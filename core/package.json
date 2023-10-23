@@ -1,0 +1,33 @@
+{
+  "name": "@litmus/core",
+  "version": "0.0.1",
+  "license": "MIT",
+  "scripts": {
+    "build": "hardhat compile",
+    "deploy": "hardhat deploy",
+    "test": "hardhat test"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^2.0.2",
+    "@nomicfoundation/hardhat-ethers": "^3.0.4",
+    "@nomicfoundation/hardhat-network-helpers": "^1.0.9",
+    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
+    "@nomicfoundation/hardhat-verify": "^1.1.1",
+    "@typechain/ethers-v6": "^0.5.1",
+    "@typechain/hardhat": "^9.1.0",
+    "@types/chai": "^4.3.8",
+    "@types/mocha": "^10.0.2",
+    "@types/node": "^20.8.6",
+    "chai": "^4.3.10",
+    "ethers": "^6.8.0",
+    "hardhat": "^2.18.1",
+    "hardhat-gas-reporter": "^1.0.9",
+    "solidity-coverage": "^0.8.5",
+    "ts-node": "^10.9.1",
+    "typechain": "^8.3.2",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.0"
+  }
+}
