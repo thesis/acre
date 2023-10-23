@@ -4,8 +4,6 @@ import { expect } from "chai";
 import { Depositor } from "../../typechain-types/contracts/depositor/Depositor";
 
 async function deployDepositorFixture() {
-  const [account] = await ethers.getSigners();
-
   const Depositor = await ethers.getContractFactory("Depositor");
   const depositor = await Depositor.deploy();
 
@@ -16,14 +14,15 @@ const data = {
   bitcoin: {
     publicKey: {
       uncompressed:
-        "0450863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b23522cd470243453a299fa9e77237716103abc11a1df38855ed6f2ee187e9c582ba6",
-      x: "0x50863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352",
-      y: "0x2cd470243453a299fa9e77237716103abc11a1df38855ed6f2ee187e9c582ba6",
+        "04f4f3ac5daa51ec3dd5fb00bffe39c31fab780b66565bf9d33ee8d4aa3a0b96a575fd7a008d245d1c960877251c6d0b50e14e142bea6ccfb1b2020abe6e0b3949",
+      x: "0xf4f3ac5daa51ec3dd5fb00bffe39c31fab780b66565bf9d33ee8d4aa3a0b96a5",
+      y: "0x75fd7a008d245d1c960877251c6d0b50e14e142bea6ccfb1b2020abe6e0b3949",
     },
     signature: {
-      v: "",
-      r: "",
-      s: "",
+      messageHash:
+        "0x55fc78ab5308b828b74bcf4852be2fb229d8cdc196cdaea7d8960282ca43dd69",
+      messageSignature:
+        "2019958eb693dd163d93796373ef830c2ceec57a475eb99c95ccfff9dd9d7f415718c7edc90dd3b7ce9940fb1381a0f03ab8e4d1ec5a87f2d386dc67e27a02e30f",
     },
   },
 };
@@ -45,7 +44,7 @@ describe("Depositor", () => {
       x: publicKeyX,
       y: publicKeyY,
     } = data.bitcoin.publicKey;
-    const amount = ethers.WeiPerEther
+    const amount = ethers.WeiPerEther;
 
     const expectedEthereumAddress = ethers.computeAddress(`0x${uncompressed}`);
 
@@ -54,5 +53,42 @@ describe("Depositor", () => {
     const balance = await depositor.balances(expectedEthereumAddress);
 
     expect(balance).to.eq(amount);
+  });
+
+  describe("withdraw", () => {
+    const pubKeyX = data.bitcoin.publicKey.x;
+    const pubKeyY = data.bitcoin.publicKey.y;
+
+    before(async () => {
+      const [signer] = await ethers.getSigners();
+      const amount = ethers.WeiPerEther;
+
+      await depositor.connect(signer).deposit(pubKeyX, pubKeyY, amount);
+    });
+
+    it("should withdraw deposited amount", async () => {
+      const { messageSignature } = data.bitcoin.signature;
+
+      const v = messageSignature.slice(0, 2);
+      // Bitcoin signature uses `v` that is +4.
+      const normalizedV = Number(`0x${v}`) - 4;
+      const r = messageSignature.slice(2, 66);
+      const s = messageSignature.slice(66, 130);
+
+      await depositor.withdraw(
+        pubKeyX,
+        pubKeyY,
+        normalizedV,
+        `0x${r}`,
+        `0x${s}`
+      );
+
+      const expectedEthereumAddress = ethers.computeAddress(
+        `0x${data.bitcoin.publicKey.uncompressed}`
+      );
+      const balance = await depositor.balances(expectedEthereumAddress);
+
+      expect(balance).to.eq(0);
+    });
   });
 });
