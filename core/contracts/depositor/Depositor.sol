@@ -51,8 +51,10 @@ contract Depositor {
     /// @param publicKeyY Second half of uncompressed ECDSA public key.
     /// @param v Indicates the recovery param. The canonical values are usually
     ///          27 and 28 (for 0 and 1) which indicates the signature parity.
-    ///          First 1 byte of Bitcoin message signature. Note that Bitcoin
-    ///          signature uses `v` that is +4.
+    ///          First 1 byte of Bitcoin message signature. The recover id might
+    ///          be 2 or 3 is a super rare edge-case - in practice only ever be
+    ///          seen in specifically generated examples. In 99.99999999% of the
+    ///          cases it is false.
     /// @param r The next 32 bytes of signature.
     /// @param s Final 32 bytes of signature.
     function withdraw(
