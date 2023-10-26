@@ -95,4 +95,45 @@ describe("TokenStaking", () => {
       })
     })
   })
+
+  describe("unstaking", () => {
+    const amountToStake = WeiPerEther * 10n
+
+    beforeEach(async () => {
+      // Stake tokens.
+      await token
+        .connect(tokenHolder)
+        .approveAndCall(await tokenStaking.getAddress(), amountToStake, "0x")
+    })
+
+    it("should unstake tokens", async () => {
+      const staker = await tokenHolder.getAddress()
+      const stakingBalance = await tokenStaking.balanceOf(staker)
+      const balanceBeforeUnstaking = await token.balanceOf(staker)
+
+      await expect(tokenStaking.connect(tokenHolder).unstake(stakingBalance))
+        .to.emit(tokenStaking, "Unstaked")
+        .withArgs(staker, stakingBalance)
+
+      expect(await token.balanceOf(staker)).to.be.equal(
+        balanceBeforeUnstaking + stakingBalance,
+      )
+      expect(await tokenStaking.balanceOf(staker)).to.be.eq(0)
+    })
+
+    it("should revert if the unstaked amount is equal 0", async () => {
+      await expect(
+        tokenStaking.connect(tokenHolder).unstake(0),
+      ).to.be.revertedWith("Amount can not be zero")
+    })
+
+    it("should revert if the user wants to unstake more tokens than currently staked", async () => {
+      const staker = await tokenHolder.getAddress()
+      const stakingBalance = await tokenStaking.balanceOf(staker)
+
+      await expect(
+        tokenStaking.connect(tokenHolder).unstake(stakingBalance + 10n),
+      ).to.be.revertedWith("Insufficient funds")
+    })
+  })
 })

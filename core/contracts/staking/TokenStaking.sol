@@ -18,6 +18,7 @@ contract TokenStaking is IReceiveApproval {
     mapping(address => uint256) public balanceOf;
 
     event Staked(address indexed staker, uint256 amount);
+    event Unstaked(address indexed staker, uint256 amount);
 
     constructor(IERC20 _token) {
         require(
@@ -49,6 +50,21 @@ contract TokenStaking is IReceiveApproval {
     /// @param amount Approved amount for the transfer and stake.
     function stake(uint256 amount) external {
         _stake(msg.sender, amount);
+    }
+
+    /// @notice Reduces stake amount by the provided amount and
+    ///         withdraws tokens to the owner.
+    /// @param amount Amount to unstake and withdraw.
+    function unstake(uint256 amount) external {
+        require((amount > 0), "Amount can not be zero");
+
+        uint256 balance = balanceOf[msg.sender];
+        require(balance >= amount, "Insufficient funds");
+
+        balanceOf[msg.sender] -= amount;
+
+        emit Unstaked(msg.sender, amount);
+        token.safeTransfer(msg.sender, amount);
     }
 
     /// @notice Returns minimum amount of staking tokens to participate in
