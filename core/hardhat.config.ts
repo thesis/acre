@@ -2,7 +2,6 @@ import { HardhatUserConfig } from "hardhat/config"
 
 import "@nomicfoundation/hardhat-toolbox"
 import "hardhat-deploy"
-import "@typechain/hardhat"
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -24,15 +23,9 @@ const config: HardhatUserConfig = {
   },
 
   networks: {
-    hardhat: {
-      deploy: [
-        "deploy",
-      ],
-    },
     sepolia: {
       url: process.env.CHAIN_API_URL || "",
       chainId: 11155111,
-      deploy: ["deploy"],
       accounts: process.env.ACCOUNTS_PRIVATE_KEYS
         ? process.env.ACCOUNTS_PRIVATE_KEYS.split(",")
         : undefined,
@@ -41,17 +34,11 @@ const config: HardhatUserConfig = {
     mainnet: {
       url: process.env.CHAIN_API_URL || "",
       chainId: 1,
-      deploy: ["deploy"],
       accounts: process.env.ACCOUNTS_PRIVATE_KEYS
         ? process.env.ACCOUNTS_PRIVATE_KEYS.split(",")
         : undefined,
       tags: ["etherscan"],
     },
-  },
-
-  deploymentArtifactsExport: {
-    sepolia: "artifacts",
-    mainnet: "artifacts",
   },
 
   etherscan: {
@@ -73,9 +60,7 @@ const config: HardhatUserConfig = {
       mainnet: "",
     },
   },
-  mocha: {
-    timeout: 60_000,
-  },
+
   typechain: {
     outDir: "typechain",
   },
