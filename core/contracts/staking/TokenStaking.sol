@@ -51,8 +51,24 @@ contract TokenStaking is IReceiveApproval {
         _stake(msg.sender, amount);
     }
 
+    /// @notice Returns minimum amount of staking tokens to participate in
+    ///         protocol.
+    function minimumStake() public pure returns (uint256) {
+        // TODO: Fetch this param from "parameters" contract that stores
+        // governable params.
+        return 1;
+    }
+
+    /// @notice Returns maximum amount of staking tokens.
+    function maximumStake() public pure returns (uint256) {
+        // TODO: Fetch this param from "parameters" contract that stores
+        // governable params.
+        return 100 ether;
+    }
+
     function _stake(address account, uint256 amount) private {
-        require(amount > 0, "Amount is less than minimum");
+        require(amount >= minimumStake(), "Amount is less than minimum");
+        require(amount <= maximumStake(), "Amount is greater than maxium");
         require(account != address(0), "Can not be the zero address");
 
         balanceOf[account] += amount;

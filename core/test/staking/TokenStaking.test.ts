@@ -38,6 +38,8 @@ describe("TokenStaking", () => {
   })
 
   describe("staking", () => {
+    const amountToStake = WeiPerEther * 10n
+
     describe("when staking via staking contract directly", () => {
       beforeEach(async () => {
         // Infinite approval for staking contract.
@@ -48,15 +50,18 @@ describe("TokenStaking", () => {
 
       it("should stake tokens", async () => {
         const tokenHolderAddress = await tokenHolder.getAddress()
-        const tokenBalance = await token.balanceOf(tokenHolderAddress)
+        const tokenBalanceBeforeStake =
+          await token.balanceOf(tokenHolderAddress)
 
-        await expect(tokenStaking.connect(tokenHolder).stake(tokenBalance))
+        await expect(tokenStaking.connect(tokenHolder).stake(amountToStake))
           .to.emit(tokenStaking, "Staked")
-          .withArgs(tokenHolderAddress, tokenBalance)
+          .withArgs(tokenHolderAddress, amountToStake)
         expect(await tokenStaking.balanceOf(tokenHolderAddress)).to.be.eq(
-          tokenBalance,
+          amountToStake,
         )
-        expect(await token.balanceOf(tokenHolderAddress)).to.be.eq(0)
+        expect(await token.balanceOf(tokenHolderAddress)).to.be.eq(
+          tokenBalanceBeforeStake - amountToStake,
+        )
       })
 
       it("should revert if the staked amount is less than required minimum", async () => {
@@ -64,25 +69,36 @@ describe("TokenStaking", () => {
           tokenStaking.connect(tokenHolder).stake(0),
         ).to.be.revertedWith("Amount is less than minimum")
       })
+
+      it("should revert if the staked amount is grater than maxium stake amount", async () => {
+        const maxAmount = await tokenStaking.maximumStake()
+
+        await expect(
+          tokenStaking.connect(tokenHolder).stake(maxAmount + 1n),
+        ).to.be.revertedWith("Amount is greater than maxium")
+      })
     })
 
     describe("when staking via staking token using approve and call pattern", () => {
       it("should stake tokens", async () => {
         const tokenHolderAddress = await tokenHolder.getAddress()
-        const tokenBalance = await token.balanceOf(tokenHolderAddress)
+        const tokenBalanceBeforeStake =
+          await token.balanceOf(tokenHolderAddress)
         const tokenStakingAddress = await tokenStaking.getAddress()
 
         await expect(
           token
             .connect(tokenHolder)
-            .approveAndCall(tokenStakingAddress, tokenBalance, "0x"),
+            .approveAndCall(tokenStakingAddress, amountToStake, "0x"),
         )
           .to.emit(tokenStaking, "Staked")
-          .withArgs(tokenHolderAddress, tokenBalance)
+          .withArgs(tokenHolderAddress, amountToStake)
         expect(await tokenStaking.balanceOf(tokenHolderAddress)).to.be.eq(
-          tokenBalance,
+          amountToStake,
         )
-        expect(await token.balanceOf(tokenHolderAddress)).to.be.eq(0)
+        expect(await token.balanceOf(tokenHolderAddress)).to.be.eq(
+          tokenBalanceBeforeStake - amountToStake,
+        )
       })
     })
   })
