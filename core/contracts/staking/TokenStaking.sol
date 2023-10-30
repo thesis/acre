@@ -73,6 +73,7 @@ contract TokenStaking is IReceiveApproval {
 
         balanceOf[staker] += amount;
 
+        // TODO: Mint stBTC token.
         emit Staked(staker, amount);
         token.safeTransferFrom(staker, address(this), amount);
     }
