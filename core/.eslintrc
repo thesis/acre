@@ -2,6 +2,9 @@
   "root": true,
   "extends": ["@thesis-co"],
   "rules": {
-    "import/no-extraneous-dependencies": "off"
+    "import/no-extraneous-dependencies": [
+      "error",
+      { "devDependencies": ["hardhat.config.ts", "test/**"] }
+    ]
   }
 }
