@@ -1,7 +1,8 @@
-node_modules/
-export/
 build/
 cache/
-typechain/
-
 export.json
+export/
+node_modules/
+typechain/
+yarn-debug.log*
+yarn-error.log*
