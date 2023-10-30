@@ -11,8 +11,12 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 ///         and recover the stake after undelegation period is over.
 contract TokenStaking {
     using SafeERC20 for IERC20;
-    
+
+    event Staked(address indexed account, uint256 amount);
+
     IERC20 internal immutable token;
+
+    mapping(address => uint256) public balanceOf;
 
     constructor(IERC20 _token) {
         require(
@@ -21,5 +25,16 @@ contract TokenStaking {
         );
 
         token = _token;
+    }
+
+    /// @notice Stakes the owner's tokens in the staking contract.
+    /// @param amount Approved amount for the transfer and stake.
+    function stake(uint256 amount) external {
+        require(amount > 0, "Amount is less than minimum");
+
+        balanceOf[msg.sender] += amount;
+
+        emit Staked(msg.sender, amount);
+        token.safeTransferFrom(msg.sender, address(this), amount);
     }
 }
