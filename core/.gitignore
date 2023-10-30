@@ -1,12 +1,7 @@
-node_modules
-.env
-coverage
-coverage.json
-typechain
-typechain-types
+node_modules/
+export/
+build/
+cache/
+typechain/
 
-# Hardhat files
-cache
-artifacts
-build
-
+export.json

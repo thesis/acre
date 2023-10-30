@@ -1,5 +1,3 @@
-.openzeppelin/
-artifacts/
 build/
 cache/
 deployments/
