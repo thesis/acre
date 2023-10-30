@@ -13,7 +13,7 @@ import "../shared/IReceiveApproval.sol";
 contract TokenStaking is IReceiveApproval {
     using SafeERC20 for IERC20;
 
-    event Staked(address indexed account, uint256 amount);
+    event Staked(address indexed staker, uint256 amount);
 
     IERC20 internal immutable token;
 
@@ -66,14 +66,14 @@ contract TokenStaking is IReceiveApproval {
         return 100 ether;
     }
 
-    function _stake(address account, uint256 amount) private {
+    function _stake(address staker, uint256 amount) private {
         require(amount >= minimumStake(), "Amount is less than minimum");
         require(amount <= maximumStake(), "Amount is greater than maxium");
-        require(account != address(0), "Can not be the zero address");
+        require(staker != address(0), "Can not be the zero address");
 
-        balanceOf[account] += amount;
+        balanceOf[staker] += amount;
 
-        emit Staked(account, amount);
-        token.safeTransferFrom(account, address(this), amount);
+        emit Staked(staker, amount);
+        token.safeTransferFrom(staker, address(this), amount);
     }
 }
