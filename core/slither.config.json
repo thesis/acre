@@ -1,0 +1,4 @@
+{
+  "hardhat_artifacts_directory": "build",
+  "filter_paths": "node_modules/.*"
+}
