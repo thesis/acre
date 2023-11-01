@@ -1,9 +1,12 @@
 # litmus
+
 Bitcoin Liquid Staking
 
-# Development
+[![Core](https://github.com/thesis/litmus/actions/workflows/core.yaml/badge.svg?branch=main&event=push)](https://github.com/thesis/litmus/actions/workflows/core.yaml)
 
-## Pre-commit Hooks
+## Development
+
+### Pre-commit Hooks
 
 Developers are encouraged to use [pre-commit](https://pre-commit.com/) hooks to
 automatically discover code issues, before they submit the code.
