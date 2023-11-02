@@ -4,6 +4,6 @@ pragma solidity ^0.8.21;
 // Uncomment this line to use console.log
 // import "hardhat/console.sol";
 
-contract Litmus {
+contract Acre {
     // TODO: add your implementation
 }
