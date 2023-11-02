@@ -5,9 +5,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployments } = hre
   const { log } = deployments
 
-  log("Deploying Litmus contract")
+  log("Deploying Acre contract")
 }
 
 export default func
 
-func.tags = ["Litmus"]
+func.tags = ["Acre"]
