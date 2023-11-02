@@ -1,12 +1,12 @@
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 import { ethers } from "hardhat"
 import { expect } from "chai"
-import { Token, TokenStaking } from "../../typechain"
 import { WeiPerEther } from "ethers"
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
+import type { Token, TokenStaking } from "../../typechain"
 
 async function tokenStakingFixture() {
-  const [deployer, tokenHolder] = await ethers.getSigners()
+  const [_, tokenHolder] = await ethers.getSigners()
   const StakingToken = await ethers.getContractFactory("Token")
   const token = await StakingToken.deploy()
 
@@ -26,15 +26,8 @@ describe("TokenStaking", () => {
   let tokenHolder: HardhatEthersSigner
 
   beforeEach(async () => {
-    const {
-      tokenStaking: _tokenStaking,
-      token: _token,
-      tokenHolder: _tokenHolder,
-    } = await loadFixture(tokenStakingFixture)
-
-    tokenStaking = _tokenStaking
-    token = _token
-    tokenHolder = _tokenHolder
+    ;({ tokenStaking, token, tokenHolder } =
+      await loadFixture(tokenStakingFixture))
   })
 
   describe("staking", () => {

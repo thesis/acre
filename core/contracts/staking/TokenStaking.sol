@@ -13,11 +13,11 @@ import "../shared/IReceiveApproval.sol";
 contract TokenStaking is IReceiveApproval {
     using SafeERC20 for IERC20;
 
-    event Staked(address indexed staker, uint256 amount);
-
     IERC20 internal immutable token;
 
     mapping(address => uint256) public balanceOf;
+
+    event Staked(address indexed staker, uint256 amount);
 
     constructor(IERC20 _token) {
         require(
