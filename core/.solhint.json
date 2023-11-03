@@ -1,7 +1,5 @@
 {
-  "extends": "keep",
+  "extends": "thesis",
   "plugins": [],
-  "rules": {
-    "func-visibility": ["error", { "ignoreConstructors": true }]
-  }
+  "rules": {}
 }
