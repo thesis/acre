@@ -49,9 +49,9 @@ describe("TokenStaking", () => {
         await expect(tokenStaking.connect(tokenHolder).stake(amountToStake))
           .to.emit(tokenStaking, "Staked")
           .withArgs(tokenHolderAddress, amountToStake)
-        expect(await tokenStaking.balanceOf(tokenHolderAddress)).to.be.eq(
-          amountToStake,
-        )
+        expect(
+          (await tokenStaking.stakers(tokenHolderAddress)).balance,
+        ).to.be.eq(amountToStake)
         expect(await token.balanceOf(tokenHolderAddress)).to.be.eq(
           tokenBalanceBeforeStake - amountToStake,
         )
@@ -86,9 +86,9 @@ describe("TokenStaking", () => {
         )
           .to.emit(tokenStaking, "Staked")
           .withArgs(tokenHolderAddress, amountToStake)
-        expect(await tokenStaking.balanceOf(tokenHolderAddress)).to.be.eq(
-          amountToStake,
-        )
+        expect(
+          (await tokenStaking.stakers(tokenHolderAddress)).balance,
+        ).to.be.eq(amountToStake)
         expect(await token.balanceOf(tokenHolderAddress)).to.be.eq(
           tokenBalanceBeforeStake - amountToStake,
         )
@@ -108,7 +108,7 @@ describe("TokenStaking", () => {
 
     it("should unstake tokens", async () => {
       const staker = await tokenHolder.getAddress()
-      const stakingBalance = await tokenStaking.balanceOf(staker)
+      const stakingBalance = (await tokenStaking.stakers(staker)).balance
       const balanceBeforeUnstaking = await token.balanceOf(staker)
 
       await expect(tokenStaking.connect(tokenHolder).unstake(stakingBalance))
@@ -118,7 +118,7 @@ describe("TokenStaking", () => {
       expect(await token.balanceOf(staker)).to.be.equal(
         balanceBeforeUnstaking + stakingBalance,
       )
-      expect(await tokenStaking.balanceOf(staker)).to.be.eq(0)
+      expect((await tokenStaking.stakers(staker)).balance).to.be.eq(0)
     })
 
     it("should revert if the unstaked amount is equal 0", async () => {
@@ -129,7 +129,7 @@ describe("TokenStaking", () => {
 
     it("should revert if the user wants to unstake more tokens than currently staked", async () => {
       const staker = await tokenHolder.getAddress()
-      const stakingBalance = await tokenStaking.balanceOf(staker)
+      const stakingBalance = (await tokenStaking.stakers(staker)).balance
 
       await expect(
         tokenStaking.connect(tokenHolder).unstake(stakingBalance + 10n),

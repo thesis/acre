@@ -13,9 +13,14 @@ import "../shared/IReceiveApproval.sol";
 contract TokenStaking is IReceiveApproval {
     using SafeERC20 for IERC20;
 
+    struct Staker {
+        uint256 balance;
+        uint256 startStakingTimestamp;
+    }
+
     IERC20 internal immutable token;
 
-    mapping(address => uint256) public balanceOf;
+    mapping(address => Staker) public stakers;
 
     event Staked(address indexed staker, uint256 amount);
     event Unstaked(address indexed staker, uint256 amount);
@@ -58,10 +63,12 @@ contract TokenStaking is IReceiveApproval {
     function unstake(uint256 amount) external {
         require((amount > 0), "Amount can not be zero");
 
-        uint256 balance = balanceOf[msg.sender];
-        require(balance >= amount, "Insufficient funds");
+        Staker storage staker = stakers[msg.sender];
 
-        balanceOf[msg.sender] -= amount;
+        require(staker.balance > 0, "Nothing to unstake");
+        require(staker.balance >= amount, "Insufficient funds");
+
+        staker.balance -= amount;
 
         emit Unstaked(msg.sender, amount);
         token.safeTransfer(msg.sender, amount);
@@ -87,7 +94,10 @@ contract TokenStaking is IReceiveApproval {
         require(amount <= maximumStake(), "Amount is greater than maxium");
         require(staker != address(0), "Can not be the zero address");
 
-        balanceOf[staker] += amount;
+        Staker storage stakerStruct = stakers[staker];
+        stakerStruct.balance += amount;
+        /* solhint-disable-next-line not-rely-on-time */
+        stakerStruct.startStakingTimestamp = block.timestamp;
 
         // TODO: Mint stBTC token.
         emit Staked(staker, amount);
