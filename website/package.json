@@ -2,12 +2,11 @@
   "name": "website",
   "version": "1.0.0",
   "private": true,
-  "description": "website",
+  "description": "Acre website",
   "keywords": [
     "gatsby"
   ],
   "scripts": {
-    "develop": "gatsby develop",
     "start": "gatsby develop",
     "build": "gatsby build",
     "serve": "gatsby serve",
@@ -23,6 +22,6 @@
     "@types/node": "^20.3.3",
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",
-    "typescript": "^5.1.6"
+    "typescript": "^5.2.2"
   }
 }
