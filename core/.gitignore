@@ -1,8 +1,11 @@
 build/
 cache/
+cache_forge/
 export.json
 export/
+lib/
 node_modules/
+out/
 typechain/
 yarn-debug.log*
 yarn-error.log*
