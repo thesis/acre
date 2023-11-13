@@ -13,8 +13,10 @@
     "serve": "gatsby serve",
     "clean": "gatsby clean",
     "typecheck": "tsc --noEmit",
-    "lint:eslint": "eslint .",
-    "lint:fix:eslint": "eslint . --fix",
+    "format": "npm run lint:js && npm run lint:config",
+    "format:fix": "npm run lint:js:fix && npm run lint:config:fix",
+    "lint:js": "eslint .",
+    "lint:js:fix": "eslint . --fix",
     "lint:config": "prettier -c '**/*.@(json|yaml|toml)'",
     "lint:config:fix": "prettier -w '**/*.@(json|yaml|toml)'"
   },
