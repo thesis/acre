@@ -6,12 +6,19 @@
   "keywords": [
     "gatsby"
   ],
+  "prettier": "@thesis/prettier-config",
   "scripts": {
     "start": "gatsby develop",
     "build": "gatsby build",
     "serve": "gatsby serve",
     "clean": "gatsby clean",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "format": "npm run lint:js && npm run lint:config",
+    "format:fix": "npm run lint:js:fix && npm run lint:config:fix",
+    "lint:js": "eslint .",
+    "lint:js:fix": "eslint . --fix",
+    "lint:config": "prettier -c '**/*.@(json|yaml|toml)'",
+    "lint:config:fix": "prettier -w '**/*.@(json|yaml|toml)'"
   },
   "dependencies": {
     "gatsby": "^5.12.4",
@@ -19,9 +26,15 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@thesis-co/eslint-config": "^0.6.1",
+    "@thesis/prettier-config": "github:thesis/prettier-config",
     "@types/node": "^20.3.3",
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",
+    "@typescript-eslint/eslint-plugin": "^6.10.0",
+    "@typescript-eslint/parser": "^6.10.0",
+    "eslint": "^8.53.0",
+    "prettier": "^3.0.3",
     "typescript": "^5.2.2"
   }
 }
