@@ -1,0 +1,30 @@
+{
+    "id": "acre",
+    "name": "Acre",
+    "url": "http://localhost:5173?embed=true",
+    "homepageUrl": "http://localhost:5173?embed=true",
+    "icon": "https://cdn.live.ledger.com/icons/platform/moonpay.png",
+    "platform": "all",
+    "apiVersion": "2.0.0",
+    "manifestVersion": "1",
+    "branch": "stable",
+    "categories": [
+        "buy"
+    ],
+    "currencies": [
+        "bitcoin",
+        "bitcoin_testnet"
+    ],
+    "content": {
+        "shortDescription": {
+            "en": "Bitcoin Liquid Staking"
+        },
+        "description": {
+            "en": "Bitcoin Liquid Staking"
+        }
+    },
+    "permissions": [],
+    "domains": [
+        "http://*"
+    ]
+}
