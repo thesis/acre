@@ -1,7 +1,6 @@
 import React from "react"
 import { useEmbedFeatureFlag } from "./hooks"
 import { LedgerWalletAPIProvider } from "./providers"
-import { LOCAL_STORAGE_EMBED } from "./constants"
 
 function DApp() {
   const { isEmbed } = useEmbedFeatureFlag()
@@ -10,13 +9,9 @@ function DApp() {
 }
 
 function DAppWrapper() {
-  const { enableIsEmbedFeatureFlag } = useEmbedFeatureFlag()
+  const { isEmbed } = useEmbedFeatureFlag()
 
-  const params = new URLSearchParams(window.location.search)
-  const isEmbed = params.get(LOCAL_STORAGE_EMBED)
-
-  if (isEmbed) {
-    enableIsEmbedFeatureFlag()
+  if (isEmbed === "true") {
     return (
       <LedgerWalletAPIProvider>
         <DApp />
