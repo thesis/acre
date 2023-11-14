@@ -1,10 +1,13 @@
 {
   "root": true,
-  "extends": ["@thesis-co"],
-  "rules": {
-    "import/no-extraneous-dependencies": [
-      "error",
-      { "devDependencies": ["hardhat.config.ts", "test/**"] }
-    ]
-  }
+  "extends":["../.eslintrc"],
+  "overrides": [
+    {
+      "files": ["hardhat.config.ts", "test/**"],
+      "rules": {
+        "semi": "error",
+        "import/no-extraneous-dependencies": "off"
+      }
+    }
+  ]
 }

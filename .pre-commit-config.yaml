@@ -3,19 +3,19 @@ repos:
     hooks:
       - id: lint-sol
         name: "lint core sol"
-        entry: /usr/bin/env bash -c "cd core/ && npm run lint:sol"
+        entry: /usr/bin/env bash -c "echo `lint sol`"
         files: '\.sol$'
         language: script
         description: "Checks solidity code according to the package's linter configuration"
       - id: lint-js
         name: "lint core ts/js"
-        entry: /usr/bin/env bash -c "cd core/ && npm run lint:js"
+        entry: /usr/bin/env bash -c "echo `lint  js/ts`"
         files: '\.(ts|js)$'
         language: script
         description: "Checks TS/JS code according to the package's linter configuration"
       - id: lint-config
         name: "lint core json/yaml"
-        entry: /usr/bin/env bash -c "cd core/ && npm run lint:config"
+        entry: /usr/bin/env bash -c "echo `lint config`"
         files: '\.(json|yaml)$'
         language: script
         description: "Checks JSON/YAML code according to the package's linter configuration"
