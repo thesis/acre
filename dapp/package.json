@@ -3,7 +3,6 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "prettier": "@thesis/prettier-config",
   "scripts": {
     "start": "vite",
     "build": "tsc && vite build",
