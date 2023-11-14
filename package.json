@@ -1,0 +1,31 @@
+{
+  "name": "acre",
+  "version": "1.0.0",
+  "description": "Acre monorepo",
+  "repository": "git@github.com:thesis/acre.git",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "format": "npm run lint:js && npm run lint:config && npm run lint:sol",
+    "format:fix": "npm run lint:js:fix && npm run lint:config:fix && npm run lint:sol:fix",
+    "lint:js": "eslint .",
+    "lint:js:fix": "eslint . --fix",
+    "lint:config": "prettier -c '**/*.@(json|yaml|toml)'",
+    "lint:config:fix": "prettier -w '**/*.@(json|yaml|toml)'",
+    "lint:sol": "solhint '**/*.sol' && prettier --check '**/*.sol'",
+    "lint:sol:fix": "solhint '**/*.sol' --fix && prettier --write '**/*.sol'"
+  },
+  "devDependencies": {
+    "@thesis-co/eslint-config": "^0.6.1",
+    "@thesis/prettier-config": "github:thesis/prettier-config",
+    "@typescript-eslint/eslint-plugin": "^6.11.0",
+    "@typescript-eslint/parser": "^6.11.0",
+    "eslint": "^8.53.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "prettier": "^3.1.0",
+    "prettier-plugin-solidity": "^1.2.0",
+    "solhint": "^3.6.2",
+    "solhint-config-thesis": "https://github.com/thesis/solhint-config.git",
+    "typescript": "^5.2.2"
+  }
+}
