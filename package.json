@@ -6,14 +6,12 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "format": "npm run lint:js && npm run lint:config && npm run lint:sol",
-    "format:fix": "npm run lint:js:fix && npm run lint:config:fix && npm run lint:sol:fix",
-    "lint:js": "eslint .",
-    "lint:js:fix": "eslint . --fix",
-    "lint:config": "prettier -c '**/*.@(json|yaml|toml)'",
-    "lint:config:fix": "prettier -w '**/*.@(json|yaml|toml)'",
-    "lint:sol": "solhint '**/*.sol' && prettier --check '**/*.sol'",
-    "lint:sol:fix": "solhint '**/*.sol' --fix && prettier --write '**/*.sol'"
+    "lint:js": "./lint.sh -t js",
+    "lint:js:fix": "npm run lint:js -- -f",
+    "lint:config": "./lint.sh -t config",
+    "lint:config:fix": "npm run lint:config -- -f",
+    "lint:sol": "./lint.sh -t sol",
+    "lint:sol:fix": "npm run lint:sol -- -f"
   },
   "devDependencies": {
     "@thesis-co/eslint-config": "^0.6.1",
