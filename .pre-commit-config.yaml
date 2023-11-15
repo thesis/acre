@@ -22,3 +22,18 @@ repos:
         types_or: [json,yaml]
         language: script
         description: "Checks JSON/YAML code according to the package's linter configuration"
+      # Website
+      - id: website-lint-js
+        name: "lint website ts/js"
+        entry: /usr/bin/env bash -c "npm run lint:js -- -w website"
+        files: ^website/
+        types_or: [ts,tsx,javascript,jsx]
+        language: script
+        description: "Checks TS/JS code according to the package's linter configuration"
+      - id: website-lint-config
+        name: "lint website json/yaml"
+        entry: /usr/bin/env bash -c "npm run lint:config -- -w website"
+        files: ^website/
+        types_or: [json,yaml]
+        language: script
+        description: "Checks JSON/YAML code according to the package's linter configuration"
