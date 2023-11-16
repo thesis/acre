@@ -1,7 +1,6 @@
 import { useEffect } from "react"
 import { LOCAL_STORAGE_CHAKRA_COLOR_MODE } from "../constants/local-storage"
 
-// eslint-disable-next-line import/prefer-default-export
 export function useDetectThemeMode(): string | null {
   const params = new URLSearchParams(window.location.search)
   const themeMode = params.get("theme")
