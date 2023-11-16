@@ -1,9 +1,9 @@
 import React from "react"
 import ReactDOM from "react-dom/client"
-import DAppWrapper from "./DApp"
+import DAppProviders from "./DApp"
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <DAppWrapper />
+    <DAppProviders />
   </React.StrictMode>,
 )
