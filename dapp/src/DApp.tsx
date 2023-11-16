@@ -1,5 +1,6 @@
 import React from "react"
 import { ChakraProvider, Button, Box } from "@chakra-ui/react"
+import { useDetectThemeMode } from "./hooks"
 import { LedgerWalletAPIProvider } from "./providers"
 import { getThemeConfig } from "./theme/utils/utils"
 import theme from "./theme/index"
@@ -14,8 +15,7 @@ function DApp() {
 }
 
 function DAppProviders() {
-  const params = new URLSearchParams(window.location.search)
-  const themeMode = params.get("theme")
+  const themeMode = useDetectThemeMode()
 
   return (
     <LedgerWalletAPIProvider>
