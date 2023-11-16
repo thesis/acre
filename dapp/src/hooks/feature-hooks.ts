@@ -8,7 +8,6 @@ const getEmbedParam = (): string => {
   return isEmbed ?? "false"
 }
 
-// eslint-disable-next-line import/prefer-default-export
 export function useEmbedFeatureFlag() {
   const [isEmbed, setIsEmbed] = useLocalStorage(
     LOCAL_STORAGE_EMBED,

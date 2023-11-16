@@ -6,7 +6,6 @@ const setLocalStorageItem = (key: string, value: string): void =>
 const getLocalStorageItem = (key: string, defaultValue: string): string =>
   localStorage.getItem(key) || defaultValue
 
-// eslint-disable-next-line import/prefer-default-export
 export function useLocalStorage(
   key: string,
   initialValue: string,
