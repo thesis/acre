@@ -1,4 +1,8 @@
 {
   "root": true,
-  "extends": ["@thesis-co"]
+  "extends": ["@thesis-co"],
+  "rules": {
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
+    "import/prefer-default-export": "off"
+  }
 }

@@ -16,6 +16,8 @@
     "lint:config:fix": "prettier -w '**/*.@(json|yaml|toml)'"
   },
   "dependencies": {
+    "@ledgerhq/wallet-api-client": "^1.2.1",
+    "@ledgerhq/wallet-api-client-react": "^1.1.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
