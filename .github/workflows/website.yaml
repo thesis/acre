@@ -1,0 +1,47 @@
+name: Website
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "website/**"
+  pull_request:
+    paths:
+      - "website/**"
+
+defaults:
+  run:
+    working-directory: ./website
+
+jobs:
+  core-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node in root
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: "./.nvmrc"
+          cache: "yarn"
+          cache-dependency-path: "./yarn.lock"
+
+      - name: Install Dependencies in root
+        run: cd .. && yarn install --prefer-offline --frozen-lockfile
+
+      - name: Set up Node in website package
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: "website/.nvmrc"
+          cache: "yarn"
+          cache-dependency-path: "website/yarn.lock"
+
+      - name: Install Dependencies in website package
+        run: yarn install --prefer-offline --frozen-lockfile
+
+      - name: Make the script file executable
+        run: cd .. && chmod +x lint.sh
+
+      - name: Format
+        run: cd .. && yarn format -w website
