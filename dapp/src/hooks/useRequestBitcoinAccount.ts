@@ -1,20 +1,8 @@
-import { Account, WalletAPIClient } from "@ledgerhq/wallet-api-client"
 import { useRequestAccount } from "@ledgerhq/wallet-api-client-react"
 import { useCallback, useContext, useEffect } from "react"
 import { LedgerLiveAppContext } from "../contexts/LedgerLiveAppContext"
 import { CURRENCY_ID_BITCOIN } from "../constants"
-
-type UseRequestAccount = {
-  pending: boolean
-  account: Account | null
-  error: unknown
-}
-
-type RequestAccountParams = Parameters<WalletAPIClient["account"]["request"]>
-
-type UseRequestAccountReturn = {
-  requestAccount: (...params: RequestAccountParams) => Promise<void>
-} & UseRequestAccount
+import { UseRequestAccountReturn } from "../types"
 
 export function useRequestBitcoinAccount(): UseRequestAccountReturn {
   const { setBtcAccount } = useContext(LedgerLiveAppContext)
