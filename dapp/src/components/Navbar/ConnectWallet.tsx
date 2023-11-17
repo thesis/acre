@@ -25,10 +25,13 @@ function ConnectButton({
   account,
   requestAccount,
 }: ConnectButtonsProps) {
+  const styles = !account ? { color: "error", borderColor: "error" } : undefined
   return (
     <Button
       variant="outline"
+      sx={styles}
       leftIcon={<Image src={leftIcon} />}
+      // TODO: Add a tooltip here
       rightIcon={!account ? <Image src={rightIcon} /> : undefined}
       onClick={requestAccount}
     >
