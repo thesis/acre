@@ -7,6 +7,8 @@ on:
     paths:
       - "core/**"
   pull_request:
+    paths:
+      - "core/**"
 
 defaults:
   run:
