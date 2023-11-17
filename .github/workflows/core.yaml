@@ -20,18 +20,31 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Node
+      - name: Set up Node in root
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: "./.nvmrc"
+          cache: "yarn"
+          cache-dependency-path: "./yarn.lock"
+
+      - name: Install Dependencies in root
+        run: cd .. && yarn install --prefer-offline --frozen-lockfile
+
+      - name: Set up Node in core package
         uses: actions/setup-node@v4
         with:
           node-version-file: "core/.nvmrc"
           cache: "yarn"
           cache-dependency-path: "core/yarn.lock"
 
-      - name: Install Dependencies
+      - name: Install Dependencies in core package
         run: yarn install --prefer-offline --frozen-lockfile
 
+      - name: Make the script file executable
+        run: cd .. && chmod +x lint.sh
+
       - name: Format
-        run: yarn format
+        run: cd .. && yarn format -w core
 
   core-build:
     runs-on: ubuntu-latest
