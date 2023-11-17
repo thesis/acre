@@ -13,7 +13,9 @@
     ],
     "currencies": [
         "bitcoin",
-        "bitcoin_testnet"
+        "bitcoin_testnet",
+        "ethereum",
+        "ethereum_goerli"
     ],
     "content": {
         "shortDescription": {
@@ -23,7 +25,9 @@
             "en": "Bitcoin Liquid Staking"
         }
     },
-    "permissions": [],
+    "permissions": [
+        "account.request"
+    ],
     "domains": [
         "http://*"
     ]
