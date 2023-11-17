@@ -10,7 +10,7 @@ import {
   useRequestEthereumAccount,
 } from "../../hooks"
 import { LedgerLiveAppContext } from "../../contexts/LedgerLiveAppContext"
-import { formatSatoshiAmount } from "../../utils"
+import { formatSatoshiAmount, truncateAddress } from "../../utils"
 
 export type ConnectButtonsProps = {
   leftIcon: string
@@ -32,7 +32,7 @@ function ConnectButton({
       rightIcon={!account ? <Image src={rightIcon} /> : undefined}
       onClick={requestAccount}
     >
-      {account ? account.address : "Not connected"}
+      {account ? truncateAddress(account.address) : "Not connected"}
     </Button>
   )
 }
