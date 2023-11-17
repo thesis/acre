@@ -10,6 +10,7 @@ import {
   useRequestEthereumAccount,
 } from "../../hooks"
 import { LedgerLiveAppContext } from "../../contexts/LedgerLiveAppContext"
+import { formatSatoshiAmount } from "../../utils"
 
 export type ConnectButtonsProps = {
   leftIcon: string
@@ -46,7 +47,9 @@ export default function ConnectWallet() {
       <Box display="flex" gap="2">
         <Text>Balance</Text>
         <Text as="b">
-          {!btcAccount ? "0.00" : btcAccount.balance.toString()}
+          {!btcAccount || btcAccount?.balance.isZero()
+            ? "0.00"
+            : formatSatoshiAmount(btcAccount.balance.toString())}
         </Text>
         <Text>{BITCOIN.token}</Text>
       </Box>
