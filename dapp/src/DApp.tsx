@@ -2,7 +2,7 @@ import React from "react"
 import { ChakraProvider, Button, Box } from "@chakra-ui/react"
 import { useDetectThemeMode } from "./hooks"
 import { LedgerWalletAPIProvider } from "./providers"
-import { getThemeConfig } from "./theme/utils/utils"
+import { getThemeConfig } from "./theme/utils"
 import theme from "./theme/index"
 
 function DApp() {
