@@ -1,8 +1,8 @@
 import { extendTheme } from "@chakra-ui/react"
 import Button from "./Button"
-import { colors } from "./utils/index"
+import { colors } from "./utils"
 
-export const defaultTheme = {
+const defaultTheme = {
   colors,
   components: {
     Button,
