@@ -6,6 +6,8 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "format": "./lint.sh",
+    "format:fix": "npm run format -- -f",
     "lint:js": "./lint.sh -t js",
     "lint:js:fix": "npm run lint:js -- -f",
     "lint:config": "./lint.sh -t config",
