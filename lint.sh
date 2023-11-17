@@ -1,3 +1,4 @@
+#!/bin/bash
 set -euo pipefail
 
 # Defaults, can be overwritten by input parameters.
