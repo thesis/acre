@@ -1,16 +1,27 @@
 import React from "react"
+import { ChakraProvider, Button, Box } from "@chakra-ui/react"
+import { useDetectThemeMode } from "./hooks"
 import { LedgerWalletAPIProvider } from "./providers"
+import theme from "./theme"
 
 function DApp() {
-  return <h1>Ledger live - Acre dApp</h1>
+  useDetectThemeMode()
+  return (
+    <Box p={4}>
+      <h1>Ledger live - Acre dApp</h1>
+      <Button>Test button</Button>
+    </Box>
+  )
 }
 
-function DAppWrapper() {
+function DAppProviders() {
   return (
     <LedgerWalletAPIProvider>
-      <DApp />
+      <ChakraProvider theme={theme}>
+        <DApp />
+      </ChakraProvider>
     </LedgerWalletAPIProvider>
   )
 }
 
-export default DAppWrapper
+export default DAppProviders
