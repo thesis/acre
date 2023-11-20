@@ -6,7 +6,6 @@
   "keywords": [
     "gatsby"
   ],
-  "prettier": "@thesis/prettier-config",
   "scripts": {
     "start": "gatsby develop",
     "build": "gatsby build",
