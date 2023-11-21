@@ -3,7 +3,6 @@ cache/
 cache_forge/
 export.json
 export/
-lib/
 node_modules/
 out/
 typechain/
