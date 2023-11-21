@@ -4,3 +4,6 @@
 [submodule "core/lib/erc4626"]
 	path = core/lib/erc4626
 	url = https://github.com/thesis/erc4626
+[submodule "core/lib/solmate"]
+	path = core/lib/solmate
+	url = https://github.com/Rari-Capital/solmate
