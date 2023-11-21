@@ -1,0 +1,40 @@
+{
+  "name": "dapp",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "start": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview",
+    "format": "npm run lint:js && npm run lint:config",
+    "format:fix": "npm run lint:js:fix && npm run lint:config:fix",
+    "lint:js": "eslint .",
+    "lint:js:fix": "eslint . --fix",
+    "lint:config": "prettier -c '**/*.@(json|yaml|toml)'",
+    "lint:config:fix": "prettier -w '**/*.@(json|yaml|toml)'"
+  },
+  "dependencies": {
+    "@chakra-ui/react": "^2.8.2",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@ledgerhq/wallet-api-client": "^1.2.1",
+    "@ledgerhq/wallet-api-client-react": "^1.1.2",
+    "framer-motion": "^10.16.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@thesis-co/eslint-config": "^0.6.1",
+    "@thesis/prettier-config": "github:thesis/prettier-config",
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "@typescript-eslint/eslint-plugin": "^6.10.0",
+    "@typescript-eslint/parser": "^6.10.0",
+    "@vitejs/plugin-react": "^4.0.3",
+    "eslint": "^8.53.0",
+    "prettier": "^3.1.0",
+    "typescript": "^5.2.2",
+    "vite": "^4.4.5"
+  }
+}
