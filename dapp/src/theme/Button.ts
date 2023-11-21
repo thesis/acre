@@ -14,6 +14,10 @@ const Button = {
       color: mode("black", "grey.80")(props),
       borderColor: mode("black", "grey.50")(props),
     }),
+    link: (props: StyleFunctionProps) => ({
+      color: mode("black", "grey.50")(props),
+      textDecoration: "underline",
+    }),
   },
 }
 
