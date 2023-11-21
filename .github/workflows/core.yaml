@@ -35,6 +35,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -45,6 +47,9 @@ jobs:
 
       - name: Install Dependencies
         run: yarn install --prefer-offline --frozen-lockfile
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
 
       - name: Build
         run: yarn build
@@ -74,6 +79,9 @@ jobs:
       - name: Install Dependencies
         run: yarn install --prefer-offline --frozen-lockfile
 
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+
       - name: Download Build Artifacts
         uses: actions/download-artifact@v3
         with:
@@ -82,6 +90,22 @@ jobs:
 
       - name: Test
         run: yarn test --no-compile
+
+  core-foundry-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Run tests
+        run: forge test -vvv
+
+      - name: Run snapshot
+        run: forge snapshot
 
   core-deploy-dry-run:
     needs: [core-build]
@@ -98,6 +122,9 @@ jobs:
 
       - name: Install Dependencies
         run: yarn install --prefer-offline --frozen-lockfile
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
 
       - name: Download Build Artifacts
         uses: actions/download-artifact@v3
