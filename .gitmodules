@@ -7,3 +7,6 @@
 [submodule "core/lib/solmate"]
 	path = core/lib/solmate
 	url = https://github.com/Rari-Capital/solmate
+[submodule "core/lib/ds-test"]
+	path = core/lib/ds-test
+	url = https://github.com/dapphub/ds-test
