@@ -8,18 +8,18 @@ export default function Overview() {
   const bg = useColorModeValue("white", "grey.400")
   return (
     <Grid
-      h="90vh"
-      templateRows="repeat(5, 1fr)"
-      templateColumns="repeat(6, 1fr)"
+      h="80vh"
+      templateRows="repeat(12, 1fr)"
+      templateColumns="repeat(12, 1fr)"
       gap={4}
     >
-      <GridItem colSpan={2} rowSpan={2} bg={bg}>
+      <GridItem colSpan={3} rowSpan={5} bg={bg}>
         <PositionDetails />
       </GridItem>
-      <GridItem colSpan={4} rowSpan={2} bg={bg}>
+      <GridItem colSpan={9} rowSpan={5} bg={bg}>
         <Statistics />
       </GridItem>
-      <GridItem colSpan={6} rowSpan={3} bg={bg}>
+      <GridItem colSpan={12} rowSpan={7} bg={bg}>
         <TransactionHistory />
       </GridItem>
     </Grid>
