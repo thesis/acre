@@ -4,3 +4,4 @@ deployments/
 export.json
 export/
 typechain/
+contracts/lib/
