@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Acre monorepo",
   "repository": "git@github.com:thesis/acre.git",
-  "license": "MIT",
+  "license": "GPL-3.0-only",
   "private": true,
   "scripts": {
     "format": "npm run lint:js && npm run lint:config && npm run lint:sol",
