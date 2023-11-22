@@ -1,5 +1,6 @@
-**/node_modules
-**/.cache
-**/cache
-**/public
-**/build
+node_modules/
+.cache/
+cache/
+public/
+build/
+typechain/
