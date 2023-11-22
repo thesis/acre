@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Rewards logic inspired by xERC20 (https://github.com/ZeframLou/playpen/blob/main/src/xERC20.sol)
 
+// Copied from https://github.com/ERC4626-Alliance/ERC4626-Contracts based on
+// the project commit 643cd04 from Apr 20, 2022
+
 pragma solidity ^0.8.0;
 
 import "solmate/src/mixins/ERC4626.sol";
