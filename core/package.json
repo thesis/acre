@@ -27,6 +27,9 @@
     "lint:config:fix": "prettier --write '**/*.@(json)'",
     "test": "hardhat test"
   },
+  "dependencies": {
+    "solmate": "^6.2.0"
+  },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
     "@nomicfoundation/hardhat-ethers": "^3.0.0",
