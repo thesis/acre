@@ -1,4 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
+
+// Copied from https://github.com/ERC4626-Alliance/ERC4626-Contracts based on
+// the project commit 643cd04 from Apr 20, 2022
+
 pragma solidity 0.8.10;
 
 import {IERC4626, IERC4626RouterBase, ERC20} from "./interfaces/IERC4626RouterBase.sol";
