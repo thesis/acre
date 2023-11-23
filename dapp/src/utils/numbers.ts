@@ -12,7 +12,7 @@ export function bigIntToUserAmount(
 
   const formattedAmount =
     Number(desiredDecimalsAmount) / 10 ** Math.min(desiredDecimals, decimals)
-  const minAmountToDisplay = 10 ** (decimals - desiredDecimals)
+  const minAmountToDisplay = 1 / 10 ** Math.min(desiredDecimals, decimals)
 
   if (minAmountToDisplay > formattedAmount) {
     return `<0.${"0".repeat(desiredDecimals - 1)}1`
