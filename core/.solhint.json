@@ -1,5 +1,7 @@
 {
   "extends": "thesis",
   "plugins": [],
-  "rules": {}
+  "rules": {
+    "func-visibility": ["warn", { "ignoreConstructors": true }]
+  }
 }
