@@ -30,3 +30,21 @@ jobs:
 
       - name: Format
         run: yarn format
+
+  dapp-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: "dapp/.nvmrc"
+          cache: "yarn"
+          cache-dependency-path: "dapp/yarn.lock"
+
+      - name: Install Dependencies
+        run: yarn install --prefer-offline --frozen-lockfile
+
+      - name: Build
+        run: yarn build
