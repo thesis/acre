@@ -1,3 +1,3 @@
 module.exports = {
-    ...require("@thesis-co/prettier-config"),
+    ...require("../.prettierrc.js"),
 }

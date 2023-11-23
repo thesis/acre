@@ -1,6 +1,13 @@
 repos:
   - repo: local
     hooks:
+      # Root
+      - id: root-lint
+        name: "lint root"
+        entry: /usr/bin/env bash -c "npm run format"
+        exclude: (^core/|^dapp/|^website/)
+        language: script
+        description: "Checks code according to the package's linter configuration"
       # Core
       - id: core-lint-sol
         name: "lint core sol"
