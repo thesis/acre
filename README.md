@@ -22,3 +22,28 @@ To setup the hooks follow the steps:
     ```sh
     pre-commit install
     ```
+
+### Syncpack
+
+[Syncpack](https://jamiemason.github.io/syncpack/) is a tool that helps manage
+multiple package.json files in a monorepo.
+
+#### Install
+
+In the repository's root directory execute:
+
+```sh
+yarn install
+```
+
+#### Usage
+
+To list dependencies from all packages run:
+```sh
+syncpack list
+``` 
+
+To update a dependency (e.g. `eslint`) in all packages run:
+```sh
+syncpack update --filter eslint
+```

@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "workspaces": [
+    "./core",
+    "./dapp",
+    "./website"
+  ],
+  "devDependencies": {
+    "syncpack": "^11.2.1"
+  }
+}
