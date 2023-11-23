@@ -1,4 +1,7 @@
 {
-    "private": true,
-    "packageManager": "pnpm@8.10.5"
+  "private": true,
+  "packageManager": "pnpm@8.10.5",
+  "devDependencies": {
+    "syncpack": "^11.2.1"
+  }
 }
