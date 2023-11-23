@@ -22,3 +22,15 @@ To setup the hooks follow the steps:
     ```sh
     pre-commit install
     ```
+
+#### Testing
+
+To test the pre-commit hooks configuration you can invoke them with one of the
+commands:
+```sh
+# Execute hooks for all files:
+pre-commit run --all-files
+
+# Execute hooks for specific files (e.g. Acre.sol):
+pre-commit run --files ./core/contracts/Acre.sol
+```
