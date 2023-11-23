@@ -6,6 +6,22 @@ Bitcoin Liquid Staking
 
 ## Development
 
+### pnpm
+
+This project uses [pnpm](https://pnpm.io/) as a package manager.
+
+#### Install
+
+To install pnpm with Homebrew run `brew install pnpm`, for other installation options
+please see the [documentation](https://pnpm.io/installation).
+
+#### Package Dependencies
+
+To install the packages dependencies run:
+```sh
+pnpm install
+```
+
 ### Pre-commit Hooks
 
 Developers are encouraged to use [pre-commit](https://pre-commit.com/) hooks to
@@ -34,3 +50,4 @@ pre-commit run --all-files
 # Execute hooks for specific files (e.g. Acre.sol):
 pre-commit run --files ./core/contracts/Acre.sol
 ```
+
