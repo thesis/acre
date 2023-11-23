@@ -27,7 +27,7 @@
   "devDependencies": {
     "@thesis-co/eslint-config": "^0.6.1",
     "@thesis/prettier-config": "github:thesis/prettier-config",
-    "@types/node": "^20.3.3",
+    "@types/node": "^20.9.4",
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",
     "@typescript-eslint/eslint-plugin": "^6.12.0",
