@@ -1,30 +1,23 @@
 {
-    "id": "acre",
-    "name": "ACRE",
-    "url": "http://localhost:5173/",
-    "homepageUrl": "http://localhost:5173/",
-    "icon": "http://localhost:5173/acre.svg",
-    "platform": "all",
-    "apiVersion": "2.0.0",
-    "manifestVersion": "1",
-    "branch": "stable",
-    "categories": [
-        "buy"
-    ],
-    "currencies": [
-        "bitcoin",
-        "bitcoin_testnet"
-    ],
-    "content": {
-        "shortDescription": {
-            "en": "Bitcoin Liquid Staking"
-        },
-        "description": {
-            "en": "Bitcoin Liquid Staking"
-        }
+  "id": "acre",
+  "name": "ACRE",
+  "url": "http://localhost:5173/",
+  "homepageUrl": "http://localhost:5173/",
+  "icon": "http://localhost:5173/acre.svg",
+  "platform": "all",
+  "apiVersion": "2.0.0",
+  "manifestVersion": "1",
+  "branch": "stable",
+  "categories": ["buy"],
+  "currencies": ["bitcoin", "bitcoin_testnet"],
+  "content": {
+    "shortDescription": {
+      "en": "Bitcoin Liquid Staking"
     },
-    "permissions": [],
-    "domains": [
-        "http://*"
-    ]
+    "description": {
+      "en": "Bitcoin Liquid Staking"
+    }
+  },
+  "permissions": [],
+  "domains": ["http://*"]
 }
