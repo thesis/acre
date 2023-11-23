@@ -16,6 +16,8 @@
   },
   "dependencies": {
     "@chakra-ui/react": "^2.8.2",
+    "@chakra-ui/styled-system": "^2.9.2",
+    "@chakra-ui/theme-tools": "^2.1.2",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@ledgerhq/wallet-api-client": "^1.2.1",
