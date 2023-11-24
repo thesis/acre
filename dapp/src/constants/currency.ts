@@ -1,6 +1,15 @@
-export const BITCOIN = {
+import { Currency } from "../types"
+
+export const BITCOIN: Currency = {
   name: "Bitcoin",
-  token: "BTC",
+  symbol: "BTC",
+  decimals: 8,
+}
+
+export const ETHEREUM: Currency = {
+  name: "Ethereum",
+  symbol: "ETH",
+  decimals: 18,
 }
 
 export const CURRENCY_ID_BITCOIN =

@@ -54,7 +54,7 @@ export default function ConnectWallet() {
             ? "0.00"
             : formatSatoshiAmount(btcAccount.balance.toString())}
         </Text>
-        <Text>{BITCOIN.token}</Text>
+        <Text>{BITCOIN.symbol}</Text>
       </Box>
       <ConnectButton
         leftIcon={BitcoinIcon}
