@@ -2,6 +2,7 @@ import { useState } from "react"
 import {
   ColumnDef,
   SortingState,
+  PaginationState,
   Table,
   getCoreRowModel,
   getPaginationRowModel,
@@ -20,15 +21,22 @@ export function useTransactionHistoryTable({
   columns,
 }: TransactionHistoryTable): Table<TxHistory> {
   const [sorting, setSorting] = useState<SortingState>([])
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 4,
+  })
+
   const table = useReactTable({
     columns,
     data,
-    getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
+    onPaginationChange: setPagination,
+    getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     state: {
       sorting,
+      pagination,
     },
   })
 

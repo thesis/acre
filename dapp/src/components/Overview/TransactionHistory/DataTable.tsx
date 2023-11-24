@@ -1,5 +1,17 @@
 import React from "react"
-import { Table, Thead, Tbody, Tr, Th, Td, HStack, Icon } from "@chakra-ui/react"
+import {
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  HStack,
+  Icon,
+  Text,
+  IconButton,
+  VStack,
+} from "@chakra-ui/react"
 import {
   flexRender,
   ColumnDef,
@@ -10,7 +22,13 @@ import { useTransactionHistoryTable } from "../../../hooks"
 import { TxHistory } from "../../../types"
 import { getCustomCell } from "./CustomCell"
 import { formatBlockTImestamp, truncateAddress } from "../../../utils"
-import { ArrowDown, ArrowUp, Sort } from "../../../static/icons"
+import {
+  ArrowDown,
+  ArrowUp,
+  ChevronLeft,
+  ChevronRight,
+  Sort,
+} from "../../../static/icons"
 
 const getSortIcon = (value: false | SortDirection) => {
   if (value) return value === "desc" ? ArrowDown : ArrowUp
@@ -83,39 +101,64 @@ export default function DataTable({ data }: { data: TxHistory[] }) {
   })
 
   return (
-    <Table>
-      <Thead backgroundColor="transparent">
-        {table.getHeaderGroups().map(({ id, headers }) => (
-          <Tr key={id}>
-            {headers.map((header) => (
-              <Th
-                key={header.id}
-                onClick={header.column.getToggleSortingHandler()}
-                borderBottom={0}
-              >
-                {flexRender(
-                  header.column.columnDef.header,
-                  header.getContext(),
-                )}
-                {header.column.getCanSort() && (
-                  <Icon as={getSortIcon(header.column.getIsSorted())} ml={1} />
-                )}
-              </Th>
-            ))}
-          </Tr>
-        ))}
-      </Thead>
-      <Tbody>
-        {table.getRowModel().rows.map((row) => (
-          <Tr key={row.id} border="2px solid #F4E4C1">
-            {row.getVisibleCells().map(({ id, column, getContext }) => (
-              <Td key={id} p={0}>
-                {flexRender(column.columnDef.cell, getContext())}
-              </Td>
-            ))}
-          </Tr>
-        ))}
-      </Tbody>
-    </Table>
+    <VStack alignItems="start">
+      <Table>
+        <Thead backgroundColor="transparent">
+          {table.getHeaderGroups().map(({ id, headers }) => (
+            <Tr key={id}>
+              {headers.map((header) => (
+                <Th
+                  key={header.id}
+                  onClick={header.column.getToggleSortingHandler()}
+                  borderBottom={0}
+                >
+                  {flexRender(
+                    header.column.columnDef.header,
+                    header.getContext(),
+                  )}
+                  {header.column.getCanSort() && (
+                    <Icon
+                      as={getSortIcon(header.column.getIsSorted())}
+                      ml={1}
+                    />
+                  )}
+                </Th>
+              ))}
+            </Tr>
+          ))}
+        </Thead>
+        <Tbody>
+          {table.getRowModel().rows.map((row) => (
+            <Tr key={row.id} border="2px solid #F4E4C1">
+              {row.getVisibleCells().map(({ id, column, getContext }) => (
+                <Td key={id} p={0}>
+                  {flexRender(column.columnDef.cell, getContext())}
+                </Td>
+              ))}
+            </Tr>
+          ))}
+        </Tbody>
+      </Table>
+      <HStack>
+        <IconButton
+          aria-label="Previous Page"
+          onClick={() => table.previousPage()}
+          isDisabled={!table.getCanPreviousPage()}
+          icon={<ChevronLeft />}
+        />
+        <IconButton
+          aria-label="Next page"
+          variant="outline"
+          onClick={() => table.nextPage()}
+          isDisabled={!table.getCanNextPage()}
+          icon={<ChevronRight />}
+        />
+        <Text>
+          {`Page ${
+            table.getState().pagination.pageIndex + 1
+          } of ${table.getPageCount()}`}
+        </Text>
+      </HStack>
+    </VStack>
   )
 }
