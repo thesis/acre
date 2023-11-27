@@ -26,7 +26,7 @@ export default function PositionDetails() {
         <VStack alignItems="flex-start" gap="0">
           <HStack>
             <Text>34.75</Text>
-            <Text>{BITCOIN.token}</Text>
+            <Text>{BITCOIN.symbol}</Text>
           </HStack>
           <HStack w="100%" justifyContent="space-between">
             <HStack>
