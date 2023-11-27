@@ -25,7 +25,7 @@ contract Acre is ERC4626, IReceiveApproval {
     ) external override {
         require(_token == super.asset(), "Unrecognized token");
         // TODO: Decide on the format of the `extradata` variable.
-        require(extraData.length >= 32, "Corrupted stake data");
+        require(extraData.length == 32, "Corrupted stake data");
 
         this.stake(amount, from, bytes32(extraData));
     }
