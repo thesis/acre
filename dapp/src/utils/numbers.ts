@@ -1,18 +1,29 @@
 const toLocaleString = (value: number): string =>
   value.toLocaleString("default", { maximumFractionDigits: 2 })
 
-// Parse token amount by moving the decimal point
+/**
+ * Convert a fixed point bigint with precision `fixedPointDecimals` to a
+ * floating point number truncated to `desiredDecimals`.
+ * If `formattedAmount` is less than the minimum amount to display
+ * for the specified precision return information about this.
+ *
+ * This function is based on the solution used by the Taho extension.
+ * More info: https://github.com/tahowallet/extension/blob/main/background/lib/fixed-point.ts#L216-L239
+ */
 export function bigIntToUserAmount(
-  amount: bigint,
-  decimals = 18,
+  fixedPoint: bigint,
+  fixedPointDecimals: number,
   desiredDecimals = 2,
 ): string {
-  const desiredDecimalsAmount =
-    amount / 10n ** BigInt(Math.max(1, decimals - desiredDecimals))
+  const fixedPointDesiredDecimalsAmount =
+    fixedPoint /
+    10n ** BigInt(Math.max(1, fixedPointDecimals - desiredDecimals))
 
   const formattedAmount =
-    Number(desiredDecimalsAmount) / 10 ** Math.min(desiredDecimals, decimals)
-  const minAmountToDisplay = 10 ** (decimals - desiredDecimals)
+    Number(fixedPointDesiredDecimalsAmount) /
+    10 ** Math.min(desiredDecimals, fixedPointDecimals)
+  const minAmountToDisplay =
+    1 / 10 ** Math.min(desiredDecimals, fixedPointDecimals)
 
   if (minAmountToDisplay > formattedAmount) {
     return `<0.${"0".repeat(desiredDecimals - 1)}1`
