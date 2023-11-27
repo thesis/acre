@@ -57,6 +57,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^5.0.0"
+    "@openzeppelin/contracts": "^5.0.0",
+    "@thesis/solidity-contracts": "github:thesis/solidity-contracts#c315b9d"
   }
 }
