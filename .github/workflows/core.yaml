@@ -68,15 +68,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v2
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version-file: "core/.nvmrc"
-          cache: "yarn"
-          cache-dependency-path: "core/yarn.lock"
+          cache: "pnpm"
 
       - name: Install Dependencies
-        run: yarn install --prefer-offline --frozen-lockfile
+        run: pnpm install --prefer-offline --frozen-lockfile
 
       - uses: actions/setup-python@v4
         with:
