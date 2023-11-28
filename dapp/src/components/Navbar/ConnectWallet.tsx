@@ -59,7 +59,7 @@ export default function ConnectWallet() {
   const { btcAccount, ethAccount } = useWalletContext()
 
   return (
-    <HStack spacing="8px">
+    <HStack>
       <HStack mr="16px">
         <Text>Balance</Text>
         <Text as="b">
