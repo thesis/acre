@@ -73,7 +73,7 @@ describe("Acre", () => {
           acre
             .connect(tokenHolder)
             .stake(1, tokenHolder.address, emptyReferrer),
-        ).to.be.revertedWith("Referrer can not be empty")
+        ).to.be.revertedWith("Referral can not be empty")
       })
     })
 
