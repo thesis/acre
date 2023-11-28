@@ -51,3 +51,23 @@ pre-commit run --all-files
 pre-commit run --files ./core/contracts/Acre.sol
 ```
 
+### Slither
+
+[Slither](https://github.com/crytic/slither) is a static analysis framework used
+for Solidity contracts verification.
+
+#### Install
+
+To install Slither execute:
+
+```sh
+pip3 install slither-analyzer
+```
+
+#### Usage
+
+To run Slither execute:
+
+```sh
+slither .
+```
