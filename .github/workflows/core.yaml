@@ -62,6 +62,42 @@ jobs:
             core/typechain/
           if-no-files-found: error
 
+  core-slither:
+    needs: [core-build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v2
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: "core/.nvmrc"
+          cache: "pnpm"
+
+      - name: Install Dependencies
+        run: pnpm install --prefer-offline --frozen-lockfile
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Install Slither
+        env:
+          SLITHER_VERSION: 0.9.6
+        run: pip3 install slither-analyzer==$SLITHER_VERSION
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: core-build
+          path: core/
+
+      - name: Run Slither
+        run: slither --hardhat-ignore-compile .
+
   core-test:
     needs: [core-build]
     runs-on: ubuntu-latest

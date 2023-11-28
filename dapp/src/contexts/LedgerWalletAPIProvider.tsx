@@ -19,7 +19,7 @@ type LedgerWalletAPIProviderProps = {
   children: React.ReactElement
 }
 
-export default function LedgerWalletAPIProvider({
+export function LedgerWalletAPIProvider({
   children,
 }: LedgerWalletAPIProviderProps): JSX.Element {
   const transport = getWalletAPITransport()

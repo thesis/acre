@@ -56,22 +56,36 @@ pre-commit run --files ./core/contracts/Acre.sol
 [Syncpack](https://jamiemason.github.io/syncpack/) is a tool that helps manage
 multiple package.json files in a monorepo.
 
-#### Install
-
-In the repository's root directory execute:
-
-```sh
-yarn install
-```
 
 #### Usage
 
 To list dependencies from all packages run:
 ```sh
-syncpack list
+pnpm syncpack list
 ``` 
 
 To update a dependency (e.g. `eslint`) in all packages run:
 ```sh
-syncpack update --filter eslint
+pnpm syncpack update --filter eslint
+```
+
+### Slither
+
+[Slither](https://github.com/crytic/slither) is a static analysis framework used
+for Solidity contracts verification.
+
+#### Install
+
+To install Slither execute:
+
+```sh
+pip3 install slither-analyzer
+```
+
+#### Usage
+
+To run Slither execute:
+
+```sh
+slither .
 ```

@@ -9,7 +9,7 @@
   "manifestVersion": "1",
   "branch": "stable",
   "categories": ["buy"],
-  "currencies": ["bitcoin", "bitcoin_testnet"],
+  "currencies": ["bitcoin", "bitcoin_testnet", "ethereum", "ethereum_goerli"],
   "content": {
     "shortDescription": {
       "en": "Bitcoin Liquid Staking"
@@ -18,6 +18,6 @@
       "en": "Bitcoin Liquid Staking"
     }
   },
-  "permissions": [],
+  "permissions": ["account.request"],
   "domains": ["http://*"]
 }
