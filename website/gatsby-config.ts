@@ -7,7 +7,7 @@ const config: GatsbyConfig = {
     title: "Acre",
   },
   graphqlTypegen: true,
-  plugins: [],
+  plugins: ["gatsby-plugin-pnpm"],
 }
 
 export default config

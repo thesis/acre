@@ -18,36 +18,40 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v2
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version-file: "core/.nvmrc"
-          cache: "yarn"
-          cache-dependency-path: "core/yarn.lock"
+          cache: "pnpm"
 
       - name: Install Dependencies
-        run: yarn install --prefer-offline --frozen-lockfile
+        run: pnpm install --prefer-offline --frozen-lockfile
 
       - name: Format
-        run: yarn format
+        run: pnpm run format
 
   core-build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v2
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version-file: "core/.nvmrc"
-          cache: "yarn"
-          cache-dependency-path: "core/yarn.lock"
+          cache: "pnpm"
 
       - name: Install Dependencies
-        run: yarn install --prefer-offline --frozen-lockfile
+        run: pnpm install --prefer-offline --frozen-lockfile
 
       - name: Build
-        run: yarn build
+        run: pnpm run build
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
@@ -64,15 +68,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v2
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version-file: "core/.nvmrc"
-          cache: "yarn"
-          cache-dependency-path: "core/yarn.lock"
+          cache: "pnpm"
 
       - name: Install Dependencies
-        run: yarn install --prefer-offline --frozen-lockfile
+        run: pnpm install --prefer-offline --frozen-lockfile
 
       - uses: actions/setup-python@v4
         with:
@@ -98,15 +104,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v2
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version-file: "core/.nvmrc"
-          cache: "yarn"
-          cache-dependency-path: "core/yarn.lock"
+          cache: "pnpm"
 
       - name: Install Dependencies
-        run: yarn install --prefer-offline --frozen-lockfile
+        run: pnpm install --prefer-offline --frozen-lockfile
 
       - name: Download Build Artifacts
         uses: actions/download-artifact@v3
@@ -115,7 +123,7 @@ jobs:
           path: core/
 
       - name: Test
-        run: yarn test --no-compile
+        run: pnpm run test --no-compile
 
   core-deploy-dry-run:
     needs: [core-build]
@@ -123,15 +131,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v2
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version-file: "core/.nvmrc"
-          cache: "yarn"
-          cache-dependency-path: "core/yarn.lock"
+          cache: "pnpm"
 
       - name: Install Dependencies
-        run: yarn install --prefer-offline --frozen-lockfile
+        run: pnpm install --prefer-offline --frozen-lockfile
 
       - name: Download Build Artifacts
         uses: actions/download-artifact@v3
@@ -140,4 +150,4 @@ jobs:
           path: core/
 
       - name: Deploy
-        run: yarn deploy --no-compile
+        run: pnpm run deploy --no-compile
