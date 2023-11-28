@@ -1,18 +1,14 @@
-import React, { useContext } from "react"
+import React from "react"
 import { ChakraProvider, Box, Text } from "@chakra-ui/react"
-import { useDetectThemeMode } from "./hooks"
-import { LedgerWalletAPIProvider } from "./providers"
+import { useDetectThemeMode, useWalletContext } from "./hooks"
 import theme from "./theme"
-import {
-  LedgerLiveAppContext,
-  LedgerLiveAppProvider,
-} from "./contexts/LedgerLiveAppContext"
+import { LedgerWalletAPIProvider, WalletContextProvider } from "./contexts"
 import Navbar from "./components/Navbar"
 
 function DApp() {
   useDetectThemeMode()
 
-  const { btcAccount, ethAccount } = useContext(LedgerLiveAppContext)
+  const { btcAccount, ethAccount } = useWalletContext()
 
   return (
     <Box>
@@ -27,11 +23,11 @@ function DApp() {
 function DAppProviders() {
   return (
     <LedgerWalletAPIProvider>
-      <LedgerLiveAppProvider>
+      <WalletContextProvider>
         <ChakraProvider theme={theme}>
           <DApp />
         </ChakraProvider>
-      </LedgerLiveAppProvider>
+      </WalletContextProvider>
     </LedgerWalletAPIProvider>
   )
 }

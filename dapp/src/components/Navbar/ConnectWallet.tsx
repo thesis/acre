@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React from "react"
 import { Box, Button, Image, Text } from "@chakra-ui/react"
 import { Account } from "@ledgerhq/wallet-api-client"
 import BitcoinIcon from "../../assets/bitcoin.svg"
@@ -8,14 +8,14 @@ import { BITCOIN } from "../../constants"
 import {
   useRequestBitcoinAccount,
   useRequestEthereumAccount,
+  useWalletContext,
 } from "../../hooks"
-import { LedgerLiveAppContext } from "../../contexts/LedgerLiveAppContext"
 import { formatSatoshiAmount, truncateAddress } from "../../utils"
 
 export type ConnectButtonsProps = {
   leftIcon: string
   rightIcon: string
-  account: Account | null
+  account: Account | undefined
   requestAccount: () => Promise<void>
 }
 
@@ -41,9 +41,9 @@ function ConnectButton({
 }
 
 export default function ConnectWallet() {
-  const requestBitcoinAccount = useRequestBitcoinAccount()
-  const requestEthereumAccount = useRequestEthereumAccount()
-  const { btcAccount } = useContext(LedgerLiveAppContext)
+  const { requestAccount: requestBitcoinAccount } = useRequestBitcoinAccount()
+  const { requestAccount: requestEthereumAccount } = useRequestEthereumAccount()
+  const { btcAccount, ethAccount } = useWalletContext()
 
   return (
     <Box display="flex" alignItems="center" gap="4">
@@ -59,17 +59,17 @@ export default function ConnectWallet() {
       <ConnectButton
         leftIcon={BitcoinIcon}
         rightIcon={InfoIcon}
-        account={requestBitcoinAccount.account}
+        account={btcAccount}
         requestAccount={async () => {
-          await requestBitcoinAccount.requestAccount()
+          await requestBitcoinAccount()
         }}
       />
       <ConnectButton
         leftIcon={EthereumIcon}
         rightIcon={InfoIcon}
-        account={requestEthereumAccount.account}
+        account={ethAccount}
         requestAccount={async () => {
-          await requestEthereumAccount.requestAccount()
+          await requestEthereumAccount()
         }}
       />
     </Box>

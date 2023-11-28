@@ -1,21 +1,20 @@
 import { useRequestAccount } from "@ledgerhq/wallet-api-client-react"
 import { useCallback, useContext, useEffect } from "react"
-import { LedgerLiveAppContext } from "../contexts/LedgerLiveAppContext"
 import { CURRENCY_ID_BITCOIN } from "../constants"
 import { UseRequestAccountReturn } from "../types"
+import { WalletContext } from "../contexts"
 
 export function useRequestBitcoinAccount(): UseRequestAccountReturn {
-  const { setBtcAccount } = useContext(LedgerLiveAppContext)
-  const requestAccountResponse = useRequestAccount()
-  const { account, requestAccount } = requestAccountResponse
+  const walletContext = useContext(WalletContext)
+  const { account, requestAccount } = useRequestAccount()
 
   useEffect(() => {
-    setBtcAccount(account || undefined)
-  }, [account, setBtcAccount])
+    walletContext?.setBtcAccount(account || undefined)
+  }, [account, walletContext])
 
   const requestBitcoinAccount = useCallback(async () => {
     await requestAccount({ currencyIds: [CURRENCY_ID_BITCOIN] })
   }, [requestAccount])
 
-  return { ...requestAccountResponse, requestAccount: requestBitcoinAccount }
+  return { requestAccount: requestBitcoinAccount }
 }
