@@ -22,11 +22,11 @@ async function acreFixture() {
 
 describe("Acre", () => {
   let acre: Acre
-  let token: TestToken
+  let tbtc: TestToken
   let tokenHolder: HardhatEthersSigner
 
   beforeEach(async () => {
-    ;({ acre, token, tokenHolder } = await loadFixture(acreFixture))
+    ;({ acre, token: tbtc, tokenHolder } = await loadFixture(acreFixture))
   })
 
   describe("Staking", () => {
@@ -35,14 +35,14 @@ describe("Acre", () => {
     context("when staking via Acre contract", () => {
       beforeEach(async () => {
         // Infinite approval for staking contract.
-        await token
+        await tbtc
           .connect(tokenHolder)
           .approve(await acre.getAddress(), ethers.MaxUint256)
       })
 
       it("should stake tokens and receive shares", async () => {
         const tokenHolderAddress = tokenHolder.address
-        const amountToStake = await token.balanceOf(tokenHolderAddress)
+        const amountToStake = await tbtc.balanceOf(tokenHolderAddress)
 
         await expect(
           acre
@@ -63,7 +63,7 @@ describe("Acre", () => {
             amountToStake,
           )
         expect(await acre.balanceOf(tokenHolderAddress)).to.be.eq(amountToStake)
-        expect(await token.balanceOf(tokenHolderAddress)).to.be.eq(0)
+        expect(await tbtc.balanceOf(tokenHolderAddress)).to.be.eq(0)
       })
 
       it("should revert if the referrer is zero valu", async () => {
@@ -107,7 +107,7 @@ describe("Acre", () => {
           )
 
           await expect(
-            token
+            tbtc
               .connect(tokenHolder)
               .approveAndCall(acreAddress, 1, invalidExtraData),
           ).to.be.revertedWith("Corrupted stake data")
