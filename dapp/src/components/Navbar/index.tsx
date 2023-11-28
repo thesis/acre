@@ -2,7 +2,7 @@ import React from "react"
 import { Box, Button, HStack, Icon, Switch } from "@chakra-ui/react"
 import ConnectWallet from "./ConnectWallet"
 import { ChevronRight } from "../../static/icons"
-import { FIAT_CURRENCY_USD } from "../../constants"
+import { USD } from "../../constants"
 
 export default function Navbar() {
   return (
@@ -12,7 +12,7 @@ export default function Navbar() {
       </HStack>
       <HStack mt={8} justifyContent="space-between">
         {/* TODO: Handle click actions */}
-        <Switch size="sm">Show values in {FIAT_CURRENCY_USD}</Switch>
+        <Switch size="sm">Show values in {USD.symbol}</Switch>
         <Button variant="link" rightIcon={<Icon as={ChevronRight} />}>
           Read documentation
         </Button>

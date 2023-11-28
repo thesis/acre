@@ -9,7 +9,7 @@ import {
   Icon,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { BITCOIN, FIAT_CURRENCY_USD } from "../../constants"
+import { BITCOIN, USD } from "../../constants"
 import { Info } from "../../static/icons"
 
 export default function PositionDetails() {
@@ -31,7 +31,7 @@ export default function PositionDetails() {
           <HStack w="100%" justifyContent="space-between">
             <HStack>
               <Text>1.245.148,1</Text>
-              <Text>{FIAT_CURRENCY_USD}</Text>
+              <Text>{USD.symbol}</Text>
             </HStack>
             {/* TODO: Add correct text for tooltip */}
             <Tooltip label="Template">
