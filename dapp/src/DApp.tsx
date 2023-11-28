@@ -1,9 +1,8 @@
 import React from "react"
 import { ChakraProvider, Box } from "@chakra-ui/react"
 import { useDetectThemeMode } from "./hooks"
-import { LedgerWalletAPIProvider } from "./providers"
 import theme from "./theme"
-import { LedgerLiveAppProvider } from "./contexts/LedgerLiveAppContext"
+import { LedgerWalletAPIProvider, WalletContextProvider } from "./contexts"
 import Navbar from "./components/Navbar"
 import Overview from "./components/Overview"
 
@@ -21,11 +20,11 @@ function DApp() {
 function DAppProviders() {
   return (
     <LedgerWalletAPIProvider>
-      <LedgerLiveAppProvider>
+      <WalletContextProvider>
         <ChakraProvider theme={theme}>
           <DApp />
         </ChakraProvider>
-      </LedgerLiveAppProvider>
+      </WalletContextProvider>
     </LedgerWalletAPIProvider>
   )
 }

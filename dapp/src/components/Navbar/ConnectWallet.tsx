@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React from "react"
 import {
   Button,
   HStack,
@@ -13,14 +13,14 @@ import { BITCOIN } from "../../constants"
 import {
   useRequestBitcoinAccount,
   useRequestEthereumAccount,
+  useWalletContext,
 } from "../../hooks"
-import { LedgerLiveAppContext } from "../../contexts/LedgerLiveAppContext"
 import { formatSatoshiAmount, truncateAddress } from "../../utils"
 
 export type ConnectButtonsProps = {
   leftIcon: typeof Icon
   rightIcon: typeof Icon
-  account: Account | null
+  account: Account | undefined
   requestAccount: () => Promise<void>
 }
 
@@ -54,9 +54,9 @@ function ConnectButton({
 }
 
 export default function ConnectWallet() {
-  const requestBitcoinAccount = useRequestBitcoinAccount()
-  const requestEthereumAccount = useRequestEthereumAccount()
-  const { btcAccount } = useContext(LedgerLiveAppContext)
+  const { requestAccount: requestBitcoinAccount } = useRequestBitcoinAccount()
+  const { requestAccount: requestEthereumAccount } = useRequestEthereumAccount()
+  const { btcAccount, ethAccount } = useWalletContext()
 
   return (
     <HStack spacing="8px">
@@ -72,17 +72,17 @@ export default function ConnectWallet() {
       <ConnectButton
         leftIcon={Bitcoin}
         rightIcon={Info}
-        account={requestBitcoinAccount.account}
+        account={btcAccount}
         requestAccount={async () => {
-          await requestBitcoinAccount.requestAccount()
+          await requestBitcoinAccount()
         }}
       />
       <ConnectButton
         leftIcon={Ethereum}
         rightIcon={Info}
-        account={requestEthereumAccount.account}
+        account={ethAccount}
         requestAccount={async () => {
-          await requestEthereumAccount.requestAccount()
+          await requestEthereumAccount()
         }}
       />
     </HStack>

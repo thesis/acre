@@ -12,10 +12,9 @@ const defaultTheme = {
   colors,
   styles: {
     global: (props: StyleFunctionProps) => ({
-      "html, body, #root, #root > div": {
+      body: {
         backgroundColor: mode("grey.100", "grey.300")(props),
         color: mode("black", "grey.80")(props),
-        minHeight: "100vh",
       },
     }),
   },

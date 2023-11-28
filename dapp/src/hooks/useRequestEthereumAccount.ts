@@ -1,21 +1,20 @@
 import { useRequestAccount } from "@ledgerhq/wallet-api-client-react"
 import { useCallback, useContext, useEffect } from "react"
-import { LedgerLiveAppContext } from "../contexts/LedgerLiveAppContext"
 import { CURRENCY_ID_ETHEREUM } from "../constants"
 import { UseRequestAccountReturn } from "../types"
+import { WalletContext } from "../contexts"
 
 export function useRequestEthereumAccount(): UseRequestAccountReturn {
-  const { setEthAccount } = useContext(LedgerLiveAppContext)
-  const requestAccountResponse = useRequestAccount()
-  const { account, requestAccount } = requestAccountResponse
+  const walletContext = useContext(WalletContext)
+  const { account, requestAccount } = useRequestAccount()
 
   useEffect(() => {
-    setEthAccount(account || undefined)
-  }, [account, setEthAccount])
+    walletContext?.setEthAccount(account || undefined)
+  }, [account, walletContext])
 
   const requestEthereumAccount = useCallback(async () => {
     await requestAccount({ currencyIds: [CURRENCY_ID_ETHEREUM] })
   }, [requestAccount])
 
-  return { ...requestAccountResponse, requestAccount: requestEthereumAccount }
+  return { requestAccount: requestEthereumAccount }
 }
