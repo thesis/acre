@@ -15,17 +15,17 @@ contract Acre is ERC4626, IReceiveApproval {
     ///      this contract.
     /// @param from The owner of the tokens who approved them to transfer.
     /// @param amount Approved amount for the transfer and stake.
-    /// @param _token Token contract address.
+    /// @param token Token contract address.
     /// @param extraData Extra data for stake. This byte array must have the
     ///        following values concatenated:
     ///        - referrer ID (32 bytes)
     function receiveApproval(
         address from,
         uint256 amount,
-        address _token,
+        address token,
         bytes calldata extraData
     ) external override {
-        require(_token == asset(), "Unrecognized token");
+        require(token == asset(), "Unrecognized token");
         // TODO: Decide on the format of the `extradata` variable.
         require(extraData.length == 32, "Corrupted stake data");
 
