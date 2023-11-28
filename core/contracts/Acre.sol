@@ -5,7 +5,9 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
 import "@thesis/solidity-contracts/contracts/token/IReceiveApproval.sol";
 
 contract Acre is ERC4626, IReceiveApproval {
-    constructor(IERC20 _token) ERC4626(_token) ERC20("Staking BTC", "stBTC") {}
+    constructor(
+        IERC20 _token
+    ) ERC4626(_token) ERC20("Acre Staked Bitcoin", "stBTC") {}
 
     /// @notice Receives approval of token transfer and stakes the approved
     ///         amount.
