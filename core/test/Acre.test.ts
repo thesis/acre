@@ -30,7 +30,7 @@ describe("Acre", () => {
   })
 
   describe("Staking", () => {
-    const referrer = ethers.encodeBytes32String("referrer")
+    const referral = ethers.encodeBytes32String("referral")
 
     context("when staking via Acre contract", () => {
       beforeEach(async () => {
@@ -47,7 +47,7 @@ describe("Acre", () => {
         await expect(
           acre
             .connect(tokenHolder)
-            .stake(amountToStake, tokenHolderAddress, referrer),
+            .stake(amountToStake, tokenHolderAddress, referral),
         )
           .to.emit(acre, "Deposit")
           .withArgs(
@@ -103,7 +103,7 @@ describe("Acre", () => {
           const acreAddress = await acre.getAddress()
           const invalidExtraData = ethers.AbiCoder.defaultAbiCoder().encode(
             ["bytes32", "address"],
-            [referrer, tokenHolder.address],
+            [referral, tokenHolder.address],
           )
 
           await expect(

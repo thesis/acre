@@ -18,7 +18,7 @@ contract Acre is ERC4626, IReceiveApproval {
     /// @param token Token contract address.
     /// @param extraData Extra data for stake. This byte array must have the
     ///        following values concatenated:
-    ///        - referrer ID (32 bytes)
+    ///        - referral (32 bytes)
     function receiveApproval(
         address from,
         uint256 amount,
@@ -37,14 +37,14 @@ contract Acre is ERC4626, IReceiveApproval {
     /// @dev This function calls `deposit` function from `ERC4626` contract.
     /// @param assets Approved amount for the transfer and stake.
     /// @param receiver The address to which the shares will be minted.
-    /// @param referrer Data used for refferal program.
+    /// @param referral Data used for referral program.
     /// @return shares Minted shares.
     function stake(
         uint256 assets,
         address receiver,
-        bytes32 referrer
+        bytes32 referral
     ) public returns (uint256 shares) {
-        require(referrer != bytes32(0), "Referrer can not be empty");
+        require(referral != bytes32(0), "Referral can not be empty");
 
         return deposit(assets, receiver);
     }
