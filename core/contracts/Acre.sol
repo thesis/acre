@@ -29,7 +29,7 @@ contract Acre is ERC4626, IReceiveApproval {
         // TODO: Decide on the format of the `extradata` variable.
         require(extraData.length == 32, "Corrupted stake data");
 
-        this.stake(amount, from, bytes32(extraData));
+        stake(amount, from, bytes32(extraData));
     }
 
     /// @notice Stakes a given amount of underlying token and mints shares to a
@@ -43,7 +43,7 @@ contract Acre is ERC4626, IReceiveApproval {
         uint256 assets,
         address receiver,
         bytes32 referrer
-    ) external returns (uint256 shares) {
+    ) public returns (uint256 shares) {
         require(referrer != bytes32(0), "Referrer can not be empty");
 
         return deposit(assets, receiver);
