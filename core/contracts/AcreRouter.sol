@@ -9,7 +9,7 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 /// @title AcreRouter
 /// @notice AcreRouter is a contract that routes funds from stBTC (Acre) to
-///         a given allocator and back. Allocators funds yield strategies that
+///         a given vault and back. Vaults fund yield strategies that
 ///         generate yield for Bitcoin holders.
 contract AcreRouter is OwnableUpgradeable {
     using SafeERC20 for IERC20;
@@ -17,20 +17,20 @@ contract AcreRouter is OwnableUpgradeable {
     IERC20 public immutable stBTC;
     IERC20 public immutable tBTC;
 
-    /// @notice Approved allocators which essentially are the ERC4626 vaults that
-    ///         deposit funds to yield strategies, e.g. Uniswap V3 WBTC/TBTC pool.
-    ///         Each Allocator contract is managed by a Yield Manager. From Acre"s
-    ///         perspective, the Allocator contract can be a part of an external
-    ///         Yield Module and does not care how the yield is generated.
-    address[] public allocators;
-    mapping(address => bool) public isAllocator;
+    /// @notice Approved vaults within the Yiern Modules that implement ERC4626
+    ///         standard. These vaults deposit assets to yield strategies, e.g.
+    ///         Uniswap V3 WBTC/TBTC pool. Vault can be a part of Acre ecosystem
+    ///         or can be implemented externally. As long as it complies with
+    ///         ERC4626 standard and is approved by the Acre Manager it can be
+    ///         plugged into Acre.
+    address[] public vaults;
+    mapping(address => bool) public isVault;
 
-    /// @notice Acre Manager address. Only Acre Manager can set or remove
-    ///         Strategy Allocators.
+    /// @notice Acre Manager address. Only Acre Manager can set or remove Vaults.
     address public acreManager;
 
-    event AllocatorAdded(address indexed allocator);
-    event AllocatorRemoved(address indexed allocator);
+    event VaultAdded(address indexed vault);
+    event VaultRemoved(address indexed vault);
 
     event AcreManagerSet(address indexed manager);
 
@@ -50,60 +50,60 @@ contract AcreRouter is OwnableUpgradeable {
         emit AcreManagerSet(manager);
     }
 
-    function addAllocator(address allocator) external onlyAcreManager {
-        require(!isAllocator[allocator], "Allocator already exists");
-        allocators.push(allocator);
-        isAllocator[allocator] = true;
-        emit AllocatorAdded(allocator);
+    function addVault(address vault) external onlyAcreManager {
+        require(!isVault[vault], "Vault already exists");
+        vaults.push(vault);
+        isVault[vault] = true;
+        emit VaultAdded(vault);
     }
 
-    function removeAllocator(address allocator) external onlyAcreManager {
-        require(isAllocator[allocator], "Not an allocator");
+    function removeVault(address vault) external onlyAcreManager {
+        require(isVault[vault], "Not an vault");
 
-        delete isAllocator[allocator];
+        delete isVault[vault];
 
-        for (uint256 i = 0; i < allocators.length; i++) {
-            if (allocators[i] == allocator) {
-                allocators[i] = allocators[allocators.length - 1];
-                allocators.pop();
+        for (uint256 i = 0; i < vaults.length; i++) {
+            if (vaults[i] == vault) {
+                vaults[i] = vaults[vaults.length - 1];
+                vaults.pop();
                 break;
             }
         }
 
-        emit AllocatorRemoved(allocator);
+        emit VaultRemoved(vault);
     }
 
-    /// @notice Routes funds from stBTC (Acre) to a given allocator
-    /// @param allocator Address of the allocator to route the funds to.
-    /// @param amount Amount of TBTC to allocate.
-    function allocate(address allocator, uint256 amount) public {
+    /// @notice Routes funds from stBTC (Acre) to a given vault
+    /// @param vault Address of the vault to route the funds to.
+    /// @param amount Amount of TBTC to deposit.
+    function deposit(address vault, uint256 amount) public {
         require(msg.sender == address(stBTC), "stBTC only");
-        if (!isAllocator[allocator]) {
-            revert("Allocator is not approved");
+        if (!isVault[vault]) {
+            revert("Vault is not approved");
         }
 
         tBTC.safeTransferFrom(msg.sender, address(this), amount);
-        tBTC.safeIncreaseAllowance(allocator, amount);
+        tBTC.safeIncreaseAllowance(vault, amount);
         // TODO: implement protection from the inflation attack / slippage
-        IERC4626(allocator).deposit(amount, address(this));
+        IERC4626(vault).deposit(amount, address(this));
     }
 
-    /// @notice Collects TBTC from an allocator and approves them to be collected
+    /// @notice Redeem TBTC from a vault and approves them to be collected
     ///         by stBTC (Acre)
-    /// @param allocator Address of the allocator to collect the assets from.
+    /// @param vault Address of the vault to collect the assets from.
     /// @param shares Amount of shares to collect. Shares are the internal representation
-    ///               of the underlying asset in the allocator. Concrete amount of the
+    ///               of the underlying asset in the vault. Concrete amount of the
     ///               underlying asset is calculated by calling `convertToAssets` on
-    ///               the allocator and the shares are burned.
-    function collect(address allocator, uint256 shares) public {
+    ///               the vault and the shares are burned.
+    function redeem(address vault, uint256 shares) public {
         require(msg.sender == address(stBTC), "stBTC only");
 
-        if (!isAllocator[allocator]) {
-            revert("Allocator is not approved");
+        if (!isVault[vault]) {
+            revert("Vault is not approved");
         }
 
         // TODO: implement protection from the inflation attack / slippage
-        uint256 assets = IERC4626(allocator).redeem(
+        uint256 assets = IERC4626(vault).redeem(
             shares,
             address(this),
             address(this)
