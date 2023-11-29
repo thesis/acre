@@ -44,12 +44,16 @@ contract AcreRouter is OwnableUpgradeable {
         tBTC = _tBTC;
     }
 
+    /// @notice Sets the Acre Manager address.
+    /// @param manager Address of the Acre Manager.
     function setAcreManager(address manager) external onlyOwner {
         require(manager != address(0), "Cannot be zero address");
         acreManager = manager;
         emit AcreManagerSet(manager);
     }
 
+    /// @notice Adds a vault to the list of approved vaults.
+    /// @param vault Address of the vault to add.
     function addVault(address vault) external onlyAcreManager {
         require(!isVault[vault], "Vault already exists");
         vaults.push(vault);
@@ -57,6 +61,8 @@ contract AcreRouter is OwnableUpgradeable {
         emit VaultAdded(vault);
     }
 
+    /// @notice Removes a vault from the list of approved vaults.
+    /// @param vault Address of the vault to remove.
     function removeVault(address vault) external onlyAcreManager {
         require(isVault[vault], "Not an vault");
 
