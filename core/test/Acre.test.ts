@@ -66,7 +66,7 @@ describe("Acre", () => {
         expect(await tbtc.balanceOf(tokenHolderAddress)).to.be.eq(0)
       })
 
-      it("should revert if the referrer is zero valu", async () => {
+      it("should revert if the referrer is zero value", async () => {
         const emptyReferrer = ethers.encodeBytes32String("")
 
         await expect(
