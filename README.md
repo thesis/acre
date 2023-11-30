@@ -54,6 +54,25 @@ pre-commit run --all-files
 pre-commit run --files ./core/contracts/Acre.sol
 ```
 
+### Syncpack
+
+[Syncpack](https://jamiemason.github.io/syncpack/) is a tool that helps manage
+multiple package.json files in a monorepo.
+
+#### Usage
+
+To list dependencies from all packages run:
+
+```sh
+pnpm syncpack list
+```
+
+To update a dependency (e.g. `eslint`) in all packages run:
+
+```sh
+pnpm syncpack update --filter eslint
+```
+
 ### Slither
 
 [Slither](https://github.com/crytic/slither) is a static analysis framework used
