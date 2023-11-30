@@ -10,27 +10,27 @@ import { WeiPerEther } from "ethers"
 import type { TestToken, Acre } from "../typechain"
 
 async function acreFixture() {
-  const [_, tokenHolder] = await ethers.getSigners()
+  const [_, staker] = await ethers.getSigners()
   const Token = await ethers.getContractFactory("TestToken")
   const tbtc = await Token.deploy()
 
   const amountToMint = WeiPerEther * 100000n
 
-  tbtc.mint(tokenHolder, amountToMint)
+  tbtc.mint(staker, amountToMint)
 
   const Acre = await ethers.getContractFactory("Acre")
   const acre = await Acre.deploy(await tbtc.getAddress())
 
-  return { acre, tbtc, tokenHolder }
+  return { acre, tbtc, staker }
 }
 
 describe("Acre", () => {
   let acre: Acre
   let tbtc: TestToken
-  let tokenHolder: HardhatEthersSigner
+  let staker: HardhatEthersSigner
 
   before(async () => {
-    ;({ acre, tbtc, tokenHolder } = await loadFixture(acreFixture))
+    ;({ acre, tbtc, staker } = await loadFixture(acreFixture))
   })
 
   describe("Staking", () => {
@@ -44,7 +44,7 @@ describe("Acre", () => {
         snapshot = await takeSnapshot()
 
         await tbtc
-          .connect(tokenHolder)
+          .connect(staker)
           .approve(await acre.getAddress(), amountToStake)
       })
 
@@ -53,12 +53,12 @@ describe("Acre", () => {
       })
 
       it("should stake tokens and receive shares", async () => {
-        const tokenHolderAddress = tokenHolder.address
-        const balanceOfBeforeStake = await tbtc.balanceOf(tokenHolderAddress)
+        const stakerAddress = staker.address
+        const balanceOfBeforeStake = await tbtc.balanceOf(stakerAddress)
 
         const tx = await acre
-          .connect(tokenHolder)
-          .stake(amountToStake, tokenHolderAddress, referral)
+          .connect(staker)
+          .stake(amountToStake, stakerAddress, referral)
 
         const stakedTokens = amountToStake
 
@@ -69,9 +69,9 @@ describe("Acre", () => {
 
         expect(tx).to.emit(acre, "Deposit").withArgs(
           // Caller.
-          tokenHolderAddress,
+          stakerAddress,
           // Receiver.
-          tokenHolderAddress,
+          stakerAddress,
           // Staked tokens.
           stakedTokens,
           // Received shares.
@@ -82,8 +82,8 @@ describe("Acre", () => {
           .to.emit(acre, "Staked")
           .withArgs(referral, stakedTokens, receivedShares)
 
-        expect(await acre.balanceOf(tokenHolderAddress)).to.be.eq(amountToStake)
-        expect(await tbtc.balanceOf(tokenHolderAddress)).to.be.eq(
+        expect(await acre.balanceOf(stakerAddress)).to.be.eq(amountToStake)
+        expect(await tbtc.balanceOf(stakerAddress)).to.be.eq(
           balanceOfBeforeStake - amountToStake,
         )
       })
@@ -93,16 +93,16 @@ describe("Acre", () => {
 
         await expect(
           acre
-            .connect(tokenHolder)
-            .stake(amountToStake, tokenHolder.address, emptyReferral),
+            .connect(staker)
+            .stake(amountToStake, staker.address, emptyReferral),
         ).to.be.not.reverted
       })
 
       it("should revert if a staker wants to stake more tokens than approved", async () => {
         await expect(
           acre
-            .connect(tokenHolder)
-            .stake(amountToStake + 1n, tokenHolder.address, referral),
+            .connect(staker)
+            .stake(amountToStake + 1n, staker.address, referral),
         ).to.be.reverted
       })
     })
