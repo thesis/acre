@@ -95,44 +95,6 @@ describe("Acre", () => {
       })
     })
 
-    context(
-      "when staking via staking token using approve and call pattern",
-      () => {
-        it("should stake tokens", () => {
-          // TODO: The `ERC4626.deposit` sets the owner as `msg.sender` under
-          // the hood. Using the approve and call pattern the `msg.sender` is
-          // token address, so we are actually trying to send tokens from the
-          // token contract to the receiver, which is impossible. We need to
-          // decide if we want to override the `deposit` function to allow
-          // staking via approve and call pattern.
-        })
-
-        it("should revert when called not for linked token", async () => {
-          const FakeToken = await ethers.getContractFactory("TestToken")
-          const fakeToken = await FakeToken.deploy()
-          const acreAddress = await acre.getAddress()
-
-          await expect(
-            fakeToken.connect(tokenHolder).approveAndCall(acreAddress, 1, "0x"),
-          ).to.be.revertedWith("Unrecognized token")
-        })
-
-        it("should revert when extra data is invalid", async () => {
-          const acreAddress = await acre.getAddress()
-          const invalidExtraData = ethers.AbiCoder.defaultAbiCoder().encode(
-            ["bytes32", "address"],
-            [referral, tokenHolder.address],
-          )
-
-          await expect(
-            tbtc
-              .connect(tokenHolder)
-              .approveAndCall(acreAddress, 1, invalidExtraData),
-          ).to.be.revertedWith("Corrupted stake data")
-        })
-      },
-    )
-
     context("when there are two stakers, A and B ", () => {
       type Staker = {
         signer: HardhatEthersSigner
