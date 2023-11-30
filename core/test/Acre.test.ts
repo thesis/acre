@@ -120,8 +120,8 @@ describe("Acre", () => {
 
       before(async () => {
         const [staker1, staker2] = await ethers.getSigners()
-        const staker1AmountToStake = WeiPerEther * 10000n
-        const staker2AmountToStake = WeiPerEther * 5000n
+        const staker1AmountToStake = WeiPerEther * 75n
+        const staker2AmountToStake = WeiPerEther * 25n
         // Infinite approval for staking contract.
         await tbtc
           .connect(staker1)
@@ -154,7 +154,7 @@ describe("Acre", () => {
           })
 
           context("when staker A stakes tokens", () => {
-            it("should stake tokens", async () => {
+            it("should stake tokens correctly", async () => {
               await expect(
                 acre
                   .connect(stakerA.signer)
@@ -205,13 +205,22 @@ describe("Acre", () => {
         let stakerASharesBefore: bigint
         let stakerBSharesBefore: bigint
         let vaultYield: bigint
+        let expectedTotalAssets: bigint
+        let expectedTotalSupply: bigint
 
         before(async () => {
           await afterStakesSnapshot.restore()
 
           stakerASharesBefore = await acre.balanceOf(stakerA.address)
           stakerBSharesBefore = await acre.balanceOf(stakerB.address)
-          vaultYield = WeiPerEther * 10000n
+          vaultYield = WeiPerEther * 100n
+          // Staker A shares = 75
+          // Staker B shares = 25
+          // Total assets = 75(staker A) + 25(staker) + 100(yield)
+          expectedTotalAssets =
+            stakerA.amountToStake + stakerB.amountToStake + vaultYield
+          // Total shares = 75 + 25 = 100
+          expectedTotalSupply = stakerA.amountToStake + stakerB.amountToStake
 
           // Simulating yield returned from strategies. The vault now contains
           // more tokens than deposited which causes the exchange rate to
@@ -242,18 +251,32 @@ describe("Acre", () => {
           const shares = await acre.balanceOf(stakerA.address)
           const availableAssetsToRedeem = await acre.previewRedeem(shares)
 
+          // Expected amount w/o rounding: 75 * 200 / 100 = 150
+          // Expected amount w/ support for rounding: 149999999999999999999 in
+          // tBTC token precision.
+          const expectedAssetsToRedeem =
+            (shares * (expectedTotalAssets + 1n)) / (expectedTotalSupply + 1n)
+
           expect(availableAssetsToRedeem).to.be.greaterThan(
             stakerA.amountToStake,
           )
+          expect(availableAssetsToRedeem).to.be.eq(expectedAssetsToRedeem)
         })
 
         it("the staker B should be able to redeem more tokens than before", async () => {
           const shares = await acre.balanceOf(stakerB.address)
           const availableAssetsToRedeem = await acre.previewRedeem(shares)
 
+          // Expected amount w/o rounding: 25 * 200 / 100 = 50
+          // Expected amount w/ support for rounding: 49999999999999999999 in
+          // tBTC token precision.
+          const expectedAssetsToRedeem =
+            (shares * (expectedTotalAssets + 1n)) / (expectedTotalSupply + 1n)
+
           expect(availableAssetsToRedeem).to.be.greaterThan(
             stakerB.amountToStake,
           )
+          expect(availableAssetsToRedeem).to.be.eq(expectedAssetsToRedeem)
         })
       })
 
