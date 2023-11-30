@@ -223,7 +223,7 @@ describe("Acre", () => {
           afterSimulatingYieldSnapshot = await takeSnapshot()
         })
 
-        it("the vault should hold more asstes", async () => {
+        it("the vault should hold more assets", async () => {
           expect(await acre.totalAssets()).to.be.eq(
             stakerA.amountToStake + stakerB.amountToStake + vaultYield,
           )
