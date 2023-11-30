@@ -82,7 +82,12 @@ contract AcreRouter is OwnableUpgradeable {
     /// @notice Routes funds from stBTC (Acre) to a given vault
     /// @param vault Address of the vault to route the funds to.
     /// @param amount Amount of TBTC to deposit.
-    function deposit(address vault, uint256 amount) public {
+    /// @param minSharesOut Minimum amount of shares to receive.
+    function deposit(
+        address vault,
+        uint256 amount,
+        uint256 minSharesOut
+    ) public returns (uint256 sharesOut) {
         require(msg.sender == address(stBTC), "stBTC only");
         if (!isVault[vault]) {
             revert("Vault is not approved");
@@ -90,8 +95,13 @@ contract AcreRouter is OwnableUpgradeable {
 
         tBTC.safeTransferFrom(msg.sender, address(this), amount);
         tBTC.safeIncreaseAllowance(vault, amount);
-        // TODO: implement protection from the inflation attack / slippage
-        IERC4626(vault).deposit(amount, address(this));
+        // stBTC is the Acre contract where the shares will be minted to
+        if (
+            (sharesOut = IERC4626(vault).deposit(amount, address(stBTC))) <
+            minSharesOut
+        ) {
+            revert("Not enough shares received");
+        }
     }
 
     /// @notice Redeem TBTC from a vault and approves them to be collected
@@ -101,19 +111,27 @@ contract AcreRouter is OwnableUpgradeable {
     ///               of the underlying asset in the vault. Concrete amount of the
     ///               underlying asset is calculated by calling `convertToAssets` on
     ///               the vault and the shares are burned.
-    function redeem(address vault, uint256 shares) public {
+    /// @param minAssetsOut Minimum amount of TBTC to receive.
+    function redeem(
+        address vault,
+        uint256 shares,
+        uint256 minAssetsOut
+    ) public returns (uint256 assetsOut) {
         require(msg.sender == address(stBTC), "stBTC only");
 
         if (!isVault[vault]) {
             revert("Vault is not approved");
         }
 
-        // TODO: implement protection from the inflation attack / slippage
-        uint256 assets = IERC4626(vault).redeem(
-            shares,
-            address(this),
-            address(this)
-        );
-        tBTC.safeIncreaseAllowance(address(stBTC), assets);
+        if (
+            (assetsOut = IERC4626(vault).redeem(
+                shares,
+                address(this),
+                address(stBTC)
+            )) < minAssetsOut
+        ) {
+            revert("Not enough assets received");
+        }
+        tBTC.safeIncreaseAllowance(address(stBTC), assetsOut);
     }
 }
