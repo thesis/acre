@@ -12,16 +12,16 @@ import type { TestToken, Acre } from "../typechain"
 async function acreFixture() {
   const [_, tokenHolder] = await ethers.getSigners()
   const Token = await ethers.getContractFactory("TestToken")
-  const token = await Token.deploy()
+  const tbtc = await Token.deploy()
 
   const amountToMint = WeiPerEther * 10000n
 
-  token.mint(tokenHolder, amountToMint)
+  tbtc.mint(tokenHolder, amountToMint)
 
   const Acre = await ethers.getContractFactory("Acre")
-  const acre = await Acre.deploy(await token.getAddress())
+  const acre = await Acre.deploy(await tbtc.getAddress())
 
-  return { acre, token, tokenHolder }
+  return { acre, tbtc, tokenHolder }
 }
 
 describe("Acre", () => {
@@ -30,7 +30,7 @@ describe("Acre", () => {
   let tokenHolder: HardhatEthersSigner
 
   before(async () => {
-    ;({ acre, token: tbtc, tokenHolder } = await loadFixture(acreFixture))
+    ;({ acre, tbtc, tokenHolder } = await loadFixture(acreFixture))
   })
 
   describe("Staking", () => {
