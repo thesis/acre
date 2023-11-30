@@ -89,12 +89,12 @@ describe("Acre", () => {
       })
 
       it("should not revert if the referral is zero value", async () => {
-        const emptyReferrer = ethers.encodeBytes32String("")
+        const emptyReferral = ethers.encodeBytes32String("")
 
         await expect(
           acre
             .connect(tokenHolder)
-            .stake(amountToStake, tokenHolder.address, emptyReferrer),
+            .stake(amountToStake, tokenHolder.address, emptyReferral),
         ).to.be.not.reverted
       })
 
