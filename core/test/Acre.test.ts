@@ -54,36 +54,44 @@ describe("Acre", () => {
         const tokenHolderAddress = tokenHolder.address
         const amountToStake = await tbtc.balanceOf(tokenHolderAddress)
 
-        await expect(
-          acre
-            .connect(tokenHolder)
-            .stake(amountToStake, tokenHolderAddress, referral),
+        const tx = await acre
+          .connect(tokenHolder)
+          .stake(amountToStake, tokenHolderAddress, referral)
+
+        const stakedTokens = amountToStake
+
+        // In this test case there is only one staker and
+        // the token vault has not earned anythig yet so received shares are
+        // equal to staked tokens amount.
+        const receivedShares = amountToStake
+
+        expect(tx).to.emit(acre, "Deposit").withArgs(
+          // Caller.
+          tokenHolderAddress,
+          // Receiver.
+          tokenHolderAddress,
+          // Staked tokens.
+          stakedTokens,
+          // Received shares.
+          receivedShares,
         )
-          .to.emit(acre, "Deposit")
-          .withArgs(
-            // Caller.
-            tokenHolderAddress,
-            // Receiver.
-            tokenHolderAddress,
-            // Staked tokens.
-            amountToStake,
-            // Received shares. In this test case there is only one staker and
-            // the token vault has not earned anythig yet so received shares are
-            // equal to staked tokens amount.
-            amountToStake,
-          )
+
+        expect(tx)
+          .to.emit(acre, "Staked")
+          .withArgs(referral, stakedTokens, receivedShares)
+
         expect(await acre.balanceOf(tokenHolderAddress)).to.be.eq(amountToStake)
         expect(await tbtc.balanceOf(tokenHolderAddress)).to.be.eq(0)
       })
 
-      it("should revert if the referrer is zero value", async () => {
+      it("should not revert if the referral is zero value", async () => {
         const emptyReferrer = ethers.encodeBytes32String("")
 
         await expect(
           acre
             .connect(tokenHolder)
             .stake(1, tokenHolder.address, emptyReferrer),
-        ).to.be.revertedWith("Referral can not be empty")
+        ).to.be.not.reverted
       })
     })
 

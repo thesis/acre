@@ -5,6 +5,8 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
 import "@thesis/solidity-contracts/contracts/token/IReceiveApproval.sol";
 
 contract Acre is ERC4626, IReceiveApproval {
+    event Staked(bytes32 indexed referral, uint256 assets, uint256 shares);
+
     constructor(
         IERC20 _token
     ) ERC4626(_token) ERC20("Acre Staked Bitcoin", "stBTC") {}
@@ -44,8 +46,10 @@ contract Acre is ERC4626, IReceiveApproval {
         address receiver,
         bytes32 referral
     ) public returns (uint256 shares) {
-        require(referral != bytes32(0), "Referral can not be empty");
+        shares = deposit(assets, receiver);
 
-        return deposit(assets, receiver);
+        emit Staked(referral, assets, shares);
+
+        return shares;
     }
 }
