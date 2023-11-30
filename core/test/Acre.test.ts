@@ -14,7 +14,7 @@ async function acreFixture() {
   const Token = await ethers.getContractFactory("TestToken")
   const tbtc = await Token.deploy()
 
-  const amountToMint = WeiPerEther * 10000n
+  const amountToMint = WeiPerEther * 100000n
 
   tbtc.mint(tokenHolder, amountToMint)
 
@@ -38,12 +38,14 @@ describe("Acre", () => {
     let snapshot: SnapshotRestorer
 
     context("when staking via Acre contract", () => {
+      const amountToStake = 1000n * WeiPerEther
+
       beforeEach(async () => {
         snapshot = await takeSnapshot()
-        // Infinite approval for staking contract.
+
         await tbtc
           .connect(tokenHolder)
-          .approve(await acre.getAddress(), ethers.MaxUint256)
+          .approve(await acre.getAddress(), amountToStake)
       })
 
       afterEach(async () => {
@@ -52,7 +54,7 @@ describe("Acre", () => {
 
       it("should stake tokens and receive shares", async () => {
         const tokenHolderAddress = tokenHolder.address
-        const amountToStake = await tbtc.balanceOf(tokenHolderAddress)
+        const balanceOfBeforeStake = await tbtc.balanceOf(tokenHolderAddress)
 
         const tx = await acre
           .connect(tokenHolder)
@@ -81,7 +83,9 @@ describe("Acre", () => {
           .withArgs(referral, stakedTokens, receivedShares)
 
         expect(await acre.balanceOf(tokenHolderAddress)).to.be.eq(amountToStake)
-        expect(await tbtc.balanceOf(tokenHolderAddress)).to.be.eq(0)
+        expect(await tbtc.balanceOf(tokenHolderAddress)).to.be.eq(
+          balanceOfBeforeStake - amountToStake,
+        )
       })
 
       it("should not revert if the referral is zero value", async () => {
@@ -90,8 +94,16 @@ describe("Acre", () => {
         await expect(
           acre
             .connect(tokenHolder)
-            .stake(1, tokenHolder.address, emptyReferrer),
+            .stake(amountToStake, tokenHolder.address, emptyReferrer),
         ).to.be.not.reverted
+      })
+
+      it("should revert if a staker wants to stake more tokens than approved", async () => {
+        await expect(
+          acre
+            .connect(tokenHolder)
+            .stake(amountToStake + 1n, tokenHolder.address, referral),
+        ).to.be.reverted
       })
     })
 
