@@ -14,6 +14,11 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 contract AcreRouter is OwnableUpgradeable {
     using SafeERC20 for IERC20;
 
+    struct Vault {
+        uint256 distribution; // percentage of TBTC in Acre to be distributed to the vault
+        bool approved;
+    }
+
     IERC20 public immutable stBTC;
     IERC20 public immutable tBTC;
 
@@ -24,7 +29,7 @@ contract AcreRouter is OwnableUpgradeable {
     ///         ERC4626 standard and is approved by the Acre Manager it can be
     ///         plugged into Acre.
     address[] public vaults;
-    mapping(address => bool) public isVault;
+    mapping(address => Vault) public vaultsInfo;
 
     /// @notice Acre Manager address. Only Acre Manager can set or remove Vaults.
     address public acreManager;
@@ -48,25 +53,55 @@ contract AcreRouter is OwnableUpgradeable {
     /// @param manager Address of the Acre Manager.
     function setAcreManager(address manager) external onlyOwner {
         require(manager != address(0), "Cannot be zero address");
+
         acreManager = manager;
         emit AcreManagerSet(manager);
     }
 
     /// @notice Adds a vault to the list of approved vaults.
     /// @param vault Address of the vault to add.
-    function addVault(address vault) external onlyAcreManager {
-        require(!isVault[vault], "Vault already exists");
+    /// @param percent Percentage of TBTC in Acre to be distributed to the vault.
+    function addVault(address vault, uint256 percent) external onlyAcreManager {
+        require(!vaultsInfo[vault].approved, "Vault already approved");
+
         vaults.push(vault);
-        isVault[vault] = true;
+        vaultsInfo[vault].distribution = percent;
+        vaultsInfo[vault].approved = true;
+
+        require(
+            sumOfVaultsDistribution() <= 100,
+            "Total vaults distribution is greater than 100%"
+        );
+
         emit VaultAdded(vault);
+    }
+
+    /// @notice Updates the distribution of a given vault. If the percentage of
+    ///         all vaults distributions exceed 100% the transaction will revert.
+    ///         In this case it is required to adjust the distribution of other
+    ///         vault(s) first.
+    /// @param vault Address of the vault to update.
+    /// @param percent Percentage of TBTC in Acre to be distributed to the vault.
+    function updateVaultDistribution(
+        address vault,
+        uint256 percent
+    ) external onlyAcreManager {
+        require(vaultsInfo[vault].approved, "Vault is not approved");
+
+        vaultsInfo[vault].distribution = percent;
+
+        require(
+            sumOfVaultsDistribution() <= 100,
+            "Total vaults distribution is greater than 100%"
+        );
     }
 
     /// @notice Removes a vault from the list of approved vaults.
     /// @param vault Address of the vault to remove.
     function removeVault(address vault) external onlyAcreManager {
-        require(isVault[vault], "Not an vault");
+        require(vaultsInfo[vault].approved, "Not a vault");
 
-        delete isVault[vault];
+        delete vaultsInfo[vault];
 
         for (uint256 i = 0; i < vaults.length; i++) {
             if (vaults[i] == vault) {
@@ -79,29 +114,43 @@ contract AcreRouter is OwnableUpgradeable {
         emit VaultRemoved(vault);
     }
 
-    /// @notice Routes funds from stBTC (Acre) to a given vault
+    /// @notice Routes funds from stBTC (Acre) to a given vault according to
+    ///         the vault distribution. The amount of TBTC to deposit is
+    ///         calculated as a percentage of the total amount of TBTC in Acre.
     /// @param vault Address of the vault to route the funds to.
-    /// @param amount Amount of TBTC to deposit.
     /// @param minSharesOut Minimum amount of shares to receive.
     function deposit(
         address vault,
-        uint256 amount,
         uint256 minSharesOut
     ) public returns (uint256 sharesOut) {
         require(msg.sender == address(stBTC), "stBTC only");
-        if (!isVault[vault]) {
-            revert("Vault is not approved");
-        }
+        require(vaultsInfo[vault].approved, "Vault is not approved");
 
-        tBTC.safeTransferFrom(msg.sender, address(this), amount);
-        tBTC.safeIncreaseAllowance(vault, amount);
+        uint256 totalBalance = tBTC.balanceOf(address(stBTC));
+        uint256 vaultDistribution = vaultsInfo[vault].distribution; // percent
+        uint256 amountToDeposit = (totalBalance * vaultDistribution) / 100;
+
+        tBTC.safeTransferFrom(msg.sender, address(this), amountToDeposit);
+        tBTC.safeIncreaseAllowance(vault, amountToDeposit);
         // stBTC is the Acre contract where the shares will be minted to
         if (
-            (sharesOut = IERC4626(vault).deposit(amount, address(stBTC))) <
-            minSharesOut
+            (sharesOut = IERC4626(vault).deposit(
+                amountToDeposit,
+                address(stBTC)
+            )) < minSharesOut
         ) {
             revert("Not enough shares received");
         }
+    }
+
+    // TODO: decide if we actually need this functionality. Is it be needed
+    //       for automation of the deposit process by bots?
+    function depositBatch() public {
+        // require(msg.sender == address(stBTC), "stBTC only");
+        // TODO: go through all the approved vaults and calulate the amount to
+        //       deposit for each Vault based on their percent distribution.
+        // TODO: minSharesOut can be calculated for each Vault using
+        //       Acre.previewDeposit(amount) function.
     }
 
     /// @notice Redeem TBTC from a vault and approves them to be collected
@@ -118,10 +167,7 @@ contract AcreRouter is OwnableUpgradeable {
         uint256 minAssetsOut
     ) public returns (uint256 assetsOut) {
         require(msg.sender == address(stBTC), "stBTC only");
-
-        if (!isVault[vault]) {
-            revert("Vault is not approved");
-        }
+        require(vaultsInfo[vault].approved, "Vault is not approved");
 
         if (
             (assetsOut = IERC4626(vault).redeem(
@@ -133,5 +179,11 @@ contract AcreRouter is OwnableUpgradeable {
             revert("Not enough assets received");
         }
         tBTC.safeIncreaseAllowance(address(stBTC), assetsOut);
+    }
+
+    function sumOfVaultsDistribution() internal view returns (uint256 sum) {
+        for (uint256 i = 0; i < vaults.length; i++) {
+            sum += vaultsInfo[vaults[i]].distribution;
+        }
     }
 }
