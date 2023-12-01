@@ -23,6 +23,9 @@ const config: HardhatUserConfig = {
   },
 
   networks: {
+    hardhat: {
+      tags: ["allowStubs"],
+    },
     sepolia: {
       url: process.env.CHAIN_API_URL || "",
       chainId: 11155111,
