@@ -165,6 +165,9 @@ importers:
       gatsby:
         specifier: ^5.12.11
         version: 5.12.11(babel-eslint@10.1.0)(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.2)
+      gatsby-plugin-manifest:
+        specifier: ^5.12.3
+        version: 5.12.3(gatsby@5.12.11)(graphql@16.8.1)
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -9597,6 +9600,22 @@ packages:
       '@parcel/runtime-js': 2.8.3(@parcel/core@2.8.3)
       '@parcel/transformer-js': 2.8.3(@parcel/core@2.8.3)
       '@parcel/transformer-json': 2.8.3(@parcel/core@2.8.3)
+
+  /gatsby-plugin-manifest@5.12.3(gatsby@5.12.11)(graphql@16.8.1):
+    resolution: {integrity: sha512-qpH0pSIIt7ggO7OnP127eKn6fhD1DKTzg9Aw8vaMCO8MMOQ5qfOn3ZrRCgH6DuaU1admZU18gFKlCKH+QHoGfQ==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      gatsby: ^5.0.0-next
+    dependencies:
+      '@babel/runtime': 7.23.4
+      gatsby: 5.12.11(babel-eslint@10.1.0)(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.2)
+      gatsby-core-utils: 4.12.1
+      gatsby-plugin-utils: 4.12.3(gatsby@5.12.11)(graphql@16.8.1)
+      semver: 7.5.4
+      sharp: 0.32.6
+    transitivePeerDependencies:
+      - graphql
+    dev: false
 
   /gatsby-plugin-page-creator@5.12.3(gatsby@5.12.11)(graphql@16.8.1):
     resolution: {integrity: sha512-li9jKy70h4vXNxxRrXP2DpgEx05m5E7EDOLCjAWNsm7e9EO1szixXQ0ev6Ie1SBKT6vAHAoIonet6+oFattf9w==}
