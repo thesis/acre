@@ -8,6 +8,7 @@ const config: GatsbyConfig = {
   graphqlTypegen: true,
   plugins: [
     "gatsby-plugin-pnpm",
+    "gatsby-plugin-react-helmet",
     {
       resolve: "gatsby-plugin-manifest",
       options: {
