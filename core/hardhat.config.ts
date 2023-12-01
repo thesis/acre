@@ -1,4 +1,4 @@
-import { HardhatUserConfig } from "hardhat/config"
+import type { HardhatUserConfig } from "hardhat/config"
 
 import "@nomicfoundation/hardhat-toolbox"
 import "hardhat-deploy"
@@ -41,6 +41,13 @@ const config: HardhatUserConfig = {
         ? process.env.ACCOUNTS_PRIVATE_KEYS.split(",")
         : undefined,
       tags: ["etherscan"],
+    },
+  },
+
+  external: {
+    deployments: {
+      sepolia: ["./external/sepolia"],
+      mainnet: ["./external/mainnet"],
     },
   },
 
