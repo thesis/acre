@@ -6,15 +6,15 @@ import {
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
 import { ethers } from "hardhat"
 import { expect } from "chai"
-import { WeiPerEther } from "ethers"
 import type { TestERC20, Acre } from "../typechain"
+import { to1e18 } from "./utils"
 
 async function acreFixture() {
   const [_, staker] = await ethers.getSigners()
   const Token = await ethers.getContractFactory("TestERC20")
   const tbtc = await Token.deploy()
 
-  const amountToMint = WeiPerEther * 100000n
+  const amountToMint = to1e18(100000)
 
   tbtc.mint(staker, amountToMint)
 
@@ -38,7 +38,7 @@ describe("Acre", () => {
     let snapshot: SnapshotRestorer
 
     context("when staking via Acre contract", () => {
-      const amountToStake = 1000n * WeiPerEther
+      const amountToStake = to1e18(1000)
 
       beforeEach(async () => {
         snapshot = await takeSnapshot()
@@ -120,8 +120,8 @@ describe("Acre", () => {
 
       before(async () => {
         const [staker1, staker2] = await ethers.getSigners()
-        const staker1AmountToStake = WeiPerEther * 75n
-        const staker2AmountToStake = WeiPerEther * 25n
+        const staker1AmountToStake = to1e18(75)
+        const staker2AmountToStake = to1e18(25)
         // Infinite approval for staking contract.
         await tbtc
           .connect(staker1)
@@ -213,7 +213,7 @@ describe("Acre", () => {
 
           stakerASharesBefore = await acre.balanceOf(stakerA.address)
           stakerBSharesBefore = await acre.balanceOf(stakerB.address)
-          vaultYield = WeiPerEther * 100n
+          vaultYield = to1e18(100)
           // Staker A shares = 75
           // Staker B shares = 25
           // Total assets = 75(staker A) + 25(staker) + 100(yield)
