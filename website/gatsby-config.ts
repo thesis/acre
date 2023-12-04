@@ -2,12 +2,27 @@ import type { GatsbyConfig } from "gatsby"
 
 const config: GatsbyConfig = {
   siteMetadata: {
-    // TODO: Update the needed data when the final domain name will be ready.
-    siteUrl: "https://www.yourdomain.tld",
+    siteUrl: "https://acre.fi/",
     title: "Acre",
   },
   graphqlTypegen: true,
-  plugins: [],
+  plugins: [
+    "gatsby-plugin-pnpm",
+    "gatsby-plugin-react-helmet",
+    {
+      resolve: "gatsby-plugin-manifest",
+      options: {
+        name: "Acre",
+        short_name: "Acre",
+        start_url: "/",
+        background_color: "#F3E5C1",
+        theme_color: "#F3E5C1",
+        display: "standalone",
+        icon: "src/images/favicon.png",
+        crossOrigin: "use-credentials",
+      },
+    },
+  ],
 }
 
 export default config

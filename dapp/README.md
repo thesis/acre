@@ -9,8 +9,8 @@ This project was bootstrapped with [Create Vite](https://github.com/vitejs/vite/
 Install dependencies and start the app.
 
  ```bash
-    yarn install
-    yarn start
+    pnpm install
+    pnpm run start
 ```
 
 Once the build is running, you can import the manifest on desktop:
