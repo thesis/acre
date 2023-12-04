@@ -11,27 +11,29 @@ import type { TestERC20, Acre } from "../typechain"
 import { to1e18 } from "./utils"
 
 async function acreFixture() {
-  const [_, staker] = await ethers.getSigners()
+  const [staker, staker2] = await ethers.getSigners()
   const Token = await ethers.getContractFactory("TestERC20")
   const tbtc = await Token.deploy()
 
   const amountToMint = to1e18(100000)
 
   tbtc.mint(staker, amountToMint)
+  tbtc.mint(staker2, amountToMint)
 
   const Acre = await ethers.getContractFactory("Acre")
   const acre = await Acre.deploy(await tbtc.getAddress())
 
-  return { acre, tbtc, staker }
+  return { acre, tbtc, staker, staker2 }
 }
 
 describe("Acre", () => {
   let acre: Acre
   let tbtc: TestERC20
   let staker: HardhatEthersSigner
+  let staker2: HardhatEthersSigner
 
   before(async () => {
-    ;({ acre, tbtc, staker } = await loadFixture(acreFixture))
+    ;({ acre, tbtc, staker, staker2 } = await loadFixture(acreFixture))
   })
 
   describe("Staking", () => {
@@ -210,24 +212,23 @@ describe("Acre", () => {
       let afterSimulatingYieldSnapshot: SnapshotRestorer
 
       before(async () => {
-        const [staker1, staker2] = await ethers.getSigners()
         const staker1AmountToStake = to1e18(75)
         const staker2AmountToStake = to1e18(25)
         // Infinite approval for staking contract.
         await tbtc
-          .connect(staker1)
+          .connect(staker)
           .approve(await acre.getAddress(), ethers.MaxUint256)
         await tbtc
           .connect(staker2)
           .approve(await acre.getAddress(), ethers.MaxUint256)
 
         // Mint tokens.
-        await tbtc.connect(staker1).mint(staker1.address, staker1AmountToStake)
+        await tbtc.connect(staker).mint(staker.address, staker1AmountToStake)
         await tbtc.connect(staker2).mint(staker2.address, staker2AmountToStake)
 
         stakerA = {
-          signer: staker1,
-          address: staker1.address,
+          signer: staker,
+          address: staker.address,
           amountToStake: staker1AmountToStake,
         }
         stakerB = {
