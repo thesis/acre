@@ -21,8 +21,8 @@ contract Acre is ERC4626 {
         uint256 assets,
         address receiver,
         bytes32 referral
-    ) public returns (uint256 shares) {
-        shares = deposit(assets, receiver);
+    ) public returns (uint256) {
+        uint256 shares = deposit(assets, receiver);
 
         emit Staked(referral, assets, shares);
 
