@@ -92,7 +92,7 @@ importers:
         version: 4.0.0
       solhint-config-thesis:
         specifier: github:thesis/solhint-config
-        version: github.com/thesis/solhint-config/159587cd6103f21aaa7fbadc17a06717a51b5b42(solhint@4.0.0)
+        version: github.com/thesis/solhint-config/266de12d96d58f01171e20858b855ec80520de8d(solhint@4.0.0)
       solidity-coverage:
         specifier: ^0.8.5
         version: 0.8.5(hardhat@2.19.1)
@@ -15344,9 +15344,9 @@ packages:
       prettier: 3.1.0
     dev: true
 
-  github.com/thesis/solhint-config/159587cd6103f21aaa7fbadc17a06717a51b5b42(solhint@4.0.0):
-    resolution: {tarball: https://codeload.github.com/thesis/solhint-config/tar.gz/159587cd6103f21aaa7fbadc17a06717a51b5b42}
-    id: github.com/thesis/solhint-config/159587cd6103f21aaa7fbadc17a06717a51b5b42
+  github.com/thesis/solhint-config/266de12d96d58f01171e20858b855ec80520de8d(solhint@4.0.0):
+    resolution: {tarball: https://codeload.github.com/thesis/solhint-config/tar.gz/266de12d96d58f01171e20858b855ec80520de8d}
+    id: github.com/thesis/solhint-config/266de12d96d58f01171e20858b855ec80520de8d
     name: solhint-config-thesis
     version: 0.1.0
     engines: {node: '>=0.10.0'}
