@@ -6,6 +6,7 @@ import {
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
 import { ethers } from "hardhat"
 import { expect } from "chai"
+import { ContractTransactionResponse, ZeroAddress } from "ethers"
 import type { TestERC20, Acre } from "../typechain"
 import { to1e18 } from "./utils"
 
@@ -37,74 +38,164 @@ describe("Acre", () => {
     const referral = ethers.encodeBytes32String("referral")
     let snapshot: SnapshotRestorer
 
-    context("when staking via Acre contract", () => {
-      const amountToStake = to1e18(1000)
-
+    context("when staking", () => {
       beforeEach(async () => {
         snapshot = await takeSnapshot()
-
-        await tbtc
-          .connect(staker)
-          .approve(await acre.getAddress(), amountToStake)
       })
 
       afterEach(async () => {
         await snapshot.restore()
       })
 
-      it("should stake tokens and receive shares", async () => {
-        const stakerAddress = staker.address
-        const balanceOfBeforeStake = await tbtc.balanceOf(stakerAddress)
-
-        const tx = await acre
-          .connect(staker)
-          .stake(amountToStake, stakerAddress, referral)
-
-        const stakedTokens = amountToStake
+      context("with a referral", () => {
+        const amountToStake = to1e18(1000)
 
         // In this test case there is only one staker and
         // the token vault has not earned anythig yet so received shares are
         // equal to staked tokens amount.
-        const receivedShares = amountToStake
+        const expectedReceivedShares = amountToStake
 
-        expect(tx).to.emit(acre, "Deposit").withArgs(
-          // Caller.
-          stakerAddress,
-          // Receiver.
-          stakerAddress,
-          // Staked tokens.
-          stakedTokens,
-          // Received shares.
-          receivedShares,
-        )
+        let tx: ContractTransactionResponse
 
-        expect(tx)
-          .to.emit(acre, "Staked")
-          .withArgs(referral, stakedTokens, receivedShares)
+        beforeEach(async () => {
+          await tbtc
+            .connect(staker)
+            .approve(await acre.getAddress(), amountToStake)
 
-        expect(await acre.balanceOf(stakerAddress)).to.be.eq(amountToStake)
-        expect(await tbtc.balanceOf(stakerAddress)).to.be.eq(
-          balanceOfBeforeStake - amountToStake,
-        )
+          tx = await acre
+            .connect(staker)
+            .stake(amountToStake, staker.address, referral)
+        })
+
+        it("should emit Deposit event", () => {
+          expect(tx).to.emit(acre, "Deposit").withArgs(
+            // Caller.
+            staker.address,
+            // Receiver.
+            staker.address,
+            // Staked tokens.
+            amountToStake,
+            // Received shares.
+            expectedReceivedShares,
+          )
+        })
+
+        it("should emit Staked event", () => {
+          expect(tx)
+            .to.emit(acre, "Staked")
+            .withArgs(referral, amountToStake, expectedReceivedShares)
+        })
+
+        it("should mint stBTC tokens", async () => {
+          await expect(tx).to.changeTokenBalances(
+            acre,
+            [staker.address],
+            [amountToStake],
+          )
+        })
+
+        it("should transfer tBTC tokens", async () => {
+          await expect(tx).to.changeTokenBalances(
+            tbtc,
+            [staker.address, acre],
+            [-amountToStake, amountToStake],
+          )
+        })
       })
 
-      it("should not revert if the referral is zero value", async () => {
+      context("without referral", () => {
         const emptyReferral = ethers.encodeBytes32String("")
+        let tx: ContractTransactionResponse
 
-        await expect(
-          acre
+        beforeEach(async () => {
+          await tbtc.connect(staker).approve(await acre.getAddress(), 1)
+
+          tx = await acre
             .connect(staker)
-            .stake(amountToStake, staker.address, emptyReferral),
-        ).to.be.not.reverted
+            .stake(1, staker.address, emptyReferral)
+        })
+
+        it("should not revert", async () => {
+          await expect(tx).to.be.not.reverted
+        })
       })
 
-      it("should revert if a staker wants to stake more tokens than approved", async () => {
-        await expect(
-          acre
+      context(
+        "when amount to stake is greater than the approved amount",
+        () => {
+          const amountToStake = to1e18(10)
+          beforeEach(async () => {
+            await tbtc
+              .connect(staker)
+              .approve(await acre.getAddress(), amountToStake)
+          })
+
+          it("should revert", async () => {
+            await expect(
+              acre
+                .connect(staker)
+                .stake(amountToStake + 1n, staker.address, referral),
+            ).to.be.reverted
+          })
+        },
+      )
+
+      context("when amount to stake is 1", () => {
+        const amountToStake = 1
+
+        beforeEach(async () => {
+          await tbtc
             .connect(staker)
-            .stake(amountToStake + 1n, staker.address, referral),
-        ).to.be.reverted
+            .approve(await acre.getAddress(), amountToStake)
+        })
+
+        it("should not revert", async () => {
+          await expect(
+            acre.connect(staker).stake(amountToStake, staker.address, referral),
+          ).to.not.be.reverted
+        })
       })
+
+      context("when the receiver is zero address", () => {
+        const amountToStake = to1e18(10)
+
+        beforeEach(async () => {
+          await tbtc
+            .connect(staker)
+            .approve(await acre.getAddress(), amountToStake)
+        })
+
+        it("should revert", async () => {
+          await expect(
+            acre.connect(staker).stake(amountToStake, ZeroAddress, referral),
+          ).to.be.revertedWithCustomError(acre, "ERC20InvalidReceiver")
+        })
+      })
+
+      context(
+        "when a staker approved and staked tokens and wants to stake more but w/o another apporval",
+        () => {
+          const amountToStake = to1e18(10)
+
+          beforeEach(async () => {
+            await tbtc
+              .connect(staker)
+              .approve(await acre.getAddress(), amountToStake)
+
+            await acre
+              .connect(staker)
+              .stake(amountToStake, staker.address, referral)
+          })
+
+          it("should revert", async () => {
+            await expect(
+              acre
+                .connect(staker)
+                .stake(amountToStake, staker.address, referral),
+            ).to.be.revertedWithCustomError(acre, "ERC20InsufficientAllowance")
+          })
+        },
+      )
     })
 
     context("when there are two stakers, A and B ", () => {
