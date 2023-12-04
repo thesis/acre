@@ -7,10 +7,10 @@ contract Acre is ERC4626 {
     event Staked(bytes32 indexed referral, uint256 assets, uint256 shares);
 
     constructor(
-        IERC20 _token
-    ) ERC4626(_token) ERC20("Acre Staked Bitcoin", "stBTC") {}
+        IERC20 tbtc
+    ) ERC4626(tbtc) ERC20("Acre Staked Bitcoin", "stBTC") {}
 
-    /// @notice Stakes a given amount of underlying token and mints shares to a
+    /// @notice Stakes a given amount of tBTC token and mints shares to a
     ///         receiver.
     /// @dev This function calls `deposit` function from `ERC4626` contract.
     /// @param assets Approved amount for the transfer and stake.
