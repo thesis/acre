@@ -7,11 +7,11 @@ import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
 import { ethers } from "hardhat"
 import { expect } from "chai"
 import { WeiPerEther } from "ethers"
-import type { TestToken, Acre } from "../typechain"
+import type { TestERC20, Acre } from "../typechain"
 
 async function acreFixture() {
   const [_, staker] = await ethers.getSigners()
-  const Token = await ethers.getContractFactory("TestToken")
+  const Token = await ethers.getContractFactory("TestERC20")
   const tbtc = await Token.deploy()
 
   const amountToMint = WeiPerEther * 100000n
@@ -26,7 +26,7 @@ async function acreFixture() {
 
 describe("Acre", () => {
   let acre: Acre
-  let tbtc: TestToken
+  let tbtc: TestERC20
   let staker: HardhatEthersSigner
 
   before(async () => {

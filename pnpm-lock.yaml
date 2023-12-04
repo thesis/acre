@@ -23,9 +23,6 @@ importers:
       '@openzeppelin/contracts':
         specifier: ^5.0.0
         version: 5.0.0
-      '@thesis/solidity-contracts':
-        specifier: github:thesis/solidity-contracts#c315b9d
-        version: github.com/thesis/solidity-contracts/c315b9d
     devDependencies:
       '@nomicfoundation/hardhat-chai-matchers':
         specifier: ^2.0.2
@@ -4415,10 +4412,6 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
-
-  /@openzeppelin/contracts@4.9.3:
-    resolution: {integrity: sha512-He3LieZ1pP2TNt5JbkPA4PNT9WC3gOTOlDcFGJW4Le4QKqwmiNJCRt44APfxMxvq7OugU/cqYuPcSBzOw38DAg==}
-    dev: false
 
   /@openzeppelin/contracts@5.0.0:
     resolution: {integrity: sha512-bv2sdS6LKqVVMLI5+zqnNrNU/CA+6z6CmwFXm/MzmOPBRSO5reEJN7z0Gbzvs0/bv/MZZXNklubpwy3v2+azsw==}
@@ -15362,11 +15355,3 @@ packages:
     dependencies:
       solhint: 4.0.0
     dev: true
-
-  github.com/thesis/solidity-contracts/c315b9d:
-    resolution: {tarball: https://codeload.github.com/thesis/solidity-contracts/tar.gz/c315b9d}
-    name: '@thesis-co/solidity-contracts'
-    version: 0.0.1-pre
-    dependencies:
-      '@openzeppelin/contracts': 4.9.3
-    dev: false
