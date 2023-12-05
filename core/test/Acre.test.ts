@@ -58,23 +58,28 @@ describe("Acre", () => {
         const expectedReceivedShares = amountToStake
 
         let tx: ContractTransactionResponse
+        let tbtcHolder: HardhatEthersSigner
+        let receiver: HardhatEthersSigner
 
         beforeEach(async () => {
+          tbtcHolder = staker1
+          receiver = staker2
+
           await tbtc
-            .connect(staker1)
+            .connect(tbtcHolder)
             .approve(await acre.getAddress(), amountToStake)
 
           tx = await acre
-            .connect(staker1)
-            .stake(amountToStake, staker1.address, referral)
+            .connect(tbtcHolder)
+            .stake(amountToStake, receiver.address, referral)
         })
 
         it("should emit Deposit event", () => {
           expect(tx).to.emit(acre, "Deposit").withArgs(
             // Caller.
-            staker1.address,
+            tbtcHolder.address,
             // Receiver.
-            staker1.address,
+            receiver.address,
             // Staked tokens.
             amountToStake,
             // Received shares.
@@ -91,7 +96,7 @@ describe("Acre", () => {
         it("should mint stBTC tokens", async () => {
           await expect(tx).to.changeTokenBalances(
             acre,
-            [staker1.address],
+            [receiver.address],
             [expectedReceivedShares],
           )
         })
@@ -99,7 +104,7 @@ describe("Acre", () => {
         it("should transfer tBTC tokens", async () => {
           await expect(tx).to.changeTokenBalances(
             tbtc,
-            [staker1.address, acre],
+            [tbtcHolder.address, acre],
             [-amountToStake, amountToStake],
           )
         })
