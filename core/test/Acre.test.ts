@@ -1,23 +1,23 @@
 import {
-  SnapshotRestorer,
-  loadFixture,
   takeSnapshot,
+  loadFixture,
 } from "@nomicfoundation/hardhat-toolbox/network-helpers"
-import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
-import { ethers } from "hardhat"
 import { expect } from "chai"
 import { ContractTransactionResponse, ZeroAddress } from "ethers"
-import type { TestERC20, Acre } from "../typechain"
+
+import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
+import type { SnapshotRestorer } from "@nomicfoundation/hardhat-toolbox/network-helpers"
+import { deployment } from "./helpers/context"
+import { getUnnamedSigner } from "./helpers/signer"
+
 import { to1e18 } from "./utils"
 
-async function acreFixture() {
-  const [staker1, staker2] = await ethers.getSigners()
+import type { Acre, TestERC20 } from "../typechain"
 
-  const TestERC20 = await ethers.getContractFactory("TestERC20")
-  const tbtc = await TestERC20.deploy()
+async function fixture() {
+  const { tbtc, acre } = await deployment()
 
-  const Acre = await ethers.getContractFactory("Acre")
-  const acre = await Acre.deploy(await tbtc.getAddress())
+  const [staker1, staker2] = await getUnnamedSigner()
 
   const amountToMint = to1e18(100000)
   tbtc.mint(staker1, amountToMint)
@@ -33,7 +33,7 @@ describe("Acre", () => {
   let staker2: HardhatEthersSigner
 
   before(async () => {
-    ;({ acre, tbtc, staker1, staker2 } = await loadFixture(acreFixture))
+    ;({ acre, tbtc, staker1, staker2 } = await loadFixture(fixture))
   })
 
   describe("stake", () => {
