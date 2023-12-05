@@ -11,29 +11,29 @@ import type { TestERC20, Acre } from "../typechain"
 import { to1e18 } from "./utils"
 
 async function acreFixture() {
-  const [staker, staker2] = await ethers.getSigners()
+  const [staker1, staker2] = await ethers.getSigners()
   const Token = await ethers.getContractFactory("TestERC20")
   const tbtc = await Token.deploy()
 
   const amountToMint = to1e18(100000)
 
-  tbtc.mint(staker, amountToMint)
+  tbtc.mint(staker1, amountToMint)
   tbtc.mint(staker2, amountToMint)
 
   const Acre = await ethers.getContractFactory("Acre")
   const acre = await Acre.deploy(await tbtc.getAddress())
 
-  return { acre, tbtc, staker, staker2 }
+  return { acre, tbtc, staker1, staker2 }
 }
 
 describe("Acre", () => {
   let acre: Acre
   let tbtc: TestERC20
-  let staker: HardhatEthersSigner
+  let staker1: HardhatEthersSigner
   let staker2: HardhatEthersSigner
 
   before(async () => {
-    ;({ acre, tbtc, staker, staker2 } = await loadFixture(acreFixture))
+    ;({ acre, tbtc, staker1, staker2 } = await loadFixture(acreFixture))
   })
 
   describe("Staking", () => {
@@ -61,20 +61,20 @@ describe("Acre", () => {
 
         beforeEach(async () => {
           await tbtc
-            .connect(staker)
+            .connect(staker1)
             .approve(await acre.getAddress(), amountToStake)
 
           tx = await acre
-            .connect(staker)
-            .stake(amountToStake, staker.address, referral)
+            .connect(staker1)
+            .stake(amountToStake, staker1.address, referral)
         })
 
         it("should emit Deposit event", () => {
           expect(tx).to.emit(acre, "Deposit").withArgs(
             // Caller.
-            staker.address,
+            staker1.address,
             // Receiver.
-            staker.address,
+            staker1.address,
             // Staked tokens.
             amountToStake,
             // Received shares.
@@ -91,7 +91,7 @@ describe("Acre", () => {
         it("should mint stBTC tokens", async () => {
           await expect(tx).to.changeTokenBalances(
             acre,
-            [staker.address],
+            [staker1.address],
             [amountToStake],
           )
         })
@@ -99,7 +99,7 @@ describe("Acre", () => {
         it("should transfer tBTC tokens", async () => {
           await expect(tx).to.changeTokenBalances(
             tbtc,
-            [staker.address, acre],
+            [staker1.address, acre],
             [-amountToStake, amountToStake],
           )
         })
@@ -110,11 +110,11 @@ describe("Acre", () => {
         let tx: ContractTransactionResponse
 
         beforeEach(async () => {
-          await tbtc.connect(staker).approve(await acre.getAddress(), 1)
+          await tbtc.connect(staker1).approve(await acre.getAddress(), 1)
 
           tx = await acre
-            .connect(staker)
-            .stake(1, staker.address, emptyReferral)
+            .connect(staker1)
+            .stake(1, staker1.address, emptyReferral)
         })
 
         it("should not revert", async () => {
@@ -132,15 +132,15 @@ describe("Acre", () => {
           const amountToStake = to1e18(10)
           beforeEach(async () => {
             await tbtc
-              .connect(staker)
+              .connect(staker1)
               .approve(await acre.getAddress(), amountToStake)
           })
 
           it("should revert", async () => {
             await expect(
               acre
-                .connect(staker)
-                .stake(amountToStake + 1n, staker.address, referral),
+                .connect(staker1)
+                .stake(amountToStake + 1n, staker1.address, referral),
             ).to.be.reverted
           })
         },
@@ -151,13 +151,15 @@ describe("Acre", () => {
 
         beforeEach(async () => {
           await tbtc
-            .connect(staker)
+            .connect(staker1)
             .approve(await acre.getAddress(), amountToStake)
         })
 
         it("should not revert", async () => {
           await expect(
-            acre.connect(staker).stake(amountToStake, staker.address, referral),
+            acre
+              .connect(staker1)
+              .stake(amountToStake, staker1.address, referral),
           ).to.not.be.reverted
         })
       })
@@ -167,13 +169,13 @@ describe("Acre", () => {
 
         beforeEach(async () => {
           await tbtc
-            .connect(staker)
+            .connect(staker1)
             .approve(await acre.getAddress(), amountToStake)
         })
 
         it("should revert", async () => {
           await expect(
-            acre.connect(staker).stake(amountToStake, ZeroAddress, referral),
+            acre.connect(staker1).stake(amountToStake, ZeroAddress, referral),
           ).to.be.revertedWithCustomError(acre, "ERC20InvalidReceiver")
         })
       })
@@ -185,19 +187,19 @@ describe("Acre", () => {
 
           beforeEach(async () => {
             await tbtc
-              .connect(staker)
+              .connect(staker1)
               .approve(await acre.getAddress(), amountToStake)
 
             await acre
-              .connect(staker)
-              .stake(amountToStake, staker.address, referral)
+              .connect(staker1)
+              .stake(amountToStake, staker1.address, referral)
           })
 
           it("should revert", async () => {
             await expect(
               acre
-                .connect(staker)
-                .stake(amountToStake, staker.address, referral),
+                .connect(staker1)
+                .stake(amountToStake, staker1.address, referral),
             ).to.be.revertedWithCustomError(acre, "ERC20InsufficientAllowance")
           })
         },
@@ -216,24 +218,24 @@ describe("Acre", () => {
       let afterSimulatingYieldSnapshot: SnapshotRestorer
 
       before(async () => {
-        const stakerAmountToStake = to1e18(75)
+        const staker1AmountToStake = to1e18(75)
         const staker2AmountToStake = to1e18(25)
         // Infinite approval for staking contract.
         await tbtc
-          .connect(staker)
+          .connect(staker1)
           .approve(await acre.getAddress(), ethers.MaxUint256)
         await tbtc
           .connect(staker2)
           .approve(await acre.getAddress(), ethers.MaxUint256)
 
         // Mint tokens.
-        await tbtc.connect(staker).mint(staker.address, stakerAmountToStake)
+        await tbtc.connect(staker1).mint(staker1.address, staker1AmountToStake)
         await tbtc.connect(staker2).mint(staker2.address, staker2AmountToStake)
 
         stakerA = {
-          signer: staker,
-          address: staker.address,
-          amountToStake: stakerAmountToStake,
+          signer: staker1,
+          address: staker1.address,
+          amountToStake: staker1AmountToStake,
         }
         stakerB = {
           signer: staker2,
