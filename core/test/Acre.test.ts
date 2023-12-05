@@ -92,7 +92,7 @@ describe("Acre", () => {
           await expect(tx).to.changeTokenBalances(
             acre,
             [staker1.address],
-            [amountToStake],
+            [expectedReceivedShares],
           )
         })
 
