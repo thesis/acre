@@ -146,7 +146,7 @@ describe("Acre", () => {
               acre
                 .connect(staker1)
                 .stake(amountToStake, staker1.address, referral),
-            ).to.be.reverted
+            ).to.be.revertedWithCustomError(tbtc, "ERC20InsufficientAllowance")
           })
         },
       )
