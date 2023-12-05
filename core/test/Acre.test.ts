@@ -12,8 +12,8 @@ import { to1e18 } from "./utils"
 
 async function acreFixture() {
   const [staker1, staker2] = await ethers.getSigners()
-  const Token = await ethers.getContractFactory("TestERC20")
-  const tbtc = await Token.deploy()
+  const TestERC20 = await ethers.getContractFactory("TestERC20")
+  const tbtc = await TestERC20.deploy()
 
   const amountToMint = to1e18(100000)
 
