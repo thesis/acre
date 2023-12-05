@@ -12,16 +12,16 @@ import { to1e18 } from "./utils"
 
 async function acreFixture() {
   const [staker1, staker2] = await ethers.getSigners()
+
   const TestERC20 = await ethers.getContractFactory("TestERC20")
   const tbtc = await TestERC20.deploy()
 
-  const amountToMint = to1e18(100000)
-
-  tbtc.mint(staker1, amountToMint)
-  tbtc.mint(staker2, amountToMint)
-
   const Acre = await ethers.getContractFactory("Acre")
   const acre = await Acre.deploy(await tbtc.getAddress())
+
+  const amountToMint = to1e18(100000)
+  tbtc.mint(staker1, amountToMint)
+  tbtc.mint(staker2, amountToMint)
 
   return { acre, tbtc, staker1, staker2 }
 }
