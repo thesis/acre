@@ -381,7 +381,6 @@ describe("Acre", () => {
         it("should receive more shares", async () => {
           const shares = await acre.balanceOf(staker1.address)
 
-          expect(shares).to.be.greaterThan(sharesBefore)
           expect(shares).to.be.eq(sharesBefore + expectedSharesToMint)
         })
 
