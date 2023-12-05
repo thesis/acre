@@ -40,7 +40,7 @@ describe("Acre", () => {
     const referral = ethers.encodeBytes32String("referral")
     let snapshot: SnapshotRestorer
 
-    context("when staking", () => {
+    context("when staking as first staker", () => {
       beforeEach(async () => {
         snapshot = await takeSnapshot()
       })
