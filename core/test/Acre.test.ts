@@ -373,26 +373,63 @@ describe("Acre", () => {
       })
 
       context("when staker A stakes more tokens", () => {
+        const newAmountToStake = to1e18(20)
         let sharesBefore: bigint
         let availableToRedeemBefore: bigint
+        let totalAssetsBefore: bigint
+        let totalSupplyBefore: bigint
+        let expectedSharesToMint: bigint
+        let expectedTotalSupply: bigint
+        let expectedTotalAssets: bigint
 
         before(async () => {
+          // Current state:
+          // Total assets = 75(staker A) + 25(staker B) + 100(yield)
+          // Total shares = 75 + 25 = 100
           await afterSimulatingYieldSnapshot.restore()
 
           sharesBefore = await acre.balanceOf(stakerA.address)
           availableToRedeemBefore = await acre.previewRedeem(sharesBefore)
+          totalAssetsBefore = await acre.totalAssets()
+          totalSupplyBefore = await acre.totalSupply()
 
-          tbtc.mint(stakerA.address, stakerA.amountToStake)
+          tbtc.mint(stakerA.address, newAmountToStake)
 
-          await acre.stake(stakerA.amountToStake, stakerA.address, referral)
+          expectedSharesToMint =
+            (newAmountToStake * (totalSupplyBefore + 1n)) /
+            (totalAssetsBefore + 1n)
+
+          await acre.stake(newAmountToStake, stakerA.address, referral)
+
+          // State after stake:
+          // Total assets = 75(staker A) + 25(staker B) + 100(yield) + 20(staker
+          // A) = 220
+          // Total shares = 75 + 25 + 10 = 110
+          expectedTotalAssets = totalAssetsBefore + newAmountToStake
+          expectedTotalSupply = totalSupplyBefore + expectedSharesToMint
         })
 
         it("should receive more shares", async () => {
           const shares = await acre.balanceOf(stakerA.address)
-          const availableToRedeem = await acre.previewRedeem(shares)
 
           expect(shares).to.be.greaterThan(sharesBefore)
+          expect(shares).to.be.eq(sharesBefore + expectedSharesToMint)
+        })
+
+        it("should be able to redeem more tokens than before", async () => {
+          const shares = await acre.balanceOf(stakerA.address)
+          const availableToRedeem = await acre.previewRedeem(shares)
+
+          // Expected amount w/o rounding: 85 * 220 / 110 = 170
+          // Expected amount w/ support for rounding: 169999999999999999999 in
+          // tBTC token precision.
+          const expectedTotalAssetsAvailableToRedeem =
+            (shares * (expectedTotalAssets + 1n)) / (expectedTotalSupply + 1n)
+
           expect(availableToRedeem).to.be.greaterThan(availableToRedeemBefore)
+          expect(availableToRedeem).to.be.eq(
+            expectedTotalAssetsAvailableToRedeem,
+          )
         })
       })
     })
