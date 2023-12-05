@@ -220,13 +220,13 @@ describe("Acre", () => {
       before(async () => {
         const staker1AmountToStake = to1e18(75)
         const staker2AmountToStake = to1e18(25)
-        // Infinite approval for staking contract.
+
         await tbtc
           .connect(staker1)
-          .approve(await acre.getAddress(), ethers.MaxUint256)
+          .approve(await acre.getAddress(), staker1AmountToStake)
         await tbtc
           .connect(staker2)
-          .approve(await acre.getAddress(), ethers.MaxUint256)
+          .approve(await acre.getAddress(), staker2AmountToStake)
 
         // Mint tokens.
         await tbtc.connect(staker1).mint(staker1.address, staker1AmountToStake)
@@ -400,6 +400,10 @@ describe("Acre", () => {
           totalSupplyBefore = await acre.totalSupply()
 
           tbtc.mint(stakerA.address, newAmountToStake)
+
+          await tbtc
+            .connect(stakerA.signer)
+            .approve(await acre.getAddress(), newAmountToStake)
 
           expectedSharesToMint =
             (newAmountToStake * (totalSupplyBefore + 1n)) /
