@@ -82,10 +82,10 @@ describe("Acre", () => {
           )
         })
 
-        it("should emit Staked event", () => {
+        it("should emit StakeReferral event", () => {
           expect(tx)
-            .to.emit(acre, "Staked")
-            .withArgs(referral, amountToStake, expectedReceivedShares)
+            .to.emit(acre, "StakeReferral")
+            .withArgs(referral, amountToStake)
         })
 
         it("should mint stBTC tokens", async () => {

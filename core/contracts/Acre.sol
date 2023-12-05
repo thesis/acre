@@ -11,7 +11,7 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
 ///         tokens.
 /// @dev ERC-4626 standard extends the ERC-20 token.
 contract Acre is ERC4626 {
-    event Staked(bytes32 indexed referral, uint256 assets, uint256 shares);
+    event StakeReferral(bytes32 indexed referral, uint256 assets);
 
     constructor(
         IERC20 tbtc
@@ -32,7 +32,7 @@ contract Acre is ERC4626 {
         // TODO: revisit the type of referral.
         uint256 shares = deposit(assets, receiver);
 
-        emit Staked(referral, assets, shares);
+        emit StakeReferral(referral, assets);
 
         return shares;
     }
