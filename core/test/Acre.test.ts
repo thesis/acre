@@ -132,18 +132,20 @@ describe("Acre", () => {
       context(
         "when amount to stake is greater than the approved amount",
         () => {
-          const amountToStake = to1e18(10)
+          const approvedAmount = to1e18(10)
+          const amountToStake = approvedAmount + 1n
+
           beforeEach(async () => {
             await tbtc
               .connect(staker1)
-              .approve(await acre.getAddress(), amountToStake)
+              .approve(await acre.getAddress(), approvedAmount)
           })
 
           it("should revert", async () => {
             await expect(
               acre
                 .connect(staker1)
-                .stake(amountToStake + 1n, staker1.address, referral),
+                .stake(amountToStake, staker1.address, referral),
             ).to.be.reverted
           })
         },
