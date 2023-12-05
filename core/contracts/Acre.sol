@@ -19,7 +19,8 @@ contract Acre is ERC4626 {
 
     /// @notice Stakes a given amount of tBTC token and mints shares to a
     ///         receiver.
-    /// @dev This function calls `deposit` function from `ERC4626` contract.
+    /// @dev This function calls `deposit` function from `ERC4626` contract. The
+    ///      amount of the assets has to be pre-approved in the tBTC contract.
     /// @param assets Approved amount for the transfer and stake.
     /// @param receiver The address to which the shares will be minted.
     /// @param referral Data used for referral program.
