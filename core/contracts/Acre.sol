@@ -3,6 +3,13 @@ pragma solidity ^0.8.21;
 
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
 
+/// @title Acre
+/// @notice Implementation of the ERR-4626 tokenized vault standard. ERC-4626 is
+///         a standard to optimize and unify the technical parameters of
+///         yield-bearing vaults. This contract allows the minting and burning
+///         of shares, represented as standard ERC20 token, in exchange for tBTC
+///         tokens.
+/// @dev ERC-4626 standard extends the ERC-20 token.
 contract Acre is ERC4626 {
     event Staked(bytes32 indexed referral, uint256 assets, uint256 shares);
 
