@@ -32,7 +32,9 @@ contract Acre is ERC4626 {
         // TODO: revisit the type of referral.
         uint256 shares = deposit(assets, receiver);
 
-        emit StakeReferral(referral, assets);
+        if (referral != bytes32(0)) {
+            emit StakeReferral(referral, assets);
+        }
 
         return shares;
     }
