@@ -297,12 +297,12 @@ describe("Acre", () => {
           // Current state:
           // Staker A shares = 75
           // Staker B shares = 25
-          // Total assets = 75(staker A) + 25(staker B) + 100(yield)
+          // Total assets = 75(staker A) + 25(staker B) + 50(yield)
           await afterStakesSnapshot.restore()
 
           staker1SharesBefore = await acre.balanceOf(staker1.address)
           staker2SharesBefore = await acre.balanceOf(staker2.address)
-          vaultYield = to1e18(100)
+          vaultYield = to1e18(50)
 
           // Simulating yield returned from strategies. The vault now contains
           // more tokens than deposited which causes the exchange rate to
@@ -333,10 +333,10 @@ describe("Acre", () => {
           const shares = await acre.balanceOf(staker1.address)
           const availableAssetsToRedeem = await acre.previewRedeem(shares)
 
-          // Expected amount w/o rounding: 75 * 200 / 100 = 150
-          // Expected amount w/ support for rounding: 149999999999999999999 in
+          // Expected amount w/o rounding: 75 * 150 / 100 = 112.5
+          // Expected amount w/ support for rounding: 112499999999999999999 in
           // tBTC token precision.
-          const expectedAssetsToRedeem = 149999999999999999999n
+          const expectedAssetsToRedeem = 112499999999999999999n
 
           expect(availableAssetsToRedeem).to.be.greaterThan(
             staker1AmountToStake,
@@ -348,10 +348,10 @@ describe("Acre", () => {
           const shares = await acre.balanceOf(staker2.address)
           const availableAssetsToRedeem = await acre.previewRedeem(shares)
 
-          // Expected amount w/o rounding: 25 * 200 / 100 = 50
-          // Expected amount w/ support for rounding: 49999999999999999999 in
+          // Expected amount w/o rounding: 25 * 150 / 100 = 37.5
+          // Expected amount w/ support for rounding: 37499999999999999999 in
           // tBTC token precision.
-          const expectedAssetsToRedeem = 49999999999999999999n
+          const expectedAssetsToRedeem = 37499999999999999999n
 
           expect(availableAssetsToRedeem).to.be.greaterThan(
             staker2AmountToStake,
@@ -362,14 +362,16 @@ describe("Acre", () => {
 
       context("when staker A stakes more tokens", () => {
         const newAmountToStake = to1e18(20)
-        const expectedSharesToMint = to1e18(10)
+        // Current state:
+        // Total assets = 75(staker A) + 25(staker B) + 50(yield)
+        // Total shares = 75 + 25 = 100
+        // 20 * 100 / 150 = 13.(3) -> 13333333333333333333 in stBTC token
+        /// precision
+        const expectedSharesToMint = 13333333333333333333n
         let sharesBefore: bigint
         let availableToRedeemBefore: bigint
 
         before(async () => {
-          // Current state:
-          // Total assets = 75(staker A) + 25(staker B) + 100(yield)
-          // Total shares = 75 + 25 = 100
           await afterSimulatingYieldSnapshot.restore()
 
           sharesBefore = await acre.balanceOf(staker1.address)
@@ -382,9 +384,9 @@ describe("Acre", () => {
             .approve(await acre.getAddress(), newAmountToStake)
 
           // State after stake:
-          // Total assets = 75(staker A) + 25(staker B) + 100(yield) + 20(staker
-          // A) = 220
-          // Total shares = 75 + 25 + 10 = 110
+          // Total assets = 75(staker A) + 25(staker B) + 50(yield) + 20(staker
+          // A) = 170
+          // Total shares = 75 + 25 + 13.(3) = 113.(3)
           await acre.stake(newAmountToStake, staker1.address, referral)
         })
 
@@ -398,10 +400,10 @@ describe("Acre", () => {
           const shares = await acre.balanceOf(staker1.address)
           const availableToRedeem = await acre.previewRedeem(shares)
 
-          // Expected amount w/o rounding: 85 * 220 / 110 = 170
-          // Expected amount w/ support for rounding: 169999999999999999999 in
+          // Expected amount w/o rounding: 88.(3) * 170 / 113.(3) = 132.5
+          // Expected amount w/ support for rounding: 132499999999999999999 in
           // tBTC token precision.
-          const expectedTotalAssetsAvailableToRedeem = 169999999999999999999n
+          const expectedTotalAssetsAvailableToRedeem = 132499999999999999999n
 
           expect(availableToRedeem).to.be.greaterThan(availableToRedeemBefore)
           expect(availableToRedeem).to.be.eq(
