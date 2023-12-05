@@ -308,7 +308,7 @@ describe("Acre", () => {
           vaultYield = to1e18(100)
           // Staker A shares = 75
           // Staker B shares = 25
-          // Total assets = 75(staker A) + 25(staker) + 100(yield)
+          // Total assets = 75(staker A) + 25(staker B) + 100(yield)
           expectedTotalAssets =
             stakerA.amountToStake + stakerB.amountToStake + vaultYield
           // Total shares = 75 + 25 = 100
