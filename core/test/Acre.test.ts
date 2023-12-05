@@ -36,7 +36,7 @@ describe("Acre", () => {
     ;({ acre, tbtc, staker1, staker2 } = await loadFixture(acreFixture))
   })
 
-  describe("Staking", () => {
+  describe("stake", () => {
     const referral = ethers.encodeBytes32String("referral")
     let snapshot: SnapshotRestorer
 
