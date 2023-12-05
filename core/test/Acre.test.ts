@@ -212,7 +212,7 @@ describe("Acre", () => {
       let afterSimulatingYieldSnapshot: SnapshotRestorer
 
       before(async () => {
-        const staker1AmountToStake = to1e18(75)
+        const stakerAmountToStake = to1e18(75)
         const staker2AmountToStake = to1e18(25)
         // Infinite approval for staking contract.
         await tbtc
@@ -223,13 +223,13 @@ describe("Acre", () => {
           .approve(await acre.getAddress(), ethers.MaxUint256)
 
         // Mint tokens.
-        await tbtc.connect(staker).mint(staker.address, staker1AmountToStake)
+        await tbtc.connect(staker).mint(staker.address, stakerAmountToStake)
         await tbtc.connect(staker2).mint(staker2.address, staker2AmountToStake)
 
         stakerA = {
           signer: staker,
           address: staker.address,
-          amountToStake: staker1AmountToStake,
+          amountToStake: stakerAmountToStake,
         }
         stakerB = {
           signer: staker2,
