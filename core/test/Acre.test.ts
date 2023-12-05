@@ -106,15 +106,18 @@ describe("Acre", () => {
       })
 
       context("without referral", () => {
+        const amountToStake = to1e18(10)
         const emptyReferral = ethers.encodeBytes32String("")
         let tx: ContractTransactionResponse
 
         beforeEach(async () => {
-          await tbtc.connect(staker1).approve(await acre.getAddress(), 1)
+          await tbtc
+            .connect(staker1)
+            .approve(await acre.getAddress(), amountToStake)
 
           tx = await acre
             .connect(staker1)
-            .stake(1, staker1.address, emptyReferral)
+            .stake(amountToStake, staker1.address, emptyReferral)
         })
 
         it("should not revert", async () => {
