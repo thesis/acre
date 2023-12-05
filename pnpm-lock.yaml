@@ -169,12 +169,21 @@ importers:
       gatsby:
         specifier: ^5.12.11
         version: 5.12.11(babel-eslint@10.1.0)(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.2)
+      gatsby-plugin-manifest:
+        specifier: ^5.12.3
+        version: 5.12.3(gatsby@5.12.11)(graphql@16.8.1)
+      gatsby-plugin-react-helmet:
+        specifier: ^6.12.0
+        version: 6.12.0(gatsby@5.12.11)(react-helmet@6.1.0)
       react:
         specifier: ^18.2.0
         version: 18.2.0
       react-dom:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
+      react-helmet:
+        specifier: ^6.1.0
+        version: 6.1.0(react@18.2.0)
     devDependencies:
       '@thesis-co/eslint-config':
         specifier: ^0.6.1
@@ -188,6 +197,9 @@ importers:
       '@types/react-dom':
         specifier: ^18.2.17
         version: 18.2.17
+      '@types/react-helmet':
+        specifier: ^6.1.9
+        version: 6.1.9
       '@typescript-eslint/eslint-plugin':
         specifier: ^6.12.0
         version: 6.12.0(@typescript-eslint/parser@6.12.0)(eslint@8.54.0)(typescript@5.3.2)
@@ -5598,6 +5610,12 @@ packages:
       '@types/react': 18.2.38
     dev: true
 
+  /@types/react-helmet@6.1.9:
+    resolution: {integrity: sha512-nuOeTefP4yPTWHvjGksCBKb/4hsgJxSX7aSTjTIDFXJIkZ6Wo2Y4/cmE1FO9OlYBrHjKOer/0zLwY7s4qiQBtw==}
+    dependencies:
+      '@types/react': 18.2.38
+    dev: true
+
   /@types/react@18.2.38:
     resolution: {integrity: sha512-cBBXHzuPtQK6wNthuVMV6IjHAFkdl/FOPFIlkd81/Cd1+IqkHu/A+w4g43kaQQoYHik/ruaQBDL72HyCy1vuMw==}
     dependencies:
@@ -9606,6 +9624,22 @@ packages:
       '@parcel/transformer-js': 2.8.3(@parcel/core@2.8.3)
       '@parcel/transformer-json': 2.8.3(@parcel/core@2.8.3)
 
+  /gatsby-plugin-manifest@5.12.3(gatsby@5.12.11)(graphql@16.8.1):
+    resolution: {integrity: sha512-qpH0pSIIt7ggO7OnP127eKn6fhD1DKTzg9Aw8vaMCO8MMOQ5qfOn3ZrRCgH6DuaU1admZU18gFKlCKH+QHoGfQ==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      gatsby: ^5.0.0-next
+    dependencies:
+      '@babel/runtime': 7.23.4
+      gatsby: 5.12.11(babel-eslint@10.1.0)(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.2)
+      gatsby-core-utils: 4.12.1
+      gatsby-plugin-utils: 4.12.3(gatsby@5.12.11)(graphql@16.8.1)
+      semver: 7.5.4
+      sharp: 0.32.6
+    transitivePeerDependencies:
+      - graphql
+    dev: false
+
   /gatsby-plugin-page-creator@5.12.3(gatsby@5.12.11)(graphql@16.8.1):
     resolution: {integrity: sha512-li9jKy70h4vXNxxRrXP2DpgEx05m5E7EDOLCjAWNsm7e9EO1szixXQ0ev6Ie1SBKT6vAHAoIonet6+oFattf9w==}
     engines: {node: '>=18.0.0'}
@@ -9639,6 +9673,18 @@ packages:
       lodash.get: 4.4.2
       lodash.uniq: 4.5.0
     dev: true
+
+  /gatsby-plugin-react-helmet@6.12.0(gatsby@5.12.11)(react-helmet@6.1.0):
+    resolution: {integrity: sha512-agcBCT9H8nlpkAU3D1fUeJbjh7IMPjGO/njoa7avIYLGsQ2nyGlHwcrEmS2zBHxYKaxPkztvr47OpCdnuEIvEw==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      gatsby: ^5.0.0-next
+      react-helmet: ^5.1.3 || ^6.0.0
+    dependencies:
+      '@babel/runtime': 7.23.4
+      gatsby: 5.12.11(babel-eslint@10.1.0)(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.2)
+      react-helmet: 6.1.0(react@18.2.0)
+    dev: false
 
   /gatsby-plugin-typescript@5.12.1(gatsby@5.12.11):
     resolution: {integrity: sha512-NIigc9TnhjLam/WAQxvVLKpRgjOXzDDgetOt2F2qtO+1KjMuUgLxHdd613Z0JoSPGpi5ug0KG8U99gh9zge7jA==}
@@ -13008,6 +13054,18 @@ packages:
       use-sidecar: 1.1.2(@types/react@18.2.38)(react@18.2.0)
     dev: false
 
+  /react-helmet@6.1.0(react@18.2.0):
+    resolution: {integrity: sha512-4uMzEY9nlDlgxr61NL3XbKRy1hEkXmKNXhjbAIOVw5vcFrsdYbH2FEwcNyWvWinl103nXgzYNlns9ca+8kFiWw==}
+    peerDependencies:
+      react: '>=16.3.0'
+    dependencies:
+      object-assign: 4.1.1
+      prop-types: 15.8.1
+      react: 18.2.0
+      react-fast-compare: 3.2.2
+      react-side-effect: 2.1.2(react@18.2.0)
+    dev: false
+
   /react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
 
@@ -13062,6 +13120,14 @@ packages:
       neo-async: 2.6.2
       react: 18.2.0
       webpack: 5.89.0
+
+  /react-side-effect@2.1.2(react@18.2.0):
+    resolution: {integrity: sha512-PVjOcvVOyIILrYoyGEpDN3vmYNLdy1CajSFNt4TDsVQC5KpTijDvWVoR+/7Rz2xT978D8/ZtFceXxzsPwZEDvw==}
+    peerDependencies:
+      react: ^16.3.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.2.0
+    dev: false
 
   /react-style-singleton@2.2.1(@types/react@18.2.38)(react@18.2.0):
     resolution: {integrity: sha512-ZWj0fHEMyWkHzKYUr2Bs/4zU6XLmq9HsgBURm7g5pAVfyn49DgUiNgY2d4lXRlYSiCif9YBGpQleewkcqddc7g==}

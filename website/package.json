@@ -21,14 +21,18 @@
   },
   "dependencies": {
     "gatsby": "^5.12.11",
+    "gatsby-plugin-manifest": "^5.12.3",
+    "gatsby-plugin-react-helmet": "^6.12.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-helmet": "^6.1.0"
   },
   "devDependencies": {
     "@thesis-co/eslint-config": "^0.6.1",
     "@types/node": "^20.9.4",
     "@types/react": "^18.2.38",
     "@types/react-dom": "^18.2.17",
+    "@types/react-helmet": "^6.1.9",
     "@typescript-eslint/eslint-plugin": "^6.12.0",
     "@typescript-eslint/parser": "^6.12.0",
     "eslint": "^8.54.0",
