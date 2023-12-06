@@ -1,8 +1,7 @@
 import { StyleFunctionProps, extendTheme } from "@chakra-ui/react"
 import { mode } from "@chakra-ui/theme-tools"
 import Button from "./Button"
-import { colors } from "./utils"
-import { fontSizes, fontWeights, lineHeights } from "./utils/fonts"
+import { colors, fontSizes, fontWeights, lineHeights } from "./utils"
 
 const defaultTheme = {
   colors,
