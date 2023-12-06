@@ -3,7 +3,6 @@ import {
   Button,
   ModalBody,
   ModalFooter,
-  Text,
   Flex,
   Tabs,
   TabList,
@@ -18,6 +17,7 @@ import { useStakingFlowContext } from "../../hooks"
 import BaseModal from "./BaseModal"
 import { TokenBalance } from "../TokenBalance"
 import { BITCOIN } from "../../constants"
+import { TextMd } from "../Typography"
 
 function StakeDetails({
   text,
@@ -30,7 +30,7 @@ function StakeDetails({
 }) {
   return (
     <Flex justifyContent="space-between">
-      <Text>{text}</Text>
+      <TextMd>{text}</TextMd>
       <TokenBalance
         tokenBalance={tokenBalance}
         currency={BITCOIN}

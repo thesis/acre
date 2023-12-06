@@ -1,8 +1,9 @@
 import React from "react"
-import { HStack, Text, Flex } from "@chakra-ui/react"
+import { HStack, Flex } from "@chakra-ui/react"
 import { Currency } from "../../types"
 import { formatTokenAmount } from "../../utils"
 import { USD } from "../../constants"
+import { TextMd, TextSm } from "../Typography"
 
 type TokenBalanceProps = {
   currency: Currency
@@ -22,16 +23,16 @@ export function TokenBalance({
   return (
     <Flex direction="column" alignItems={alignItems}>
       <HStack>
-        <Text>
+        <TextMd>
           {formatTokenAmount(tokenBalance, currency.decimals, desiredDecimals)}
-        </Text>
-        <Text>{currency.symbol}</Text>
+        </TextMd>
+        <TextMd>{currency.symbol}</TextMd>
       </HStack>
       {usdBalance && (
         // TODO: Set the correct color
         <HStack color="gray.500">
-          <Text>{usdBalance}</Text>
-          <Text>{USD.symbol}</Text>
+          <TextSm>{usdBalance}</TextSm>
+          <TextSm>{USD.symbol}</TextSm>
         </HStack>
       )}
     </Flex>

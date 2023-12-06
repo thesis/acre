@@ -3,7 +3,6 @@ import {
   Button,
   HStack,
   Icon,
-  Text,
   Tooltip,
   useColorModeValue,
 } from "@chakra-ui/react"
@@ -17,6 +16,7 @@ import {
 } from "../../hooks"
 import { truncateAddress } from "../../utils"
 import { TokenBalance } from "../TokenBalance"
+import { TextMd } from "../Typography"
 
 export type ConnectButtonsProps = {
   leftIcon: typeof Icon
@@ -62,7 +62,7 @@ export default function ConnectWallet() {
   return (
     <HStack spacing={4}>
       <HStack>
-        <Text>Balance</Text>
+        <TextMd>Balance</TextMd>
         <TokenBalance
           tokenBalance={btcAccount?.balance.toString() ?? "0"}
           currency={BITCOIN}

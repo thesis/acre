@@ -6,11 +6,11 @@ import {
   ModalFooter,
   ModalHeader,
   VStack,
-  Text,
 } from "@chakra-ui/react"
 import { useRequestBitcoinAccount } from "../../hooks"
 import BaseModal from "./BaseModal"
 import ConnectBTCAccount from "../../static/images/ConnectBTCAccount.png"
+import { TextLg, TextMd } from "../Typography"
 
 export default function ConnectWalletModal() {
   const { requestAccount } = useRequestBitcoinAccount()
@@ -18,15 +18,15 @@ export default function ConnectWalletModal() {
   return (
     <BaseModal>
       <ModalHeader textAlign="center">
-        Bitcoin account not installed
+        <TextLg>Bitcoin account not installed</TextLg>
       </ModalHeader>
       <ModalBody>
         <VStack spacing={12} mt={8}>
           <Image src={ConnectBTCAccount} />
-          <Text textAlign="center">
+          <TextMd textAlign="center">
             Bitcoin account is required to make transactions for depositing and
             staking your BTC.
-          </Text>
+          </TextMd>
         </VStack>
       </ModalBody>
       <ModalFooter>
