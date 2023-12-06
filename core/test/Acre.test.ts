@@ -125,10 +125,6 @@ describe("Acre", () => {
             .stake(amountToStake, staker1.address, emptyReferral)
         })
 
-        it("should not revert", async () => {
-          await expect(tx).to.be.not.reverted
-        })
-
         it("should not emit the StakeReferral event", async () => {
           await expect(tx).to.not.emit(acre, "StakeReferral")
         })
