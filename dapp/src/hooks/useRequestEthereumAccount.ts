@@ -5,12 +5,12 @@ import { UseRequestAccountReturn } from "../types"
 import { WalletContext } from "../contexts"
 
 export function useRequestEthereumAccount(): UseRequestAccountReturn {
-  const walletContext = useContext(WalletContext)
+  const { setEthAccount } = useContext(WalletContext)
   const { account, requestAccount } = useRequestAccount()
 
   useEffect(() => {
-    walletContext?.setEthAccount(account || undefined)
-  }, [account, walletContext])
+    setEthAccount(account || undefined)
+  }, [account, setEthAccount])
 
   const requestEthereumAccount = useCallback(async () => {
     await requestAccount({ currencyIds: [CURRENCY_ID_ETHEREUM] })

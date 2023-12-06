@@ -8,9 +8,12 @@ type WalletContextValue = {
   setEthAccount: React.Dispatch<React.SetStateAction<Account | undefined>>
 }
 
-export const WalletContext = createContext<WalletContextValue | undefined>(
-  undefined,
-)
+export const WalletContext = createContext<WalletContextValue>({
+  ethAccount: undefined,
+  btcAccount: undefined,
+  setEthAccount: () => {},
+  setBtcAccount: () => {},
+})
 
 export function WalletContextProvider({
   children,
@@ -27,7 +30,7 @@ export function WalletContextProvider({
       ethAccount,
       setEthAccount,
     }),
-    [btcAccount, setBtcAccount, ethAccount, setEthAccount],
+    [btcAccount, ethAccount],
   )
 
   return (

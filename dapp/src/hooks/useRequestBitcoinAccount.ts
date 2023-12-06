@@ -5,12 +5,12 @@ import { UseRequestAccountReturn } from "../types"
 import { WalletContext } from "../contexts"
 
 export function useRequestBitcoinAccount(): UseRequestAccountReturn {
-  const walletContext = useContext(WalletContext)
+  const { setBtcAccount } = useContext(WalletContext)
   const { account, requestAccount } = useRequestAccount()
 
   useEffect(() => {
-    walletContext?.setBtcAccount(account || undefined)
-  }, [account, walletContext])
+    setBtcAccount(account || undefined)
+  }, [account, setBtcAccount])
 
   const requestBitcoinAccount = useCallback(async () => {
     await requestAccount({ currencyIds: [CURRENCY_ID_BITCOIN] })
