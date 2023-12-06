@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity ^0.8.21;
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 /// @title AcreRouter
 /// @notice AcreRouter is a contract that routes TBTC from stBTC (Acre) to
 ///         a given vault and back. Vaults supply yield strategies with TBTC that
 ///         generate yield for Bitcoin holders.
-contract AcreRouter is OwnableUpgradeable {
+contract AcreRouter is Ownable {
     struct Vault {
         bool approved;
     }
@@ -23,6 +23,8 @@ contract AcreRouter is OwnableUpgradeable {
 
     event VaultAdded(address indexed vault);
     event VaultRemoved(address indexed vault);
+
+    constructor() Ownable(msg.sender) {}
 
     /// @notice Adds a vault to the list of approved vaults.
     /// @param vault Address of the vault to add.
@@ -40,16 +42,21 @@ contract AcreRouter is OwnableUpgradeable {
     function removeVault(address vault) external onlyOwner {
         require(vaultsInfo[vault].approved, "Not a vault");
 
-        delete vaultsInfo[vault];
+        vaultsInfo[vault].approved = false;
 
         for (uint256 i = 0; i < vaults.length; i++) {
             if (vaults[i] == vault) {
                 vaults[i] = vaults[vaults.length - 1];
+                // slither-disable-next-line costly-loop
                 vaults.pop();
                 break;
             }
         }
 
         emit VaultRemoved(vault);
+    }
+
+    function vaultsLength() external view returns (uint256) {
+        return vaults.length;
     }
 }

@@ -20,9 +20,9 @@ importers:
 
   core:
     dependencies:
-      '@openzeppelin/contracts-upgradeable':
+      '@openzeppelin/contracts':
         specifier: ^5.0.0
-        version: 5.0.0(@openzeppelin/contracts@5.0.0)
+        version: 5.0.0
     devDependencies:
       '@nomicfoundation/hardhat-chai-matchers':
         specifier: ^2.0.2
@@ -4424,14 +4424,6 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
-
-  /@openzeppelin/contracts-upgradeable@5.0.0(@openzeppelin/contracts@5.0.0):
-    resolution: {integrity: sha512-D54RHzkOKHQ8xUssPgQe2d/U92mwaiBDY7qCCVGq6VqwQjsT3KekEQ3bonev+BLP30oZ0R1U6YC8/oLpizgC5Q==}
-    peerDependencies:
-      '@openzeppelin/contracts': 5.0.0
-    dependencies:
-      '@openzeppelin/contracts': 5.0.0
-    dev: false
 
   /@openzeppelin/contracts@5.0.0:
     resolution: {integrity: sha512-bv2sdS6LKqVVMLI5+zqnNrNU/CA+6z6CmwFXm/MzmOPBRSO5reEJN7z0Gbzvs0/bv/MZZXNklubpwy3v2+azsw==}
