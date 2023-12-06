@@ -6,6 +6,7 @@ import {
   LedgerWalletAPIProvider,
   StakingFlowProvider,
   WalletContextProvider,
+  DocsDrawerContextProvider,
 } from "./contexts"
 import Header from "./components/Header"
 import Overview from "./components/Overview"
@@ -28,9 +29,11 @@ function DAppProviders() {
     <LedgerWalletAPIProvider>
       <WalletContextProvider>
         <StakingFlowProvider>
-          <ChakraProvider theme={theme}>
-            <DApp />
-          </ChakraProvider>
+          <DocsDrawerContextProvider>
+            <ChakraProvider theme={theme}>
+              <DApp />
+            </ChakraProvider>
+          </DocsDrawerContextProvider>
         </StakingFlowProvider>
       </WalletContextProvider>
     </LedgerWalletAPIProvider>

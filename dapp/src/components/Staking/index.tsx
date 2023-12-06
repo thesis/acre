@@ -4,6 +4,7 @@ import StakingOverviewModal from "../Modals/StakingOverviewModal"
 import { useStakingFlowContext, useWalletContext } from "../../hooks"
 import ModalOverlay from "../ModalOverlay"
 import { HEADER_HEIGHT } from "../Header"
+import Sidebar from "../Sidebar"
 
 function Modal() {
   const { modalType } = useStakingFlowContext()
@@ -23,6 +24,7 @@ export default function Staking() {
       {/* The user has several modals in a flow.
       Let's use our own modal overlay to prevent the background flickering effect. */}
       <ModalOverlay marginTop={HEADER_HEIGHT} />
+      <Sidebar marginTop={HEADER_HEIGHT} />
     </>
   )
 }
