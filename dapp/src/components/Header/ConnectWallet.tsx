@@ -20,7 +20,7 @@ import { formatSatoshiAmount, truncateAddress } from "../../utils"
 export type ConnectButtonsProps = {
   leftIcon: typeof Icon
   rightIcon: typeof Icon
-  account: Account | undefined
+  account?: Account
   requestAccount: () => Promise<void>
 }
 
