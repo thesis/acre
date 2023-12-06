@@ -3,7 +3,7 @@ import { ChakraProvider, Flex } from "@chakra-ui/react"
 import { useDetectThemeMode } from "./hooks"
 import theme from "./theme"
 import { LedgerWalletAPIProvider, WalletContextProvider } from "./contexts"
-import Navbar from "./components/Navbar"
+import Header from "./components/Header"
 import Overview from "./components/Overview"
 
 function DApp() {
@@ -11,7 +11,7 @@ function DApp() {
 
   return (
     <Flex p={6} gap={2} direction="column">
-      <Navbar />
+      <Header />
       <Overview />
     </Flex>
   )

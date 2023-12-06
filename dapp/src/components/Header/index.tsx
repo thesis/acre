@@ -4,7 +4,7 @@ import ConnectWallet from "./ConnectWallet"
 import { ChevronRight } from "../../static/icons"
 import { USD } from "../../constants"
 
-export default function Navbar() {
+export default function Header() {
   return (
     <Flex gap={4} direction="column">
       <Flex justifyContent="end">
