@@ -1,7 +1,8 @@
 import { mode } from "@chakra-ui/theme-tools"
 import type { StyleFunctionProps } from "@chakra-ui/styled-system"
+import { ComponentSingleStyleConfig } from "@chakra-ui/react"
 
-const Button = {
+const Button: ComponentSingleStyleConfig = {
   baseStyle: {
     rounded: "none",
   },

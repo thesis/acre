@@ -1,4 +1,6 @@
-const Switch = {
+import { ComponentSingleStyleConfig } from "@chakra-ui/react"
+
+const Switch: ComponentSingleStyleConfig = {
   baseStyle: {
     track: {
       _checked: {
