@@ -20,8 +20,8 @@ export default function ConnectWalletModal() {
       <ModalHeader textAlign="center">
         <TextLg>Bitcoin account not installed</TextLg>
       </ModalHeader>
-      <ModalBody>
-        <VStack spacing={12} mt={8}>
+      <ModalBody mt={6}>
+        <VStack spacing={12}>
           <Image src={ConnectBTCAccount} />
           <TextMd textAlign="center">
             Bitcoin account is required to make transactions for depositing and

@@ -37,9 +37,9 @@ export default function StakingOverviewModal() {
       <ModalHeader textAlign="center">Staking overview</ModalHeader>
       <ModalBody>
         <Stepper
+          gap={0}
           index={2}
-          gap="0"
-          height="200px"
+          height={48}
           orientation="vertical"
           variant="basic"
         >

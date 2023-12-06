@@ -33,7 +33,6 @@ export default function ModalOverlay({ marginTop }: { marginTop?: number }) {
       zIndex="overlay"
       // Hide the element when it is no longer needed.
       display={showOverlay ? "block" : "none"}
-      // zIndex={showOverlay ? "overlay" : "-1"}
       transition={`opacity ${DELAY}ms`}
       mt={marginTop}
     />
