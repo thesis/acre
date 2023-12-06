@@ -30,7 +30,7 @@ const STEPS = [
 ]
 
 export default function StakingOverviewModal() {
-  const { closeModal } = useStakingFlowContext()
+  const { setModalType } = useStakingFlowContext()
 
   return (
     <BaseModal>
@@ -58,7 +58,7 @@ export default function StakingOverviewModal() {
         </Stepper>
       </ModalBody>
       <ModalFooter>
-        <Button width="100%" onClick={closeModal}>
+        <Button width="100%" onClick={() => setModalType("stake")}>
           Get started
         </Button>
       </ModalFooter>
