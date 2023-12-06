@@ -9,15 +9,13 @@ import {
   Tab,
   TabPanels,
   TabPanel,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
 } from "@chakra-ui/react"
-import { useStakingFlowContext } from "../../hooks"
+import { useStakingFlowContext, useWalletContext } from "../../hooks"
 import BaseModal from "./BaseModal"
 import { TokenBalance } from "../TokenBalance"
 import { BITCOIN } from "../../constants"
 import { TextMd } from "../Typography"
+import TokenBalanceInput from "../TokenBalanceInput"
 
 function StakeDetails({
   text,
@@ -41,7 +39,8 @@ function StakeDetails({
 }
 
 export default function StakeModal() {
-  const { closeModal } = useStakingFlowContext()
+  const { amount, setAmount, closeModal } = useStakingFlowContext()
+  const { btcAccount } = useWalletContext()
 
   return (
     <BaseModal>
@@ -55,11 +54,16 @@ export default function StakeModal() {
           <TabPanels>
             <TabPanel>
               <Flex gap={12} direction="column">
-                {/* TODO: Create a custom number input component */}
-                <NumberInput>
-                  <NumberInputField />
-                  <NumberInputStepper />
-                </NumberInput>
+                {/* TODO: Add a validation */}
+                <TokenBalanceInput
+                  amount={amount}
+                  // TODO: Use the real data
+                  usdAmount="45.725,91"
+                  tokenBalance={btcAccount?.balance.toString() ?? 0}
+                  currency={BITCOIN}
+                  placeholder={BITCOIN.symbol}
+                  onChange={(value) => setAmount(value)}
+                />
                 <Flex gap={4} direction="column" w="100%">
                   {/* TODO: Use the real data */}
                   <StakeDetails
