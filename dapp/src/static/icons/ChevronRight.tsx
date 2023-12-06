@@ -3,22 +3,11 @@ import { createIcon } from "@chakra-ui/react"
 
 export const ChevronRight = createIcon({
   displayName: "ChevronRight",
-  viewBox: "0 0 16 16",
+  viewBox: "0 0 20 20",
   path: (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M6 12L10 8L6 4"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="square"
-        strokeLinejoin="round"
-      />
-    </svg>
+    <path
+      fill="currentColor"
+      d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"
+    />
   ),
 })
