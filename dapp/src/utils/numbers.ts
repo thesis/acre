@@ -15,6 +15,10 @@ export function bigIntToUserAmount(
   fixedPointDecimals: number,
   desiredDecimals = 2,
 ): string {
+  if (fixedPoint === BigInt(0)) {
+    return `0.${"0".repeat(desiredDecimals)}`
+  }
+
   const fixedPointDesiredDecimalsAmount =
     fixedPoint /
     10n ** BigInt(Math.max(1, fixedPointDecimals - desiredDecimals))

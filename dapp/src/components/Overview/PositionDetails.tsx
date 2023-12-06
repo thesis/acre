@@ -1,17 +1,9 @@
 import React from "react"
-import {
-  Text,
-  Button,
-  HStack,
-  Tooltip,
-  Icon,
-  useColorModeValue,
-  Flex,
-} from "@chakra-ui/react"
-import { BITCOIN, USD } from "../../constants"
-import { Info } from "../../static/icons"
+import { Text, Button, Flex } from "@chakra-ui/react"
+import { BITCOIN } from "../../constants"
 import Staking from "../Staking"
 import { useStakingFlowContext } from "../../hooks"
+import { TokenBalance } from "../TokenBalance"
 
 export default function PositionDetails() {
   const { setModalType } = useStakingFlowContext()
@@ -21,22 +13,13 @@ export default function PositionDetails() {
       <Flex p={4} h="100%" direction="column" justifyContent="space-between">
         <Flex direction="column" gap={2}>
           <Text>Your positions</Text>
-          <Flex direction="column" alignItems="flex-start">
-            <HStack>
-              <Text>34.75</Text>
-              <Text>{BITCOIN.symbol}</Text>
-            </HStack>
-            <Flex w="100%" justifyContent="space-between">
-              <HStack>
-                <Text>1.245.148,1</Text>
-                <Text>{USD.symbol}</Text>
-              </HStack>
-              {/* TODO: Add correct text for tooltip */}
-              <Tooltip label="Template">
-                <Icon as={Info} color={useColorModeValue("black", "grey.80")} />
-              </Tooltip>
-            </Flex>
-          </Flex>
+          {/* TODO: Use the real data */}
+          <TokenBalance
+            tokenBalance="132231212"
+            currency={BITCOIN}
+            usdBalance="1.245.148,1"
+            alignItems="start"
+          />
         </Flex>
         <Flex direction="column" gap={2}>
           {/* TODO: Handle click actions */}
