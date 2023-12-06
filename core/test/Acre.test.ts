@@ -338,9 +338,6 @@ describe("Acre", () => {
           // tBTC token precision.
           const expectedAssetsToRedeem = 112499999999999999999n
 
-          expect(availableAssetsToRedeem).to.be.greaterThan(
-            staker1AmountToStake,
-          )
           expect(availableAssetsToRedeem).to.be.eq(expectedAssetsToRedeem)
         })
 
@@ -353,9 +350,6 @@ describe("Acre", () => {
           // tBTC token precision.
           const expectedAssetsToRedeem = 37499999999999999999n
 
-          expect(availableAssetsToRedeem).to.be.greaterThan(
-            staker2AmountToStake,
-          )
           expect(availableAssetsToRedeem).to.be.eq(expectedAssetsToRedeem)
         })
       })
