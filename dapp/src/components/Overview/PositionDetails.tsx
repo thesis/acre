@@ -2,7 +2,6 @@ import React from "react"
 import {
   Text,
   Button,
-  Box,
   HStack,
   Tooltip,
   Icon,
@@ -14,9 +13,9 @@ import { Info } from "../../static/icons"
 
 export default function PositionDetails() {
   return (
-    <Flex p="24px" h="100%" direction="column" justifyContent="space-between">
-      <Box>
-        <Text mb="8px">Your positions</Text>
+    <Flex p={4} h="100%" direction="column" justifyContent="space-between">
+      <Flex direction="column" gap={2}>
+        <Text>Your positions</Text>
         <Flex direction="column" alignItems="flex-start">
           <HStack>
             <Text>34.75</Text>
@@ -33,7 +32,7 @@ export default function PositionDetails() {
             </Tooltip>
           </Flex>
         </Flex>
-      </Box>
+      </Flex>
       <Flex direction="column" gap={2}>
         {/* TODO: Handle click actions */}
         <Button>Stake</Button>

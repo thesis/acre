@@ -37,7 +37,7 @@ function ConnectButton({
     <Button
       variant="outline"
       sx={styles}
-      leftIcon={<Icon as={leftIcon} h="28px" w="28px" />}
+      leftIcon={<Icon as={leftIcon} h={7} w={7} />}
       rightIcon={
         !account ? (
           // TODO: Add correct text for tooltip
@@ -59,8 +59,8 @@ export default function ConnectWallet() {
   const { btcAccount, ethAccount } = useWalletContext()
 
   return (
-    <HStack>
-      <HStack mr="16px">
+    <HStack spacing={4}>
+      <HStack>
         <Text>Balance</Text>
         <Text as="b">
           {!btcAccount || btcAccount?.balance.isZero()

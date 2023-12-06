@@ -1,5 +1,5 @@
 import React from "react"
-import { ChakraProvider, Flex } from "@chakra-ui/react"
+import { ChakraProvider } from "@chakra-ui/react"
 import { useDetectThemeMode } from "./hooks"
 import theme from "./theme"
 import { LedgerWalletAPIProvider, WalletContextProvider } from "./contexts"
@@ -10,12 +10,12 @@ function DApp() {
   useDetectThemeMode()
 
   return (
-    <Flex p={6} gap={2} direction="column">
+    <>
       <Header />
       <main>
         <Overview />
       </main>
-    </Flex>
+    </>
   )
 }
 
