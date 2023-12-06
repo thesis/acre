@@ -12,7 +12,9 @@ function DApp() {
   return (
     <Flex p={6} gap={2} direction="column">
       <Header />
-      <Overview />
+      <main>
+        <Overview />
+      </main>
     </Flex>
   )
 }
