@@ -11,36 +11,36 @@ import type { TestERC20, Acre } from "../typechain"
 import { to1e18 } from "./utils"
 
 async function acreFixture() {
-  const [staker, staker2] = await ethers.getSigners()
-  const Token = await ethers.getContractFactory("TestERC20")
-  const tbtc = await Token.deploy()
+  const [staker1, staker2] = await ethers.getSigners()
 
-  const amountToMint = to1e18(100000)
-
-  tbtc.mint(staker, amountToMint)
-  tbtc.mint(staker2, amountToMint)
+  const TestERC20 = await ethers.getContractFactory("TestERC20")
+  const tbtc = await TestERC20.deploy()
 
   const Acre = await ethers.getContractFactory("Acre")
   const acre = await Acre.deploy(await tbtc.getAddress())
 
-  return { acre, tbtc, staker, staker2 }
+  const amountToMint = to1e18(100000)
+  tbtc.mint(staker1, amountToMint)
+  tbtc.mint(staker2, amountToMint)
+
+  return { acre, tbtc, staker1, staker2 }
 }
 
 describe("Acre", () => {
   let acre: Acre
   let tbtc: TestERC20
-  let staker: HardhatEthersSigner
+  let staker1: HardhatEthersSigner
   let staker2: HardhatEthersSigner
 
   before(async () => {
-    ;({ acre, tbtc, staker, staker2 } = await loadFixture(acreFixture))
+    ;({ acre, tbtc, staker1, staker2 } = await loadFixture(acreFixture))
   })
 
-  describe("Staking", () => {
+  describe("stake", () => {
     const referral = ethers.encodeBytes32String("referral")
     let snapshot: SnapshotRestorer
 
-    context("when staking", () => {
+    context("when staking as first staker", () => {
       beforeEach(async () => {
         snapshot = await takeSnapshot()
       })
@@ -58,23 +58,28 @@ describe("Acre", () => {
         const expectedReceivedShares = amountToStake
 
         let tx: ContractTransactionResponse
+        let tbtcHolder: HardhatEthersSigner
+        let receiver: HardhatEthersSigner
 
         beforeEach(async () => {
+          tbtcHolder = staker1
+          receiver = staker2
+
           await tbtc
-            .connect(staker)
+            .connect(tbtcHolder)
             .approve(await acre.getAddress(), amountToStake)
 
           tx = await acre
-            .connect(staker)
-            .stake(amountToStake, staker.address, referral)
+            .connect(tbtcHolder)
+            .stake(amountToStake, receiver.address, referral)
         })
 
         it("should emit Deposit event", () => {
           expect(tx).to.emit(acre, "Deposit").withArgs(
             // Caller.
-            staker.address,
+            tbtcHolder.address,
             // Receiver.
-            staker.address,
+            receiver.address,
             // Staked tokens.
             amountToStake,
             // Received shares.
@@ -82,62 +87,67 @@ describe("Acre", () => {
           )
         })
 
-        it("should emit Staked event", () => {
+        it("should emit StakeReferral event", () => {
           expect(tx)
-            .to.emit(acre, "Staked")
-            .withArgs(referral, amountToStake, expectedReceivedShares)
+            .to.emit(acre, "StakeReferral")
+            .withArgs(referral, amountToStake)
         })
 
         it("should mint stBTC tokens", async () => {
           await expect(tx).to.changeTokenBalances(
             acre,
-            [staker.address],
-            [amountToStake],
+            [receiver.address],
+            [expectedReceivedShares],
           )
         })
 
         it("should transfer tBTC tokens", async () => {
           await expect(tx).to.changeTokenBalances(
             tbtc,
-            [staker.address, acre],
+            [tbtcHolder.address, acre],
             [-amountToStake, amountToStake],
           )
         })
       })
 
       context("without referral", () => {
+        const amountToStake = to1e18(10)
         const emptyReferral = ethers.encodeBytes32String("")
         let tx: ContractTransactionResponse
 
         beforeEach(async () => {
-          await tbtc.connect(staker).approve(await acre.getAddress(), 1)
+          await tbtc
+            .connect(staker1)
+            .approve(await acre.getAddress(), amountToStake)
 
           tx = await acre
-            .connect(staker)
-            .stake(1, staker.address, emptyReferral)
+            .connect(staker1)
+            .stake(amountToStake, staker1.address, emptyReferral)
         })
 
-        it("should not revert", async () => {
-          await expect(tx).to.be.not.reverted
+        it("should not emit the StakeReferral event", async () => {
+          await expect(tx).to.not.emit(acre, "StakeReferral")
         })
       })
 
       context(
         "when amount to stake is greater than the approved amount",
         () => {
-          const amountToStake = to1e18(10)
+          const approvedAmount = to1e18(10)
+          const amountToStake = approvedAmount + 1n
+
           beforeEach(async () => {
             await tbtc
-              .connect(staker)
-              .approve(await acre.getAddress(), amountToStake)
+              .connect(staker1)
+              .approve(await acre.getAddress(), approvedAmount)
           })
 
           it("should revert", async () => {
             await expect(
               acre
-                .connect(staker)
-                .stake(amountToStake + 1n, staker.address, referral),
-            ).to.be.reverted
+                .connect(staker1)
+                .stake(amountToStake, staker1.address, referral),
+            ).to.be.revertedWithCustomError(tbtc, "ERC20InsufficientAllowance")
           })
         },
       )
@@ -147,13 +157,15 @@ describe("Acre", () => {
 
         beforeEach(async () => {
           await tbtc
-            .connect(staker)
+            .connect(staker1)
             .approve(await acre.getAddress(), amountToStake)
         })
 
         it("should not revert", async () => {
           await expect(
-            acre.connect(staker).stake(amountToStake, staker.address, referral),
+            acre
+              .connect(staker1)
+              .stake(amountToStake, staker1.address, referral),
           ).to.not.be.reverted
         })
       })
@@ -163,13 +175,13 @@ describe("Acre", () => {
 
         beforeEach(async () => {
           await tbtc
-            .connect(staker)
+            .connect(staker1)
             .approve(await acre.getAddress(), amountToStake)
         })
 
         it("should revert", async () => {
           await expect(
-            acre.connect(staker).stake(amountToStake, ZeroAddress, referral),
+            acre.connect(staker1).stake(amountToStake, ZeroAddress, referral),
           ).to.be.revertedWithCustomError(acre, "ERC20InvalidReceiver")
         })
       })
@@ -181,19 +193,19 @@ describe("Acre", () => {
 
           beforeEach(async () => {
             await tbtc
-              .connect(staker)
+              .connect(staker1)
               .approve(await acre.getAddress(), amountToStake)
 
             await acre
-              .connect(staker)
-              .stake(amountToStake, staker.address, referral)
+              .connect(staker1)
+              .stake(amountToStake, staker1.address, referral)
           })
 
           it("should revert", async () => {
             await expect(
               acre
-                .connect(staker)
-                .stake(amountToStake, staker.address, referral),
+                .connect(staker1)
+                .stake(amountToStake, staker1.address, referral),
             ).to.be.revertedWithCustomError(acre, "ERC20InsufficientAllowance")
           })
         },
@@ -201,41 +213,22 @@ describe("Acre", () => {
     })
 
     context("when there are two stakers, A and B ", () => {
-      type Staker = {
-        signer: HardhatEthersSigner
-        address: string
-        amountToStake: bigint
-      }
-      let stakerA: Staker
-      let stakerB: Staker
+      const staker1AmountToStake = to1e18(75)
+      const staker2AmountToStake = to1e18(25)
       let afterStakesSnapshot: SnapshotRestorer
       let afterSimulatingYieldSnapshot: SnapshotRestorer
 
       before(async () => {
-        const stakerAmountToStake = to1e18(75)
-        const staker2AmountToStake = to1e18(25)
-        // Infinite approval for staking contract.
         await tbtc
-          .connect(staker)
-          .approve(await acre.getAddress(), ethers.MaxUint256)
+          .connect(staker1)
+          .approve(await acre.getAddress(), staker1AmountToStake)
         await tbtc
           .connect(staker2)
-          .approve(await acre.getAddress(), ethers.MaxUint256)
+          .approve(await acre.getAddress(), staker2AmountToStake)
 
         // Mint tokens.
-        await tbtc.connect(staker).mint(staker.address, stakerAmountToStake)
+        await tbtc.connect(staker1).mint(staker1.address, staker1AmountToStake)
         await tbtc.connect(staker2).mint(staker2.address, staker2AmountToStake)
-
-        stakerA = {
-          signer: staker,
-          address: staker.address,
-          amountToStake: stakerAmountToStake,
-        }
-        stakerB = {
-          signer: staker2,
-          address: staker2.address,
-          amountToStake: staker2AmountToStake,
-        }
       })
 
       context(
@@ -249,15 +242,15 @@ describe("Acre", () => {
             it("should stake tokens correctly", async () => {
               await expect(
                 acre
-                  .connect(stakerA.signer)
-                  .stake(stakerA.amountToStake, stakerA.address, referral),
+                  .connect(staker1)
+                  .stake(staker1AmountToStake, staker1.address, referral),
               ).to.be.not.reverted
             })
 
             it("should receive shares equal to a staked amount", async () => {
-              const shares = await acre.balanceOf(stakerA.address)
+              const shares = await acre.balanceOf(staker1.address)
 
-              expect(shares).to.eq(stakerA.amountToStake)
+              expect(shares).to.eq(staker1AmountToStake)
             })
           })
 
@@ -265,15 +258,15 @@ describe("Acre", () => {
             it("should stake tokens correctly", async () => {
               await expect(
                 acre
-                  .connect(stakerB.signer)
-                  .stake(stakerB.amountToStake, stakerB.address, referral),
+                  .connect(staker2)
+                  .stake(staker2AmountToStake, staker2.address, referral),
               ).to.be.not.reverted
             })
 
             it("should receive shares equal to a staked amount", async () => {
-              const shares = await acre.balanceOf(stakerB.address)
+              const shares = await acre.balanceOf(staker2.address)
 
-              expect(shares).to.eq(stakerB.amountToStake)
+              expect(shares).to.eq(staker2AmountToStake)
             })
           })
         },
@@ -287,32 +280,25 @@ describe("Acre", () => {
         it("the total assets amount should be equal to all staked tokens", async () => {
           const totalAssets = await acre.totalAssets()
 
-          expect(totalAssets).to.eq(
-            stakerA.amountToStake + stakerB.amountToStake,
-          )
+          expect(totalAssets).to.eq(staker1AmountToStake + staker2AmountToStake)
         })
       })
 
       context("when vault earns yield", () => {
-        let stakerASharesBefore: bigint
-        let stakerBSharesBefore: bigint
+        let staker1SharesBefore: bigint
+        let staker2SharesBefore: bigint
         let vaultYield: bigint
-        let expectedTotalAssets: bigint
-        let expectedTotalSupply: bigint
 
         before(async () => {
-          await afterStakesSnapshot.restore()
-
-          stakerASharesBefore = await acre.balanceOf(stakerA.address)
-          stakerBSharesBefore = await acre.balanceOf(stakerB.address)
-          vaultYield = to1e18(100)
+          // Current state:
           // Staker A shares = 75
           // Staker B shares = 25
-          // Total assets = 75(staker A) + 25(staker B) + 100(yield)
-          expectedTotalAssets =
-            stakerA.amountToStake + stakerB.amountToStake + vaultYield
-          // Total shares = 75 + 25 = 100
-          expectedTotalSupply = stakerA.amountToStake + stakerB.amountToStake
+          // Total assets = 75(staker A) + 25(staker B) + 50(yield)
+          await afterStakesSnapshot.restore()
+
+          staker1SharesBefore = await acre.balanceOf(staker1.address)
+          staker2SharesBefore = await acre.balanceOf(staker2.address)
+          vaultYield = to1e18(50)
 
           // Simulating yield returned from strategies. The vault now contains
           // more tokens than deposited which causes the exchange rate to
@@ -326,105 +312,88 @@ describe("Acre", () => {
 
         it("the vault should hold more assets", async () => {
           expect(await acre.totalAssets()).to.be.eq(
-            stakerA.amountToStake + stakerB.amountToStake + vaultYield,
+            staker1AmountToStake + staker2AmountToStake + vaultYield,
           )
         })
 
         it("the staker's shares should be the same", async () => {
-          expect(await acre.balanceOf(stakerA.address)).to.be.eq(
-            stakerASharesBefore,
+          expect(await acre.balanceOf(staker1.address)).to.be.eq(
+            staker1SharesBefore,
           )
-          expect(await acre.balanceOf(stakerB.address)).to.be.eq(
-            stakerBSharesBefore,
+          expect(await acre.balanceOf(staker2.address)).to.be.eq(
+            staker2SharesBefore,
           )
         })
 
         it("the staker A should be able to redeem more tokens than before", async () => {
-          const shares = await acre.balanceOf(stakerA.address)
+          const shares = await acre.balanceOf(staker1.address)
           const availableAssetsToRedeem = await acre.previewRedeem(shares)
 
-          // Expected amount w/o rounding: 75 * 200 / 100 = 150
-          // Expected amount w/ support for rounding: 149999999999999999999 in
+          // Expected amount w/o rounding: 75 * 150 / 100 = 112.5
+          // Expected amount w/ support for rounding: 112499999999999999999 in
           // tBTC token precision.
-          const expectedAssetsToRedeem =
-            (shares * (expectedTotalAssets + 1n)) / (expectedTotalSupply + 1n)
+          const expectedAssetsToRedeem = 112499999999999999999n
 
-          expect(availableAssetsToRedeem).to.be.greaterThan(
-            stakerA.amountToStake,
-          )
           expect(availableAssetsToRedeem).to.be.eq(expectedAssetsToRedeem)
         })
 
         it("the staker B should be able to redeem more tokens than before", async () => {
-          const shares = await acre.balanceOf(stakerB.address)
+          const shares = await acre.balanceOf(staker2.address)
           const availableAssetsToRedeem = await acre.previewRedeem(shares)
 
-          // Expected amount w/o rounding: 25 * 200 / 100 = 50
-          // Expected amount w/ support for rounding: 49999999999999999999 in
+          // Expected amount w/o rounding: 25 * 150 / 100 = 37.5
+          // Expected amount w/ support for rounding: 37499999999999999999 in
           // tBTC token precision.
-          const expectedAssetsToRedeem =
-            (shares * (expectedTotalAssets + 1n)) / (expectedTotalSupply + 1n)
+          const expectedAssetsToRedeem = 37499999999999999999n
 
-          expect(availableAssetsToRedeem).to.be.greaterThan(
-            stakerB.amountToStake,
-          )
           expect(availableAssetsToRedeem).to.be.eq(expectedAssetsToRedeem)
         })
       })
 
       context("when staker A stakes more tokens", () => {
         const newAmountToStake = to1e18(20)
+        // Current state:
+        // Total assets = 75(staker A) + 25(staker B) + 50(yield)
+        // Total shares = 75 + 25 = 100
+        // 20 * 100 / 150 = 13.(3) -> 13333333333333333333 in stBTC token
+        /// precision
+        const expectedSharesToMint = 13333333333333333333n
         let sharesBefore: bigint
         let availableToRedeemBefore: bigint
-        let totalAssetsBefore: bigint
-        let totalSupplyBefore: bigint
-        let expectedSharesToMint: bigint
-        let expectedTotalSupply: bigint
-        let expectedTotalAssets: bigint
 
         before(async () => {
-          // Current state:
-          // Total assets = 75(staker A) + 25(staker B) + 100(yield)
-          // Total shares = 75 + 25 = 100
           await afterSimulatingYieldSnapshot.restore()
 
-          sharesBefore = await acre.balanceOf(stakerA.address)
+          sharesBefore = await acre.balanceOf(staker1.address)
           availableToRedeemBefore = await acre.previewRedeem(sharesBefore)
-          totalAssetsBefore = await acre.totalAssets()
-          totalSupplyBefore = await acre.totalSupply()
 
-          tbtc.mint(stakerA.address, newAmountToStake)
+          tbtc.mint(staker1.address, newAmountToStake)
 
-          expectedSharesToMint =
-            (newAmountToStake * (totalSupplyBefore + 1n)) /
-            (totalAssetsBefore + 1n)
-
-          await acre.stake(newAmountToStake, stakerA.address, referral)
+          await tbtc
+            .connect(staker1)
+            .approve(await acre.getAddress(), newAmountToStake)
 
           // State after stake:
-          // Total assets = 75(staker A) + 25(staker B) + 100(yield) + 20(staker
-          // A) = 220
-          // Total shares = 75 + 25 + 10 = 110
-          expectedTotalAssets = totalAssetsBefore + newAmountToStake
-          expectedTotalSupply = totalSupplyBefore + expectedSharesToMint
+          // Total assets = 75(staker A) + 25(staker B) + 50(yield) + 20(staker
+          // A) = 170
+          // Total shares = 75 + 25 + 13.(3) = 113.(3)
+          await acre.stake(newAmountToStake, staker1.address, referral)
         })
 
         it("should receive more shares", async () => {
-          const shares = await acre.balanceOf(stakerA.address)
+          const shares = await acre.balanceOf(staker1.address)
 
-          expect(shares).to.be.greaterThan(sharesBefore)
           expect(shares).to.be.eq(sharesBefore + expectedSharesToMint)
         })
 
         it("should be able to redeem more tokens than before", async () => {
-          const shares = await acre.balanceOf(stakerA.address)
+          const shares = await acre.balanceOf(staker1.address)
           const availableToRedeem = await acre.previewRedeem(shares)
 
-          // Expected amount w/o rounding: 85 * 220 / 110 = 170
-          // Expected amount w/ support for rounding: 169999999999999999999 in
+          // Expected amount w/o rounding: 88.(3) * 170 / 113.(3) = 132.5
+          // Expected amount w/ support for rounding: 132499999999999999999 in
           // tBTC token precision.
-          const expectedTotalAssetsAvailableToRedeem =
-            (shares * (expectedTotalAssets + 1n)) / (expectedTotalSupply + 1n)
+          const expectedTotalAssetsAvailableToRedeem = 132499999999999999999n
 
           expect(availableToRedeem).to.be.greaterThan(availableToRedeemBefore)
           expect(availableToRedeem).to.be.eq(

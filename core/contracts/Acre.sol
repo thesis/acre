@@ -4,14 +4,18 @@ pragma solidity ^0.8.21;
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
 
 /// @title Acre
-/// @notice Implementation of the ERR-4626 tokenized vault standard. ERC-4626 is
-///         a standard to optimize and unify the technical parameters of
-///         yield-bearing vaults. This contract allows the minting and burning
-///         of shares, represented as standard ERC20 token, in exchange for tBTC
-///         tokens.
-/// @dev ERC-4626 standard extends the ERC-20 token.
+/// @notice This contract implements the ERC-4626 tokenized vault standard. By
+///         staking tBTC, users acquire a liquid staking token called stBTC,
+///         commonly referred to as "shares". The staked tBTC is securely
+///         deposited into Acre's vaults, where it generates yield over time.
+///         Users have the flexibility to redeem stBTC, enabling them to
+///         withdraw their staked tBTC along with the accrued yield.
+/// @dev ERC-4626 is a standard to optimize and unify the technical parameters
+///      of yield-bearing vaults. This contract facilitates the minting and
+///      burning of shares (stBTC), which are represented as standard ERC20
+///      tokens, providing a seamless exchange with tBTC tokens.
 contract Acre is ERC4626 {
-    event Staked(bytes32 indexed referral, uint256 assets, uint256 shares);
+    event StakeReferral(bytes32 indexed referral, uint256 assets);
 
     constructor(
         IERC20 tbtc
@@ -19,7 +23,8 @@ contract Acre is ERC4626 {
 
     /// @notice Stakes a given amount of tBTC token and mints shares to a
     ///         receiver.
-    /// @dev This function calls `deposit` function from `ERC4626` contract.
+    /// @dev This function calls `deposit` function from `ERC4626` contract. The
+    ///      amount of the assets has to be pre-approved in the tBTC contract.
     /// @param assets Approved amount for the transfer and stake.
     /// @param receiver The address to which the shares will be minted.
     /// @param referral Data used for referral program.
@@ -32,7 +37,9 @@ contract Acre is ERC4626 {
         // TODO: revisit the type of referral.
         uint256 shares = deposit(assets, receiver);
 
-        emit Staked(referral, assets, shares);
+        if (referral != bytes32(0)) {
+            emit StakeReferral(referral, assets);
+        }
 
         return shares;
     }
