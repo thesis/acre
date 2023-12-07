@@ -35,6 +35,20 @@ contract Acre is ERC4626 {
         });
     }
 
+    function deposit(
+        uint256 assets,
+        address receiver
+    ) public override returns (uint256) {
+        require(
+            assets >= stakingParameters.minimumDepositAmount,
+            "Amount is less than minimum"
+        );
+
+        uint256 shares = super.deposit(assets, receiver);
+
+        return shares;
+    }
+
     /// @notice Stakes a given amount of tBTC token and mints shares to a
     ///         receiver.
     /// @dev This function calls `deposit` function from `ERC4626` contract. The

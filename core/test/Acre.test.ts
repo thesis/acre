@@ -161,12 +161,59 @@ describe("Acre", () => {
             .approve(await acre.getAddress(), amountToStake)
         })
 
-        it("should not revert", async () => {
+        it("should revert", async () => {
           await expect(
             acre
               .connect(staker1)
               .stake(amountToStake, staker1.address, referral),
-          ).to.not.be.reverted
+          ).to.revertedWith("Amount is less than minimum")
+        })
+      })
+
+      context("when amount to stake is less than minimum", () => {
+        let amountToStake: bigint
+
+        beforeEach(async () => {
+          const { minimumDepositAmount } = await acre.stakingParameters()
+          amountToStake = minimumDepositAmount - 1n
+
+          await tbtc
+            .connect(staker1)
+            .approve(await acre.getAddress(), amountToStake)
+        })
+
+        it("should revert", async () => {
+          await expect(
+            acre
+              .connect(staker1)
+              .stake(amountToStake, staker1.address, referral),
+          ).to.revertedWith("Amount is less than minimum")
+        })
+      })
+
+      context("when amount to stake is equal to the minimum amount", () => {
+        let amountToStake: bigint
+        let tx: ContractTransactionResponse
+
+        beforeEach(async () => {
+          const { minimumDepositAmount } = await acre.stakingParameters()
+          amountToStake = minimumDepositAmount
+
+          await tbtc
+            .connect(staker1)
+            .approve(await acre.getAddress(), amountToStake)
+
+          tx = await acre
+            .connect(staker1)
+            .stake(amountToStake, staker1.address, referral)
+        })
+
+        it("should receive shares equal to the staked amount", async () => {
+          await expect(tx).to.changeTokenBalances(
+            acre,
+            [staker1.address],
+            [amountToStake],
+          )
         })
       })
 
