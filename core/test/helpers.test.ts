@@ -29,6 +29,12 @@ describe("Helpers", () => {
         expect(isNonZeroAddress(ADDRESS_ZERO)).to.be.false
       })
 
+      it("should throw an error for empty string", () => {
+        expect(() => {
+          isNonZeroAddress("")
+        }).to.throw("invalid address")
+      })
+
       it("should throw an error for address containing invalid character", () => {
         expect(() => {
           isNonZeroAddress(ADDRESS_INVALID)
