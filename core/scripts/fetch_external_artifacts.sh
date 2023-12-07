@@ -35,7 +35,8 @@ fetch_external_artifact() {
         --pack-destination=${TMP_DIR} \
         ${package} |
         # Extract deployment artifact to the destination directory.
-        xargs -I{} tar -zxf ${TMP_DIR}/{} -C ${destination_dir} --strip-components 2 package/artifacts/${contractName}.json
+        xargs -I{} tar -zxf ${TMP_DIR}/{} -C ${destination_dir} \
+            --strip-components 2 package/artifacts/${contractName}.json
 
     printf "Succesfully fetched ${contractName} contract artifact from ${package} to ${destination_dir}\n"
 }
