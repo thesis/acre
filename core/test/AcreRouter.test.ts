@@ -62,11 +62,11 @@ describe("AcreRouter", () => {
         expect(isVault1Approved).to.equal(true)
 
         expect(await acreRouter.vaults(1)).to.equal(vault2)
-        const isVault2Approved = await acreRouter.vaultsInfo(vault1)
+        const isVault2Approved = await acreRouter.vaultsInfo(vault2)
         expect(isVault2Approved).to.equal(true)
 
         expect(await acreRouter.vaults(2)).to.equal(vault3)
-        const isVault3Approved = await acreRouter.vaultsInfo(vault1)
+        const isVault3Approved = await acreRouter.vaultsInfo(vault3)
         expect(isVault3Approved).to.equal(true)
       })
 
