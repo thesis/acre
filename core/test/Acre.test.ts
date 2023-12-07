@@ -481,4 +481,42 @@ describe("Acre", () => {
       })
     })
   })
+
+  describe("mint", () => {
+    context("when staker wants to mint more shares than allowed", () => {
+      let sharesToMint: bigint
+
+      beforeEach(async () => {
+        const maxMint = await acre.maxMint(staker1.address)
+
+        sharesToMint = maxMint + 1n
+      })
+
+      it("should take into account the max total assets parameter and revert", async () => {
+        await expect(
+          acre.mint(sharesToMint, staker1.address),
+        ).to.be.revertedWithCustomError(acre, "ERC4626ExceededMaxMint")
+      })
+    })
+
+    context(
+      "when staker wants to mint less shares than is equal to the min deposit amount",
+      () => {
+        let sharesToMint: bigint
+
+        beforeEach(async () => {
+          const { minimumDepositAmount } = await acre.stakingParameters()
+          const previewDeposit = await acre.previewDeposit(minimumDepositAmount)
+
+          sharesToMint = previewDeposit - 1n
+        })
+
+        it("should take into account the min deposit amount parameter and revert", async () => {
+          await expect(
+            acre.mint(sharesToMint, staker1.address),
+          ).to.be.revertedWith("Amount is less than minimum")
+        })
+      },
+    )
+  })
 })

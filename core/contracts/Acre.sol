@@ -49,6 +49,20 @@ contract Acre is ERC4626 {
         return shares;
     }
 
+    function mint(
+        uint256 shares,
+        address receiver
+    ) public override returns (uint256) {
+        uint256 assets = super.mint(shares, receiver);
+
+        require(
+            assets >= stakingParameters.minimumDepositAmount,
+            "Amount is less than minimum"
+        );
+
+        return assets;
+    }
+
     /// @notice Stakes a given amount of tBTC token and mints shares to a
     ///         receiver.
     /// @dev This function calls `deposit` function from `ERC4626` contract. The
@@ -80,5 +94,14 @@ contract Acre is ERC4626 {
     /// @return The maximum amount of the tBTC token.
     function maxDeposit(address) public view override returns (uint256) {
         return stakingParameters.maximumTotalAssets - totalAssets();
+    }
+
+    /// @notice Returns the maximum amount of the vault shares that can be
+    ///         minted for the receiver, through a mint call.
+    /// @dev Since the Acre contract limits the maximum total tBTC tokens this
+    ///      function converts the maximum deposit amount to shares.
+    /// @return The maximum amount of the vault shares.
+    function maxMint(address receiver) public view override returns (uint256) {
+        return previewDeposit(maxDeposit(receiver));
     }
 }
