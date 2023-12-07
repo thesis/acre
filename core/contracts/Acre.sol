@@ -71,4 +71,14 @@ contract Acre is ERC4626 {
 
         return shares;
     }
+
+    /// @notice Returns the maximum amount of the tBTC token that can be
+    ///         deposited into the vault for the receiver, through a deposit
+    ///         call. It takes into account the staking parameter, maximum total
+    ///         assets, which determines the total amount of tBTC token held by
+    ///         Acre.
+    /// @return The maximum amount of the tBTC token.
+    function maxDeposit(address) public view override returns (uint256) {
+        return stakingParameters.maximumTotalAssets - totalAssets();
+    }
 }
