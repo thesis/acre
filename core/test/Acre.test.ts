@@ -286,34 +286,30 @@ describe("Acre", () => {
           })
 
           context("when staker A stakes tokens", () => {
-            it("should stake tokens correctly", async () => {
-              await expect(
-                acre
-                  .connect(staker1)
-                  .stake(staker1AmountToStake, staker1.address, referral),
-              ).to.be.not.reverted
-            })
-
             it("should receive shares equal to a staked amount", async () => {
-              const shares = await acre.balanceOf(staker1.address)
+              const tx = await acre
+                .connect(staker1)
+                .stake(staker1AmountToStake, staker1.address, referral)
 
-              expect(shares).to.eq(staker1AmountToStake)
+              await expect(tx).to.changeTokenBalances(
+                acre,
+                [staker1.address],
+                [staker1AmountToStake],
+              )
             })
           })
 
           context("when staker B stakes tokens", () => {
-            it("should stake tokens correctly", async () => {
-              await expect(
-                acre
-                  .connect(staker2)
-                  .stake(staker2AmountToStake, staker2.address, referral),
-              ).to.be.not.reverted
-            })
-
             it("should receive shares equal to a staked amount", async () => {
-              const shares = await acre.balanceOf(staker2.address)
+              const tx = await acre
+                .connect(staker2)
+                .stake(staker2AmountToStake, staker2.address, referral)
 
-              expect(shares).to.eq(staker2AmountToStake)
+              await expect(tx).to.changeTokenBalances(
+                acre,
+                [staker2.address],
+                [staker2AmountToStake],
+              )
             })
           })
         },
