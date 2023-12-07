@@ -25,7 +25,9 @@ function ConnectButton({
   account,
   requestAccount,
 }: ConnectButtonsProps) {
-  const styles = !account ? { color: "error", borderColor: "error" } : undefined
+  const styles = !account
+    ? { color: "red.400", borderColor: "red.400" }
+    : undefined
   return (
     <Button
       variant="outline"
