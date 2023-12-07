@@ -17,6 +17,15 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
 contract Acre is ERC4626 {
     event StakeReferral(bytes32 indexed referral, uint256 assets);
 
+    struct StakingParameters {
+        // Minimum amount for a single deposit operation.
+        uint256 minimumDepositAmount;
+        // Maximum total amount of tBTC token held by Acre.
+        uint256 maximumTotalAssets;
+    }
+
+    StakingParameters public stakingParameters;
+
     constructor(
         IERC20 tbtc
     ) ERC4626(tbtc) ERC20("Acre Staked Bitcoin", "stBTC") {}
