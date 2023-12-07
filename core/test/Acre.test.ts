@@ -234,7 +234,7 @@ describe("Acre", () => {
       })
 
       context(
-        "when a staker approved and staked tokens and wants to stake more but w/o another apporval",
+        "when a staker approved and staked tokens and wants to stake more but w/o another approval",
         () => {
           const amountToStake = to1e18(10)
 
