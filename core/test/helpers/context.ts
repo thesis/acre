@@ -2,7 +2,7 @@ import { deployments } from "hardhat"
 
 import { getDeployedContract } from "./contract"
 
-import type { Acre, TestERC20 } from "../../typechain"
+import type { Acre, AcreRouter, TestERC20 } from "../../typechain"
 
 // eslint-disable-next-line import/prefer-default-export
 export async function deployment() {
@@ -10,6 +10,7 @@ export async function deployment() {
 
   const tbtc: TestERC20 = await getDeployedContract("TBTC")
   const acre: Acre = await getDeployedContract("Acre")
+  const acreRouter: AcreRouter = await getDeployedContract("AcreRouter")
 
-  return { tbtc, acre }
+  return { tbtc, acre, acreRouter }
 }
