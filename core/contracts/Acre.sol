@@ -15,8 +15,6 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
 ///      burning of shares (stBTC), which are represented as standard ERC20
 ///      tokens, providing a seamless exchange with tBTC tokens.
 contract Acre is ERC4626 {
-    event StakeReferral(bytes32 indexed referral, uint256 assets);
-
     struct StakingParameters {
         // Minimum amount for a single deposit operation.
         uint256 minimumDepositAmount;
@@ -26,9 +24,16 @@ contract Acre is ERC4626 {
 
     StakingParameters public stakingParameters;
 
+    event StakeReferral(bytes32 indexed referral, uint256 assets);
+
     constructor(
         IERC20 tbtc
-    ) ERC4626(tbtc) ERC20("Acre Staked Bitcoin", "stBTC") {}
+    ) ERC4626(tbtc) ERC20("Acre Staked Bitcoin", "stBTC") {
+        stakingParameters = StakingParameters({
+            minimumDepositAmount: 10000000000000000, // 0.01 tBTC
+            maximumTotalAssets: 25000000000000000000 // 25 tBTC
+        });
+    }
 
     /// @notice Stakes a given amount of tBTC token and mints shares to a
     ///         receiver.
