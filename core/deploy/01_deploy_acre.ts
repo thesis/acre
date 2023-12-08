@@ -1,13 +1,24 @@
 import type { HardhatRuntimeEnvironment } from "hardhat/types"
 import type { DeployFunction } from "hardhat-deploy/types"
 
-const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-  const { deployments } = hre
-  const { log } = deployments
+const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
+  const { getNamedAccounts, deployments } = hre
+  const { deployer } = await getNamedAccounts()
 
-  log("Deploying Acre contract")
+  const tbtc = await deployments.get("TBTC")
+
+  await deployments.deploy("Acre", {
+    from: deployer,
+    args: [tbtc.address],
+    log: true,
+    waitConfirmations: 1,
+  })
+
+  // TODO: Add Etherscan verification
+  // TODO: Add Tenderly verification
 }
 
 export default func
 
 func.tags = ["Acre"]
+func.dependencies = ["TBTC"]

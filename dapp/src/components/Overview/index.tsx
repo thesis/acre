@@ -3,7 +3,6 @@ import {
   Button,
   Flex,
   Grid,
-  GridItem,
   Icon,
   Switch,
   useColorModeValue,
@@ -33,15 +32,9 @@ export default function Overview() {
         h="80vh"
         gap={4}
       >
-        <GridItem bg={bg} area="position-details">
-          <PositionDetails />
-        </GridItem>
-        <GridItem bg={bg} area="statistics">
-          <Statistics />
-        </GridItem>
-        <GridItem bg={bg} area="transaction-history">
-          <TransactionHistory />
-        </GridItem>
+        <PositionDetails bg={bg} gridArea="position-details" />
+        <Statistics bg={bg} gridArea="statistics" />
+        <TransactionHistory bg={bg} gridArea="transaction-history" />
       </Grid>
     </Flex>
   )
