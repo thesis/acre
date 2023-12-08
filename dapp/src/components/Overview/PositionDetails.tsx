@@ -13,8 +13,13 @@ import {
 } from "@chakra-ui/react"
 import { BITCOIN, USD } from "../../constants"
 import { Info } from "../../static/icons"
+import { useModal, useSidebar } from "../../hooks"
+import Staking from "../Staking"
 
 export default function PositionDetails(props: CardProps) {
+  const { openModal } = useModal()
+  const { onOpen: openSidebar } = useSidebar()
+
   return (
     <Card {...props}>
       <CardBody>
@@ -34,9 +39,17 @@ export default function PositionDetails(props: CardProps) {
       </CardBody>
       <CardFooter flexDirection="column" gap={2}>
         {/* TODO: Handle click actions */}
-        <Button>Stake</Button>
+        <Button
+          onClick={() => {
+            openSidebar()
+            openModal("overview")
+          }}
+        >
+          Stake
+        </Button>
         <Button variant="outline">Withdraw</Button>
       </CardFooter>
+      <Staking />
     </Card>
   )
 }

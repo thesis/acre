@@ -2,7 +2,8 @@ import { StyleFunctionProps, Tooltip, extendTheme } from "@chakra-ui/react"
 import { mode } from "@chakra-ui/theme-tools"
 import Button from "./Button"
 import Switch from "./Switch"
-import { colors, fontSizes, fontWeights, lineHeights } from "./utils"
+import { colors, fontSizes, fontWeights, lineHeights, zIndices } from "./utils"
+import Drawer from "./Drawer"
 
 // Currently, there is no possibility to set all tooltips with hasArrow by defaultProps.
 // Let's override the defaultProps as follows.
@@ -13,6 +14,7 @@ const defaultTheme = {
   fontSizes,
   fontWeights,
   lineHeights,
+  zIndices,
   styles: {
     global: (props: StyleFunctionProps) => ({
       body: {
@@ -24,6 +26,7 @@ const defaultTheme = {
   components: {
     Button,
     Switch,
+    Drawer,
   },
 }
 
