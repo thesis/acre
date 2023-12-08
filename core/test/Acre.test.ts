@@ -424,7 +424,9 @@ describe("Acre", () => {
               // Total assets = 7(staker A) + 3(staker B) + 5(yield) + 2(staker
               // A) = 17
               // Total shares = 7 + 3 + 1.(3) = 11.(3)
-              await acre.stake(newAmountToStake, staker1.address, referral)
+              await acre
+                .connect(staker1)
+                .stake(newAmountToStake, staker1.address, referral)
             })
 
             it("should receive more shares", async () => {
@@ -505,7 +507,7 @@ describe("Acre", () => {
 
       it("should take into account the max total assets parameter and revert", async () => {
         await expect(
-          acre.mint(sharesToMint, staker1.address),
+          acre.connect(staker1).mint(sharesToMint, staker1.address),
         ).to.be.revertedWithCustomError(acre, "ERC4626ExceededMaxMint")
       })
     })
@@ -520,11 +522,14 @@ describe("Acre", () => {
           const previewDeposit = await acre.previewDeposit(minimumDepositAmount)
 
           sharesToMint = previewDeposit - 1n
+          await tbtc
+            .connect(staker1)
+            .approve(await acre.getAddress(), minimumDepositAmount)
         })
 
         it("should take into account the min deposit amount parameter and revert", async () => {
           await expect(
-            acre.mint(sharesToMint, staker1.address),
+            acre.connect(staker1).mint(sharesToMint, staker1.address),
           ).to.be.revertedWith("Amount is less than minimum")
         })
       },
