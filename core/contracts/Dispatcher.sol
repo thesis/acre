@@ -27,6 +27,8 @@ contract Dispatcher is Router, Ownable {
     function migrateShares(IERC4626[] calldata _vaults) public onlyOwner {
         address newDispatcher = address(acre.dispatcher());
 
+        require(newDispatcher != address(0), "new dispatcher address cannot be zero address");
+
         for (uint i=0; i<_vaults.length; i++) {
             _vaults[i].transfer(newDispatcher, _vaults[i].balanceOf(address(this)));
         }
