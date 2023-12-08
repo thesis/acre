@@ -18,7 +18,7 @@ const Button: ComponentSingleStyleConfig = {
       borderColor: mode("grey.700", "grey.700")(props),
     }),
     link: (props: StyleFunctionProps) => ({
-      color: mode("black", "grey.50")(props),
+      color: mode("grey.700", "grey.700")(props),
       textDecoration: "underline",
     }),
   },

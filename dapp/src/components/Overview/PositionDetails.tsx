@@ -22,7 +22,7 @@ export default function PositionDetails(props: CardProps) {
           <Text>Your positions</Text>
           {/* TODO: Add correct text for tooltip */}
           <Tooltip label="Template">
-            <Icon as={Info} color={useColorModeValue("black", "grey.80")} />
+            <Icon as={Info} color={useColorModeValue("grey.700", "grey.700")} />
           </Tooltip>
         </HStack>
         <Text>
