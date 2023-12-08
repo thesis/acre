@@ -89,9 +89,7 @@ contract Acre is ERC4626, Ownable {
             "Amount is less than minimum"
         );
 
-        uint256 shares = super.deposit(assets, receiver);
-
-        return shares;
+        return super.deposit(assets, receiver);
     }
 
     function mint(
