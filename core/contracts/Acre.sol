@@ -2,6 +2,7 @@
 pragma solidity ^0.8.21;
 
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 /// @title Acre
 /// @notice This contract implements the ERC-4626 tokenized vault standard. By
@@ -14,7 +15,7 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
 ///      of yield-bearing vaults. This contract facilitates the minting and
 ///      burning of shares (stBTC), which are represented as standard ERC20
 ///      tokens, providing a seamless exchange with tBTC tokens.
-contract Acre is ERC4626 {
+contract Acre is ERC4626, Ownable {
     struct StakingParameters {
         // Minimum amount for a single deposit operation.
         uint256 minimumDepositAmount;
@@ -25,14 +26,60 @@ contract Acre is ERC4626 {
     StakingParameters public stakingParameters;
 
     event StakeReferral(bytes32 indexed referral, uint256 assets);
+    event StakingParametersUpdated(
+        uint256 minimumDepositAmount,
+        uint256 maximumTotalAssets
+    );
 
     constructor(
-        IERC20 tbtc
-    ) ERC4626(tbtc) ERC20("Acre Staked Bitcoin", "stBTC") {
+        IERC20 tbtc,
+        address initialOwner
+    )
+        ERC4626(tbtc)
+        ERC20("Acre Staked Bitcoin", "stBTC")
+        Ownable(initialOwner)
+    {
         stakingParameters = StakingParameters({
             minimumDepositAmount: 10000000000000000, // 0.01 tBTC
             maximumTotalAssets: 25000000000000000000 // 25 tBTC
         });
+    }
+
+    /// @notice Updates parameters of staking.
+    /// @dev Requirements:
+    ///      - Minimum deposit amount must be greater than zero,
+    ///      - Minimum deposit amount must be greater than or equal to the
+    ///        minimum deposit amount in the tBTC system,
+    ///      - Maximum total assets must be greater than zero.
+    /// @param minimumDepositAmount New value of the minimum deposit amount. It
+    ///        is the minimum amount for a single deposit operation.
+    /// @param maximumTotalAssets New value of the maximum total assets amount.
+    ///        It is the maximum amount of the tBTC token that the Acre can
+    ///        hold.
+    function updateStakingParameters(
+        uint256 minimumDepositAmount,
+        uint256 maximumTotalAssets
+    ) external onlyOwner {
+        require(
+            minimumDepositAmount > 0,
+            "Minimum deposit amount must be greater than zero"
+        );
+
+        // TODO: Do we need this requirement?
+        require(
+            minimumDepositAmount >= _getTBTCSystemMinDepositAmount(),
+            "Minimum deposit amount must be greater than or to the equal minimum deposit amount in tBTC system"
+        );
+
+        require(
+            maximumTotalAssets > 0,
+            "Maximum total assets amount must be greater than zero"
+        );
+
+        stakingParameters.minimumDepositAmount = minimumDepositAmount;
+        stakingParameters.maximumTotalAssets = maximumTotalAssets;
+
+        emit StakingParametersUpdated(minimumDepositAmount, maximumTotalAssets);
     }
 
     function deposit(
@@ -103,5 +150,18 @@ contract Acre is ERC4626 {
     /// @return The maximum amount of the vault shares.
     function maxMint(address receiver) public view override returns (uint256) {
         return previewDeposit(maxDeposit(receiver));
+    }
+
+    function _getTBTCSystemMinDepositAmount() private pure returns (uint256) {
+        // TODO: Implement if we want to make sure the minimum deposit amount is
+        // greater than or equal the minimum dposit amount in the tBTC system.
+
+        // (uint64 depositDustThreshold, , , ) = tbtcBridge.depositParameters();
+
+        // // The `depositDustThreshold` is in satoshi so we need to cast to tBTC
+        // // decimals.
+        // return 10 ** (ERC20(asset()).decimals() - 8) * depositDustThreshold;
+
+        return 10000000000000000; // 0.01 tBTC
     }
 }
