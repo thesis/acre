@@ -2,6 +2,8 @@
 pragma solidity ^0.8.21;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/interfaces/IERC4626.sol";
+import "./Router.sol";
 
 /// @title Dispatcher
 /// @notice Dispatcher is a contract that routes TBTC from stBTC (Acre) to
@@ -65,5 +67,29 @@ contract Dispatcher is Ownable {
 
     function getVaults() external view returns (address[] memory) {
         return vaults;
+    }
+
+    // TODO: add documentation
+    function depositToVault(
+        address vault,
+        uint256 amount,
+        uint256 minSharesOut
+    ) public {
+        require(msg.sender == address(stBTC), "stBTC only");
+        require(vaultsInfo[vault].authorized, "Vault is not approved");
+
+        deposit(IERC4626(vault), address(stBTC), amount, minSharesOut);
+    }
+
+    // TODO: add documentation
+    function redeemFromVault(
+        address vault,
+        uint256 shares,
+        uint256 minAssetsOut
+    ) public {
+        require(msg.sender == address(stBTC), "stBTC only");
+        require(vaultsInfo[vault].authorized, "Vault is not approved");
+
+        redeem(IERC4626(vault), address(stBTC), shares, minAssetsOut);
     }
 }
