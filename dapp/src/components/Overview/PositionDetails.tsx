@@ -2,42 +2,37 @@ import React from "react"
 import {
   Text,
   Button,
-  HStack,
   Tooltip,
   Icon,
   useColorModeValue,
-  Flex,
+  CardBody,
+  Card,
+  CardFooter,
 } from "@chakra-ui/react"
 import { BITCOIN, USD } from "../../constants"
 import { Info } from "../../static/icons"
 
 export default function PositionDetails() {
   return (
-    <Flex p={4} h="100%" direction="column" justifyContent="space-between">
-      <Flex direction="column" gap={2}>
+    <Card h="100%">
+      <CardBody>
         <Text>Your positions</Text>
-        <Flex direction="column" alignItems="flex-start">
-          <HStack>
-            <Text>34.75</Text>
-            <Text>{BITCOIN.symbol}</Text>
-          </HStack>
-          <Flex w="100%" justifyContent="space-between">
-            <HStack>
-              <Text>1.245.148,1</Text>
-              <Text>{USD.symbol}</Text>
-            </HStack>
-            {/* TODO: Add correct text for tooltip */}
-            <Tooltip label="Template">
-              <Icon as={Info} color={useColorModeValue("black", "grey.80")} />
-            </Tooltip>
-          </Flex>
-        </Flex>
-      </Flex>
-      <Flex direction="column" gap={2}>
+        <Text>
+          34.75 <Text as="span">{BITCOIN.symbol}</Text>
+        </Text>
+        <Text>
+          1.245.148,1 <Text as="span">{USD.symbol}</Text>
+          {/* TODO: Add correct text for tooltip */}
+          <Tooltip label="Template">
+            <Icon as={Info} color={useColorModeValue("black", "grey.80")} />
+          </Tooltip>
+        </Text>
+      </CardBody>
+      <CardFooter flexDirection="column" gap={2}>
         {/* TODO: Handle click actions */}
         <Button>Stake</Button>
         <Button variant="outline">Withdraw</Button>
-      </Flex>
-    </Flex>
+      </CardFooter>
+    </Card>
   )
 }

@@ -1,10 +1,13 @@
 import React from "react"
-import { Text, Box } from "@chakra-ui/react"
+import { CardBody, Card } from "@chakra-ui/react"
+import { TextMd } from "../Typography"
 
 export default function TransactionHistory() {
   return (
-    <Box>
-      <Text>Transaction history</Text>
-    </Box>
+    <Card h="100%">
+      <CardBody>
+        <TextMd>Transaction history</TextMd>
+      </CardBody>
+    </Card>
   )
 }
