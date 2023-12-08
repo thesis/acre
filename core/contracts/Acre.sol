@@ -2,6 +2,9 @@
 pragma solidity ^0.8.21;
 
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+import "./Dispatcher.sol";
 
 /// @title Acre
 /// @notice This contract implements the ERC-4626 tokenized vault standard. By
@@ -14,12 +17,15 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
 ///      of yield-bearing vaults. This contract facilitates the minting and
 ///      burning of shares (stBTC), which are represented as standard ERC20
 ///      tokens, providing a seamless exchange with tBTC tokens.
-contract Acre is ERC4626 {
+contract Acre is ERC4626, Ownable {
     event StakeReferral(bytes32 indexed referral, uint256 assets);
+
+    Dispatcher public dispatcher;
 
     constructor(
         IERC20 tbtc
-    ) ERC4626(tbtc) ERC20("Acre Staked Bitcoin", "stBTC") {}
+    ) ERC4626(tbtc) ERC20("Acre Staked Bitcoin", "stBTC") Ownable(msg.sender) {}
+
 
     /// @notice Stakes a given amount of tBTC token and mints shares to a
     ///         receiver.
@@ -42,5 +48,15 @@ contract Acre is ERC4626 {
         }
 
         return shares;
+    }
+
+    function upgradeDispatcher(Dispatcher _newDispatcher) public onlyOwner {
+        if (address(dispatcher) != address(0)) {
+            IERC20(asset()).approve(address(dispatcher), 0);
+        }
+
+        dispatcher = _newDispatcher;
+
+        IERC20(asset()).approve(address(dispatcher), type(uint256).max);
     }
 }
