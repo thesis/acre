@@ -1,5 +1,5 @@
 import React from "react"
-import { ChakraProvider } from "@chakra-ui/react"
+import { Box, ChakraProvider } from "@chakra-ui/react"
 import { useDetectThemeMode } from "./hooks"
 import theme from "./theme"
 import { LedgerWalletAPIProvider, WalletContextProvider } from "./contexts"
@@ -12,9 +12,9 @@ function DApp() {
   return (
     <>
       <Header />
-      <main>
+      <Box as="main">
         <Overview />
-      </main>
+      </Box>
     </>
   )
 }
