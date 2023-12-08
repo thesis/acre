@@ -7,6 +7,7 @@ export const fontSizes = {
 }
 
 export const fontWeights = {
+  normal: 400,
   medium: 500,
   semibold: 600,
   bold: 700,
@@ -19,4 +20,9 @@ export const lineHeights = {
   md: "1.5rem",
   lg: "1.75rem",
   xl: "1.875rem",
+}
+
+export const fonts = {
+  heading: "Segment, sans-serif",
+  body: "Segment, sans-serif",
 }
