@@ -3,4 +3,5 @@ cache/
 deployments/
 export.json
 export/
+external/
 typechain/
