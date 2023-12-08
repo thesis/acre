@@ -1,22 +1,21 @@
 import React from "react"
-import { ChakraProvider, Box, Text } from "@chakra-ui/react"
-import { useDetectThemeMode, useWalletContext } from "./hooks"
+import { Box, ChakraProvider } from "@chakra-ui/react"
+import { useDetectThemeMode } from "./hooks"
 import theme from "./theme"
 import { LedgerWalletAPIProvider, WalletContextProvider } from "./contexts"
-import Navbar from "./components/Navbar"
+import Header from "./components/Header"
+import Overview from "./components/Overview"
 
 function DApp() {
   useDetectThemeMode()
 
-  const { btcAccount, ethAccount } = useWalletContext()
-
   return (
-    <Box>
-      <Navbar />
-      <h1>Ledger live - Acre dApp</h1>
-      {btcAccount && <Text>Account: {btcAccount.address}</Text>}
-      {ethAccount && <Text>Account: {ethAccount.address}</Text>}
-    </Box>
+    <>
+      <Header />
+      <Box as="main">
+        <Overview />
+      </Box>
+    </>
   )
 }
 

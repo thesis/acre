@@ -1,7 +1,8 @@
 import { mode } from "@chakra-ui/theme-tools"
 import type { StyleFunctionProps } from "@chakra-ui/styled-system"
+import { ComponentSingleStyleConfig } from "@chakra-ui/react"
 
-const Button = {
+const Button: ComponentSingleStyleConfig = {
   baseStyle: {
     rounded: "none",
   },
@@ -15,6 +16,10 @@ const Button = {
       // TODO: Update when the dark theme is ready
       color: mode("grey.700", "grey.700")(props),
       borderColor: mode("grey.700", "grey.700")(props),
+    }),
+    link: (props: StyleFunctionProps) => ({
+      color: mode("black", "grey.50")(props),
+      textDecoration: "underline",
     }),
   },
 }

@@ -1,9 +1,7 @@
 import React from "react"
-import { Box, Button, Image, Text } from "@chakra-ui/react"
+import { Button, HStack, Icon, Text, Tooltip } from "@chakra-ui/react"
 import { Account } from "@ledgerhq/wallet-api-client"
-import BitcoinIcon from "../../assets/bitcoin.svg"
-import EthereumIcon from "../../assets/ethereum.svg"
-import InfoIcon from "../../assets/info.svg"
+import { Bitcoin, Ethereum, Info } from "../../static/icons"
 import { BITCOIN } from "../../constants"
 import {
   useRequestBitcoinAccount,
@@ -13,8 +11,8 @@ import {
 import { formatSatoshiAmount, truncateAddress } from "../../utils"
 
 export type ConnectButtonsProps = {
-  leftIcon: string
-  rightIcon: string
+  leftIcon: typeof Icon
+  rightIcon: typeof Icon
   account: Account | undefined
   requestAccount: () => Promise<void>
 }
@@ -28,13 +26,20 @@ function ConnectButton({
   const styles = !account
     ? { color: "red.400", borderColor: "red.400" }
     : undefined
+
   return (
     <Button
       variant="outline"
       sx={styles}
-      leftIcon={<Image src={leftIcon} />}
-      // TODO: Add a tooltip here
-      rightIcon={!account ? <Image src={rightIcon} /> : undefined}
+      leftIcon={<Icon as={leftIcon} h={7} w={7} />}
+      rightIcon={
+        !account ? (
+          // TODO: Add correct text for tooltip
+          <Tooltip label="Template">
+            <Icon as={rightIcon} color="grey.700" />
+          </Tooltip>
+        ) : undefined
+      }
       onClick={requestAccount}
     >
       {account ? truncateAddress(account.address) : "Not connected"}
@@ -48,8 +53,8 @@ export default function ConnectWallet() {
   const { btcAccount, ethAccount } = useWalletContext()
 
   return (
-    <Box display="flex" alignItems="center" gap="4">
-      <Box display="flex" gap="2">
+    <HStack spacing={4}>
+      <HStack>
         <Text>Balance</Text>
         <Text as="b">
           {!btcAccount || btcAccount?.balance.isZero()
@@ -57,23 +62,23 @@ export default function ConnectWallet() {
             : formatSatoshiAmount(btcAccount.balance.toString())}
         </Text>
         <Text>{BITCOIN.symbol}</Text>
-      </Box>
+      </HStack>
       <ConnectButton
-        leftIcon={BitcoinIcon}
-        rightIcon={InfoIcon}
+        leftIcon={Bitcoin}
+        rightIcon={Info}
         account={btcAccount}
         requestAccount={async () => {
           await requestBitcoinAccount()
         }}
       />
       <ConnectButton
-        leftIcon={EthereumIcon}
-        rightIcon={InfoIcon}
+        leftIcon={Ethereum}
+        rightIcon={Info}
         account={ethAccount}
         requestAccount={async () => {
           await requestEthereumAccount()
         }}
       />
-    </Box>
+    </HStack>
   )
 }
