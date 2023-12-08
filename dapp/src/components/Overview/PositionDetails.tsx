@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React from "react"
 import {
   Text,
@@ -9,13 +10,14 @@ import {
   Card,
   CardFooter,
   HStack,
+  CardProps,
 } from "@chakra-ui/react"
 import { BITCOIN, USD } from "../../constants"
 import { Info } from "../../static/icons"
 
-export default function PositionDetails() {
+export default function PositionDetails(props: CardProps) {
   return (
-    <Card h="100%">
+    <Card {...props}>
       <CardBody>
         <HStack justifyContent="space-between">
           <Text>Your positions</Text>
