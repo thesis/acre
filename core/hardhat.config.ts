@@ -78,6 +78,11 @@ const config: HardhatUserConfig = {
     strict: true,
   },
 
+  gasReporter: {
+    enabled: true,
+    coinmarketcap: process.env.COINMARKETCAP_API_KEY,
+  },
+
   typechain: {
     outDir: "typechain",
   },
