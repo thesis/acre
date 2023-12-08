@@ -11,29 +11,30 @@ import type { TestERC20, Acre } from "../typechain"
 import { to1e18 } from "./utils"
 
 async function acreFixture() {
-  const [staker1, staker2] = await ethers.getSigners()
+  const [owner, staker1, staker2] = await ethers.getSigners()
 
   const TestERC20 = await ethers.getContractFactory("TestERC20")
   const tbtc = await TestERC20.deploy()
 
   const Acre = await ethers.getContractFactory("Acre")
-  const acre = await Acre.deploy(await tbtc.getAddress())
+  const acre = await Acre.deploy(await tbtc.getAddress(), owner)
 
   const amountToMint = to1e18(100000)
   tbtc.mint(staker1, amountToMint)
   tbtc.mint(staker2, amountToMint)
 
-  return { acre, tbtc, staker1, staker2 }
+  return { acre, tbtc, owner, staker1, staker2 }
 }
 
 describe("Acre", () => {
   let acre: Acre
   let tbtc: TestERC20
+  let owner: HardhatEthersSigner
   let staker1: HardhatEthersSigner
   let staker2: HardhatEthersSigner
 
   before(async () => {
-    ;({ acre, tbtc, staker1, staker2 } = await loadFixture(acreFixture))
+    ;({ acre, tbtc, owner, staker1, staker2 } = await loadFixture(acreFixture))
   })
 
   describe("stake", () => {
@@ -483,6 +484,16 @@ describe("Acre", () => {
   })
 
   describe("mint", () => {
+    let snapshot: SnapshotRestorer
+
+    beforeEach(async () => {
+      snapshot = await takeSnapshot()
+    })
+
+    afterEach(async () => {
+      await snapshot.restore()
+    })
+
     context("when staker wants to mint more shares than allowed", () => {
       let sharesToMint: bigint
 
@@ -518,5 +529,119 @@ describe("Acre", () => {
         })
       },
     )
+  })
+
+  describe("updateStakingParameters", () => {
+    const validMinimumDepositAmount = to1e18(1)
+    const validMaximumTotalAssetsAmount = to1e18(30)
+
+    context("when is called by owner", () => {
+      context("when all parameters are valid", () => {
+        let tx: ContractTransactionResponse
+
+        beforeEach(async () => {
+          tx = await acre
+            .connect(owner)
+            .updateStakingParameters(
+              validMinimumDepositAmount,
+              validMaximumTotalAssetsAmount,
+            )
+        })
+
+        it("should emit StakingParametersUpdated event", async () => {
+          await expect(tx)
+            .to.emit(acre, "StakingParametersUpdated")
+            .withArgs(validMinimumDepositAmount, validMaximumTotalAssetsAmount)
+        })
+
+        it("should update parameters correctly", async () => {
+          const stakingParameters = await acre.stakingParameters()
+
+          expect(stakingParameters.minimumDepositAmount).to.be.eq(
+            validMinimumDepositAmount,
+          )
+          expect(stakingParameters.maximumTotalAssets).to.be.eq(
+            validMaximumTotalAssetsAmount,
+          )
+        })
+      })
+
+      context("when minimum deposit amount is invalid", () => {
+        context("when it is equal to 0", () => {
+          const minimumDepositAmount = 0
+
+          it("should revert", async () => {
+            await expect(
+              acre
+                .connect(owner)
+                .updateStakingParameters(
+                  minimumDepositAmount,
+                  validMaximumTotalAssetsAmount,
+                ),
+            ).to.be.revertedWith(
+              "Minimum deposit amount must be greater than zero",
+            )
+          })
+        })
+
+        context(
+          "when it is less than the minimum deposit amount in tBTC system",
+          () => {
+            // TODO: In the current implementation the minimum deposit amount
+            // from tBTC system is hardcoded to 0.01 tBTC. We should get this
+            // value from mocked tBTC Bridge contract.
+            const minimumDepositAmountInTBTCSystem = 10000000000000000n
+
+            const newMinimumDepositAmount =
+              minimumDepositAmountInTBTCSystem - 1n
+
+            it("should revert", async () => {
+              await expect(
+                acre
+                  .connect(owner)
+                  .updateStakingParameters(
+                    newMinimumDepositAmount,
+                    validMaximumTotalAssetsAmount,
+                  ),
+              ).to.be.revertedWith(
+                "Minimum deposit amount must be greater than or to the equal minimum deposit amount in tBTC system",
+              )
+            })
+          },
+        )
+      })
+
+      context("when the maximum total assets amount is invalid", () => {
+        const maximumTotalAssets = 0
+
+        context("when it is equal to 0", () => {
+          it("should revert", async () => {
+            await expect(
+              acre
+                .connect(owner)
+                .updateStakingParameters(
+                  validMinimumDepositAmount,
+                  maximumTotalAssets,
+                ),
+            ).to.be.revertedWith(
+              "Maximum total assets amount must be greater than zero",
+            )
+          })
+        })
+      })
+    })
+
+    context("when it is called by non-owner", () => {
+      it("should revert", async () => {
+        await expect(
+          acre
+            .connect(staker1)
+            .updateStakingParameters(
+              validMinimumDepositAmount,
+              validMaximumTotalAssetsAmount,
+            ),
+        ).to.be.revertedWithCustomError(acre, "OwnableUnauthorizedAccount")
+      })
+    })
   })
 })
