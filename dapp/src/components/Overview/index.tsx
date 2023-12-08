@@ -26,18 +26,20 @@ export default function Overview() {
         </Button>
       </Flex>
       <Grid
+        templateAreas={`"position-details statistics"
+                        "transaction-history transaction-history"`}
+        gridTemplateColumns={{ base: "30% 1fr", xl: "20% 1fr" }}
+        gridTemplateRows={{ base: "55% 1fr", xl: "40% 1fr" }}
         h="80vh"
-        templateRows="repeat(12, 1fr)"
-        templateColumns="repeat(12, 1fr)"
         gap={4}
       >
-        <GridItem colSpan={3} rowSpan={5} bg={bg}>
+        <GridItem bg={bg} area="position-details">
           <PositionDetails />
         </GridItem>
-        <GridItem colSpan={9} rowSpan={5} bg={bg}>
+        <GridItem bg={bg} area="statistics">
           <Statistics />
         </GridItem>
-        <GridItem colSpan={12} rowSpan={7} bg={bg}>
+        <GridItem bg={bg} area="transaction-history">
           <TransactionHistory />
         </GridItem>
       </Grid>
