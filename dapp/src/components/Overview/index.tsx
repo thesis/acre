@@ -12,15 +12,23 @@ import Statistics from "./Statistics"
 import TransactionHistory from "./TransactionHistory"
 import { USD } from "../../constants"
 import { ChevronRight } from "../../static/icons"
+import { useDocsDrawer } from "../../hooks"
 
 export default function Overview() {
+  const { onOpen } = useDocsDrawer()
+
   const bg = useColorModeValue("white", "grey.400")
+
   return (
     <Flex direction="column" gap={2} p={6}>
       <Flex justifyContent="space-between">
         {/* TODO: Handle click actions */}
         <Switch size="sm">Show values in {USD.symbol}</Switch>
-        <Button variant="link" rightIcon={<Icon as={ChevronRight} />}>
+        <Button
+          variant="link"
+          rightIcon={<Icon as={ChevronRight} />}
+          onClick={onOpen}
+        >
           Read documentation
         </Button>
       </Flex>
