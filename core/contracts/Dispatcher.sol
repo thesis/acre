@@ -8,6 +8,9 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 ///         a given vault and back. Vaults supply yield strategies with TBTC that
 ///         generate yield for Bitcoin holders.
 contract Dispatcher is Ownable {
+    error VaultAlreadyAuthorized();
+    error VaultUnauthorized();
+
     struct VaultInfo {
         bool authorized;
     }
@@ -29,7 +32,9 @@ contract Dispatcher is Ownable {
     /// @notice Adds a vault to the list of authorized vaults.
     /// @param vault Address of the vault to add.
     function authorizeVault(address vault) external onlyOwner {
-        require(!vaultsInfo[vault].authorized, "Vault already authorized");
+        if (vaultsInfo[vault].authorized) {
+            revert VaultAlreadyAuthorized();
+        }
 
         vaults.push(vault);
         vaultsInfo[vault].authorized = true;
@@ -40,7 +45,9 @@ contract Dispatcher is Ownable {
     /// @notice Removes a vault from the list of authorized vaults.
     /// @param vault Address of the vault to remove.
     function deauthorizeVault(address vault) external onlyOwner {
-        require(vaultsInfo[vault].authorized, "Not a vault");
+        if (!vaultsInfo[vault].authorized) {
+            revert VaultUnauthorized();
+        }
 
         vaultsInfo[vault].authorized = false;
 

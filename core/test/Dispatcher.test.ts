@@ -74,7 +74,7 @@ describe("Dispatcher", () => {
         await dispatcher.connect(governance).authorizeVault(vault1)
         await expect(
           dispatcher.connect(governance).authorizeVault(vault1),
-        ).to.be.revertedWith("Vault already authorized")
+        ).to.be.revertedWithCustomError(dispatcher, "VaultAlreadyAuthorized")
       })
 
       it("should emit an event when adding a vault", async () => {
@@ -130,7 +130,7 @@ describe("Dispatcher", () => {
       it("should not be able to remove a vault that is not authorized", async () => {
         await expect(
           dispatcher.connect(governance).deauthorizeVault(vault4),
-        ).to.be.revertedWith("Not a vault")
+        ).to.be.revertedWithCustomError(dispatcher, "VaultUnauthorized")
       })
 
       it("should emit an event when removing a vault", async () => {
