@@ -3,6 +3,7 @@ import { mode } from "@chakra-ui/theme-tools"
 import Button from "./Button"
 import Switch from "./Switch"
 import { colors, fontSizes, fontWeights, lineHeights } from "./utils"
+import Card from "./Card"
 
 // Currently, there is no possibility to set all tooltips with hasArrow by defaultProps.
 // Let's override the defaultProps as follows.
@@ -25,6 +26,7 @@ const defaultTheme = {
   components: {
     Button,
     Switch,
+    Card,
   },
 }
 

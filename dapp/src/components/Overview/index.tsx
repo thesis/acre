@@ -5,7 +5,6 @@ import {
   Grid,
   Icon,
   Switch,
-  useColorModeValue,
 } from "@chakra-ui/react"
 import PositionDetails from "./PositionDetails"
 import Statistics from "./Statistics"
@@ -14,8 +13,6 @@ import { USD } from "../../constants"
 import { ChevronRight } from "../../static/icons"
 
 export default function Overview() {
-  // TODO: Create a custom theme for card component
-  const bg = useColorModeValue("gold.100", "gold.100")
   return (
     <Flex direction="column" gap={2} p={6}>
       <Flex justifyContent="space-between">
@@ -33,9 +30,9 @@ export default function Overview() {
         h="80vh"
         gap={4}
       >
-        <PositionDetails bg={bg} gridArea="position-details" />
-        <Statistics bg={bg} gridArea="statistics" />
-        <TransactionHistory bg={bg} gridArea="transaction-history" />
+        <PositionDetails gridArea="position-details" />
+        <Statistics gridArea="statistics" />
+        <TransactionHistory gridArea="transaction-history" />
       </Grid>
     </Flex>
   )
