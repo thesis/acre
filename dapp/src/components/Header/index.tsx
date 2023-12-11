@@ -1,13 +1,17 @@
 import React from "react"
-import { Flex } from "@chakra-ui/react"
+import { Flex, HStack, Icon } from "@chakra-ui/react"
 import ConnectWallet from "./ConnectWallet"
+import { AcreLogo } from "../../static/icons"
 
 export const HEADER_HEIGHT = 24
 
 export default function Header() {
   return (
-    <Flex justifyContent="end" p={6} height={HEADER_HEIGHT}>
-      <ConnectWallet />
-    </Flex>
+    <HStack as="header" p={6}  height={HEADER_HEIGHT}>
+      <Icon as={AcreLogo} boxSize={20} />
+      <Flex ml="auto">
+        <ConnectWallet />
+      </Flex>
+    </HStack>
   )
 }
