@@ -33,8 +33,10 @@ export default function PositionDetails(props: CardProps) {
       </CardBody>
       <CardFooter flexDirection="column" gap={2}>
         {/* TODO: Handle click actions */}
-        <Button>Stake</Button>
-        <Button variant="outline">Withdraw</Button>
+        <Button size="lg">Stake</Button>
+        <Button size="lg" variant="outline">
+          Withdraw
+        </Button>
       </CardFooter>
     </Card>
   )

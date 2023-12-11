@@ -1,16 +1,10 @@
 import React from "react"
-import {
-  Button,
-  Flex,
-  Grid,
-  Icon,
-  Switch,
-} from "@chakra-ui/react"
+import { Button, Flex, Grid, Icon, Switch } from "@chakra-ui/react"
 import PositionDetails from "./PositionDetails"
 import Statistics from "./Statistics"
 import TransactionHistory from "./TransactionHistory"
 import { USD } from "../../constants"
-import { ChevronRight } from "../../static/icons"
+import { ArrowUpRight } from "../../static/icons"
 
 export default function Overview() {
   return (
@@ -18,8 +12,11 @@ export default function Overview() {
       <Flex justifyContent="space-between">
         {/* TODO: Handle click actions */}
         <Switch size="sm">Show values in {USD.symbol}</Switch>
-        <Button variant="link" rightIcon={<Icon as={ChevronRight} />}>
-          Read documentation
+        <Button
+          variant="card"
+          leftIcon={<Icon as={ArrowUpRight} color="brand.400" boxSize={4} />}
+        >
+          Docs
         </Button>
       </Flex>
       <Grid
