@@ -3,11 +3,11 @@ pragma solidity ^0.8.21;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-/// @title AcreRouter
-/// @notice AcreRouter is a contract that routes TBTC from stBTC (Acre) to
+/// @title Dispatcher
+/// @notice Dispatcher is a contract that routes TBTC from stBTC (Acre) to
 ///         a given vault and back. Vaults supply yield strategies with TBTC that
 ///         generate yield for Bitcoin holders.
-contract AcreRouter is Ownable {
+contract Dispatcher is Ownable {
     struct Vault {
         bool approved;
     }
