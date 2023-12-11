@@ -54,7 +54,7 @@ export default function ConnectWallet() {
 
   return (
     <HStack spacing={4}>
-      <HStack>
+      <HStack display={{ base: "none", md: "flex" }}>
         <Text>Balance</Text>
         <Text as="b">
           {!btcAccount || btcAccount?.balance.isZero()
