@@ -59,28 +59,22 @@ describe("Dispatcher", () => {
     })
 
     context("when caller is a governance account", () => {
-      it("should be able to add vaults", async () => {
+      it("should be able to authorize vaults", async () => {
         await dispatcher.connect(governance).authorizeVault(vaultAddress1)
         await dispatcher.connect(governance).authorizeVault(vaultAddress2)
         await dispatcher.connect(governance).authorizeVault(vaultAddress3)
 
         expect(await dispatcher.vaults(0)).to.equal(vaultAddress1)
-        const isVaultAddress1Authorized =
-          await dispatcher.vaultsInfo(vaultAddress1)
-        expect(isVaultAddress1Authorized).to.equal(true)
+        expect(await dispatcher.vaultsInfo(vaultAddress1)).to.be.equal(true)
 
         expect(await dispatcher.vaults(1)).to.equal(vaultAddress2)
-        const isVaultAddress2Authorized =
-          await dispatcher.vaultsInfo(vaultAddress2)
-        expect(isVaultAddress2Authorized).to.equal(true)
+        expect(await dispatcher.vaultsInfo(vaultAddress2)).to.be.equal(true)
 
         expect(await dispatcher.vaults(2)).to.equal(vaultAddress3)
-        const isVaultAddress3Authorized =
-          await dispatcher.vaultsInfo(vaultAddress3)
-        expect(isVaultAddress3Authorized).to.equal(true)
+        expect(await dispatcher.vaultsInfo(vaultAddress3)).to.be.equal(true)
       })
 
-      it("should not be able to add the same vault twice", async () => {
+      it("should not be able to authorize the same vault twice", async () => {
         await dispatcher.connect(governance).authorizeVault(vaultAddress1)
         await expect(
           dispatcher.connect(governance).authorizeVault(vaultAddress1),
@@ -116,14 +110,12 @@ describe("Dispatcher", () => {
     })
 
     context("when caller is a governance account", () => {
-      it("should be able to remove vaults", async () => {
+      it("should be able to authorize vaults", async () => {
         await dispatcher.connect(governance).deauthorizeVault(vaultAddress1)
 
         // Last vault replaced the first vault in the 'vaults' array
         expect(await dispatcher.vaults(0)).to.equal(vaultAddress3)
-        const isVaultAddress1Authorized =
-          await dispatcher.vaultsInfo(vaultAddress1)
-        expect(isVaultAddress1Authorized).to.equal(false)
+        expect(await dispatcher.vaultsInfo(vaultAddress1)).to.be.equal(false)
         expect((await dispatcher.getVaults()).length).to.equal(2)
 
         await dispatcher.connect(governance).deauthorizeVault(vaultAddress2)
@@ -131,18 +123,22 @@ describe("Dispatcher", () => {
         // Last vault (vaultAddress2) was removed from the 'vaults' array
         expect(await dispatcher.vaults(0)).to.equal(vaultAddress3)
         expect((await dispatcher.getVaults()).length).to.equal(1)
-        const isVaultAddress2Authorized =
-          await dispatcher.vaultsInfo(vaultAddress2)
-        expect(isVaultAddress2Authorized).to.equal(false)
+        expect(await dispatcher.vaultsInfo(vaultAddress2)).to.be.equal(false)
 
         await dispatcher.connect(governance).deauthorizeVault(vaultAddress3)
         expect((await dispatcher.getVaults()).length).to.equal(0)
-        const isVaultAddress3Authorized =
-          await dispatcher.vaultsInfo(vaultAddress3)
-        expect(isVaultAddress3Authorized).to.equal(false)
+        expect(await dispatcher.vaultsInfo(vaultAddress3)).to.be.equal(false)
       })
 
-      it("should not be able to remove a vault that is not authorized", async () => {
+      it("should be able to deauthorize a vault and authorize it again", async () => {
+        await dispatcher.connect(governance).deauthorizeVault(vaultAddress1)
+        expect(await dispatcher.vaultsInfo(vaultAddress1)).to.be.equal(false)
+
+        await dispatcher.connect(governance).authorizeVault(vaultAddress1)
+        expect(await dispatcher.vaultsInfo(vaultAddress1)).to.be.equal(true)
+      })
+
+      it("should not be able to deauthorize a vault that is not authorized", async () => {
         await expect(
           dispatcher.connect(governance).deauthorizeVault(vaultAddress4),
         ).to.be.revertedWithCustomError(dispatcher, "VaultUnauthorized")
