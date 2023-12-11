@@ -20,7 +20,7 @@ export default function PositionDetails(props: CardProps) {
         <HStack justifyContent="space-between">
           <Text>Your positions</Text>
           {/* TODO: Add correct text for tooltip */}
-          <Tooltip label="Template">
+          <Tooltip label="Template" placement="top">
             <Icon as={Info} color="grey.700" />
           </Tooltip>
         </HStack>
