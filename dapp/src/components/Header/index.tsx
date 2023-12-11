@@ -5,7 +5,7 @@ import { AcreLogo } from "../../static/icons"
 
 export default function Header() {
   return (
-    <HStack as="header" p={6}>
+    <HStack as="header" p={6} h={24}>
       <Icon as={AcreLogo} boxSize={20} />
       <Flex ml="auto">
         <ConnectWallet />

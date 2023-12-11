@@ -35,7 +35,7 @@ export default function PositionDetails(props: CardProps) {
         {/* TODO: Handle click actions */}
         <Button size="lg">Stake</Button>
         <Button size="lg" variant="outline">
-          Withdraw
+          Unstake
         </Button>
       </CardFooter>
     </Card>
