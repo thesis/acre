@@ -1,14 +1,22 @@
-import { getUnnamedAccounts } from "hardhat"
+import { ethers } from "hardhat"
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
-import { Address } from "hardhat-deploy/types"
 import { expect } from "chai"
 import {
   SnapshotRestorer,
   takeSnapshot,
+  loadFixture,
 } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 import type { Dispatcher } from "../typechain"
 import { deployment } from "./helpers/context"
 import { getNamedSigner, getUnnamedSigner } from "./helpers/signer"
+
+async function fixture() {
+  const { dispatcher } = await deployment()
+  const { governance } = await getNamedSigner()
+  const [thirdParty] = await getUnnamedSigner()
+
+  return { dispatcher, governance, thirdParty }
+}
 
 describe("Dispatcher", () => {
   let snapshot: SnapshotRestorer
@@ -16,19 +24,18 @@ describe("Dispatcher", () => {
   let dispatcher: Dispatcher
   let governance: HardhatEthersSigner
   let thirdParty: HardhatEthersSigner
-  let vault1: Address
-  let vault2: Address
-  let vault3: Address
-  let vault4: Address
+  let vaultAddress1: string
+  let vaultAddress2: string
+  let vaultAddress3: string
+  let vaultAddress4: string
 
   before(async () => {
-    const accounts = await getUnnamedAccounts()
-    ;[vault1, vault2, vault3, vault4] = accounts
+    ;({ dispatcher, governance, thirdParty } = await loadFixture(fixture))
 
-    governance = (await getNamedSigner()).governance
-    ;[thirdParty] = await getUnnamedSigner()
-
-    dispatcher = (await deployment()).dispatcher
+    vaultAddress1 = await ethers.Wallet.createRandom().getAddress()
+    vaultAddress2 = await ethers.Wallet.createRandom().getAddress()
+    vaultAddress3 = await ethers.Wallet.createRandom().getAddress()
+    vaultAddress4 = await ethers.Wallet.createRandom().getAddress()
   })
 
   beforeEach(async () => {
@@ -43,7 +50,7 @@ describe("Dispatcher", () => {
     context("when caller is not a governance account", () => {
       it("should revert when adding a vault", async () => {
         await expect(
-          dispatcher.connect(thirdParty).authorizeVault(vault1),
+          dispatcher.connect(thirdParty).authorizeVault(vaultAddress1),
         ).to.be.revertedWithCustomError(
           dispatcher,
           "OwnableUnauthorizedAccount",
@@ -53,49 +60,54 @@ describe("Dispatcher", () => {
 
     context("when caller is a governance account", () => {
       it("should be able to add vaults", async () => {
-        await dispatcher.connect(governance).authorizeVault(vault1)
-        await dispatcher.connect(governance).authorizeVault(vault2)
-        await dispatcher.connect(governance).authorizeVault(vault3)
+        await dispatcher.connect(governance).authorizeVault(vaultAddress1)
+        await dispatcher.connect(governance).authorizeVault(vaultAddress2)
+        await dispatcher.connect(governance).authorizeVault(vaultAddress3)
 
-        expect(await dispatcher.vaults(0)).to.equal(vault1)
-        const isVault1Authorized = await dispatcher.vaultsInfo(vault1)
-        expect(isVault1Authorized).to.equal(true)
+        expect(await dispatcher.vaults(0)).to.equal(vaultAddress1)
+        const isVaultAddress1Authorized =
+          await dispatcher.vaultsInfo(vaultAddress1)
+        expect(isVaultAddress1Authorized).to.equal(true)
 
-        expect(await dispatcher.vaults(1)).to.equal(vault2)
-        const isVault2Authorized = await dispatcher.vaultsInfo(vault2)
-        expect(isVault2Authorized).to.equal(true)
+        expect(await dispatcher.vaults(1)).to.equal(vaultAddress2)
+        const isVaultAddress2Authorized =
+          await dispatcher.vaultsInfo(vaultAddress2)
+        expect(isVaultAddress2Authorized).to.equal(true)
 
-        expect(await dispatcher.vaults(2)).to.equal(vault3)
-        const isVault3Authorized = await dispatcher.vaultsInfo(vault3)
-        expect(isVault3Authorized).to.equal(true)
+        expect(await dispatcher.vaults(2)).to.equal(vaultAddress3)
+        const isVaultAddress3Authorized =
+          await dispatcher.vaultsInfo(vaultAddress3)
+        expect(isVaultAddress3Authorized).to.equal(true)
       })
 
       it("should not be able to add the same vault twice", async () => {
-        await dispatcher.connect(governance).authorizeVault(vault1)
+        await dispatcher.connect(governance).authorizeVault(vaultAddress1)
         await expect(
-          dispatcher.connect(governance).authorizeVault(vault1),
+          dispatcher.connect(governance).authorizeVault(vaultAddress1),
         ).to.be.revertedWithCustomError(dispatcher, "VaultAlreadyAuthorized")
       })
 
       it("should emit an event when adding a vault", async () => {
-        await expect(dispatcher.connect(governance).authorizeVault(vault1))
+        await expect(
+          dispatcher.connect(governance).authorizeVault(vaultAddress1),
+        )
           .to.emit(dispatcher, "VaultAuthorized")
-          .withArgs(vault1)
+          .withArgs(vaultAddress1)
       })
     })
   })
 
   describe("deauthorizeVault", () => {
     beforeEach(async () => {
-      await dispatcher.connect(governance).authorizeVault(vault1)
-      await dispatcher.connect(governance).authorizeVault(vault2)
-      await dispatcher.connect(governance).authorizeVault(vault3)
+      await dispatcher.connect(governance).authorizeVault(vaultAddress1)
+      await dispatcher.connect(governance).authorizeVault(vaultAddress2)
+      await dispatcher.connect(governance).authorizeVault(vaultAddress3)
     })
 
     context("when caller is not a governance account", () => {
       it("should revert when adding a vault", async () => {
         await expect(
-          dispatcher.connect(thirdParty).deauthorizeVault(vault1),
+          dispatcher.connect(thirdParty).deauthorizeVault(vaultAddress1),
         ).to.be.revertedWithCustomError(
           dispatcher,
           "OwnableUnauthorizedAccount",
@@ -105,38 +117,43 @@ describe("Dispatcher", () => {
 
     context("when caller is a governance account", () => {
       it("should be able to remove vaults", async () => {
-        await dispatcher.connect(governance).deauthorizeVault(vault1)
+        await dispatcher.connect(governance).deauthorizeVault(vaultAddress1)
 
         // Last vault replaced the first vault in the 'vaults' array
-        expect(await dispatcher.vaults(0)).to.equal(vault3)
-        const isVault1Authorized = await dispatcher.vaultsInfo(vault1)
-        expect(isVault1Authorized).to.equal(false)
+        expect(await dispatcher.vaults(0)).to.equal(vaultAddress3)
+        const isVaultAddress1Authorized =
+          await dispatcher.vaultsInfo(vaultAddress1)
+        expect(isVaultAddress1Authorized).to.equal(false)
         expect((await dispatcher.getVaults()).length).to.equal(2)
 
-        await dispatcher.connect(governance).deauthorizeVault(vault2)
+        await dispatcher.connect(governance).deauthorizeVault(vaultAddress2)
 
-        // Last vault (vault2) was removed from the 'vaults' array
-        expect(await dispatcher.vaults(0)).to.equal(vault3)
+        // Last vault (vaultAddress2) was removed from the 'vaults' array
+        expect(await dispatcher.vaults(0)).to.equal(vaultAddress3)
         expect((await dispatcher.getVaults()).length).to.equal(1)
-        const isVault2Authorized = await dispatcher.vaultsInfo(vault2)
-        expect(isVault2Authorized).to.equal(false)
+        const isVaultAddress2Authorized =
+          await dispatcher.vaultsInfo(vaultAddress2)
+        expect(isVaultAddress2Authorized).to.equal(false)
 
-        await dispatcher.connect(governance).deauthorizeVault(vault3)
+        await dispatcher.connect(governance).deauthorizeVault(vaultAddress3)
         expect((await dispatcher.getVaults()).length).to.equal(0)
-        const isVault3Authorized = await dispatcher.vaultsInfo(vault3)
-        expect(isVault3Authorized).to.equal(false)
+        const isVaultAddress3Authorized =
+          await dispatcher.vaultsInfo(vaultAddress3)
+        expect(isVaultAddress3Authorized).to.equal(false)
       })
 
       it("should not be able to remove a vault that is not authorized", async () => {
         await expect(
-          dispatcher.connect(governance).deauthorizeVault(vault4),
+          dispatcher.connect(governance).deauthorizeVault(vaultAddress4),
         ).to.be.revertedWithCustomError(dispatcher, "VaultUnauthorized")
       })
 
       it("should emit an event when removing a vault", async () => {
-        await expect(dispatcher.connect(governance).deauthorizeVault(vault1))
+        await expect(
+          dispatcher.connect(governance).deauthorizeVault(vaultAddress1),
+        )
           .to.emit(dispatcher, "VaultDeauthorized")
-          .withArgs(vault1)
+          .withArgs(vaultAddress1)
       })
     })
   })
