@@ -24,8 +24,8 @@ contract Dispatcher is Ownable {
     address[] public vaults;
     mapping(address => VaultInfo) public vaultsInfo;
 
-    event VaultAdded(address indexed vault);
-    event VaultRemoved(address indexed vault);
+    event VaultAuthorized(address indexed vault);
+    event VaultDeauthorized(address indexed vault);
 
     constructor() Ownable(msg.sender) {}
 
@@ -39,7 +39,7 @@ contract Dispatcher is Ownable {
         vaults.push(vault);
         vaultsInfo[vault].authorized = true;
 
-        emit VaultAdded(vault);
+        emit VaultAuthorized(vault);
     }
 
     /// @notice Removes a vault from the list of authorized vaults.
@@ -60,10 +60,10 @@ contract Dispatcher is Ownable {
             }
         }
 
-        emit VaultRemoved(vault);
+        emit VaultDeauthorized(vault);
     }
 
-    function vaultsLength() external view returns (uint256) {
-        return vaults.length;
+    function getVaults() external view returns (address[] memory) {
+        return vaults;
     }
 }

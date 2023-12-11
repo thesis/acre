@@ -79,7 +79,7 @@ describe("Dispatcher", () => {
 
       it("should emit an event when adding a vault", async () => {
         await expect(dispatcher.connect(governance).authorizeVault(vault1))
-          .to.emit(dispatcher, "VaultAdded")
+          .to.emit(dispatcher, "VaultAuthorized")
           .withArgs(vault1)
       })
     })
@@ -111,18 +111,18 @@ describe("Dispatcher", () => {
         expect(await dispatcher.vaults(0)).to.equal(vault3)
         const isVault1Authorized = await dispatcher.vaultsInfo(vault1)
         expect(isVault1Authorized).to.equal(false)
-        expect(await dispatcher.vaultsLength()).to.equal(2)
+        expect((await dispatcher.getVaults()).length).to.equal(2)
 
         await dispatcher.connect(governance).deauthorizeVault(vault2)
 
         // Last vault (vault2) was removed from the 'vaults' array
         expect(await dispatcher.vaults(0)).to.equal(vault3)
-        expect(await dispatcher.vaultsLength()).to.equal(1)
+        expect((await dispatcher.getVaults()).length).to.equal(1)
         const isVault2Authorized = await dispatcher.vaultsInfo(vault2)
         expect(isVault2Authorized).to.equal(false)
 
         await dispatcher.connect(governance).deauthorizeVault(vault3)
-        expect(await dispatcher.vaultsLength()).to.equal(0)
+        expect((await dispatcher.getVaults()).length).to.equal(0)
         const isVault3Authorized = await dispatcher.vaultsInfo(vault3)
         expect(isVault3Authorized).to.equal(false)
       })
@@ -135,7 +135,7 @@ describe("Dispatcher", () => {
 
       it("should emit an event when removing a vault", async () => {
         await expect(dispatcher.connect(governance).deauthorizeVault(vault1))
-          .to.emit(dispatcher, "VaultRemoved")
+          .to.emit(dispatcher, "VaultDeauthorized")
           .withArgs(vault1)
       })
     })
