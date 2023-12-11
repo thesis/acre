@@ -9,14 +9,14 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 ///         generate yield for Bitcoin holders.
 contract Dispatcher is Ownable {
     struct VaultInfo {
-        bool approved;
+        bool authorized;
     }
 
-    /// @notice Approved Yield Vaults that implement ERC4626 standard. These
+    /// @notice Authorized Yield Vaults that implement ERC4626 standard. These
     ///         vaults deposit assets to yield strategies, e.g. Uniswap V3
     ///         WBTC/TBTC pool. Vault can be a part of Acre ecosystem or can be
     ///         implemented externally. As long as it complies with ERC4626
-    ///         standard and is approved by the owner it can be plugged into
+    ///         standard and is authorized by the owner it can be plugged into
     ///         Acre.
     address[] public vaults;
     mapping(address => VaultInfo) public vaultsInfo;
@@ -26,23 +26,23 @@ contract Dispatcher is Ownable {
 
     constructor() Ownable(msg.sender) {}
 
-    /// @notice Adds a vault to the list of approved vaults.
+    /// @notice Adds a vault to the list of authorized vaults.
     /// @param vault Address of the vault to add.
-    function addVault(address vault) external onlyOwner {
-        require(!vaultsInfo[vault].approved, "Vault already approved");
+    function authorizeVault(address vault) external onlyOwner {
+        require(!vaultsInfo[vault].authorized, "Vault already authorized");
 
         vaults.push(vault);
-        vaultsInfo[vault].approved = true;
+        vaultsInfo[vault].authorized = true;
 
         emit VaultAdded(vault);
     }
 
-    /// @notice Removes a vault from the list of approved vaults.
+    /// @notice Removes a vault from the list of authorized vaults.
     /// @param vault Address of the vault to remove.
-    function removeVault(address vault) external onlyOwner {
-        require(vaultsInfo[vault].approved, "Not a vault");
+    function deauthorizeVault(address vault) external onlyOwner {
+        require(vaultsInfo[vault].authorized, "Not a vault");
 
-        vaultsInfo[vault].approved = false;
+        vaultsInfo[vault].authorized = false;
 
         for (uint256 i = 0; i < vaults.length; i++) {
             if (vaults[i] == vault) {
