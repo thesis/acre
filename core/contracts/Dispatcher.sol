@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 ///         a given vault and back. Vaults supply yield strategies with TBTC that
 ///         generate yield for Bitcoin holders.
 contract Dispatcher is Ownable {
-    struct Vault {
+    struct VaultInfo {
         bool approved;
     }
 
@@ -19,7 +19,7 @@ contract Dispatcher is Ownable {
     ///         standard and is approved by the owner it can be plugged into
     ///         Acre.
     address[] public vaults;
-    mapping(address => Vault) public vaultsInfo;
+    mapping(address => VaultInfo) public vaultsInfo;
 
     event VaultAdded(address indexed vault);
     event VaultRemoved(address indexed vault);
