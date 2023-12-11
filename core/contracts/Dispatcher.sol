@@ -12,12 +12,12 @@ contract Dispatcher is Ownable {
         bool approved;
     }
 
-    /// @notice Approved vaults within the Yiern Modules that implement ERC4626
-    ///         standard. These vaults deposit assets to yield strategies, e.g.
-    ///         Uniswap V3 WBTC/TBTC pool. Vault can be a part of Acre ecosystem
-    ///         or can be implemented externally. As long as it complies with
-    ///         ERC4626 standard and is approved by the owner it can be
-    ///         plugged into Acre.
+    /// @notice Approved Yield Vaults that implement ERC4626 standard. These
+    ///         vaults deposit assets to yield strategies, e.g. Uniswap V3
+    ///         WBTC/TBTC pool. Vault can be a part of Acre ecosystem or can be
+    ///         implemented externally. As long as it complies with ERC4626
+    ///         standard and is approved by the owner it can be plugged into
+    ///         Acre.
     address[] public vaults;
     mapping(address => Vault) public vaultsInfo;
 
