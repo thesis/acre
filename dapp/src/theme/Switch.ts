@@ -5,10 +5,10 @@ const Switch: ComponentSingleStyleConfig = {
     track: {
       _checked: {
         _dark: {
-          bg: "purple",
+          bg: "grey.700",
         },
         _light: {
-          bg: "grey.200",
+          bg: "grey.700",
         },
       },
     },

@@ -17,7 +17,8 @@ import { useDocsDrawer } from "../../hooks"
 export default function Overview() {
   const { onOpen } = useDocsDrawer()
 
-  const bg = useColorModeValue("white", "grey.400")
+  // TODO: Create a custom theme for card component
+  const bg = useColorModeValue("gold.100", "gold.100")
 
   return (
     <Flex direction="column" gap={2} p={6}>

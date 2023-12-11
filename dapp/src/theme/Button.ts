@@ -8,15 +8,17 @@ const Button: ComponentSingleStyleConfig = {
   },
   variants: {
     solid: (props: StyleFunctionProps) => ({
-      backgroundColor: mode("black", "purple")(props),
+      // TODO: Update when the dark theme is ready
+      backgroundColor: mode("brand.400", "brand.400")(props),
       color: "white",
     }),
     outline: (props: StyleFunctionProps) => ({
-      color: mode("black", "grey.80")(props),
-      borderColor: mode("black", "grey.50")(props),
+      // TODO: Update when the dark theme is ready
+      color: mode("grey.700", "grey.700")(props),
+      borderColor: mode("grey.700", "grey.700")(props),
     }),
     link: (props: StyleFunctionProps) => ({
-      color: mode("black", "grey.50")(props),
+      color: mode("grey.700", "grey.700")(props),
       textDecoration: "underline",
     }),
   },

@@ -4,7 +4,6 @@ import {
   Button,
   Tooltip,
   Icon,
-  useColorModeValue,
   CardBody,
   Card,
   CardFooter,
@@ -27,7 +26,7 @@ export default function PositionDetails(props: CardProps) {
           <Text>Your positions</Text>
           {/* TODO: Add correct text for tooltip */}
           <Tooltip label="Template">
-            <Icon as={Info} color={useColorModeValue("black", "grey.80")} />
+            <Icon as={Info} color="grey.700" />
           </Tooltip>
         </HStack>
         <Text>
