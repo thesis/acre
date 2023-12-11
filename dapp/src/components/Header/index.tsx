@@ -7,7 +7,7 @@ export const HEADER_HEIGHT = 24
 
 export default function Header() {
   return (
-    <HStack as="header" p={6}  height={HEADER_HEIGHT}>
+    <HStack as="header" p={6} height={HEADER_HEIGHT}>
       <Icon as={AcreLogo} boxSize={20} />
       <Flex ml="auto">
         <ConnectWallet />
