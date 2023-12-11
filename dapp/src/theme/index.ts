@@ -4,6 +4,7 @@ import Button from "./Button"
 import Switch from "./Switch"
 import { colors, fontSizes, fontWeights, lineHeights, zIndices } from "./utils"
 import Drawer from "./Drawer"
+import Modal from "./Modal"
 
 // Currently, there is no possibility to set all tooltips with hasArrow by defaultProps.
 // Let's override the defaultProps as follows.
@@ -27,6 +28,7 @@ const defaultTheme = {
     Button,
     Switch,
     Drawer,
+    Modal,
   },
 }
 

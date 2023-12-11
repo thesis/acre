@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { Box, useColorModeValue } from "@chakra-ui/react"
+import { Box } from "@chakra-ui/react"
 import { useModal } from "../../hooks"
 import { HEADER_HEIGHT } from "../Header"
 
@@ -28,8 +28,8 @@ export default function ModalOverlay() {
       w="100vw"
       h="100vh"
       position="fixed"
-      // TODO: Set the correct background color
-      bg={useColorModeValue("grey.100", "grey.100")}
+      // TODO: Use the correct variables
+      bg="#F3E5C1"
       opacity={modalType ? 1 : 0}
       zIndex="overlay"
       // Hide the element when it is no longer needed.

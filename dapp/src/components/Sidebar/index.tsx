@@ -1,5 +1,5 @@
 import React from "react"
-import { Box, Button, useColorModeValue } from "@chakra-ui/react"
+import { Box, Button } from "@chakra-ui/react"
 import DocsDrawer from "../DocsDrawer"
 import { useDocsDrawer, useSidebar } from "../../hooks"
 import { HEADER_HEIGHT } from "../Header"
@@ -14,17 +14,24 @@ export default function Sidebar() {
         top={0}
         right={0}
         h="100vh"
+        w={isOpen ? 80 : 0}
         position="fixed"
-        width={isOpen ? 80 : 0}
-        height="100vh"
+        overflow="hidden"
         transition="width 0.3s"
         zIndex="sidebar"
-        // TODO: Set the correct background color
-        bg={useColorModeValue("white", "white")}
         mt={HEADER_HEIGHT}
       >
-        {/* TODO: Add a correct content for the sidebar */}
-        <Button onClick={openDocsDrawer}>Open a documentation</Button>
+        <Box
+          p={4}
+          h="100%"
+          borderTop="2px"
+          borderLeft="2px"
+          borderColor="white"
+          borderTopLeftRadius="xl"
+        >
+          {/* TODO: Add a correct content for the sidebar */}
+          <Button onClick={openDocsDrawer}>Open a documentation</Button>
+        </Box>
       </Box>
       <DocsDrawer />
     </>

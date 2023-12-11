@@ -4,7 +4,6 @@ import {
   DrawerBody,
   DrawerContent,
   DrawerOverlay,
-  useColorModeValue,
 } from "@chakra-ui/react"
 import { useDocsDrawer } from "../../hooks"
 import { TextMd } from "../Typography"
@@ -15,16 +14,8 @@ export default function DocsDrawer() {
 
   return (
     <Drawer size="xl" placement="right" isOpen={isOpen} onClose={onClose}>
-      <DrawerOverlay
-        mt={HEADER_HEIGHT}
-        // TODO: Set the correct background color
-        bg={useColorModeValue("grey.100", "grey.100")}
-      />
-      {/* TODO: Set the correct background color */}
-      <DrawerContent
-        mt={HEADER_HEIGHT}
-        bg={useColorModeValue("white", "white")}
-      >
+      <DrawerOverlay mt={HEADER_HEIGHT} />
+      <DrawerContent mt={HEADER_HEIGHT}>
         <DrawerBody>
           {/* TODO: Add a documentation */}
           <TextMd>Documentation</TextMd>
