@@ -28,8 +28,7 @@ export default function ModalOverlay() {
       w="100vw"
       h="100vh"
       position="fixed"
-      // TODO: Use the correct variables
-      bg="#F3E5C1"
+      bg="gold.300"
       opacity={modalType ? 1 : 0}
       zIndex="overlay"
       // Hide the element when it is no longer needed.

@@ -8,15 +8,13 @@ const Modal: ComponentSingleStyleConfig = {
       boxShadow: "none",
       borderColor: "white",
       borderRadius: "xl",
-      // TODO: Use the correct variables
-      bg: "#FBF7EC",
+      bg: "gold.100",
     },
     closeButton: {
       top: -10,
       right: -10,
       rounded: "100%",
-      // TODO: Use the correct variables
-      bg: "#FBF7EC",
+      bg: "gold.100",
     },
   },
 }

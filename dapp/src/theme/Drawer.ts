@@ -6,8 +6,7 @@ const Drawer: ComponentSingleStyleConfig = {
       zIndex: "drawer",
     },
     overlay: {
-      // TODO: Use the correct variables
-      bg: "#F3E5C1",
+      bg: "gold.300",
     },
     dialog: {
       borderTop: "2px",
@@ -15,8 +14,7 @@ const Drawer: ComponentSingleStyleConfig = {
       boxShadow: "none",
       borderColor: "white",
       borderTopLeftRadius: "xl",
-      // TODO: Use the correct variables
-      bg: "#F8EFDA",
+      bg: "gold.200",
     },
   },
 }
