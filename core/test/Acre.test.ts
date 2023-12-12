@@ -167,7 +167,7 @@ describe("Acre", () => {
             acre
               .connect(staker1)
               .stake(amountToStake, staker1.address, referral),
-          ).to.revertedWith("Amount is less than minimum")
+          ).to.revertedWithCustomError(acre, "StakingAmountLessThanMin")
         })
       })
 
@@ -188,7 +188,7 @@ describe("Acre", () => {
             acre
               .connect(staker1)
               .stake(amountToStake, staker1.address, referral),
-          ).to.revertedWith("Amount is less than minimum")
+          ).to.revertedWithCustomError(acre, "StakingAmountLessThanMin")
         })
       })
 
@@ -534,7 +534,7 @@ describe("Acre", () => {
         it("should take into account the min deposit amount parameter and revert", async () => {
           await expect(
             acre.connect(staker1).mint(sharesToMint, staker1.address),
-          ).to.be.revertedWith("Amount is less than minimum")
+          ).to.be.revertedWithCustomError(acre, "StakingAmountLessThanMin")
         })
       },
     )
@@ -596,9 +596,7 @@ describe("Acre", () => {
                   minimumDepositAmount,
                   validMaximumTotalAssetsAmount,
                 ),
-            ).to.be.revertedWith(
-              "Minimum deposit amount must be greater than zero",
-            )
+            ).to.be.revertedWithCustomError(acre, "InvalidStakingParameter")
           })
         })
       })
@@ -615,9 +613,7 @@ describe("Acre", () => {
                   validMinimumDepositAmount,
                   maximumTotalAssets,
                 ),
-            ).to.be.revertedWith(
-              "Maximum total assets amount must be greater than zero",
-            )
+            ).to.be.revertedWithCustomError(acre, "InvalidStakingParameter")
           })
         })
       })

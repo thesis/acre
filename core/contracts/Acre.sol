@@ -31,6 +31,9 @@ contract Acre is ERC4626, Ownable {
         uint256 maximumTotalAssets
     );
 
+    error StakingAmountLessThanMin(uint256 amount, uint256 min);
+    error InvalidStakingParameter();
+
     constructor(
         IERC20 tbtc
     ) ERC4626(tbtc) ERC20("Acre Staked Bitcoin", "stBTC") Ownable(msg.sender) {
@@ -52,15 +55,9 @@ contract Acre is ERC4626, Ownable {
         uint256 maximumTotalAssets
     ) external onlyOwner {
         // TODO: Introduce a parameters update process.
-        require(
-            minimumDepositAmount > 0,
-            "Minimum deposit amount must be greater than zero"
-        );
-
-        require(
-            maximumTotalAssets > 0,
-            "Maximum total assets amount must be greater than zero"
-        );
+        if (minimumDepositAmount <= 0 || maximumTotalAssets <= 0) {
+            revert InvalidStakingParameter();
+        }
 
         stakingParameters.minimumDepositAmount = minimumDepositAmount;
         stakingParameters.maximumTotalAssets = maximumTotalAssets;
@@ -72,10 +69,12 @@ contract Acre is ERC4626, Ownable {
         uint256 assets,
         address receiver
     ) public override returns (uint256) {
-        require(
-            assets >= stakingParameters.minimumDepositAmount,
-            "Amount is less than minimum"
-        );
+        if (assets < stakingParameters.minimumDepositAmount) {
+            revert StakingAmountLessThanMin(
+                assets,
+                stakingParameters.minimumDepositAmount
+            );
+        }
 
         return super.deposit(assets, receiver);
     }
@@ -84,10 +83,14 @@ contract Acre is ERC4626, Ownable {
         uint256 shares,
         address receiver
     ) public override returns (uint256) {
-        require(
-            previewMint(shares) >= stakingParameters.minimumDepositAmount,
-            "Amount is less than minimum"
-        );
+        uint256 assets = previewMint(shares);
+
+        if (assets < stakingParameters.minimumDepositAmount) {
+            revert StakingAmountLessThanMin(
+                assets,
+                stakingParameters.minimumDepositAmount
+            );
+        }
 
         return super.mint(shares, receiver);
     }
