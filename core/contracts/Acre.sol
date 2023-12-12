@@ -131,7 +131,11 @@ contract Acre is ERC4626, Ownable {
     ///         Acre.
     /// @return The maximum amount of the tBTC token.
     function maxDeposit(address) public view override returns (uint256) {
-        return stakingParameters.maximumTotalAssets - totalAssets();
+        uint256 _totalAssets = totalAssets();
+
+        if (_totalAssets >= stakingParameters.maximumTotalAssets) return 0;
+
+        return stakingParameters.maximumTotalAssets - _totalAssets;
     }
 
     /// @notice Returns the maximum amount of the vault shares that can be

@@ -279,6 +279,10 @@ describe("Acre", () => {
         await tbtc.connect(staker2).mint(staker2.address, staker2AmountToStake)
       })
 
+      after(async () => {
+        await snapshot.restore()
+      })
+
       context(
         "when the vault is empty and has not yet earned yield from strategies",
         () => {
@@ -539,6 +543,15 @@ describe("Acre", () => {
   describe("updateStakingParameters", () => {
     const validMinimumDepositAmount = to1e18(1)
     const validMaximumTotalAssetsAmount = to1e18(30)
+    let snapshot: SnapshotRestorer
+
+    beforeEach(async () => {
+      snapshot = await takeSnapshot()
+    })
+
+    afterEach(async () => {
+      await snapshot.restore()
+    })
 
     context("when is called by owner", () => {
       context("when all parameters are valid", () => {
@@ -646,6 +659,65 @@ describe("Acre", () => {
               validMaximumTotalAssetsAmount,
             ),
         ).to.be.revertedWithCustomError(acre, "OwnableUnauthorizedAccount")
+      })
+    })
+  })
+
+  describe("maxDeposit", () => {
+    let maximumTotalAssets: bigint
+    let snapshot: SnapshotRestorer
+
+    beforeEach(async () => {
+      snapshot = await takeSnapshot()
+      ;({ maximumTotalAssets } = await acre.stakingParameters())
+    })
+
+    afterEach(async () => {
+      await snapshot.restore()
+    })
+
+    context(
+      "when total assets is greater than maximum total assets amount",
+      () => {
+        beforeEach(async () => {
+          const toMint = maximumTotalAssets + 1n
+
+          await tbtc.mint(await acre.getAddress(), toMint)
+        })
+
+        it("should return 0", async () => {
+          expect(await acre.maxDeposit(staker1.address)).to.be.eq(0)
+        })
+      },
+    )
+
+    context("when the vault is empty", () => {
+      it("should return maximum total assets amount", async () => {
+        expect(await acre.maxDeposit(staker1.address)).to.be.eq(
+          maximumTotalAssets,
+        )
+      })
+    })
+
+    context("when the maximum total amount has not yet been reached", () => {
+      let expectedValue: bigint
+
+      beforeEach(async () => {
+        const toMint = to1e18(2)
+        const newMaximumTotalAssets = to1e18(30)
+        const minimumDepositAmount = to1e18(1)
+
+        expectedValue = newMaximumTotalAssets - toMint
+
+        await acre.updateStakingParameters(
+          minimumDepositAmount,
+          newMaximumTotalAssets,
+        )
+        await tbtc.mint(await acre.getAddress(), toMint)
+      })
+
+      it("should return correct value", async () => {
+        expect(await acre.maxDeposit(staker1.address)).to.be.eq(expectedValue)
       })
     })
   })
