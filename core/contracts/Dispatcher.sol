@@ -2,20 +2,26 @@
 pragma solidity ^0.8.21;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/interfaces/IERC4626.sol";
 import "./Router.sol";
 
 /// @title Dispatcher
-/// @notice Dispatcher is a contract that routes TBTC from stBTC (Acre) to
+/// @notice Dispatcher is a contract that routes tBTC from stBTC (Acre) to
 ///         a given vault and back. Vaults supply yield strategies with TBTC that
 ///         generate yield for Bitcoin holders.
-contract Dispatcher is Ownable {
+contract Dispatcher is Router, Ownable {
+    using SafeERC20 for IERC20;
+
     error VaultAlreadyAuthorized();
     error VaultUnauthorized();
 
     struct VaultInfo {
         bool authorized;
     }
+
+    IERC20 public immutable stBTC; // Acre contract
+    IERC20 public immutable tBTC;
 
     /// @notice Authorized Yield Vaults that implement ERC4626 standard. These
     ///         vaults deposit assets to yield strategies, e.g. Uniswap V3
@@ -29,7 +35,10 @@ contract Dispatcher is Ownable {
     event VaultAuthorized(address indexed vault);
     event VaultDeauthorized(address indexed vault);
 
-    constructor() Ownable(msg.sender) {}
+    constructor(IERC20 _stBTC, IERC20 _tBTC) Ownable(msg.sender) {
+        stBTC = _stBTC;
+        tBTC = _tBTC;
+    }
 
     /// @notice Adds a vault to the list of authorized vaults.
     /// @param vault Address of the vault to add.
@@ -76,7 +85,9 @@ contract Dispatcher is Ownable {
         uint256 minSharesOut
     ) public {
         require(msg.sender == address(stBTC), "stBTC only");
-        require(vaultsInfo[vault].authorized, "Vault is not approved");
+        if (!vaultsInfo[vault].authorized) {
+            revert VaultUnauthorized();
+        }
 
         deposit(IERC4626(vault), address(stBTC), amount, minSharesOut);
     }
@@ -88,7 +99,9 @@ contract Dispatcher is Ownable {
         uint256 minAssetsOut
     ) public {
         require(msg.sender == address(stBTC), "stBTC only");
-        require(vaultsInfo[vault].authorized, "Vault is not approved");
+        if (!vaultsInfo[vault].authorized) {
+            revert VaultUnauthorized();
+        }
 
         redeem(IERC4626(vault), address(stBTC), shares, minAssetsOut);
     }
