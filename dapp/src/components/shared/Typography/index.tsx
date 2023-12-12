@@ -1,76 +1,28 @@
 import React from "react"
-import { Text, TextProps } from "@chakra-ui/react"
+import { Heading, Text, TextProps } from "@chakra-ui/react"
 
-export function H2Xl(props: TextProps) {
-  return (
-    <Text
-      as="h1"
-      fontWeight="medium"
-      fontSize="h2Xl"
-      lineHeight="h2Xl"
-      {...props}
-    />
-  )
+export function H1(props: TextProps) {
+  return <Heading as="h1" size={{ base: "6xl", md: "7xl" }} {...props} />
 }
 
-export function HXl(props: TextProps) {
-  return (
-    <Text
-      as="h2"
-      fontWeight="medium"
-      fontSize="hXl"
-      lineHeight="hXl"
-      {...props}
-    />
-  )
+export function H2(props: TextProps) {
+  return <Heading as="h2" size={{ base: "5xl", md: "6xl" }} {...props} />
 }
 
-export function HLg(props: TextProps) {
-  return (
-    <Text
-      as="h3"
-      fontWeight="medium"
-      fontSize="hLg"
-      lineHeight="hLg"
-      {...props}
-    />
-  )
+export function H3(props: TextProps) {
+  return <Heading as="h3" size={{ base: "4xl", md: "5xl" }} {...props} />
 }
 
-export function HMd(props: TextProps) {
-  return (
-    <Text
-      as="h4"
-      fontWeight="medium"
-      fontSize="hMd"
-      lineHeight="hMd"
-      {...props}
-    />
-  )
+export function H4(props: TextProps) {
+  return <Heading as="h4" size={{ base: "3xl", md: "4xl" }} {...props} />
 }
 
-export function HSm(props: TextProps) {
-  return (
-    <Text
-      as="h5"
-      fontWeight="medium"
-      fontSize="hSm"
-      lineHeight="hSm"
-      {...props}
-    />
-  )
+export function H5(props: TextProps) {
+  return <Heading as="h5" size={{ base: "2xl", md: "3xl" }} {...props} />
 }
 
-export function HXs(props: TextProps) {
-  return (
-    <Text
-      as="h6"
-      fontWeight="medium"
-      fontSize="hXs"
-      lineHeight="hXs"
-      {...props}
-    />
-  )
+export function H6(props: TextProps) {
+  return <Heading as="h6" size={{ base: "xl", md: "2xl" }} {...props} />
 }
 
 export function TextXl(props: TextProps) {
