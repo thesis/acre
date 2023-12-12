@@ -8,7 +8,8 @@ import {
   useRequestEthereumAccount,
   useWalletContext,
 } from "../../hooks"
-import { formatSatoshiAmount, truncateAddress } from "../../utils"
+import { truncateAddress } from "../../utils"
+import { CurrencyBalance } from "../shared/CurrencyBalance"
 
 export type ConnectButtonsProps = {
   leftIcon: typeof Icon
@@ -56,12 +57,12 @@ export default function ConnectWallet() {
     <HStack spacing={4}>
       <HStack display={{ base: "none", md: "flex" }}>
         <Text>Balance</Text>
-        <Text as="b">
-          {!btcAccount || btcAccount?.balance.isZero()
-            ? "0.00"
-            : formatSatoshiAmount(btcAccount.balance.toString())}
-        </Text>
-        <Text>{BITCOIN.symbol}</Text>
+        <CurrencyBalance
+          currency={BITCOIN}
+          amount={btcAccount?.balance.toString()}
+          balanceProps={{ fontWeight: "bold" }}
+          symbolProps={{ fontWeight: "bold" }}
+        />
       </HStack>
       <ConnectButton
         leftIcon={Bitcoin}
