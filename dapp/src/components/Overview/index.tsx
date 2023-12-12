@@ -5,7 +5,7 @@ import Statistics from "./Statistics"
 import TransactionHistory from "./TransactionHistory"
 import { USD } from "../../constants"
 import { ArrowUpRight } from "../../static/icons"
-import { TextSm } from "../Typography"
+import { TextSm } from "../shared/Typography"
 
 export default function Overview() {
   return (
