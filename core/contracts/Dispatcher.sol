@@ -15,6 +15,7 @@ contract Dispatcher is Router, Ownable {
 
     error VaultAlreadyAuthorized();
     error VaultUnauthorized();
+    error CallerUnauthorized(string reason);
 
     struct VaultInfo {
         bool authorized;
@@ -78,13 +79,18 @@ contract Dispatcher is Router, Ownable {
         return vaults;
     }
 
-    // TODO: add documentation
+    /// @notice Routes tBTC from stBTC (Acre) to a vault.
+    /// @param vault Address of the vault to route the assets to.
+    /// @param amount Amount of tBTC to deposit.
+    /// @param minSharesOut Minimum amount of shares to receive by Acre.
     function depositToVault(
         address vault,
         uint256 amount,
         uint256 minSharesOut
     ) public {
-        require(msg.sender == address(stBTC), "stBTC only");
+        if (msg.sender != address(stBTC)) {
+            revert CallerUnauthorized("Acre only");
+        }
         if (!vaultsInfo[vault].authorized) {
             revert VaultUnauthorized();
         }
@@ -92,13 +98,18 @@ contract Dispatcher is Router, Ownable {
         deposit(IERC4626(vault), address(stBTC), amount, minSharesOut);
     }
 
-    // TODO: add documentation
+    /// @notice Routes tBTC from a vault to stBTC (Acre).
+    /// @param vault Address of the vault to collect the assets from.
+    /// @param shares Amount of shares to collect.
+    /// @param minAssetsOut Minimum amount of TBTC to receive.
     function redeemFromVault(
         address vault,
         uint256 shares,
         uint256 minAssetsOut
     ) public {
-        require(msg.sender == address(stBTC), "stBTC only");
+        if (msg.sender != address(stBTC)) {
+            revert CallerUnauthorized("Acre only");
+        }
         if (!vaultsInfo[vault].authorized) {
             revert VaultUnauthorized();
         }
