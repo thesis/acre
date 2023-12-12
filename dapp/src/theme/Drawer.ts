@@ -14,7 +14,7 @@ const Drawer: ComponentSingleStyleConfig = {
       boxShadow: "none",
       borderColor: "white",
       borderTopLeftRadius: "xl",
-      bg: "gold.200",
+      bg: "gold.100",
     },
   },
 }

@@ -24,9 +24,10 @@ export default function Sidebar() {
         <Box
           p={4}
           h="100%"
+          bg="gold.200"
           borderTop="2px"
           borderLeft="2px"
-          borderColor="white"
+          borderColor="gold.100"
           borderTopLeftRadius="xl"
         >
           {/* TODO: Add a correct content for the sidebar */}
