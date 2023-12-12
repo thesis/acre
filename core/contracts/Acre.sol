@@ -51,6 +51,7 @@ contract Acre is ERC4626, Ownable {
         uint256 minimumDepositAmount,
         uint256 maximumTotalAssets
     ) external onlyOwner {
+        // TODO: Introduce a parameters update process.
         require(
             minimumDepositAmount > 0,
             "Minimum deposit amount must be greater than zero"
