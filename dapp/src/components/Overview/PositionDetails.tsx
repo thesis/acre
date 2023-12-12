@@ -12,7 +12,7 @@ import {
 import { BITCOIN, USD } from "../../constants"
 import { Info } from "../../static/icons"
 import { CurrencyBalance } from "../shared/CurrencyBalance"
-import { HMd, TextLg, TextMd, TextXl } from "../shared/Typography"
+import { H4, TextLg, TextMd, TextXl } from "../shared/Typography"
 
 export default function PositionDetails(props: CardProps) {
   return (
@@ -28,7 +28,7 @@ export default function PositionDetails(props: CardProps) {
         <CurrencyBalance
           currency={BITCOIN}
           amount="2398567898"
-          balanceTag={HMd}
+          balanceTag={H4}
           symbolTag={TextXl}
           balanceProps={{ fontWeight: "bold" }}
           symbolProps={{ fontWeight: "semibold" }}

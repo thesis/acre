@@ -1,10 +1,11 @@
 import React, { useMemo } from "react"
-import { HStack, TextProps } from "@chakra-ui/react"
+import { HStack, HeadingProps, TextProps } from "@chakra-ui/react"
 import { formatTokenAmount, toLocaleString } from "../../../utils"
 import { Currency } from "../../../types"
 import { TextMd } from "../Typography"
 
 type TypographyTag = (props: TextProps) => JSX.Element
+type TypographyProps = TextProps | HeadingProps
 
 type CurrencyBalanceProps = {
   currency: Currency
@@ -13,8 +14,8 @@ type CurrencyBalanceProps = {
   desiredDecimals?: number
   balanceTag?: TypographyTag
   symbolTag?: TypographyTag
-  balanceProps?: TextProps
-  symbolProps?: TextProps
+  balanceProps?: TypographyProps
+  symbolProps?: TypographyProps
 }
 
 export function CurrencyBalance({
