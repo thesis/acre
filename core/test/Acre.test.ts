@@ -17,7 +17,7 @@ async function acreFixture() {
   const tbtc = await TestERC20.deploy()
 
   const Acre = await ethers.getContractFactory("Acre")
-  const acre = await Acre.deploy(await tbtc.getAddress(), owner)
+  const acre = await Acre.deploy(await tbtc.getAddress())
 
   const amountToMint = to1e18(100000)
   tbtc.mint(staker1, amountToMint)

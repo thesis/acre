@@ -9,7 +9,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
   await deployments.deploy("Acre", {
     from: deployer,
-    args: [tbtc.address, deployer],
+    args: [tbtc.address],
     log: true,
     waitConfirmations: 1,
   })
