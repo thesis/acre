@@ -41,8 +41,6 @@ contract Acre is ERC4626, Ownable {
     /// @notice Updates parameters of staking.
     /// @dev Requirements:
     ///      - Minimum deposit amount must be greater than zero,
-    ///      - Minimum deposit amount must be greater than or equal to the
-    ///        minimum deposit amount in the tBTC system,
     ///      - Maximum total assets must be greater than zero.
     /// @param minimumDepositAmount New value of the minimum deposit amount. It
     ///        is the minimum amount for a single deposit operation.
@@ -56,12 +54,6 @@ contract Acre is ERC4626, Ownable {
         require(
             minimumDepositAmount > 0,
             "Minimum deposit amount must be greater than zero"
-        );
-
-        // TODO: Do we need this requirement?
-        require(
-            minimumDepositAmount >= _getTBTCSystemMinDepositAmount(),
-            "Minimum deposit amount must be greater than or to the equal minimum deposit amount in tBTC system"
         );
 
         require(
@@ -143,18 +135,5 @@ contract Acre is ERC4626, Ownable {
     /// @return The maximum amount of the vault shares.
     function maxMint(address receiver) public view override returns (uint256) {
         return previewDeposit(maxDeposit(receiver));
-    }
-
-    function _getTBTCSystemMinDepositAmount() private pure returns (uint256) {
-        // TODO: Implement if we want to make sure the minimum deposit amount is
-        // greater than or equal the minimum dposit amount in the tBTC system.
-
-        // (uint64 depositDustThreshold, , , ) = tbtcBridge.depositParameters();
-
-        // // The `depositDustThreshold` is in satoshi so we need to cast to tBTC
-        // // decimals.
-        // return 10 ** (ERC20(asset()).decimals() - 8) * depositDustThreshold;
-
-        return 0.01 ether; // 0.01 tBTC
     }
 }

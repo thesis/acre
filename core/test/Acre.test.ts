@@ -601,32 +601,6 @@ describe("Acre", () => {
             )
           })
         })
-
-        context(
-          "when it is less than the minimum deposit amount in tBTC system",
-          () => {
-            // TODO: In the current implementation the minimum deposit amount
-            // from tBTC system is hardcoded to 0.01 tBTC. We should get this
-            // value from mocked tBTC Bridge contract.
-            const minimumDepositAmountInTBTCSystem = 10000000000000000n
-
-            const newMinimumDepositAmount =
-              minimumDepositAmountInTBTCSystem - 1n
-
-            it("should revert", async () => {
-              await expect(
-                acre
-                  .connect(owner)
-                  .updateStakingParameters(
-                    newMinimumDepositAmount,
-                    validMaximumTotalAssetsAmount,
-                  ),
-              ).to.be.revertedWith(
-                "Minimum deposit amount must be greater than or to the equal minimum deposit amount in tBTC system",
-              )
-            })
-          },
-        )
       })
 
       context("when the maximum total assets amount is invalid", () => {
