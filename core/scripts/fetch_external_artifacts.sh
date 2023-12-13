@@ -1,7 +1,10 @@
 #! /bin/bash
 set -eou pipefail
 
-ROOT_DIR="$(realpath "$(dirname $0)/../")"
+ROOT_DIR=$(
+    cd "$(dirname $0)/../"
+    pwd -P
+)
 TMP_DIR=${ROOT_DIR}/tmp/external-artifacts
 EXTERNAL_ARTIFACTS_DIR=${ROOT_DIR}/external
 
@@ -9,9 +12,9 @@ EXTERNAL_ARTIFACTS_DIR=${ROOT_DIR}/external
 rm -rf ${TMP_DIR}
 mkdir -p ${TMP_DIR}
 
-# fetch_external_artifact is a function that fetches a contract deployment artifact
-# from a package published to the NPM registry. It assumes a package is published
-# following the rules established by Keep Network deployments:
+# fetch_external_artifact is a function that fetches a contract deployment
+# artifact from a package published to the NPM registry. It assumes a package is
+# published following the rules established by Keep Network deployments:
 # 1. Packages are tagged with network name and contain the latest version of
 #    deployment artifacts for the given network.
 # 2. Deployment artfiacts files located under `artifacts/` directory.
@@ -35,7 +38,8 @@ fetch_external_artifact() {
         --pack-destination=${TMP_DIR} \
         ${package} |
         # Extract deployment artifact to the destination directory.
-        xargs -I{} tar -zxf ${TMP_DIR}/{} -C ${destination_dir} --strip-components 2 package/artifacts/${contractName}.json
+        xargs -I{} tar -zxf ${TMP_DIR}/{} -C ${destination_dir} \
+            --strip-components 2 package/artifacts/${contractName}.json
 
     printf "Succesfully fetched ${contractName} contract artifact from ${package} to ${destination_dir}\n"
 }

@@ -25,13 +25,7 @@ export async function getNamedSigner(): Promise<{
  * @returns Array of unnamed Hardhat Ethers Signers.
  */
 export async function getUnnamedSigner(): Promise<HardhatEthersSigner[]> {
-  const unnamedSigners: HardhatEthersSigner[] = []
+  const accounts = await getUnnamedAccounts()
 
-  await Promise.all(
-    (await getUnnamedAccounts()).map(async (address) => {
-      unnamedSigners.push(await ethers.getSigner(address))
-    }),
-  )
-
-  return unnamedSigners
+  return Promise.all(accounts.map(ethers.getSigner))
 }
