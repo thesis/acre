@@ -3,6 +3,7 @@ pragma solidity ^0.8.21;
 
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 import "./Dispatcher.sol";
 
@@ -18,6 +19,10 @@ import "./Dispatcher.sol";
 ///      burning of shares (stBTC), which are represented as standard ERC20
 ///      tokens, providing a seamless exchange with tBTC tokens.
 contract Acre is ERC4626, Ownable {
+    using SafeERC20 for IERC20;
+
+    error CallerNotDispatcher();
+    
     event StakeReferral(bytes32 indexed referral, uint256 assets);
 
     Dispatcher public dispatcher;
@@ -53,10 +58,18 @@ contract Acre is ERC4626, Ownable {
     function upgradeDispatcher(Dispatcher _newDispatcher) public onlyOwner {
         if (address(dispatcher) != address(0)) {
             IERC20(asset()).approve(address(dispatcher), 0);
+            // TODO: Remove dispatcher's approvals for the vaults.
         }
 
         dispatcher = _newDispatcher;
 
         IERC20(asset()).approve(address(dispatcher), type(uint256).max);
+    }
+
+    function approveVaultSharesForDispatcher(address vault, uint256 amount) external {
+        if (msg.sender != address(dispatcher)) revert CallerNotDispatcher();
+
+        // TODO: Emit event
+        IERC20(vault).safeIncreaseAllowance(address(dispatcher), amount);
     }
 }
