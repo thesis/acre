@@ -78,10 +78,10 @@ describe.only("Dispatcher", () => {
       vaultDepositAmount,
     )
 
-    expect(await vault.balanceOf(await acre.getAddress())).to.be.equal(
+    expect(await vault.balanceOf(await acre.getAddress())).to.be.equal(0)
+    expect(await vault.balanceOf(await dispatcher.getAddress())).to.be.equal(
       expectedSharesDeposit,
     )
-    expect(await vault.balanceOf(await dispatcher.getAddress())).to.be.equal(0)
 
     // Simulate Vault generating yield.
     const yieldAmount = to1e18(300)
@@ -102,10 +102,10 @@ describe.only("Dispatcher", () => {
       expectedSharesWithdraw,
     )
 
-    expect(await vault.balanceOf(await dispatcher.getAddress())).to.be.equal(0)
-    expect(await vault.balanceOf(await acre.getAddress())).to.be.equal(
+    expect(await vault.balanceOf(await dispatcher.getAddress())).to.be.equal(
       expectedSharesDeposit - expectedSharesWithdraw,
     )
+    expect(await vault.balanceOf(await acre.getAddress())).to.be.equal(0)
 
     expect(await tbtc.balanceOf(await acre.getAddress())).to.be.equal(
       staker1Amount - vaultDepositAmount + amountToWithdraw1,
@@ -125,10 +125,10 @@ describe.only("Dispatcher", () => {
       expectedAmountRedeem,
     )
 
-    expect(await vault.balanceOf(await dispatcher.getAddress())).to.be.equal(0)
-    expect(await vault.balanceOf(await acre.getAddress())).to.be.equal(
+    expect(await vault.balanceOf(await dispatcher.getAddress())).to.be.equal(
       expectedSharesDeposit - expectedSharesWithdraw - sharesToRedeem,
     )
+    expect(await vault.balanceOf(await acre.getAddress())).to.be.equal(0)
 
     expect(await tbtc.balanceOf(await acre.getAddress())).to.be.equal(
       staker1Amount -

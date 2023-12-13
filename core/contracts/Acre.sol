@@ -58,18 +58,10 @@ contract Acre is ERC4626, Ownable {
     function upgradeDispatcher(Dispatcher _newDispatcher) public onlyOwner {
         if (address(dispatcher) != address(0)) {
             IERC20(asset()).approve(address(dispatcher), 0);
-            // TODO: Remove dispatcher's approvals for the vaults.
         }
 
         dispatcher = _newDispatcher;
 
         IERC20(asset()).approve(address(dispatcher), type(uint256).max);
-    }
-
-    function approveVaultSharesForDispatcher(address vault, uint256 amount) external {
-        if (msg.sender != address(dispatcher)) revert CallerNotDispatcher();
-
-        // TODO: Emit event
-        IERC20(vault).safeIncreaseAllowance(address(dispatcher), amount);
     }
 }

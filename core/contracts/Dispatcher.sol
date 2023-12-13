@@ -13,7 +13,6 @@ import "./Acre.sol";
 contract Dispatcher is Router, Ownable {
     using SafeERC20 for IERC20;
 
-
     error VaultAlreadyAuthorized();
     error VaultUnauthorized();
 
@@ -51,8 +50,6 @@ contract Dispatcher is Router, Ownable {
         vaults.push(vault);
         vaultsInfo[vault].authorized = true;
 
-        acre.approveVaultSharesForDispatcher(vault, type(uint256).max);
-
         emit VaultAuthorized(vault);
     }
 
@@ -73,8 +70,6 @@ contract Dispatcher is Router, Ownable {
                 break;
             }
         }
-
-        acre.approveVaultSharesForDispatcher(vault, 0);
 
         emit VaultDeauthorized(vault);
     }
@@ -103,7 +98,7 @@ contract Dispatcher is Router, Ownable {
         IERC20(tbtc).safeTransferFrom(address(acre), address(this), amount);
         IERC20(tbtc).approve(address(vault), amount);
 
-        Router.deposit(vault, address(acre), amount, minSharesOut);
+        Router.deposit(vault, address(this), amount, minSharesOut);
     }
 
 // TODO: Add access restriction
@@ -114,7 +109,6 @@ contract Dispatcher is Router, Ownable {
     ) public returns (uint256 sharesOut) {
         uint256 shares = vault.previewWithdraw(amount);
 
-        IERC20(vault).safeTransferFrom(address(acre), address(this), shares);
         IERC20(vault).approve(address(vault), shares);
 
         Router.withdraw(vault, address(acre), amount, maxSharesOut);
@@ -126,11 +120,19 @@ contract Dispatcher is Router, Ownable {
         uint256 shares,
         uint256 minAmountOut
     ) public returns (uint256 amountOut) {
-        IERC20(vault).safeTransferFrom(address(acre), address(this), shares);
         IERC20(vault).approve(address(vault), shares);
 
         Router.redeem(vault, address(acre), shares, minAmountOut);
     }
 
     // TODO: Add function to withdrawMax
+
+    // TODO: Check possibilities of Dispatcher upgrades and shares migration.
+    function migrateShares(IERC4626[] calldata _vaults) public onlyOwner {
+        address newDispatcher = address(acre.dispatcher());
+
+        for (uint i=0; i<_vaults.length; i++) {
+            _vaults[i].transfer(newDispatcher, _vaults[i].balanceOf(address(this)));
+        }
+    }
 }
