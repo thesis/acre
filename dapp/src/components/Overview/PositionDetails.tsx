@@ -11,8 +11,8 @@ import {
 } from "@chakra-ui/react"
 import { BITCOIN, USD } from "../../constants"
 import { Info } from "../../static/icons"
-import { CurrencyBalance } from "../shared/CurrencyBalance"
-import { H4, TextLg, TextMd, TextXl } from "../shared/Typography"
+import { TokenBalance } from "../shared/TokenBalance"
+import { TextMd } from "../shared/Typography"
 
 export default function PositionDetails(props: CardProps) {
   return (
@@ -25,22 +25,18 @@ export default function PositionDetails(props: CardProps) {
             <Icon as={Info} color="grey.700" />
           </Tooltip>
         </HStack>
-        <CurrencyBalance
-          currency={BITCOIN}
-          amount="2398567898"
-          balanceTag={H4}
-          symbolTag={TextXl}
-          balanceProps={{ fontWeight: "bold" }}
-          symbolProps={{ fontWeight: "semibold" }}
-        />
-        <CurrencyBalance
-          currency={USD}
-          amount={419288.98}
-          shouldBeFormatted={false}
-          balanceTag={TextLg}
-          symbolTag={TextLg}
-          balanceProps={{ fontWeight: "semibold" }}
-          symbolProps={{ fontWeight: "semibold" }}
+        <TokenBalance
+          token={{
+            currency: BITCOIN,
+            amount: "2398567898",
+            variant: "greater-balance",
+          }}
+          fiatCurrency={{
+            currency: USD,
+            amount: 419288.98,
+            shouldBeFormatted: false,
+            size: "lg",
+          }}
         />
       </CardBody>
       <CardFooter flexDirection="column" gap={2}>

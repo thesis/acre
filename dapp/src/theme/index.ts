@@ -4,6 +4,7 @@ import Button from "./Button"
 import Switch from "./Switch"
 import { colors, fonts, lineHeights } from "./utils"
 import Heading from "./Heading"
+import CurrencyBalance from "./CurrencyBalance"
 
 // Currently, there is no possibility to set all tooltips with hasArrow by defaultProps.
 // Let's override the defaultProps as follows.
@@ -26,6 +27,7 @@ const defaultTheme = {
     Button,
     Switch,
     Heading,
+    CurrencyBalance,
   },
 }
 

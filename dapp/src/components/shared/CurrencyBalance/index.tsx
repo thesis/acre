@@ -1,21 +1,15 @@
 import React, { useMemo } from "react"
-import { HStack, HeadingProps, TextProps } from "@chakra-ui/react"
+import { Box, useMultiStyleConfig } from "@chakra-ui/react"
 import { formatTokenAmount, toLocaleString } from "../../../utils"
 import { Currency } from "../../../types"
-import { TextMd } from "../Typography"
 
-type TypographyTag = (props: TextProps) => JSX.Element
-type TypographyProps = TextProps | HeadingProps
-
-type CurrencyBalanceProps = {
+export type CurrencyBalanceProps = {
   currency: Currency
   amount?: string | number
   shouldBeFormatted?: boolean
   desiredDecimals?: number
-  balanceTag?: TypographyTag
-  symbolTag?: TypographyTag
-  balanceProps?: TypographyProps
-  symbolProps?: TypographyProps
+  size?: string
+  variant?: "greater-balance"
 }
 
 export function CurrencyBalance({
@@ -23,11 +17,11 @@ export function CurrencyBalance({
   amount,
   shouldBeFormatted = true,
   desiredDecimals = 2,
-  balanceTag: BalanceTag = TextMd,
-  symbolTag: SymbolTag = TextMd,
-  balanceProps,
-  symbolProps,
+  size,
+  variant,
 }: CurrencyBalanceProps) {
+  const styles = useMultiStyleConfig("CurrencyBalance", { size, variant })
+
   const balance = useMemo(() => {
     if (shouldBeFormatted)
       return formatTokenAmount(amount ?? 0, currency.decimals, desiredDecimals)
@@ -40,9 +34,13 @@ export function CurrencyBalance({
   }, [amount, currency, desiredDecimals, shouldBeFormatted])
 
   return (
-    <HStack>
-      <BalanceTag {...balanceProps}>{balance}</BalanceTag>
-      <SymbolTag {...symbolProps}>{currency.symbol}</SymbolTag>
-    </HStack>
+    <Box>
+      <Box as="span" __css={styles.balance}>
+        {balance}
+      </Box>
+      <Box as="span" __css={styles.symbol}>
+        {currency.symbol}
+      </Box>
+    </Box>
   )
 }
