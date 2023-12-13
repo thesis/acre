@@ -7,10 +7,6 @@ import Tooltip from "./Tooltip"
 import { colors, fonts, lineHeights } from "./utils"
 import Heading from "./Heading"
 
-// Currently, there is no possibility to set all tooltips with hasArrow by defaultProps.
-// Let's override the defaultProps as follows.
-Tooltip.defaultProps = { ...Tooltip.defaultProps, hasArrow: true }
-
 const defaultTheme = {
   colors,
   fonts,
