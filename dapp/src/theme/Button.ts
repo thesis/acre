@@ -1,4 +1,7 @@
-import { ComponentSingleStyleConfig } from "@chakra-ui/react"
+import {
+  ComponentSingleStyleConfig,
+  StyleFunctionProps,
+} from "@chakra-ui/react"
 
 // TODO: Update the button styles correctly when ready
 const Button: ComponentSingleStyleConfig = {
@@ -37,17 +40,30 @@ const Button: ComponentSingleStyleConfig = {
         bg: "transparent",
       },
     },
-    card: {
-      borderWidth: "2px",
-      borderColor: "gold.100",
-      borderRadius: "xl",
-      bg: "gold.200",
-      _hover: {
-        bg: "opacity.grey.700-05",
-      },
-      _active: {
-        bg: "transparent",
-      },
+    card: (props: StyleFunctionProps) => {
+      const defaultStyles = {
+        borderWidth: "2px",
+        borderColor: "gold.100",
+        borderRadius: "xl",
+        bg: "gold.200",
+        _hover: {
+          bg: "opacity.grey.700-05",
+        },
+        _active: {
+          bg: "transparent",
+        },
+      }
+
+      if (props.colorScheme === "error") {
+        return {
+          ...defaultStyles,
+          color: "red.400",
+          borderColor: "red.400",
+          bg: "transparent",
+        }
+      }
+
+      return defaultStyles
     },
   },
 }

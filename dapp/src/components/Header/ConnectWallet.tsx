@@ -21,14 +21,12 @@ function ConnectButton({
   account,
   requestAccount,
 }: ConnectButtonsProps) {
-  const styles = !account
-    ? { color: "red.400", borderColor: "red.400", bg: "transparent" }
-    : undefined
+  const colorScheme = !account ? "error" : undefined
 
   return (
     <Button
       variant="card"
-      sx={styles}
+      colorScheme={colorScheme}
       leftIcon={<Icon as={leftIcon} boxSize={6} />}
       onClick={requestAccount}
     >
