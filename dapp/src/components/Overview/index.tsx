@@ -14,7 +14,8 @@ import { USD } from "../../constants"
 import { ChevronRight } from "../../static/icons"
 
 export default function Overview() {
-  const bg = useColorModeValue("white", "grey.400")
+  // TODO: Create a custom theme for card component
+  const bg = useColorModeValue("gold.100", "gold.100")
   return (
     <Flex direction="column" gap={2} p={6}>
       <Flex justifyContent="space-between">

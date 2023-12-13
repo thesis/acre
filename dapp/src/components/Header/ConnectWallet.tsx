@@ -1,12 +1,5 @@
 import React from "react"
-import {
-  Button,
-  HStack,
-  Icon,
-  Text,
-  Tooltip,
-  useColorModeValue,
-} from "@chakra-ui/react"
+import { Button, HStack, Icon, Text, Tooltip } from "@chakra-ui/react"
 import { Account } from "@ledgerhq/wallet-api-client"
 import { Bitcoin, Ethereum, Info } from "../../static/icons"
 import { BITCOIN } from "../../constants"
@@ -30,8 +23,9 @@ function ConnectButton({
   account,
   requestAccount,
 }: ConnectButtonsProps) {
-  const styles = !account ? { color: "error", borderColor: "error" } : undefined
-  const colorRightIcon = useColorModeValue("black", "grey.80")
+  const styles = !account
+    ? { color: "red.400", borderColor: "red.400" }
+    : undefined
 
   return (
     <Button
@@ -42,7 +36,7 @@ function ConnectButton({
         !account ? (
           // TODO: Add correct text for tooltip
           <Tooltip label="Template">
-            <Icon as={rightIcon} color={colorRightIcon} />
+            <Icon as={rightIcon} color="grey.700" />
           </Tooltip>
         ) : undefined
       }
@@ -60,7 +54,7 @@ export default function ConnectWallet() {
 
   return (
     <HStack spacing={4}>
-      <HStack>
+      <HStack display={{ base: "none", md: "flex" }}>
         <Text>Balance</Text>
         <Text as="b">
           {!btcAccount || btcAccount?.balance.isZero()

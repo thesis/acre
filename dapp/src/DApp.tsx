@@ -5,6 +5,7 @@ import theme from "./theme"
 import { LedgerWalletAPIProvider, WalletContextProvider } from "./contexts"
 import Header from "./components/Header"
 import Overview from "./components/Overview"
+import GlobalStyles from "./components/GlobalStyles"
 
 function DApp() {
   useDetectThemeMode()
@@ -24,6 +25,7 @@ function DAppProviders() {
     <LedgerWalletAPIProvider>
       <WalletContextProvider>
         <ChakraProvider theme={theme}>
+          <GlobalStyles />
           <DApp />
         </ChakraProvider>
       </WalletContextProvider>
