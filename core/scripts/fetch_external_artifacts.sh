@@ -1,7 +1,10 @@
 #! /bin/bash
 set -eou pipefail
 
-ROOT_DIR="$(realpath "$(dirname $0)/../")"
+ROOT_DIR=$(
+    cd "$(dirname $0)/../"
+    pwd -P
+)
 TMP_DIR=${ROOT_DIR}/tmp/external-artifacts
 EXTERNAL_ARTIFACTS_DIR=${ROOT_DIR}/external
 

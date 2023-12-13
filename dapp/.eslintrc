@@ -3,6 +3,9 @@
   "extends": ["@thesis-co"],
   "rules": {
     "import/no-extraneous-dependencies": "off",
-    "import/prefer-default-export": "off"
+    "import/prefer-default-export": "off",
+    // Regarding the fact that we are using Chakra UI lib let's disable this rule.
+    // This will allow us to easily pass props from the parent component.
+    "react/jsx-props-no-spreading": "off"
   }
 }
