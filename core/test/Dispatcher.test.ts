@@ -1,109 +1,156 @@
-import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers"
-import { expect } from "chai"
-
-import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
-
 import { ethers } from "hardhat"
+import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
+import { expect } from "chai"
+import {
+  SnapshotRestorer,
+  takeSnapshot,
+  loadFixture,
+} from "@nomicfoundation/hardhat-toolbox/network-helpers"
+import type { Dispatcher } from "../typechain"
 import { deployment } from "./helpers/context"
 import { getNamedSigner, getUnnamedSigner } from "./helpers/signer"
 
-import { to1e18 } from "./utils"
-
-import type { Acre, Dispatcher, TestERC4626, TestERC20 } from "../typechain"
-
 async function fixture() {
-  const { tbtc, acre, dispatcher } = await deployment()
-
+  const { dispatcher } = await deployment()
   const { governance } = await getNamedSigner()
+  const [thirdParty] = await getUnnamedSigner()
 
-  const [staker1] = await getUnnamedSigner()
-
-  await acre
-    .connect(governance)
-    .upgradeDispatcher(await dispatcher.getAddress())
-
-  const vault: TestERC4626 = await ethers.deployContract("TestERC4626", [
-    await tbtc.getAddress(),
-    "Test Vault Token",
-    "vToken",
-  ])
-  await vault.waitForDeployment()
-
-  return { acre, tbtc, dispatcher, vault, staker1 }
+  return { dispatcher, governance, thirdParty }
 }
 
 describe("Dispatcher", () => {
-  const staker1Amount = to1e18(1000)
+  let snapshot: SnapshotRestorer
 
-  let acre: Acre
-  let tbtc: TestERC20
   let dispatcher: Dispatcher
-  let vault: TestERC4626
-
-  let staker1: HardhatEthersSigner
+  let governance: HardhatEthersSigner
+  let thirdParty: HardhatEthersSigner
+  let vaultAddress1: string
+  let vaultAddress2: string
+  let vaultAddress3: string
+  let vaultAddress4: string
 
   before(async () => {
-    ;({ acre, tbtc, dispatcher, vault, staker1 } = await loadFixture(fixture))
+    ;({ dispatcher, governance, thirdParty } = await loadFixture(fixture))
+
+    vaultAddress1 = await ethers.Wallet.createRandom().getAddress()
+    vaultAddress2 = await ethers.Wallet.createRandom().getAddress()
+    vaultAddress3 = await ethers.Wallet.createRandom().getAddress()
+    vaultAddress4 = await ethers.Wallet.createRandom().getAddress()
   })
 
-  it("test deposit and withdraw", async () => {
-    // Mint tBTC for staker.
-    await tbtc.mint(staker1.address, staker1Amount)
+  beforeEach(async () => {
+    snapshot = await takeSnapshot()
+  })
 
-    // Stake tBTC in Acre.
-    await tbtc.approve(await acre.getAddress(), staker1Amount)
-    await acre.connect(staker1).deposit(staker1Amount, staker1.address)
+  afterEach(async () => {
+    await snapshot.restore()
+  })
 
-    expect(await tbtc.balanceOf(await acre.getAddress())).to.be.equal(
-      staker1Amount,
-    )
+  describe("authorizeVault", () => {
+    context("when caller is not a governance account", () => {
+      it("should revert when adding a vault", async () => {
+        await expect(
+          dispatcher.connect(thirdParty).authorizeVault(vaultAddress1),
+        ).to.be.revertedWithCustomError(
+          dispatcher,
+          "OwnableUnauthorizedAccount",
+        )
+      })
+    })
 
-    const vaultDepositAmount = to1e18(500)
-    const expectedSharesDeposit = vaultDepositAmount
+    context("when caller is a governance account", () => {
+      it("should be able to authorize vaults", async () => {
+        await dispatcher.connect(governance).authorizeVault(vaultAddress1)
+        await dispatcher.connect(governance).authorizeVault(vaultAddress2)
+        await dispatcher.connect(governance).authorizeVault(vaultAddress3)
 
-    await dispatcher.deposit(
-      await vault.getAddress(),
-      vaultDepositAmount,
-      expectedSharesDeposit,
-    )
+        expect(await dispatcher.vaults(0)).to.equal(vaultAddress1)
+        expect(await dispatcher.vaultsInfo(vaultAddress1)).to.be.equal(true)
 
-    expect(await tbtc.balanceOf(await acre.getAddress())).to.be.equal(
-      staker1Amount - vaultDepositAmount,
-    )
-    expect(await tbtc.balanceOf(await dispatcher.getAddress())).to.be.equal(0)
-    expect(await tbtc.balanceOf(await vault.getAddress())).to.be.equal(
-      vaultDepositAmount,
-    )
+        expect(await dispatcher.vaults(1)).to.equal(vaultAddress2)
+        expect(await dispatcher.vaultsInfo(vaultAddress2)).to.be.equal(true)
 
-    expect(await vault.balanceOf(await acre.getAddress())).to.be.equal(0)
-    expect(await vault.balanceOf(await dispatcher.getAddress())).to.be.equal(
-      expectedSharesDeposit,
-    )
+        expect(await dispatcher.vaults(2)).to.equal(vaultAddress3)
+        expect(await dispatcher.vaultsInfo(vaultAddress3)).to.be.equal(true)
+      })
 
-    // // Simulate Vault generating yield.
-    // const yieldAmount = to1e18(200)
-    // await tbtc.mint(await vault.getAddress(), yieldAmount)
+      it("should not be able to authorize the same vault twice", async () => {
+        await dispatcher.connect(governance).authorizeVault(vaultAddress1)
+        await expect(
+          dispatcher.connect(governance).authorizeVault(vaultAddress1),
+        ).to.be.revertedWithCustomError(dispatcher, "VaultAlreadyAuthorized")
+      })
 
-    // Partial withdrawal.
-    const amountToWithdraw1 = to1e18(300)
-    const expectedSharesWithdraw = to1e18(300)
-    await dispatcher.withdraw(
-      await vault.getAddress(),
-      amountToWithdraw1,
-      expectedSharesWithdraw,
-    )
+      it("should emit an event when adding a vault", async () => {
+        await expect(
+          dispatcher.connect(governance).authorizeVault(vaultAddress1),
+        )
+          .to.emit(dispatcher, "VaultAuthorized")
+          .withArgs(vaultAddress1)
+      })
+    })
+  })
 
-    expect(await vault.balanceOf(await acre.getAddress())).to.be.equal(0)
-    expect(await vault.balanceOf(await dispatcher.getAddress())).to.be.equal(
-      expectedSharesDeposit - expectedSharesWithdraw,
-    )
+  describe("deauthorizeVault", () => {
+    beforeEach(async () => {
+      await dispatcher.connect(governance).authorizeVault(vaultAddress1)
+      await dispatcher.connect(governance).authorizeVault(vaultAddress2)
+      await dispatcher.connect(governance).authorizeVault(vaultAddress3)
+    })
 
-    expect(await tbtc.balanceOf(await acre.getAddress())).to.be.equal(
-      staker1Amount - vaultDepositAmount + amountToWithdraw1,
-    )
-    expect(await tbtc.balanceOf(await dispatcher.getAddress())).to.be.equal(0)
-    expect(await tbtc.balanceOf(await vault.getAddress())).to.be.equal(
-      vaultDepositAmount - amountToWithdraw1,
-    )
+    context("when caller is not a governance account", () => {
+      it("should revert when adding a vault", async () => {
+        await expect(
+          dispatcher.connect(thirdParty).deauthorizeVault(vaultAddress1),
+        ).to.be.revertedWithCustomError(
+          dispatcher,
+          "OwnableUnauthorizedAccount",
+        )
+      })
+    })
+
+    context("when caller is a governance account", () => {
+      it("should be able to authorize vaults", async () => {
+        await dispatcher.connect(governance).deauthorizeVault(vaultAddress1)
+
+        // Last vault replaced the first vault in the 'vaults' array
+        expect(await dispatcher.vaults(0)).to.equal(vaultAddress3)
+        expect(await dispatcher.vaultsInfo(vaultAddress1)).to.be.equal(false)
+        expect((await dispatcher.getVaults()).length).to.equal(2)
+
+        await dispatcher.connect(governance).deauthorizeVault(vaultAddress2)
+
+        // Last vault (vaultAddress2) was removed from the 'vaults' array
+        expect(await dispatcher.vaults(0)).to.equal(vaultAddress3)
+        expect((await dispatcher.getVaults()).length).to.equal(1)
+        expect(await dispatcher.vaultsInfo(vaultAddress2)).to.be.equal(false)
+
+        await dispatcher.connect(governance).deauthorizeVault(vaultAddress3)
+        expect((await dispatcher.getVaults()).length).to.equal(0)
+        expect(await dispatcher.vaultsInfo(vaultAddress3)).to.be.equal(false)
+      })
+
+      it("should be able to deauthorize a vault and authorize it again", async () => {
+        await dispatcher.connect(governance).deauthorizeVault(vaultAddress1)
+        expect(await dispatcher.vaultsInfo(vaultAddress1)).to.be.equal(false)
+
+        await dispatcher.connect(governance).authorizeVault(vaultAddress1)
+        expect(await dispatcher.vaultsInfo(vaultAddress1)).to.be.equal(true)
+      })
+
+      it("should not be able to deauthorize a vault that is not authorized", async () => {
+        await expect(
+          dispatcher.connect(governance).deauthorizeVault(vaultAddress4),
+        ).to.be.revertedWithCustomError(dispatcher, "VaultUnauthorized")
+      })
+
+      it("should emit an event when removing a vault", async () => {
+        await expect(
+          dispatcher.connect(governance).deauthorizeVault(vaultAddress1),
+        )
+          .to.emit(dispatcher, "VaultDeauthorized")
+          .withArgs(vaultAddress1)
+      })
+    })
   })
 })

@@ -5,7 +5,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { getNamedAccounts, deployments } = hre
   const { deployer } = await getNamedAccounts()
 
-  await deployments.deploy("AcreRouter", {
+  await deployments.deploy("Dispatcher", {
     from: deployer,
     args: [],
     log: true,
@@ -18,5 +18,5 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
 export default func
 
-func.tags = ["AcreRouter"]
+func.tags = ["Dispatcher"]
 func.dependencies = ["Acre"]
