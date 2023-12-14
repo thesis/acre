@@ -5,6 +5,10 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/interfaces/IERC4626.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
+// TODO: If changing the contract to upgradable switch to another library.
+// import {MathUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/math/MathUpgradeable.sol";
+
 import "./Router.sol";
 import "./Acre.sol";
 
@@ -115,6 +119,10 @@ contract Dispatcher is Router, Ownable {
         return vaults;
     }
 
+    function sharesOwner() public returns (address) {
+        return address(this);
+    }
+
     // TODO: Add access restriction
     function depositToVault(
         IVault vault,
@@ -130,7 +138,7 @@ contract Dispatcher is Router, Ownable {
         IERC20(tbtc).safeTransferFrom(address(acre), address(this), amount);
         IERC20(tbtc).approve(address(vault), amount);
 
-        return Router.deposit(vault, address(this), amount, minSharesOut);
+        return Router.deposit(vault, sharesOwner(), amount, minSharesOut);
     }
 
     // TODO: Add access restriction
@@ -221,12 +229,17 @@ contract Dispatcher is Router, Ownable {
                 vaultsTotalWeight;
             if (vaultAmount == 0) continue;
 
+            uint256 depositAmount = Math.min(
+                vaultAmount,
+                vault.maxDeposit(sharesOwner())
+            );
+
             // TODO: Pre-calculate the minSharesOut value off-chain as a slippage protection
             // before calling the allocate function.
-            uint256 minSharesOut = vault.previewDeposit(vaultAmount);
+            uint256 minSharesOut = vault.previewDeposit(depositAmount);
 
             // Allocate tBTC to Vault.
-            depositToVault(vault, vaultAmount, minSharesOut);
+            depositToVault(vault, depositAmount, minSharesOut);
         }
     }
 }

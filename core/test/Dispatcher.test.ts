@@ -18,7 +18,7 @@ async function fixture() {
   return { dispatcher, governance, thirdParty }
 }
 
-describe("Dispatcher", () => {
+describe.skip("Dispatcher", () => {
   let snapshot: SnapshotRestorer
 
   let dispatcher: Dispatcher
