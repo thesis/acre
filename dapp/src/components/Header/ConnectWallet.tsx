@@ -1,7 +1,7 @@
 import React from "react"
-import { Button, HStack, Icon, Tooltip } from "@chakra-ui/react"
+import { Button, HStack, Icon } from "@chakra-ui/react"
 import { Account } from "@ledgerhq/wallet-api-client"
-import { Bitcoin, Ethereum, Info } from "../../static/icons"
+import { Bitcoin, Ethereum } from "../../static/icons"
 import { BITCOIN } from "../../constants"
 import {
   useRequestBitcoinAccount,
@@ -14,34 +14,22 @@ import { TextMd } from "../shared/Typography"
 
 export type ConnectButtonsProps = {
   leftIcon: typeof Icon
-  rightIcon: typeof Icon
   account: Account | undefined
   requestAccount: () => Promise<void>
 }
 
 function ConnectButton({
   leftIcon,
-  rightIcon,
   account,
   requestAccount,
 }: ConnectButtonsProps) {
-  const styles = !account
-    ? { color: "red.400", borderColor: "red.400" }
-    : undefined
+  const colorScheme = !account ? "error" : undefined
 
   return (
     <Button
-      variant="outline"
-      sx={styles}
-      leftIcon={<Icon as={leftIcon} h={7} w={7} />}
-      rightIcon={
-        !account ? (
-          // TODO: Add correct text for tooltip
-          <Tooltip label="Template">
-            <Icon as={rightIcon} color="grey.700" />
-          </Tooltip>
-        ) : undefined
-      }
+      variant="card"
+      colorScheme={colorScheme}
+      leftIcon={<Icon as={leftIcon} boxSize={6} />}
       onClick={requestAccount}
     >
       {account ? truncateAddress(account.address) : "Not connected"}
@@ -65,7 +53,6 @@ export default function ConnectWallet() {
       </HStack>
       <ConnectButton
         leftIcon={Bitcoin}
-        rightIcon={Info}
         account={btcAccount}
         requestAccount={async () => {
           await requestBitcoinAccount()
@@ -73,7 +60,6 @@ export default function ConnectWallet() {
       />
       <ConnectButton
         leftIcon={Ethereum}
-        rightIcon={Info}
         account={ethAccount}
         requestAccount={async () => {
           await requestEthereumAccount()
