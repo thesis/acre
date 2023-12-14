@@ -12,6 +12,7 @@ import Header from "./components/Header"
 import Overview from "./components/Overview"
 import Sidebar from "./components/Sidebar"
 import DocsDrawer from "./components/DocsDrawer"
+import GlobalStyles from "./components/GlobalStyles"
 
 function DApp() {
   useDetectThemeMode()
@@ -35,6 +36,7 @@ function DAppProviders() {
         <DocsDrawerContextProvider>
           <SidebarContextProvider>
             <ChakraProvider theme={theme}>
+              <GlobalStyles />
               <DApp />
             </ChakraProvider>
           </SidebarContextProvider>

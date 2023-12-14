@@ -5,8 +5,8 @@ import {
   ModalCloseButton,
   ModalFooter,
 } from "@chakra-ui/react"
-import { TextMd } from "../Typography"
 import { ModalStep } from "../../contexts"
+import { TextMd } from "../shared/Typography"
 
 export default function StakingOverviewModal({ goNext }: ModalStep) {
   return (

@@ -1,7 +1,7 @@
 import React from "react"
 import { Button, ModalBody, ModalCloseButton } from "@chakra-ui/react"
-import { TextMd } from "../Typography"
 import { ModalStep } from "../../contexts"
+import { TextMd } from "../shared/Typography"
 
 export default function StakeModal({ goNext }: ModalStep) {
   return (

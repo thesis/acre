@@ -1,36 +1,30 @@
 import React from "react"
-import {
-  Button,
-  Flex,
-  Grid,
-  Icon,
-  Switch,
-  useColorModeValue,
-} from "@chakra-ui/react"
+import { Button, Flex, Grid, HStack, Icon, Switch } from "@chakra-ui/react"
 import PositionDetails from "./PositionDetails"
 import Statistics from "./Statistics"
 import TransactionHistory from "./TransactionHistory"
 import { USD } from "../../constants"
-import { ChevronRight } from "../../static/icons"
+import { ArrowUpRight } from "../../static/icons"
+import { TextSm } from "../shared/Typography"
 import { useDocsDrawer } from "../../hooks"
 
 export default function Overview() {
   const { onOpen } = useDocsDrawer()
 
-  // TODO: Create a custom theme for card component
-  const bg = useColorModeValue("gold.100", "gold.100")
-
   return (
     <Flex direction="column" gap={2} p={6}>
-      <Flex justifyContent="space-between">
-        {/* TODO: Handle click actions */}
-        <Switch size="sm">Show values in {USD.symbol}</Switch>
+      <Flex justifyContent="space-between" alignItems="center">
+        <HStack>
+          {/* TODO: Handle click actions */}
+          <Switch size="sm" />
+          <TextSm fontWeight="bold">Show values in {USD.symbol}</TextSm>
+        </HStack>
         <Button
-          variant="link"
-          rightIcon={<Icon as={ChevronRight} />}
+          variant="card"
           onClick={onOpen}
+          leftIcon={<Icon as={ArrowUpRight} color="brand.400" boxSize={4} />}
         >
-          Read documentation
+          Docs
         </Button>
       </Flex>
       <Grid
@@ -38,12 +32,12 @@ export default function Overview() {
                         "transaction-history transaction-history"`}
         gridTemplateColumns={{ base: "30% 1fr", xl: "20% 1fr" }}
         gridTemplateRows={{ base: "55% 1fr", xl: "40% 1fr" }}
-        h="80vh"
+        h="75vh"
         gap={4}
       >
-        <PositionDetails bg={bg} gridArea="position-details" />
-        <Statistics bg={bg} gridArea="statistics" />
-        <TransactionHistory bg={bg} gridArea="transaction-history" />
+        <PositionDetails gridArea="position-details" />
+        <Statistics gridArea="statistics" />
+        <TransactionHistory gridArea="transaction-history" />
       </Grid>
     </Flex>
   )

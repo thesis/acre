@@ -7,8 +7,6 @@ import ModalBase from "../shared/ModalBase"
 function StakingModalSteps() {
   const { activeStep, goNext } = useModalFlowContext()
 
-  console.log("activeStep ", activeStep)
-
   switch (activeStep) {
     case "overview":
       return <StakingOverviewModal goNext={goNext} />
