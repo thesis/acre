@@ -8,6 +8,7 @@ import Modal from "./Modal"
 import Card from "./Card"
 import Tooltip from "./Tooltip"
 import Heading from "./Heading"
+import Sidebar from "./Sidebar"
 
 const defaultTheme = {
   colors,
@@ -27,6 +28,7 @@ const defaultTheme = {
     Button,
     Switch,
     Drawer,
+    Sidebar,
     Modal,
     Heading,
     Card,
