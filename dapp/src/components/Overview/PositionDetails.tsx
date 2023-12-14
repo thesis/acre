@@ -4,7 +4,6 @@ import {
   Button,
   Tooltip,
   Icon,
-  useColorModeValue,
   CardBody,
   Card,
   CardFooter,
@@ -21,8 +20,8 @@ export default function PositionDetails(props: CardProps) {
         <HStack justifyContent="space-between">
           <Text>Your positions</Text>
           {/* TODO: Add correct text for tooltip */}
-          <Tooltip label="Template">
-            <Icon as={Info} color={useColorModeValue("black", "grey.80")} />
+          <Tooltip label="Template" placement="top">
+            <Icon as={Info} color="grey.700" />
           </Tooltip>
         </HStack>
         <Text>
@@ -34,8 +33,10 @@ export default function PositionDetails(props: CardProps) {
       </CardBody>
       <CardFooter flexDirection="column" gap={2}>
         {/* TODO: Handle click actions */}
-        <Button>Stake</Button>
-        <Button variant="outline">Withdraw</Button>
+        <Button size="lg">Stake</Button>
+        <Button size="lg" variant="outline">
+          Unstake
+        </Button>
       </CardFooter>
     </Card>
   )

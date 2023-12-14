@@ -3,13 +3,9 @@ import { ComponentSingleStyleConfig } from "@chakra-ui/react"
 const Switch: ComponentSingleStyleConfig = {
   baseStyle: {
     track: {
+      bg: "grey.700",
       _checked: {
-        _dark: {
-          bg: "purple",
-        },
-        _light: {
-          bg: "grey.200",
-        },
+        bg: "brand.400",
       },
     },
   },
