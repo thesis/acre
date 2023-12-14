@@ -20,7 +20,7 @@ export default function PositionDetails(props: CardProps) {
         <HStack justifyContent="space-between">
           <Text>Your positions</Text>
           {/* TODO: Add correct text for tooltip */}
-          <Tooltip label="Template">
+          <Tooltip label="Template" placement="top">
             <Icon as={Info} color="grey.700" />
           </Tooltip>
         </HStack>
@@ -33,8 +33,10 @@ export default function PositionDetails(props: CardProps) {
       </CardBody>
       <CardFooter flexDirection="column" gap={2}>
         {/* TODO: Handle click actions */}
-        <Button>Stake</Button>
-        <Button variant="outline">Withdraw</Button>
+        <Button size="lg">Stake</Button>
+        <Button size="lg" variant="outline">
+          Unstake
+        </Button>
       </CardFooter>
     </Card>
   )

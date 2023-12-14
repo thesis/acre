@@ -53,4 +53,11 @@ export const colors = {
     600: "#443D3F",
     700: "#231F20", // Acre Dirt
   },
+  opacity: {
+    grey: {
+      700: {
+        5: "rgba(35, 31, 32, 0.05)",
+      },
+    },
+  },
 }
