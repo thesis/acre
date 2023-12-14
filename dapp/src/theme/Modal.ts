@@ -14,7 +14,7 @@ const Modal: ComponentSingleStyleConfig = {
       top: -10,
       right: -10,
       rounded: "100%",
-      bg: "opacity.white.5"
+      bg: "opacity.white.5",
     },
     overlay: {
       bg: "none",
