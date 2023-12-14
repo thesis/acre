@@ -196,7 +196,7 @@ describe("Dispatcher Routing", () => {
         .connect(governance)
         .setVaultWeights([await vault1.getAddress()], [vault1Weight])
 
-      await dispatcher.allocate()
+      await dispatcher.allocate([expectedVault1Shares, 0])
 
       expect(await tbtc.balanceOf(await acre.getAddress())).to.be.equal(0)
       expect(await tbtc.balanceOf(await dispatcher.getAddress())).to.be.equal(0)
@@ -221,7 +221,7 @@ describe("Dispatcher Routing", () => {
         .connect(governance)
         .setVaultWeights([await vault1.getAddress()], [vault1Weight])
 
-      await dispatcher.allocate()
+      await dispatcher.allocate([expectedVault1Shares, 0])
 
       expect(await tbtc.balanceOf(await acre.getAddress())).to.be.equal(
         staker1Amount - vault1DepositAmount,
@@ -255,7 +255,7 @@ describe("Dispatcher Routing", () => {
           [vault1Weight, vault2Weight],
         )
 
-      await dispatcher.allocate()
+      await dispatcher.allocate([expectedVault1Shares, expectedVault2Shares])
 
       expect(await tbtc.balanceOf(await acre.getAddress())).to.be.equal(0)
       expect(await tbtc.balanceOf(await dispatcher.getAddress())).to.be.equal(0)

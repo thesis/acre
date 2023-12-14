@@ -25,6 +25,7 @@ contract Dispatcher is Router, Ownable {
     error VaultUnauthorized();
     error InvalidVaultsWeight(uint16 vaultsWeight, uint16 vaultsTotalWeight);
     error TotalAmountZero();
+    error InvalidMinSharesOutListLength(uint256 current, uint256 expected);
 
     struct VaultInfo {
         bool authorized;
@@ -204,10 +205,13 @@ contract Dispatcher is Router, Ownable {
     // allocation. We may need improved solution to calculate exactly how much
     // tBTC should be deposited or withdrawn from each vault.
     // TODO: Make callable only by the maintainer bot.
-    // TODO: Add pre-calculated minSharesOut values for each deposit.
-    // TODO: Consider having constant total weight, e.g. 1000, so the vaults can
-    //       have
-    function allocate() public {
+    function allocate(uint256[] memory minSharesOutList) public {
+        if (minSharesOutList.length != vaults.length)
+            revert InvalidMinSharesOutListLength(
+                minSharesOutList.length,
+                vaults.length
+            );
+
         uint16 vaultsWeight = vaultsWeight();
         if (
             vaultsTotalWeight == 0 ||
@@ -236,7 +240,7 @@ contract Dispatcher is Router, Ownable {
 
             // TODO: Pre-calculate the minSharesOut value off-chain as a slippage protection
             // before calling the allocate function.
-            uint256 minSharesOut = vault.previewDeposit(depositAmount);
+            uint256 minSharesOut = minSharesOutList[i];
 
             // Allocate tBTC to Vault.
             depositToVault(vault, depositAmount, minSharesOut);
