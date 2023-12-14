@@ -7,24 +7,23 @@ import { useSidebar } from "../../../hooks"
 export default function ModalBase({
   isOpen,
   onClose,
-  steps,
-  defaultIndex = 0,
+  numberOfSteps,
+  defaultStep = 1,
   children,
 }: {
   isOpen: boolean
   onClose: () => void
-  steps: string[]
+  numberOfSteps: number
   // eslint-disable-next-line react/require-default-props
-  defaultIndex?: number
+  defaultStep?: number
   children: React.ReactNode
 }) {
   const { onOpen: openSideBar, onClose: closeSidebar } = useSidebar()
 
-  const [activeStep, setActiveStep] = useState(steps[defaultIndex])
-  const [index, setIndex] = useState(defaultIndex)
+  const [activeStep, setActiveStep] = useState(defaultStep)
 
   const handleGoNext = useCallback(() => {
-    setIndex((prevIndex) => prevIndex + 1)
+    setActiveStep((prevStep) => prevStep + 1)
   }, [])
 
   const handleClose = useCallback(() => {
@@ -32,17 +31,14 @@ export default function ModalBase({
   }, [onClose])
 
   const resetState = useCallback(() => {
-    setActiveStep(steps[defaultIndex])
-    setIndex(defaultIndex)
-  }, [defaultIndex, steps])
+    setActiveStep(defaultStep)
+  }, [defaultStep])
 
   useEffect(() => {
-    if (index >= steps.length) {
+    if (activeStep > numberOfSteps) {
       handleClose()
-    } else {
-      setActiveStep(steps[index])
     }
-  }, [steps, index, handleClose])
+  }, [activeStep, numberOfSteps, handleClose])
 
   useEffect(() => {
     let timeout: NodeJS.Timeout
@@ -58,12 +54,11 @@ export default function ModalBase({
 
   const contextValue: ModalFlowContextValue = useMemo<ModalFlowContextValue>(
     () => ({
-      steps,
       activeStep,
       onClose: handleClose,
       goNext: handleGoNext,
     }),
-    [activeStep, steps, handleGoNext, handleClose],
+    [activeStep, handleGoNext, handleClose],
   )
 
   return (

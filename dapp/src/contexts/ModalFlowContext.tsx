@@ -5,15 +5,13 @@ export type ModalStep = {
 }
 
 export type ModalFlowContextValue = {
-  activeStep?: string
-  steps: string[]
+  activeStep?: number
   onClose: () => void
   goNext: () => void
 }
 
 export const ModalFlowContext = createContext<ModalFlowContextValue>({
   activeStep: undefined,
-  steps: [],
   goNext: () => {},
   onClose: () => {},
 })

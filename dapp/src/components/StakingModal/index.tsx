@@ -8,9 +8,9 @@ function StakingModalSteps() {
   const { activeStep, goNext } = useModalFlowContext()
 
   switch (activeStep) {
-    case "overview":
+    case 1:
       return <StakingOverviewModal goNext={goNext} />
-    case "stake":
+    case 2:
       return <StakeModal goNext={goNext} />
     default:
       return null
@@ -25,7 +25,7 @@ export default function StakingModal({
   onClose: () => void
 }) {
   return (
-    <ModalBase isOpen={isOpen} onClose={onClose} steps={["overview", "stake"]}>
+    <ModalBase isOpen={isOpen} onClose={onClose} numberOfSteps={2}>
       <StakingModalSteps />
     </ModalBase>
   )
