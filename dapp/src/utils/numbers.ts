@@ -43,7 +43,7 @@ export const formatTokenAmount = (
 ) => {
   const fixedPoint = BigInt(amount)
 
-  if (fixedPoint === BigInt(0)) {
+  if (fixedPoint === 0n) {
     return `0.${"0".repeat(desiredDecimals)}`
   }
 
