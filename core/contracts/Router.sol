@@ -5,7 +5,6 @@ import "@openzeppelin/contracts/interfaces/IERC20.sol";
 import {IERC4626} from "@openzeppelin/contracts/interfaces/IERC4626.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-
 // TODO: Consider deploying ERC4626RouterBase from the ERC4626 Alliance.
 // TODO: Think about adding reentrancy guard
 // TODO: Add ACL
@@ -48,7 +47,10 @@ abstract contract Router {
         uint256 amount,
         uint256 maxSharesOut
     ) internal virtual returns (uint256 sharesOut) {
-        if ((sharesOut = vault.withdraw(amount, to, address(this))) > maxSharesOut) {
+        if (
+            (sharesOut = vault.withdraw(amount, to, address(this))) >
+            maxSharesOut
+        ) {
             revert MaxSharesError();
         }
     }
@@ -63,7 +65,9 @@ abstract contract Router {
         uint256 shares,
         uint256 minAmountOut
     ) internal virtual returns (uint256 amountOut) {
-          if ((amountOut = vault.redeem(shares, to, address(this))) < minAmountOut) {
+        if (
+            (amountOut = vault.redeem(shares, to, address(this))) < minAmountOut
+        ) {
             revert MinAmountError();
         }
     }

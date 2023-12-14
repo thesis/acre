@@ -22,7 +22,7 @@ contract Acre is ERC4626, Ownable {
     using SafeERC20 for IERC20;
 
     error CallerNotDispatcher();
-    
+
     event StakeReferral(bytes32 indexed referral, uint256 assets);
 
     Dispatcher public dispatcher;
@@ -31,6 +31,12 @@ contract Acre is ERC4626, Ownable {
         IERC20 tbtc
     ) ERC4626(tbtc) ERC20("Acre Staked Bitcoin", "stBTC") Ownable(msg.sender) {}
 
+    /// @notice Returns the total amount of the underlying asset that is “managed”
+    ///         by Acre.
+    function totalAssets() public view virtual override returns (uint256) {
+        return
+            IERC20(asset()).balanceOf(address(this)) + dispatcher.totalAssets();
+    }
 
     /// @notice Stakes a given amount of tBTC token and mints shares to a
     ///         receiver.
