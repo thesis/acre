@@ -34,7 +34,7 @@ const Button: ComponentSingleStyleConfig = {
       color: "grey.700",
       borderColor: "grey.700",
       _hover: {
-        bg: "opacity.grey.700.5",
+        bg: "opacity.grey.700.05",
       },
       _active: {
         bg: "transparent",
@@ -47,7 +47,7 @@ const Button: ComponentSingleStyleConfig = {
         borderRadius: "xl",
         bg: "gold.200",
         _hover: {
-          bg: "opacity.grey.700.5",
+          bg: "opacity.grey.700.05",
         },
         _active: {
           bg: "transparent",
