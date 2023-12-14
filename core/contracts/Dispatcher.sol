@@ -35,8 +35,6 @@ contract Dispatcher is Router, Ownable {
     Acre public acre;
     IERC20 public tbtc;
 
-    uint16 public vaultsTotalWeight = 1000;
-
     /// @notice Authorized Yield Vaults that implement ERC4626 standard. These
     ///         vaults deposit assets to yield strategies, e.g. Uniswap V3
     ///         WBTC/TBTC pool. Vault can be a part of Acre ecosystem or can be
@@ -45,6 +43,12 @@ contract Dispatcher is Router, Ownable {
     ///         Acre.
     IVault[] public vaults;
     mapping(IVault => VaultInfo) public vaultsInfo;
+
+    /// @dev Vaults weights defined in VaultInfo structure should sum up to
+    ///      vaultsTotalWeight. If vaults weight defined in the VaultInfo
+    ///      is less than vaultsTotalWeight the rest of funds will be kept
+    ///      as a buffer in the Acre contract.
+    uint16 public vaultsTotalWeight = 1000;
 
     event VaultAuthorized(address indexed vault);
     event VaultDeauthorized(address indexed vault);
@@ -120,66 +124,6 @@ contract Dispatcher is Router, Ownable {
         return vaults;
     }
 
-    function sharesOwner() public returns (address) {
-        return address(this);
-    }
-
-    // TODO: Add access restriction
-    function depositToVault(
-        IVault vault,
-        uint256 amount,
-        uint256 minSharesOut
-    ) public returns (uint256 sharesOut) {
-        if (!isVaultAuthorized(vault)) {
-            revert VaultUnauthorized();
-        }
-
-        require(vault.asset() == address(tbtc), "vault asset is not tbtc");
-
-        IERC20(tbtc).safeTransferFrom(address(acre), address(this), amount);
-        IERC20(tbtc).approve(address(vault), amount);
-
-        return Router.deposit(vault, sharesOwner(), amount, minSharesOut);
-    }
-
-    // TODO: Add access restriction
-    function withdrawFromVault(
-        IVault vault,
-        uint256 amount,
-        uint256 maxSharesOut
-    ) public returns (uint256 sharesOut) {
-        uint256 shares = vault.previewWithdraw(amount);
-
-        IERC20(vault).approve(address(vault), shares);
-
-        return Router.withdraw(vault, address(acre), amount, maxSharesOut);
-    }
-
-    // TODO: Add access restriction
-    function redeemFromVault(
-        IVault vault,
-        uint256 shares,
-        uint256 minAmountOut
-    ) public returns (uint256 amountOut) {
-        IERC20(vault).approve(address(vault), shares);
-
-        Router.redeem(vault, address(acre), shares, minAmountOut);
-    }
-
-    // TODO: Add function to withdrawMax
-
-    // TODO: Check possibilities of Dispatcher upgrades and shares migration.
-    function migrateShares(IVault[] calldata _vaults) public onlyOwner {
-        address newDispatcher = address(acre.dispatcher());
-
-        for (uint i = 0; i < _vaults.length; i++) {
-            _vaults[i].transfer(
-                newDispatcher,
-                _vaults[i].balanceOf(address(this))
-            );
-        }
-    }
-
     function vaultsWeight() internal view returns (uint16 totalWeight) {
         for (uint256 i = 0; i < vaults.length; i++) {
             totalWeight += vaultsInfo[vaults[i]].weight;
@@ -244,6 +188,68 @@ contract Dispatcher is Router, Ownable {
 
             // Allocate tBTC to Vault.
             depositToVault(vault, depositAmount, minSharesOut);
+        }
+    }
+
+    function sharesOwner() public returns (address) {
+        return address(this);
+    }
+
+    // TODO: This function has to be internal.
+    function depositToVault(
+        IVault vault,
+        uint256 amount,
+        uint256 minSharesOut
+    ) public returns (uint256 sharesOut) {
+        if (!isVaultAuthorized(vault)) {
+            revert VaultUnauthorized();
+        }
+
+        require(vault.asset() == address(tbtc), "vault asset is not tbtc");
+
+        IERC20(tbtc).safeTransferFrom(address(acre), address(this), amount);
+        IERC20(tbtc).approve(address(vault), amount);
+
+        return Router.deposit(vault, sharesOwner(), amount, minSharesOut);
+    }
+
+    // TODO: This function has to be internal.
+    function withdrawFromVault(
+        IVault vault,
+        uint256 amount,
+        uint256 maxSharesOut
+    ) public returns (uint256 sharesOut) {
+        uint256 shares = vault.previewWithdraw(amount);
+
+        IERC20(vault).approve(address(vault), shares);
+
+        return Router.withdraw(vault, address(acre), amount, maxSharesOut);
+    }
+
+    // TODO: This function has to be internal.
+    function redeemFromVault(
+        IVault vault,
+        uint256 shares,
+        uint256 minAmountOut
+    ) public returns (uint256 amountOut) {
+        IERC20(vault).approve(address(vault), shares);
+
+        Router.redeem(vault, address(acre), shares, minAmountOut);
+    }
+
+    // TODO: Add function to withdrawMax
+
+    // TODO: Check possibilities of Dispatcher upgrades and shares migration.
+    function migrateShares(IVault[] calldata _vaults) public onlyOwner {
+        address newDispatcher = address(acre.dispatcher());
+
+        require(newDispatcher != address(0), "new dispatcher cannot be address zero");
+
+        for (uint i = 0; i < _vaults.length; i++) {
+            _vaults[i].transfer(
+                newDispatcher,
+                _vaults[i].balanceOf(address(this))
+            );
         }
     }
 }
