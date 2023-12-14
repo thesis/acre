@@ -10,7 +10,7 @@ import {
   CardProps,
 } from "@chakra-ui/react"
 import { Info } from "../../static/icons"
-import { TokenBalance } from "../shared/TokenBalance"
+import { CurrencyBalanceWithConversion } from "../shared/CurrencyBalanceWithConversion"
 import { TextMd } from "../shared/Typography"
 
 export default function PositionDetails(props: CardProps) {
@@ -24,7 +24,7 @@ export default function PositionDetails(props: CardProps) {
             <Icon as={Info} color="grey.700" />
           </Tooltip>
         </HStack>
-        <TokenBalance
+        <CurrencyBalanceWithConversion
           token={{
             currencyType: "bitcoin",
             amount: "2398567898",
