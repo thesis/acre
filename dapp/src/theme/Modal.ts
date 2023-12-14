@@ -16,6 +16,11 @@ const Modal: ComponentSingleStyleConfig = {
       rounded: "100%",
       bg: "rgba(255, 255, 255, 0.50)",
     },
+    overlay: {
+      bg: "none",
+      backdropFilter: "auto",
+      backdropBlur: "8px",
+    },
   },
 }
 

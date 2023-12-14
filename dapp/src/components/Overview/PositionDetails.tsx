@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import {
   Text,
   Button,
@@ -12,12 +12,10 @@ import {
 } from "@chakra-ui/react"
 import { BITCOIN, USD } from "../../constants"
 import { Info } from "../../static/icons"
-import { useModal, useSidebar } from "../../hooks"
-import Staking from "../Staking"
+import StakingModal from "../StakingModal"
 
 export default function PositionDetails(props: CardProps) {
-  const { openModal } = useModal()
-  const { onOpen: openSidebar } = useSidebar()
+  const [isOpenStakingModal, setIsOpenStakingModal] = useState(false)
 
   return (
     <Card {...props}>
@@ -38,17 +36,13 @@ export default function PositionDetails(props: CardProps) {
       </CardBody>
       <CardFooter flexDirection="column" gap={2}>
         {/* TODO: Handle click actions */}
-        <Button
-          onClick={() => {
-            openSidebar()
-            openModal("overview")
-          }}
-        >
-          Stake
-        </Button>
+        <Button onClick={() => setIsOpenStakingModal(true)}>Stake</Button>
         <Button variant="outline">Withdraw</Button>
       </CardFooter>
-      <Staking />
+      <StakingModal
+        isOpen={isOpenStakingModal}
+        onClose={() => setIsOpenStakingModal(false)}
+      />
     </Card>
   )
 }

@@ -6,7 +6,9 @@ const Drawer: ComponentSingleStyleConfig = {
       zIndex: "drawer",
     },
     overlay: {
-      bg: "gold.300",
+      bg: "none",
+      backdropFilter: "auto",
+      backdropBlur: "8px",
     },
     dialog: {
       borderTop: "2px",

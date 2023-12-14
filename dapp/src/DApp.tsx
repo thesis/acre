@@ -5,7 +5,6 @@ import theme from "./theme"
 import {
   DocsDrawerContextProvider,
   LedgerWalletAPIProvider,
-  ModalContextProvider,
   SidebarContextProvider,
   WalletContextProvider,
 } from "./contexts"
@@ -13,7 +12,6 @@ import Header from "./components/Header"
 import Overview from "./components/Overview"
 import Sidebar from "./components/Sidebar"
 import DocsDrawer from "./components/DocsDrawer"
-import ModalOverlay from "./components/ModalOverlay"
 
 function DApp() {
   useDetectThemeMode()
@@ -26,9 +24,6 @@ function DApp() {
       </Box>
       <Sidebar />
       <DocsDrawer />
-      {/* The user has several modals in a flow.
-      Let's use our own modal overlay to prevent the background flickering effect. */}
-      <ModalOverlay />
     </>
   )
 }
@@ -39,11 +34,9 @@ function DAppProviders() {
       <WalletContextProvider>
         <DocsDrawerContextProvider>
           <SidebarContextProvider>
-            <ModalContextProvider>
-              <ChakraProvider theme={theme}>
-                <DApp />
-              </ChakraProvider>
-            </ModalContextProvider>
+            <ChakraProvider theme={theme}>
+              <DApp />
+            </ChakraProvider>
           </SidebarContextProvider>
         </DocsDrawerContextProvider>
       </WalletContextProvider>

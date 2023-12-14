@@ -1,11 +1,25 @@
 import React from "react"
-import { ModalHeader } from "@chakra-ui/react"
-import BaseModal from "./BaseModal"
+import {
+  Button,
+  ModalBody,
+  ModalCloseButton,
+  ModalFooter,
+} from "@chakra-ui/react"
+import { TextMd } from "../Typography"
+import { ModalStep } from "../../contexts"
 
-export default function StakingOverviewModal() {
+export default function StakingOverviewModal({ goNext }: ModalStep) {
   return (
-    <BaseModal>
-      <ModalHeader textAlign="center">Staking overview</ModalHeader>
-    </BaseModal>
+    <>
+      <ModalCloseButton />
+      <ModalBody>
+        <TextMd>Staking overview</TextMd>
+      </ModalBody>
+      <ModalFooter>
+        <Button width="100%" onClick={goNext}>
+          Get started
+        </Button>
+      </ModalFooter>
+    </>
   )
 }
