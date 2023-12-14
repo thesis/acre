@@ -9,7 +9,6 @@ import {
   HStack,
   CardProps,
 } from "@chakra-ui/react"
-import { BITCOIN, USD } from "../../constants"
 import { Info } from "../../static/icons"
 import { TokenBalance } from "../shared/TokenBalance"
 import { TextMd } from "../shared/Typography"
@@ -27,12 +26,12 @@ export default function PositionDetails(props: CardProps) {
         </HStack>
         <TokenBalance
           token={{
-            currency: BITCOIN,
+            currencyType: "bitcoin",
             amount: "2398567898",
             variant: "greater-balance",
           }}
           fiatCurrency={{
-            currency: USD,
+            currencyType: "usd",
             amount: 419288.98,
             shouldBeFormatted: false,
             size: "lg",

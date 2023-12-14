@@ -2,7 +2,6 @@ import React from "react"
 import { Button, HStack, Icon } from "@chakra-ui/react"
 import { Account } from "@ledgerhq/wallet-api-client"
 import { Bitcoin, Ethereum } from "../../static/icons"
-import { BITCOIN } from "../../constants"
 import {
   useRequestBitcoinAccount,
   useRequestEthereumAccount,
@@ -47,7 +46,7 @@ export default function ConnectWallet() {
       <HStack display={{ base: "none", md: "flex" }}>
         <TextMd color="grey.500">Balance</TextMd>
         <CurrencyBalance
-          currency={BITCOIN}
+          currencyType="bitcoin"
           amount={btcAccount?.balance.toString()}
         />
       </HStack>
