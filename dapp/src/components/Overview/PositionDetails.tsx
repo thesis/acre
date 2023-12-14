@@ -36,7 +36,9 @@ export default function PositionDetails(props: CardProps) {
       </CardBody>
       <CardFooter flexDirection="column" gap={2}>
         {/* TODO: Handle click actions */}
-        <Button size="lg" onClick={() => setIsOpenStakingModal(true)}>Stake</Button>
+        <Button size="lg" onClick={() => setIsOpenStakingModal(true)}>
+          Stake
+        </Button>
         <Button size="lg" variant="outline">
           Unstake
         </Button>

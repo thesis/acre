@@ -14,6 +14,7 @@ export default function ModalBase({
   isOpen: boolean
   onClose: () => void
   steps: string[]
+  // eslint-disable-next-line react/require-default-props
   defaultIndex?: number
   children: React.ReactNode
 }) {
@@ -30,6 +31,11 @@ export default function ModalBase({
     onClose()
   }, [onClose])
 
+  const resetState = useCallback(() => {
+    setActiveStep(steps[defaultIndex])
+    setIndex(defaultIndex)
+  }, [defaultIndex, steps])
+
   useEffect(() => {
     if (index >= steps.length) {
       handleClose()
@@ -39,18 +45,16 @@ export default function ModalBase({
   }, [steps, index, handleClose])
 
   useEffect(() => {
-    if (!isOpen) {
-      closeSidebar()
+    let timeout: NodeJS.Timeout
 
-      const timeout = setTimeout(() => {
-        setActiveStep(steps[defaultIndex])
-        setIndex(defaultIndex)
-      }, 100)
-      return () => clearTimeout(timeout)
-    } else {
+    if (isOpen) {
       openSideBar()
+    } else {
+      closeSidebar()
+      timeout = setTimeout(resetState, 100)
     }
-  }, [isOpen, steps, defaultIndex, closeSidebar, openSideBar])
+    return () => clearTimeout(timeout)
+  }, [isOpen, resetState, openSideBar, closeSidebar])
 
   const contextValue: ModalFlowContextValue = useMemo<ModalFlowContextValue>(
     () => ({
