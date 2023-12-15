@@ -1,5 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react"
-import { Modal, ModalContent, ModalOverlay } from "@chakra-ui/react"
+import {
+  Modal,
+  ModalCloseButton,
+  ModalContent,
+  ModalOverlay,
+} from "@chakra-ui/react"
 import { HEADER_HEIGHT } from "../../Header"
 import { ModalFlowContext, ModalFlowContextValue } from "../../../contexts"
 import { useSidebar } from "../../../hooks"
@@ -65,7 +70,10 @@ export default function ModalBase({
     <ModalFlowContext.Provider value={contextValue}>
       <Modal size="md" isOpen={isOpen} onClose={handleClose}>
         <ModalOverlay mt={HEADER_HEIGHT} />
-        <ModalContent mt={2 * HEADER_HEIGHT}>{children}</ModalContent>
+        <ModalContent mt={2 * HEADER_HEIGHT}>
+          <ModalCloseButton />
+          {children}
+        </ModalContent>
       </Modal>
     </ModalFlowContext.Provider>
   )
