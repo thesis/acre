@@ -2,16 +2,16 @@ import React from "react"
 import { CurrencyBalance, CurrencyBalanceProps } from "../CurrencyBalance"
 
 export function CurrencyBalanceWithConversion({
-  token,
-  fiatCurrency,
+  from,
+  to,
 }: {
-  token: CurrencyBalanceProps
-  fiatCurrency: CurrencyBalanceProps
+  from: CurrencyBalanceProps
+  to: CurrencyBalanceProps
 }) {
   return (
     <>
-      <CurrencyBalance {...token} />
-      <CurrencyBalance {...fiatCurrency} />
+      <CurrencyBalance {...from} />
+      <CurrencyBalance {...to} />
     </>
   )
 }

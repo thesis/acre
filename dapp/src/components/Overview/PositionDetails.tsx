@@ -25,12 +25,12 @@ export default function PositionDetails(props: CardProps) {
           </Tooltip>
         </HStack>
         <CurrencyBalanceWithConversion
-          token={{
+          from={{
             currencyType: "bitcoin",
             amount: "2398567898",
             variant: "greater-balance",
           }}
-          fiatCurrency={{
+          to={{
             currencyType: "usd",
             amount: 419288.98,
             shouldBeFormatted: false,
