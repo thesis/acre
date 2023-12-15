@@ -1,6 +1,7 @@
 import type { HardhatUserConfig } from "hardhat/config"
 
 import "@nomicfoundation/hardhat-toolbox"
+import "hardhat-contract-sizer"
 import "hardhat-deploy"
 
 const config: HardhatUserConfig = {
@@ -69,6 +70,17 @@ const config: HardhatUserConfig = {
       sepolia: 0,
       mainnet: "",
     },
+  },
+
+  contractSizer: {
+    alphaSort: true,
+    runOnCompile: true,
+    strict: true,
+  },
+
+  gasReporter: {
+    enabled: true,
+    coinmarketcap: process.env.COINMARKETCAP_API_KEY,
   },
 
   typechain: {
