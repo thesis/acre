@@ -9,6 +9,7 @@ import Card from "./Card"
 import Tooltip from "./Tooltip"
 import Heading from "./Heading"
 import Sidebar from "./Sidebar"
+import CurrencyBalance from "./CurrencyBalance"
 
 const defaultTheme = {
   colors,
@@ -31,6 +32,7 @@ const defaultTheme = {
     Sidebar,
     Modal,
     Heading,
+    CurrencyBalance,
     Card,
     Tooltip,
   },

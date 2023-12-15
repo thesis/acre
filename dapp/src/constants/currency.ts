@@ -1,4 +1,4 @@
-import { Currency } from "../types"
+import { Currency, CurrencyType } from "../types"
 
 export const BITCOIN: Currency = {
   name: "Bitcoin",
@@ -23,3 +23,9 @@ export const CURRENCY_ID_BITCOIN =
 
 export const CURRENCY_ID_ETHEREUM =
   import.meta.env.VITE_USE_TESTNET === "true" ? "ethereum_goerli" : "ethereum"
+
+export const CURRENCIES_BY_TYPE: Record<CurrencyType, Currency> = {
+  bitcoin: BITCOIN,
+  ethereum: ETHEREUM,
+  usd: ETHEREUM,
+}

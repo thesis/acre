@@ -19,7 +19,6 @@ export default function ModalBase({
   isOpen: boolean
   onClose: () => void
   numberOfSteps: number
-  // eslint-disable-next-line react/require-default-props
   defaultStep?: number
   children: React.ReactNode
 }) {

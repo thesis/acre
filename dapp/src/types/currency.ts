@@ -3,3 +3,5 @@ export type Currency = {
   symbol: string
   decimals: number
 }
+
+export type CurrencyType = "bitcoin" | "ethereum" | "usd"
