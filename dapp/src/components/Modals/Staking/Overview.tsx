@@ -1,9 +1,9 @@
 import React from "react"
 import { Button, ModalBody, ModalFooter } from "@chakra-ui/react"
-import { ModalStep } from "../../contexts"
-import { TextMd } from "../shared/Typography"
+import { ModalStep } from "../../../contexts"
+import { TextMd } from "../../shared/Typography"
 
-export default function StakingOverviewModal({ goNext }: ModalStep) {
+export default function Overview({ goNext }: ModalStep) {
   return (
     <>
       <ModalBody>
