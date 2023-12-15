@@ -1,14 +1,15 @@
 import React from "react"
-import { Button, HStack, Icon, Text } from "@chakra-ui/react"
+import { Button, HStack, Icon } from "@chakra-ui/react"
 import { Account } from "@ledgerhq/wallet-api-client"
 import { Bitcoin, Ethereum } from "../../static/icons"
-import { BITCOIN } from "../../constants"
 import {
   useRequestBitcoinAccount,
   useRequestEthereumAccount,
   useWalletContext,
 } from "../../hooks"
-import { formatSatoshiAmount, truncateAddress } from "../../utils"
+import { truncateAddress } from "../../utils"
+import { CurrencyBalance } from "../shared/CurrencyBalance"
+import { TextMd } from "../shared/Typography"
 
 export type ConnectButtonsProps = {
   leftIcon: typeof Icon
@@ -43,13 +44,11 @@ export default function ConnectWallet() {
   return (
     <HStack spacing={4}>
       <HStack display={{ base: "none", md: "flex" }}>
-        <Text>Balance</Text>
-        <Text as="b">
-          {!btcAccount || btcAccount?.balance.isZero()
-            ? "0.00"
-            : formatSatoshiAmount(btcAccount.balance.toString())}
-        </Text>
-        <Text>{BITCOIN.symbol}</Text>
+        <TextMd color="grey.500">Balance</TextMd>
+        <CurrencyBalance
+          currencyType="bitcoin"
+          amount={btcAccount?.balance.toString()}
+        />
       </HStack>
       <ConnectButton
         leftIcon={Bitcoin}

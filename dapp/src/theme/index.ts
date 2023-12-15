@@ -6,6 +6,7 @@ import Card from "./Card"
 import Tooltip from "./Tooltip"
 import { colors, fonts, lineHeights } from "./utils"
 import Heading from "./Heading"
+import CurrencyBalance from "./CurrencyBalance"
 
 const defaultTheme = {
   colors,
@@ -24,6 +25,7 @@ const defaultTheme = {
     Button,
     Switch,
     Heading,
+    CurrencyBalance,
     Card,
     Tooltip,
   },
