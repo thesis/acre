@@ -7,6 +7,8 @@ import Tooltip from "./Tooltip"
 import { colors, fonts, lineHeights } from "./utils"
 import Heading from "./Heading"
 import CurrencyBalance from "./CurrencyBalance"
+import TokenBalanceInput from "./TokenBalanceInput"
+import Input from "./Input"
 
 const defaultTheme = {
   colors,
@@ -28,6 +30,8 @@ const defaultTheme = {
     CurrencyBalance,
     Card,
     Tooltip,
+    Input,
+    TokenBalanceInput,
   },
 }
 

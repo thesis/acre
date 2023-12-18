@@ -27,5 +27,5 @@ export const CURRENCY_ID_ETHEREUM =
 export const CURRENCIES_BY_TYPE: Record<CurrencyType, Currency> = {
   bitcoin: BITCOIN,
   ethereum: ETHEREUM,
-  usd: ETHEREUM,
+  usd: USD,
 }

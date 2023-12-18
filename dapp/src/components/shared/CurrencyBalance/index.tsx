@@ -1,5 +1,5 @@
 import React, { useMemo } from "react"
-import { Box, useMultiStyleConfig } from "@chakra-ui/react"
+import { Box, useMultiStyleConfig, TextProps } from "@chakra-ui/react"
 import { formatTokenAmount, toLocaleString } from "../../../utils"
 import { CurrencyType } from "../../../types"
 import { CURRENCIES_BY_TYPE } from "../../../constants"
@@ -11,7 +11,7 @@ export type CurrencyBalanceProps = {
   desiredDecimals?: number
   size?: string
   variant?: "greater-balance"
-}
+} & TextProps
 
 export function CurrencyBalance({
   currencyType,
@@ -20,6 +20,7 @@ export function CurrencyBalance({
   desiredDecimals = 2,
   size,
   variant,
+  ...textProps
 }: CurrencyBalanceProps) {
   const styles = useMultiStyleConfig("CurrencyBalance", { size, variant })
 
@@ -38,10 +39,10 @@ export function CurrencyBalance({
 
   return (
     <Box>
-      <Box as="span" __css={styles.balance}>
+      <Box as="span" __css={styles.balance} {...textProps}>
         {balance}
       </Box>
-      <Box as="span" __css={styles.symbol}>
+      <Box as="span" __css={styles.symbol} {...textProps}>
         {currency.symbol}
       </Box>
     </Box>
