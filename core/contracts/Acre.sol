@@ -126,9 +126,10 @@ contract Acre is ERC4626, Ownable {
     function maxDeposit(address) public view override returns (uint256) {
         uint256 _totalAssets = totalAssets();
 
-        if (_totalAssets >= stakingParameters.maximumTotalAssets) return 0;
-
-        return stakingParameters.maximumTotalAssets - _totalAssets;
+        return
+            _totalAssets >= stakingParameters.maximumTotalAssets
+                ? 0
+                : stakingParameters.maximumTotalAssets - _totalAssets;
     }
 
     /// @notice Returns the maximum amount of the vault shares that can be
