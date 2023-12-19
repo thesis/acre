@@ -17,7 +17,7 @@ function StakingSteps() {
   }
 }
 
-export default function Staking({
+export default function StakingModal({
   isOpen,
   onClose,
 }: {

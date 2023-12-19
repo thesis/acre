@@ -11,7 +11,7 @@ import {
   useBoolean,
 } from "@chakra-ui/react"
 import { Info } from "../../static/icons"
-import Staking from "../Modals/Staking"
+import StakingModal from "../Modals/Staking"
 import { CurrencyBalanceWithConversion } from "../shared/CurrencyBalanceWithConversion"
 import { TextMd } from "../shared/Typography"
 
@@ -51,7 +51,7 @@ export default function PositionDetails(props: CardProps) {
           Unstake
         </Button>
       </CardFooter>
-      <Staking isOpen={isOpenStakingModal} onClose={stakingModal.off} />
+      <StakingModal isOpen={isOpenStakingModal} onClose={stakingModal.off} />
     </Card>
   )
 }
