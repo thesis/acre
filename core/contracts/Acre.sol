@@ -82,17 +82,16 @@ contract Acre is ERC4626, Ownable {
     function mint(
         uint256 shares,
         address receiver
-    ) public override returns (uint256) {
-        uint256 assets = previewMint(shares);
-
-        if (assets < stakingParameters.minimumDepositAmount) {
+    ) public override returns (uint256 assets) {
+        if (
+            (assets = super.mint(shares, receiver)) <
+            stakingParameters.minimumDepositAmount
+        ) {
             revert StakingAmountLessThanMin(
                 assets,
                 stakingParameters.minimumDepositAmount
             );
         }
-
-        return super.mint(shares, receiver);
     }
 
     /// @notice Stakes a given amount of tBTC token and mints shares to a
