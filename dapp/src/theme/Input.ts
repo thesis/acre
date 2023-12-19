@@ -18,6 +18,10 @@ const variantBalanceField = defineStyle({
     color: "grey.300",
     fontWeight: "medium",
   },
+
+  _invalid: {
+    color: "red.400",
+  },
 })
 
 const variantBalanceElement = defineStyle({

@@ -140,6 +140,7 @@ export default function TokenBalanceInput({
           size={size}
           value={amount}
           variant={VARIANT}
+          isInvalid={hasError}
           placeholder={placeholder}
           onValueChange={(values: NumberFormatInputValues) =>
             setAmount(values.value)

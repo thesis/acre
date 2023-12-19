@@ -29,7 +29,7 @@ const NumberFormatInput = React.forwardRef<
 >((props, ref) => {
   const { field: css } = useMultiStyleConfig("Input", props)
 
-  const { decimalScale, isDisabled, ...restProps } = props
+  const { decimalScale, isDisabled, isInvalid, ...restProps } = props
 
   return (
     <ChakraWrapper
@@ -38,6 +38,7 @@ const NumberFormatInput = React.forwardRef<
       decimalScale={decimalScale}
       __css={css}
       disabled={isDisabled}
+      aria-invalid={isInvalid}
       getInputRef={ref}
       {...restProps}
     />
