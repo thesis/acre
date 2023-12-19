@@ -55,7 +55,7 @@ contract Acre is ERC4626, Ownable {
         uint256 maximumTotalAssets
     ) external onlyOwner {
         // TODO: Introduce a parameters update process.
-        if (minimumDepositAmount <= 0 || maximumTotalAssets <= 0) {
+        if (minimumDepositAmount < 0 || maximumTotalAssets <= 0) {
             revert InvalidStakingParameter();
         }
 

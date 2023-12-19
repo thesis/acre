@@ -589,20 +589,24 @@ describe("Acre", () => {
         })
       })
 
-      context("when minimum deposit amount is invalid", () => {
-        context("when it is equal to 0", () => {
-          const minimumDepositAmount = 0
+      context("when minimum deposit amount is 0", () => {
+        const newMinimumDepositAmount = 0
 
-          it("should revert", async () => {
-            await expect(
-              acre
-                .connect(owner)
-                .updateStakingParameters(
-                  minimumDepositAmount,
-                  validMaximumTotalAssetsAmount,
-                ),
-            ).to.be.revertedWithCustomError(acre, "InvalidStakingParameter")
-          })
+        beforeEach(async () => {
+          await acre
+            .connect(owner)
+            .updateStakingParameters(
+              newMinimumDepositAmount,
+              validMaximumTotalAssetsAmount,
+            )
+        })
+
+        it("should update the minimum deposit amount correctly", async () => {
+          const stakingParameters = await acre.stakingParameters()
+
+          expect(stakingParameters.minimumDepositAmount).to.be.eq(
+            newMinimumDepositAmount,
+          )
         })
       })
 
