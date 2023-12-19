@@ -31,7 +31,7 @@ contract Acre is ERC4626, Ownable {
         uint256 maximumTotalAssets
     );
 
-    error StakingAmountLessThanMin(uint256 amount, uint256 min);
+    error DepositAmountLessThanMin(uint256 amount, uint256 min);
     error InvalidStakingParameter();
 
     constructor(
@@ -70,7 +70,7 @@ contract Acre is ERC4626, Ownable {
         address receiver
     ) public override returns (uint256) {
         if (assets < stakingParameters.minimumDepositAmount) {
-            revert StakingAmountLessThanMin(
+            revert DepositAmountLessThanMin(
                 assets,
                 stakingParameters.minimumDepositAmount
             );
@@ -87,7 +87,7 @@ contract Acre is ERC4626, Ownable {
             (assets = super.mint(shares, receiver)) <
             stakingParameters.minimumDepositAmount
         ) {
-            revert StakingAmountLessThanMin(
+            revert DepositAmountLessThanMin(
                 assets,
                 stakingParameters.minimumDepositAmount
             );

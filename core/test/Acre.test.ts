@@ -172,7 +172,7 @@ describe("Acre", () => {
             acre
               .connect(staker1)
               .stake(amountToStake, staker1.address, referral),
-          ).to.revertedWithCustomError(acre, "StakingAmountLessThanMin")
+          ).to.revertedWithCustomError(acre, "DepositAmountLessThanMin")
         })
       })
 
@@ -193,7 +193,7 @@ describe("Acre", () => {
             acre
               .connect(staker1)
               .stake(amountToStake, staker1.address, referral),
-          ).to.revertedWithCustomError(acre, "StakingAmountLessThanMin")
+          ).to.revertedWithCustomError(acre, "DepositAmountLessThanMin")
         })
       })
 
@@ -539,7 +539,7 @@ describe("Acre", () => {
         it("should take into account the min deposit amount parameter and revert", async () => {
           await expect(
             acre.connect(staker1).mint(sharesToMint, staker1.address),
-          ).to.be.revertedWithCustomError(acre, "StakingAmountLessThanMin")
+          ).to.be.revertedWithCustomError(acre, "DepositAmountLessThanMin")
         })
       },
     )
