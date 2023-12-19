@@ -5,70 +5,9 @@ import {BTCUtils} from "@keep-network/bitcoin-spv-sol/contracts/BTCUtils.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
+import {IBridge} from "../external/tbtc/IBridge.sol";
+import {ITBTCVault} from "../external/tbtc/ITBTCVault.sol";
 import {Acre} from "../Acre.sol";
-
-interface IBridge {
-    struct BitcoinTxInfo {
-        bytes4 version;
-        bytes inputVector;
-        bytes outputVector;
-        bytes4 locktime;
-    }
-
-    struct DepositRevealInfo {
-        uint32 fundingOutputIndex;
-        bytes8 blindingFactor;
-        bytes20 walletPubKeyHash;
-        bytes20 refundPubKeyHash;
-        bytes4 refundLocktime;
-        address vault;
-    }
-
-    struct DepositRequest {
-        address depositor;
-        uint64 amount;
-        uint32 revealedAt;
-        address vault;
-        uint64 treasuryFee;
-        uint32 sweptAt;
-    }
-
-    function revealDepositWithExtraData(
-        BitcoinTxInfo calldata fundingTx,
-        DepositRevealInfo calldata reveal,
-        bytes32 extraData
-    ) external;
-
-    function deposits(
-        uint256 depositKey
-    ) external view returns (DepositRequest memory);
-
-    function depositParameters()
-        external
-        view
-        returns (
-            uint64 depositDustThreshold,
-            uint64 depositTreasuryFeeDivisor,
-            uint64 depositTxMaxFee,
-            uint32 depositRevealAheadPeriod
-        );
-}
-
-interface ITBTCVault {
-    struct OptimisticMintingRequest {
-        // UNIX timestamp at which the optimistic minting was requested.
-        uint64 requestedAt;
-        // UNIX timestamp at which the optimistic minting was finalized.
-        // 0 if not yet finalized.
-        uint64 finalizedAt;
-    }
-
-    function optimisticMintingRequests(
-        uint256 depositKey
-    ) external returns (OptimisticMintingRequest memory);
-
-    function optimisticMintingFeeDivisor() external returns (uint32);
-}
 
 contract TbtcDepositor {
     using BTCUtils for bytes;
@@ -223,6 +162,7 @@ contract TbtcDepositor {
 
         // Stake tBTC in Acre.
         IERC20(acre.asset()).safeIncreaseAllowance(address(acre), amount);
+        // TODO: Figure out what to do if deposit limit is reached in Acre
         acre.stake(amount, request.receiver, request.referral);
     }
 
