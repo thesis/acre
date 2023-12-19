@@ -7,6 +7,7 @@ import Tooltip from "./Tooltip"
 import { colors, fonts, lineHeights } from "./utils"
 import Heading from "./Heading"
 import CurrencyBalance from "./CurrencyBalance"
+import Stepper from "./Stepper"
 
 const defaultTheme = {
   colors,
@@ -28,6 +29,7 @@ const defaultTheme = {
     CurrencyBalance,
     Card,
     Tooltip,
+    Stepper,
   },
 }
 
