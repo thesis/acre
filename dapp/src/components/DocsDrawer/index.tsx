@@ -6,7 +6,6 @@ import {
   DrawerOverlay,
 } from "@chakra-ui/react"
 import { useDocsDrawer } from "../../hooks"
-import { HEADER_HEIGHT } from "../Header"
 import { TextMd } from "../shared/Typography"
 
 export default function DocsDrawer() {
@@ -14,8 +13,8 @@ export default function DocsDrawer() {
 
   return (
     <Drawer size="xl" placement="right" isOpen={isOpen} onClose={onClose}>
-      <DrawerOverlay mt={HEADER_HEIGHT} />
-      <DrawerContent mt={HEADER_HEIGHT}>
+      <DrawerOverlay mt="header_height" />
+      <DrawerContent mt="header_height">
         <DrawerBody>
           {/* TODO: Add a documentation */}
           <TextMd>Documentation</TextMd>

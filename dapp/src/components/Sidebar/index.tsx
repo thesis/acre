@@ -1,7 +1,6 @@
 import React from "react"
 import { Box, Button, useMultiStyleConfig } from "@chakra-ui/react"
 import { useDocsDrawer, useSidebar } from "../../hooks"
-import { HEADER_HEIGHT } from "../Header"
 
 export default function Sidebar() {
   const { isOpen } = useSidebar()
@@ -11,8 +10,8 @@ export default function Sidebar() {
   return (
     <Box
       as="aside"
+      mt="header_height"
       w={isOpen ? 80 : 0}
-      mt={HEADER_HEIGHT}
       __css={styles.sidebarContainer}
     >
       <Box __css={styles.sidebar}>
