@@ -10,3 +10,6 @@ pnpm-debug.log*
 
 # Temporary directory
 tmp/
+
+# Environment configuration files
+.envrc

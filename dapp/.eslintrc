@@ -6,6 +6,15 @@
     "import/prefer-default-export": "off",
     // Regarding the fact that we are using Chakra UI lib let's disable this rule.
     // This will allow us to easily pass props from the parent component.
-    "react/jsx-props-no-spreading": "off"
+    "react/jsx-props-no-spreading": "off",
+    // TypeScript allows us to declare props that are non-optional internally
+    // but are interpreted as optional externally if they have defaultProps
+    // defined; the following two adjustments disable eslint-plugin-react
+    // checks that predate this ability for TS and that no longer apply.
+    "react/default-props-match-prop-types": [
+      2,
+      { "allowRequiredDefaults": true }
+    ],
+    "react/require-default-props": [0]
   }
 }

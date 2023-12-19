@@ -3,28 +3,28 @@ import { ComponentSingleStyleConfig } from "@chakra-ui/react"
 const Heading: ComponentSingleStyleConfig = {
   sizes: {
     "7xl": {
-      fontSize: "4.5rem",
-      lineHeight: "5.625rem",
+      fontSize: "7xl",
+      lineHeight: "7xl",
     },
     "6xl": {
-      fontSize: "3.75rem",
-      lineHeight: "4.5rem",
+      fontSize: "6xl",
+      lineHeight: "6xl",
     },
     "5xl": {
-      fontSize: "3rem",
-      lineHeight: "3.75rem",
+      fontSize: "5xl",
+      lineHeight: "5xl",
     },
     "4xl": {
-      fontSize: "2.25rem",
-      lineHeight: "2.75rem",
+      fontSize: "4xl",
+      lineHeight: "4xl",
     },
     "3xl": {
-      fontSize: "1.875rem",
-      lineHeight: "2.375rem",
+      fontSize: "3xl",
+      lineHeight: "3xl",
     },
     "2xl": {
-      fontSize: "1.5rem",
-      lineHeight: "2rem",
+      fontSize: "3xl",
+      lineHeight: "2xl",
     },
   },
 }
