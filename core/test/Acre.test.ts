@@ -505,6 +505,51 @@ describe("Acre", () => {
       await snapshot.restore()
     })
 
+    context("when minting as first staker", () => {
+      const amountToStake = to1e18(1)
+      let tx: ContractTransactionResponse
+      let sharesToMint: bigint
+
+      beforeEach(async () => {
+        sharesToMint = await acre.previewDeposit(amountToStake)
+
+        await tbtc
+          .connect(staker1)
+          .approve(await acre.getAddress(), amountToStake)
+
+        tx = await acre.connect(staker1).mint(sharesToMint, staker1.address)
+      })
+
+      it("should emit Deposit event", () => {
+        expect(tx).to.emit(acre, "Deposit").withArgs(
+          // Caller.
+          staker1.address,
+          // Receiver.
+          staker1.address,
+          // Staked tokens.
+          amountToStake,
+          // Received shares.
+          sharesToMint,
+        )
+      })
+
+      it("should mint stBTC tokens", async () => {
+        await expect(tx).to.changeTokenBalances(
+          acre,
+          [staker1.address],
+          [sharesToMint],
+        )
+      })
+
+      it("should transfer tBTC tokens", async () => {
+        await expect(tx).to.changeTokenBalances(
+          tbtc,
+          [staker1.address, acre],
+          [-amountToStake, amountToStake],
+        )
+      })
+    })
+
     context("when staker wants to mint more shares than allowed", () => {
       let sharesToMint: bigint
 
