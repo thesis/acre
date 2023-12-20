@@ -1,3 +1,4 @@
 {
-  "eslint.workingDirectories": [{ "mode": "auto" }]
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+  "prettier.ignorePath": ""
 }
