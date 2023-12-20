@@ -2,10 +2,13 @@ import { StyleFunctionProps, extendTheme } from "@chakra-ui/react"
 import { mode } from "@chakra-ui/theme-tools"
 import Button from "./Button"
 import Switch from "./Switch"
+import { colors, fonts, lineHeights, semanticTokens, zIndices } from "./utils"
+import Drawer from "./Drawer"
+import Modal from "./Modal"
 import Card from "./Card"
 import Tooltip from "./Tooltip"
-import { colors, fonts, lineHeights } from "./utils"
 import Heading from "./Heading"
+import Sidebar from "./Sidebar"
 import CurrencyBalance from "./CurrencyBalance"
 import Stepper from "./Stepper"
 
@@ -13,6 +16,8 @@ const defaultTheme = {
   colors,
   fonts,
   lineHeights,
+  zIndices,
+  semanticTokens,
   styles: {
     global: (props: StyleFunctionProps) => ({
       body: {
@@ -25,6 +30,9 @@ const defaultTheme = {
   components: {
     Button,
     Switch,
+    Drawer,
+    Sidebar,
+    Modal,
     Heading,
     CurrencyBalance,
     Card,
