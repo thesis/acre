@@ -744,4 +744,78 @@ describe("Acre", () => {
       })
     })
   })
+
+  describe("maxMint", () => {
+    let maximumTotalAssets: bigint
+    let snapshot: SnapshotRestorer
+
+    beforeEach(async () => {
+      snapshot = await takeSnapshot()
+      ;({ maximumTotalAssets } = await acre.stakingParameters())
+    })
+
+    afterEach(async () => {
+      await snapshot.restore()
+    })
+
+    context(
+      "when total assets is greater than maximum total assets amount",
+      () => {
+        beforeEach(async () => {
+          const toMint = maximumTotalAssets + 1n
+
+          await tbtc.mint(await acre.getAddress(), toMint)
+        })
+
+        it("should return 0", async () => {
+          expect(await acre.maxMint(staker1.address)).to.be.eq(0)
+        })
+      },
+    )
+
+    context("when the vault is empty", () => {
+      it("should return maximum total assets amount in shares", async () => {
+        // When the vault is empty the max shares amount is equal to the maximum
+        // total assets amount.
+        expect(await acre.maxMint(staker1.address)).to.be.eq(maximumTotalAssets)
+      })
+    })
+
+    context("when the maximum total amount has not yet been reached", () => {
+      let expectedValue: bigint
+
+      beforeEach(async () => {
+        const toMint = to1e18(2)
+        const amountToStake = to1e18(3)
+        const newMaximumTotalAssets = to1e18(30)
+        const minimumDepositAmount = to1e18(1)
+
+        await acre
+          .connect(owner)
+          .updateStakingParameters(minimumDepositAmount, newMaximumTotalAssets)
+
+        // Staker stakes 3 tBTC.
+        await tbtc
+          .connect(staker1)
+          .approve(await acre.getAddress(), amountToStake)
+        await acre.connect(staker1).deposit(amountToStake, staker1.address)
+
+        // Vault earns 2 tBTC.
+        await tbtc.mint(await acre.getAddress(), toMint)
+
+        // The current state is:
+        // Total assets: 5
+        // Total supply: 3
+        // Maximum total assets: 30
+        // Current max deposit: 30 - 2 - 3 = 25
+        // Max shares: 25 * 3 / 5 = 15 -> 15000000000000000001 in stBTC
+        // precision and rounding support.
+        expectedValue = 15000000000000000001n
+      })
+
+      it("should return correct value", async () => {
+        expect(await acre.maxMint(staker1.address)).to.be.eq(expectedValue)
+      })
+    })
+  })
 })
