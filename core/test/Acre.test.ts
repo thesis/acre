@@ -58,9 +58,9 @@ describe("Acre", () => {
       context("with a referral", () => {
         const amountToStake = to1e18(1)
 
-        // In this test case there is only one staker and
-        // the token vault has not earned anythig yet so received shares are
-        // equal to staked tokens amount.
+        // In this test case, there is only one staker and the token vault has
+        // not earned anything yet so received shares are equal to staked tokens
+        // amount.
         const expectedReceivedShares = amountToStake
 
         let tx: ContractTransactionResponse
