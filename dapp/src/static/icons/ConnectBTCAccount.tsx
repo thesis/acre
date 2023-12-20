@@ -1,80 +1,65 @@
 import React from "react"
 import { createIcon } from "@chakra-ui/react"
 
-// TODO: Update an svg when gradient problem will be fixed
 export const ConnectBTCAccount = createIcon({
   displayName: "ConnectBTCAccount",
-  viewBox: "0 0 126 121",
-  path: (
-    <svg
-      width="126"
-      height="121"
-      viewBox="0 0 126 121"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <circle
-        cx="60"
-        cy="60"
-        r="59"
-        transform="matrix(1 0 0 -1 0 120.5)"
-        stroke="url(#paint0_angular_4163_24619)"
-        strokeWidth="2"
+  viewBox: "0 0 127 122",
+  defaultProps: {
+    fill: "none",
+  },
+  path: [
+    <path
+      d="M121 61C121 94.1371 94.1371 121 61 121C27.8629 121 1 94.1371 1 61C1 27.8629 27.8629 1 61 1"
+      stroke="url(#paint0_linear_4219_45528)"
+      strokeWidth="2"
+    />,
+    <g clipPath="url(#clip0_4219_45528)">
+      <rect
+        x="33"
+        y="33"
+        width="56"
+        height="56"
+        rx="28"
+        fill="white"
+        fillOpacity="0.1"
       />
-      <g clipPath="url(#clip0_4163_24619)">
-        <rect
-          x="32"
-          y="32.5"
-          width="56"
-          height="56"
-          rx="28"
-          fill="white"
-          fillOpacity="0.1"
-        />
-        <rect x="32" y="32.5" width="56" height="56" fill="#231F20" />
-        <path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M59.9967 45.5004L59.9969 45.5V45.5007L69.4934 60.9816L59.9969 66.4965V66.4969L59.9967 66.4967L59.9965 66.4968L59.996 66.4963L50.5 60.9816L59.9961 45.5014L59.9965 45.5L59.9967 45.5004ZM59.9969 75.8989V75.901L50.5 62.7528L59.9969 68.2652V68.2664L59.9978 68.2654L69.5003 62.7529L59.9978 75.9012L59.9969 75.8989Z"
-          fill="#FFFDF9"
-        />
-      </g>
+      <rect x="33" y="33" width="56" height="56" fill="#231F20" />
       <path
-        d="M126 54.5C126 58.366 122.866 61.5 119 61.5C115.134 61.5 112 58.366 112 54.5L112 49.5L126 49.5L126 54.5Z"
-        fill="#F34900"
+        d="M68.9283 59.9201C70.4675 59.1298 71.4305 57.7381 71.2055 55.4195C70.9026 52.2509 68.188 51.1884 64.7613 50.8858L64.7606 46.4907H62.1055L62.1048 50.7702C61.4062 50.7702 60.6941 50.7841 59.9852 50.7984L59.9846 46.4913L57.332 46.4911L57.3315 50.8851C56.7566 50.8969 56.192 50.9081 55.6407 50.9081V50.8951L51.9785 50.8936L51.979 53.7505C51.979 53.7505 53.9397 53.7133 53.9074 53.7494C54.9825 53.7501 55.3335 54.3793 55.4344 54.9224L55.4353 59.9293V66.9624C55.3879 67.3032 55.1887 67.8478 54.4371 67.8488C54.4713 67.8791 52.5057 67.8485 52.5057 67.8485L51.979 71.0431H55.4336C56.0773 71.0438 56.7098 71.0539 57.3303 71.0589L57.3326 75.5037L59.9846 75.5045L59.9839 71.1062C60.7135 71.1212 61.4178 71.1277 62.1057 71.1268L62.105 75.5045H64.76L64.7615 71.0671C69.2243 70.8087 72.3487 69.6756 72.7372 65.4516C73.0503 62.0509 71.4621 60.5329 68.9283 59.9201ZM60.0487 53.9433C61.5461 53.9433 66.2555 53.4627 66.2562 56.6153C66.2555 59.6377 61.5476 59.2846 60.0487 59.2846V53.9433ZM60.0475 67.8705L60.0487 61.9811C61.8478 61.9806 67.4908 61.4594 67.4915 64.9245C67.4923 68.2475 61.8478 67.8691 60.0475 67.8705Z"
+        fill="#FFFDF9"
       />
-      <path
-        d="M124 49.5L121 49.5L121 46C121 45.1716 121.672 44.5 122.5 44.5C123.328 44.5 124 45.1716 124 46L124 49.5Z"
-        fill="#F34900"
-      />
-      <path
-        d="M117 49.5L114 49.5L114 46C114 45.1716 114.672 44.5 115.5 44.5C116.328 44.5 117 45.1716 117 46L117 49.5Z"
-        fill="#F34900"
-      />
-      <path
-        d="M121.5 52L116.5 57M116.5 52L121.5 57"
-        stroke="white"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <defs>
-        <radialGradient
-          id="paint0_angular_4163_24619"
-          cx="0"
-          cy="0"
-          r="1"
-          gradientUnits="userSpaceOnUse"
-          gradientTransform="translate(60 60) scale(60)"
-        >
-          <stop offset="0.229167" stopColor="#F34900" stopOpacity="0" />
-          <stop offset="0.9999" stopColor="#F34900" />
-          <stop offset="1" stopColor="#F34900" stopOpacity="0" />
-        </radialGradient>
-        <clipPath id="clip0_4163_24619">
-          <rect x="32" y="32.5" width="56" height="56" rx="28" fill="white" />
-        </clipPath>
-      </defs>
-    </svg>
-  ),
+    </g>,
+    <path
+      d="M127 55C127 58.866 123.866 62 120 62V62C116.134 62 113 58.866 113 55L113 50L127 50L127 55Z"
+      fill="#F34900"
+    />,
+    <path
+      d="M125 50L122 50L122 46.5C122 45.6716 122.672 45 123.5 45V45C124.328 45 125 45.6716 125 46.5L125 50Z"
+      fill="#F34900"
+    />,
+    <path
+      d="M125 50L122 50L122 46.5C122 45.6716 122.672 45 123.5 45V45C124.328 45 125 45.6716 125 46.5L125 50Z"
+      fill="#F34900"
+    />,
+    <path
+      d="M118 50L115 50L115 46.5C115 45.6716 115.672 45 116.5 45V45C117.328 45 118 45.6716 118 46.5L118 50Z"
+      fill="#F34900"
+    />,
+    <defs>
+      <linearGradient
+        id="paint0_linear_4219_45528"
+        x1="122.5"
+        y1="1"
+        x2="122.5"
+        y2="62.5"
+        gradientUnits="userSpaceOnUse"
+      >
+        <stop stopColor="#F34900" stopOpacity="0" />
+        <stop offset="1" stopColor="#F34900" />
+      </linearGradient>
+      <clipPath id="clip0_4219_45528">
+        <rect x="33" y="33" width="56" height="56" rx="28" fill="white" />
+      </clipPath>
+    </defs>,
+  ],
 })

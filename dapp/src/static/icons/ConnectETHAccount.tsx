@@ -1,80 +1,70 @@
 import React from "react"
 import { createIcon } from "@chakra-ui/react"
 
-// TODO: Update an svg when gradient problem will be fixed
 export const ConnectETHAccount = createIcon({
   displayName: "ConnectETHAccount",
-  viewBox: "0 0 126 121",
-  path: (
-    <svg
-      width="126"
-      height="121"
-      viewBox="0 0 126 121"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <circle
-        cx="60"
-        cy="60"
-        r="59"
-        transform="matrix(1 0 0 -1 0 120.5)"
-        stroke="url(#paint0_angular_4163_24619)"
-        strokeWidth="2"
+  viewBox: "0 0 127 122",
+  defaultProps: {
+    fill: "none",
+  },
+  path: [
+    <path
+      d="M121 61C121 94.1371 94.1371 121 61 121C27.8629 121 1 94.1371 1 61C1 27.8629 27.8629 1 61 1"
+      stroke="url(#paint0_linear_3172_24686)"
+      strokeWidth="2"
+    />,
+    <g clipPath="url(#clip0_3172_24686)">
+      <rect
+        x="33"
+        y="33"
+        width="56"
+        height="56"
+        rx="28"
+        fill="white"
+        fillOpacity="0.1"
       />
-      <g clipPath="url(#clip0_4163_24619)">
-        <rect
-          x="32"
-          y="32.5"
-          width="56"
-          height="56"
-          rx="28"
-          fill="white"
-          fillOpacity="0.1"
-        />
-        <rect x="32" y="32.5" width="56" height="56" fill="#231F20" />
-        <path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M59.9967 45.5004L59.9969 45.5V45.5007L69.4934 60.9816L59.9969 66.4965V66.4969L59.9967 66.4967L59.9965 66.4968L59.996 66.4963L50.5 60.9816L59.9961 45.5014L59.9965 45.5L59.9967 45.5004ZM59.9969 75.8989V75.901L50.5 62.7528L59.9969 68.2652V68.2664L59.9978 68.2654L69.5003 62.7529L59.9978 75.9012L59.9969 75.8989Z"
-          fill="#FFFDF9"
-        />
-      </g>
+      <rect x="33" y="33" width="56" height="56" fill="#231F20" />
       <path
-        d="M126 54.5C126 58.366 122.866 61.5 119 61.5C115.134 61.5 112 58.366 112 54.5L112 49.5L126 49.5L126 54.5Z"
-        fill="#F34900"
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M60.9967 46.0004L60.9969 46V46.0007L70.4934 61.4816L60.9969 66.9965V66.9969L60.9967 66.9967L60.9965 66.9968L60.996 66.9963L51.5 61.4816L60.9961 46.0014L60.9965 46L60.9967 46.0004ZM60.9969 76.3989V76.401L51.5 63.2528L60.9969 68.7652V68.7664L60.9978 68.7654L70.5003 63.2529L60.9978 76.4012L60.9969 76.3989Z"
+        fill="#FFFDF9"
       />
-      <path
-        d="M124 49.5L121 49.5L121 46C121 45.1716 121.672 44.5 122.5 44.5C123.328 44.5 124 45.1716 124 46L124 49.5Z"
-        fill="#F34900"
-      />
-      <path
-        d="M117 49.5L114 49.5L114 46C114 45.1716 114.672 44.5 115.5 44.5C116.328 44.5 117 45.1716 117 46L117 49.5Z"
-        fill="#F34900"
-      />
-      <path
-        d="M121.5 52L116.5 57M116.5 52L121.5 57"
-        stroke="white"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <defs>
-        <radialGradient
-          id="paint0_angular_4163_24619"
-          cx="0"
-          cy="0"
-          r="1"
-          gradientUnits="userSpaceOnUse"
-          gradientTransform="translate(60 60) scale(60)"
-        >
-          <stop offset="0.229167" stopColor="#F34900" stopOpacity="0" />
-          <stop offset="0.9999" stopColor="#F34900" />
-          <stop offset="1" stopColor="#F34900" stopOpacity="0" />
-        </radialGradient>
-        <clipPath id="clip0_4163_24619">
-          <rect x="32" y="32.5" width="56" height="56" rx="28" fill="white" />
-        </clipPath>
-      </defs>
-    </svg>
-  ),
+    </g>,
+    <path
+      d="M127 55C127 58.866 123.866 62 120 62C116.134 62 113 58.866 113 55L113 50L127 50L127 55Z"
+      fill="#F34900"
+    />,
+    <path
+      d="M125 50L122 50L122 46.5C122 45.6716 122.672 45 123.5 45C124.328 45 125 45.6716 125 46.5L125 50Z"
+      fill="#F34900"
+    />,
+    <path
+      d="M118 50L115 50L115 46.5C115 45.6716 115.672 45 116.5 45C117.328 45 118 45.6716 118 46.5L118 50Z"
+      fill="#F34900"
+    />,
+    <path
+      d="M122.5 52.5L117.5 57.5M117.5 52.5L122.5 57.5"
+      stroke="white"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />,
+    <defs>
+      <linearGradient
+        id="paint0_linear_3172_24686"
+        x1="122.5"
+        y1="1"
+        x2="122.5"
+        y2="62.5"
+        gradientUnits="userSpaceOnUse"
+      >
+        <stop stopColor="#F34900" stopOpacity="0" />
+        <stop offset="1" stopColor="#F34900" />
+      </linearGradient>
+      <clipPath id="clip0_3172_24686">
+        <rect x="33" y="33" width="56" height="56" rx="28" fill="white" />
+      </clipPath>
+    </defs>,
+  ],
 })
