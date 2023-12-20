@@ -180,7 +180,7 @@ describe("Acre", () => {
         let amountToStake: bigint
 
         beforeEach(async () => {
-          const { minimumDepositAmount } = await acre.stakingParameters()
+          const [minimumDepositAmount] = await acre.depositParameters()
           amountToStake = minimumDepositAmount - 1n
 
           await tbtc
@@ -202,7 +202,7 @@ describe("Acre", () => {
         let tx: ContractTransactionResponse
 
         beforeEach(async () => {
-          const { minimumDepositAmount } = await acre.stakingParameters()
+          const [minimumDepositAmount] = await acre.depositParameters()
           amountToStake = minimumDepositAmount
 
           await tbtc
@@ -572,7 +572,7 @@ describe("Acre", () => {
         let sharesToMint: bigint
 
         beforeEach(async () => {
-          const { minimumDepositAmount } = await acre.stakingParameters()
+          const [minimumDepositAmount] = await acre.depositParameters()
           const previewDeposit = await acre.previewDeposit(minimumDepositAmount)
 
           sharesToMint = previewDeposit - 1n
@@ -590,7 +590,7 @@ describe("Acre", () => {
     )
   })
 
-  describe("updateStakingParameters", () => {
+  describe("updateDepositParameters", () => {
     const validMinimumDepositAmount = to1e18(1)
     const validMaximumTotalAssetsAmount = to1e18(30)
     let snapshot: SnapshotRestorer
@@ -610,27 +610,24 @@ describe("Acre", () => {
         beforeEach(async () => {
           tx = await acre
             .connect(owner)
-            .updateStakingParameters(
+            .updateDepositParameters(
               validMinimumDepositAmount,
               validMaximumTotalAssetsAmount,
             )
         })
 
-        it("should emit StakingParametersUpdated event", async () => {
+        it("should emit DepositParametersUpdated event", async () => {
           await expect(tx)
-            .to.emit(acre, "StakingParametersUpdated")
+            .to.emit(acre, "DepositParametersUpdated")
             .withArgs(validMinimumDepositAmount, validMaximumTotalAssetsAmount)
         })
 
         it("should update parameters correctly", async () => {
-          const stakingParameters = await acre.stakingParameters()
+          const [minimumDepositAmount, maximumTotalAssets] =
+            await acre.depositParameters()
 
-          expect(stakingParameters.minimumDepositAmount).to.be.eq(
-            validMinimumDepositAmount,
-          )
-          expect(stakingParameters.maximumTotalAssets).to.be.eq(
-            validMaximumTotalAssetsAmount,
-          )
+          expect(minimumDepositAmount).to.be.eq(validMinimumDepositAmount)
+          expect(maximumTotalAssets).to.be.eq(validMaximumTotalAssetsAmount)
         })
       })
 
@@ -640,18 +637,16 @@ describe("Acre", () => {
         beforeEach(async () => {
           await acre
             .connect(owner)
-            .updateStakingParameters(
+            .updateDepositParameters(
               newMinimumDepositAmount,
               validMaximumTotalAssetsAmount,
             )
         })
 
         it("should update the minimum deposit amount correctly", async () => {
-          const stakingParameters = await acre.stakingParameters()
+          const [minimumDepositAmount] = await acre.depositParameters()
 
-          expect(stakingParameters.minimumDepositAmount).to.be.eq(
-            newMinimumDepositAmount,
-          )
+          expect(minimumDepositAmount).to.be.eq(newMinimumDepositAmount)
         })
       })
 
@@ -663,11 +658,11 @@ describe("Acre", () => {
             await expect(
               acre
                 .connect(owner)
-                .updateStakingParameters(
+                .updateDepositParameters(
                   validMinimumDepositAmount,
                   maximumTotalAssets,
                 ),
-            ).to.be.revertedWithCustomError(acre, "InvalidStakingParameter")
+            ).to.be.revertedWithCustomError(acre, "InvalidDepositParameter")
           })
         })
       })
@@ -678,7 +673,7 @@ describe("Acre", () => {
         await expect(
           acre
             .connect(staker1)
-            .updateStakingParameters(
+            .updateDepositParameters(
               validMinimumDepositAmount,
               validMaximumTotalAssetsAmount,
             ),
@@ -693,7 +688,7 @@ describe("Acre", () => {
 
     beforeEach(async () => {
       snapshot = await takeSnapshot()
-      ;({ maximumTotalAssets } = await acre.stakingParameters())
+      maximumTotalAssets = await acre.maximumTotalAssets()
     })
 
     afterEach(async () => {
@@ -735,7 +730,7 @@ describe("Acre", () => {
 
         await acre
           .connect(owner)
-          .updateStakingParameters(minimumDepositAmount, newMaximumTotalAssets)
+          .updateDepositParameters(minimumDepositAmount, newMaximumTotalAssets)
         await tbtc.mint(await acre.getAddress(), toMint)
       })
 
@@ -751,7 +746,7 @@ describe("Acre", () => {
 
     beforeEach(async () => {
       snapshot = await takeSnapshot()
-      ;({ maximumTotalAssets } = await acre.stakingParameters())
+      maximumTotalAssets = await acre.maximumTotalAssets()
     })
 
     afterEach(async () => {
@@ -792,7 +787,7 @@ describe("Acre", () => {
 
         await acre
           .connect(owner)
-          .updateStakingParameters(minimumDepositAmount, newMaximumTotalAssets)
+          .updateDepositParameters(minimumDepositAmount, newMaximumTotalAssets)
 
         // Staker stakes 3 tBTC.
         await tbtc

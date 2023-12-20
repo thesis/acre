@@ -16,63 +16,59 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 ///      burning of shares (stBTC), which are represented as standard ERC20
 ///      tokens, providing a seamless exchange with tBTC tokens.
 contract Acre is ERC4626, Ownable {
-    struct StakingParameters {
-        // Minimum amount for a single deposit operation.
-        uint256 minimumDepositAmount;
-        // Maximum total amount of tBTC token held by Acre.
-        uint256 maximumTotalAssets;
-    }
-
-    StakingParameters public stakingParameters;
+    // Minimum amount for a single deposit operation.
+    uint256 public minimumDepositAmount;
+    // Maximum total amount of tBTC token held by Acre.
+    uint256 public maximumTotalAssets;
 
     event StakeReferral(bytes32 indexed referral, uint256 assets);
-    event StakingParametersUpdated(
+    event DepositParametersUpdated(
         uint256 minimumDepositAmount,
         uint256 maximumTotalAssets
     );
 
     error DepositAmountLessThanMin(uint256 amount, uint256 min);
-    error InvalidStakingParameter();
+    error InvalidDepositParameter();
 
     constructor(
         IERC20 tbtc
     ) ERC4626(tbtc) ERC20("Acre Staked Bitcoin", "stBTC") Ownable(msg.sender) {
-        stakingParameters.minimumDepositAmount = 0.01 ether; // 0.01 tBTC
-        stakingParameters.maximumTotalAssets = 25 ether; // 25 tBTC
+        minimumDepositAmount = 0.01 ether; // 0.01 tBTC
+        maximumTotalAssets = 25 ether; // 25 tBTC
     }
 
     /// @notice Updates parameters of staking.
     /// @dev Requirements:
     ///      - Maximum total assets must be greater than zero.
-    /// @param minimumDepositAmount New value of the minimum deposit amount. It
+    /// @param _minimumDepositAmount New value of the minimum deposit amount. It
     ///        is the minimum amount for a single deposit operation.
-    /// @param maximumTotalAssets New value of the maximum total assets amount.
+    /// @param _maximumTotalAssets New value of the maximum total assets amount.
     ///        It is the maximum amount of the tBTC token that the Acre can
     ///        hold.
-    function updateStakingParameters(
-        uint256 minimumDepositAmount,
-        uint256 maximumTotalAssets
+    function updateDepositParameters(
+        uint256 _minimumDepositAmount,
+        uint256 _maximumTotalAssets
     ) external onlyOwner {
         // TODO: Introduce a parameters update process.
-        if (maximumTotalAssets == 0) {
-            revert InvalidStakingParameter();
+        if (_maximumTotalAssets == 0) {
+            revert InvalidDepositParameter();
         }
 
-        stakingParameters.minimumDepositAmount = minimumDepositAmount;
-        stakingParameters.maximumTotalAssets = maximumTotalAssets;
+        minimumDepositAmount = _minimumDepositAmount;
+        maximumTotalAssets = _maximumTotalAssets;
 
-        emit StakingParametersUpdated(minimumDepositAmount, maximumTotalAssets);
+        emit DepositParametersUpdated(
+            _minimumDepositAmount,
+            _maximumTotalAssets
+        );
     }
 
     function deposit(
         uint256 assets,
         address receiver
     ) public override returns (uint256) {
-        if (assets < stakingParameters.minimumDepositAmount) {
-            revert DepositAmountLessThanMin(
-                assets,
-                stakingParameters.minimumDepositAmount
-            );
+        if (assets < minimumDepositAmount) {
+            revert DepositAmountLessThanMin(assets, minimumDepositAmount);
         }
 
         return super.deposit(assets, receiver);
@@ -82,14 +78,8 @@ contract Acre is ERC4626, Ownable {
         uint256 shares,
         address receiver
     ) public override returns (uint256 assets) {
-        if (
-            (assets = super.mint(shares, receiver)) <
-            stakingParameters.minimumDepositAmount
-        ) {
-            revert DepositAmountLessThanMin(
-                assets,
-                stakingParameters.minimumDepositAmount
-            );
+        if ((assets = super.mint(shares, receiver)) < minimumDepositAmount) {
+            revert DepositAmountLessThanMin(assets, minimumDepositAmount);
         }
     }
 
@@ -126,9 +116,9 @@ contract Acre is ERC4626, Ownable {
         uint256 _totalAssets = totalAssets();
 
         return
-            _totalAssets >= stakingParameters.maximumTotalAssets
+            _totalAssets >= maximumTotalAssets
                 ? 0
-                : stakingParameters.maximumTotalAssets - _totalAssets;
+                : maximumTotalAssets - _totalAssets;
     }
 
     /// @notice Returns the maximum amount of the vault shares that can be
@@ -138,5 +128,10 @@ contract Acre is ERC4626, Ownable {
     /// @return The maximum amount of the vault shares.
     function maxMint(address receiver) public view override returns (uint256) {
         return convertToShares(maxDeposit(receiver));
+    }
+
+    /// @return Returns deposit parametrs
+    function depositParameters() public view returns (uint256, uint256) {
+        return (minimumDepositAmount, maximumTotalAssets);
     }
 }
