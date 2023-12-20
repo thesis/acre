@@ -43,7 +43,6 @@ contract Acre is ERC4626, Ownable {
 
     /// @notice Updates parameters of staking.
     /// @dev Requirements:
-    ///      - Minimum deposit amount must be greater than zero,
     ///      - Maximum total assets must be greater than zero.
     /// @param minimumDepositAmount New value of the minimum deposit amount. It
     ///        is the minimum amount for a single deposit operation.
@@ -55,7 +54,7 @@ contract Acre is ERC4626, Ownable {
         uint256 maximumTotalAssets
     ) external onlyOwner {
         // TODO: Introduce a parameters update process.
-        if (minimumDepositAmount < 0 || maximumTotalAssets <= 0) {
+        if (maximumTotalAssets == 0) {
             revert InvalidStakingParameter();
         }
 
