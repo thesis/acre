@@ -4,6 +4,7 @@
   "main": "dist/src/index.js",
   "license": "GPL-3.0-only",
   "scripts": {
+    "build": "tsc",
     "format": "npm run lint:js && npm run lint:config",
     "format:fix": "npm run lint:js:fix && npm run lint:config:fix",
     "lint:js": "eslint .",
