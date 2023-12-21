@@ -18,7 +18,7 @@ import NumberFormatInput, {
   NumberFormatInputValues,
 } from "../NumberFormatInput"
 import { CurrencyBalance } from "../CurrencyBalance"
-import { Alert } from "../../../static/icons"
+import { AlertInfo } from "../../../static/icons"
 
 const VARIANT = "balance"
 const [StylesProvider, useStyles] = createStylesContext("TokenBalanceInput")
@@ -47,7 +47,7 @@ function HelperErrorText({
   if (helperText) {
     return (
       <HStack __css={styles.helperText}>
-        <Icon as={Alert} />
+        <Icon as={AlertInfo} />
         <Box as="span">{helperText}</Box>
       </HStack>
     )

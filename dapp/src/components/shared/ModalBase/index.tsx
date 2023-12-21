@@ -7,6 +7,7 @@ import {
 } from "@chakra-ui/react"
 import { ModalFlowContext, ModalFlowContextValue } from "../../../contexts"
 import { useSidebar } from "../../../hooks"
+import SupportWrapper from "../../Modals/Support"
 
 export default function ModalBase({
   isOpen,
@@ -66,11 +67,11 @@ export default function ModalBase({
 
   return (
     <ModalFlowContext.Provider value={contextValue}>
-      <Modal size="md" isOpen={isOpen} onClose={handleClose}>
+      <Modal size="lg" isOpen={isOpen} onClose={handleClose}>
         <ModalOverlay mt="header_height" />
         <ModalContent mt="modal_shift">
           <ModalCloseButton />
-          {children}
+          <SupportWrapper>{children}</SupportWrapper>
         </ModalContent>
       </Modal>
     </ModalFlowContext.Provider>

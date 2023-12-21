@@ -1,8 +1,8 @@
 import React from "react"
 import { createIcon } from "@chakra-ui/react"
 
-export const Alert = createIcon({
-  displayName: "Alert",
+export const AlertInfo = createIcon({
+  displayName: "AlertInfo",
   viewBox: "0 0 16 16",
   path: [
     <g clipPath="url(#clip0_3178_2454)">
