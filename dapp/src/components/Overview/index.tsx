@@ -6,8 +6,11 @@ import TransactionHistory from "./TransactionHistory"
 import { USD } from "../../constants"
 import { ArrowUpRight } from "../../static/icons"
 import { TextSm } from "../shared/Typography"
+import { useDocsDrawer } from "../../hooks"
 
 export default function Overview() {
+  const { onOpen } = useDocsDrawer()
+
   return (
     <Flex direction="column" gap={2} p={6}>
       <Flex justifyContent="space-between" alignItems="center">
@@ -18,6 +21,7 @@ export default function Overview() {
         </HStack>
         <Button
           variant="card"
+          onClick={onOpen}
           leftIcon={<Icon as={ArrowUpRight} color="brand.400" boxSize={4} />}
         >
           Docs
