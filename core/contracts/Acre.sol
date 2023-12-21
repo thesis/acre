@@ -38,7 +38,7 @@ contract Acre is ERC4626, Ownable {
         maximumTotalAssets = 25 * 1e18; // 25 tBTC
     }
 
-    /// @notice Updates parameters of staking.
+    /// @notice Updates deposit parameters.
     /// @dev Requirements:
     ///      - Maximum total assets must be greater than zero.
     /// @param _minimumDepositAmount New value of the minimum deposit amount. It
@@ -64,6 +64,15 @@ contract Acre is ERC4626, Ownable {
         );
     }
 
+    /// @notice Mints shares to receiver by depositing exactly amount of
+    ///         tBTC tokens.
+    /// @dev Takes into account a deposit parameter, minimum deposit amount,
+    ///      which determines the minimum amount for a single deposit operation.
+    ///      The amount of the assets has to be pre-approved in the tBTC
+    ///      contract.
+    /// @param assets Approved amount of tBTC tokens to deposit.
+    /// @param receiver The address to which the shares will be minted.
+    /// @return Minted shares.
     function deposit(
         uint256 assets,
         address receiver
@@ -75,6 +84,14 @@ contract Acre is ERC4626, Ownable {
         return super.deposit(assets, receiver);
     }
 
+    /// @notice Mints shares to receiver by depositing tBTC tokens.
+    /// @dev Takes into account a deposit parameter, minimum deposit amount,
+    ///      which determines the minimum amount for a single deposit operation.
+    ///      The amount of the assets has to be pre-approved in the tBTC
+    ///      contract.
+    /// @param shares Amount of shares to mint. To get the amount of share use
+    ///        `previewMint`.
+    /// @param receiver The address to which the shares will be minted.
     function mint(
         uint256 shares,
         address receiver
@@ -109,7 +126,7 @@ contract Acre is ERC4626, Ownable {
 
     /// @notice Returns the maximum amount of the tBTC token that can be
     ///         deposited into the vault for the receiver, through a deposit
-    ///         call. It takes into account the staking parameter, maximum total
+    ///         call. It takes into account the deposit parameter, maximum total
     ///         assets, which determines the total amount of tBTC token held by
     ///         Acre.
     /// @return The maximum amount of the tBTC token.
