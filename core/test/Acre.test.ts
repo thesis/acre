@@ -158,24 +158,6 @@ describe("Acre", () => {
         },
       )
 
-      context("when amount to stake is 1", () => {
-        const amountToStake = 1
-
-        beforeEach(async () => {
-          await tbtc
-            .connect(staker1)
-            .approve(await acre.getAddress(), amountToStake)
-        })
-
-        it("should revert", async () => {
-          await expect(
-            acre
-              .connect(staker1)
-              .stake(amountToStake, staker1.address, referral),
-          ).to.revertedWithCustomError(acre, "DepositAmountLessThanMin")
-        })
-      })
-
       context("when amount to stake is less than minimum", () => {
         let amountToStake: bigint
 
