@@ -153,16 +153,19 @@ describe("Acre", () => {
               acre
                 .connect(staker1)
                 .stake(amountToStake, staker1.address, referral),
-            ).to.be.revertedWithCustomError(tbtc, "ERC20InsufficientAllowance")
+            )
+              .to.be.revertedWithCustomError(tbtc, "ERC20InsufficientAllowance")
+              .withArgs(await acre.getAddress(), approvedAmount, amountToStake)
           })
         },
       )
 
       context("when amount to stake is less than minimum", () => {
         let amountToStake: bigint
+        let minimumDepositAmount: bigint
 
         beforeEach(async () => {
-          const [minimumDepositAmount] = await acre.depositParameters()
+          ;[minimumDepositAmount] = await acre.depositParameters()
           amountToStake = minimumDepositAmount - 1n
 
           await tbtc
@@ -175,7 +178,9 @@ describe("Acre", () => {
             acre
               .connect(staker1)
               .stake(amountToStake, staker1.address, referral),
-          ).to.revertedWithCustomError(acre, "DepositAmountLessThanMin")
+          )
+            .to.revertedWithCustomError(acre, "DepositAmountLessThanMin")
+            .withArgs(amountToStake, minimumDepositAmount)
         })
       })
 
@@ -217,7 +222,9 @@ describe("Acre", () => {
         it("should revert", async () => {
           await expect(
             acre.connect(staker1).stake(amountToStake, ZeroAddress, referral),
-          ).to.be.revertedWithCustomError(acre, "ERC20InvalidReceiver")
+          )
+            .to.be.revertedWithCustomError(acre, "ERC20InvalidReceiver")
+            .withArgs(ZeroAddress)
         })
       })
 
@@ -241,7 +248,9 @@ describe("Acre", () => {
               acre
                 .connect(staker1)
                 .stake(amountToStake, staker1.address, referral),
-            ).to.be.revertedWithCustomError(acre, "ERC20InsufficientAllowance")
+            )
+              .to.be.revertedWithCustomError(acre, "ERC20InsufficientAllowance")
+              .withArgs(await acre.getAddress(), 0, amountToStake)
           })
         },
       )
@@ -466,9 +475,16 @@ describe("Acre", () => {
             })
 
             it("should revert", async () => {
-              await expect(
-                acre.stake(amountToStake, staker1.address, referral),
-              ).to.be.revertedWithCustomError(acre, "ERC4626ExceededMaxDeposit")
+              await expect(acre.stake(amountToStake, staker1.address, referral))
+                .to.be.revertedWithCustomError(
+                  acre,
+                  "ERC4626ExceededMaxDeposit",
+                )
+                .withArgs(
+                  staker1.address,
+                  amountToStake,
+                  possibleMaxAmountToStake,
+                )
             })
           },
         )
@@ -534,17 +550,18 @@ describe("Acre", () => {
 
     context("when staker wants to mint more shares than allowed", () => {
       let sharesToMint: bigint
+      let maxMint: bigint
 
       beforeEach(async () => {
-        const maxMint = await acre.maxMint(staker1.address)
+        maxMint = await acre.maxMint(staker1.address)
 
         sharesToMint = maxMint + 1n
       })
 
       it("should take into account the max total assets parameter and revert", async () => {
-        await expect(
-          acre.connect(staker1).mint(sharesToMint, staker1.address),
-        ).to.be.revertedWithCustomError(acre, "ERC4626ExceededMaxMint")
+        await expect(acre.connect(staker1).mint(sharesToMint, staker1.address))
+          .to.be.revertedWithCustomError(acre, "ERC4626ExceededMaxMint")
+          .withArgs(staker1.address, sharesToMint, maxMint)
       })
     })
 
@@ -552,9 +569,10 @@ describe("Acre", () => {
       "when staker wants to mint less shares than is equal to the min deposit amount",
       () => {
         let sharesToMint: bigint
+        let minimumDepositAmount: bigint
 
         beforeEach(async () => {
-          const [minimumDepositAmount] = await acre.depositParameters()
+          ;[minimumDepositAmount] = await acre.depositParameters()
           const previewDeposit = await acre.previewDeposit(minimumDepositAmount)
 
           sharesToMint = previewDeposit - 1n
@@ -564,9 +582,16 @@ describe("Acre", () => {
         })
 
         it("should take into account the min deposit amount parameter and revert", async () => {
+          // In this test case, there is only one staker and the token vault has
+          // not earned anything yet so received shares are equal to staked
+          // tokens amount.
+          const depositAmount = sharesToMint
+
           await expect(
             acre.connect(staker1).mint(sharesToMint, staker1.address),
-          ).to.be.revertedWithCustomError(acre, "DepositAmountLessThanMin")
+          )
+            .to.be.revertedWithCustomError(acre, "DepositAmountLessThanMin")
+            .withArgs(depositAmount, minimumDepositAmount)
         })
       },
     )
@@ -644,10 +669,12 @@ describe("Acre", () => {
                   validMinimumDepositAmount,
                   maximumTotalAssets,
                 ),
-            ).to.be.revertedWithCustomError(
-              acre,
-              "InvalidMaximumTotalAssetsParameter",
             )
+              .to.be.revertedWithCustomError(
+                acre,
+                "InvalidMaximumTotalAssetsParameter",
+              )
+              .withArgs(maximumTotalAssets)
           })
         })
       })
@@ -662,7 +689,9 @@ describe("Acre", () => {
               validMinimumDepositAmount,
               validMaximumTotalAssetsAmount,
             ),
-        ).to.be.revertedWithCustomError(acre, "OwnableUnauthorizedAccount")
+        )
+          .to.be.revertedWithCustomError(acre, "OwnableUnauthorizedAccount")
+          .withArgs(staker1.address)
       })
     })
   })
