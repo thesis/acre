@@ -662,7 +662,10 @@ describe("Acre", () => {
                   validMinimumDepositAmount,
                   maximumTotalAssets,
                 ),
-            ).to.be.revertedWithCustomError(acre, "InvalidDepositParameter")
+            ).to.be.revertedWithCustomError(
+              acre,
+              "InvalidMaximumTotalAssetsParameter",
+            )
           })
         })
       })
