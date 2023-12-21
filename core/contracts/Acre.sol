@@ -33,8 +33,9 @@ contract Acre is ERC4626, Ownable {
     constructor(
         IERC20 tbtc
     ) ERC4626(tbtc) ERC20("Acre Staked Bitcoin", "stBTC") Ownable(msg.sender) {
-        minimumDepositAmount = 0.01 ether; // 0.01 tBTC
-        maximumTotalAssets = 25 ether; // 25 tBTC
+        // TODO: Revisit the exact values closer to the launch.
+        minimumDepositAmount = 0.01 * 1e18; // 0.01 tBTC
+        maximumTotalAssets = 25 * 1e18; // 25 tBTC
     }
 
     /// @notice Updates parameters of staking.
