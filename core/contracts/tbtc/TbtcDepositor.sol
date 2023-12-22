@@ -16,9 +16,9 @@ contract TbtcDepositor {
     using SafeERC20 for IERC20;
 
     struct DepositRequest {
-        // UNIX timestamp at which the optimistic minting was requested.
+        // UNIX timestamp at which the deposit request was initialized.
         uint64 requestedAt;
-        // UNIX timestamp at which the optimistic minting was finalized.
+        // UNIX timestamp at which the deposit request was finalized.
         // 0 if not yet finalized.
         uint64 finalizedAt;
         // Maximum Deposit Transaction Fee snapshotted from the Bridge contract
