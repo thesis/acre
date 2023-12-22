@@ -37,7 +37,7 @@ describe("Acre", () => {
   })
 
   describe("stake", () => {
-    const referral = ethers.encodeBytes32String("referral")
+    const referral: number = 17283
     let snapshot: SnapshotRestorer
 
     context("when staking as first staker", () => {

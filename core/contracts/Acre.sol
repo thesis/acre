@@ -32,12 +32,12 @@ contract Acre is ERC4626 {
     function stake(
         uint256 assets,
         address receiver,
-        bytes32 referral
+        uint16 referral
     ) public returns (uint256) {
         // TODO: revisit the type of referral.
         uint256 shares = deposit(assets, receiver);
 
-        if (referral != bytes32(0)) {
+        if (referral > 0) {
             emit StakeReferral(referral, assets);
         }
 
