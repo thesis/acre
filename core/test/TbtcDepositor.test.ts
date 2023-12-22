@@ -115,8 +115,10 @@ describe.only("TbtcDepositor", () => {
       // stakeTbtcAmount = depositAmount - depositTreasuryFee - depositTxMaxFee
       //        = 10_000 - 5 - 1_000 = 8_995
       //
+      // tbtcLeftInDepositor = 20% * depositTxMaxFee = 200
       const expectedMintedTbtcAmount = to1ePrecision(9_195, 10)
       const expectedStakedTbtcAmount = to1ePrecision(8_995, 10)
+      const expectedLeftInDepositorTbtcAmount = to1ePrecision(200, 10)
 
       const sweepTx = await bridge.sweep(
         testData.fundingTxHash,
@@ -142,6 +144,10 @@ describe.only("TbtcDepositor", () => {
         [testData.receiver],
         [expectedStakedTbtcAmount],
       )
+
+      await expect(
+        await tbtc.balanceOf(await tbtcDepositor.getAddress()),
+      ).to.be.equal(expectedLeftInDepositorTbtcAmount)
     })
 
     // TODO: Test with optimistic minting flow
