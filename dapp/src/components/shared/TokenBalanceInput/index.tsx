@@ -2,13 +2,14 @@ import React, { useMemo } from "react"
 import {
   Box,
   Button,
-  HStack,
+  FormControl,
+  FormErrorMessage,
+  FormHelperText,
+  FormLabel,
   Icon,
   InputGroup,
   InputProps,
   InputRightElement,
-  TypographyProps,
-  createStylesContext,
   useMultiStyleConfig,
 } from "@chakra-ui/react"
 import { fixedPointNumberToString } from "../../../utils"
@@ -21,7 +22,6 @@ import { CurrencyBalance } from "../CurrencyBalance"
 import { AlertInfo } from "../../../static/icons"
 
 const VARIANT = "balance"
-const [StylesProvider, useStyles] = createStylesContext("TokenBalanceInput")
 
 type HelperErrorTextProps = {
   errorMsgText?: string | JSX.Element
@@ -34,22 +34,20 @@ function HelperErrorText({
   errorMsgText,
   hasError,
 }: HelperErrorTextProps) {
-  const styles = useStyles()
-
   if (hasError) {
     return (
-      <Box as="span" __css={styles.errorMsgText}>
+      <FormErrorMessage>
         {errorMsgText || "Please enter a valid value"}
-      </Box>
+      </FormErrorMessage>
     )
   }
 
   if (helperText) {
     return (
-      <HStack __css={styles.helperText}>
+      <FormHelperText>
         <Icon as={AlertInfo} />
-        <Box as="span">{helperText}</Box>
-      </HStack>
+        {helperText}
+      </FormHelperText>
     )
   }
 
@@ -65,8 +63,8 @@ function FiatCurrencyBalance({
   fiatAmount,
   fiatCurrencyType,
 }: FiatCurrencyBalanceProps) {
-  const { helperText } = useStyles()
-  const textProps = helperText as TypographyProps
+  const styles = useMultiStyleConfig("Form")
+  const { fontWeight } = styles.helperText
 
   if (fiatAmount && fiatCurrencyType) {
     return (
@@ -74,7 +72,8 @@ function FiatCurrencyBalance({
         currencyType={fiatCurrencyType}
         amount={fiatAmount}
         shouldBeFormatted={false}
-        {...textProps}
+        fontWeight={fontWeight as string}
+        size="sm"
       />
     )
   }
@@ -119,22 +118,22 @@ export default function TokenBalanceInput({
   )
 
   return (
-    <Box __css={styles.container}>
-      <Box __css={styles.labelContainer}>
-        <Box as="span" __css={styles.label}>
+    <FormControl isInvalid={hasError} isDisabled={inputProps.isDisabled}>
+      <FormLabel htmlFor={inputProps.name} size={size}>
+        <Box __css={styles.labelContainer}>
           Amount
-        </Box>
-        <HStack>
-          <Box as="span" __css={styles.balance}>
-            Balance
+          <Box __css={styles.balanceContainer}>
+            <Box as="span" __css={styles.balance}>
+              Balance
+            </Box>
+            <CurrencyBalance
+              size={size === "lg" ? "md" : "sm"}
+              amount={tokenBalance}
+              currencyType={currencyType}
+            />
           </Box>
-          <CurrencyBalance
-            size={size === "lg" ? "md" : "sm"}
-            amount={tokenBalance}
-            currencyType={currencyType}
-          />
-        </HStack>
-      </Box>
+        </Box>
+      </FormLabel>
       <InputGroup variant={VARIANT}>
         <NumberFormatInput
           size={size}
@@ -153,19 +152,19 @@ export default function TokenBalanceInput({
           </Button>
         </InputRightElement>
       </InputGroup>
-      <StylesProvider value={styles}>
-        <HelperErrorText
-          helperText={helperText}
-          errorMsgText={errorMsgText}
-          hasError={hasError}
-        />
-        {!hasError && !helperText && (
+      <HelperErrorText
+        helperText={helperText}
+        errorMsgText={errorMsgText}
+        hasError={hasError}
+      />
+      {!hasError && !helperText && (
+        <FormHelperText>
           <FiatCurrencyBalance
             fiatAmount={fiatAmount}
             fiatCurrencyType={fiatCurrencyType}
           />
-        )}
-      </StylesProvider>
-    </Box>
+        </FormHelperText>
+      )}
+    </FormControl>
   )
 }

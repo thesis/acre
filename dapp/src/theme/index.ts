@@ -14,6 +14,9 @@ import TokenBalanceInput from "./TokenBalanceInput"
 import Input from "./Input"
 import Stepper from "./Stepper"
 import Alert from "./Alert"
+import Form from "./Form"
+import FormLabel from "./FormLabel"
+import FormError from "./FormError"
 
 const defaultTheme = {
   colors,
@@ -44,6 +47,9 @@ const defaultTheme = {
     TokenBalanceInput,
     Stepper,
     Alert,
+    Form,
+    FormLabel,
+    FormError,
   },
 }
 
