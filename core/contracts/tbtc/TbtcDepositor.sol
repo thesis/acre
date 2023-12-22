@@ -16,10 +16,6 @@ contract TbtcDepositor {
     using SafeERC20 for IERC20;
 
     struct DepositRequest {
-        // Receiver of the stBTC token.
-        address receiver;
-        // Referral for the stake operation.
-        uint16 referral;
         // UNIX timestamp at which the optimistic minting was requested.
         uint64 requestedAt;
         // UNIX timestamp at which the optimistic minting was finalized.
@@ -69,8 +65,11 @@ contract TbtcDepositor {
     function initializeDeposit(
         IBridge.BitcoinTxInfo calldata fundingTx,
         IBridge.DepositRevealInfo calldata reveal,
-        bytes32 extraData
+        address receiver,
+        uint16 referral
     ) external {
+        require(receiver != address(0), "receiver cannot be zero");
+
         bytes32 fundingTxHash = abi
             .encodePacked(
                 fundingTx.version,
@@ -90,15 +89,12 @@ contract TbtcDepositor {
         // solhint-disable-next-line not-rely-on-time
         request.requestedAt = uint64(block.timestamp);
 
-        // First 20 bytes of extra data is receiver address.
-        request.receiver = address(uint160(bytes20(extraData)));
-        // Next 2 bytes of extra data is referral info.
-        request.referral = uint16(bytes2(extraData << (8 * 20)));
-
-        require(request.receiver != address(0), "receiver cannot be zero");
-
         // Reveal the deposit to tBTC Bridge contract.
-        bridge.revealDepositWithExtraData(fundingTx, reveal, extraData);
+        bridge.revealDepositWithExtraData(
+            fundingTx,
+            reveal,
+            encodeExtraData(receiver, referral)
+        );
 
         // Store Deposit Transaction Max Fee.
         (, , uint64 depositTxMaxFee, ) = bridge.depositParameters();
@@ -175,13 +171,18 @@ contract TbtcDepositor {
 
         uint256 amountToStakeTbtc = amountToStakeSat * SATOSHI_MULTIPLIER;
 
+        bytes32 extraData = bridgeDepositRequest.extraData;
+
+        (address receiver, uint16 referral) = decodeExtraData(extraData);
+
         // Stake tBTC in Acre.
         IERC20(acre.asset()).safeIncreaseAllowance(
             address(acre),
             amountToStakeTbtc
         );
         // TODO: Figure out what to do if deposit limit is reached in Acre
-        acre.stake(amountToStakeTbtc, request.receiver, request.referral);
+        // TODO: Consider extracting stake function with referrals from Acre to this contract.
+        acre.stake(amountToStakeTbtc, receiver, referral);
     }
 
     /// @notice Calculates deposit key the same way as the Bridge contract.
@@ -195,5 +196,21 @@ contract TbtcDepositor {
             uint256(
                 keccak256(abi.encodePacked(fundingTxHash, fundingOutputIndex))
             );
+    }
+
+    function encodeExtraData(
+        address receiver,
+        uint16 referral
+    ) public pure returns (bytes32) {
+        return bytes32(abi.encodePacked(receiver, referral));
+    }
+
+    function decodeExtraData(
+        bytes32 extraData
+    ) public pure returns (address receiver, uint16 referral) {
+        // First 20 bytes of extra data is receiver address.
+        receiver = address(uint160(bytes20(extraData)));
+        // Next 2 bytes of extra data is referral info.
+        referral = uint16(bytes2(extraData << (8 * 20)));
     }
 }
