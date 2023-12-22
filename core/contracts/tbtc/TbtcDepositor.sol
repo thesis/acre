@@ -23,7 +23,7 @@ contract TbtcDepositor {
         uint64 finalizedAt;
         // Maximum Deposit Transaction Fee snapshotted from the Bridge contract
         // at the moment of deposit reveal.
-        uint256 depositTxMaxFee;
+        uint64 depositTxMaxFee;
         // Optimistic Minting Fee Divisor snapshotted from the TBTC Vault contract
         // at the moment of deposit reveal.
         uint32 optimisticMintingFeeDivisor;
