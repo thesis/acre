@@ -12,6 +12,7 @@ import Sidebar from "./Sidebar"
 import CurrencyBalance from "./CurrencyBalance"
 import TokenBalanceInput from "./TokenBalanceInput"
 import Input from "./Input"
+import Stepper from "./Stepper"
 import Alert from "./Alert"
 
 const defaultTheme = {
@@ -41,6 +42,7 @@ const defaultTheme = {
     Tooltip,
     Input,
     TokenBalanceInput,
+    Stepper,
     Alert,
   },
 }
