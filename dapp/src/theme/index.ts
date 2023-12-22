@@ -10,6 +10,7 @@ import Tooltip from "./Tooltip"
 import Heading from "./Heading"
 import Sidebar from "./Sidebar"
 import CurrencyBalance from "./CurrencyBalance"
+import Stepper from "./Stepper"
 import Alert from "./Alert"
 
 const defaultTheme = {
@@ -37,6 +38,7 @@ const defaultTheme = {
     CurrencyBalance,
     Card,
     Tooltip,
+    Stepper,
     Alert,
   },
 }
