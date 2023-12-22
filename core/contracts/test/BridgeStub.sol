@@ -10,7 +10,7 @@ contract BridgeStub is IBridge {
 
     TBTCVaultStub tbtcVault;
 
-    mapping(uint256 => DepositRequest) dep;
+    mapping(uint256 => DepositRequest) depositsMap;
 
     constructor(TBTCVaultStub _tbtcVault) {
         tbtcVault = _tbtcVault;
@@ -30,7 +30,7 @@ contract BridgeStub is IBridge {
             )
             .hash256View();
 
-        DepositRequest storage deposit = dep[
+        DepositRequest storage deposit = depositsMap[
             calculateDepositKey(fundingTxHash, reveal.fundingOutputIndex)
         ];
 
@@ -68,11 +68,11 @@ contract BridgeStub is IBridge {
     function deposits(
         uint256 depositKey
     ) external view returns (DepositRequest memory) {
-        return dep[depositKey];
+        return depositsMap[depositKey];
     }
 
     function sweep(bytes32 fundingTxHash, uint32 fundingOutputIndex) public {
-        DepositRequest storage deposit = dep[
+        DepositRequest storage deposit = depositsMap[
             calculateDepositKey(fundingTxHash, fundingOutputIndex)
         ];
 

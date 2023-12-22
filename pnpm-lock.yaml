@@ -20,6 +20,9 @@ importers:
 
   core:
     dependencies:
+      '@keep-network/bitcoin-spv-sol':
+        specifier: 3.4.0-solc-0.8
+        version: 3.4.0-solc-0.8
       '@openzeppelin/contracts':
         specifier: ^5.0.0
         version: 5.0.0
@@ -3792,6 +3795,10 @@ packages:
       '@jridgewell/resolve-uri': 3.1.1
       '@jridgewell/sourcemap-codec': 1.4.15
     dev: true
+
+  /@keep-network/bitcoin-spv-sol@3.4.0-solc-0.8:
+    resolution: {integrity: sha512-KlpY9BbasyLvYXSS7dsJktgRChu/yjdFLOX8ldGA/pltLicCm/l0F4oqxL8wSws9XD12vq9x0B5qzPygVLB2TQ==}
+    dev: false
 
   /@ledgerhq/devices@8.0.8:
     resolution: {integrity: sha512-0j7E8DY2jeSSATc8IJk+tXDZ9u+Z7tXxB8I4TzXrfV/8A5exMh/K1IwX6Jt1zlw1wre4CT9MV4mzUs3M/TE7lg==}
