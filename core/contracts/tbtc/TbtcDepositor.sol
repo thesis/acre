@@ -10,6 +10,7 @@ import {IBridge} from "../external/tbtc/IBridge.sol";
 import {ITBTCVault} from "../external/tbtc/ITBTCVault.sol";
 import {Acre} from "../Acre.sol";
 
+// TODO: Add Missfund token protection.
 contract TbtcDepositor {
     using BTCUtils for bytes;
     using SafeERC20 for IERC20;
@@ -47,11 +48,19 @@ contract TbtcDepositor {
         acre = _acre;
     }
 
-    function minDeposit() public view returns (uint256) {
-        (uint64 bridgeDepositDustThreshold, , , ) = bridge.depositParameters();
-        uint256 acreMinimumDepositAmount = 10000; // TODO: acre.minimumDepositAmount();
+    /// @notice Returns minimum deposit amount in Satoshi
+    function minDepositAmountSat() public view returns (uint256) {
+        (uint64 bridgeDepositDustThresholdSat, , , ) = bridge
+            .depositParameters();
 
-        return Math.max(bridgeDepositDustThreshold, acreMinimumDepositAmount);
+        uint256 acreMinimumDepositAmountSat = acre.minimumDepositAmount() /
+            SATOSHI_MULTIPLIER;
+
+        return
+            Math.max(
+                bridgeDepositDustThresholdSat,
+                acreMinimumDepositAmountSat
+            );
     }
 
     // Extra Data 32 byte

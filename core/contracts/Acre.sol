@@ -15,6 +15,9 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
 ///      burning of shares (stBTC), which are represented as standard ERC20
 ///      tokens, providing a seamless exchange with tBTC tokens.
 contract Acre is ERC4626 {
+    // Minimum amount for a single deposit operation.
+    uint256 public minimumDepositAmount;
+
     event StakeReferral(uint16 indexed referral, uint256 assets);
 
     constructor(
