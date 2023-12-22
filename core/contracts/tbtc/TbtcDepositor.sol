@@ -4,6 +4,7 @@ pragma solidity ^0.8.21;
 import {BTCUtils} from "@keep-network/bitcoin-spv-sol/contracts/BTCUtils.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import {IBridge} from "../external/tbtc/IBridge.sol";
 import {ITBTCVault} from "../external/tbtc/ITBTCVault.sol";
@@ -37,10 +38,20 @@ contract TbtcDepositor {
 
     mapping(uint256 => DepositRequest) public depositRequests;
 
+    /// @notice Multiplier to convert satoshi to tBTC token units.
+    uint256 public constant SATOSHI_MULTIPLIER = 10 ** 10;
+
     constructor(IBridge _bridge, ITBTCVault _tbtcVault, Acre _acre) {
         bridge = _bridge;
         tbtcVault = _tbtcVault;
         acre = _acre;
+    }
+
+    function minDeposit() public view returns (uint256) {
+        (uint64 bridgeDepositDustThreshold, , , ) = bridge.depositParameters();
+        uint256 acreMinimumDepositAmount = 10000; // TODO: acre.minimumDepositAmount();
+
+        return Math.max(bridgeDepositDustThreshold, acreMinimumDepositAmount);
     }
 
     // Extra Data 32 byte
@@ -89,14 +100,7 @@ contract TbtcDepositor {
             .optimisticMintingFeeDivisor();
     }
 
-    function finalizeDeposit(
-        bytes32 fundingTxHash,
-        uint32 fundingOutputIndex
-    ) external {
-        uint256 depositKey = calculateDepositKey(
-            fundingTxHash,
-            fundingOutputIndex
-        );
+    function finalizeDeposit(uint256 depositKey) external {
         DepositRequest storage request = depositRequests[depositKey];
 
         // TODO: Replace with custom errors
@@ -134,9 +138,9 @@ contract TbtcDepositor {
         // Extract initial value sent by the user.
         uint256 fundingTxAmount = bridgeDepositRequest.amount;
 
-        uint256 amount = fundingTxAmount -
+        uint256 amountToStakeSat = (fundingTxAmount -
             bridgeDepositRequest.treasuryFee -
-            request.depositTxMaxFee;
+            request.depositTxMaxFee);
 
         // TODO: Revisit logic to find edge cases of mixed minting paths.
         // Check if deposit was optimistically minted.
@@ -151,7 +155,7 @@ contract TbtcDepositor {
                 ? (fundingTxAmount / optimisticMintingFeeDivisor)
                 : 0;
 
-            amount -= optimisticMintingFee;
+            amountToStakeSat -= optimisticMintingFee;
             // If not optimistically minted check if deposit was swept.
         } else {
             require(
@@ -160,10 +164,15 @@ contract TbtcDepositor {
             );
         }
 
+        uint256 amountToStakeTbtc = amountToStakeSat * SATOSHI_MULTIPLIER;
+
         // Stake tBTC in Acre.
-        IERC20(acre.asset()).safeIncreaseAllowance(address(acre), amount);
+        IERC20(acre.asset()).safeIncreaseAllowance(
+            address(acre),
+            amountToStakeTbtc
+        );
         // TODO: Figure out what to do if deposit limit is reached in Acre
-        acre.stake(amount, request.receiver, request.referral);
+        acre.stake(amountToStakeTbtc, request.receiver, request.referral);
     }
 
     /// @notice Calculates deposit key the same way as the Bridge contract.
