@@ -18,6 +18,23 @@
       "en": "Bitcoin Liquid Staking"
     }
   },
-  "permissions": ["account.request"],
+  "permissions": [
+    "account.list",
+    "account.receive",
+    "account.request",
+    "currency.list",
+    "device.close",
+    "device.exchange",
+    "device.transport",
+    "message.sign",
+    "transaction.sign",
+    "transaction.signAndBroadcast",
+    "storage.set",
+    "storage.get",
+    "bitcoin.getXPub",
+    "wallet.capabilities",
+    "wallet.userId",
+    "wallet.info"
+  ],
   "domains": ["http://*"]
 }
