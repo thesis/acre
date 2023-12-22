@@ -124,6 +124,11 @@ contract TbtcDepositor {
             memory optimisticMintingRequest = tbtcVault
                 .optimisticMintingRequests(depositKey);
 
+        require(
+            bridgeDepositRequest.depositor == address(this),
+            "invalid depositor"
+        );
+
         // tBTC amount calculation.
         // - for optimistically minted deposits:
         //   amount = depositAmount - depositTreasuryFee - depositTxMaxFee - optimisticMintingFee
