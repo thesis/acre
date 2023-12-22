@@ -15,7 +15,7 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
 ///      burning of shares (stBTC), which are represented as standard ERC20
 ///      tokens, providing a seamless exchange with tBTC tokens.
 contract Acre is ERC4626 {
-    event StakeReferral(bytes32 indexed referral, uint256 assets);
+    event StakeReferral(uint16 indexed referral, uint256 assets);
 
     constructor(
         IERC20 tbtc
