@@ -54,13 +54,12 @@ describe.only("TbtcDepositor", () => {
       refundLocktime: "0x60bcea61",
       vault: "0x594cfd89700040163727828AE20B52099C58F02C",
     },
-    // sha256("fancy extra data")
-    extraData:
-      "0xa9b38ea6435c8941d6eda6a46b68e3e2117196995bd154ab55196396b03d9bda",
     // 20-bytes of extraData
     receiver: "0xa9B38eA6435c8941d6eDa6a46b68E3e211719699",
     // 2-bytes of extraData
     referral: "0x5bd1",
+    extraData:
+      "0xa9b38ea6435c8941d6eda6a46b68e3e2117196995bd100000000000000000000",
     // Deposit key is keccak256(fundingTxHash | fundingOutputIndex).
     depositKey: ethers.solidityPackedKeccak256(
       ["bytes32", "uint32"],
@@ -74,7 +73,8 @@ describe.only("TbtcDepositor", () => {
         await tbtcDepositor.initializeDeposit(
           testData.fundingTxInfo,
           testData.reveal,
-          testData.extraData,
+          testData.receiver,
+          testData.referral,
         )
 
       await tx.wait()
@@ -92,9 +92,13 @@ describe.only("TbtcDepositor", () => {
       // Default value returned by TBTCVaultStub.
       expect(depositRequest.optimisticMintingFeeDivisor).to.be.equal(500)
 
-      expect(depositRequest.receiver).to.be.equal(testData.receiver)
+      // expect(depositRequest.receiver).to.be.equal(testData.receiver)
 
-      expect(depositRequest.referral).to.be.equal(testData.referral)
+      // expect(depositRequest.referral).to.be.equal(testData.referral)
+
+      expect(
+        (await bridge.deposits(testData.depositKey)).extraData,
+      ).to.be.equal(testData.extraData)
     })
   })
 
