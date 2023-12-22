@@ -86,7 +86,6 @@ contract TbtcDepositor {
     ///      been optimistically minted nor swept.
     error TbtcDepositNotCompleted();
 
-
     /// @notice Tbtc Depositor contract constructor.
     /// @param _bridge tBTC Bridge contract instance.
     /// @param _tbtcVault tBTC Vault contract instance.
@@ -197,7 +196,7 @@ contract TbtcDepositor {
         StakeRequest storage request = stakeRequests[depositKey];
 
         if (request.requestedAt == 0) revert StakeRequestNotInitialized();
-        if (request.finalizedAt >0) revert StakeRequestAlreadyFinalized();
+        if (request.finalizedAt > 0) revert StakeRequestAlreadyFinalized();
 
         // solhint-disable-next-line not-rely-on-time
         request.finalizedAt = uint64(block.timestamp);
@@ -212,7 +211,8 @@ contract TbtcDepositor {
 
         // Check if Depositor revealed to the tBTC Bridge contract matches the
         // current contract address.
-        if (bridgeDepositRequest.depositor != address(this)) revert UnexpectedDepositor(bridgeDepositRequest.depositor);
+        if (bridgeDepositRequest.depositor != address(this))
+            revert UnexpectedDepositor(bridgeDepositRequest.depositor);
 
         // Extract funding transaction amount sent by the user in Bitcoin transaction.
         uint256 fundingTxAmount = bridgeDepositRequest.amount;
@@ -229,9 +229,10 @@ contract TbtcDepositor {
             // There is a possibility the fee has changed since the snapshot of
             // the `tbtcOptimisticMintingFeeDivisor`, to cover this scenario
             // in fee computation we use the bigger of these.
-            uint256 optimisticMintingFeeDivisor = Math.max(request
-                .tbtcOptimisticMintingFeeDivisor, tbtcVault
-            .optimisticMintingFeeDivisor());
+            uint256 optimisticMintingFeeDivisor = Math.max(
+                request.tbtcOptimisticMintingFeeDivisor,
+                tbtcVault.optimisticMintingFeeDivisor()
+            );
 
             uint256 optimisticMintingFee = optimisticMintingFeeDivisor > 0
                 ? (fundingTxAmount / optimisticMintingFeeDivisor)
@@ -240,7 +241,8 @@ contract TbtcDepositor {
             amountToStakeSat -= optimisticMintingFee;
         } else {
             // If the deposit wan't optimistically minted check if it was swept.
-            if (bridgeDepositRequest.sweptAt == 0) revert TbtcDepositNotCompleted();
+            if (bridgeDepositRequest.sweptAt == 0)
+                revert TbtcDepositNotCompleted();
         }
 
         // Convert amount in satoshi to tBTC token precision.
