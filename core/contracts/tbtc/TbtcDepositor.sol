@@ -260,6 +260,7 @@ contract TbtcDepositor {
         // TODO: Consider extracting stake function with referrals from Acre to this contract.
         acre.stake(amountToStakeTbtc, receiver, referral);
     }
+    // TODO: Handle minimum deposit amount in tBTC Bridge vs Acre.
 
     /// @notice Calculates deposit key the same way as the Bridge contract.
     /// @dev The deposit key is computed as
