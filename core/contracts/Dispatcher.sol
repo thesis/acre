@@ -5,23 +5,20 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/interfaces/IERC4626.sol";
 import "./Router.sol";
+import "./Acre.sol";
 
 /// @title Dispatcher
-/// @notice Dispatcher is a contract that routes tBTC from stBTC (Acre) to
+/// @notice Dispatcher is a contract that routes tBTC from Acre (stBTC) to
 ///         a given vault and back. Vaults supply yield strategies with TBTC that
 ///         generate yield for Bitcoin holders.
 contract Dispatcher is Router, Ownable {
     using SafeERC20 for IERC20;
 
-    error VaultAlreadyAuthorized();
-    error VaultUnauthorized();
-    error CallerUnauthorized(string reason);
-
     struct VaultInfo {
         bool authorized;
     }
 
-    IERC20 public immutable stBTC; // Acre contract
+    Acre public immutable acre; // Depositing tBTC into Acre returns stBTC.
     IERC20 public immutable tBTC;
 
     /// @notice Authorized Yield Vaults that implement ERC4626 standard. These
@@ -35,9 +32,18 @@ contract Dispatcher is Router, Ownable {
 
     event VaultAuthorized(address indexed vault);
     event VaultDeauthorized(address indexed vault);
+    event DepositAllocated(
+        address indexed vault,
+        uint256 amount,
+        uint256 minSharesOut
+    );
 
-    constructor(IERC20 _stBTC, IERC20 _tBTC) Ownable(msg.sender) {
-        stBTC = _stBTC;
+    error VaultAlreadyAuthorized();
+    error VaultUnauthorized();
+    error CallerUnauthorized(string reason);
+
+    constructor(Acre _acre, IERC20 _tBTC) Ownable(msg.sender) {
+        acre = _acre;
         tBTC = _tBTC;
     }
 
@@ -79,41 +85,31 @@ contract Dispatcher is Router, Ownable {
         return vaults;
     }
 
-    /// @notice Routes tBTC from stBTC (Acre) to a vault.
+    /// @notice Routes tBTC from Acre to a vault.
     /// @param vault Address of the vault to route the assets to.
     /// @param amount Amount of tBTC to deposit.
     /// @param minSharesOut Minimum amount of shares to receive by Acre.
-    function depositToVault(
+    function allocate(
         address vault,
         uint256 amount,
         uint256 minSharesOut
-    ) public {
-        if (msg.sender != address(stBTC)) {
-            revert CallerUnauthorized("Acre only");
-        }
+    ) public onlyOwner {
         if (!vaultsInfo[vault].authorized) {
             revert VaultUnauthorized();
         }
+        // slither-disable-next-line arbitrary-send-erc20
+        IERC20(IERC4626(vault).asset()).safeTransferFrom(
+            address(acre),
+            address(this),
+            amount
+        );
+        IERC20(IERC4626(vault).asset()).safeIncreaseAllowance(
+            address(vault),
+            amount
+        );
 
-        deposit(IERC4626(vault), address(stBTC), amount, minSharesOut);
+        deposit(IERC4626(vault), address(acre), amount, minSharesOut);
     }
 
-    /// @notice Routes tBTC from a vault to stBTC (Acre).
-    /// @param vault Address of the vault to collect the assets from.
-    /// @param shares Amount of shares to collect.
-    /// @param minAssetsOut Minimum amount of TBTC to receive.
-    function redeemFromVault(
-        address vault,
-        uint256 shares,
-        uint256 minAssetsOut
-    ) public {
-        if (msg.sender != address(stBTC)) {
-            revert CallerUnauthorized("Acre only");
-        }
-        if (!vaultsInfo[vault].authorized) {
-            revert VaultUnauthorized();
-        }
-
-        redeem(IERC4626(vault), address(stBTC), shares, minAssetsOut);
-    }
+    /// TODO: implement redeem() / withdraw() functions
 }
