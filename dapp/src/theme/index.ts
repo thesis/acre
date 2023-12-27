@@ -17,6 +17,7 @@ import Alert from "./Alert"
 import Form from "./Form"
 import FormLabel from "./FormLabel"
 import FormError from "./FormError"
+import Tabs from "./Tabs"
 
 const defaultTheme = {
   colors,
@@ -50,6 +51,7 @@ const defaultTheme = {
     Form,
     FormLabel,
     FormError,
+    Tabs,
   },
 }
 

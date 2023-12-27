@@ -1,15 +1,28 @@
 import React from "react"
-import { Button, ModalBody } from "@chakra-ui/react"
+import { withFormik } from "formik"
 import { ModalStep } from "../../../contexts"
-import { TextMd } from "../../shared/Typography"
+import FormBase, { FormBaseProps, FormValues } from "../../shared/FormBase"
+import { useWalletContext } from "../../../hooks"
 
-export default function StakeModal({ goNext }: ModalStep) {
+// TODO: Add a validate function
+const StakeFormik = withFormik<ModalStep & FormBaseProps, FormValues>({
+  handleSubmit: (values, { props }) => {
+    // TODO: Handle the correct form action
+    props.goNext()
+  },
+})(FormBase)
+
+function StakeForm({ goNext }: ModalStep) {
+  const { btcAccount } = useWalletContext()
+
   return (
-    <ModalBody>
-      <TextMd>Stake modal</TextMd>
-      <Button width="100%" onClick={goNext}>
-        Stake
-      </Button>
-    </ModalBody>
+    <StakeFormik
+      goNext={goNext}
+      transactionType="stake"
+      btnText="Stake"
+      tokenBalance={btcAccount?.balance.toString() ?? "0"}
+    />
   )
 }
+
+export default StakeForm

@@ -1,17 +1,17 @@
 import React from "react"
 import { useModalFlowContext } from "../../../hooks"
-import StakeForm from "./StakeForm"
 import Overview from "./Overview"
 import ModalBase from "../../shared/ModalBase"
+import ActionForm from "../ActionForm"
 
 function StakingSteps() {
   const { activeStep, goNext } = useModalFlowContext()
 
   switch (activeStep) {
     case 1:
-      return <Overview goNext={goNext} />
+      return <ActionForm defaultForm="stake" goNext={goNext} />
     case 2:
-      return <StakeForm goNext={goNext} />
+      return <Overview goNext={goNext} />
     default:
       return null
   }

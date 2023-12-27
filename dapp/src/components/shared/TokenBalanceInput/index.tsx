@@ -1,4 +1,4 @@
-import React, { useMemo } from "react"
+import React, { useMemo, useRef } from "react"
 import {
   Box,
   Button,
@@ -81,13 +81,13 @@ function FiatCurrencyBalance({
   return null
 }
 
-type TokenBalanceInputProps = {
+export type TokenBalanceInputProps = {
   amount?: string
   currencyType: CurrencyType
   tokenBalance: string | number
   placeholder?: string
   size?: "lg" | "md"
-  setAmount: (value: string) => void
+  setAmount: (value?: string) => void
 } & InputProps &
   HelperErrorTextProps &
   FiatCurrencyBalanceProps
@@ -106,6 +106,7 @@ export default function TokenBalanceInput({
   fiatCurrencyType,
   ...inputProps
 }: TokenBalanceInputProps) {
+  const valueRef = useRef<string | undefined>(amount)
   const styles = useMultiStyleConfig("TokenBalanceInput", { size })
 
   const tokenBalanceAmount = useMemo(
@@ -116,6 +117,10 @@ export default function TokenBalanceInput({
       ),
     [currencyType, tokenBalance],
   )
+
+  const handleValueChange = (value: string) => {
+    valueRef.current = value
+  }
 
   return (
     <FormControl isInvalid={hasError} isDisabled={inputProps.isDisabled}>
@@ -137,14 +142,17 @@ export default function TokenBalanceInput({
       <InputGroup variant={VARIANT}>
         <NumberFormatInput
           size={size}
-          value={amount}
           variant={VARIANT}
           isInvalid={hasError}
           placeholder={placeholder}
-          onValueChange={(values: NumberFormatInputValues) =>
-            setAmount(values.value)
-          }
           {...inputProps}
+          value={amount}
+          onValueChange={(values: NumberFormatInputValues) =>
+            handleValueChange(values.value)
+          }
+          onChange={() => {
+            setAmount(valueRef?.current)
+          }}
         />
         <InputRightElement>
           <Button h="70%" onClick={() => setAmount(tokenBalanceAmount)}>
