@@ -414,7 +414,7 @@ describe("Acre", () => {
               sharesBefore = await acre.balanceOf(staker1.address)
               availableToRedeemBefore = await acre.previewRedeem(sharesBefore)
 
-              tbtc.mint(staker1.address, newAmountToStake)
+              await tbtc.mint(staker1.address, newAmountToStake)
 
               await tbtc
                 .connect(staker1)
