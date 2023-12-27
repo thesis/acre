@@ -573,9 +573,9 @@ describe("Acre", () => {
 
         beforeEach(async () => {
           minimumDepositAmount = await acre.minimumDepositAmount()
-          const previewDeposit = await acre.previewDeposit(minimumDepositAmount)
+          const shares = await acre.convertToShares(minimumDepositAmount)
 
-          sharesToMint = previewDeposit - 1n
+          sharesToMint = shares - 1n
           await tbtc
             .connect(staker1)
             .approve(await acre.getAddress(), minimumDepositAmount)
