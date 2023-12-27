@@ -657,25 +657,20 @@ describe("Acre", () => {
         })
       })
 
-      context("when the maximum total assets amount is invalid", () => {
-        const maximumTotalAssets = 0
+      context("when the maximum total assets amount is 0", () => {
+        const newMaximumTotalAssets = 0
 
-        context("when it is equal to 0", () => {
-          it("should revert", async () => {
-            await expect(
-              acre
-                .connect(owner)
-                .updateDepositParameters(
-                  validMinimumDepositAmount,
-                  maximumTotalAssets,
-                ),
+        beforeEach(async () => {
+          await acre
+            .connect(owner)
+            .updateDepositParameters(
+              validMinimumDepositAmount,
+              newMaximumTotalAssets,
             )
-              .to.be.revertedWithCustomError(
-                acre,
-                "InvalidMaximumTotalAssetsParameter",
-              )
-              .withArgs(maximumTotalAssets)
-          })
+        })
+
+        it("should update parameter correctly", async () => {
+          expect(await acre.maximumTotalAssets()).to.be.eq(0)
         })
       })
     })

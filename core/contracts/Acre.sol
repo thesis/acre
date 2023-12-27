@@ -28,7 +28,6 @@ contract Acre is ERC4626, Ownable {
     );
 
     error DepositAmountLessThanMin(uint256 amount, uint256 min);
-    error InvalidMaximumTotalAssetsParameter(uint256 maximumTotalAssets);
 
     constructor(
         IERC20 tbtc
@@ -39,8 +38,6 @@ contract Acre is ERC4626, Ownable {
     }
 
     /// @notice Updates deposit parameters.
-    /// @dev Requirements:
-    ///      - Maximum total assets must be greater than zero.
     /// @param _minimumDepositAmount New value of the minimum deposit amount. It
     ///        is the minimum amount for a single deposit operation.
     /// @param _maximumTotalAssets New value of the maximum total assets amount.
@@ -51,10 +48,6 @@ contract Acre is ERC4626, Ownable {
         uint256 _maximumTotalAssets
     ) external onlyOwner {
         // TODO: Introduce a parameters update process.
-        if (_maximumTotalAssets == 0) {
-            revert InvalidMaximumTotalAssetsParameter(_maximumTotalAssets);
-        }
-
         minimumDepositAmount = _minimumDepositAmount;
         maximumTotalAssets = _maximumTotalAssets;
 
