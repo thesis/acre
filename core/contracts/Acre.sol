@@ -38,6 +38,8 @@ contract Acre is ERC4626, Ownable {
     }
 
     /// @notice Updates deposit parameters.
+    /// @dev To disable the limit for deposits, set the maximum total assets to
+    ///      maximum (`type(uint256).max`).
     /// @param _minimumDepositAmount New value of the minimum deposit amount. It
     ///        is the minimum amount for a single deposit operation.
     /// @param _maximumTotalAssets New value of the maximum total assets amount.
@@ -124,6 +126,10 @@ contract Acre is ERC4626, Ownable {
     ///         Acre.
     /// @return The maximum amount of the tBTC token.
     function maxDeposit(address) public view override returns (uint256) {
+        if (maximumTotalAssets == type(uint256).max) {
+            return type(uint256).max;
+        }
+
         uint256 _totalAssets = totalAssets();
 
         return

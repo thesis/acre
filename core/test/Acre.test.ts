@@ -5,6 +5,7 @@ import {
 import { expect } from "chai"
 import {
   ContractTransactionResponse,
+  MaxUint256,
   ZeroAddress,
   encodeBytes32String,
 } from "ethers"
@@ -693,11 +694,13 @@ describe("Acre", () => {
 
   describe("maxDeposit", () => {
     let maximumTotalAssets: bigint
+    let minimumDepositAmount: bigint
     let snapshot: SnapshotRestorer
 
     beforeEach(async () => {
       snapshot = await takeSnapshot()
-      maximumTotalAssets = await acre.maximumTotalAssets()
+      ;[minimumDepositAmount, maximumTotalAssets] =
+        await acre.depositParameters()
     })
 
     afterEach(async () => {
@@ -739,6 +742,41 @@ describe("Acre", () => {
 
       it("should return correct value", async () => {
         expect(await acre.maxDeposit(staker1.address)).to.be.eq(expectedValue)
+      })
+    })
+
+    context("when the deposit limit is disabled", () => {
+      const maximum = MaxUint256
+
+      beforeEach(async () => {
+        await acre
+          .connect(owner)
+          .updateDepositParameters(minimumDepositAmount, maximum)
+      })
+
+      context("when the vault is empty", () => {
+        it("should return the maximum value", async () => {
+          expect(await acre.maxDeposit(staker1.address)).to.be.eq(maximum)
+        })
+      })
+
+      context("when the vault is not empty", () => {
+        const amountToStake = to1e18(1)
+        const referral = encodeBytes32String("referral")
+
+        beforeEach(async () => {
+          await tbtc
+            .connect(staker1)
+            .approve(await acre.getAddress(), amountToStake)
+
+          await acre
+            .connect(staker1)
+            .stake(amountToStake, staker1.address, referral)
+        })
+
+        it("should return the maximum value", async () => {
+          expect(await acre.maxDeposit(staker1.address)).to.be.eq(maximum)
+        })
       })
     })
   })
