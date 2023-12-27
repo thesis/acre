@@ -1,6 +1,6 @@
 import React, { useMemo } from "react"
 import { Box, useMultiStyleConfig, TextProps } from "@chakra-ui/react"
-import { formatTokenAmount, toLocaleString } from "../../../utils"
+import { formatTokenAmount, numberToLocaleString } from "../../../utils"
 import { CurrencyType } from "../../../types"
 import { CURRENCIES_BY_TYPE } from "../../../constants"
 
@@ -27,14 +27,11 @@ export function CurrencyBalance({
   const currency = CURRENCIES_BY_TYPE[currencyType]
 
   const balance = useMemo(() => {
+    const value = amount ?? 0
     if (shouldBeFormatted)
-      return formatTokenAmount(amount ?? 0, currency.decimals, desiredDecimals)
+      return formatTokenAmount(value, currency.decimals, desiredDecimals)
 
-    if (typeof amount === "number") {
-      return toLocaleString(amount)
-    }
-
-    return amount
+    return numberToLocaleString(value, desiredDecimals)
   }, [amount, currency, desiredDecimals, shouldBeFormatted])
 
   return (
