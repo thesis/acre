@@ -509,7 +509,7 @@ describe("Acre", () => {
       let sharesToMint: bigint
 
       beforeEach(async () => {
-        sharesToMint = await acre.previewDeposit(amountToStake)
+        sharesToMint = amountToStake
 
         await tbtc
           .connect(staker1)
