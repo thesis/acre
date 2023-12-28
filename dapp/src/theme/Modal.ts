@@ -26,10 +26,29 @@ const baseStyleOverlay = defineStyle({
   backdropBlur: "8px",
 })
 
+const baseStyleHeader = defineStyle({
+  textAlign: "center",
+  fontSize: "lg",
+  lineHeight: "lg",
+  fontWeight: "bold",
+  py: 6,
+})
+
+const baseStyleBody = defineStyle({
+  textAlign: "center",
+  color: "grey.600",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: 6,
+})
+
 const baseStyle = definePartsStyle({
   dialog: baseStyleDialog,
   closeButton: baseCloseButton,
   overlay: baseStyleOverlay,
+  header: baseStyleHeader,
+  body: baseStyleBody,
 })
 
 const Modal = defineMultiStyleConfig({ baseStyle })
