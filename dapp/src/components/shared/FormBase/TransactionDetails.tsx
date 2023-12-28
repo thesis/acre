@@ -24,6 +24,28 @@ const DETAILS: Record<
     estimatedAmountText: "Approximately unstaked tokens",
   },
 }
+// TODO: Use data from the SDK
+function getTransactionDetails(value: string):
+  | {
+      btcAmount: string
+      protocolFee: string
+      stakedAmount: string
+    }
+  | undefined {
+  const btcAmount = value ?? 0n
+  const btcAmountInBI = BigInt(btcAmount)
+
+  if (btcAmountInBI <= 0n) return undefined
+
+  const protocolFee = btcAmountInBI / 10000n
+  const stakedAmount = btcAmountInBI - protocolFee
+
+  return {
+    btcAmount,
+    protocolFee: protocolFee.toString(),
+    stakedAmount: stakedAmount.toString(),
+  }
+}
 
 function TransactionDetailsItem({
   text,
@@ -31,7 +53,7 @@ function TransactionDetailsItem({
   usdAmount,
 }: {
   text: string
-  btcAmount: string | number
+  btcAmount?: string | number
   usdAmount: string
 }) {
   return (
@@ -44,7 +66,6 @@ function TransactionDetailsItem({
           from={{
             currencyType: "bitcoin",
             amount: btcAmount,
-            shouldBeFormatted: false,
           }}
           to={{
             currencyType: "usd",
@@ -70,27 +91,23 @@ function TransactionDetails({
   const [, { value }] = useField(fieldName)
 
   const { btcAmountText, protocolFeeText, estimatedAmountText } = DETAILS[type]
-
-  // TODO: Let's simplify it and secure edge cases
-  const btcAmount = parseFloat(value) || 0
-  const protocolFee = btcAmount * 0.01
-  const stakedAmount = btcAmount - protocolFee
+  const details = getTransactionDetails(value)
 
   return (
     <VStack gap={3} mt={10}>
       <TransactionDetailsItem
         text={btcAmountText}
-        btcAmount={btcAmount}
+        btcAmount={details?.btcAmount}
         usdAmount="45.725,91"
       />
       <TransactionDetailsItem
         text={protocolFeeText}
-        btcAmount={protocolFee}
+        btcAmount={details?.protocolFee}
         usdAmount="0.024,91"
       />
       <TransactionDetailsItem
         text={estimatedAmountText}
-        btcAmount={stakedAmount}
+        btcAmount={details?.stakedAmount}
         usdAmount="44.762,21"
       />
     </VStack>

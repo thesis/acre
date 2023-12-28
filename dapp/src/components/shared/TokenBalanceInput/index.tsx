@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from "react"
+import React, { useRef } from "react"
 import {
   Box,
   Button,
@@ -12,7 +12,7 @@ import {
   InputRightElement,
   useMultiStyleConfig,
 } from "@chakra-ui/react"
-import { fixedPointNumberToString } from "../../../utils"
+import { fixedPointNumberToString, userAmountToBigInt } from "../../../utils"
 import { CurrencyType } from "../../../types"
 import { CURRENCIES_BY_TYPE } from "../../../constants"
 import NumberFormatInput, {
@@ -109,17 +109,12 @@ export default function TokenBalanceInput({
   const valueRef = useRef<string | undefined>(amount)
   const styles = useMultiStyleConfig("TokenBalanceInput", { size })
 
-  const tokenBalanceAmount = useMemo(
-    () =>
-      fixedPointNumberToString(
-        BigInt(tokenBalance || 0),
-        CURRENCIES_BY_TYPE[currencyType].decimals,
-      ),
-    [currencyType, tokenBalance],
-  )
+  const currency = CURRENCIES_BY_TYPE[currencyType]
 
   const handleValueChange = (value: string) => {
     valueRef.current = value
+      ? userAmountToBigInt(value, currency.decimals)?.toString()
+      : undefined
   }
 
   return (
@@ -146,7 +141,11 @@ export default function TokenBalanceInput({
           isInvalid={hasError}
           placeholder={placeholder}
           {...inputProps}
-          value={amount}
+          value={
+            amount
+              ? fixedPointNumberToString(BigInt(amount), currency.decimals)
+              : undefined
+          }
           onValueChange={(values: NumberFormatInputValues) =>
             handleValueChange(values.value)
           }
@@ -155,7 +154,7 @@ export default function TokenBalanceInput({
           }}
         />
         <InputRightElement>
-          <Button h="70%" onClick={() => setAmount(tokenBalanceAmount)}>
+          <Button h="70%" onClick={() => setAmount(tokenBalance.toString())}>
             Max
           </Button>
         </InputRightElement>
