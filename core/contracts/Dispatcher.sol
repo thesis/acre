@@ -21,6 +21,8 @@ contract Dispatcher is Router, Ownable {
     Acre public immutable acre; // Depositing tBTC into Acre returns stBTC.
     IERC20 public immutable tBTC;
 
+    address public maintainer;
+
     /// @notice Authorized Yield Vaults that implement ERC4626 standard. These
     ///         vaults deposit assets to yield strategies, e.g. Uniswap V3
     ///         WBTC/TBTC pool. Vault can be a part of Acre ecosystem or can be
@@ -37,10 +39,19 @@ contract Dispatcher is Router, Ownable {
         uint256 amount,
         uint256 minSharesOut
     );
+    event MaintainerUpdated(address indexed maintainer);
 
     error VaultAlreadyAuthorized();
     error VaultUnauthorized();
     error CallerUnauthorized(string reason);
+    error ZeroAddress();
+
+    modifier onlyMaintainer() {
+        if (msg.sender != maintainer) {
+            revert CallerUnauthorized("Maintainer only");
+        }
+        _;
+    }
 
     constructor(Acre _acre, IERC20 _tBTC) Ownable(msg.sender) {
         acre = _acre;
@@ -81,11 +92,8 @@ contract Dispatcher is Router, Ownable {
         emit VaultDeauthorized(vault);
     }
 
-    function getVaults() external view returns (address[] memory) {
-        return vaults;
-    }
-
-    /// @notice Routes tBTC from Acre to a vault.
+    /// @notice Routes tBTC from Acre to a vault. Can be called by the maintainer
+    ///         only.
     /// @param vault Address of the vault to route the assets to.
     /// @param amount Amount of tBTC to deposit.
     /// @param minSharesOut Minimum amount of shares to receive by Acre.
@@ -93,10 +101,12 @@ contract Dispatcher is Router, Ownable {
         address vault,
         uint256 amount,
         uint256 minSharesOut
-    ) public onlyOwner {
+    ) public onlyMaintainer {
         if (!vaultsInfo[vault].authorized) {
             revert VaultUnauthorized();
         }
+        emit DepositAllocated(vault, amount, minSharesOut);
+
         // slither-disable-next-line arbitrary-send-erc20
         IERC20(IERC4626(vault).asset()).safeTransferFrom(
             address(acre),
@@ -109,6 +119,23 @@ contract Dispatcher is Router, Ownable {
         );
 
         deposit(IERC4626(vault), address(acre), amount, minSharesOut);
+    }
+
+    /// @notice Updates the maintainer address.
+    /// @param _maintainer Address of the new maintainer.
+    function updateMaintainer(address _maintainer) external onlyOwner {
+        if (_maintainer == address(0)) {
+            revert ZeroAddress();
+        }
+
+        maintainer = _maintainer;
+
+        emit MaintainerUpdated(maintainer);
+    }
+
+    /// @notice Returns the list of authorized vaults.
+    function getVaults() external view returns (address[] memory) {
+        return vaults;
     }
 
     /// TODO: implement redeem() / withdraw() functions
