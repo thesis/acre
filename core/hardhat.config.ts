@@ -69,6 +69,11 @@ const config: HardhatUserConfig = {
       sepolia: 0,
       mainnet: "",
     },
+    maintainer: {
+      default: 3,
+      sepolia: 0,
+      mainnet: "",
+    },
   },
 
   typechain: {
