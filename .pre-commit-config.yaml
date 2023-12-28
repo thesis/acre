@@ -60,3 +60,18 @@ repos:
         types_or: [json, yaml]
         language: script
         description: "Checks JSON/YAML code according to the package's linter configuration"
+      # SDK
+      - id: sdk-lint-js
+        name: "lint sdk ts/js"
+        entry: /usr/bin/env bash -c "npm --prefix ./sdk/ run lint:js"
+        files: ^sdk/
+        types_or: [ts, javascript]
+        language: script
+        description: "Checks TS/JS code according to the package's linter configuration"
+      - id: sdk-lint-config
+        name: "lint sdk json/yaml"
+        entry: /usr/bin/env bash -c "npm --prefix ./sdk/ run lint:config"
+        files: ^sdk/
+        types_or: [json, yaml]
+        language: script
+        description: "Checks JSON/YAML code according to the package's linter configuration"
