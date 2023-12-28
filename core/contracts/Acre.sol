@@ -144,7 +144,12 @@ contract Acre is ERC4626, Ownable {
     ///      function converts the maximum deposit amount to shares.
     /// @return The maximum amount of the vault shares.
     function maxMint(address receiver) public view override returns (uint256) {
-        return convertToShares(maxDeposit(receiver));
+        uint256 _maxDeposit = maxDeposit(receiver);
+
+        return
+            _maxDeposit == type(uint256).max
+                ? type(uint256).max
+                : convertToShares(_maxDeposit);
     }
 
     /// @return Returns deposit parametrs
