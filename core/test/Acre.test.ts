@@ -885,4 +885,70 @@ describe("Acre", () => {
       })
     })
   })
+
+  describe("deposit", () => {
+    let amountToDeposit: bigint
+    let minimumDepositAmount: bigint
+
+    beforeEach(async () => {
+      minimumDepositAmount = await acre.minimumDepositAmount()
+    })
+
+    context("when the deposit amount is less than minimum", () => {
+      beforeEach(() => {
+        amountToDeposit = minimumDepositAmount - 1n
+      })
+
+      it("should revert", async () => {
+        await expect(acre.deposit(amountToDeposit, staker1.address))
+          .to.be.revertedWithCustomError(acre, "DepositAmountLessThanMin")
+          .withArgs(amountToDeposit, minimumDepositAmount)
+      })
+    })
+
+    context(
+      "when the deposit amount is equal to the minimum deposit amount",
+      () => {
+        let tx: ContractTransactionResponse
+        let expectedReceivedShares: bigint
+
+        beforeEach(async () => {
+          amountToDeposit = minimumDepositAmount
+          expectedReceivedShares = amountToDeposit
+
+          await tbtc.approve(await acre.getAddress(), amountToDeposit)
+          tx = await acre.deposit(amountToDeposit, staker1.address)
+        })
+
+        it("should emit Deposit event", () => {
+          expect(tx).to.emit(acre, "Deposit").withArgs(
+            // Caller.
+            staker1.address,
+            // Receiver.
+            staker1.address,
+            // Staked tokens.
+            amountToDeposit,
+            // Received shares.
+            expectedReceivedShares,
+          )
+        })
+
+        it("should mint stBTC tokens", async () => {
+          await expect(tx).to.changeTokenBalances(
+            acre,
+            [staker1.address],
+            [expectedReceivedShares],
+          )
+        })
+
+        it("should transfer tBTC tokens", async () => {
+          await expect(tx).to.changeTokenBalances(
+            tbtc,
+            [staker1.address, acre],
+            [-amountToDeposit, amountToDeposit],
+          )
+        })
+      },
+    )
+  })
 })
