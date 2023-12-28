@@ -1,12 +1,15 @@
-import React from "react"
+import React, { useCallback } from "react"
 import { FormikErrors, withFormik } from "formik"
 import { ModalStep } from "../../../contexts"
 import FormBase, { FormBaseProps, FormValues } from "../../shared/FormBase"
-import { useWalletContext } from "../../../hooks"
+import { useTransactionContext, useWalletContext } from "../../../hooks"
 import { formatSatoshiAmount } from "../../../utils"
 import { BITCOIN_MIN_AMOUNT, ERRORS } from "../../../constants"
 
-const StakeFormik = withFormik<ModalStep & FormBaseProps, FormValues>({
+const StakeFormik = withFormik<
+  { onSubmitForm: (values: FormValues) => void } & FormBaseProps,
+  FormValues
+>({
   validate: ({ amount: value }, { tokenBalance }) => {
     const errors: FormikErrors<FormValues> = {}
 
@@ -29,20 +32,28 @@ const StakeFormik = withFormik<ModalStep & FormBaseProps, FormValues>({
     return errors
   },
   handleSubmit: (values, { props }) => {
-    // TODO: Handle the correct form action
-    props.goNext()
+    props.onSubmitForm(values)
   },
 })(FormBase)
 
 function StakeForm({ goNext }: ModalStep) {
   const { btcAccount } = useWalletContext()
+  const { setAmount } = useTransactionContext()
+
+  const handleSubmitForm = useCallback(
+    (values: FormValues) => {
+      setAmount(values.amount)
+      goNext()
+    },
+    [goNext, setAmount],
+  )
 
   return (
     <StakeFormik
-      goNext={goNext}
       transactionType="stake"
       btnText="Stake"
       tokenBalance={btcAccount?.balance.toString() ?? "0"}
+      onSubmitForm={handleSubmitForm}
     />
   )
 }
