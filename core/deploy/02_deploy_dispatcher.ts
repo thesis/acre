@@ -14,15 +14,6 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     log: true,
     waitConfirmations: 1,
   })
-  const dispatcher = await deployments.get("Dispatcher")
-
-  // TODO: move to a separate script
-  await deployments.execute(
-    "Acre",
-    { from: deployer, log: true, waitConfirmations: 1 },
-    "updateDispatcher",
-    dispatcher.address,
-  )
 
   // TODO: Add Etherscan verification
   // TODO: Add Tenderly verification
