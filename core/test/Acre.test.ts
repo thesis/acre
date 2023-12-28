@@ -21,8 +21,8 @@ async function fixture() {
   const [staker1, staker2] = await getUnnamedSigner()
 
   const amountToMint = to1e18(100000)
-  tbtc.mint(staker1, amountToMint)
-  tbtc.mint(staker2, amountToMint)
+  await tbtc.mint(staker1, amountToMint)
+  await tbtc.mint(staker2, amountToMint)
 
   return { acre, tbtc, staker1, staker2 }
 }
@@ -38,7 +38,7 @@ describe("Acre", () => {
   })
 
   describe("stake", () => {
-    const referral = ethers.encodeBytes32String("referral")
+    const referral: string = ethers.encodeBytes32String("referral")
     let snapshot: SnapshotRestorer
 
     context("when staking as first staker", () => {
@@ -75,8 +75,8 @@ describe("Acre", () => {
             .stake(amountToStake, receiver.address, referral)
         })
 
-        it("should emit Deposit event", () => {
-          expect(tx).to.emit(acre, "Deposit").withArgs(
+        it("should emit Deposit event", async () => {
+          await expect(tx).to.emit(acre, "Deposit").withArgs(
             // Caller.
             tbtcHolder.address,
             // Receiver.
@@ -88,8 +88,8 @@ describe("Acre", () => {
           )
         })
 
-        it("should emit StakeReferral event", () => {
-          expect(tx)
+        it("should emit StakeReferral event", async () => {
+          await expect(tx)
             .to.emit(acre, "StakeReferral")
             .withArgs(referral, amountToStake)
         })
@@ -368,7 +368,7 @@ describe("Acre", () => {
           sharesBefore = await acre.balanceOf(staker1.address)
           availableToRedeemBefore = await acre.previewRedeem(sharesBefore)
 
-          tbtc.mint(staker1.address, newAmountToStake)
+          await tbtc.mint(staker1.address, newAmountToStake)
 
           await tbtc
             .connect(staker1)
