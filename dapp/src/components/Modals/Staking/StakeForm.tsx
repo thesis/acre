@@ -3,33 +3,21 @@ import { FormikErrors, withFormik } from "formik"
 import { ModalStep } from "../../../contexts"
 import FormBase, { FormBaseProps, FormValues } from "../../shared/FormBase"
 import { useTransactionContext, useWalletContext } from "../../../hooks"
-import { formatSatoshiAmount } from "../../../utils"
-import { BITCOIN_MIN_AMOUNT, ERRORS } from "../../../constants"
+import { getErrorsObj, validateTokenAmount } from "../../../utils"
 
 const StakeFormik = withFormik<
   { onSubmitForm: (values: FormValues) => void } & FormBaseProps,
   FormValues
 >({
-  validate: ({ amount: value }, { tokenBalance }) => {
+  mapPropsToValues: () => ({
+    amount: "",
+  }),
+  validate: async ({ amount }, { tokenBalance }) => {
     const errors: FormikErrors<FormValues> = {}
 
-    if (!value) errors.amount = ERRORS.REQUIRED
-    else {
-      const valueInBI = BigInt(value)
-      const maxValueInBI = BigInt(tokenBalance)
-      const minValueInBI = BigInt(BITCOIN_MIN_AMOUNT)
+    errors.amount = validateTokenAmount(amount, tokenBalance)
 
-      const isMaximumValueExceeded = valueInBI > maxValueInBI
-      const isMinimumValueFulfilled = valueInBI > minValueInBI
-
-      if (isMaximumValueExceeded) errors.amount = ERRORS.EXCEEDED_VALUE
-      else if (!isMinimumValueFulfilled)
-        errors.amount = ERRORS.INSUFFICIENT_VALUE(
-          formatSatoshiAmount(BITCOIN_MIN_AMOUNT),
-        )
-    }
-
-    return errors
+    return getErrorsObj(errors)
   },
   handleSubmit: (values, { props }) => {
     props.onSubmitForm(values)
