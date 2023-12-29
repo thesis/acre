@@ -59,9 +59,7 @@ describe("Integration Tests - Asset Flows", () => {
           dispatcher
             .connect(thirdParty)
             .depositToVault(vault.getAddress(), assetsToAllocate, minSharesOut),
-        )
-          .to.be.revertedWithCustomError(dispatcher, "CallerUnauthorized")
-          .withArgs("Maintainer only")
+        ).to.be.revertedWithCustomError(dispatcher, "NotMaintainer")
       })
     })
 

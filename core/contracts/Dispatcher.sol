@@ -18,9 +18,11 @@ contract Dispatcher is Router, Ownable {
         bool authorized;
     }
 
-    Acre public immutable acre; // Depositing tBTC into Acre returns stBTC.
-    IERC20 public immutable tBTC;
-
+    // Depositing tBTC into Acre returns stBTC.
+    Acre public immutable acre;
+    // tBTC token contract.
+    IERC20 public immutable tbtc;
+    // Address of the maintainer bot.
     address public maintainer;
 
     /// @notice Authorized Yield Vaults that implement ERC4626 standard. These
@@ -37,31 +39,31 @@ contract Dispatcher is Router, Ownable {
     event DepositAllocated(
         address indexed vault,
         uint256 amount,
-        uint256 minSharesOut
+        uint256 sharesOut
     );
     event MaintainerUpdated(address indexed maintainer);
 
     error VaultAlreadyAuthorized();
     error VaultUnauthorized();
-    error CallerUnauthorized(string reason);
+    error NotMaintainer();
     error ZeroAddress();
 
     modifier onlyMaintainer() {
         if (msg.sender != maintainer) {
-            revert CallerUnauthorized("Maintainer only");
+            revert NotMaintainer();
         }
         _;
     }
 
-    constructor(Acre _acre, IERC20 _tBTC) Ownable(msg.sender) {
+    constructor(Acre _acre, IERC20 _tbtc) Ownable(msg.sender) {
         acre = _acre;
-        tBTC = _tBTC;
+        tbtc = _tbtc;
     }
 
     /// @notice Adds a vault to the list of authorized vaults.
     /// @param vault Address of the vault to add.
     function authorizeVault(address vault) external onlyOwner {
-        if (vaultsInfo[vault].authorized) {
+        if (isVaultAuthorized(vault)) {
             revert VaultAlreadyAuthorized();
         }
 
@@ -74,7 +76,7 @@ contract Dispatcher is Router, Ownable {
     /// @notice Removes a vault from the list of authorized vaults.
     /// @param vault Address of the vault to remove.
     function deauthorizeVault(address vault) external onlyOwner {
-        if (!vaultsInfo[vault].authorized) {
+        if (!isVaultAuthorized(vault)) {
             revert VaultUnauthorized();
         }
 
@@ -104,26 +106,32 @@ contract Dispatcher is Router, Ownable {
         uint256 amount,
         uint256 minSharesOut
     ) public onlyMaintainer {
-        if (!vaultsInfo[vault].authorized) {
+        if (!isVaultAuthorized(vault)) {
             revert VaultUnauthorized();
         }
-        emit DepositAllocated(vault, amount, minSharesOut);
 
         // slither-disable-next-line arbitrary-send-erc20
-        tBTC.safeTransferFrom(address(acre), address(this), amount);
-        tBTC.forceApprove(address(vault), amount);
+        tbtc.safeTransferFrom(address(acre), address(this), amount);
+        tbtc.forceApprove(address(vault), amount);
 
-        deposit(IERC4626(vault), address(acre), amount, minSharesOut);
+        uint256 sharesOut = deposit(
+            IERC4626(vault),
+            address(acre),
+            amount,
+            minSharesOut
+        );
+        // slither-disable-next-line reentrancy-events
+        emit DepositAllocated(vault, amount, sharesOut);
     }
 
     /// @notice Updates the maintainer address.
-    /// @param _maintainer Address of the new maintainer.
-    function updateMaintainer(address _maintainer) external onlyOwner {
-        if (_maintainer == address(0)) {
+    /// @param newMaintainer Address of the new maintainer.
+    function updateMaintainer(address newMaintainer) external onlyOwner {
+        if (newMaintainer == address(0)) {
             revert ZeroAddress();
         }
 
-        maintainer = _maintainer;
+        maintainer = newMaintainer;
 
         emit MaintainerUpdated(maintainer);
     }
@@ -131,6 +139,12 @@ contract Dispatcher is Router, Ownable {
     /// @notice Returns the list of authorized vaults.
     function getVaults() external view returns (address[] memory) {
         return vaults;
+    }
+
+    /// @notice Returns true if the vault is authorized.
+    /// @param vault Address of the vault to check.
+    function isVaultAuthorized(address vault) internal view returns (bool) {
+        return vaultsInfo[vault].authorized;
     }
 
     /// TODO: implement redeem() / withdraw() functions
