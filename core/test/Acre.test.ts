@@ -489,6 +489,41 @@ describe("Acre", () => {
             })
           },
         )
+
+        context(
+          "when total tBTC amount after staking would be equal to the max amount",
+          () => {
+            let amountToStake: bigint
+            let tx: ContractTransactionResponse
+
+            before(async () => {
+              amountToStake = await acre.maxDeposit(staker1.address)
+
+              await tbtc
+                .connect(staker1)
+                .approve(await acre.getAddress(), amountToStake)
+
+              tx = await acre.stake(amountToStake, staker1, referral)
+            })
+
+            it("should stake tokens correctly", async () => {
+              await expect(tx).to.emit(acre, "Deposit")
+            })
+
+            it("the max deposit amount should be equal 0", async () => {
+              expect(await acre.maxDeposit(staker1)).to.eq(0)
+            })
+
+            it("should not be able to stake more tokens", async () => {
+              await expect(acre.stake(amountToStake, staker1, referral))
+                .to.be.revertedWithCustomError(
+                  acre,
+                  "ERC4626ExceededMaxDeposit",
+                )
+                .withArgs(staker1.address, amountToStake, 0)
+            })
+          },
+        )
       })
     })
   })
