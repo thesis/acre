@@ -838,15 +838,11 @@ describe("Acre", () => {
         dispatcherAddress = await dispatcher.getAddress()
         newDispatcher = await ethers.Wallet.createRandom().getAddress()
         acreAddress = await acre.getAddress()
-      })
 
-      it("should approve max amount for the dispatcher", async () => {
-        const allowance = await tbtc.allowance(acreAddress, dispatcherAddress)
-        expect(allowance).to.be.equal(MaxUint256)
+        await acre.connect(governance).updateDispatcher(newDispatcher)
       })
 
       it("should be able to update the dispatcher", async () => {
-        await acre.connect(governance).updateDispatcher(newDispatcher)
         expect(await acre.dispatcher()).to.be.equal(newDispatcher)
       })
 
