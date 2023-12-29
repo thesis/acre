@@ -17,5 +17,5 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
 export default func
 
-func.tags = ["UpdateDispatcher"]
-func.dependencies = ["Dispatcher"]
+func.tags = ["AcreUpdateDispatcher"]
+func.dependencies = ["Acre", "Dispatcher"]

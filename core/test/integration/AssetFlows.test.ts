@@ -49,7 +49,7 @@ describe("Integration Tests - Asset Flows", () => {
     await snapshot.restore()
   })
 
-  describe("allocate", () => {
+  describe("depositToVault", () => {
     const assetsToAllocate = to1e18(100)
     const minSharesOut = to1e18(100)
 
@@ -58,7 +58,7 @@ describe("Integration Tests - Asset Flows", () => {
         await expect(
           dispatcher
             .connect(thirdParty)
-            .allocate(vault.getAddress(), assetsToAllocate, minSharesOut),
+            .depositToVault(vault.getAddress(), assetsToAllocate, minSharesOut),
         )
           .to.be.revertedWithCustomError(dispatcher, "CallerUnauthorized")
           .withArgs("Maintainer only")
@@ -72,7 +72,7 @@ describe("Integration Tests - Asset Flows", () => {
           await expect(
             dispatcher
               .connect(maintainer)
-              .allocate(randomAddress, assetsToAllocate, minSharesOut),
+              .depositToVault(randomAddress, assetsToAllocate, minSharesOut),
           ).to.be.revertedWithCustomError(dispatcher, "VaultUnauthorized")
         })
       })
@@ -88,7 +88,7 @@ describe("Integration Tests - Asset Flows", () => {
           before(async () => {
             tx = await dispatcher
               .connect(maintainer)
-              .allocate(vaultAddress, assetsToAllocate, minSharesOut)
+              .depositToVault(vaultAddress, assetsToAllocate, minSharesOut)
           })
 
           it("should be able to deposit to an authorized Vault", async () => {
@@ -117,7 +117,7 @@ describe("Integration Tests - Asset Flows", () => {
             await expect(
               dispatcher
                 .connect(maintainer)
-                .allocate(vaultAddress, assetsToAllocate, minShares),
+                .depositToVault(vaultAddress, assetsToAllocate, minShares),
             ).to.be.revertedWithCustomError(dispatcher, "MinSharesError")
           })
         })

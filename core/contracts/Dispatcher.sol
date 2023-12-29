@@ -92,12 +92,14 @@ contract Dispatcher is Router, Ownable {
         emit VaultDeauthorized(vault);
     }
 
+    /// TODO: make this function internal once the allocation distribution is
+    /// implemented
     /// @notice Routes tBTC from Acre to a vault. Can be called by the maintainer
     ///         only.
     /// @param vault Address of the vault to route the assets to.
     /// @param amount Amount of tBTC to deposit.
     /// @param minSharesOut Minimum amount of shares to receive by Acre.
-    function allocate(
+    function depositToVault(
         address vault,
         uint256 amount,
         uint256 minSharesOut
@@ -108,15 +110,8 @@ contract Dispatcher is Router, Ownable {
         emit DepositAllocated(vault, amount, minSharesOut);
 
         // slither-disable-next-line arbitrary-send-erc20
-        IERC20(IERC4626(vault).asset()).safeTransferFrom(
-            address(acre),
-            address(this),
-            amount
-        );
-        IERC20(IERC4626(vault).asset()).safeIncreaseAllowance(
-            address(vault),
-            amount
-        );
+        tBTC.safeTransferFrom(address(acre), address(this), amount);
+        tBTC.safeIncreaseAllowance(address(vault), amount);
 
         deposit(IERC4626(vault), address(acre), amount, minSharesOut);
     }

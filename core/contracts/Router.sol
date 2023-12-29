@@ -18,16 +18,16 @@ abstract contract Router {
     /// @notice Routes funds from stBTC (Acre) to a vault. The amount of tBTC to
     ///         Shares of deposited tBTC are minted to the stBTC contract.
     /// @param vault Address of the vault to route the funds to.
-    /// @param to Address of the receiver of the shares.
+    /// @param receiver Address of the receiver of the shares.
     /// @param amount Amount of tBTC to deposit.
     /// @param minSharesOut Minimum amount of shares to receive.
     function deposit(
         IERC4626 vault,
-        address to,
+        address receiver,
         uint256 amount,
         uint256 minSharesOut
     ) internal returns (uint256 sharesOut) {
-        if ((sharesOut = vault.deposit(amount, to)) < minSharesOut) {
+        if ((sharesOut = vault.deposit(amount, receiver)) < minSharesOut) {
             revert MinSharesError();
         }
     }

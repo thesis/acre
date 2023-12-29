@@ -5,12 +5,12 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { getNamedAccounts, deployments } = hre
   const { deployer } = await getNamedAccounts()
 
-  const tTBC = await deployments.get("TBTC")
-  const stBTC = await deployments.get("Acre")
+  const tbtc = await deployments.get("TBTC")
+  const acre = await deployments.get("Acre")
 
   await deployments.deploy("Dispatcher", {
     from: deployer,
-    args: [stBTC.address, tTBC.address],
+    args: [acre.address, tbtc.address],
     log: true,
     waitConfirmations: 1,
   })
