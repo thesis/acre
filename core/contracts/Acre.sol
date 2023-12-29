@@ -20,6 +20,7 @@ import "./Dispatcher.sol";
 contract Acre is ERC4626, Ownable {
     using SafeERC20 for IERC20;
 
+    // Dispatcher contract that routes tBTC from Acre to a given vault and back.
     Dispatcher public dispatcher;
     // Minimum amount for a single deposit operation.
     uint256 public minimumDepositAmount;
@@ -31,12 +32,10 @@ contract Acre is ERC4626, Ownable {
         uint256 minimumDepositAmount,
         uint256 maximumTotalAssets
     );
+    event DispatcherUpdated(address oldDispatcher, address newDispatcher);
 
     error DepositAmountLessThanMin(uint256 amount, uint256 min);
-
     error ZeroAddress();
-    error DispatcherNotSet();
-    error ApproveFailed();
 
     constructor(
         IERC20 tbtc
@@ -128,16 +127,20 @@ contract Acre is ERC4626, Ownable {
         return shares;
     }
 
+    // TODO: Implement a governed upgrade process that initiates an update and
+    //       then finalizes it after a delay.
     /// @notice Updates the dispatcher contract and gives it an unlimited
     ///         allowance to transfer staked tBTC.
-    /// @param _dispatcher Address of the new dispatcher contract.
-    function updateDispatcher(Dispatcher _dispatcher) external onlyOwner {
-        if (address(_dispatcher) == address(0)) {
+    /// @param newDispatcher Address of the new dispatcher contract.
+    function updateDispatcher(Dispatcher newDispatcher) external onlyOwner {
+        if (address(newDispatcher) == address(0)) {
             revert ZeroAddress();
         }
 
         address oldDispatcher = address(dispatcher);
-        dispatcher = _dispatcher;
+
+        emit DispatcherUpdated(oldDispatcher, address(newDispatcher));
+        dispatcher = newDispatcher;
 
         // TODO: Once withdrawal/rebalancing is implemented, we need to revoke the
         // approval of the vaults share tokens from the old dispatcher and approve
