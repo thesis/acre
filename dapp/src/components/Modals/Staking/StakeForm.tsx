@@ -1,9 +1,11 @@
 import React from "react"
 import { Button, ModalBody } from "@chakra-ui/react"
-import { ModalStep } from "../../../contexts"
 import { TextMd } from "../../shared/Typography"
+import { useModalFlowContext } from "../../../hooks"
 
-export default function StakeModal({ goNext }: ModalStep) {
+export default function StakeModal() {
+  const { goNext } = useModalFlowContext()
+
   return (
     <ModalBody>
       <TextMd>Stake modal</TextMd>

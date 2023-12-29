@@ -3,15 +3,21 @@ import { useModalFlowContext } from "../../../hooks"
 import StakeForm from "./StakeForm"
 import Overview from "./Overview"
 import ModalBase from "../../shared/ModalBase"
+import SignMessage from "./SignMessage"
+import DepositBTC from "./DepositBTC"
 
 function StakingSteps() {
-  const { activeStep, goNext } = useModalFlowContext()
+  const { activeStep } = useModalFlowContext()
 
   switch (activeStep) {
     case 1:
-      return <Overview goNext={goNext} />
+      return <StakeForm />
     case 2:
-      return <StakeForm goNext={goNext} />
+      return <Overview />
+    case 3:
+      return <SignMessage />
+    case 4:
+      return <DepositBTC />
     default:
       return null
   }
@@ -25,7 +31,7 @@ export default function StakingModal({
   onClose: () => void
 }) {
   return (
-    <ModalBase isOpen={isOpen} onClose={onClose} numberOfSteps={2}>
+    <ModalBase isOpen={isOpen} onClose={onClose} numberOfSteps={4}>
       <StakingSteps />
     </ModalBase>
   )
