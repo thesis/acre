@@ -924,9 +924,15 @@ describe("Acre", () => {
   describe("deposit", () => {
     let amountToDeposit: bigint
     let minimumDepositAmount: bigint
+    let snapshot: SnapshotRestorer
 
     beforeEach(async () => {
+      snapshot = await takeSnapshot()
       minimumDepositAmount = await acre.minimumDepositAmount()
+    })
+
+    afterEach(async () => {
+      await snapshot.restore()
     })
 
     context("when the deposit amount is less than minimum", () => {
