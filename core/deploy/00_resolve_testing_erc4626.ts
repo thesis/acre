@@ -25,3 +25,7 @@ export default func
 
 func.tags = ["TestERC4626"]
 func.dependencies = ["TBTC"]
+
+if (hre.network.name === "mainnet") {
+  func.skip = async () => true
+}
