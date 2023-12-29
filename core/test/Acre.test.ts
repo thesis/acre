@@ -263,16 +263,17 @@ describe("Acre", () => {
       let afterSimulatingYieldSnapshot: SnapshotRestorer
 
       before(async () => {
+        // Mint tBTC.
+        await tbtc.mint(staker1.address, staker1AmountToStake)
+        await tbtc.mint(staker2.address, staker2AmountToStake)
+
+        // Approve tBTC.
         await tbtc
           .connect(staker1)
           .approve(await acre.getAddress(), staker1AmountToStake)
         await tbtc
           .connect(staker2)
           .approve(await acre.getAddress(), staker2AmountToStake)
-
-        // Mint tokens.
-        await tbtc.connect(staker1).mint(staker1.address, staker1AmountToStake)
-        await tbtc.connect(staker2).mint(staker2.address, staker2AmountToStake)
       })
 
       context(
