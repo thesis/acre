@@ -146,6 +146,7 @@ contract Acre is ERC4626, Ownable {
     function maxMint(address receiver) public view override returns (uint256) {
         uint256 _maxDeposit = maxDeposit(receiver);
 
+        // slither-disable-next-line incorrect-equality
         return
             _maxDeposit == type(uint256).max
                 ? type(uint256).max
