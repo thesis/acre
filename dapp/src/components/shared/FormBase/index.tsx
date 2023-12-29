@@ -2,7 +2,7 @@ import React from "react"
 import { Button } from "@chakra-ui/react"
 import { FormikProps } from "formik"
 import { Form, FormTokenBalanceInput } from "../Form"
-import { CurrencyType, TransactionType } from "../../../types"
+import { CurrencyType } from "../../../types"
 import TransactionDetails from "./TransactionDetails"
 
 export type FormValues = {
@@ -10,8 +10,11 @@ export type FormValues = {
 }
 
 export type FormBaseProps = {
-  transactionType: TransactionType
-  btnText: string
+  customData: {
+    buttonText: string
+    btcAmountText: string
+    estimatedAmountText: string
+  }
   tokenBalance: string
   tokenBalanceInputPlaceholder?: string
   currencyType?: CurrencyType
@@ -20,8 +23,7 @@ export type FormBaseProps = {
 }
 
 function FormBase({
-  transactionType,
-  btnText,
+  customData,
   tokenBalance,
   tokenBalanceInputPlaceholder = "BTC",
   currencyType = "bitcoin",
@@ -37,10 +39,14 @@ function FormBase({
         placeholder={tokenBalanceInputPlaceholder}
         currencyType={currencyType}
       />
-      <TransactionDetails fieldName={fieldName} type={transactionType} />
+      <TransactionDetails
+        fieldName={fieldName}
+        btcAmountText={customData.btcAmountText}
+        estimatedAmountText={customData.estimatedAmountText}
+      />
       {children}
       <Button type="submit" size="lg" width="100%" mt={4}>
-        {btnText}
+        {customData.buttonText}
       </Button>
     </Form>
   )

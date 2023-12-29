@@ -5,6 +5,12 @@ import FormBase, { FormBaseProps, FormValues } from "../../shared/FormBase"
 import { useTransactionContext, useWalletContext } from "../../../hooks"
 import { getErrorsObj, validateTokenAmount } from "../../../utils"
 
+const CUSTOM_DATA = {
+  buttonText: "Stake",
+  btcAmountText: "Amount to be staked",
+  estimatedAmountText: "Approximately staked tokens",
+}
+
 const StakeFormik = withFormik<
   { onSubmitForm: (values: FormValues) => void } & FormBaseProps,
   FormValues
@@ -38,8 +44,7 @@ function StakeForm({ goNext }: ModalStep) {
 
   return (
     <StakeFormik
-      transactionType="stake"
-      btnText="Stake"
+      customData={CUSTOM_DATA}
       tokenBalance={btcAccount?.balance.toString() ?? "0"}
       onSubmitForm={handleSubmitForm}
     />

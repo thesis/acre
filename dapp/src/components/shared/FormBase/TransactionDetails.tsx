@@ -3,27 +3,7 @@ import { Box, Flex, VStack } from "@chakra-ui/react"
 import { useField } from "formik"
 import { CurrencyBalanceWithConversion } from "../CurrencyBalanceWithConversion"
 import { TextMd } from "../Typography"
-import { TransactionType } from "../../../types"
 
-const DETAILS: Record<
-  TransactionType,
-  {
-    btcAmountText: string
-    protocolFeeText: string
-    estimatedAmountText: string
-  }
-> = {
-  stake: {
-    btcAmountText: "Amount to be staked",
-    protocolFeeText: "Protocol fee (0.01%)",
-    estimatedAmountText: "Approximately staked tokens",
-  },
-  unstake: {
-    btcAmountText: "Amount to be unstaked from the pool",
-    protocolFeeText: "Protocol fee (0.01%)",
-    estimatedAmountText: "Approximately unstaked tokens",
-  },
-}
 // TODO: Use data from the SDK
 function getTransactionDetails(value: string):
   | {
@@ -83,14 +63,15 @@ function TransactionDetailsItem({
 
 function TransactionDetails({
   fieldName,
-  type,
+  btcAmountText,
+  estimatedAmountText,
 }: {
   fieldName: string
-  type: TransactionType
+  btcAmountText: string
+  estimatedAmountText: string
 }) {
   const [, { value }] = useField(fieldName)
 
-  const { btcAmountText, protocolFeeText, estimatedAmountText } = DETAILS[type]
   const details = getTransactionDetails(value)
 
   return (
@@ -101,7 +82,8 @@ function TransactionDetails({
         usdAmount="45.725,91"
       />
       <TransactionDetailsItem
-        text={protocolFeeText}
+        // TODO: Use protocol fee from the SDK
+        text="Protocol fee (0.01%)"
         btcAmount={details?.protocolFee}
         usdAmount="0.024,91"
       />
