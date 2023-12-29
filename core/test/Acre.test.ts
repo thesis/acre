@@ -830,36 +830,40 @@ describe("Acre", () => {
     })
 
     context("when caller is an owner", () => {
-      let newDispatcher: string
-      let acreAddress: string
-      let dispatcherAddress: string
-
-      before(async () => {
-        dispatcherAddress = await dispatcher.getAddress()
-        newDispatcher = await ethers.Wallet.createRandom().getAddress()
-        acreAddress = await acre.getAddress()
-
-        await acre.connect(governance).updateDispatcher(newDispatcher)
+      context("when a new dispatcher is zero address", () => {
+        it("should revert", async () => {
+          await expect(
+            acre.connect(governance).updateDispatcher(ZeroAddress),
+          ).to.be.revertedWithCustomError(acre, "ZeroAddress")
+        })
       })
 
-      it("should be able to update the dispatcher", async () => {
-        expect(await acre.dispatcher()).to.be.equal(newDispatcher)
-      })
+      context("when a new dispatcher is non-zero address", () => {
+        let newDispatcher: string
+        let acreAddress: string
+        let dispatcherAddress: string
 
-      it("should reset approval amount for the old dispatcher", async () => {
-        const allowance = await tbtc.allowance(acreAddress, dispatcherAddress)
-        expect(allowance).to.be.equal(0)
-      })
+        before(async () => {
+          dispatcherAddress = await dispatcher.getAddress()
+          newDispatcher = await ethers.Wallet.createRandom().getAddress()
+          acreAddress = await acre.getAddress()
 
-      it("should approve max amount for the new dispatcher", async () => {
-        const allowance = await tbtc.allowance(acreAddress, newDispatcher)
-        expect(allowance).to.be.equal(MaxUint256)
-      })
+          await acre.connect(governance).updateDispatcher(newDispatcher)
+        })
 
-      it("should not be able to update the dispatcher to the zero address", async () => {
-        await expect(
-          acre.connect(governance).updateDispatcher(ZeroAddress),
-        ).to.be.revertedWithCustomError(acre, "ZeroAddress")
+        it("should be able to update the dispatcher", async () => {
+          expect(await acre.dispatcher()).to.be.equal(newDispatcher)
+        })
+
+        it("should reset approval amount for the old dispatcher", async () => {
+          const allowance = await tbtc.allowance(acreAddress, dispatcherAddress)
+          expect(allowance).to.be.equal(0)
+        })
+
+        it("should approve max amount for the new dispatcher", async () => {
+          const allowance = await tbtc.allowance(acreAddress, newDispatcher)
+          expect(allowance).to.be.equal(MaxUint256)
+        })
       })
     })
   })

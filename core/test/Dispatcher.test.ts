@@ -159,7 +159,7 @@ describe("Dispatcher", () => {
 
   describe("updateMaintainer", () => {
     context("when caller is not an owner", () => {
-      it("should revert when updating the maintainer", async () => {
+      it("should revert", async () => {
         await expect(
           dispatcher.connect(thirdParty).updateMaintainer(newMaintainer),
         ).to.be.revertedWithCustomError(
@@ -170,23 +170,32 @@ describe("Dispatcher", () => {
     })
 
     context("when caller is an owner", () => {
-      it("should revert when updating the maintainer to the zero address", async () => {
-        await expect(
-          dispatcher.connect(governance).updateMaintainer(ZeroAddress),
-        ).to.be.revertedWithCustomError(dispatcher, "ZeroAddress")
+      context("when maintainer is a zero address", () => {
+        it("should revert", async () => {
+          await expect(
+            dispatcher.connect(governance).updateMaintainer(ZeroAddress),
+          ).to.be.revertedWithCustomError(dispatcher, "ZeroAddress")
+        })
       })
 
-      it("should be able to update the maintainer", async () => {
-        await dispatcher.connect(governance).updateMaintainer(newMaintainer)
-        expect(await dispatcher.maintainer()).to.be.equal(newMaintainer)
-      })
+      context("when maintainer is not a zero address", () => {
+        let tx: ContractTransactionResponse
 
-      it("should emit an event when updating the maintainer", async () => {
-        await expect(
-          dispatcher.connect(governance).updateMaintainer(newMaintainer),
-        )
-          .to.emit(dispatcher, "MaintainerUpdated")
-          .withArgs(newMaintainer)
+        before(async () => {
+          tx = await dispatcher
+            .connect(governance)
+            .updateMaintainer(newMaintainer)
+        })
+
+        it("should be able to update the maintainer", async () => {
+          expect(await dispatcher.maintainer()).to.be.equal(newMaintainer)
+        })
+
+        it("should emit an event when updating the maintainer", async () => {
+          await expect(tx)
+            .to.emit(dispatcher, "MaintainerUpdated")
+            .withArgs(newMaintainer)
+        })
       })
     })
   })
