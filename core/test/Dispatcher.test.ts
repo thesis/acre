@@ -1,13 +1,9 @@
 import { ethers } from "hardhat"
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
 import { expect } from "chai"
-import {
-  SnapshotRestorer,
-  takeSnapshot,
-  loadFixture,
-} from "@nomicfoundation/hardhat-toolbox/network-helpers"
+import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 import type { Dispatcher } from "../typechain"
-import { deployment } from "./helpers/context"
+import { beforeAfterEachSnapshotWrapper, deployment } from "./helpers/context"
 import { getNamedSigner, getUnnamedSigner } from "./helpers/signer"
 
 async function fixture() {
@@ -19,8 +15,6 @@ async function fixture() {
 }
 
 describe("Dispatcher", () => {
-  let snapshot: SnapshotRestorer
-
   let dispatcher: Dispatcher
   let governance: HardhatEthersSigner
   let thirdParty: HardhatEthersSigner
@@ -38,13 +32,7 @@ describe("Dispatcher", () => {
     vaultAddress4 = await ethers.Wallet.createRandom().getAddress()
   })
 
-  beforeEach(async () => {
-    snapshot = await takeSnapshot()
-  })
-
-  afterEach(async () => {
-    await snapshot.restore()
-  })
+  beforeAfterEachSnapshotWrapper()
 
   describe("authorizeVault", () => {
     context("when caller is not a governance account", () => {

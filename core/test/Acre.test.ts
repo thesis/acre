@@ -12,7 +12,11 @@ import {
 
 import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
 import type { SnapshotRestorer } from "@nomicfoundation/hardhat-toolbox/network-helpers"
-import { deployment } from "./helpers/context"
+import {
+  beforeAfterEachSnapshotWrapper,
+  beforeAfterSnapshotWrapper,
+  deployment,
+} from "./helpers/context"
 import { getNamedSigner, getUnnamedSigner } from "./helpers/signer"
 
 import { to1e18 } from "./utils"
@@ -45,16 +49,9 @@ describe("Acre", () => {
 
   describe("stake", () => {
     const referral = encodeBytes32String("referral")
-    let snapshot: SnapshotRestorer
 
     context("when staking as first staker", () => {
-      beforeEach(async () => {
-        snapshot = await takeSnapshot()
-      })
-
-      afterEach(async () => {
-        await snapshot.restore()
-      })
+      beforeAfterEachSnapshotWrapper()
 
       context("with a referral", () => {
         const amountToStake = to1e18(1)
@@ -258,6 +255,8 @@ describe("Acre", () => {
     })
 
     context("when there are two stakers", () => {
+      beforeAfterSnapshotWrapper()
+
       const staker1AmountToStake = to1e18(7)
       const staker2AmountToStake = to1e18(3)
       let afterStakesSnapshot: SnapshotRestorer
@@ -274,10 +273,6 @@ describe("Acre", () => {
         // Mint tokens.
         await tbtc.connect(staker1).mint(staker1.address, staker1AmountToStake)
         await tbtc.connect(staker2).mint(staker2.address, staker2AmountToStake)
-      })
-
-      after(async () => {
-        await snapshot.restore()
       })
 
       context(
@@ -529,15 +524,7 @@ describe("Acre", () => {
   })
 
   describe("mint", () => {
-    let snapshot: SnapshotRestorer
-
-    beforeEach(async () => {
-      snapshot = await takeSnapshot()
-    })
-
-    afterEach(async () => {
-      await snapshot.restore()
-    })
+    beforeAfterEachSnapshotWrapper()
 
     context("when minting as first staker", () => {
       const amountToStake = to1e18(1)
@@ -634,17 +621,10 @@ describe("Acre", () => {
   })
 
   describe("updateDepositParameters", () => {
+    beforeAfterEachSnapshotWrapper()
+
     const validMinimumDepositAmount = to1e18(1)
     const validMaximumTotalAssetsAmount = to1e18(30)
-    let snapshot: SnapshotRestorer
-
-    beforeEach(async () => {
-      snapshot = await takeSnapshot()
-    })
-
-    afterEach(async () => {
-      await snapshot.restore()
-    })
 
     context("when is called by owner", () => {
       context("when all parameters are valid", () => {
@@ -728,18 +708,14 @@ describe("Acre", () => {
   })
 
   describe("maxDeposit", () => {
+    beforeAfterEachSnapshotWrapper()
+
     let maximumTotalAssets: bigint
     let minimumDepositAmount: bigint
-    let snapshot: SnapshotRestorer
 
     beforeEach(async () => {
-      snapshot = await takeSnapshot()
       ;[minimumDepositAmount, maximumTotalAssets] =
         await acre.depositParameters()
-    })
-
-    afterEach(async () => {
-      await snapshot.restore()
     })
 
     context(
@@ -817,18 +793,14 @@ describe("Acre", () => {
   })
 
   describe("maxMint", () => {
+    beforeAfterEachSnapshotWrapper()
+
     let maximumTotalAssets: bigint
     let minimumDepositAmount: bigint
-    let snapshot: SnapshotRestorer
 
     beforeEach(async () => {
-      snapshot = await takeSnapshot()
       ;[minimumDepositAmount, maximumTotalAssets] =
         await acre.depositParameters()
-    })
-
-    afterEach(async () => {
-      await snapshot.restore()
     })
 
     context(
@@ -922,17 +894,13 @@ describe("Acre", () => {
   })
 
   describe("deposit", () => {
+    beforeAfterEachSnapshotWrapper()
+
     let amountToDeposit: bigint
     let minimumDepositAmount: bigint
-    let snapshot: SnapshotRestorer
 
     beforeEach(async () => {
-      snapshot = await takeSnapshot()
       minimumDepositAmount = await acre.minimumDepositAmount()
-    })
-
-    afterEach(async () => {
-      await snapshot.restore()
     })
 
     context("when the deposit amount is less than minimum", () => {
