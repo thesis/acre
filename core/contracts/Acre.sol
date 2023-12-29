@@ -153,7 +153,7 @@ contract Acre is ERC4626, Ownable {
                 : convertToShares(_maxDeposit);
     }
 
-    /// @return Returns deposit parametrs
+    /// @return Returns deposit parameters.
     function depositParameters() public view returns (uint256, uint256) {
         return (minimumDepositAmount, maximumTotalAssets);
     }
