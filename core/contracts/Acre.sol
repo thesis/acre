@@ -72,19 +72,10 @@ contract Acre is ERC4626, Ownable {
 
         if (oldDispatcher != address(0)) {
             // Setting allowance to zero for the old dispatcher
-            bool approvedToZero = IERC20(asset()).approve(oldDispatcher, 0);
-            if (!approvedToZero) {
-                revert ApproveFailed();
-            }
+            IERC20(asset()).forceApprove(oldDispatcher, 0);
         }
 
         // Setting allowance to max for the new dispatcher
-        bool approvedToMax = IERC20(asset()).approve(
-            address(dispatcher),
-            type(uint256).max
-        );
-        if (!approvedToMax) {
-            revert ApproveFailed();
-        }
+        IERC20(asset()).forceApprove(address(dispatcher), type(uint256).max);
     }
 }

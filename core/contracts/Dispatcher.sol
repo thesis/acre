@@ -111,7 +111,7 @@ contract Dispatcher is Router, Ownable {
 
         // slither-disable-next-line arbitrary-send-erc20
         tBTC.safeTransferFrom(address(acre), address(this), amount);
-        tBTC.safeIncreaseAllowance(address(vault), amount);
+        tBTC.forceApprove(address(vault), amount);
 
         deposit(IERC4626(vault), address(acre), amount, minSharesOut);
     }
