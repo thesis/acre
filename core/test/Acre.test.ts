@@ -3,19 +3,20 @@ import {
   loadFixture,
 } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 import { expect } from "chai"
-import { ContractTransactionResponse, ZeroAddress } from "ethers"
+import { ContractTransactionResponse, ZeroAddress, MaxUint256 } from "ethers"
 
 import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
 import type { SnapshotRestorer } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 import { deployment } from "./helpers/context"
-import { getUnnamedSigner } from "./helpers/signer"
+import { getUnnamedSigner, getNamedSigner } from "./helpers/signer"
 
 import { to1e18 } from "./utils"
 
-import type { Acre, TestERC20 } from "../typechain"
+import type { Acre, TestERC20, Dispatcher } from "../typechain"
 
 async function fixture() {
-  const { tbtc, acre } = await deployment()
+  const { tbtc, acre, dispatcher } = await deployment()
+  const { governance } = await getNamedSigner()
 
   const [staker1, staker2] = await getUnnamedSigner()
 
@@ -23,7 +24,7 @@ async function fixture() {
   tbtc.mint(staker1, amountToMint)
   tbtc.mint(staker2, amountToMint)
 
-  return { acre, tbtc, staker1, staker2 }
+  return { acre, tbtc, staker1, staker2, dispatcher, governance }
 }
 
 describe("Acre", () => {
@@ -31,9 +32,12 @@ describe("Acre", () => {
   let tbtc: TestERC20
   let staker1: HardhatEthersSigner
   let staker2: HardhatEthersSigner
+  let dispatcher: Dispatcher
+  let governance: HardhatEthersSigner
 
   before(async () => {
-    ;({ acre, tbtc, staker1, staker2 } = await loadFixture(fixture))
+    ;({ acre, tbtc, staker1, staker2, dispatcher, governance } =
+      await loadFixture(fixture))
   })
 
   describe("stake", () => {
@@ -400,6 +404,54 @@ describe("Acre", () => {
             expectedTotalAssetsAvailableToRedeem,
           )
         })
+      })
+    })
+  })
+
+  describe("updateDispatcher", () => {
+    context("when caller is not an owner", () => {
+      it("should revert", async () => {
+        await expect(
+          acre.connect(staker1).updateDispatcher(ZeroAddress),
+        ).to.be.revertedWithCustomError(acre, "OwnableUnauthorizedAccount")
+      })
+    })
+
+    context("when caller is an owner", () => {
+      let newDispatcher: string
+      let acreAddress: string
+      let dispatcherAddress: string
+
+      before(async () => {
+        dispatcherAddress = await dispatcher.getAddress()
+        newDispatcher = await ethers.Wallet.createRandom().getAddress()
+        acreAddress = await acre.getAddress()
+      })
+
+      it("should approve max amount for the dispatcher", async () => {
+        const allowance = await tbtc.allowance(acreAddress, dispatcherAddress)
+        expect(allowance).to.be.equal(MaxUint256)
+      })
+
+      it("should be able to update the dispatcher", async () => {
+        await acre.connect(governance).updateDispatcher(newDispatcher)
+        expect(await acre.dispatcher()).to.be.equal(newDispatcher)
+      })
+
+      it("should reset approval amount for the old dispatcher", async () => {
+        const allowance = await tbtc.allowance(acreAddress, dispatcherAddress)
+        expect(allowance).to.be.equal(0)
+      })
+
+      it("should approve max amount for the new dispatcher", async () => {
+        const allowance = await tbtc.allowance(acreAddress, newDispatcher)
+        expect(allowance).to.be.equal(MaxUint256)
+      })
+
+      it("should not be able to update the dispatcher to the zero address", async () => {
+        await expect(
+          acre.connect(governance).updateDispatcher(ZeroAddress),
+        ).to.be.revertedWithCustomError(acre, "ZeroAddress")
       })
     })
   })

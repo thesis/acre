@@ -62,6 +62,11 @@ contract Acre is ERC4626, Ownable {
         if (address(_dispatcher) == address(0)) {
             revert ZeroAddress();
         }
+
+        if (address(dispatcher) != address(0)) {
+            IERC20(asset()).approve(address(dispatcher), 0);
+        }
+
         dispatcher = _dispatcher;
 
         bool success = IERC20(asset()).approve(
