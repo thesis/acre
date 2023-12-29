@@ -66,6 +66,10 @@ contract Acre is ERC4626, Ownable {
         address oldDispatcher = address(dispatcher);
         dispatcher = _dispatcher;
 
+        // TODO: Once withdrawal/rebalancing is implemented, we need to revoke the
+        // approval of the vaults share tokens from the old dispatcher and approve
+        // a new dispatcher to manage the share tokens.
+
         if (oldDispatcher != address(0)) {
             // Setting allowance to zero for the old dispatcher
             bool approvedToZero = IERC20(asset()).approve(oldDispatcher, 0);
