@@ -1,4 +1,4 @@
-import { BitcoinClient, DepositsService } from "@keep-network/tbtc-v2.ts"
+import { TBTC } from "@keep-network/tbtc-v2.ts"
 import { AcreContracts } from "../../lib/contracts"
 import { ChainMessages } from "../../lib/messages"
 import { Staking } from "./staking"
@@ -8,25 +8,16 @@ class StakingModule {
 
   readonly #chainMessages: ChainMessages
 
-  readonly #deposits: DepositsService
-
-  readonly #bitcoinClient: BitcoinClient
+  readonly #tbtc: TBTC
 
   constructor(
     _contracts: AcreContracts,
     _chainMessages: ChainMessages,
-    _deposits: DepositsService,
-    _bitcoinClient: BitcoinClient,
+    _tbtc: TBTC,
   ) {
     this.#contracts = _contracts
     this.#chainMessages = _chainMessages
-    this.#deposits = _deposits
-    // TODO: move setting the default depositor to the `Acre` context.
-    this.#deposits.setDefaultDepositor(
-      this.#contracts.depositor.getChainIdentifier(),
-    )
-
-    this.#bitcoinClient = _bitcoinClient
+    this.#tbtc = _tbtc
   }
 
   async initializeStake(bitcoinRecoveryAddress: string) {
@@ -35,13 +26,17 @@ class StakingModule {
     const signedMessage = await this.#chainMessages.sign("message")
 
     // Generate deposit script parameters.
-    const deposit = await this.#deposits.initiateDeposit(bitcoinRecoveryAddress)
+    // TODO: generate deposit script parameters with extra data once we add this
+    // feature to the `@keep-network/tbtc-v2.ts` lib.
+    const deposit = await this.#tbtc.deposits.initiateDeposit(
+      bitcoinRecoveryAddress,
+    )
 
     return new Staking(
       this.#contracts,
       signedMessage,
       deposit,
-      this.#bitcoinClient,
+      this.#tbtc.bitcoinClient,
     )
   }
 }
