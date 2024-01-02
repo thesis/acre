@@ -1,5 +1,6 @@
-import { BITCOIN_MIN_AMOUNT } from "../constants"
-import { formatSatoshiAmount } from "./numbers"
+import { CURRENCIES_BY_TYPE } from "../constants"
+import { CurrencyType } from "../types"
+import { formatTokenAmount } from "./numbers"
 
 const ERRORS = {
   REQUIRED: "Required.",
@@ -16,20 +17,23 @@ export function getErrorsObj<T>(errors: { [key in keyof T]: string }) {
 
 export function validateTokenAmount(
   value: string,
-  tokenBalance: string,
+  maxValue: string,
+  minValue: string,
+  currencyType: CurrencyType,
 ): string | undefined {
   if (!value) return ERRORS.REQUIRED
 
+  const { decimals } = CURRENCIES_BY_TYPE[currencyType]
   const valueInBI = BigInt(value)
-  const maxValueInBI = BigInt(tokenBalance)
-  const minValueInBI = BigInt(BITCOIN_MIN_AMOUNT)
+  const maxValueInBI = BigInt(maxValue)
+  const minValueInBI = BigInt(minValue)
 
   const isMaximumValueExceeded = valueInBI > maxValueInBI
   const isMinimumValueFulfilled = valueInBI >= minValueInBI
 
   if (isMaximumValueExceeded) return ERRORS.EXCEEDED_VALUE
   if (!isMinimumValueFulfilled)
-    return ERRORS.INSUFFICIENT_VALUE(formatSatoshiAmount(BITCOIN_MIN_AMOUNT))
+    return ERRORS.INSUFFICIENT_VALUE(formatTokenAmount(minValue, decimals))
 
   return undefined
 }

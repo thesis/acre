@@ -4,6 +4,7 @@ import { ModalStep } from "../../../contexts"
 import FormBase, { FormBaseProps, FormValues } from "../../shared/FormBase"
 import { useTransactionContext, useWalletContext } from "../../../hooks"
 import { getErrorsObj, validateTokenAmount } from "../../../utils"
+import { BITCOIN_MIN_AMOUNT } from "../../../constants"
 
 const CUSTOM_DATA = {
   buttonText: "Stake",
@@ -18,10 +19,15 @@ const StakeFormik = withFormik<
   mapPropsToValues: () => ({
     amount: "",
   }),
-  validate: async ({ amount }, { tokenBalance }) => {
+  validate: async ({ amount }, { tokenBalance, currencyType }) => {
     const errors: FormikErrors<FormValues> = {}
 
-    errors.amount = validateTokenAmount(amount, tokenBalance)
+    errors.amount = validateTokenAmount(
+      amount,
+      tokenBalance,
+      BITCOIN_MIN_AMOUNT,
+      currencyType ?? "bitcoin",
+    )
 
     return getErrorsObj(errors)
   },
