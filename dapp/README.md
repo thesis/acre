@@ -23,4 +23,4 @@ Once the build is running, you can import the manifest on desktop:
 
     Click on Browse next to **Add a local app** and select the manifest file. The app is now visible in the menu.
 
-If you have any problems, take a look [here](https://developers.ledger.com/docs/non-dapp/tutorial/3-import/#desktop).
+If you have any problems, take a look [here](https://developers.ledger.com/docs/discover/developer-mode).
