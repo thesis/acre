@@ -62,11 +62,15 @@ describe("Dispatcher", () => {
     })
 
     context("when caller is a governance account", () => {
-      it("should be able to authorize vaults", async () => {
-        await dispatcher.connect(governance).authorizeVault(vaultAddress1)
+      let tx1: ContractTransactionResponse
+
+      beforeEach(async () => {
+        tx1 = await dispatcher.connect(governance).authorizeVault(vaultAddress1)
         await dispatcher.connect(governance).authorizeVault(vaultAddress2)
         await dispatcher.connect(governance).authorizeVault(vaultAddress3)
+      })
 
+      it("should be able to authorize vaults", async () => {
         expect(await dispatcher.vaults(0)).to.equal(vaultAddress1)
         expect(await dispatcher.vaultsInfo(vaultAddress1)).to.be.equal(true)
 
@@ -78,16 +82,13 @@ describe("Dispatcher", () => {
       })
 
       it("should not be able to authorize the same vault twice", async () => {
-        await dispatcher.connect(governance).authorizeVault(vaultAddress1)
         await expect(
           dispatcher.connect(governance).authorizeVault(vaultAddress1),
         ).to.be.revertedWithCustomError(dispatcher, "VaultAlreadyAuthorized")
       })
 
       it("should emit an event when adding a vault", async () => {
-        await expect(
-          dispatcher.connect(governance).authorizeVault(vaultAddress1),
-        )
+        await expect(tx1)
           .to.emit(dispatcher, "VaultAuthorized")
           .withArgs(vaultAddress1)
       })
@@ -113,7 +114,7 @@ describe("Dispatcher", () => {
     })
 
     context("when caller is a governance account", () => {
-      it("should be able to authorize vaults", async () => {
+      it("should be able to deauthorize vaults", async () => {
         await dispatcher.connect(governance).deauthorizeVault(vaultAddress1)
 
         // Last vault replaced the first vault in the 'vaults' array
