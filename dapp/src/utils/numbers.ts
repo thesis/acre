@@ -1,5 +1,15 @@
-export const toLocaleString = (value: number): string =>
-  value.toLocaleString("default", { maximumFractionDigits: 2 })
+export const numberToLocaleString = (
+  value: string | number,
+  desiredDecimals = 2,
+): string => {
+  const number = typeof value === "number" ? value : parseFloat(value)
+
+  if (number === 0) return `0.${"0".repeat(desiredDecimals)}`
+
+  return number.toLocaleString("default", {
+    maximumFractionDigits: desiredDecimals,
+  })
+}
 
 /**
  * Convert a fixed point bigint with precision `fixedPointDecimals` to a
@@ -59,7 +69,7 @@ export const formatTokenAmount = (
     return `<0.${"0".repeat(desiredDecimals - 1)}1`
   }
 
-  return toLocaleString(formattedAmount)
+  return numberToLocaleString(formattedAmount)
 }
 
 export const formatSatoshiAmount = (
