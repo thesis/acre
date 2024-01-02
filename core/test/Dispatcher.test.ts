@@ -7,16 +7,17 @@ import {
   loadFixture,
 } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 import { ZeroAddress } from "ethers"
-import type { Dispatcher } from "../typechain"
+import type { Dispatcher, TestERC4626, Acre, TestERC20 } from "../typechain"
 import { deployment } from "./helpers/context"
 import { getNamedSigner, getUnnamedSigner } from "./helpers/signer"
+import { to1e18 } from "./utils"
 
 async function fixture() {
-  const { dispatcher } = await deployment()
-  const { governance } = await getNamedSigner()
+  const { tbtc, acre, dispatcher, vault } = await deployment()
+  const { governance, maintainer } = await getNamedSigner()
   const [thirdParty] = await getUnnamedSigner()
 
-  return { dispatcher, governance, thirdParty }
+  return { dispatcher, governance, thirdParty, maintainer, vault, tbtc, acre }
 }
 
 describe("Dispatcher", () => {
@@ -25,20 +26,23 @@ describe("Dispatcher", () => {
   let dispatcher: Dispatcher
   let governance: HardhatEthersSigner
   let thirdParty: HardhatEthersSigner
+  let maintainer: HardhatEthersSigner
+  let vault: TestERC4626
+  let acre: Acre
+  let tbtc: TestERC20
   let vaultAddress1: string
   let vaultAddress2: string
   let vaultAddress3: string
   let vaultAddress4: string
-  let newMaintainer: string
 
   before(async () => {
-    ;({ dispatcher, governance, thirdParty } = await loadFixture(fixture))
+    ;({ dispatcher, governance, thirdParty, maintainer, vault, tbtc, acre } =
+      await loadFixture(fixture))
 
     vaultAddress1 = await ethers.Wallet.createRandom().getAddress()
     vaultAddress2 = await ethers.Wallet.createRandom().getAddress()
     vaultAddress3 = await ethers.Wallet.createRandom().getAddress()
     vaultAddress4 = await ethers.Wallet.createRandom().getAddress()
-    newMaintainer = await ethers.Wallet.createRandom().getAddress()
   })
 
   beforeEach(async () => {
@@ -158,7 +162,96 @@ describe("Dispatcher", () => {
     })
   })
 
+  describe("depositToVault", () => {
+    const assetsToAllocate = to1e18(100)
+    const minSharesOut = to1e18(100)
+
+    before(async () => {
+      await dispatcher.connect(governance).authorizeVault(vault.getAddress())
+      await tbtc.mint(await acre.getAddress(), to1e18(100000))
+    })
+
+    context("when caller is not maintainer", () => {
+      it("should revert when depositing to a vault", async () => {
+        await expect(
+          dispatcher
+            .connect(thirdParty)
+            .depositToVault(
+              await vault.getAddress(),
+              assetsToAllocate,
+              minSharesOut,
+            ),
+        ).to.be.revertedWithCustomError(dispatcher, "NotMaintainer")
+      })
+    })
+
+    context("when caller is maintainer", () => {
+      context("when vault is not authorized", () => {
+        it("should revert", async () => {
+          const randomAddress = await ethers.Wallet.createRandom().getAddress()
+          await expect(
+            dispatcher
+              .connect(maintainer)
+              .depositToVault(randomAddress, assetsToAllocate, minSharesOut),
+          ).to.be.revertedWithCustomError(dispatcher, "VaultUnauthorized")
+        })
+      })
+
+      context("when the vault is authorized", () => {
+        let vaultAddress: string
+        before(async () => {
+          vaultAddress = await vault.getAddress()
+        })
+
+        context("when allocation is successful", () => {
+          let tx: ContractTransactionResponse
+          before(async () => {
+            tx = await dispatcher
+              .connect(maintainer)
+              .depositToVault(vaultAddress, assetsToAllocate, minSharesOut)
+          })
+
+          it("should be able to deposit to an authorized Vault", async () => {
+            expect(await tbtc.balanceOf(vault.getAddress())).to.equal(
+              assetsToAllocate,
+            )
+          })
+
+          it("should be able to receive Vault's shares", async () => {
+            expect(await vault.balanceOf(acre.getAddress())).to.equal(
+              minSharesOut,
+            )
+          })
+
+          it("should emit a DepositAllocated event", async () => {
+            await expect(tx)
+              .to.emit(dispatcher, "DepositAllocated")
+              .withArgs(vaultAddress, assetsToAllocate, minSharesOut)
+          })
+        })
+
+        context("when allocation is not successful", () => {
+          const minShares = to1e18(101)
+
+          it("should emit a MinSharesError event", async () => {
+            await expect(
+              dispatcher
+                .connect(maintainer)
+                .depositToVault(vaultAddress, assetsToAllocate, minShares),
+            ).to.be.revertedWithCustomError(dispatcher, "MinSharesError")
+          })
+        })
+      })
+    })
+  })
+
   describe("updateMaintainer", () => {
+    let newMaintainer: string
+
+    before(async () => {
+      newMaintainer = await ethers.Wallet.createRandom().getAddress()
+    })
+
     context("when caller is not an owner", () => {
       it("should revert", async () => {
         await expect(
