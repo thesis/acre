@@ -12,9 +12,12 @@ import {
   InputRightElement,
   useMultiStyleConfig,
 } from "@chakra-ui/react"
-import { fixedPointNumberToString, userAmountToBigInt } from "../../../utils"
+import {
+  fixedPointNumberToString,
+  getCurrencyByType,
+  userAmountToBigInt,
+} from "../../../utils"
 import { CurrencyType } from "../../../types"
-import { CURRENCIES_BY_TYPE } from "../../../constants"
 import NumberFormatInput, {
   NumberFormatInputValues,
 } from "../NumberFormatInput"
@@ -109,7 +112,7 @@ export default function TokenBalanceInput({
   const valueRef = useRef<string | undefined>(amount)
   const styles = useMultiStyleConfig("TokenBalanceInput", { size })
 
-  const currency = CURRENCIES_BY_TYPE[currencyType]
+  const currency = getCurrencyByType(currencyType)
 
   const handleValueChange = (value: string) => {
     valueRef.current = value

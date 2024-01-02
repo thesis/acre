@@ -10,7 +10,7 @@ import {
 import { CurrencyType, RequestAccountParams } from "../../../types"
 import { TextMd } from "../../shared/Typography"
 import AlertWrapper from "../../shared/Alert"
-import { CURRENCIES_BY_TYPE } from "../../../constants"
+import { getCurrencyByType } from "../../../utils"
 
 type MissingAccountProps = {
   currencyType: CurrencyType
@@ -23,7 +23,7 @@ export default function MissingAccount({
   icon,
   requestAccount,
 }: MissingAccountProps) {
-  const currency = CURRENCIES_BY_TYPE[currencyType]
+  const currency = getCurrencyByType(currencyType)
 
   return (
     <>

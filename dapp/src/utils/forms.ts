@@ -1,5 +1,5 @@
-import { CURRENCIES_BY_TYPE } from "../constants"
 import { CurrencyType } from "../types"
+import { getCurrencyByType } from "./currency"
 import { formatTokenAmount } from "./numbers"
 
 const ERRORS = {
@@ -23,7 +23,7 @@ export function validateTokenAmount(
 ): string | undefined {
   if (!value) return ERRORS.REQUIRED
 
-  const { decimals } = CURRENCIES_BY_TYPE[currencyType]
+  const { decimals } = getCurrencyByType(currencyType)
   const valueInBI = BigInt(value)
   const maxValueInBI = BigInt(maxValue)
   const minValueInBI = BigInt(minValue)
