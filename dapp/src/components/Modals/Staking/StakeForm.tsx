@@ -1,9 +1,9 @@
 import React, { useCallback } from "react"
-import { FormikErrors, withFormik } from "formik"
 import { ModalStep } from "../../../contexts"
-import FormBase, { FormBaseProps, FormValues } from "../../shared/FormBase"
+import TokenAmountForm, {
+  TokenAmountFormValues,
+} from "../../shared/TokenAmountForm"
 import { useTransactionContext, useWalletContext } from "../../../hooks"
-import { getErrorsObj, validateTokenAmount } from "../../../utils"
 import { BITCOIN_MIN_AMOUNT } from "../../../constants"
 
 const CUSTOM_DATA = {
@@ -12,36 +12,12 @@ const CUSTOM_DATA = {
   estimatedAmountText: "Approximately staked tokens",
 }
 
-const StakeFormik = withFormik<
-  { onSubmitForm: (values: FormValues) => void } & FormBaseProps,
-  FormValues
->({
-  mapPropsToValues: () => ({
-    amount: "",
-  }),
-  validate: async ({ amount }, { tokenBalance, currencyType }) => {
-    const errors: FormikErrors<FormValues> = {}
-
-    errors.amount = validateTokenAmount(
-      amount,
-      tokenBalance,
-      BITCOIN_MIN_AMOUNT,
-      currencyType ?? "bitcoin",
-    )
-
-    return getErrorsObj(errors)
-  },
-  handleSubmit: (values, { props }) => {
-    props.onSubmitForm(values)
-  },
-})(FormBase)
-
 function StakeForm({ goNext }: ModalStep) {
   const { btcAccount } = useWalletContext()
   const { setAmount } = useTransactionContext()
 
   const handleSubmitForm = useCallback(
-    (values: FormValues) => {
+    (values: TokenAmountFormValues) => {
       setAmount(values.amount)
       goNext()
     },
@@ -49,9 +25,10 @@ function StakeForm({ goNext }: ModalStep) {
   )
 
   return (
-    <StakeFormik
+    <TokenAmountForm
       customData={CUSTOM_DATA}
       tokenBalance={btcAccount?.balance.toString() ?? "0"}
+      minTokenAmount={BITCOIN_MIN_AMOUNT}
       onSubmitForm={handleSubmitForm}
     />
   )

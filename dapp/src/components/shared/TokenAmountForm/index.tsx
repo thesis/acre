@@ -1,15 +1,15 @@
 import React from "react"
 import { Button } from "@chakra-ui/react"
-import { FormikProps } from "formik"
+import { FormikProps, FormikErrors, withFormik } from "formik"
 import { Form, FormTokenBalanceInput } from "../Form"
 import { CurrencyType } from "../../../types"
 import TransactionDetails from "./TransactionDetails"
+import { getErrorsObj, validateTokenAmount } from "../../../utils"
 
-export type FormValues = {
+export type TokenAmountFormValues = {
   amount: string
 }
-
-export type FormBaseProps = {
+type TokenAmountFormBaseProps = {
   customData: {
     buttonText: string
     btcAmountText: string
@@ -22,7 +22,7 @@ export type FormBaseProps = {
   children?: React.ReactNode
 }
 
-function FormBase({
+function TokenAmountFormBase({
   customData,
   tokenBalance,
   tokenBalanceInputPlaceholder = "BTC",
@@ -30,7 +30,7 @@ function FormBase({
   fieldName = "amount",
   children,
   ...formikProps
-}: FormBaseProps & FormikProps<FormValues>) {
+}: TokenAmountFormBaseProps & FormikProps<TokenAmountFormValues>) {
   return (
     <Form onSubmit={formikProps.handleSubmit}>
       <FormTokenBalanceInput
@@ -52,4 +52,35 @@ function FormBase({
   )
 }
 
-export default FormBase
+type TokenAmountFormProps = {
+  onSubmitForm: (values: TokenAmountFormValues) => void
+  minTokenAmount: string
+} & TokenAmountFormBaseProps
+
+const TokenAmountForm = withFormik<TokenAmountFormProps, TokenAmountFormValues>(
+  {
+    mapPropsToValues: () => ({
+      amount: "",
+    }),
+    validate: async (
+      { amount },
+      { tokenBalance, currencyType, minTokenAmount },
+    ) => {
+      const errors: FormikErrors<TokenAmountFormValues> = {}
+
+      errors.amount = validateTokenAmount(
+        amount,
+        tokenBalance,
+        minTokenAmount,
+        currencyType ?? "bitcoin",
+      )
+
+      return getErrorsObj(errors)
+    },
+    handleSubmit: (values, { props }) => {
+      props.onSubmitForm(values)
+    },
+  },
+)(TokenAmountFormBase)
+
+export default TokenAmountForm
