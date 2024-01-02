@@ -94,6 +94,18 @@ contract Dispatcher is Router, Ownable {
         emit VaultDeauthorized(vault);
     }
 
+    /// @notice Updates the maintainer address.
+    /// @param newMaintainer Address of the new maintainer.
+    function updateMaintainer(address newMaintainer) external onlyOwner {
+        if (newMaintainer == address(0)) {
+            revert ZeroAddress();
+        }
+
+        maintainer = newMaintainer;
+
+        emit MaintainerUpdated(maintainer);
+    }
+
     /// TODO: make this function internal once the allocation distribution is
     /// implemented
     /// @notice Routes tBTC from Acre to a vault. Can be called by the maintainer
@@ -122,18 +134,6 @@ contract Dispatcher is Router, Ownable {
         );
         // slither-disable-next-line reentrancy-events
         emit DepositAllocated(vault, amount, sharesOut);
-    }
-
-    /// @notice Updates the maintainer address.
-    /// @param newMaintainer Address of the new maintainer.
-    function updateMaintainer(address newMaintainer) external onlyOwner {
-        if (newMaintainer == address(0)) {
-            revert ZeroAddress();
-        }
-
-        maintainer = newMaintainer;
-
-        emit MaintainerUpdated(maintainer);
     }
 
     /// @notice Returns the list of authorized vaults.
