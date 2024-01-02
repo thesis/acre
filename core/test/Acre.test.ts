@@ -823,9 +823,9 @@ describe("Acre", () => {
   describe("updateDispatcher", () => {
     context("when caller is not an owner", () => {
       it("should revert", async () => {
-        await expect(
-          acre.connect(staker1).updateDispatcher(ZeroAddress),
-        ).to.be.revertedWithCustomError(acre, "OwnableUnauthorizedAccount")
+        await expect(acre.connect(staker1).updateDispatcher(ZeroAddress))
+          .to.be.revertedWithCustomError(acre, "OwnableUnauthorizedAccount")
+          .withArgs(staker1.address)
       })
     })
 

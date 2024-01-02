@@ -58,10 +58,12 @@ describe("Dispatcher", () => {
       it("should revert when adding a vault", async () => {
         await expect(
           dispatcher.connect(thirdParty).authorizeVault(vaultAddress1),
-        ).to.be.revertedWithCustomError(
-          dispatcher,
-          "OwnableUnauthorizedAccount",
         )
+          .to.be.revertedWithCustomError(
+            dispatcher,
+            "OwnableUnauthorizedAccount",
+          )
+          .withArgs(thirdParty.address)
       })
     })
 
@@ -110,10 +112,12 @@ describe("Dispatcher", () => {
       it("should revert when adding a vault", async () => {
         await expect(
           dispatcher.connect(thirdParty).deauthorizeVault(vaultAddress1),
-        ).to.be.revertedWithCustomError(
-          dispatcher,
-          "OwnableUnauthorizedAccount",
         )
+          .to.be.revertedWithCustomError(
+            dispatcher,
+            "OwnableUnauthorizedAccount",
+          )
+          .withArgs(thirdParty.address)
       })
     })
 
@@ -256,10 +260,12 @@ describe("Dispatcher", () => {
       it("should revert", async () => {
         await expect(
           dispatcher.connect(thirdParty).updateMaintainer(newMaintainer),
-        ).to.be.revertedWithCustomError(
-          dispatcher,
-          "OwnableUnauthorizedAccount",
         )
+          .to.be.revertedWithCustomError(
+            dispatcher,
+            "OwnableUnauthorizedAccount",
+          )
+          .withArgs(thirdParty.address)
       })
     })
 
