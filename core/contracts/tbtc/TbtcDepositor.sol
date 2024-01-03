@@ -15,7 +15,7 @@ import {Acre} from "../Acre.sol";
 
 /// @title tBTC Depositor contract.
 /// @notice The contract integrates Acre staking with tBTC minting.
-///         User who want to stake BTC in Acre should submit a Bitcoin transaction
+///         User who wants to stake BTC in Acre should submit a Bitcoin transaction
 ///         to the most recently created off-chain ECDSA wallets of the tBTC Bridge
 ///         using pay-to-script-hash (P2SH) or pay-to-witness-script-hash (P2WSH)
 ///         containing hashed information about this Depositor contract address,
@@ -177,7 +177,7 @@ contract TbtcDepositor {
     ///        `amount = depositAmount - depositTreasuryFee - depositTxMaxFee`
     ///      - for optimistically minted deposits:
     ///        ```
-    ///        amount = depositAmount - depositTreasuryFee - depositTxMaxFee 
+    ///        amount = depositAmount - depositTreasuryFee - depositTxMaxFee
     ///               - optimisticMintingFee
     ///        ```
     ///      These calculation are simplified and can leave some positive
@@ -188,9 +188,8 @@ contract TbtcDepositor {
     ///        at the moment of the deposit reveal, there is a chance that the fee
     ///        parameter is updated in the tBTC Vault contract before the optimistic
     ///        minting is finalized.
-    ///      The imbalance should be donated to the Acre staking contract by the
-    ///      Governance.
-    /// @param depositKey Deposit key computed as 
+    ///      The imbalance is considered a part of the depositor fee.
+    /// @param depositKey Deposit key computed as
     ///                   `keccak256(fundingTxHash | fundingOutputIndex)`.
     function finalizeStake(uint256 depositKey) external {
         StakeRequest storage request = stakeRequests[depositKey];
@@ -224,7 +223,7 @@ contract TbtcDepositor {
         // Check if deposit was optimistically minted.
         if (optimisticMintingRequest.finalizedAt > 0) {
             // For tBTC minted with optimistic minting process additional fee
-            // is taken. The fee is calculated on `TBTCVautl.finalizeOptimisticMint`
+            // is taken. The fee is calculated on `TBTCVault.finalizeOptimisticMint`
             // call, and not stored in the contract.
             // There is a possibility the fee has changed since the snapshot of
             // the `tbtcOptimisticMintingFeeDivisor`, to cover this scenario
@@ -294,7 +293,7 @@ contract TbtcDepositor {
         return bytes32(abi.encodePacked(receiver, referral));
     }
 
-    /// @notice Decodes receiver address and referral from extera data,
+    /// @notice Decodes receiver address and referral from extra data,
     /// @dev Unpacks the data from bytes32: 20 bytes of receiver address and
     ///      2 bytes of referral, 10 bytes of trailing zeros.
     /// @param extraData Encoded extra data.
