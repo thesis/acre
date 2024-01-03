@@ -39,9 +39,11 @@ contract Dispatcher is Router, Ownable {
     /// Emitted when a vault is authorized.
     /// @param vault Address of the vault.
     event VaultAuthorized(address indexed vault);
+
     /// Emitted when a vault is deauthorized.
     /// @param vault Address of the vault.
     event VaultDeauthorized(address indexed vault);
+
     /// Emitted when tBTC is routed to a vault.
     /// @param vault Address of the vault.
     /// @param amount Amount of tBTC.
@@ -51,16 +53,20 @@ contract Dispatcher is Router, Ownable {
         uint256 amount,
         uint256 sharesOut
     );
+
     /// Emitted when the maintainer address is updated.
     /// @param maintainer Address of the new maintainer.
     event MaintainerUpdated(address indexed maintainer);
 
     /// Reverts if the vault is already authorized.
     error VaultAlreadyAuthorized();
+
     /// Reverts if the vault is not authorized.
     error VaultUnauthorized();
+
     /// Reverts if the caller is not the maintainer.
     error NotMaintainer();
+
     /// Reverts if the address is zero.
     error ZeroAddress();
 

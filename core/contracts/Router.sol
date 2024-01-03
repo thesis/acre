@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity ^0.8.21;
 
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/interfaces/IERC20.sol";
 import "@openzeppelin/contracts/interfaces/IERC4626.sol";
 
 /// @title Router
@@ -10,8 +8,6 @@ import "@openzeppelin/contracts/interfaces/IERC4626.sol";
 ///         a given vault and back. Vaults supply yield strategies with tBTC that
 ///         generate yield for Bitcoin holders.
 abstract contract Router {
-    using SafeERC20 for IERC20;
-
     /// Thrown when amount of shares received is below the min set by caller.
     /// @param vault Address of the vault.
     /// @param sharesOut Amount of shares received by Acre.

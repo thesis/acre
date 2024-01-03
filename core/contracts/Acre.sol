@@ -31,6 +31,7 @@ contract Acre is ERC4626, Ownable {
     /// @param referral Used for referral program.
     /// @param assets Amount of tBTC tokens staked.
     event StakeReferral(bytes32 indexed referral, uint256 assets);
+
     /// Emitted when deposit parameters are updated.
     /// @param minimumDepositAmount New value of the minimum deposit amount.
     /// @param maximumTotalAssets New value of the maximum total assets amount.
@@ -38,6 +39,7 @@ contract Acre is ERC4626, Ownable {
         uint256 minimumDepositAmount,
         uint256 maximumTotalAssets
     );
+
     /// Emitted when the dispatcher contract is updated.
     /// @param oldDispatcher Address of the old dispatcher contract.
     /// @param newDispatcher Address of the new dispatcher contract.
@@ -47,6 +49,7 @@ contract Acre is ERC4626, Ownable {
     /// @param amount Amount to check.
     /// @param min Minimum amount to check 'amount' against.
     error DepositAmountLessThanMin(uint256 amount, uint256 min);
+
     /// Reverts if the address is zero.
     error ZeroAddress();
 

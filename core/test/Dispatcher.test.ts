@@ -24,12 +24,13 @@ describe("Dispatcher", () => {
   let snapshot: SnapshotRestorer
 
   let dispatcher: Dispatcher
+  let vault: TestERC4626
+  let tbtc: TestERC20
+  let acre: Acre
+
   let governance: HardhatEthersSigner
   let thirdParty: HardhatEthersSigner
   let maintainer: HardhatEthersSigner
-  let vault: TestERC4626
-  let acre: Acre
-  let tbtc: TestERC20
   let vaultAddress1: string
   let vaultAddress2: string
   let vaultAddress3: string
@@ -68,10 +69,10 @@ describe("Dispatcher", () => {
     })
 
     context("when caller is a governance account", () => {
-      let tx1: ContractTransactionResponse
+      let tx: ContractTransactionResponse
 
       beforeEach(async () => {
-        tx1 = await dispatcher.connect(governance).authorizeVault(vaultAddress1)
+        tx = await dispatcher.connect(governance).authorizeVault(vaultAddress1)
         await dispatcher.connect(governance).authorizeVault(vaultAddress2)
         await dispatcher.connect(governance).authorizeVault(vaultAddress3)
       })
@@ -94,7 +95,7 @@ describe("Dispatcher", () => {
       })
 
       it("should emit an event when adding a vault", async () => {
-        await expect(tx1)
+        await expect(tx)
           .to.emit(dispatcher, "VaultAuthorized")
           .withArgs(vaultAddress1)
       })
@@ -203,12 +204,14 @@ describe("Dispatcher", () => {
 
       context("when the vault is authorized", () => {
         let vaultAddress: string
+
         before(async () => {
           vaultAddress = await vault.getAddress()
         })
 
         context("when allocation is successful", () => {
           let tx: ContractTransactionResponse
+
           before(async () => {
             tx = await dispatcher
               .connect(maintainer)

@@ -25,32 +25,36 @@ describe("Deployment", () => {
     ;({ acre, dispatcher, tbtc, maintainer } = await loadFixture(fixture))
   })
 
-  describe("updateDispatcher", () => {
-    context("when a dispatcher has been set", () => {
-      it("should be set to a dispatcher address by the deployment script", async () => {
-        const actualDispatcher = await acre.dispatcher()
+  describe("Acre", () => {
+    describe("updateDispatcher", () => {
+      context("when a dispatcher has been set", () => {
+        it("should be set to a dispatcher address by the deployment script", async () => {
+          const actualDispatcher = await acre.dispatcher()
 
-        expect(actualDispatcher).to.be.equal(await dispatcher.getAddress())
-      })
+          expect(actualDispatcher).to.be.equal(await dispatcher.getAddress())
+        })
 
-      it("should approve max amount for the dispatcher", async () => {
-        const actualDispatcher = await acre.dispatcher()
-        const allowance = await tbtc.allowance(
-          await acre.getAddress(),
-          actualDispatcher,
-        )
+        it("should approve max amount for the dispatcher", async () => {
+          const actualDispatcher = await acre.dispatcher()
+          const allowance = await tbtc.allowance(
+            await acre.getAddress(),
+            actualDispatcher,
+          )
 
-        expect(allowance).to.be.equal(MaxUint256)
+          expect(allowance).to.be.equal(MaxUint256)
+        })
       })
     })
   })
 
-  describe("updateMaintainer", () => {
-    context("when a new maintainer has been set", () => {
-      it("should be set to a new maintainer address", async () => {
-        const actualMaintainer = await dispatcher.maintainer()
+  describe("Dispatcher", () => {
+    describe("updateMaintainer", () => {
+      context("when a new maintainer has been set", () => {
+        it("should be set to a new maintainer address", async () => {
+          const actualMaintainer = await dispatcher.maintainer()
 
-        expect(actualMaintainer).to.be.equal(await maintainer.getAddress())
+          expect(actualMaintainer).to.be.equal(await maintainer.getAddress())
+        })
       })
     })
   })
