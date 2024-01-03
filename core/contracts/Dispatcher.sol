@@ -14,40 +14,57 @@ import "./Acre.sol";
 contract Dispatcher is Router, Ownable {
     using SafeERC20 for IERC20;
 
+    /// Struct holds information about a vault.
     struct VaultInfo {
         bool authorized;
     }
 
-    // Depositing tBTC into Acre returns stBTC.
+    /// Depositing tBTC into Acre returns stBTC.
     Acre public immutable acre;
-    // tBTC token contract.
+    /// tBTC token contract.
     IERC20 public immutable tbtc;
-    // Address of the maintainer bot.
+    /// Address of the maintainer bot.
     address public maintainer;
 
-    /// @notice Authorized Yield Vaults that implement ERC4626 standard. These
-    ///         vaults deposit assets to yield strategies, e.g. Uniswap V3
-    ///         WBTC/TBTC pool. Vault can be a part of Acre ecosystem or can be
-    ///         implemented externally. As long as it complies with ERC4626
-    ///         standard and is authorized by the owner it can be plugged into
-    ///         Acre.
+    /// Authorized Yield Vaults that implement ERC4626 standard. These
+    /// vaults deposit assets to yield strategies, e.g. Uniswap V3
+    /// WBTC/TBTC pool. Vault can be a part of Acre ecosystem or can be
+    /// implemented externally. As long as it complies with ERC4626
+    /// standard and is authorized by the owner it can be plugged into
+    /// Acre.
     address[] public vaults;
+    /// Mapping of vaults to their information.
     mapping(address => VaultInfo) public vaultsInfo;
 
+    /// Emitted when a vault is authorized.
+    /// @param vault Address of the vault.
     event VaultAuthorized(address indexed vault);
+    /// Emitted when a vault is deauthorized.
+    /// @param vault Address of the vault.
     event VaultDeauthorized(address indexed vault);
+    /// Emitted when tBTC is routed to a vault.
+    /// @param vault Address of the vault.
+    /// @param amount Amount of tBTC.
+    /// @param sharesOut Amount of shares received by Acre.
     event DepositAllocated(
         address indexed vault,
         uint256 amount,
         uint256 sharesOut
     );
+    /// Emitted when the maintainer address is updated.
+    /// @param maintainer Address of the new maintainer.
     event MaintainerUpdated(address indexed maintainer);
 
+    /// Reverts if the vault is already authorized.
     error VaultAlreadyAuthorized();
+    /// Reverts if the vault is not authorized.
     error VaultUnauthorized();
+    /// Reverts if the caller is not the maintainer.
     error NotMaintainer();
+    /// Reverts if the address is zero.
     error ZeroAddress();
 
+    /// Modifier that reverts if the caller is not the maintainer.
     modifier onlyMaintainer() {
         if (msg.sender != maintainer) {
             revert NotMaintainer();

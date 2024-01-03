@@ -20,21 +20,34 @@ import "./Dispatcher.sol";
 contract Acre is ERC4626, Ownable {
     using SafeERC20 for IERC20;
 
-    // Dispatcher contract that routes tBTC from Acre to a given vault and back.
+    /// Dispatcher contract that routes tBTC from Acre to a given vault and back.
     Dispatcher public dispatcher;
-    // Minimum amount for a single deposit operation.
+    /// Minimum amount for a single deposit operation.
     uint256 public minimumDepositAmount;
-    // Maximum total amount of tBTC token held by Acre.
+    /// Maximum total amount of tBTC token held by Acre.
     uint256 public maximumTotalAssets;
 
+    /// Emitted when a referral is used.
+    /// @param referral Used for referral program.
+    /// @param assets Amount of tBTC tokens staked.
     event StakeReferral(bytes32 indexed referral, uint256 assets);
+    /// Emitted when deposit parameters are updated.
+    /// @param minimumDepositAmount New value of the minimum deposit amount.
+    /// @param maximumTotalAssets New value of the maximum total assets amount.
     event DepositParametersUpdated(
         uint256 minimumDepositAmount,
         uint256 maximumTotalAssets
     );
+    /// Emitted when the dispatcher contract is updated.
+    /// @param oldDispatcher Address of the old dispatcher contract.
+    /// @param newDispatcher Address of the new dispatcher contract.
     event DispatcherUpdated(address oldDispatcher, address newDispatcher);
 
+    /// Reverts if the amount is less than the minimum deposit amount.
+    /// @param amount Amount to check.
+    /// @param min Minimum amount to check 'amount' against.
     error DepositAmountLessThanMin(uint256 amount, uint256 min);
+    /// Reverts if the address is zero.
     error ZeroAddress();
 
     constructor(
