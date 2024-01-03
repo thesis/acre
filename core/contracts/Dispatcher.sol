@@ -154,7 +154,7 @@ contract Dispatcher is Router, Ownable {
     }
 
     /// @notice Returns the list of authorized vaults.
-    function getVaults() external view returns (address[] memory) {
+    function getVaults() public view returns (address[] memory) {
         return vaults;
     }
 
