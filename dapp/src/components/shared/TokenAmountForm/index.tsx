@@ -7,7 +7,7 @@ import TransactionDetails from "./TransactionDetails"
 import { getErrorsObj, validateTokenAmount } from "../../../utils"
 
 export type TokenAmountFormValues = {
-  amount: string
+  amount?: bigint
 }
 type TokenAmountFormBaseProps = {
   customData: {
@@ -17,7 +17,7 @@ type TokenAmountFormBaseProps = {
   }
   tokenBalance: string
   tokenBalanceInputPlaceholder?: string
-  currencyType?: CurrencyType
+  currencyType: CurrencyType
   fieldName?: string
   children?: React.ReactNode
 }
@@ -25,8 +25,8 @@ type TokenAmountFormBaseProps = {
 function TokenAmountFormBase({
   customData,
   tokenBalance,
+  currencyType,
   tokenBalanceInputPlaceholder = "BTC",
-  currencyType = "bitcoin",
   fieldName = "amount",
   children,
   ...formikProps
@@ -60,7 +60,7 @@ type TokenAmountFormProps = {
 const TokenAmountForm = withFormik<TokenAmountFormProps, TokenAmountFormValues>(
   {
     mapPropsToValues: () => ({
-      amount: "",
+      amount: undefined,
     }),
     validate: async (
       { amount },
@@ -72,7 +72,7 @@ const TokenAmountForm = withFormik<TokenAmountFormProps, TokenAmountFormValues>(
         amount,
         tokenBalance,
         minTokenAmount,
-        currencyType ?? "bitcoin",
+        currencyType,
       )
 
       return getErrorsObj(errors)

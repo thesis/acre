@@ -5,7 +5,9 @@ import TokenAmountForm, {
 } from "../../shared/TokenAmountForm"
 import { useTransactionContext, useWalletContext } from "../../../hooks"
 import { BITCOIN_MIN_AMOUNT } from "../../../constants"
+import { CurrencyType } from "../../../types"
 
+const CURRENCY_TYPE: CurrencyType = "bitcoin"
 const CUSTOM_DATA = {
   buttonText: "Stake",
   btcAmountText: "Amount to be staked",
@@ -14,18 +16,21 @@ const CUSTOM_DATA = {
 
 function StakeForm({ goNext }: ModalStep) {
   const { btcAccount } = useWalletContext()
-  const { setAmount } = useTransactionContext()
+  const { seTokenAmount } = useTransactionContext()
 
   const handleSubmitForm = useCallback(
     (values: TokenAmountFormValues) => {
-      setAmount(values.amount)
-      goNext()
+      if (values.amount) {
+        seTokenAmount({ amount: values.amount, currencyType: CURRENCY_TYPE })
+        goNext()
+      }
     },
-    [goNext, setAmount],
+    [goNext, seTokenAmount],
   )
 
   return (
     <TokenAmountForm
+      currencyType={CURRENCY_TYPE}
       customData={CUSTOM_DATA}
       tokenBalance={btcAccount?.balance.toString() ?? "0"}
       minTokenAmount={BITCOIN_MIN_AMOUNT}

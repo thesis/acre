@@ -85,12 +85,12 @@ function FiatCurrencyBalance({
 }
 
 export type TokenBalanceInputProps = {
-  amount?: string
+  amount?: bigint
   currencyType: CurrencyType
   tokenBalance: string | number
   placeholder?: string
   size?: "lg" | "md"
-  setAmount: (value?: string) => void
+  setAmount: (value?: bigint) => void
 } & InputProps &
   HelperErrorTextProps &
   FiatCurrencyBalanceProps
@@ -109,14 +109,14 @@ export default function TokenBalanceInput({
   fiatCurrencyType,
   ...inputProps
 }: TokenBalanceInputProps) {
-  const valueRef = useRef<string | undefined>(amount)
+  const valueRef = useRef<bigint | undefined>(amount)
   const styles = useMultiStyleConfig("TokenBalanceInput", { size })
 
   const currency = getCurrencyByType(currencyType)
 
   const handleValueChange = (value: string) => {
     valueRef.current = value
-      ? userAmountToBigInt(value, currency.decimals)?.toString()
+      ? userAmountToBigInt(value, currency.decimals)
       : undefined
   }
 
@@ -157,7 +157,7 @@ export default function TokenBalanceInput({
           }}
         />
         <InputRightElement>
-          <Button h="70%" onClick={() => setAmount(tokenBalance.toString())}>
+          <Button h="70%" onClick={() => setAmount(BigInt(tokenBalance))}>
             Max
           </Button>
         </InputRightElement>
