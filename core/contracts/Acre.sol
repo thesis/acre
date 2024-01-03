@@ -2,7 +2,9 @@
 pragma solidity ^0.8.21;
 
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "./Dispatcher.sol";
 
 /// @title Acre
 /// @notice This contract implements the ERC-4626 tokenized vault standard. By
@@ -16,18 +18,40 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 ///      burning of shares (stBTC), which are represented as standard ERC20
 ///      tokens, providing a seamless exchange with tBTC tokens.
 contract Acre is ERC4626, Ownable {
-    // Minimum amount for a single deposit operation.
+    using SafeERC20 for IERC20;
+
+    /// Dispatcher contract that routes tBTC from Acre to a given vault and back.
+    Dispatcher public dispatcher;
+    /// Minimum amount for a single deposit operation.
     uint256 public minimumDepositAmount;
-    // Maximum total amount of tBTC token held by Acre.
+    /// Maximum total amount of tBTC token held by Acre.
     uint256 public maximumTotalAssets;
 
+    /// Emitted when a referral is used.
+    /// @param referral Used for referral program.
+    /// @param assets Amount of tBTC tokens staked.
     event StakeReferral(bytes32 indexed referral, uint256 assets);
+
+    /// Emitted when deposit parameters are updated.
+    /// @param minimumDepositAmount New value of the minimum deposit amount.
+    /// @param maximumTotalAssets New value of the maximum total assets amount.
     event DepositParametersUpdated(
         uint256 minimumDepositAmount,
         uint256 maximumTotalAssets
     );
 
+    /// Emitted when the dispatcher contract is updated.
+    /// @param oldDispatcher Address of the old dispatcher contract.
+    /// @param newDispatcher Address of the new dispatcher contract.
+    event DispatcherUpdated(address oldDispatcher, address newDispatcher);
+
+    /// Reverts if the amount is less than the minimum deposit amount.
+    /// @param amount Amount to check.
+    /// @param min Minimum amount to check 'amount' against.
     error DepositAmountLessThanMin(uint256 amount, uint256 min);
+
+    /// Reverts if the address is zero.
+    error ZeroAddress();
 
     constructor(
         IERC20 tbtc
@@ -57,6 +81,34 @@ contract Acre is ERC4626, Ownable {
             _minimumDepositAmount,
             _maximumTotalAssets
         );
+    }
+
+    // TODO: Implement a governed upgrade process that initiates an update and
+    //       then finalizes it after a delay.
+    /// @notice Updates the dispatcher contract and gives it an unlimited
+    ///         allowance to transfer staked tBTC.
+    /// @param newDispatcher Address of the new dispatcher contract.
+    function updateDispatcher(Dispatcher newDispatcher) external onlyOwner {
+        if (address(newDispatcher) == address(0)) {
+            revert ZeroAddress();
+        }
+
+        address oldDispatcher = address(dispatcher);
+
+        emit DispatcherUpdated(oldDispatcher, address(newDispatcher));
+        dispatcher = newDispatcher;
+
+        // TODO: Once withdrawal/rebalancing is implemented, we need to revoke the
+        // approval of the vaults share tokens from the old dispatcher and approve
+        // a new dispatcher to manage the share tokens.
+
+        if (oldDispatcher != address(0)) {
+            // Setting allowance to zero for the old dispatcher
+            IERC20(asset()).forceApprove(oldDispatcher, 0);
+        }
+
+        // Setting allowance to max for the new dispatcher
+        IERC20(asset()).forceApprove(address(dispatcher), type(uint256).max);
     }
 
     /// @notice Mints shares to receiver by depositing exactly amount of
