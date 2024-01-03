@@ -9,7 +9,7 @@ import "./Acre.sol";
 
 /// @title Dispatcher
 /// @notice Dispatcher is a contract that routes tBTC from Acre (stBTC) to
-///         a given vault and back. Vaults supply yield strategies with TBTC that
+///         yield vaults and back. Vaults supply yield strategies with tBTC that
 ///         generate yield for Bitcoin holders.
 contract Dispatcher is Router, Ownable {
     using SafeERC20 for IERC20;
@@ -19,7 +19,7 @@ contract Dispatcher is Router, Ownable {
         bool authorized;
     }
 
-    /// Depositing tBTC into Acre returns stBTC.
+    /// The main Acre contract holding tBTC deposited by stakers.
     Acre public immutable acre;
     /// tBTC token contract.
     IERC20 public immutable tbtc;
@@ -160,7 +160,7 @@ contract Dispatcher is Router, Ownable {
 
     /// @notice Returns true if the vault is authorized.
     /// @param vault Address of the vault to check.
-    function isVaultAuthorized(address vault) internal view returns (bool) {
+    function isVaultAuthorized(address vault) public view returns (bool) {
         return vaultsInfo[vault].authorized;
     }
 
