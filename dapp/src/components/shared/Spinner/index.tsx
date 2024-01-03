@@ -5,13 +5,5 @@ import {
 } from "@chakra-ui/react"
 
 export default function Spinner({ ...spinnerProps }: ChakraSpinnerProps) {
-  return (
-    <ChakraSpinner
-      thickness="3px"
-      speed="1s"
-      emptyColor="gold.400"
-      color="brand.400"
-      {...spinnerProps}
-    />
-  )
+  return <ChakraSpinner speed="1.3s" {...spinnerProps} />
 }
