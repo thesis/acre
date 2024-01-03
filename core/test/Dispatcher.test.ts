@@ -76,7 +76,7 @@ describe("Dispatcher", () => {
         await dispatcher.connect(governance).authorizeVault(vaultAddress3)
       })
 
-      it("should be able to authorize vaults", async () => {
+      it("should authorize vaults", async () => {
         expect(await dispatcher.vaults(0)).to.equal(vaultAddress1)
         expect(await dispatcher.vaultsInfo(vaultAddress1)).to.be.equal(true)
 
@@ -87,7 +87,7 @@ describe("Dispatcher", () => {
         expect(await dispatcher.vaultsInfo(vaultAddress3)).to.be.equal(true)
       })
 
-      it("should not be able to authorize the same vault twice", async () => {
+      it("should not authorize the same vault twice", async () => {
         await expect(
           dispatcher.connect(governance).authorizeVault(vaultAddress1),
         ).to.be.revertedWithCustomError(dispatcher, "VaultAlreadyAuthorized")
@@ -122,7 +122,7 @@ describe("Dispatcher", () => {
     })
 
     context("when caller is a governance account", () => {
-      it("should be able to deauthorize vaults", async () => {
+      it("should deauthorize vaults", async () => {
         await dispatcher.connect(governance).deauthorizeVault(vaultAddress1)
 
         // Last vault replaced the first vault in the 'vaults' array
@@ -142,7 +142,7 @@ describe("Dispatcher", () => {
         expect(await dispatcher.vaultsInfo(vaultAddress3)).to.be.equal(false)
       })
 
-      it("should be able to deauthorize a vault and authorize it again", async () => {
+      it("should deauthorize a vault and authorize it again", async () => {
         await dispatcher.connect(governance).deauthorizeVault(vaultAddress1)
         expect(await dispatcher.vaultsInfo(vaultAddress1)).to.be.equal(false)
 
@@ -150,7 +150,7 @@ describe("Dispatcher", () => {
         expect(await dispatcher.vaultsInfo(vaultAddress1)).to.be.equal(true)
       })
 
-      it("should not be able to deauthorize a vault that is not authorized", async () => {
+      it("should not deauthorize a vault that is not authorized", async () => {
         await expect(
           dispatcher.connect(governance).deauthorizeVault(vaultAddress4),
         ).to.be.revertedWithCustomError(dispatcher, "VaultUnauthorized")
@@ -215,15 +215,19 @@ describe("Dispatcher", () => {
               .depositToVault(vaultAddress, assetsToAllocate, minSharesOut)
           })
 
-          it("should be able to deposit to an authorized Vault", async () => {
-            expect(await tbtc.balanceOf(vault.getAddress())).to.equal(
-              assetsToAllocate,
+          it("should deposit tBTC to a vault", async () => {
+            await expect(tx).to.changeTokenBalances(
+              tbtc,
+              [acre, vault],
+              [-assetsToAllocate, assetsToAllocate],
             )
           })
 
-          it("should be able to receive Vault's shares", async () => {
-            expect(await vault.balanceOf(acre.getAddress())).to.equal(
-              minSharesOut,
+          it("should mint vault's shares for Acre contract", async () => {
+            await expect(tx).to.changeTokenBalances(
+              vault,
+              [acre],
+              [minSharesOut],
             )
           })
 
@@ -234,17 +238,23 @@ describe("Dispatcher", () => {
           })
         })
 
-        context("when allocation is not successful", () => {
-          const minShares = to1e18(101)
+        context(
+          "when the expected returned shares are less than the actual returned shares",
+          () => {
+            const sharesOut = assetsToAllocate
+            const minShares = to1e18(101)
 
-          it("should emit a MinSharesError event", async () => {
-            await expect(
-              dispatcher
-                .connect(maintainer)
-                .depositToVault(vaultAddress, assetsToAllocate, minShares),
-            ).to.be.revertedWithCustomError(dispatcher, "MinSharesError")
-          })
-        })
+            it("should emit a MinSharesError event", async () => {
+              await expect(
+                dispatcher
+                  .connect(maintainer)
+                  .depositToVault(vaultAddress, assetsToAllocate, minShares),
+              )
+                .to.be.revertedWithCustomError(dispatcher, "MinSharesError")
+                .withArgs(vaultAddress, sharesOut, minShares)
+            })
+          },
+        )
       })
     })
   })
@@ -287,7 +297,7 @@ describe("Dispatcher", () => {
             .updateMaintainer(newMaintainer)
         })
 
-        it("should be able to update the maintainer", async () => {
+        it("should update the maintainer", async () => {
           expect(await dispatcher.maintainer()).to.be.equal(newMaintainer)
         })
 

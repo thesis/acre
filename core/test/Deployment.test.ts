@@ -27,6 +27,12 @@ describe("Deployment", () => {
 
   describe("updateDispatcher", () => {
     context("when a dispatcher has been set", () => {
+      it("should be set to a dispatcher address by the deployment script", async () => {
+        const actualDispatcher = await acre.dispatcher()
+
+        expect(actualDispatcher).to.be.equal(await dispatcher.getAddress())
+      })
+
       it("should approve max amount for the dispatcher", async () => {
         const actualDispatcher = await acre.dispatcher()
         const allowance = await tbtc.allowance(

@@ -23,27 +23,27 @@ async function fixture() {
   const { tbtc, acre, dispatcher } = await deployment()
   const { governance } = await getNamedSigner()
 
-  const [staker1, staker2] = await getUnnamedSigner()
-  const { governance: owner } = await getNamedSigner()
+  const [staker1, staker2, thirdParty] = await getUnnamedSigner()
 
   const amountToMint = to1e18(100000)
   tbtc.mint(staker1, amountToMint)
   tbtc.mint(staker2, amountToMint)
 
-  return { acre, tbtc, owner, staker1, staker2, dispatcher, governance }
+  return { acre, tbtc, staker1, staker2, dispatcher, governance, thirdParty }
 }
 
 describe("Acre", () => {
   let acre: Acre
   let tbtc: TestERC20
-  let owner: HardhatEthersSigner
+  let dispatcher: Dispatcher
+
+  let governance: HardhatEthersSigner
   let staker1: HardhatEthersSigner
   let staker2: HardhatEthersSigner
-  let dispatcher: Dispatcher
-  let governance: HardhatEthersSigner
+  let thirdParty: HardhatEthersSigner
 
   before(async () => {
-    ;({ acre, tbtc, staker1, staker2, owner, dispatcher, governance } =
+    ;({ acre, tbtc, staker1, staker2, dispatcher, governance, thirdParty } =
       await loadFixture(fixture))
   })
 
@@ -374,7 +374,7 @@ describe("Acre", () => {
           )
         })
 
-        it("the staker A should be able to redeem more tokens than before", async () => {
+        it("the staker A should redeem more tokens than before", async () => {
           const shares = await acre.balanceOf(staker1.address)
           const availableAssetsToRedeem = await acre.previewRedeem(shares)
 
@@ -386,7 +386,7 @@ describe("Acre", () => {
           expect(availableAssetsToRedeem).to.be.eq(expectedAssetsToRedeem)
         })
 
-        it("the staker B should be able to redeem more tokens than before", async () => {
+        it("the staker B should redeem more tokens than before", async () => {
           const shares = await acre.balanceOf(staker2.address)
           const availableAssetsToRedeem = await acre.previewRedeem(shares)
 
@@ -440,7 +440,7 @@ describe("Acre", () => {
               expect(shares).to.be.eq(sharesBefore + expectedSharesToMint)
             })
 
-            it("should be able to redeem more tokens than before", async () => {
+            it("should redeem more tokens than before", async () => {
               const shares = await acre.balanceOf(staker1.address)
               const availableToRedeem = await acre.previewRedeem(shares)
 
@@ -518,7 +518,7 @@ describe("Acre", () => {
               expect(await acre.maxDeposit(staker1)).to.eq(0)
             })
 
-            it("should not be able to stake more tokens", async () => {
+            it("should not stake more tokens", async () => {
               await expect(acre.stake(amountToStake, staker1, referral))
                 .to.be.revertedWithCustomError(
                   acre,
@@ -650,13 +650,13 @@ describe("Acre", () => {
       await snapshot.restore()
     })
 
-    context("when is called by owner", () => {
+    context("when is called by governance", () => {
       context("when all parameters are valid", () => {
         let tx: ContractTransactionResponse
 
         beforeEach(async () => {
           tx = await acre
-            .connect(owner)
+            .connect(governance)
             .updateDepositParameters(
               validMinimumDepositAmount,
               validMaximumTotalAssetsAmount,
@@ -683,7 +683,7 @@ describe("Acre", () => {
 
         beforeEach(async () => {
           await acre
-            .connect(owner)
+            .connect(governance)
             .updateDepositParameters(
               newMinimumDepositAmount,
               validMaximumTotalAssetsAmount,
@@ -702,7 +702,7 @@ describe("Acre", () => {
 
         beforeEach(async () => {
           await acre
-            .connect(owner)
+            .connect(governance)
             .updateDepositParameters(
               validMinimumDepositAmount,
               newMaximumTotalAssets,
@@ -715,7 +715,7 @@ describe("Acre", () => {
       })
     })
 
-    context("when it is called by non-owner", () => {
+    context("when it is called by non-governance", () => {
       it("should revert", async () => {
         await expect(
           acre
@@ -789,7 +789,7 @@ describe("Acre", () => {
 
       beforeEach(async () => {
         await acre
-          .connect(owner)
+          .connect(governance)
           .updateDepositParameters(minimumDepositAmount, maximum)
       })
 
@@ -821,15 +821,25 @@ describe("Acre", () => {
   })
 
   describe("updateDispatcher", () => {
-    context("when caller is not an owner", () => {
+    let snapshot: SnapshotRestorer
+
+    before(async () => {
+      snapshot = await takeSnapshot()
+    })
+
+    after(async () => {
+      await snapshot.restore()
+    })
+
+    context("when caller is not governance", () => {
       it("should revert", async () => {
-        await expect(acre.connect(staker1).updateDispatcher(ZeroAddress))
+        await expect(acre.connect(thirdParty).updateDispatcher(ZeroAddress))
           .to.be.revertedWithCustomError(acre, "OwnableUnauthorizedAccount")
-          .withArgs(staker1.address)
+          .withArgs(thirdParty.address)
       })
     })
 
-    context("when caller is an owner", () => {
+    context("when caller is governance", () => {
       context("when a new dispatcher is zero address", () => {
         it("should revert", async () => {
           await expect(
@@ -842,16 +852,19 @@ describe("Acre", () => {
         let newDispatcher: string
         let acreAddress: string
         let dispatcherAddress: string
+        let tx: ContractTransactionResponse
 
         before(async () => {
+          // Dispatcher is set by the deployment scripts. See deployment tests
+          // where initial parameters are checked.
           dispatcherAddress = await dispatcher.getAddress()
           newDispatcher = await ethers.Wallet.createRandom().getAddress()
           acreAddress = await acre.getAddress()
 
-          await acre.connect(governance).updateDispatcher(newDispatcher)
+          tx = await acre.connect(governance).updateDispatcher(newDispatcher)
         })
 
-        it("should be able to update the dispatcher", async () => {
+        it("should update the dispatcher", async () => {
           expect(await acre.dispatcher()).to.be.equal(newDispatcher)
         })
 
@@ -863,6 +876,12 @@ describe("Acre", () => {
         it("should approve max amount for the new dispatcher", async () => {
           const allowance = await tbtc.allowance(acreAddress, newDispatcher)
           expect(allowance).to.be.equal(MaxUint256)
+        })
+
+        it("should emit DispatcherUpdated event", async () => {
+          await expect(tx)
+            .to.emit(acre, "DispatcherUpdated")
+            .withArgs(dispatcherAddress, newDispatcher)
         })
       })
     })
@@ -942,7 +961,7 @@ describe("Acre", () => {
 
       beforeEach(async () => {
         await acre
-          .connect(owner)
+          .connect(governance)
           .updateDepositParameters(minimumDepositAmount, maximum)
       })
 
