@@ -70,6 +70,30 @@ contract TbtcDepositor {
     // TODO: Decide if leave or remove?
     uint64 public minimumFundingTransactionAmount;
 
+    /// @notice Emitted when a stake request is initialized.
+    /// @dev Deposit details can be fetched from {{ Bridge.DepositRevealed }}
+    ///      event emitted in the same transaction.
+    /// @param depositKey Deposit identifier.
+    /// @param caller Address that initialized the stake request.
+    /// @param receiver The address to which the stBTC shares will be minted.
+    /// @return referral Data used for referral program.
+    event StakeInitialized(
+        uint256 indexed depositKey,
+        address indexed caller,
+        address receiver,
+        uint16 referral
+    );
+
+    /// @notice Emitted when a stake request is finalized.
+    /// @dev Deposit details can be fetched from {{ ERC4626.Deposit }}
+    ///      event emitted in the same transaction.
+    /// @param depositKey Deposit identifier.
+    /// @param caller Address that finalized the stake request.
+    event StakeFinalized(
+        uint256 indexed depositKey,
+        address indexed caller
+    );
+
     /// @dev Receiver address is zero.
     error ReceiverIsZeroAddress();
     /// @dev Attempted to initiate a stake request that was already initialized.
@@ -144,11 +168,14 @@ contract TbtcDepositor {
             )
             .hash256View();
 
+        uint256 depositKey = calculateDepositKey(fundingTxHash, reveal.fundingOutputIndex);
         StakeRequest storage request = stakeRequests[
-            calculateDepositKey(fundingTxHash, reveal.fundingOutputIndex)
+            depositKey
         ];
 
         if (request.requestedAt > 0) revert StakeRequestAlreadyInProgress();
+
+        emit StakeInitialized(depositKey, msg.sender, receiver, referral);
 
         // solhint-disable-next-line not-rely-on-time
         request.requestedAt = uint64(block.timestamp);
@@ -251,6 +278,8 @@ contract TbtcDepositor {
         // Request.
         bytes32 extraData = bridgeDepositRequest.extraData;
         (address receiver, uint16 referral) = decodeExtraData(extraData);
+
+        emit StakeFinalized(depositKey, msg.sender);
 
         // Stake tBTC in Acre.
         IERC20(acre.asset()).safeIncreaseAllowance(
