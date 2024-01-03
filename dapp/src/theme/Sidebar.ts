@@ -18,6 +18,7 @@ const baseStyleSidebarContainer = defineStyle({
 const baseStyleSidebar = defineStyle({
   p: 4,
   height: "100%",
+  w: "19.75rem",
   bg: "gold.200",
   borderTop: "2px",
   borderLeft: "2px",
