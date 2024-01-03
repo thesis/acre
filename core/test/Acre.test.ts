@@ -895,6 +895,8 @@ describe("Acre", () => {
   describe("deposit", () => {
     beforeAfterEachSnapshotWrapper()
 
+    const receiver = ethers.Wallet.createRandom()
+
     let amountToDeposit: bigint
     let minimumDepositAmount: bigint
 
@@ -908,7 +910,7 @@ describe("Acre", () => {
       })
 
       it("should revert", async () => {
-        await expect(acre.deposit(amountToDeposit, staker1.address))
+        await expect(acre.deposit(amountToDeposit, receiver.address))
           .to.be.revertedWithCustomError(acre, "DepositAmountLessThanMin")
           .withArgs(amountToDeposit, minimumDepositAmount)
       })
@@ -925,7 +927,9 @@ describe("Acre", () => {
           expectedReceivedShares = amountToDeposit
 
           await tbtc.approve(await acre.getAddress(), amountToDeposit)
-          tx = await acre.deposit(amountToDeposit, staker1.address)
+          tx = await acre
+            .connect(staker1)
+            .deposit(amountToDeposit, receiver.address)
         })
 
         it("should emit Deposit event", () => {
@@ -933,7 +937,7 @@ describe("Acre", () => {
             // Caller.
             staker1.address,
             // Receiver.
-            staker1.address,
+            receiver.address,
             // Staked tokens.
             amountToDeposit,
             // Received shares.
@@ -944,7 +948,7 @@ describe("Acre", () => {
         it("should mint stBTC tokens", async () => {
           await expect(tx).to.changeTokenBalances(
             acre,
-            [staker1.address],
+            [receiver.address],
             [expectedReceivedShares],
           )
         })
