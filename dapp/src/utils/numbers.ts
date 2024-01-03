@@ -1,5 +1,15 @@
-export const toLocaleString = (value: number): string =>
-  value.toLocaleString("default", { maximumFractionDigits: 2 })
+export const numberToLocaleString = (
+  value: string | number,
+  desiredDecimals = 2,
+): string => {
+  const number = typeof value === "number" ? value : parseFloat(value)
+
+  if (number === 0) return `0.${"0".repeat(desiredDecimals)}`
+
+  return number.toLocaleString("default", {
+    maximumFractionDigits: desiredDecimals,
+  })
+}
 
 /**
  * Convert a fixed point bigint with precision `fixedPointDecimals` to a
@@ -58,10 +68,49 @@ export const formatTokenAmount = (
     return `<0.${"0".repeat(desiredDecimals - 1)}1`
   }
 
-  return toLocaleString(formattedAmount)
+  return numberToLocaleString(formattedAmount)
 }
 
 export const formatSatoshiAmount = (
   amount: number | string,
   desiredDecimals = 2,
 ) => formatTokenAmount(amount, 8, desiredDecimals)
+
+/**
+ * Converts a fixed point number with a bigint amount and a decimals field
+ * indicating the orders of magnitude in `amount` behind the decimal point into
+ * a string in US decimal format (no thousands separators, . for the decimal
+ * separator).
+ *
+ * Used in cases where precision is critical.
+ *
+ * This function is based on the solution used by the Taho extension.
+ * More info: https://github.com/tahowallet/extension/blob/main/background/lib/fixed-point.ts#L172-L214
+ */
+export function fixedPointNumberToString(
+  amount: bigint,
+  decimals: number,
+  trimTrailingZeros = true,
+): string {
+  const undecimaledAmount = amount.toString()
+  const preDecimalLength = undecimaledAmount.length - decimals
+
+  const preDecimalCharacters =
+    preDecimalLength > 0
+      ? undecimaledAmount.substring(0, preDecimalLength)
+      : "0"
+  const postDecimalCharacters =
+    "0".repeat(Math.max(-preDecimalLength, 0)) +
+    undecimaledAmount.substring(preDecimalLength)
+
+  const trimmedPostDecimalCharacters = trimTrailingZeros
+    ? postDecimalCharacters.replace(/0*$/, "")
+    : postDecimalCharacters
+
+  const decimalString =
+    trimmedPostDecimalCharacters.length > 0
+      ? `.${trimmedPostDecimalCharacters}`
+      : ""
+
+  return `${preDecimalCharacters}${decimalString}`
+}
