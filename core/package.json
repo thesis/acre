@@ -14,9 +14,10 @@
     "export.json"
   ],
   "scripts": {
-    "clean": "hardhat clean && rm -rf cache/ export/ export.json",
+    "clean": "hardhat clean && rm -rf cache/ export/ gen/ export.json",
     "build": "hardhat compile",
     "deploy": "hardhat deploy --export export.json",
+    "docs": "hardhat docgen",
     "format": "npm run lint:js && npm run lint:sol && npm run lint:config",
     "format:fix": "npm run lint:js:fix && npm run lint:sol:fix && npm run lint:config:fix",
     "lint:js": "eslint .",
@@ -53,6 +54,7 @@
     "solhint": "^4.0.0",
     "solhint-config-thesis": "github:thesis/solhint-config",
     "solidity-coverage": "^0.8.5",
+    "solidity-docgen": "0.6.0-beta.36",
     "ts-node": "^10.9.1",
     "typechain": "^8.3.2",
     "typescript": "^5.3.2"

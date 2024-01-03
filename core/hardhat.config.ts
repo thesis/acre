@@ -3,6 +3,7 @@ import type { HardhatUserConfig } from "hardhat/config"
 import "@nomicfoundation/hardhat-toolbox"
 import "hardhat-contract-sizer"
 import "hardhat-deploy"
+import "solidity-docgen"
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -85,6 +86,13 @@ const config: HardhatUserConfig = {
 
   typechain: {
     outDir: "typechain",
+  },
+
+  docgen: {
+    outputDir: "./gen/docs",
+    pages: "files",
+    exclude: ["external/", "test/"],
+    collapseNewlines: true,
   },
 }
 

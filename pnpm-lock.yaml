@@ -99,6 +99,9 @@ importers:
       solidity-coverage:
         specifier: ^0.8.5
         version: 0.8.5(hardhat@2.19.1)
+      solidity-docgen:
+        specifier: 0.6.0-beta.36
+        version: 0.6.0-beta.36(hardhat@2.19.1)
       ts-node:
         specifier: ^10.9.1
         version: 10.9.1(@types/node@20.9.4)(typescript@5.3.2)
@@ -14075,6 +14078,16 @@ packages:
       web3-utils: 1.10.3
     transitivePeerDependencies:
       - supports-color
+    dev: true
+
+  /solidity-docgen@0.6.0-beta.36(hardhat@2.19.1):
+    resolution: {integrity: sha512-f/I5G2iJgU1h0XrrjRD0hHMr7C10u276vYvm//rw1TzFcYQ4xTOyAoi9oNAHRU0JU4mY9eTuxdVc2zahdMuhaQ==}
+    peerDependencies:
+      hardhat: ^2.8.0
+    dependencies:
+      handlebars: 4.7.8
+      hardhat: 2.19.1(ts-node@10.9.1)(typescript@5.3.2)
+      solidity-ast: 0.4.53
     dev: true
 
   /source-list-map@2.0.1:
