@@ -4,7 +4,6 @@ import { isNonZeroAddress } from "../helpers/address"
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { getNamedAccounts, deployments } = hre
-  // eslint-disable-next-line @typescript-eslint/unbound-method
   const { log } = deployments
   const { deployer } = await getNamedAccounts()
 
