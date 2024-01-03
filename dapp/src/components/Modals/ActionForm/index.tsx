@@ -12,18 +12,14 @@ import StakeForm from "../Staking/StakeForm"
 
 const TABS = ["stake", "unstake"] as const
 
-type FormType = (typeof TABS)[number]
+type Action = (typeof TABS)[number]
 
-type ActionFormProps = { defaultForm: FormType } & ModalStep
+type ActionFormProps = { action: Action } & ModalStep
 
-function ActionForm({ defaultForm, goNext }: ActionFormProps) {
+function ActionForm({ action, goNext }: ActionFormProps) {
   return (
     <ModalBody>
-      <Tabs
-        w="100%"
-        variant="underline"
-        defaultIndex={TABS.indexOf(defaultForm)}
-      >
+      <Tabs w="100%" variant="underline" defaultIndex={TABS.indexOf(action)}>
         <TabList>
           {TABS.map((tab) => (
             <Tab key={tab} w="50%">
