@@ -93,12 +93,24 @@ const sizeXl = definePartsStyle({
   },
 })
 
+const size4Xl = definePartsStyle({
+  balance: {
+    fontSize: "4xl",
+    lineHeight: "4xl",
+  },
+  symbol: {
+    fontSize: "4xl",
+    lineHeight: "4xl",
+  },
+})
+
 const sizes = {
   xs: sizeXs,
   sm: sizeSm,
   md: sizeMd,
   lg: sizeLg,
   xl: sizeXl,
+  "4xl": size4Xl,
 }
 
 const CurrencyBalance = defineMultiStyleConfig({ baseStyle, variants, sizes })

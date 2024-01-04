@@ -29,8 +29,7 @@ export default function Success() {
               from={{
                 currencyType: "bitcoin",
                 amount: "2398567898",
-                fontSize: "4xl",
-                lineHeight: "4xl",
+                size: "4xl",
               }}
               to={{
                 currencyType: "usd",
