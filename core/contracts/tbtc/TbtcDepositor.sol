@@ -2,6 +2,7 @@
 pragma solidity ^0.8.21;
 
 import {BTCUtils} from "@keep-network/bitcoin-spv-sol/contracts/BTCUtils.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
@@ -33,7 +34,7 @@ import {Acre} from "../Acre.sol";
 ///         After tBTC is minted to the Depositor, on the stake finalization
 ///         tBTC is staked in Acre contract and stBTC shares are emitted to the
 ///         receiver pointed by the staker.
-contract TbtcDepositor {
+contract TbtcDepositor is Ownable {
     using BTCUtils for bytes;
     using SafeERC20 for IERC20;
 
@@ -89,10 +90,7 @@ contract TbtcDepositor {
     ///      event emitted in the same transaction.
     /// @param depositKey Deposit identifier.
     /// @param caller Address that finalized the stake request.
-    event StakeFinalized(
-        uint256 indexed depositKey,
-        address indexed caller
-    );
+    event StakeFinalized(uint256 indexed depositKey, address indexed caller);
 
     /// @dev Receiver address is zero.
     error ReceiverIsZeroAddress();
@@ -114,7 +112,11 @@ contract TbtcDepositor {
     /// @param _bridge tBTC Bridge contract instance.
     /// @param _tbtcVault tBTC Vault contract instance.
     /// @param _acre Acre contract instance.
-    constructor(IBridge _bridge, ITBTCVault _tbtcVault, Acre _acre) {
+    constructor(
+        IBridge _bridge,
+        ITBTCVault _tbtcVault,
+        Acre _acre
+    ) Ownable(msg.sender) {
         bridge = _bridge;
         tbtcVault = _tbtcVault;
         acre = _acre;
@@ -168,10 +170,11 @@ contract TbtcDepositor {
             )
             .hash256View();
 
-        uint256 depositKey = calculateDepositKey(fundingTxHash, reveal.fundingOutputIndex);
-        StakeRequest storage request = stakeRequests[
-            depositKey
-        ];
+        uint256 depositKey = calculateDepositKey(
+            fundingTxHash,
+            reveal.fundingOutputIndex
+        );
+        StakeRequest storage request = stakeRequests[depositKey];
 
         if (request.requestedAt > 0) revert StakeRequestAlreadyInProgress();
 
