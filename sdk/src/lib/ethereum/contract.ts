@@ -6,15 +6,19 @@ import {
   Contract as EthersContract,
   getAddress,
   Signer,
-  Provider,
+  VoidSigner,
 } from "ethers"
 import { EthereumAddress } from "./address"
 
-export type EthereumSigner = Signer | Provider
+/**
+ * Use `VoidSigner` from `ethers` if you want to initialize the Ethereum Acre
+ * SDK in readonly mode.
+ */
+export type EthereumSigner = Signer | VoidSigner
 
 export interface EthersContractConfig
   extends Omit<_EthersContractConfig, "signerOrProvider"> {
-  signerOrProvider: EthereumSigner
+  signer: EthereumSigner
 }
 
 export class EthersContractWrapper<T extends EthersContract> {
@@ -43,7 +47,7 @@ export class EthersContractWrapper<T extends EthersContract> {
     this.instance = new EthersContract(
       contractAddress,
       `${JSON.stringify(deployment.abi)}`,
-      config.signerOrProvider,
+      config.signer,
     ) as T
 
     this.#address = contractAddress
