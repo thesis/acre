@@ -1,14 +1,7 @@
 import React from "react"
-import {
-  Button,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  StepNumber,
-} from "@chakra-ui/react"
-import { ModalStep } from "../../../contexts"
-import StepperBase from "../../shared/StepperBase"
-import { TextLg, TextMd } from "../../shared/Typography"
+import { StepNumber } from "@chakra-ui/react"
+import { TextLg, TextMd } from "../../../shared/Typography"
+import StepperBase from "../../../shared/StepperBase"
 
 function Title({ children }: { children: React.ReactNode }) {
   return <TextLg fontWeight="bold">{children}</TextLg>
@@ -40,25 +33,15 @@ const STEPS = [
   },
 ]
 
-export default function Overview({ goNext }: ModalStep) {
+export default function StakingSteps() {
   return (
-    <>
-      <ModalHeader>Staking steps overview</ModalHeader>
-      <ModalBody textAlign="start" py={6} mx={3}>
-        <StepperBase
-          index={-1}
-          height={64}
-          size="sm"
-          orientation="vertical"
-          complete={<StepNumber />}
-          steps={STEPS}
-        />
-      </ModalBody>
-      <ModalFooter>
-        <Button size="lg" width="100%" onClick={goNext}>
-          Continue
-        </Button>
-      </ModalFooter>
-    </>
+    <StepperBase
+      index={-1}
+      height={64}
+      size="sm"
+      orientation="vertical"
+      complete={<StepNumber />}
+      steps={STEPS}
+    />
   )
 }
