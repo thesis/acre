@@ -1,7 +1,7 @@
 import { TBTC } from "@keep-network/tbtc-v2.ts"
 import { AcreContracts } from "../../lib/contracts"
 import { ChainMessages } from "../../lib/messages"
-import { Staking } from "./staking"
+import { StakeInitialization } from "./stake-initialization"
 
 class StakingModule {
   readonly #contracts: AcreContracts
@@ -32,7 +32,7 @@ class StakingModule {
       bitcoinRecoveryAddress,
     )
 
-    return new Staking(
+    return new StakeInitialization(
       this.#contracts,
       signedMessage,
       deposit,

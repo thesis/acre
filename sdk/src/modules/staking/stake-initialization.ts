@@ -8,7 +8,7 @@ import { AcreContracts } from "../../lib/contracts"
 import { ChainSignedMessage } from "../../lib/messages"
 import { Hex } from "../../lib/utils"
 
-class Staking {
+class StakeInitialization {
   readonly #contracts: AcreContracts
 
   readonly #message: ChainSignedMessage
@@ -78,4 +78,4 @@ class Staking {
 }
 
 // eslint-disable-next-line import/prefer-default-export
-export { Staking }
+export { StakeInitialization }
