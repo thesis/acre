@@ -1,12 +1,12 @@
-import { Signer } from "ethers"
-import { ChainMessages, ChainSignedMessage } from "../../messages"
 import { EthereumSignedMessage } from "./signed-message"
+import { EthereumSigner } from "../contract"
+import { ChainMessages, ChainSignedMessage } from "../../messages"
 import { Hex } from "../../utils"
 
 class EthereumMessages implements ChainMessages {
-  readonly #signer: Signer
+  readonly #signer: EthereumSigner
 
-  constructor(_signer: Signer) {
+  constructor(_signer: EthereumSigner) {
     this.#signer = _signer
   }
 

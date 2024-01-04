@@ -1,7 +1,7 @@
 import { TBTC } from "@keep-network/tbtc-v2.ts"
 import { AcreContracts } from "./lib/contracts"
 import { ChainMessages } from "./lib/messages"
-import { EthereumMessages, Signer } from "./lib/ethereum"
+import { EthereumMessages, EthereumSigner } from "./lib/ethereum"
 import { StakingModule } from "./modules/staking"
 
 class Acre {
@@ -24,8 +24,10 @@ class Acre {
     this.staking = new StakingModule(this.contracts, this.#messages, this.#tbtc)
   }
 
-  static async initializeEthereum(signer: Signer): Promise<Acre> {
+  static async initializeEthereum(signer: EthereumSigner): Promise<Acre> {
     // TODO: create tbtc for correct chain based on the config.
+    // @ts-expect-error The tBTC sdk uses ethers in v5 we are using v6 so the
+    // typescript throws error here.
     const tbtc = await TBTC.initializeMainnet(signer)
     // TODO: Create Ethereum contracts.
     const contracts = {} as AcreContracts
