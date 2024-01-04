@@ -5,13 +5,13 @@ import {
   extractBitcoinRawTxVectors,
 } from "@keep-network/tbtc-v2.ts"
 import { AcreContracts } from "../../lib/contracts"
-import { SignedMessage } from "../../lib/messages"
+import { ChainSignedMessage } from "../../lib/messages"
 import { Hex } from "../../lib/utils"
 
 class Staking {
   readonly #contracts: AcreContracts
 
-  readonly #message: SignedMessage
+  readonly #message: ChainSignedMessage
 
   readonly #deposit: Deposit
 
@@ -19,7 +19,7 @@ class Staking {
 
   constructor(
     _contracts: AcreContracts,
-    _message: SignedMessage,
+    _message: ChainSignedMessage,
     _deposit: Deposit,
     _bitcoinClient: BitcoinClient,
   ) {
@@ -34,11 +34,18 @@ class Staking {
   }
 
   async stake(receiver: ChainIdentifier): Promise<Hex> {
+    const addressFromSignature = this.#message.verify()
+
+    if (!receiver.equals(addressFromSignature)) {
+      throw new Error("Invalid receiver address")
+    }
+
     const utxos = await this.#deposit.detectFunding()
 
     if (utxos.length === 0) {
       throw new Error("Deposit not found yet")
     }
+
     // Take the most recent one.
     // TODO: Add support to pick exact funding tx.
     const { transactionHash, outputIndex } = utxos[0]
@@ -65,8 +72,6 @@ class Staking {
     return this.#contracts.depositor.initializeStake(
       depositFundingTx,
       revealDepositInfo,
-      // TODO: We can additionally check whether the receiver is equal to the
-      // address recovered from a signature.
       receiver,
       referral,
     )
