@@ -26,8 +26,13 @@ contract Acre is ERC4626, Ownable {
     /// Address of the treasury wallet, where fees should be transferred to.
     address public treasury;
 
-    /// Minimum amount for a single deposit operation.
+    /// Minimum amount for a single deposit operation. The value should be set
+    /// low enough so the deposits routed through TbtcDepositor contract won't
+    /// be rejected. It means that minimumDepositAmount should be lower than
+    /// tBTC protocol's depositDustThreshold reduced by all the minting fees taken
+    /// before depositing in the Acre contract.
     uint256 public minimumDepositAmount;
+
     /// Maximum total amount of tBTC token held by Acre.
     uint256 public maximumTotalAssets;
 

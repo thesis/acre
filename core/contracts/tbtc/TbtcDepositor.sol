@@ -77,16 +77,13 @@ contract TbtcDepositor is Ownable {
     ///       `1/50 = 0.02 = 2%`.
     uint64 public depositorFeeDivisor;
 
-    // TODO: Decide if leave or remove?
-    uint64 public minimumFundingTransactionAmount;
-
     /// @notice Emitted when a stake request is initialized.
     /// @dev Deposit details can be fetched from {{ Bridge.DepositRevealed }}
     ///      event emitted in the same transaction.
     /// @param depositKey Deposit identifier.
     /// @param caller Address that initialized the stake request.
     /// @param receiver The address to which the stBTC shares will be minted.
-    /// @return referral Data used for referral program.
+    /// @param referral Data used for referral program.
     event StakeInitialized(
         uint256 indexed depositKey,
         address indexed caller,
@@ -107,15 +104,20 @@ contract TbtcDepositor is Ownable {
 
     /// @dev Receiver address is zero.
     error ReceiverIsZeroAddress();
+
     /// @dev Attempted to initiate a stake request that was already initialized.
     error StakeRequestAlreadyInProgress();
+
     /// @dev Attempted to finalize a stake request that has not been initialized.
     error StakeRequestNotInitialized();
+
     /// @dev Attempted to finalize a stake request that was already finalized.
     error StakeRequestAlreadyFinalized();
+
     /// @dev Depositor address stored in the Deposit Request in the tBTC Bridge
     ///      contract doesn't match the current contract address.
     error UnexpectedDepositor(address bridgeDepositRequestDepositor);
+
     /// @dev Deposit was not completed on the tBTC side and tBTC was not minted
     ///      to the depositor contract. It is thrown when the deposit neither has
     ///      been optimistically minted nor swept.
