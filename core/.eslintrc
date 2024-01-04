@@ -13,5 +13,19 @@
         ]
       }
     ]
-  }
+  },
+  "overrides": [
+    {
+      "files": ["deploy/*.ts"],
+      "rules": {
+        "@typescript-eslint/unbound-method": "off"
+      }
+    },
+    {
+      "files": ["*.test.ts"],
+      "rules": {
+        "@typescript-eslint/no-unused-expressions": "off"
+      }
+    }
+  ]
 }

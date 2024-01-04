@@ -3,4 +3,5 @@ build/
 cache/
 export.json
 export/
+gen/
 typechain/

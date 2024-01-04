@@ -3,6 +3,7 @@ import type { HardhatUserConfig } from "hardhat/config"
 import "@nomicfoundation/hardhat-toolbox"
 import "hardhat-contract-sizer"
 import "hardhat-deploy"
+import "solidity-docgen"
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -67,8 +68,13 @@ const config: HardhatUserConfig = {
     },
     governance: {
       default: 2,
-      sepolia: 0,
-      mainnet: "",
+      sepolia: 0, // TODO: updated to the actual address once available
+      mainnet: "", // TODO: updated to the actual address once available
+    },
+    maintainer: {
+      default: 3,
+      sepolia: 0, // TODO: updated to the actual address once available
+      mainnet: "", // TODO: updated to the actual address once available
     },
   },
 
@@ -85,6 +91,13 @@ const config: HardhatUserConfig = {
 
   typechain: {
     outDir: "typechain",
+  },
+
+  docgen: {
+    outputDir: "./gen/docs",
+    pages: "files",
+    exclude: ["external/", "test/"],
+    collapseNewlines: true,
   },
 }
 
