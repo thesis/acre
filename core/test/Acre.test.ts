@@ -9,38 +9,43 @@ import {
   ZeroAddress,
   encodeBytes32String,
 } from "ethers"
+import { ethers } from "hardhat"
 
 import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
 import type { SnapshotRestorer } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 import { deployment } from "./helpers/context"
-import { getNamedSigner, getUnnamedSigner } from "./helpers/signer"
+import { getUnnamedSigner, getNamedSigner } from "./helpers/signer"
 
 import { to1e18 } from "./utils"
 
-import type { Acre, TestERC20 } from "../typechain"
+import type { Acre, TestERC20, Dispatcher } from "../typechain"
 
 async function fixture() {
-  const { tbtc, acre } = await deployment()
+  const { tbtc, acre, dispatcher } = await deployment()
+  const { governance } = await getNamedSigner()
 
-  const [staker1, staker2] = await getUnnamedSigner()
-  const { governance: owner } = await getNamedSigner()
+  const [staker1, staker2, thirdParty] = await getUnnamedSigner()
 
   const amountToMint = to1e18(100000)
-  tbtc.mint(staker1, amountToMint)
-  tbtc.mint(staker2, amountToMint)
+  await tbtc.mint(staker1, amountToMint)
+  await tbtc.mint(staker2, amountToMint)
 
-  return { acre, tbtc, owner, staker1, staker2 }
+  return { acre, tbtc, staker1, staker2, dispatcher, governance, thirdParty }
 }
 
 describe("Acre", () => {
   let acre: Acre
   let tbtc: TestERC20
-  let owner: HardhatEthersSigner
+  let dispatcher: Dispatcher
+
+  let governance: HardhatEthersSigner
   let staker1: HardhatEthersSigner
   let staker2: HardhatEthersSigner
+  let thirdParty: HardhatEthersSigner
 
   before(async () => {
-    ;({ acre, tbtc, staker1, staker2, owner } = await loadFixture(fixture))
+    ;({ acre, tbtc, staker1, staker2, dispatcher, governance, thirdParty } =
+      await loadFixture(fixture))
   })
 
   describe("stake", () => {
@@ -81,8 +86,8 @@ describe("Acre", () => {
             .stake(amountToStake, receiver.address, referral)
         })
 
-        it("should emit Deposit event", () => {
-          expect(tx).to.emit(acre, "Deposit").withArgs(
+        it("should emit Deposit event", async () => {
+          await expect(tx).to.emit(acre, "Deposit").withArgs(
             // Caller.
             tbtcHolder.address,
             // Receiver.
@@ -94,8 +99,8 @@ describe("Acre", () => {
           )
         })
 
-        it("should emit StakeReferral event", () => {
-          expect(tx)
+        it("should emit StakeReferral event", async () => {
+          await expect(tx)
             .to.emit(acre, "StakeReferral")
             .withArgs(referral, amountToStake)
         })
@@ -370,7 +375,7 @@ describe("Acre", () => {
           )
         })
 
-        it("the staker A should be able to redeem more tokens than before", async () => {
+        it("the staker A should redeem more tokens than before", async () => {
           const shares = await acre.balanceOf(staker1.address)
           const availableAssetsToRedeem = await acre.previewRedeem(shares)
 
@@ -382,7 +387,7 @@ describe("Acre", () => {
           expect(availableAssetsToRedeem).to.be.eq(expectedAssetsToRedeem)
         })
 
-        it("the staker B should be able to redeem more tokens than before", async () => {
+        it("the staker B should redeem more tokens than before", async () => {
           const shares = await acre.balanceOf(staker2.address)
           const availableAssetsToRedeem = await acre.previewRedeem(shares)
 
@@ -436,7 +441,7 @@ describe("Acre", () => {
               expect(shares).to.be.eq(sharesBefore + expectedSharesToMint)
             })
 
-            it("should be able to redeem more tokens than before", async () => {
+            it("should redeem more tokens than before", async () => {
               const shares = await acre.balanceOf(staker1.address)
               const availableToRedeem = await acre.previewRedeem(shares)
 
@@ -514,7 +519,7 @@ describe("Acre", () => {
               expect(await acre.maxDeposit(staker1)).to.eq(0)
             })
 
-            it("should not be able to stake more tokens", async () => {
+            it("should not stake more tokens", async () => {
               await expect(acre.stake(amountToStake, staker1, referral))
                 .to.be.revertedWithCustomError(
                   acre,
@@ -554,8 +559,8 @@ describe("Acre", () => {
         tx = await acre.connect(staker1).mint(sharesToMint, staker1.address)
       })
 
-      it("should emit Deposit event", () => {
-        expect(tx).to.emit(acre, "Deposit").withArgs(
+      it("should emit Deposit event", async () => {
+        await expect(tx).to.emit(acre, "Deposit").withArgs(
           // Caller.
           staker1.address,
           // Receiver.
@@ -646,13 +651,13 @@ describe("Acre", () => {
       await snapshot.restore()
     })
 
-    context("when is called by owner", () => {
+    context("when is called by governance", () => {
       context("when all parameters are valid", () => {
         let tx: ContractTransactionResponse
 
         beforeEach(async () => {
           tx = await acre
-            .connect(owner)
+            .connect(governance)
             .updateDepositParameters(
               validMinimumDepositAmount,
               validMaximumTotalAssetsAmount,
@@ -679,7 +684,7 @@ describe("Acre", () => {
 
         beforeEach(async () => {
           await acre
-            .connect(owner)
+            .connect(governance)
             .updateDepositParameters(
               newMinimumDepositAmount,
               validMaximumTotalAssetsAmount,
@@ -698,7 +703,7 @@ describe("Acre", () => {
 
         beforeEach(async () => {
           await acre
-            .connect(owner)
+            .connect(governance)
             .updateDepositParameters(
               validMinimumDepositAmount,
               newMaximumTotalAssets,
@@ -711,7 +716,7 @@ describe("Acre", () => {
       })
     })
 
-    context("when it is called by non-owner", () => {
+    context("when it is called by non-governance", () => {
       it("should revert", async () => {
         await expect(
           acre
@@ -785,7 +790,7 @@ describe("Acre", () => {
 
       beforeEach(async () => {
         await acre
-          .connect(owner)
+          .connect(governance)
           .updateDepositParameters(minimumDepositAmount, maximum)
       })
 
@@ -811,6 +816,73 @@ describe("Acre", () => {
 
         it("should return the maximum value", async () => {
           expect(await acre.maxDeposit(staker1.address)).to.be.eq(maximum)
+        })
+      })
+    })
+  })
+
+  describe("updateDispatcher", () => {
+    let snapshot: SnapshotRestorer
+
+    before(async () => {
+      snapshot = await takeSnapshot()
+    })
+
+    after(async () => {
+      await snapshot.restore()
+    })
+
+    context("when caller is not governance", () => {
+      it("should revert", async () => {
+        await expect(acre.connect(thirdParty).updateDispatcher(ZeroAddress))
+          .to.be.revertedWithCustomError(acre, "OwnableUnauthorizedAccount")
+          .withArgs(thirdParty.address)
+      })
+    })
+
+    context("when caller is governance", () => {
+      context("when a new dispatcher is zero address", () => {
+        it("should revert", async () => {
+          await expect(
+            acre.connect(governance).updateDispatcher(ZeroAddress),
+          ).to.be.revertedWithCustomError(acre, "ZeroAddress")
+        })
+      })
+
+      context("when a new dispatcher is non-zero address", () => {
+        let newDispatcher: string
+        let acreAddress: string
+        let dispatcherAddress: string
+        let tx: ContractTransactionResponse
+
+        before(async () => {
+          // Dispatcher is set by the deployment scripts. See deployment tests
+          // where initial parameters are checked.
+          dispatcherAddress = await dispatcher.getAddress()
+          newDispatcher = await ethers.Wallet.createRandom().getAddress()
+          acreAddress = await acre.getAddress()
+
+          tx = await acre.connect(governance).updateDispatcher(newDispatcher)
+        })
+
+        it("should update the dispatcher", async () => {
+          expect(await acre.dispatcher()).to.be.equal(newDispatcher)
+        })
+
+        it("should reset approval amount for the old dispatcher", async () => {
+          const allowance = await tbtc.allowance(acreAddress, dispatcherAddress)
+          expect(allowance).to.be.equal(0)
+        })
+
+        it("should approve max amount for the new dispatcher", async () => {
+          const allowance = await tbtc.allowance(acreAddress, newDispatcher)
+          expect(allowance).to.be.equal(MaxUint256)
+        })
+
+        it("should emit DispatcherUpdated event", async () => {
+          await expect(tx)
+            .to.emit(acre, "DispatcherUpdated")
+            .withArgs(dispatcherAddress, newDispatcher)
         })
       })
     })
@@ -890,7 +962,7 @@ describe("Acre", () => {
 
       beforeEach(async () => {
         await acre
-          .connect(owner)
+          .connect(governance)
           .updateDepositParameters(minimumDepositAmount, maximum)
       })
 
@@ -961,8 +1033,8 @@ describe("Acre", () => {
           tx = await acre.deposit(amountToDeposit, staker1.address)
         })
 
-        it("should emit Deposit event", () => {
-          expect(tx).to.emit(acre, "Deposit").withArgs(
+        it("should emit Deposit event", async () => {
+          await expect(tx).to.emit(acre, "Deposit").withArgs(
             // Caller.
             staker1.address,
             // Receiver.

@@ -46,8 +46,8 @@ importers:
         specifier: ^2.4.1
         version: 2.4.1(@nomicfoundation/hardhat-ethers@3.0.5)(@nomicfoundation/hardhat-verify@2.0.1)(ethers@6.8.1)(hardhat@2.19.1)
       '@thesis-co/eslint-config':
-        specifier: ^0.6.1
-        version: 0.6.1(eslint@8.54.0)(prettier@3.1.0)(typescript@5.3.2)
+        specifier: github:thesis/eslint-config#7b9bc8c
+        version: github.com/thesis/eslint-config/7b9bc8c(eslint@8.54.0)(prettier@3.1.0)(typescript@5.3.2)
       '@typechain/ethers-v6':
         specifier: ^0.5.1
         version: 0.5.1(ethers@6.8.1)(typechain@8.3.2)(typescript@5.3.2)
@@ -99,6 +99,9 @@ importers:
       solidity-coverage:
         specifier: ^0.8.5
         version: 0.8.5(hardhat@2.19.1)
+      solidity-docgen:
+        specifier: 0.6.0-beta.36
+        version: 0.6.0-beta.36(hardhat@2.19.1)
       ts-node:
         specifier: ^10.9.1
         version: 10.9.1(@types/node@20.9.4)(typescript@5.3.2)
@@ -176,8 +179,8 @@ importers:
   sdk:
     devDependencies:
       '@thesis-co/eslint-config':
-        specifier: ^0.6.1
-        version: 0.6.1(eslint@8.54.0)(prettier@3.1.0)(typescript@5.3.2)
+        specifier: github:thesis/eslint-config#7b9bc8c
+        version: github.com/thesis/eslint-config/7b9bc8c(eslint@8.54.0)(prettier@3.1.0)(typescript@5.3.2)
       '@types/chai':
         specifier: ^4.3.11
         version: 4.3.11
@@ -228,8 +231,8 @@ importers:
         version: 6.1.0(react@18.2.0)
     devDependencies:
       '@thesis-co/eslint-config':
-        specifier: ^0.6.1
-        version: 0.6.1(eslint@8.54.0)(prettier@3.1.0)(typescript@5.3.2)
+        specifier: github:thesis/eslint-config#7b9bc8c
+        version: github.com/thesis/eslint-config/7b9bc8c(eslint@8.54.0)(prettier@3.1.0)(typescript@5.3.2)
       '@types/node':
         specifier: ^20.9.4
         version: 20.9.4
@@ -14068,6 +14071,16 @@ packages:
       - supports-color
     dev: true
 
+  /solidity-docgen@0.6.0-beta.36(hardhat@2.19.1):
+    resolution: {integrity: sha512-f/I5G2iJgU1h0XrrjRD0hHMr7C10u276vYvm//rw1TzFcYQ4xTOyAoi9oNAHRU0JU4mY9eTuxdVc2zahdMuhaQ==}
+    peerDependencies:
+      hardhat: ^2.8.0
+    dependencies:
+      handlebars: 4.7.8
+      hardhat: 2.19.1(ts-node@10.9.1)(typescript@5.3.2)
+      solidity-ast: 0.4.53
+    dev: true
+
   /source-list-map@2.0.1:
     resolution: {integrity: sha512-qnQ7gVMxGNxsiL4lEuJwe/To8UnK7fAnmbGEEH8RpLouuKbeEm0lhbQVFIrNSuB+G7tVrAlVsZgETT5nljf+Iw==}
 
@@ -15518,6 +15531,38 @@ packages:
   /zod@3.22.4:
     resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
     dev: false
+
+  github.com/thesis/eslint-config/7b9bc8c(eslint@8.54.0)(prettier@3.1.0)(typescript@5.3.2):
+    resolution: {tarball: https://codeload.github.com/thesis/eslint-config/tar.gz/7b9bc8c}
+    id: github.com/thesis/eslint-config/7b9bc8c
+    name: '@thesis-co/eslint-config'
+    version: 0.8.0-pre
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      eslint: '>=6.8.0'
+    dependencies:
+      '@thesis-co/prettier-config': github.com/thesis/prettier-config/daeaac564056a7885e4366ce12bfde6fd823fc90(prettier@3.1.0)
+      '@typescript-eslint/eslint-plugin': 6.12.0(@typescript-eslint/parser@6.12.0)(eslint@8.54.0)(typescript@5.3.2)
+      '@typescript-eslint/parser': 6.12.0(eslint@8.54.0)(typescript@5.3.2)
+      eslint: 8.54.0
+      eslint-config-airbnb: 19.0.4(eslint-plugin-import@2.29.0)(eslint-plugin-jsx-a11y@6.8.0)(eslint-plugin-react-hooks@4.6.0)(eslint-plugin-react@7.33.2)(eslint@8.54.0)
+      eslint-config-airbnb-base: 15.0.0(eslint-plugin-import@2.29.0)(eslint@8.54.0)
+      eslint-config-airbnb-typescript: 17.1.0(@typescript-eslint/eslint-plugin@6.12.0)(@typescript-eslint/parser@6.12.0)(eslint-plugin-import@2.29.0)(eslint@8.54.0)
+      eslint-config-prettier: 9.0.0(eslint@8.54.0)
+      eslint-plugin-import: 2.29.0(@typescript-eslint/parser@6.12.0)(eslint@8.54.0)
+      eslint-plugin-jsx-a11y: 6.8.0(eslint@8.54.0)
+      eslint-plugin-no-only-tests: 3.1.0
+      eslint-plugin-prettier: 5.0.1(eslint-config-prettier@9.0.0)(eslint@8.54.0)(prettier@3.1.0)
+      eslint-plugin-react: 7.33.2(eslint@8.54.0)
+      eslint-plugin-react-hooks: 4.6.0(eslint@8.54.0)
+    transitivePeerDependencies:
+      - '@types/eslint'
+      - eslint-import-resolver-typescript
+      - eslint-import-resolver-webpack
+      - prettier
+      - supports-color
+      - typescript
+    dev: true
 
   github.com/thesis/prettier-config/daeaac564056a7885e4366ce12bfde6fd823fc90(prettier@3.1.0):
     resolution: {tarball: https://codeload.github.com/thesis/prettier-config/tar.gz/daeaac564056a7885e4366ce12bfde6fd823fc90}
