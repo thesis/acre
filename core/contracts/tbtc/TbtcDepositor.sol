@@ -68,6 +68,15 @@ contract TbtcDepositor is Ownable {
     ///         token units (18 decimals precision).
     uint256 public constant SATOSHI_MULTIPLIER = 10 ** 10;
 
+    /// @notice Divisor used to compute the depositor fee taken from each deposit
+    ///         and transferred to the treasury upon stake request finalization.
+    /// @dev That fee is computed as follows:
+    ///      `depositorFee = depositedAmount / depositorFeeDivisor`
+    ///       for example, if the depositor fee needs to be 2% of each deposit,
+    ///       the `depositorFeeDivisor` should be set to `50` because
+    ///       `1/50 = 0.02 = 2%`.
+    uint64 public depositorFeeDivisor;
+
     // TODO: Decide if leave or remove?
     uint64 public minimumFundingTransactionAmount;
 
@@ -91,6 +100,10 @@ contract TbtcDepositor is Ownable {
     /// @param depositKey Deposit identifier.
     /// @param caller Address that finalized the stake request.
     event StakeFinalized(uint256 indexed depositKey, address indexed caller);
+
+    /// @notice Emitted when a depositor fee divisor is updated.
+    /// @param depositorFeeDivisor New value of the depositor fee divisor.
+    event DepositorFeeDivisorUpdated(uint64 depositorFeeDivisor);
 
     /// @dev Receiver address is zero.
     error ReceiverIsZeroAddress();
@@ -120,6 +133,8 @@ contract TbtcDepositor is Ownable {
         bridge = _bridge;
         tbtcVault = _tbtcVault;
         acre = _acre;
+
+        depositorFeeDivisor = 0; // Depositor fee is disabled initially.
     }
 
     /// @notice This function allows staking process initialization for a Bitcoin
@@ -200,9 +215,11 @@ contract TbtcDepositor is Ownable {
     ///         request, after tBTC minting process completed and tBTC was deposited
     ///         in this Depositor contract.
     /// @dev It calculates the amount to stake in Acre contract by deducting
-    ///      tBTC network minting fees from the initial funding transaction amount.
-    ///      The amount to stake is calculated depending on the process the tBTC
-    ///      was minted in:
+    ///      tBTC protocol minting fee and the Depositor fee from the initial
+    ///      funding transaction amount.
+    ///
+    ///      The tBTC protocol minting fee is calculated depending on the process
+    ///      the tBTC was minted in:
     ///      - for swept deposits:
     ///        `amount = depositAmount - depositTreasuryFee - depositTxMaxFee`
     ///      - for optimistically minted deposits:
@@ -218,7 +235,11 @@ contract TbtcDepositor is Ownable {
     ///        at the moment of the deposit reveal, there is a chance that the fee
     ///        parameter is updated in the tBTC Vault contract before the optimistic
     ///        minting is finalized.
-    ///      The imbalance is considered a part of the depositor fee.
+    ///      The imbalance is left in the tBTC Depositor contract.
+    ///
+    ///      The Depositor fee is computed based on the `depositorFeeDivisor`
+    ///      parameter. The fee is transferred to the treasury wallet on the
+    ///      stake request finalization.
     /// @param depositKey Deposit key computed as
     ///                   `keccak256(fundingTxHash | fundingOutputIndex)`.
     function finalizeStake(uint256 depositKey) external {
@@ -246,9 +267,9 @@ contract TbtcDepositor is Ownable {
         // Extract funding transaction amount sent by the user in Bitcoin transaction.
         uint256 fundingTxAmount = bridgeDepositRequest.amount;
 
-        uint256 amountToStakeSat = (fundingTxAmount -
-            bridgeDepositRequest.treasuryFee -
-            request.tbtcDepositTxMaxFee);
+        // Estimate tBTC protocol fees for minting.
+        uint256 tbtcMintingFees = bridgeDepositRequest.treasuryFee +
+            request.tbtcDepositTxMaxFee;
 
         // Check if deposit was optimistically minted.
         if (optimisticMintingRequest.finalizedAt > 0) {
@@ -267,32 +288,58 @@ contract TbtcDepositor is Ownable {
                 ? (fundingTxAmount / optimisticMintingFeeDivisor)
                 : 0;
 
-            amountToStakeSat -= optimisticMintingFee;
+            tbtcMintingFees += optimisticMintingFee;
         } else {
-            // If the deposit wan't optimistically minted check if it was swept.
+            // If the deposit wasn't optimistically minted check if it was swept.
             if (bridgeDepositRequest.sweptAt == 0)
                 revert TbtcDepositNotCompleted();
         }
 
-        // Convert amount in satoshi to tBTC token precision.
-        uint256 amountToStakeTbtc = amountToStakeSat * SATOSHI_MULTIPLIER;
+        // Compute depositor fee.
+        uint256 depositorFee = depositorFeeDivisor > 0
+            ? (fundingTxAmount / depositorFeeDivisor)
+            : 0;
 
-        // Fetch receiver and referral stored in extra data in tBTC Bridge Deposit
+        // Calculate tBTC amount available to stake after subtracting all the fees.
+        // Convert amount in satoshi to tBTC token precision.
+        uint256 amountToStakeTbtc = (fundingTxAmount -
+            tbtcMintingFees -
+            depositorFee) * SATOSHI_MULTIPLIER;
+
+        // Fetch receiver and referral stored in extra data in tBTC Bridge Deposit.
         // Request.
         bytes32 extraData = bridgeDepositRequest.extraData;
         (address receiver, uint16 referral) = decodeExtraData(extraData);
 
         emit StakeFinalized(depositKey, msg.sender);
 
+        // Transfer depositor fee to the treasury wallet.
+        if (depositorFee > 0) {
+            IERC20(acre.asset()).safeTransfer(acre.treasury(), depositorFee);
+        }
+
         // Stake tBTC in Acre.
         IERC20(acre.asset()).safeIncreaseAllowance(
             address(acre),
             amountToStakeTbtc
         );
+
         // TODO: Figure out what to do if deposit limit is reached in Acre
         // TODO: Consider extracting stake function with referrals from Acre to this contract.
         acre.stake(amountToStakeTbtc, receiver, referral);
     }
+
+    /// @notice Updates the depositor fee divisor.
+    /// @param newDepositorFeeDivisor New depositor fee divisor value.
+    function updateDepositorFeeDivisor(
+        uint64 newDepositorFeeDivisor
+    ) external onlyOwner {
+        // TODO: Introduce a parameters update process.
+        depositorFeeDivisor = newDepositorFeeDivisor;
+
+        emit DepositorFeeDivisorUpdated(newDepositorFeeDivisor);
+    }
+
     // TODO: Handle minimum deposit amount in tBTC Bridge vs Acre.
 
     /// @notice Calculates deposit key the same way as the Bridge contract.
