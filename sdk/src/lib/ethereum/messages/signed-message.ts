@@ -1,6 +1,7 @@
-import { ChainIdentifier, EthereumAddress } from "@keep-network/tbtc-v2.ts"
 import { verifyMessage, Signature } from "ethers"
+import { EthereumAddress } from "../address"
 import { ChainSignedMessage, V } from "../../messages"
+import { ChainIdentifier } from "../../contracts"
 import { Hex } from "../../utils"
 
 class EthereumSignedMessage implements ChainSignedMessage {
