@@ -3,19 +3,17 @@ import type { DeployFunction } from "hardhat-deploy/types"
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { getNamedAccounts, deployments } = hre
-  const { deployer, governance } = await getNamedAccounts()
-  const { log } = deployments
-
-  log(`transferring ownership of Acre contract to ${governance}`)
+  const { deployer, maintainer } = await getNamedAccounts()
 
   await deployments.execute(
-    "Acre",
+    "Dispatcher",
     { from: deployer, log: true, waitConfirmations: 1 },
-    "transferOwnership",
-    governance,
+    "updateMaintainer",
+    maintainer,
   )
 }
 
 export default func
 
-func.tags = ["TransferOwnershipAcre"]
+func.tags = ["DispatcherUpdateMaintainer"]
+func.dependencies = ["Dispatcher"]
