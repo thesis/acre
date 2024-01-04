@@ -9,6 +9,7 @@ import {
   ZeroAddress,
   encodeBytes32String,
 } from "ethers"
+import { ethers } from "hardhat"
 
 import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
 import type { SnapshotRestorer } from "@nomicfoundation/hardhat-toolbox/network-helpers"
