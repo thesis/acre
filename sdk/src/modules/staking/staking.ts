@@ -59,10 +59,9 @@ class Staking {
     const revealDepositInfo = {
       fundingOutputIndex: outputIndex,
       blindingFactor: depositScript.blindingFactor,
-      walletPubKeyHash: depositScript.walletPublicKeyHash,
-      refundPubKeyHash: depositScript.refundPublicKeyHash,
+      walletPublicKeyHash: depositScript.walletPublicKeyHash,
+      refundPublicKeyHash: depositScript.refundPublicKeyHash,
       refundLocktime: depositScript.refundLocktime,
-      vault: await this.#contracts.depositor.getTbtcVaultChainIdentifier(),
     }
 
     // TODO: decide how to pass referral. Probably we should save it in Acre

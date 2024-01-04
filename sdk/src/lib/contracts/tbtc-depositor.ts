@@ -5,10 +5,9 @@ import { ChainIdentifier } from "./chain-identifier"
 export interface DepositRevealInfo {
   fundingOutputIndex: number
   blindingFactor: Hex
-  walletPubKeyHash: Hex
-  refundPubKeyHash: Hex
+  walletPublicKeyHash: Hex
+  refundPublicKeyHash: Hex
   refundLocktime: Hex
-  vault: ChainIdentifier
 }
 
 export interface TBTCDepositor {
