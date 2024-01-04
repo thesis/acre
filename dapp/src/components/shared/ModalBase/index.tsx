@@ -70,8 +70,10 @@ export default function ModalBase({
       <Modal size="lg" isOpen={isOpen} onClose={handleClose}>
         <ModalOverlay mt="header_height" />
         <ModalContent mt="modal_shift">
-          <ModalCloseButton />
-          <SupportWrapper>{children}</SupportWrapper>
+          <SupportWrapper>
+            <ModalCloseButton />
+            {children}
+          </SupportWrapper>
         </ModalContent>
       </Modal>
     </ModalFlowContext.Provider>

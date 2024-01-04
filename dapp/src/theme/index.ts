@@ -18,6 +18,7 @@ import Form from "./Form"
 import FormLabel from "./FormLabel"
 import FormError from "./FormError"
 import Spinner from "./Spinner"
+import Skeleton from "./Skeleton"
 
 const defaultTheme = {
   colors,
@@ -52,6 +53,7 @@ const defaultTheme = {
     FormLabel,
     FormError,
     Spinner,
+    Skeleton,
   },
 }
 

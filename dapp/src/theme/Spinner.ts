@@ -8,6 +8,15 @@ const baseStyle = defineStyle({
   borderLeftColor: "gold.400",
 })
 
-const Spinner = defineStyleConfig({ baseStyle })
+const sizeXl = defineStyle({
+  w: 16,
+  h: 16,
+})
+
+const sizes = {
+  xl: sizeXl,
+}
+
+const Spinner = defineStyleConfig({ baseStyle, sizes })
 
 export default Spinner

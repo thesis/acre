@@ -6,6 +6,7 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
+  ModalCloseButton,
 } from "@chakra-ui/react"
 import { CurrencyType, RequestAccountParams } from "../../../types"
 import { TextMd } from "../../shared/Typography"
@@ -27,6 +28,7 @@ export default function MissingAccount({
 
   return (
     <>
+      <ModalCloseButton />
       <ModalHeader>{currency.name} account not installed</ModalHeader>
       <ModalBody>
         <Icon as={icon} boxSize={32} my={2} />
