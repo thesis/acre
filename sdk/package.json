@@ -14,7 +14,7 @@
     "test": "mocha --exit --recursive 'test/**/*.test.ts'"
   },
   "devDependencies": {
-    "@thesis-co/eslint-config": "^0.6.1",
+    "@thesis-co/eslint-config": "github:thesis/eslint-config#7b9bc8c",
     "@types/chai": "^4.3.11",
     "@types/mocha": "^10.0.6",
     "@types/node": "^20.9.4",

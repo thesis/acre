@@ -13,26 +13,6 @@ defaults:
     working-directory: ./core
 
 jobs:
-  core-format:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up pnpm
-        uses: pnpm/action-setup@v2
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: "core/.nvmrc"
-          cache: "pnpm"
-
-      - name: Install Dependencies
-        run: pnpm install --prefer-offline --frozen-lockfile
-
-      - name: Format
-        run: pnpm run format
-
   core-build:
     runs-on: ubuntu-latest
     steps:
@@ -61,6 +41,33 @@ jobs:
             core/build/
             core/typechain/
           if-no-files-found: error
+
+  core-format:
+    needs: [core-build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v2
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: "core/.nvmrc"
+          cache: "pnpm"
+
+      - name: Install Dependencies
+        run: pnpm install --prefer-offline --frozen-lockfile
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: core-build
+          path: core/
+
+      - name: Format
+        run: pnpm run format
 
   core-slither:
     needs: [core-build]
