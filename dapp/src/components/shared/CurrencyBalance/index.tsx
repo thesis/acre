@@ -11,6 +11,7 @@ export type CurrencyBalanceProps = {
   desiredDecimals?: number
   size?: string
   variant?: "greater-balance"
+  withBrackets?: boolean
 } & TextProps
 
 export function CurrencyBalance({
@@ -20,6 +21,7 @@ export function CurrencyBalance({
   desiredDecimals = 2,
   size,
   variant,
+  withBrackets,
   ...textProps
 }: CurrencyBalanceProps) {
   const styles = useMultiStyleConfig("CurrencyBalance", { size, variant })
@@ -35,13 +37,15 @@ export function CurrencyBalance({
   }, [amount, currency, desiredDecimals, shouldBeFormatted])
 
   return (
-    <Box>
+    <Box __css={styles.balance}>
+      {withBrackets && "("}
       <Box as="span" __css={styles.balance} {...textProps}>
         {balance}
       </Box>
       <Box as="span" __css={styles.symbol} {...textProps}>
         {currency.symbol}
       </Box>
+      {withBrackets && ")"}
     </Box>
   )
 }

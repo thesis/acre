@@ -37,6 +37,7 @@ export default function Success() {
                 amount: 419288.98,
                 shouldBeFormatted: false,
                 size: "lg",
+                withBrackets: true,
               }}
             />
           </Box>
