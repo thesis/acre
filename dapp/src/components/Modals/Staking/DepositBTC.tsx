@@ -15,7 +15,7 @@ export default function DepositBTC() {
       activeStep={1}
       onClick={depositBTC}
     >
-      <Alert status="info" withIcon>
+      <Alert status="info">
         <TextMd>
           Make a Bitcoin transaction to deposit and stake your BTC.
         </TextMd>

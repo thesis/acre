@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react"
 import { CurrencyType, RequestAccountParams } from "../../../types"
 import { TextMd } from "../../shared/Typography"
-import AlertWrapper from "../../shared/Alert"
+import Alert from "../../shared/Alert"
 import { CURRENCIES_BY_TYPE } from "../../../constants"
 
 type MissingAccountProps = {
@@ -34,14 +34,14 @@ export default function MissingAccount({
           {currency.name} account is required to make transactions for
           depositing and staking your {currency.symbol}.
         </TextMd>
-        <AlertWrapper status="info" withIcon>
+        <Alert status="info">
           <TextMd>
             <Highlight query="Accounts" styles={{ fontWeight: "bold" }}>
               You will be sent to the Ledger Accounts section to perform this
               action.
             </Highlight>
           </TextMd>
-        </AlertWrapper>
+        </Alert>
       </ModalBody>
       <ModalFooter mt={4}>
         <Button
