@@ -2,20 +2,15 @@ import React from "react"
 import { Highlight } from "@chakra-ui/react"
 import Alert from "../../shared/Alert"
 import { useModalFlowContext, useSignMessage } from "../../../hooks"
-import StakeSteps from "./StakeSteps"
 import { TextMd } from "../../shared/Typography"
+import StakingSteps from "./components/StakingSteps"
 
 export default function SignMessage() {
   const { goNext } = useModalFlowContext()
   const { signMessage } = useSignMessage(goNext)
 
   return (
-    <StakeSteps
-      header="Step 1 / 2"
-      buttonText="Continue"
-      activeStep={0}
-      onClick={signMessage}
-    >
+    <StakingSteps buttonText="Continue" activeStep={0} onClick={signMessage}>
       {/* TODO: Add the correct action after click */}
       <Alert status="info" withActionIcon onclick={() => {}}>
         <TextMd>
@@ -25,6 +20,6 @@ export default function SignMessage() {
           </Highlight>
         </TextMd>
       </Alert>
-    </StakeSteps>
+    </StakingSteps>
   )
 }

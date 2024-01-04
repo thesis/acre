@@ -6,7 +6,7 @@ import ModalBase from "../../shared/ModalBase"
 import SignMessage from "./SignMessage"
 import DepositBTC from "./DepositBTC"
 
-function StakingSteps() {
+function Staking() {
   const { activeStep } = useModalFlowContext()
 
   switch (activeStep) {
@@ -32,7 +32,7 @@ export default function StakingModal({
 }) {
   return (
     <ModalBase isOpen={isOpen} onClose={onClose} numberOfSteps={4}>
-      <StakingSteps />
+      <Staking />
     </ModalBase>
   )
 }

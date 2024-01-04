@@ -5,16 +5,16 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
-  StepNumber,
 } from "@chakra-ui/react"
-import StepperBase, { StepBase } from "../../shared/StepperBase"
-import { TextLg, TextMd } from "../../shared/Typography"
-import Spinner from "../../shared/Spinner"
+import { TextLg, TextMd } from "../../../shared/Typography"
+import StepperBase, { StepBase } from "../../../shared/StepperBase"
+import Spinner from "../../../shared/Spinner"
 
-function Title({ children }: { children: React.ReactNode }) {
+export function Title({ children }: { children: React.ReactNode }) {
   return <TextLg fontWeight="bold">{children}</TextLg>
 }
-function Description({ children }: { children: React.ReactNode }) {
+
+export function Description({ children }: { children: React.ReactNode }) {
   return <TextMd color="grey.500">{children}</TextMd>
 }
 
@@ -41,14 +41,12 @@ const STEPS: StepBase[] = [
   },
 ]
 
-export default function StakeSteps({
-  header,
+export default function StakingSteps({
   buttonText,
   activeStep,
   onClick,
   children,
 }: {
-  header: string
   buttonText: string
   activeStep: number
   onClick: () => void
@@ -56,7 +54,7 @@ export default function StakeSteps({
 }) {
   return (
     <>
-      <ModalHeader>{header}</ModalHeader>
+      <ModalHeader>{`Step ${activeStep + 1} / ${STEPS.length}`}</ModalHeader>
       <ModalBody textAlign="start" alignItems="start" py={6} gap={10}>
         <StepperBase
           index={activeStep}
@@ -64,7 +62,6 @@ export default function StakeSteps({
           size="sm"
           orientation="vertical"
           colorScheme="green"
-          complete={<StepNumber />}
           steps={STEPS}
           hideDescriptionWhenInactive
         />
