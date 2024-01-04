@@ -22,6 +22,10 @@ contract Acre is ERC4626, Ownable {
 
     /// Dispatcher contract that routes tBTC from Acre to a given vault and back.
     Dispatcher public dispatcher;
+
+    /// Address of the treasury wallet, where fees should be transferred to.
+    address public treasury;
+
     /// Minimum amount for a single deposit operation.
     uint256 public minimumDepositAmount;
     /// Maximum total amount of tBTC token held by Acre.
@@ -31,6 +35,10 @@ contract Acre is ERC4626, Ownable {
     /// @param referral Used for referral program.
     /// @param assets Amount of tBTC tokens staked.
     event StakeReferral(uint16 indexed referral, uint256 assets);
+
+    /// Emitted when the treasury wallet address is updated.
+    /// @param treasury New treasury wallet address.
+    event TreasuryUpdated(address treasury);
 
     /// Emitted when deposit parameters are updated.
     /// @param minimumDepositAmount New value of the minimum deposit amount.
@@ -54,11 +62,22 @@ contract Acre is ERC4626, Ownable {
     error ZeroAddress();
 
     constructor(
-        IERC20 tbtc
-    ) ERC4626(tbtc) ERC20("Acre Staked Bitcoin", "stBTC") Ownable(msg.sender) {
+        IERC20 _tbtc,
+        address _treasury
+    ) ERC4626(_tbtc) ERC20("Acre Staked Bitcoin", "stBTC") Ownable(msg.sender) {
+        treasury = _treasury;
         // TODO: Revisit the exact values closer to the launch.
-        minimumDepositAmount = 0.01 * 1e18; // 0.01 tBTC
+        minimumDepositAmount = 0.001 * 1e18; // 0.001 tBTC
         maximumTotalAssets = 25 * 1e18; // 25 tBTC
+    }
+
+    /// @notice Updates treasury wallet address.
+    /// @param newTreasury New treasury wallet address.
+    function updateTreasury(address newTreasury) external onlyOwner {
+        // TODO: Introduce a parameters update process.
+        treasury = newTreasury;
+
+        emit TreasuryUpdated(newTreasury);
     }
 
     /// @notice Updates deposit parameters.
