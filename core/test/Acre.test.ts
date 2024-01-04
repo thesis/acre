@@ -9,6 +9,7 @@ import {
   ZeroAddress,
   encodeBytes32String,
 } from "ethers"
+import { ethers } from "hardhat"
 
 import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
 import type { SnapshotRestorer } from "@nomicfoundation/hardhat-toolbox/network-helpers"
@@ -26,8 +27,8 @@ async function fixture() {
   const [staker1, staker2, thirdParty] = await getUnnamedSigner()
 
   const amountToMint = to1e18(100000)
-  tbtc.mint(staker1, amountToMint)
-  tbtc.mint(staker2, amountToMint)
+  await tbtc.mint(staker1, amountToMint)
+  await tbtc.mint(staker2, amountToMint)
 
   return { acre, tbtc, staker1, staker2, dispatcher, governance, thirdParty }
 }
@@ -85,8 +86,8 @@ describe("Acre", () => {
             .stake(amountToStake, receiver.address, referral)
         })
 
-        it("should emit Deposit event", () => {
-          expect(tx).to.emit(acre, "Deposit").withArgs(
+        it("should emit Deposit event", async () => {
+          await expect(tx).to.emit(acre, "Deposit").withArgs(
             // Caller.
             tbtcHolder.address,
             // Receiver.
@@ -98,8 +99,8 @@ describe("Acre", () => {
           )
         })
 
-        it("should emit StakeReferral event", () => {
-          expect(tx)
+        it("should emit StakeReferral event", async () => {
+          await expect(tx)
             .to.emit(acre, "StakeReferral")
             .withArgs(referral, amountToStake)
         })
@@ -558,8 +559,8 @@ describe("Acre", () => {
         tx = await acre.connect(staker1).mint(sharesToMint, staker1.address)
       })
 
-      it("should emit Deposit event", () => {
-        expect(tx).to.emit(acre, "Deposit").withArgs(
+      it("should emit Deposit event", async () => {
+        await expect(tx).to.emit(acre, "Deposit").withArgs(
           // Caller.
           staker1.address,
           // Receiver.
@@ -1032,8 +1033,8 @@ describe("Acre", () => {
           tx = await acre.deposit(amountToDeposit, staker1.address)
         })
 
-        it("should emit Deposit event", () => {
-          expect(tx).to.emit(acre, "Deposit").withArgs(
+        it("should emit Deposit event", async () => {
+          await expect(tx).to.emit(acre, "Deposit").withArgs(
             // Caller.
             staker1.address,
             // Receiver.

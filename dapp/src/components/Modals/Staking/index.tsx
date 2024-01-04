@@ -9,9 +9,9 @@ function StakingSteps() {
 
   switch (activeStep) {
     case 1:
-      return <Overview goNext={goNext} />
-    case 2:
       return <StakeForm goNext={goNext} />
+    case 2:
+      return <Overview goNext={goNext} />
     default:
       return null
   }
