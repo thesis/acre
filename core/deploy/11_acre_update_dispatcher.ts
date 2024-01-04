@@ -5,18 +5,17 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { getNamedAccounts, deployments } = hre
   const { deployer } = await getNamedAccounts()
 
-  await deployments.deploy("Dispatcher", {
-    from: deployer,
-    args: [],
-    log: true,
-    waitConfirmations: 1,
-  })
+  const dispatcher = await deployments.get("Dispatcher")
 
-  // TODO: Add Etherscan verification
-  // TODO: Add Tenderly verification
+  await deployments.execute(
+    "Acre",
+    { from: deployer, log: true, waitConfirmations: 1 },
+    "updateDispatcher",
+    dispatcher.address,
+  )
 }
 
 export default func
 
-func.tags = ["Dispatcher"]
-func.dependencies = ["Acre"]
+func.tags = ["AcreUpdateDispatcher"]
+func.dependencies = ["Acre", "Dispatcher"]

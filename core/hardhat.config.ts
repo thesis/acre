@@ -67,8 +67,13 @@ const config: HardhatUserConfig = {
     },
     governance: {
       default: 2,
-      sepolia: 0,
-      mainnet: "",
+      sepolia: 0, // TODO: updated to the actual address once available
+      mainnet: "", // TODO: updated to the actual address once available
+    },
+    maintainer: {
+      default: 3,
+      sepolia: 0, // TODO: updated to the actual address once available
+      mainnet: "", // TODO: updated to the actual address once available
     },
   },
 
