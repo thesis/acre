@@ -15,14 +15,20 @@ contract Dispatcher is Router, Ownable {
     using SafeERC20 for IERC20;
 
     /// Struct holds information about a vault.
+    /// @param authorized True if the vault is authorized.
+    /// @param weight Weight of the vault in %. Total weight of all vaults must
+    ///               be less or equal to 'vaultsMaxWeight'.
     struct VaultInfo {
         bool authorized;
+        uint16 weight;
     }
 
     /// The main Acre contract holding tBTC deposited by stakers.
     Acre public immutable acre;
+
     /// tBTC token contract.
     IERC20 public immutable tbtc;
+
     /// Address of the maintainer bot.
     address public maintainer;
 
@@ -36,9 +42,18 @@ contract Dispatcher is Router, Ownable {
     /// Mapping of vaults to their information.
     mapping(address => VaultInfo) public vaultsInfo;
 
+    /// Vaults weights defined in VaultInfo structure should sum up to
+    /// vaultsMaxWeight. If vaults weight defined in the VaultInfo
+    /// is less than vaultsMaxWeight the rest of the assets will be kept
+    /// as a buffer in the Acre contract. This number should reflect 100%
+    /// of all the tBTC staked in or through Acre. An owner can set the vault's
+    /// weight to 2 decimal points precision. If an owner wants to set a vault with
+    /// e.g. 25.55%, then the weight should be set to 2555.
+    uint16 public constant vaultsMaxWeight = 10000;
+
     /// Emitted when a vault is authorized.
     /// @param vault Address of the vault.
-    event VaultAuthorized(address indexed vault);
+    event VaultAuthorized(address indexed vault, uint16 weight);
 
     /// Emitted when a vault is deauthorized.
     /// @param vault Address of the vault.
@@ -58,6 +73,16 @@ contract Dispatcher is Router, Ownable {
     /// @param maintainer Address of the new maintainer.
     event MaintainerUpdated(address indexed maintainer);
 
+    /// Emitted when the weight of a vault is updated.
+    /// @param vault Address of the vault.
+    /// @param newWeight New weight of the vault.
+    /// @param oldWeight Old weight of the vault.
+    event VaultWeightUpdated(
+        address indexed vault,
+        uint16 newWeight,
+        uint16 oldWeight
+    );
+
     /// Reverts if the vault is already authorized.
     error VaultAlreadyAuthorized();
 
@@ -69,6 +94,16 @@ contract Dispatcher is Router, Ownable {
 
     /// Reverts if the address is zero.
     error ZeroAddress();
+
+    /// Reverts if the arrays of vaults addresses and corresponding weights have
+    /// different length.
+    error VaultWeightsMismatch();
+
+    /// Reverts if the weight of the vault is zero.
+    error VaultWeightZero();
+
+    /// Reverts if the sum of vaults weights exceeds the total weight.
+    error VaultWeightsExceedTotalWeight();
 
     /// Modifier that reverts if the caller is not the maintainer.
     modifier onlyMaintainer() {
@@ -83,17 +118,47 @@ contract Dispatcher is Router, Ownable {
         tbtc = _tbtc;
     }
 
+    /// @notice Updates the maintainer address.
+    /// @param newMaintainer Address of the new maintainer.
+    function updateMaintainer(address newMaintainer) external onlyOwner {
+        if (newMaintainer == address(0)) {
+            revert ZeroAddress();
+        }
+
+        maintainer = newMaintainer;
+
+        emit MaintainerUpdated(maintainer);
+    }
+
     /// @notice Adds a vault to the list of authorized vaults.
     /// @param vault Address of the vault to add.
-    function authorizeVault(address vault) external onlyOwner {
+    /// @param weight Weight of the vault. If by adding a new vault the total
+    ///               weight of all vaults exceeds 'vaultsMaxWeight' the
+    ///               transaction will revert. In this case the owner should
+    ///               update the weights of the existing vaults and make room
+    ///               for the new one.
+    function authorizeVault(address vault, uint16 weight) external onlyOwner {
         if (isVaultAuthorized(vault)) {
             revert VaultAlreadyAuthorized();
         }
 
+        if (vault == address(0)) {
+            revert ZeroAddress();
+        }
+
+        if (weight == 0) {
+            revert VaultWeightZero();
+        }
+
+        if (getVaultsTotalWeight() + weight > vaultsMaxWeight) {
+            revert VaultWeightsExceedTotalWeight();
+        }
+
         vaults.push(vault);
         vaultsInfo[vault].authorized = true;
+        vaultsInfo[vault].weight = weight;
 
-        emit VaultAuthorized(vault);
+        emit VaultAuthorized(vault, weight);
     }
 
     /// @notice Removes a vault from the list of authorized vaults.
@@ -104,6 +169,7 @@ contract Dispatcher is Router, Ownable {
         }
 
         vaultsInfo[vault].authorized = false;
+        vaultsInfo[vault].weight = 0;
 
         for (uint256 i = 0; i < vaults.length; i++) {
             if (vaults[i] == vault) {
@@ -117,20 +183,53 @@ contract Dispatcher is Router, Ownable {
         emit VaultDeauthorized(vault);
     }
 
-    /// @notice Updates the maintainer address.
-    /// @param newMaintainer Address of the new maintainer.
-    function updateMaintainer(address newMaintainer) external onlyOwner {
-        if (newMaintainer == address(0)) {
-            revert ZeroAddress();
+    /// @notice Updates the weights of the vaults.
+    /// @param vaultsToSet Addresses of the vaults to update.
+    /// @param newWeights New weights of the vaults.
+    function updateVaultWeights(
+        address[] memory vaultsToSet,
+        uint16[] memory newWeights
+    ) external onlyOwner {
+        if (vaultsToSet.length != newWeights.length) {
+            revert VaultWeightsMismatch();
         }
 
-        maintainer = newMaintainer;
+        for (uint256 i = 0; i < vaultsToSet.length; i++) {
+            address vault = vaultsToSet[i];
+            uint16 newWeight = newWeights[i];
 
-        emit MaintainerUpdated(maintainer);
+            if (!isVaultAuthorized(vault)) {
+                revert VaultUnauthorized();
+            }
+
+            if (newWeight == 0) {
+                revert VaultWeightZero();
+            }
+
+            uint16 oldWeight = vaultsInfo[vault].weight;
+            vaultsInfo[vault].weight = newWeight;
+
+            emit VaultWeightUpdated(address(vault), newWeight, oldWeight);
+        }
+
+        if (getVaultsTotalWeight() > vaultsMaxWeight) {
+            revert VaultWeightsExceedTotalWeight();
+        }
     }
 
-    /// TODO: make this function internal once the allocation distribution is
+    /// @notice Returns the total weight of all authorized vaults.
+    function getVaultsTotalWeight() public view returns (uint16) {
+        uint16 totalWeight = 0;
+        for (uint256 i = 0; i < vaults.length; i++) {
+            totalWeight += vaultsInfo[vaults[i]].weight;
+        }
+        return totalWeight;
+    }
+
+    /// TODO: allocate deposits according to the vaults weights.
+    /// TODO: make depositToVault function internal once the allocation distribution is
     /// implemented
+
     /// @notice Routes tBTC from Acre to a vault. Can be called by the maintainer
     ///         only.
     /// @param vault Address of the vault to route the assets to.
