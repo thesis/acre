@@ -1,8 +1,12 @@
+/* eslint-disable func-names */
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 
 import { expect } from "chai"
+import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
+import { ContractTransactionResponse } from "ethers"
 import type { TbtcDepositor } from "../typechain"
-import { deployment } from "./helpers"
+import { deployment, getNamedSigner, getUnnamedSigner } from "./helpers"
+import { beforeAfterSnapshotWrapper } from "./helpers/snapshot"
 
 async function fixture() {
   const { tbtcDepositor } = await deployment()
@@ -13,15 +17,65 @@ async function fixture() {
 describe("TbtcDepositor", () => {
   let tbtcDepositor: TbtcDepositor
 
+  let governance: HardhatEthersSigner
+  let thirdParty: HardhatEthersSigner
+
   before(async () => {
     ;({ tbtcDepositor } = await loadFixture(fixture))
+    ;({ governance } = await getNamedSigner())
+    ;[thirdParty] = await getUnnamedSigner()
   })
 
   describe("initializeStake", () => {})
 
   describe("finalizeStake", () => {})
 
-  describe("updateDepositorFeeDivisor", () => {})
+  describe("updateDepositorFeeDivisor", () => {
+    context("when caller is not governance", () => {
+      it("should revert", async () => {
+        await expect(
+          tbtcDepositor.connect(thirdParty).updateDepositorFeeDivisor(1234),
+        )
+          .to.be.revertedWithCustomError(
+            tbtcDepositor,
+            "OwnableUnauthorizedAccount",
+          )
+          .withArgs(thirdParty.address)
+      })
+    })
+
+    context("when caller is governance", () => {
+      const testUpdateDepositorFeeDivisor = (newValue: number) =>
+        function () {
+          beforeAfterSnapshotWrapper()
+
+          let tx: ContractTransactionResponse
+
+          before(async () => {
+            tx = await tbtcDepositor
+              .connect(governance)
+              .updateDepositorFeeDivisor(newValue)
+          })
+
+          it("should emit DepositorFeeDivisorUpdated event", async () => {
+            await expect(tx)
+              .to.emit(tbtcDepositor, "DepositorFeeDivisorUpdated")
+              .withArgs(newValue)
+          })
+
+          it("should update value correctly", async () => {
+            expect(await tbtcDepositor.depositorFeeDivisor()).to.be.eq(newValue)
+          })
+        }
+
+      describe(
+        "when new value is non-zero",
+        testUpdateDepositorFeeDivisor(47281),
+      )
+
+      describe("when new value is zero", testUpdateDepositorFeeDivisor(0))
+    })
+  })
 
   describe("calculateDepositKey", () => {})
 
