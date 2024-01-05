@@ -79,7 +79,19 @@ describe("TbtcDepositor", () => {
     })
   })
 
-  describe("calculateDepositKey", () => {})
+  describe("calculateDepositKey", () => {
+    it("should calculate the deposit key", async () => {
+      // Test data from transaction: https://etherscan.io/tx/0x7816e66d2b1a7858c2e8c49099bf009e52d07e081d5b562ac9ff6d2b072387c9
+      expect(
+        await tbtcDepositor.calculateDepositKey(
+          "0xa08d41ee8e044b25d365fd54d27d79da6db9e9e2f8be166b82a510d0d31b9406",
+          114,
+        ),
+      ).to.be.equal(
+        "0x4e89fe01b92ff0ebf0bdeb70891fcb6c286d750b191971999091c8a1e5b3f11d",
+      )
+    })
+  })
 
   const extraDataValidTestData = new Map<
     string,
