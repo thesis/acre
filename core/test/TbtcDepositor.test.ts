@@ -3,37 +3,168 @@ import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 
 import { expect } from "chai"
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
-import { ContractTransactionResponse } from "ethers"
-import type { TbtcDepositor } from "../typechain"
+import { ContractTransactionResponse, ZeroAddress } from "ethers"
+import type { BridgeStub, TBTCVaultStub, TbtcDepositor } from "../typechain"
 import { deployment, getNamedSigner, getUnnamedSigner } from "./helpers"
 import { beforeAfterSnapshotWrapper } from "./helpers/snapshot"
+import { tbtcDepositData } from "./data/tbtc"
+import { lastBlockTime } from "./helpers/time"
 
 async function fixture() {
-  const { tbtcDepositor } = await deployment()
+  const { tbtcDepositor, tbtcBridge, tbtcVault } = await deployment()
 
-  return { tbtcDepositor }
+  return { tbtcDepositor, tbtcBridge, tbtcVault }
 }
 
-describe("TbtcDepositor", () => {
+describe.only("TbtcDepositor", () => {
   let tbtcDepositor: TbtcDepositor
+  let tbtcBridge: BridgeStub
+  let tbtcVault: TBTCVaultStub
 
   let governance: HardhatEthersSigner
   let thirdParty: HardhatEthersSigner
 
   before(async () => {
-    ;({ tbtcDepositor } = await loadFixture(fixture))
+    ;({ tbtcDepositor, tbtcBridge, tbtcVault } = await loadFixture(fixture))
     ;({ governance } = await getNamedSigner())
     ;[thirdParty] = await getUnnamedSigner()
   })
 
-  describe("initializeStake", () => {})
+  describe("initializeStake", () => {
+    describe("when receiver is zero address", () => {
+      it("should revert", async () => {
+        await expect(
+          tbtcDepositor.initializeStake(
+            tbtcDepositData.fundingTxInfo,
+            tbtcDepositData.reveal,
+            ZeroAddress,
+            0,
+          ),
+        ).to.be.revertedWithCustomError(tbtcDepositor, "ReceiverIsZeroAddress")
+      })
+    })
+
+    describe("when receiver is non zero address", () => {
+      describe("when stake request is not in progress", () => {
+        describe("when referral is non-zero", () => {
+          beforeAfterSnapshotWrapper()
+
+          let tx: ContractTransactionResponse
+
+          before(async () => {
+            tx = await tbtcDepositor
+              .connect(thirdParty)
+              .initializeStake(
+                tbtcDepositData.fundingTxInfo,
+                tbtcDepositData.reveal,
+                tbtcDepositData.receiver,
+                tbtcDepositData.referral,
+              )
+          })
+
+          it("should emit StakeInitialized event", async () => {
+            await expect(tx)
+              .to.emit(tbtcDepositor, "StakeInitialized")
+              .withArgs(
+                tbtcDepositData.depositKey,
+                thirdParty.address,
+                tbtcDepositData.receiver,
+                tbtcDepositData.referral,
+              )
+          })
+
+          it("should store request data", async () => {
+            const storedStakeRequest = await tbtcDepositor.stakeRequests(
+              tbtcDepositData.depositKey,
+            )
+
+            expect(
+              storedStakeRequest.requestedAt,
+              "invalid requestedAt",
+            ).to.be.equal(await lastBlockTime())
+            expect(
+              storedStakeRequest.finalizedAt,
+              "invalid finalizedAt",
+            ).to.be.equal(0)
+            expect(
+              storedStakeRequest.tbtcDepositTxMaxFee,
+              "invalid tbtcDepositTxMaxFee",
+            ).to.be.equal(1000)
+            expect(
+              storedStakeRequest.tbtcOptimisticMintingFeeDivisor,
+              "invalid tbtcOptimisticMintingFeeDivisor",
+            ).to.be.equal(500)
+          })
+
+          it("should reveal the deposit to the bridge contract with extra data", async () => {
+            const storedRevealedDeposit = await tbtcBridge.depositsMap(
+              tbtcDepositData.depositKey,
+            )
+
+            expect(
+              storedRevealedDeposit.extraData,
+              "invalid extraData",
+            ).to.be.equal(tbtcDepositData.extraData)
+          })
+        })
+
+        describe("when referral is zero", () => {
+          beforeAfterSnapshotWrapper()
+
+          it("should succeed", async () => {
+            await expect(
+              tbtcDepositor
+                .connect(thirdParty)
+                .initializeStake(
+                  tbtcDepositData.fundingTxInfo,
+                  tbtcDepositData.reveal,
+                  tbtcDepositData.receiver,
+                  0,
+                ),
+            ).to.be.not.reverted
+          })
+        })
+      })
+
+      describe("when stake request is already in progress", () => {
+        beforeAfterSnapshotWrapper()
+
+        before(async () => {
+          await tbtcDepositor
+            .connect(thirdParty)
+            .initializeStake(
+              tbtcDepositData.fundingTxInfo,
+              tbtcDepositData.reveal,
+              tbtcDepositData.receiver,
+              tbtcDepositData.referral,
+            )
+        })
+
+        it("should revert", async () => {
+          await expect(
+            tbtcDepositor
+              .connect(thirdParty)
+              .initializeStake(
+                tbtcDepositData.fundingTxInfo,
+                tbtcDepositData.reveal,
+                tbtcDepositData.receiver,
+                tbtcDepositData.referral,
+              ),
+          ).to.be.revertedWithCustomError(
+            tbtcDepositor,
+            "StakeRequestAlreadyInProgress",
+          )
+        })
+      })
+    })
+  })
 
   describe("finalizeStake", () => {})
 
   describe("updateDepositorFeeDivisor", () => {
     beforeAfterSnapshotWrapper()
 
-    context("when caller is not governance", () => {
+    describe("when caller is not governance", () => {
       it("should revert", async () => {
         await expect(
           tbtcDepositor.connect(thirdParty).updateDepositorFeeDivisor(1234),
@@ -46,7 +177,7 @@ describe("TbtcDepositor", () => {
       })
     })
 
-    context("when caller is governance", () => {
+    describe("when caller is governance", () => {
       const testUpdateDepositorFeeDivisor = (newValue: number) =>
         function () {
           beforeAfterSnapshotWrapper()
