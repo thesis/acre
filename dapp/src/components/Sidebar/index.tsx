@@ -15,7 +15,6 @@ import {
   Link,
 } from "@chakra-ui/react"
 import RightSidebar from "../../assets/images/right-sidebar-bg.png"
-import CoinsStackedIcon from "../../assets/images/coins-stacked.svg"
 import ShieldPlusIcon from "../../assets/images/shield-plus.svg"
 import { useDocsDrawer, useSidebar } from "../../hooks"
 import { ArrowUpRight } from "../../static/icons"
@@ -79,18 +78,6 @@ export default function Sidebar() {
                     position="relative"
                     top="2px"
                     src={ShieldPlusIcon}
-                    alt=""
-                  />
-                  <TextSm>
-                    Fees is software empowered by the Threshold DAO.
-                  </TextSm>
-                </HStack>
-                <HStack alignContent="flex-start">
-                  <Image
-                    alignSelf="baseline"
-                    position="relative"
-                    top="2px"
-                    src={CoinsStackedIcon}
                     alt=""
                   />
                   <TextSm>
