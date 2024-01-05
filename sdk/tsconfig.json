@@ -11,5 +11,5 @@
     "esModuleInterop": true,
     "resolveJsonModule": true
   },
-  "include": ["src", "test"]
+  "include": ["src", "test", "jest.config.js"]
 }
