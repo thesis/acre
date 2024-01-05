@@ -31,6 +31,8 @@ describe("TbtcDepositor", () => {
   describe("finalizeStake", () => {})
 
   describe("updateDepositorFeeDivisor", () => {
+    beforeAfterSnapshotWrapper()
+
     context("when caller is not governance", () => {
       it("should revert", async () => {
         await expect(
