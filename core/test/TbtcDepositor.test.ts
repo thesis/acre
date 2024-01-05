@@ -16,7 +16,7 @@ async function fixture() {
   return { tbtcDepositor, tbtcBridge, tbtcVault }
 }
 
-describe.only("TbtcDepositor", () => {
+describe("TbtcDepositor", () => {
   let tbtcDepositor: TbtcDepositor
   let tbtcBridge: BridgeStub
   let tbtcVault: TBTCVaultStub
@@ -97,7 +97,7 @@ describe.only("TbtcDepositor", () => {
           })
 
           it("should reveal the deposit to the bridge contract with extra data", async () => {
-            const storedRevealedDeposit = await tbtcBridge.depositsMap(
+            const storedRevealedDeposit = await tbtcBridge.deposits(
               tbtcDepositData.depositKey,
             )
 
