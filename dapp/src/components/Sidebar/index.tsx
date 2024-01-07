@@ -8,8 +8,6 @@ import {
   Card,
   CardBody,
   CardHeader,
-  Stack,
-  StackDivider,
   CardFooter,
   HStack,
   Link,
@@ -19,6 +17,14 @@ import ShieldPlusIcon from "../../assets/images/shield-plus.svg"
 import { useDocsDrawer, useSidebar } from "../../hooks"
 import { ArrowUpRight } from "../../static/icons"
 import { TextMd, TextSm } from "../shared/Typography"
+
+const readMoreEarnings = "https://#"
+
+const buttons = [
+  { label: "FAQ" },
+  { label: "Token Contract" },
+  { label: "Bridge Contract" },
+]
 
 export default function Sidebar() {
   const { isOpen } = useSidebar()
@@ -41,92 +47,69 @@ export default function Sidebar() {
         >
           Docs
         </Button>
-        <Card marginTop="12px" bg="gold.100" border="#ffffff solid">
+        <Card
+          marginTop="3"
+          bg="gold.100"
+          borderColor="white"
+          borderStyle="solid"
+        >
           <CardHeader padding="0">
-            <Image src={RightSidebar} alt="" width="282px" height="160px" />
+            <Image src={RightSidebar} alt="" width="70.5" height="40" />
           </CardHeader>
 
           <CardBody>
-            <Stack divider={<StackDivider />} spacing="4">
-              <Box>
-                <TextMd alignSelf="stretch" fontWeight="bold">
-                  Maximize your earnings by using tBTC to deposit and redeem BTC
-                  in DeFi!
-                </TextMd>
-              </Box>
-            </Stack>
+            <TextMd alignSelf="stretch" fontWeight="bold">
+              Maximize your earnings by using tBTC to deposit and redeem BTC in
+              DeFi!
+            </TextMd>
           </CardBody>
 
           <CardFooter paddingTop="0">
-            <Link href="https://#" isExternal>
+            <Link href={readMoreEarnings} isExternal>
               <TextSm>Read more</TextSm>
             </Link>
           </CardFooter>
         </Card>
 
-        <Card marginTop="12px" bg="gold.100" border="#ffffff solid">
+        <Card
+          marginTop="3"
+          bg="gold.100"
+          borderColor="white"
+          borderStyle="solid"
+        >
           <CardHeader>
             <TextMd fontWeight="bold">How we calculate fees</TextMd>
           </CardHeader>
 
           <CardBody paddingTop="0">
-            <Stack divider={<StackDivider />} spacing="4">
-              <Box>
-                <HStack paddingBottom="16px">
-                  <Image
-                    alignSelf="baseline"
-                    position="relative"
-                    top="2px"
-                    src={ShieldPlusIcon}
-                    alt=""
-                  />
-                  <TextSm>
-                    Fees is software empowered by the Threshold DAO.
-                  </TextSm>
-                </HStack>
-              </Box>
-            </Stack>
+            <HStack>
+              <Image
+                alignSelf="baseline"
+                position="relative"
+                top="0.5"
+                src={ShieldPlusIcon}
+                alt=""
+              />
+              <TextSm>Fees is software empowered by the Threshold DAO.</TextSm>
+            </HStack>
           </CardBody>
         </Card>
 
-        <Button
-          marginTop="12px"
-          variant="outline"
-          justifyContent="flex-start"
-          leftIcon={<Icon as={ArrowUpRight} boxSize={6} color="brand.400" />}
-          onClick={openDocsDrawer}
-          width="100%"
-          bg="gold.100"
-          border="#ffffff solid"
-        >
-          FAQ
-        </Button>
-
-        <Button
-          marginTop="12px"
-          variant="outline"
-          justifyContent="flex-start"
-          leftIcon={<Icon as={ArrowUpRight} boxSize={6} color="brand.400" />}
-          onClick={openDocsDrawer}
-          width="100%"
-          bg="gold.100"
-          border="#ffffff solid"
-        >
-          Token Contract
-        </Button>
-
-        <Button
-          marginTop="12px"
-          variant="outline"
-          justifyContent="flex-start"
-          leftIcon={<Icon as={ArrowUpRight} boxSize={6} color="brand.400" />}
-          onClick={openDocsDrawer}
-          width="100%"
-          bg="gold.100"
-          border="#ffffff solid"
-        >
-          Bridge Contract
-        </Button>
+        {buttons.map(({ label }) => (
+          <Button
+            key={label}
+            marginTop="12px"
+            variant="outline"
+            justifyContent="flex-start"
+            leftIcon={<Icon as={ArrowUpRight} boxSize={6} color="brand.400" />}
+            onClick={openDocsDrawer}
+            width="100%"
+            bg="gold.100"
+            border="#ffffff solid"
+          >
+            {label}
+          </Button>
+        ))}
       </Box>
     </Box>
   )
