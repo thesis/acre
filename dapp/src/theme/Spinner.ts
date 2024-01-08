@@ -8,6 +8,4 @@ const baseStyle = defineStyle({
   borderLeftColor: "gold.400",
 })
 
-const Spinner = defineStyleConfig({ baseStyle })
-
-export default Spinner
+export const spinnerTheme = defineStyleConfig({ baseStyle })
