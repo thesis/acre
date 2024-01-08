@@ -12,7 +12,7 @@ export default function SignMessage() {
   return (
     <StakingSteps buttonText="Continue" activeStep={0} onClick={signMessage}>
       {/* TODO: Add the correct action after click */}
-      <Alert status="info" withActionIcon onclick={() => {}}>
+      <Alert withActionIcon onclick={() => {}}>
         <TextMd>
           <Highlight query="stBTC" styles={{ textDecorationLine: "underline" }}>
             You will receive stBTC liquid staking token at this Ethereum address
