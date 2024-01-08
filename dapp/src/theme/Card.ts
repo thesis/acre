@@ -12,10 +12,12 @@ const Card: ComponentSingleStyleConfig = {
   },
   variants: {
     sidebar: {
-      marginTop: "3",
-      bg: "gold.100",
-      borderColor: "white",
-      borderStyle: "solid",
+      container: {
+        marginTop: "3",
+        bg: "gold.100",
+        borderColor: "white",
+        borderStyle: "solid",
+      },
     },
   },
 }
