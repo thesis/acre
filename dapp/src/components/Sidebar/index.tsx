@@ -46,12 +46,7 @@ export default function Sidebar() {
         >
           Docs
         </Button>
-        <Card
-          marginTop="3"
-          bg="gold.100"
-          borderColor="white"
-          borderStyle="solid"
-        >
+        <Card variant="sidebar">
           <CardHeader padding="0">
             <Image src={RightSidebar} alt="" width="70.5" height="40" />
           </CardHeader>
@@ -70,12 +65,7 @@ export default function Sidebar() {
           </CardFooter>
         </Card>
 
-        <Card
-          marginTop="3"
-          bg="gold.100"
-          borderColor="white"
-          borderStyle="solid"
-        >
+        <Card variant="sidebar">
           <CardHeader>
             <TextMd fontWeight="bold">How we calculate fees</TextMd>
           </CardHeader>

@@ -10,6 +10,14 @@ const Card: ComponentSingleStyleConfig = {
       bg: "gold.200",
     },
   },
+  variants: {
+    sidebar: {
+      marginTop: "3",
+      bg: "gold.100",
+      borderColor: "white",
+      borderStyle: "solid",
+    },
+  },
 }
 
 export default Card
