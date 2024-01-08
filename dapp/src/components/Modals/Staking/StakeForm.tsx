@@ -20,10 +20,10 @@ function StakeForm({ goNext }: ModalStep) {
 
   const handleSubmitForm = useCallback(
     (values: TokenAmountFormValues) => {
-      if (values.amount) {
-        seTokenAmount({ amount: values.amount, currencyType: CURRENCY_TYPE })
-        goNext()
-      }
+      if (!values.amount) return
+
+      seTokenAmount({ amount: values.amount, currencyType: CURRENCY_TYPE })
+      goNext()
     },
     [goNext, seTokenAmount],
   )
