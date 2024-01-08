@@ -13,14 +13,13 @@ import {
   Link,
 } from "@chakra-ui/react"
 import RightSidebar from "../../assets/images/right-sidebar-bg.png"
-import ShieldPlusIcon from "../../assets/images/shield-plus.svg"
 import { useDocsDrawer, useSidebar } from "../../hooks"
-import { ArrowUpRight } from "../../static/icons"
+import { ArrowUpRight, ShieldPlusIcon } from "../../static/icons"
 import { TextMd, TextSm } from "../shared/Typography"
 
 const readMoreEarnings = "https://#"
 
-const buttons = [
+const BUTTONS = [
   { label: "FAQ" },
   { label: "Token Contract" },
   { label: "Bridge Contract" },
@@ -82,20 +81,14 @@ export default function Sidebar() {
           </CardHeader>
 
           <CardBody paddingTop="0">
-            <HStack>
-              <Image
-                alignSelf="baseline"
-                position="relative"
-                top="0.5"
-                src={ShieldPlusIcon}
-                alt=""
-              />
+            <HStack gap="1">
+              <Icon as={ShieldPlusIcon} w={5} h={5} alignSelf="baseline" />
               <TextSm>Fees is software empowered by the Threshold DAO.</TextSm>
             </HStack>
           </CardBody>
         </Card>
 
-        {buttons.map(({ label }) => (
+        {BUTTONS.map(({ label }) => (
           <Button
             key={label}
             marginTop="12px"
@@ -105,7 +98,8 @@ export default function Sidebar() {
             onClick={openDocsDrawer}
             width="100%"
             bg="gold.100"
-            border="#ffffff solid"
+            borderColor="white"
+            borderStyle="solid"
           >
             {label}
           </Button>
