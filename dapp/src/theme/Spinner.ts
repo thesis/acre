@@ -17,6 +17,4 @@ const sizes = {
   xl: sizeXl,
 }
 
-const Spinner = defineStyleConfig({ baseStyle, sizes })
-
-export default Spinner
+export const spinnerTheme = defineStyleConfig({ baseStyle, sizes })

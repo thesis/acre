@@ -24,7 +24,7 @@ export type AlertProps = ChakraAlertProps & {
 }
 
 export default function Alert({
-  status,
+  status = "info",
   withAlertIcon = true,
   children,
   withActionIcon,
@@ -37,7 +37,7 @@ export default function Alert({
 
   return (
     <ChakraAlert status={status} {...paddingRight} {...alertProps}>
-      {withAlertIcon && <AlertIcon as={status ? ICONS[status] : undefined} />}
+      {withAlertIcon && status && <AlertIcon as={ICONS[status]} />}
       {children}
       {withActionIcon && (
         <Box __css={styles.rightIconContainer}>

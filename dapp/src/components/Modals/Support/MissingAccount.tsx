@@ -36,7 +36,7 @@ export default function MissingAccount({
           {currency.name} account is required to make transactions for
           depositing and staking your {currency.symbol}.
         </TextMd>
-        <Alert status="info">
+        <Alert>
           <TextMd>
             <Highlight query="Accounts" styles={{ fontWeight: "bold" }}>
               You will be sent to the Ledger Accounts section to perform this

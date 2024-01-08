@@ -17,8 +17,8 @@ import Alert from "./Alert"
 import Form from "./Form"
 import FormLabel from "./FormLabel"
 import FormError from "./FormError"
-import Spinner from "./Spinner"
 import Skeleton from "./Skeleton"
+import { spinnerTheme as Spinner } from "./Spinner"
 
 const defaultTheme = {
   colors,
