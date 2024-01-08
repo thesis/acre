@@ -8,7 +8,7 @@ import { BITCOIN_MIN_AMOUNT } from "../../../constants"
 import { CurrencyType } from "../../../types"
 
 const CURRENCY_TYPE: CurrencyType = "bitcoin"
-const CUSTOM_DATA = {
+const FORM_CUSTOM_DATA = {
   buttonText: "Stake",
   btcAmountText: "Amount to be staked",
   estimatedAmountText: "Approximately staked tokens",
@@ -31,7 +31,7 @@ function StakeForm({ goNext }: ModalStep) {
   return (
     <TokenAmountForm
       currencyType={CURRENCY_TYPE}
-      customData={CUSTOM_DATA}
+      customData={FORM_CUSTOM_DATA}
       tokenBalance={btcAccount?.balance.toString() ?? "0"}
       minTokenAmount={BITCOIN_MIN_AMOUNT}
       onSubmitForm={handleSubmitForm}
