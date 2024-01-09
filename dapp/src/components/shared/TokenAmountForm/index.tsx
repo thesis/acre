@@ -17,7 +17,7 @@ const TokenAmountForm = withFormik<TokenAmountFormProps, TokenAmountFormValues>(
     }),
     validate: async (
       { amount },
-      { tokenBalance, currencyType, minTokenAmount },
+      { tokenBalance, currency, minTokenAmount },
     ) => {
       const errors: FormikErrors<TokenAmountFormValues> = {}
 
@@ -25,7 +25,7 @@ const TokenAmountForm = withFormik<TokenAmountFormProps, TokenAmountFormValues>(
         amount,
         tokenBalance,
         minTokenAmount,
-        currencyType,
+        currency,
       )
 
       return getErrorsObj(errors)

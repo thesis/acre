@@ -12,12 +12,8 @@ import {
   InputRightElement,
   useMultiStyleConfig,
 } from "@chakra-ui/react"
-import {
-  fixedPointNumberToString,
-  getCurrencyByType,
-  userAmountToBigInt,
-} from "../../../utils"
-import { CurrencyType } from "../../../types"
+import { fixedPointNumberToString, userAmountToBigInt } from "../../../utils"
+import { Currency, CurrencyType } from "../../../types"
 import NumberFormatInput, {
   NumberFormatInputValues,
 } from "../NumberFormatInput"
@@ -72,7 +68,7 @@ function FiatCurrencyBalance({
   if (fiatAmount && fiatCurrencyType) {
     return (
       <CurrencyBalance
-        currencyType={fiatCurrencyType}
+        currency={fiatCurrencyType}
         amount={fiatAmount}
         shouldBeFormatted={false}
         fontWeight={fontWeight as string}
@@ -86,7 +82,7 @@ function FiatCurrencyBalance({
 
 export type TokenBalanceInputProps = {
   amount?: bigint
-  currencyType: CurrencyType
+  currency: Currency
   tokenBalance: string | number
   placeholder?: string
   size?: "lg" | "md"
@@ -97,7 +93,7 @@ export type TokenBalanceInputProps = {
 
 export default function TokenBalanceInput({
   amount,
-  currencyType,
+  currency,
   tokenBalance,
   placeholder,
   size = "lg",
@@ -111,8 +107,6 @@ export default function TokenBalanceInput({
 }: TokenBalanceInputProps) {
   const valueRef = useRef<bigint | undefined>(amount)
   const styles = useMultiStyleConfig("TokenBalanceInput", { size })
-
-  const currency = getCurrencyByType(currencyType)
 
   const handleValueChange = (value: string) => {
     valueRef.current = value
@@ -132,7 +126,7 @@ export default function TokenBalanceInput({
             <CurrencyBalance
               size={size === "lg" ? "md" : "sm"}
               amount={tokenBalance}
-              currencyType={currencyType}
+              currency={currency}
             />
           </Box>
         </Box>

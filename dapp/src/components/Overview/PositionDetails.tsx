@@ -30,12 +30,12 @@ export default function PositionDetails(props: CardProps) {
         </HStack>
         <CurrencyBalanceWithConversion
           from={{
-            currencyType: "bitcoin",
+            currency: "bitcoin",
             amount: "2398567898",
             variant: "greater-balance",
           }}
           to={{
-            currencyType: "usd",
+            currency: "usd",
             amount: 419288.98,
             shouldBeFormatted: false,
             size: "lg",

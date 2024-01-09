@@ -1,7 +1,7 @@
 import React from "react"
 import { FormikProps } from "formik"
 import { Form, FormTokenBalanceInput } from "../Form"
-import { CurrencyType } from "../../../types"
+import { Currency } from "../../../types"
 
 export type TokenAmountFormValues = {
   amount?: bigint
@@ -11,7 +11,7 @@ export type TokenAmountFormBaseProps = {
   formId: string
   tokenBalance: string
   tokenBalanceInputPlaceholder: string
-  currencyType: CurrencyType
+  currency: Currency
   fieldName: string
   children?: React.ReactNode
 }
@@ -19,7 +19,7 @@ export type TokenAmountFormBaseProps = {
 export default function TokenAmountFormBase({
   formId,
   tokenBalance,
-  currencyType,
+  currency,
   tokenBalanceInputPlaceholder,
   fieldName,
   children,
@@ -31,7 +31,7 @@ export default function TokenAmountFormBase({
         name={fieldName}
         tokenBalance={tokenBalance}
         placeholder={tokenBalanceInputPlaceholder}
-        currencyType={currencyType}
+        currency={currency}
       />
       {children}
     </Form>

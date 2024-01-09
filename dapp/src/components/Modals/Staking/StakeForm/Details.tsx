@@ -3,14 +3,14 @@ import { List } from "@chakra-ui/react"
 import { useField } from "formik"
 import { useTransactionDetails } from "../../../../hooks"
 import TransactionDetailsAmountItem from "../../../shared/TransactionDetails/AmountItem"
-import { CurrencyType } from "../../../../types"
+import { Currency } from "../../../../types"
 
 function Details({
   fieldName,
-  currencyType,
+  currency,
 }: {
   fieldName: string
-  currencyType: CurrencyType
+  currency: Currency
 }) {
   const [, { value }] = useField(fieldName)
   const btcAmount = value ?? 0n
@@ -22,11 +22,11 @@ function Details({
       <TransactionDetailsAmountItem
         label="Amount to be staked"
         from={{
-          currencyType,
+          currency,
           amount: value ?? 0n,
         }}
         to={{
-          currencyType: "usd",
+          currency: "usd",
           amount: "11212",
           shouldBeFormatted: false,
         }}
@@ -34,11 +34,11 @@ function Details({
       <TransactionDetailsAmountItem
         label="Protocol fee (0.01%)"
         from={{
-          currencyType,
+          currency,
           amount: protocolFee,
         }}
         to={{
-          currencyType: "usd",
+          currency: "usd",
           amount: "11212",
           shouldBeFormatted: false,
         }}
@@ -46,11 +46,11 @@ function Details({
       <TransactionDetailsAmountItem
         label="Approximately staked tokens"
         from={{
-          currencyType,
+          currency,
           amount: estimatedAmount,
         }}
         to={{
-          currencyType: "usd",
+          currency: "usd",
           amount: "11212",
           shouldBeFormatted: false,
         }}

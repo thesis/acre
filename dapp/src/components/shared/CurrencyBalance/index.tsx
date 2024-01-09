@@ -3,12 +3,13 @@ import { Box, useMultiStyleConfig, TextProps } from "@chakra-ui/react"
 import {
   formatTokenAmount,
   getCurrencyByType,
+  isCurrencyType,
   numberToLocaleString,
 } from "../../../utils"
-import { CurrencyType } from "../../../types"
+import { Currency, CurrencyType } from "../../../types"
 
 export type CurrencyBalanceProps = {
-  currencyType: CurrencyType
+  currency: Currency | CurrencyType
   amount?: string | number
   shouldBeFormatted?: boolean
   desiredDecimals?: number
@@ -17,7 +18,7 @@ export type CurrencyBalanceProps = {
 } & TextProps
 
 export function CurrencyBalance({
-  currencyType,
+  currency,
   amount,
   shouldBeFormatted = true,
   desiredDecimals = 2,
@@ -27,15 +28,17 @@ export function CurrencyBalance({
 }: CurrencyBalanceProps) {
   const styles = useMultiStyleConfig("CurrencyBalance", { size, variant })
 
-  const currency = getCurrencyByType(currencyType)
+  const { symbol, decimals } = isCurrencyType(currency)
+    ? getCurrencyByType(currency)
+    : currency
 
   const balance = useMemo(() => {
     const value = amount ?? 0
     if (shouldBeFormatted)
-      return formatTokenAmount(value, currency.decimals, desiredDecimals)
+      return formatTokenAmount(value, decimals, desiredDecimals)
 
     return numberToLocaleString(value, desiredDecimals)
-  }, [amount, currency, desiredDecimals, shouldBeFormatted])
+  }, [amount, decimals, desiredDecimals, shouldBeFormatted])
 
   return (
     <Box>
@@ -43,7 +46,7 @@ export function CurrencyBalance({
         {balance}
       </Box>
       <Box as="span" __css={styles.symbol} {...textProps}>
-        {currency.symbol}
+        {symbol}
       </Box>
     </Box>
   )

@@ -1,6 +1,6 @@
-import { CurrencyType } from "./currency"
+import { Currency } from "./currency"
 
 export type TokenAmount = {
   amount: bigint
-  currencyType: CurrencyType
+  currency: Currency
 }
