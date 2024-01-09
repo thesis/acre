@@ -1,5 +1,5 @@
 import React, { ComponentProps } from "react"
-import { Box } from "@chakra-ui/react"
+import { Flex } from "@chakra-ui/react"
 import TransactionDetailsItem, { TransactionDetailsItemProps } from "."
 import { CurrencyBalanceWithConversion } from "../CurrencyBalanceWithConversion"
 
@@ -15,7 +15,7 @@ function TransactionDetailsAmountItem({
 }: TransactionDetailsAmountItemProps) {
   return (
     <TransactionDetailsItem label={label} alignItems="start">
-      <Box>
+      <Flex flexDirection="column" alignItems="end">
         <CurrencyBalanceWithConversion
           from={{
             size: "md",
@@ -28,7 +28,7 @@ function TransactionDetailsAmountItem({
             ...to,
           }}
         />
-      </Box>
+      </Flex>
     </TransactionDetailsItem>
   )
 }
