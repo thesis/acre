@@ -63,6 +63,16 @@ const Button: ComponentSingleStyleConfig = {
         }
       }
 
+      if (props.colorScheme === "sidebar") {
+        return {
+          ...defaultStyles,
+          justifyContent: "flex-start",
+          width: "100%",
+          borderColor: "white",
+          borderStyle: "solid",
+        }
+      }
+
       return defaultStyles
     },
   },

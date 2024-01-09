@@ -81,15 +81,11 @@ export default function Sidebar() {
         {BUTTONS.map(({ label }) => (
           <Button
             key={label}
-            marginTop="12px"
-            variant="outline"
-            justifyContent="flex-start"
+            marginTop="3"
+            variant="card"
+            colorScheme="sidebar"
             leftIcon={<Icon as={ArrowUpRight} boxSize={6} color="brand.400" />}
             onClick={openDocsDrawer}
-            width="100%"
-            bg="gold.100"
-            borderColor="white"
-            borderStyle="solid"
           >
             {label}
           </Button>
