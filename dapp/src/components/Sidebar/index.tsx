@@ -39,10 +39,10 @@ export default function Sidebar() {
     >
       <Box __css={styles.sidebar}>
         <Button
-          justifyContent="flex-start"
-          leftIcon={<Icon as={ArrowUpRight} boxSize={6} />}
+          leftIcon={<Icon as={ArrowUpRight} boxSize={4} />}
           onClick={openDocsDrawer}
-          width="100%"
+          variant="sidebar"
+          colorScheme="solid"
         >
           Docs
         </Button>
@@ -82,9 +82,9 @@ export default function Sidebar() {
           <Button
             key={label}
             marginTop="3"
-            variant="card"
-            colorScheme="sidebar"
-            leftIcon={<Icon as={ArrowUpRight} boxSize={6} color="brand.400" />}
+            variant="sidebar"
+            colorScheme="outline"
+            leftIcon={<Icon as={ArrowUpRight} boxSize={4} color="brand.400" />}
             onClick={openDocsDrawer}
           >
             {label}

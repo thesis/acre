@@ -40,6 +40,45 @@ const Button: ComponentSingleStyleConfig = {
         bg: "transparent",
       },
     },
+    sidebar: (props: StyleFunctionProps) => {
+      const defaultStyles = {
+        justifyContent: "flex-start",
+        width: "100%",
+      }
+
+      if (props.colorScheme === "solid") {
+        return {
+          ...defaultStyles,
+          bg: "brand.400",
+          color: "white",
+          _hover: {
+            bg: "brand.500",
+          },
+          _active: {
+            bg: "brand.400",
+          },
+        }
+      }
+
+      if (props.colorScheme === "outline") {
+        return {
+          ...defaultStyles,
+          borderWidth: "2px",
+          bg: "gold.100",
+          borderRadius: "6px",
+          borderColor: "white",
+          borderStyle: "solid",
+          _hover: {
+            bg: "opacity.grey.700.05",
+          },
+          _active: {
+            bg: "transparent",
+          },
+        }
+      }
+
+      return defaultStyles
+    },
     card: (props: StyleFunctionProps) => {
       const defaultStyles = {
         borderWidth: "2px",
@@ -66,6 +105,8 @@ const Button: ComponentSingleStyleConfig = {
       if (props.colorScheme === "sidebar") {
         return {
           ...defaultStyles,
+          borderRadius: "6px",
+          marginTop: "3",
           justifyContent: "flex-start",
           width: "100%",
           borderColor: "white",
