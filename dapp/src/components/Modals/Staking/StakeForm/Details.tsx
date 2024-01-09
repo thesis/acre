@@ -23,12 +23,10 @@ function Details({
         label="Amount to be staked"
         from={{
           currency,
-          amount: value ?? 0n,
+          amount: btcAmount,
         }}
         to={{
           currency: "usd",
-          amount: "11212",
-          shouldBeFormatted: false,
         }}
       />
       <TransactionDetailsAmountItem
@@ -39,8 +37,6 @@ function Details({
         }}
         to={{
           currency: "usd",
-          amount: "11212",
-          shouldBeFormatted: false,
         }}
       />
       <TransactionDetailsAmountItem
@@ -51,8 +47,6 @@ function Details({
         }}
         to={{
           currency: "usd",
-          amount: "11212",
-          shouldBeFormatted: false,
         }}
       />
     </List>

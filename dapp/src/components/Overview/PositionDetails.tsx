@@ -36,8 +36,6 @@ export default function PositionDetails(props: CardProps) {
           }}
           to={{
             currency: "usd",
-            amount: 419288.98,
-            shouldBeFormatted: false,
             size: "lg",
           }}
         />
