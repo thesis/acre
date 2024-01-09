@@ -1,26 +1,30 @@
 import { useEffect, useState } from "react"
-import { ZERO_AMOUNT } from "../constants"
 
-export function useTransactionDetails(amount: bigint): {
+type UseTransactionDetailsResult = {
+  btcAmount: string
   protocolFee: string
   estimatedAmount: string
-} {
-  const [protocolFee, setProtocolFee] = useState<bigint>(ZERO_AMOUNT)
-  const [estimatedAmount, setEstimatedAmount] = useState<bigint>(ZERO_AMOUNT)
+}
+
+export function useTransactionDetails(amount: bigint | undefined) {
+  const [details, setDetails] = useState<
+    UseTransactionDetailsResult | undefined
+  >(undefined)
 
   useEffect(() => {
-    if (amount <= ZERO_AMOUNT) {
-      setProtocolFee(ZERO_AMOUNT)
-      setEstimatedAmount(ZERO_AMOUNT)
+    if (!amount) {
+      setDetails(undefined)
     } else {
-      const newProtocolFee = amount / 10000n
-      setProtocolFee(newProtocolFee)
-      setEstimatedAmount(amount - newProtocolFee)
+      const protocolFee = amount / 10000n
+      const estimatedAmount = amount - protocolFee
+
+      setDetails({
+        btcAmount: amount.toString(),
+        protocolFee: protocolFee.toString(),
+        estimatedAmount: estimatedAmount.toString(),
+      })
     }
   }, [amount])
 
-  return {
-    protocolFee: protocolFee.toString(),
-    estimatedAmount: estimatedAmount.toString(),
-  }
+  return details
 }

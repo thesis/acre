@@ -12,10 +12,9 @@ function Details({
   fieldName: string
   currency: Currency
 }) {
-  const [, { value }] = useField(fieldName)
-  const btcAmount = value ?? 0n
+  const [, { value }] = useField<bigint | undefined>(fieldName)
 
-  const { protocolFee, estimatedAmount } = useTransactionDetails(btcAmount)
+  const details = useTransactionDetails(value ?? 0n)
 
   return (
     <List spacing={3} mt={10}>
@@ -23,7 +22,7 @@ function Details({
         label="Amount to be staked"
         from={{
           currency,
-          amount: btcAmount,
+          amount: details?.btcAmount,
         }}
         to={{
           currency: "usd",
@@ -33,7 +32,7 @@ function Details({
         label="Protocol fee (0.01%)"
         from={{
           currency,
-          amount: protocolFee,
+          amount: details?.protocolFee,
         }}
         to={{
           currency: "usd",
@@ -43,7 +42,7 @@ function Details({
         label="Approximately staked tokens"
         from={{
           currency,
-          amount: estimatedAmount,
+          amount: details?.estimatedAmount,
         }}
         to={{
           currency: "usd",
