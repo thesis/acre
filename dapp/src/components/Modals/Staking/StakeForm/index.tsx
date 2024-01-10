@@ -9,16 +9,16 @@ import Details from "./Details"
 
 function StakeForm({ goNext }: ModalStep) {
   const { btcAccount } = useWalletContext()
-  const { seTokenAmount } = useTransactionContext()
+  const { setTokenAmount } = useTransactionContext()
 
   const handleSubmitForm = useCallback(
     (values: TokenAmountFormValues) => {
       if (!values.amount) return
 
-      seTokenAmount({ amount: values.amount, currency: "bitcoin" })
+      setTokenAmount({ amount: values.amount, currency: "bitcoin" })
       goNext()
     },
-    [goNext, seTokenAmount],
+    [goNext, setTokenAmount],
   )
 
   return (
