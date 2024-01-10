@@ -9,7 +9,7 @@ export type TokenAmountFormValues = {
 }
 
 export type TokenAmountFormBaseProps = {
-  formId: string
+  formId?: string
   tokenBalance: string
   tokenBalanceInputPlaceholder: string
   currency: Currency
