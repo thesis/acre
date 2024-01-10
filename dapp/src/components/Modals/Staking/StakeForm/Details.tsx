@@ -4,15 +4,10 @@ import { useField } from "formik"
 import { useTransactionDetails } from "../../../../hooks"
 import TransactionDetailsAmountItem from "../../../shared/TransactionDetails/AmountItem"
 import { Currency } from "../../../../types"
+import { TOKEN_AMOUNT_FIELD_NAME } from "../../../../constants"
 
-function Details({
-  fieldName,
-  currency,
-}: {
-  fieldName: string
-  currency: Currency
-}) {
-  const [, { value }] = useField<bigint | undefined>(fieldName)
+function Details({ currency }: { currency: Currency }) {
+  const [, { value }] = useField<bigint | undefined>(TOKEN_AMOUNT_FIELD_NAME)
 
   const details = useTransactionDetails(value ?? 0n)
 

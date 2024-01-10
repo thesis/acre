@@ -7,7 +7,6 @@ import TokenAmountForm from "../../../shared/TokenAmountForm"
 import { TokenAmountFormValues } from "../../../shared/TokenAmountForm/TokenAmountFormBase"
 import Details from "./Details"
 
-const FORM_FIELD_NAME = "amount"
 const FORM_ID = "staking-form"
 
 function StakeForm({ goNext }: ModalStep) {
@@ -28,14 +27,13 @@ function StakeForm({ goNext }: ModalStep) {
     <>
       <TokenAmountForm
         formId={FORM_ID}
-        fieldName={FORM_FIELD_NAME}
         tokenBalanceInputPlaceholder="BTC"
         currency={BITCOIN}
         tokenBalance={btcAccount?.balance.toString() ?? "0"}
         minTokenAmount={BITCOIN_MIN_AMOUNT}
         onSubmitForm={handleSubmitForm}
       >
-        <Details currency={BITCOIN} fieldName={FORM_FIELD_NAME} />
+        <Details currency={BITCOIN} />
       </TokenAmountForm>
       <Button type="submit" form={FORM_ID} size="lg" width="100%" mt={4}>
         Stake
