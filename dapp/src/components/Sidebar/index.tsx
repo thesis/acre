@@ -34,8 +34,11 @@ export default function Sidebar() {
     <Box
       as="aside"
       mt="header_height"
-      w={isOpen ? 80 : 0}
-      __css={styles.sidebarContainer}
+      __css={
+        isOpen
+          ? styles.expandedSidebarContainer
+          : styles.collapsedSidebarContainer
+      }
     >
       <Box __css={styles.sidebar}>
         <Button
