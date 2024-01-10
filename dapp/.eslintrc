@@ -16,8 +16,12 @@
       { "allowRequiredDefaults": true }
     ],
     "react/require-default-props": [0],
+    // Regarding the fact we are using now: @thesis-co/eslint-config": "github:thesis/eslint-config#7b9bc8c"
+    // Promise-returning function provided to attribute where a void return was expected.
+    // Avoid referencing unbound methods which may cause unintentional scoping of `this`, used in theme files.
     "@typescript-eslint/no-misused-promises": "off",
     "@typescript-eslint/unbound-method": "off",
+    // Computed name [status] resolves to any value (related to external chakra-ui package)
     "@typescript-eslint/no-unsafe-member-access": "off"
   }
 }
