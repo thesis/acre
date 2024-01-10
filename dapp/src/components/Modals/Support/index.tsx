@@ -19,7 +19,7 @@ export default function SupportWrapper({
   if (!btcAccount)
     return (
       <MissingAccount
-        currencyType="bitcoin"
+        currency="bitcoin"
         icon={ConnectBTCAccount}
         requestAccount={requestBitcoinAccount}
       />
@@ -28,7 +28,7 @@ export default function SupportWrapper({
   if (!ethAccount)
     return (
       <MissingAccount
-        currencyType="ethereum"
+        currency="ethereum"
         icon={ConnectETHAccount}
         requestAccount={requestEthereumAccount}
       />
