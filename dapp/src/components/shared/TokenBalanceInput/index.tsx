@@ -12,8 +12,12 @@ import {
   InputRightElement,
   useMultiStyleConfig,
 } from "@chakra-ui/react"
-import { fixedPointNumberToString, userAmountToBigInt } from "../../../utils"
-import { Currency, CurrencyType } from "../../../types"
+import {
+  fixedPointNumberToString,
+  getCurrencyByType,
+  userAmountToBigInt,
+} from "../../../utils"
+import { CurrencyType } from "../../../types"
 import NumberFormatInput, {
   NumberFormatInputValues,
 } from "../NumberFormatInput"
@@ -55,20 +59,20 @@ function HelperErrorText({
 
 type FiatCurrencyBalanceProps = {
   fiatAmount?: string
-  fiatCurrencyType?: CurrencyType
+  fiatCurrency?: CurrencyType
 }
 
 function FiatCurrencyBalance({
   fiatAmount,
-  fiatCurrencyType,
+  fiatCurrency,
 }: FiatCurrencyBalanceProps) {
   const styles = useMultiStyleConfig("Form")
   const { fontWeight } = styles.helperText
 
-  if (fiatAmount && fiatCurrencyType) {
+  if (fiatAmount && fiatCurrency) {
     return (
       <CurrencyBalance
-        currency={fiatCurrencyType}
+        currency={fiatCurrency}
         amount={fiatAmount}
         shouldBeFormatted={false}
         fontWeight={fontWeight as string}
@@ -82,7 +86,7 @@ function FiatCurrencyBalance({
 
 export type TokenBalanceInputProps = {
   amount?: bigint
-  currency: Currency
+  currency: CurrencyType
   tokenBalance: string | number
   placeholder?: string
   size?: "lg" | "md"
@@ -102,16 +106,16 @@ export default function TokenBalanceInput({
   helperText,
   hasError = false,
   fiatAmount,
-  fiatCurrencyType,
+  fiatCurrency,
   ...inputProps
 }: TokenBalanceInputProps) {
   const valueRef = useRef<bigint | undefined>(amount)
   const styles = useMultiStyleConfig("TokenBalanceInput", { size })
 
+  const { decimals } = getCurrencyByType(currency)
+
   const handleValueChange = (value: string) => {
-    valueRef.current = value
-      ? userAmountToBigInt(value, currency.decimals)
-      : undefined
+    valueRef.current = value ? userAmountToBigInt(value, decimals) : undefined
   }
 
   return (
@@ -140,7 +144,7 @@ export default function TokenBalanceInput({
           {...inputProps}
           value={
             amount
-              ? fixedPointNumberToString(BigInt(amount), currency.decimals)
+              ? fixedPointNumberToString(BigInt(amount), decimals)
               : undefined
           }
           onValueChange={(values: NumberFormatInputValues) =>
@@ -165,7 +169,7 @@ export default function TokenBalanceInput({
         <FormHelperText>
           <FiatCurrencyBalance
             fiatAmount={fiatAmount}
-            fiatCurrencyType={fiatCurrencyType}
+            fiatCurrency={fiatCurrency}
           />
         </FormHelperText>
       )}

@@ -1,6 +1,6 @@
 import React, { useCallback } from "react"
 import { Button } from "@chakra-ui/react"
-import { BITCOIN, BITCOIN_MIN_AMOUNT } from "../../../../constants"
+import { BITCOIN_MIN_AMOUNT } from "../../../../constants"
 import { ModalStep } from "../../../../contexts"
 import { useWalletContext, useTransactionContext } from "../../../../hooks"
 import TokenAmountForm from "../../../shared/TokenAmountForm"
@@ -15,7 +15,7 @@ function StakeForm({ goNext }: ModalStep) {
     (values: TokenAmountFormValues) => {
       if (!values.amount) return
 
-      seTokenAmount({ amount: values.amount, currency: BITCOIN })
+      seTokenAmount({ amount: values.amount, currency: "bitcoin" })
       goNext()
     },
     [goNext, seTokenAmount],
@@ -24,12 +24,12 @@ function StakeForm({ goNext }: ModalStep) {
   return (
     <TokenAmountForm
       tokenBalanceInputPlaceholder="BTC"
-      currency={BITCOIN}
+      currency="bitcoin"
       tokenBalance={btcAccount?.balance.toString() ?? "0"}
       minTokenAmount={BITCOIN_MIN_AMOUNT}
       onSubmitForm={handleSubmitForm}
     >
-      <Details currency={BITCOIN} />
+      <Details currency="bitcoin" />
       <Button type="submit" size="lg" width="100%" mt={4}>
         Stake
       </Button>

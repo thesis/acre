@@ -3,13 +3,12 @@ import { Box, useMultiStyleConfig, TextProps } from "@chakra-ui/react"
 import {
   formatTokenAmount,
   getCurrencyByType,
-  isCurrencyType,
   numberToLocaleString,
 } from "../../../utils"
-import { Currency, CurrencyType } from "../../../types"
+import { CurrencyType } from "../../../types"
 
 export type CurrencyBalanceProps = {
-  currency: Currency | CurrencyType
+  currency: CurrencyType
   amount?: string | number
   shouldBeFormatted?: boolean
   desiredDecimals?: number
@@ -28,9 +27,7 @@ export function CurrencyBalance({
 }: CurrencyBalanceProps) {
   const styles = useMultiStyleConfig("CurrencyBalance", { size, variant })
 
-  const { symbol, decimals } = isCurrencyType(currency)
-    ? getCurrencyByType(currency)
-    : currency
+  const { symbol, decimals } = getCurrencyByType(currency)
 
   const balance = useMemo(() => {
     const value = amount ?? 0

@@ -3,10 +3,10 @@ import { List } from "@chakra-ui/react"
 import { useField } from "formik"
 import { useTransactionDetails } from "../../../../hooks"
 import TransactionDetailsAmountItem from "../../../shared/TransactionDetails/AmountItem"
-import { Currency } from "../../../../types"
+import { CurrencyType } from "../../../../types"
 import { TOKEN_AMOUNT_FIELD_NAME } from "../../../../constants"
 
-function Details({ currency }: { currency: Currency }) {
+function Details({ currency }: { currency: CurrencyType }) {
   const [, { value }] = useField<bigint | undefined>(TOKEN_AMOUNT_FIELD_NAME)
 
   const details = useTransactionDetails(value ?? 0n)

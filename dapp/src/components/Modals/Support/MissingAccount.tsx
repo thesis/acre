@@ -13,26 +13,26 @@ import Alert from "../../shared/Alert"
 import { getCurrencyByType } from "../../../utils"
 
 type MissingAccountProps = {
-  currencyType: CurrencyType
+  currency: CurrencyType
   icon: typeof Icon
   requestAccount: (...params: RequestAccountParams) => Promise<void>
 }
 
 export default function MissingAccount({
-  currencyType,
+  currency,
   icon,
   requestAccount,
 }: MissingAccountProps) {
-  const currency = getCurrencyByType(currencyType)
+  const { name, symbol } = getCurrencyByType(currency)
 
   return (
     <>
-      <ModalHeader>{currency.name} account not installed</ModalHeader>
+      <ModalHeader>{name} account not installed</ModalHeader>
       <ModalBody>
         <Icon as={icon} boxSize={32} my={2} />
         <TextMd>
-          {currency.name} account is required to make transactions for
-          depositing and staking your {currency.symbol}.
+          {name} account is required to make transactions for depositing and
+          staking your {symbol}.
         </TextMd>
         <Alert>
           <TextMd>
