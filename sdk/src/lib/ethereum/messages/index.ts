@@ -1,9 +1,9 @@
 import { EthereumSignedMessage } from "./signed-message"
 import { EthereumSigner } from "../contract"
-import { ChainMessages, ChainSignedMessage } from "../../messages"
+import { ChainMessageSigner, ChainSignedMessage } from "../../message-signer"
 import { Hex } from "../../utils"
 
-class EthereumMessages implements ChainMessages {
+class EthereumMessageSigner implements ChainMessageSigner {
   readonly #signer: EthereumSigner
 
   constructor(_signer: EthereumSigner) {
@@ -18,4 +18,4 @@ class EthereumMessages implements ChainMessages {
 }
 
 // eslint-disable-next-line import/prefer-default-export
-export { EthereumMessages }
+export { EthereumMessageSigner }

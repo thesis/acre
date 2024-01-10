@@ -4,8 +4,8 @@ import {
   Deposit,
   extractBitcoinRawTxVectors,
 } from "@keep-network/tbtc-v2.ts"
+import { ChainSignedMessage } from "../../lib/message-signer"
 import { AcreContracts } from "../../lib/contracts"
-import { ChainSignedMessage } from "../../lib/messages"
 import { Hex } from "../../lib/utils"
 
 class StakeInitialization {
