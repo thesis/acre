@@ -1,6 +1,6 @@
 import { verifyMessage, Signature } from "ethers"
 import { EthereumAddress } from "../address"
-import { ChainSignedMessage, V } from "../../messages"
+import { ChainSignedMessage, V } from "../../message-signer"
 import { ChainIdentifier } from "../../contracts"
 import { Hex } from "../../utils"
 

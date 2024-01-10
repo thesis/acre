@@ -1,13 +1,13 @@
 import { TBTC } from "@keep-network/tbtc-v2.ts"
 import { AcreContracts } from "./lib/contracts"
-import { ChainMessages } from "./lib/messages"
-import { EthereumMessages, EthereumSigner } from "./lib/ethereum"
+import { ChainMessageSigner } from "./lib/message-signer"
+import { EthereumMessageSigner, EthereumSigner } from "./lib/ethereum"
 import { StakingModule } from "./modules/staking"
 
 class Acre {
   readonly #tbtc: TBTC
 
-  readonly #messages: ChainMessages
+  readonly #messages: ChainMessageSigner
 
   public readonly contracts: AcreContracts
 
@@ -15,7 +15,7 @@ class Acre {
 
   constructor(
     _contracts: AcreContracts,
-    _messages: ChainMessages,
+    _messages: ChainMessageSigner,
     _tbtc: TBTC,
   ) {
     this.contracts = _contracts
@@ -32,7 +32,7 @@ class Acre {
     // TODO: Create Ethereum contracts.
     const contracts = {} as AcreContracts
 
-    const messages = new EthereumMessages(signer)
+    const messages = new EthereumMessageSigner(signer)
 
     // The `TBTCDepositor` contract reveals the deposit to the tBTC Bridge
     // contract on behalf of the user so we need to set the default depositor to
