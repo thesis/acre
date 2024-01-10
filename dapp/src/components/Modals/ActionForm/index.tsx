@@ -7,16 +7,16 @@ import {
   TabPanels,
   TabPanel,
 } from "@chakra-ui/react"
-import { ModalStep } from "../../../contexts"
 import StakeForm from "../Staking/StakeForm"
+import { useModalFlowContext } from "../../../hooks"
 
 const TABS = ["stake", "unstake"] as const
 
 type Action = (typeof TABS)[number]
 
-type ActionFormProps = { action: Action } & ModalStep
+function ActionForm({ action }: { action: Action }) {
+  const { goNext } = useModalFlowContext()
 
-function ActionForm({ action, goNext }: ActionFormProps) {
   return (
     <ModalBody>
       <Tabs w="100%" variant="underline" defaultIndex={TABS.indexOf(action)}>
