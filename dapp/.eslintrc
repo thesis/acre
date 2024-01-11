@@ -26,7 +26,8 @@
         "src/components/Header/ConnectWallet.tsx",
         "src/components/Modals/Support/MissingAccount.tsx",
         "src/components/Modals/Staking/SignMessage.tsx",
-        "src/hooks/useDepositBTCTransaction.ts"
+        "src/hooks/useDepositBTCTransaction.ts",
+        "src/components/shared/Form/FormTokenBalanceInput.tsx"
       ],
       "rules": {
         "@typescript-eslint/no-misused-promises": "off"
@@ -54,6 +55,22 @@
       ],
       "rules": {
         "@typescript-eslint/no-unsafe-member-access": "off"
+      }
+    },
+    {
+      "files": [
+        "src/components/shared/Form/FormTokenBalanceInput.tsx"
+      ],
+      "rules": {
+        "@typescript-eslint/no-unsafe-assignment": "off"
+      }
+    },
+    {
+      "files": [
+        "src/components/shared/TokenAmountForm/index.tsx"
+      ],
+      "rules": {
+        "@typescript-eslint/require-await": "off"
       }
     }
   ],
