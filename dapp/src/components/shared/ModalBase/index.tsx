@@ -11,7 +11,7 @@ import {
   ModalFlowContextValue,
   TransactionContextProvider,
 } from "#/contexts"
-import SupportWrapper from "../../Modals/Support"
+import SupportWrapper from "#/components/Modals/Support"
 
 export default function ModalBase({
   isOpen,
