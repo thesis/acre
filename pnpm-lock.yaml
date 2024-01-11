@@ -146,8 +146,8 @@ importers:
         version: 5.3.1(react-dom@18.2.0)(react@18.2.0)
     devDependencies:
       '@thesis-co/eslint-config':
-        specifier: ^0.6.1
-        version: 0.6.1(eslint@8.54.0)(prettier@3.1.0)(typescript@5.3.2)
+        specifier: github:thesis/eslint-config#7b9bc8c
+        version: github.com/thesis/eslint-config/7b9bc8c(eslint@8.54.0)(prettier@3.1.0)(typescript@5.3.2)
       '@types/react':
         specifier: ^18.2.38
         version: 18.2.38

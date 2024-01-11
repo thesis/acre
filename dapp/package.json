@@ -27,7 +27,7 @@
     "react-number-format": "^5.3.1"
   },
   "devDependencies": {
-    "@thesis-co/eslint-config": "^0.6.1",
+    "@thesis-co/eslint-config": "github:thesis/eslint-config#7b9bc8c",
     "@types/react": "^18.2.38",
     "@types/react-dom": "^18.2.17",
     "@typescript-eslint/eslint-plugin": "^6.12.0",
