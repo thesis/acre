@@ -3,9 +3,9 @@ import {
   useRequestBitcoinAccount,
   useRequestEthereumAccount,
   useWalletContext,
-} from "../../../hooks"
+} from "#/hooks"
+import { ConnectBTCAccount, ConnectETHAccount } from "#/static/icons"
 import MissingAccount from "./MissingAccount"
-import { ConnectBTCAccount, ConnectETHAccount } from "../../../static/icons"
 
 export default function SupportWrapper({
   children,
