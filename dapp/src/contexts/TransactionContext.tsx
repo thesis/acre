@@ -1,5 +1,5 @@
 import React, { createContext, useMemo, useState } from "react"
-import { TokenAmount } from "../types"
+import { TokenAmount } from "~/types"
 
 type TransactionContextValue = {
   tokenAmount?: TokenAmount

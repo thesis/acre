@@ -1,7 +1,7 @@
 import { useSignMessage as useSignMessageLedgerLive } from "@ledgerhq/wallet-api-client-react"
 import { useCallback, useEffect } from "react"
+import { OnSuccessCallback } from "~/types"
 import { useWalletContext } from "./useWalletContext"
-import { OnSuccessCallback } from "../types"
 
 const SIGN_MESSAGE = "Test message"
 

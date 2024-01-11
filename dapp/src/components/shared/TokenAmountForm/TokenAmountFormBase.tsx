@@ -1,7 +1,7 @@
 import React from "react"
 import { FormikProps, useField } from "formik"
+import { CurrencyType } from "~/types"
 import { Form, FormTokenBalanceInput } from "../Form"
-import { CurrencyType } from "../../../types"
 
 const TOKEN_AMOUNT_FIELD_NAME = "amount"
 

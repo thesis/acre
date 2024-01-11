@@ -16,13 +16,13 @@ import {
   fixedPointNumberToString,
   getCurrencyByType,
   userAmountToBigInt,
-} from "../../../utils"
-import { CurrencyType } from "../../../types"
+} from "~/utils"
+import { AlertInfo } from "~/static/icons"
+import { CurrencyType } from "~/types"
 import NumberFormatInput, {
   NumberFormatInputValues,
 } from "../NumberFormatInput"
 import { CurrencyBalance } from "../CurrencyBalance"
-import { AlertInfo } from "../../../static/icons"
 
 const VARIANT = "balance"
 

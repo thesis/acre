@@ -1,7 +1,7 @@
 import React from "react"
-import Alert from "../../shared/Alert"
-import { useDepositBTCTransaction, useModalFlowContext } from "../../../hooks"
-import { TextMd } from "../../shared/Typography"
+import { useDepositBTCTransaction, useModalFlowContext } from "~/hooks"
+import Alert from "~/components/shared/Alert"
+import { TextMd } from "~/components/shared/Typography"
 import StakingSteps from "./components/StakingSteps"
 
 export default function DepositBTC() {

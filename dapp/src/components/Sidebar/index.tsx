@@ -1,6 +1,6 @@
 import React from "react"
 import { Box, Button, useMultiStyleConfig } from "@chakra-ui/react"
-import { useDocsDrawer, useSidebar } from "../../hooks"
+import { useDocsDrawer, useSidebar } from "~/hooks"
 
 export default function Sidebar() {
   const { isOpen } = useSidebar()

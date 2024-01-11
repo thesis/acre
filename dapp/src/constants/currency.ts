@@ -1,4 +1,4 @@
-import { Currency, CurrencyType } from "../types"
+import { Currency, CurrencyType } from "~/types"
 
 export const BITCOIN: Currency = {
   name: "Bitcoin",

@@ -1,5 +1,5 @@
 import React from "react"
-import { StepBase } from "../../../shared/StepperBase"
+import { StepBase } from "~/components/shared/StepperBase"
 import { Description, Title } from "../components/StakingSteps"
 
 export const STEPS: StepBase[] = [
