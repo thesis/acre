@@ -19,6 +19,7 @@ import FormLabel from "./FormLabel"
 import FormError from "./FormError"
 import Tabs from "./Tabs"
 import { spinnerTheme as Spinner } from "./Spinner"
+import { tableTheme as Table } from "./Table"
 
 const defaultTheme = {
   colors,
@@ -54,6 +55,7 @@ const defaultTheme = {
     FormError,
     Tabs,
     Spinner,
+    Table,
   },
 }
 
