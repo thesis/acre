@@ -1,4 +1,4 @@
-import { CurrencyType } from "~/types"
+import { CurrencyType } from "#/types"
 import { getCurrencyByType } from "./currency"
 import { formatTokenAmount } from "./numbers"
 

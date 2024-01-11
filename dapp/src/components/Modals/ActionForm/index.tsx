@@ -7,7 +7,7 @@ import {
   TabPanels,
   TabPanel,
 } from "@chakra-ui/react"
-import { useModalFlowContext } from "~/hooks"
+import { useModalFlowContext } from "#/hooks"
 import StakeForm from "../Staking/StakeForm"
 
 const TABS = ["stake", "unstake"] as const

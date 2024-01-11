@@ -6,8 +6,8 @@ import {
   ModalHeader,
   StepNumber,
 } from "@chakra-ui/react"
-import StepperBase from "~/components/shared/StepperBase"
-import { useModalFlowContext } from "~/hooks"
+import StepperBase from "#/components/shared/StepperBase"
+import { useModalFlowContext } from "#/hooks"
 import { STEPS } from "./steps"
 
 export default function Overview() {

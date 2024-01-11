@@ -1,6 +1,6 @@
 import React from "react"
-import { useModalFlowContext } from "~/hooks"
-import ModalBase from "~/components/shared/ModalBase"
+import { useModalFlowContext } from "#/hooks"
+import ModalBase from "#/components/shared/ModalBase"
 import Overview from "./Overview"
 import ActionForm from "../ActionForm"
 import SignMessage from "./SignMessage"

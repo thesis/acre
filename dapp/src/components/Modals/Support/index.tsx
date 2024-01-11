@@ -3,8 +3,8 @@ import {
   useRequestBitcoinAccount,
   useRequestEthereumAccount,
   useWalletContext,
-} from "~/hooks"
-import { ConnectBTCAccount, ConnectETHAccount } from "~/static/icons"
+} from "#/hooks"
+import { ConnectBTCAccount, ConnectETHAccount } from "#/static/icons"
 import MissingAccount from "./MissingAccount"
 
 export default function SupportWrapper({

@@ -5,11 +5,11 @@ import {
   useRequestBitcoinAccount,
   useRequestEthereumAccount,
   useWalletContext,
-} from "~/hooks"
-import { CurrencyBalance } from "~/components/shared/CurrencyBalance"
-import { TextMd } from "~/components/shared/Typography"
-import { Bitcoin, Ethereum } from "~/static/icons"
-import { truncateAddress } from "~/utils"
+} from "#/hooks"
+import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
+import { TextMd } from "#/components/shared/Typography"
+import { Bitcoin, Ethereum } from "#/static/icons"
+import { truncateAddress } from "#/utils"
 
 export type ConnectButtonsProps = {
   leftIcon: typeof Icon

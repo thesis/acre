@@ -5,8 +5,8 @@ import {
   DrawerContent,
   DrawerOverlay,
 } from "@chakra-ui/react"
-import { useDocsDrawer } from "~/hooks"
-import { TextMd } from "~/components/shared/Typography"
+import { useDocsDrawer } from "#/hooks"
+import { TextMd } from "#/components/shared/Typography"
 
 export default function DocsDrawer() {
   const { isOpen, onClose } = useDocsDrawer()

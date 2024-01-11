@@ -1,11 +1,11 @@
 import React from "react"
 import { Global } from "@emotion/react"
 
-import SegmentRegular from "~/fonts/Segment-Regular.otf"
-import SegmentMedium from "~/fonts/Segment-Medium.otf"
-import SegmentSemiBold from "~/fonts/Segment-SemiBold.otf"
-import SegmentBold from "~/fonts/Segment-Bold.otf"
-import SegmentBlack from "~/fonts/Segment-Black.otf"
+import SegmentRegular from "#/fonts/Segment-Regular.otf"
+import SegmentMedium from "#/fonts/Segment-Medium.otf"
+import SegmentSemiBold from "#/fonts/Segment-SemiBold.otf"
+import SegmentBold from "#/fonts/Segment-Bold.otf"
+import SegmentBlack from "#/fonts/Segment-Black.otf"
 
 export default function GlobalStyles() {
   return (

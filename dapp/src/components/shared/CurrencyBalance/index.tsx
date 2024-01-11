@@ -4,8 +4,8 @@ import {
   formatTokenAmount,
   getCurrencyByType,
   numberToLocaleString,
-} from "~/utils"
-import { CurrencyType } from "~/types"
+} from "#/utils"
+import { CurrencyType } from "#/types"
 
 export type CurrencyBalanceProps = {
   currency: CurrencyType

@@ -1,10 +1,10 @@
 import React, { useCallback } from "react"
 import { Button } from "@chakra-ui/react"
-import { BITCOIN_MIN_AMOUNT } from "~/constants"
-import { ModalStep } from "~/contexts"
-import TokenAmountForm from "~/components/shared/TokenAmountForm"
-import { TokenAmountFormValues } from "~/components/shared/TokenAmountForm/TokenAmountFormBase"
-import { useWalletContext, useTransactionContext } from "~/hooks"
+import { BITCOIN_MIN_AMOUNT } from "#/constants"
+import { ModalStep } from "#/contexts"
+import TokenAmountForm from "#/components/shared/TokenAmountForm"
+import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
+import { useWalletContext, useTransactionContext } from "#/hooks"
 import Details from "./Details"
 
 function StakeForm({ goNext }: ModalStep) {

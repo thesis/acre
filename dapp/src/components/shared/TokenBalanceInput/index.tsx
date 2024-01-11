@@ -16,9 +16,9 @@ import {
   fixedPointNumberToString,
   getCurrencyByType,
   userAmountToBigInt,
-} from "~/utils"
-import { AlertInfo } from "~/static/icons"
-import { CurrencyType } from "~/types"
+} from "#/utils"
+import { AlertInfo } from "#/static/icons"
+import { CurrencyType } from "#/types"
 import NumberFormatInput, {
   NumberFormatInputValues,
 } from "../NumberFormatInput"

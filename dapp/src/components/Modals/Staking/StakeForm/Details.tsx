@@ -1,9 +1,9 @@
 import React from "react"
 import { List } from "@chakra-ui/react"
-import TransactionDetailsAmountItem from "~/components/shared/TransactionDetails/AmountItem"
-import { useTokenAmountFormValue } from "~/components/shared/TokenAmountForm/TokenAmountFormBase"
-import { useTransactionDetails } from "~/hooks"
-import { CurrencyType } from "~/types"
+import TransactionDetailsAmountItem from "#/components/shared/TransactionDetails/AmountItem"
+import { useTokenAmountFormValue } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
+import { useTransactionDetails } from "#/hooks"
+import { CurrencyType } from "#/types"
 
 function Details({ currency }: { currency: CurrencyType }) {
   const value = useTokenAmountFormValue()

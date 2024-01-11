@@ -10,9 +10,9 @@ import {
   CardProps,
   useBoolean,
 } from "@chakra-ui/react"
-import { CurrencyBalanceWithConversion } from "~/components/shared/CurrencyBalanceWithConversion"
-import { TextMd } from "~/components/shared/Typography"
-import { Info } from "~/static/icons"
+import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
+import { TextMd } from "#/components/shared/Typography"
+import { Info } from "#/static/icons"
 import StakingModal from "../Modals/Staking"
 
 export default function PositionDetails(props: CardProps) {

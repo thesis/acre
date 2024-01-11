@@ -6,9 +6,9 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@chakra-ui/react"
-import { TextLg, TextMd } from "~/components/shared/Typography"
-import StepperBase, { StepBase } from "~/components/shared/StepperBase"
-import Spinner from "~/components/shared/Spinner"
+import { TextLg, TextMd } from "#/components/shared/Typography"
+import StepperBase, { StepBase } from "#/components/shared/StepperBase"
+import Spinner from "#/components/shared/Spinner"
 
 export function Title({ children }: { children: React.ReactNode }) {
   return <TextLg fontWeight="bold">{children}</TextLg>

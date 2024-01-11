@@ -1,8 +1,8 @@
 import React from "react"
 import { Highlight } from "@chakra-ui/react"
-import { useModalFlowContext, useSignMessage } from "~/hooks"
-import Alert from "~/components/shared/Alert"
-import { TextMd } from "~/components/shared/Typography"
+import { useModalFlowContext, useSignMessage } from "#/hooks"
+import Alert from "#/components/shared/Alert"
+import { TextMd } from "#/components/shared/Typography"
 import StakingSteps from "./components/StakingSteps"
 
 export default function SignMessage() {
