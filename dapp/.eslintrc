@@ -16,14 +16,45 @@
       { "allowRequiredDefaults": true }
     ],
     "react/require-default-props": [0],
-    // Regarding the fact we are using now: @thesis-co/eslint-config": "github:thesis/eslint-config#7b9bc8c"
-    // Promise-returning function provided to attribute where a void return was expected.
-    // Avoid referencing unbound methods which may cause unintentional scoping of `this`, used in theme files.
-    "@typescript-eslint/no-misused-promises": "off",
-    "@typescript-eslint/unbound-method": "off",
-    // Computed name [status] resolves to any value (related to external chakra-ui package)
-    "@typescript-eslint/no-unsafe-member-access": "off",
-    // Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator
-    "@typescript-eslint/no-floating-promises": "off"
-  }
+  },
+  // FIXME: 
+  // This is temporary solution after changes of the eslint-config version: @thesis-co/eslint-config: "github:thesis/eslint-config#7b9bc8c"
+  // Overrides rules should be fixed file by file.
+  "overrides": [
+    {
+      "files": [
+        "src/components/Header/ConnectWallet.tsx",
+        "src/components/Modals/Support/MissingAccount.tsx",
+        "src/components/Modals/Staking/SignMessage.tsx",
+        "src/hooks/useDepositBTCTransaction.ts"
+      ],
+      "rules": {
+        "@typescript-eslint/no-misused-promises": "off"
+      }
+    }, 
+    {
+      "files": [
+        "src/hooks/useSignMessage.ts"
+      ],
+      "rules": {
+        "@typescript-eslint/no-floating-promises": "off"
+      }
+    },
+    {
+      "files": [
+        "src/theme/*"
+      ],
+      "rules": {
+        "@typescript-eslint/unbound-method": "off"
+      }
+    },
+    {
+      "files": [
+        "src/theme/Alert.ts"
+      ],
+      "rules": {
+        "@typescript-eslint/no-unsafe-member-access": "off"
+      }
+    }
+   ]
 }
