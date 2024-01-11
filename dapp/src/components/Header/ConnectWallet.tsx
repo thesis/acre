@@ -46,7 +46,7 @@ export default function ConnectWallet() {
       <HStack display={{ base: "none", md: "flex" }}>
         <TextMd color="grey.500">Balance</TextMd>
         <CurrencyBalance
-          currencyType="bitcoin"
+          currency="bitcoin"
           amount={btcAccount?.balance.toString()}
         />
       </HStack>

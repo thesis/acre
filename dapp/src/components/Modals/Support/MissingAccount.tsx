@@ -9,39 +9,39 @@ import {
 } from "@chakra-ui/react"
 import { CurrencyType, RequestAccountParams } from "../../../types"
 import { TextMd } from "../../shared/Typography"
-import AlertWrapper from "../../shared/Alert"
-import { CURRENCIES_BY_TYPE } from "../../../constants"
+import Alert from "../../shared/Alert"
+import { getCurrencyByType } from "../../../utils"
 
 type MissingAccountProps = {
-  currencyType: CurrencyType
+  currency: CurrencyType
   icon: typeof Icon
   requestAccount: (...params: RequestAccountParams) => Promise<void>
 }
 
 export default function MissingAccount({
-  currencyType,
+  currency,
   icon,
   requestAccount,
 }: MissingAccountProps) {
-  const currency = CURRENCIES_BY_TYPE[currencyType]
+  const { name, symbol } = getCurrencyByType(currency)
 
   return (
     <>
-      <ModalHeader>{currency.name} account not installed</ModalHeader>
+      <ModalHeader>{name} account not installed</ModalHeader>
       <ModalBody>
         <Icon as={icon} boxSize={32} my={2} />
         <TextMd>
-          {currency.name} account is required to make transactions for
-          depositing and staking your {currency.symbol}.
+          {name} account is required to make transactions for depositing and
+          staking your {symbol}.
         </TextMd>
-        <AlertWrapper status="info" withIcon>
+        <Alert>
           <TextMd>
             <Highlight query="Accounts" styles={{ fontWeight: "bold" }}>
               You will be sent to the Ledger Accounts section to perform this
               action.
             </Highlight>
           </TextMd>
-        </AlertWrapper>
+        </Alert>
       </ModalBody>
       <ModalFooter mt={4}>
         <Button
