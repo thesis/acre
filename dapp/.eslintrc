@@ -56,5 +56,15 @@
         "@typescript-eslint/no-unsafe-member-access": "off"
       }
     }
-   ]
+  ],
+  "settings": {
+    "import/resolver": {
+      "alias": {
+        "map": [
+          ["#", "./src"]
+        ],
+        "extensions": [".js", ".jsx",".ts", ".tsx"]
+      }
+    }
+  }
 }

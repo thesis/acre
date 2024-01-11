@@ -1,8 +1,8 @@
 import React from "react"
-import { useModalFlowContext } from "../../../hooks"
-import StakeForm from "./StakeForm"
+import { useModalFlowContext } from "#/hooks"
+import ModalBase from "#/components/shared/ModalBase"
 import Overview from "./Overview"
-import ModalBase from "../../shared/ModalBase"
+import ActionForm from "../ActionForm"
 import SignMessage from "./SignMessage"
 import DepositBTC from "./DepositBTC"
 
@@ -11,7 +11,7 @@ function ActiveStakingStep() {
 
   switch (activeStep) {
     case 1:
-      return <StakeForm />
+      return <ActionForm action="stake" />
     case 2:
       return <Overview />
     case 3:
