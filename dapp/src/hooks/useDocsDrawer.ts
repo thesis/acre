@@ -1,5 +1,5 @@
 import { useContext } from "react"
-import { DocsDrawerContext } from "../contexts"
+import { DocsDrawerContext } from "#/contexts"
 
 export function useDocsDrawer() {
   const context = useContext(DocsDrawerContext)

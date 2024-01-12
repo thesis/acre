@@ -1,5 +1,5 @@
 import { FormikErrors, withFormik } from "formik"
-import { getErrorsObj, validateTokenAmount } from "../../../utils"
+import { getErrorsObj, validateTokenAmount } from "#/utils"
 import TokenAmountFormBase, {
   TokenAmountFormBaseProps,
   TokenAmountFormValues,
