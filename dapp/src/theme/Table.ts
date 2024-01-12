@@ -6,12 +6,12 @@ const KEYS = [...parts.keys, "cellContainer", "cell", "divider"] as const
 const { defineMultiStyleConfig, definePartsStyle } =
   createMultiStyleConfigHelpers(KEYS)
 
-const baseStyleTable = defineStyle({
+const variantDoubleRowTable = defineStyle({
   borderCollapse: "separate",
   borderSpacing: "0 8px",
 })
 
-const baseStyleTd = defineStyle({
+const variantDoubleRowTd = defineStyle({
   p: 0,
   bg: "gold.100",
   borderTop: "1px solid white",
@@ -30,26 +30,26 @@ const baseStyleTd = defineStyle({
   },
 })
 
-const baseStyleCellContainer = defineStyle({
+const variantDoubleRowCellContainer = defineStyle({
   display: "flex",
   flexDirection: "column",
 })
 
-const baseStyleCell = defineStyle({
+const variantDoubleRowCell = defineStyle({
   p: 4,
 })
 
-const baseStyleDivider = defineStyle({
+const variantDoubleRowDivider = defineStyle({
   borderColor: "gold.200",
   borderBottomWidth: "2px",
 })
 
 const variantDoubleRow = definePartsStyle({
-  table: baseStyleTable,
-  td: baseStyleTd,
-  cellContainer: baseStyleCellContainer,
-  cell: baseStyleCell,
-  divider: baseStyleDivider,
+  table: variantDoubleRowTable,
+  td: variantDoubleRowTd,
+  cellContainer: variantDoubleRowCellContainer,
+  cell: variantDoubleRowCell,
+  divider: variantDoubleRowDivider,
 })
 
 const variants = {
