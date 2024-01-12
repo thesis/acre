@@ -4,6 +4,7 @@ pragma solidity ^0.8.21;
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import "./Dispatcher.sol";
 
 /// @title Acre
@@ -19,6 +20,18 @@ import "./Dispatcher.sol";
 ///      tokens, providing a seamless exchange with tBTC tokens.
 contract Acre is ERC4626, Ownable {
     using SafeERC20 for IERC20;
+    using Math for uint256;
+
+    // bp (or bip) is one hundredth of 1 percent
+    uint256 private constant BASIS_POINT_SCALE = 1e4;
+    // TODO: decide on:
+    // - how granular we want to go with the fee basis points
+    // - should this value be a constant or updatable by governance
+    // - are we okay having the same basis points for entry and exit fees
+    uint256 private constant FEE_BASIS_POINTS = 10; // 0.1%
+
+    /// Address of the treasury wallet, where fees should be transferred to.
+    address public treasury;
 
     /// Dispatcher contract that routes tBTC from Acre to a given vault and back.
     Dispatcher public dispatcher;
@@ -117,7 +130,8 @@ contract Acre is ERC4626, Ownable {
     ///      which determines the minimum amount for a single deposit operation.
     ///      The amount of the assets has to be pre-approved in the tBTC
     ///      contract.
-    /// @param assets Approved amount of tBTC tokens to deposit.
+    /// @param assets Approved amount of tBTC tokens to deposit. This includes
+    ///               treasury fees for staking tBTC.
     /// @param receiver The address to which the shares will be minted.
     /// @return Minted shares.
     function deposit(
@@ -128,7 +142,13 @@ contract Acre is ERC4626, Ownable {
             revert DepositAmountLessThanMin(assets, minimumDepositAmount);
         }
 
-        return super.deposit(assets, receiver);
+        uint256 fee = feeOnTotal(assets, FEE_BASIS_POINTS);
+
+        if (fee > 0) {
+            IERC20(asset()).safeTransfer(treasury, fee);
+        }
+
+        return super.deposit(assets - fee, receiver);
     }
 
     /// @notice Mints shares to receiver by depositing tBTC tokens.
@@ -136,6 +156,12 @@ contract Acre is ERC4626, Ownable {
     ///      which determines the minimum amount for a single deposit operation.
     ///      The amount of the assets has to be pre-approved in the tBTC
     ///      contract.
+    ///      The msg.sender is required to grant approval for the transfer of a
+    ///      certain amount of tBTC, and in addition, approval for the associated
+    ///      fee. Specifically, the total amount to be approved (amountToApprove)
+    ///      should be equal to the sum of the deposited amount and the fee.
+    ///      To determine the total assets amount necessary for approval
+    ///      corresponding to a given share amount, use the `previewMint` function.
     /// @param shares Amount of shares to mint. To get the amount of share use
     ///        `previewMint`.
     /// @param receiver The address to which the shares will be minted.
@@ -143,6 +169,13 @@ contract Acre is ERC4626, Ownable {
         uint256 shares,
         address receiver
     ) public override returns (uint256 assets) {
+        uint256 previewAssets = super.previewMint(shares);
+        uint256 fee = feeOnRaw(previewAssets, FEE_BASIS_POINTS);
+
+        if (fee > 0) {
+            IERC20(asset()).safeTransferFrom(_msgSender(), treasury, fee);
+        }
+
         if ((assets = super.mint(shares, receiver)) < minimumDepositAmount) {
             revert DepositAmountLessThanMin(assets, minimumDepositAmount);
         }
@@ -208,5 +241,61 @@ contract Acre is ERC4626, Ownable {
     /// @return Returns deposit parameters.
     function depositParameters() public view returns (uint256, uint256) {
         return (minimumDepositAmount, maximumTotalAssets);
+    }
+
+    // TODO: remove FEE_BASIS_POINTS as a parameter if constant
+    /// @notice Preview taking an entry fee on deposit.
+    /// @param assets Amount to calculate the fee part of.
+    function previewDeposit(
+        uint256 assets
+    ) public view virtual override returns (uint256) {
+        uint256 fee = feeOnTotal(assets, FEE_BASIS_POINTS);
+        return super.previewDeposit(assets - fee);
+    }
+
+    // TODO: remove FEE_BASIS_POINTS as a parameter if constant
+    /// @notice Preview adding an entry fee on mint.
+    /// @param shares Amount to calculate the fee part of.
+    /// @return assets Amount of assets that will be minted for the given amount
+    ///         of shares.
+    function previewMint(
+        uint256 shares
+    ) public view virtual override returns (uint256) {
+        uint256 assets = super.previewMint(shares);
+        return assets + feeOnRaw(assets, FEE_BASIS_POINTS);
+    }
+
+    // TODO: replace feeBasisPoints with FEE_BASIS_POINTS if constant
+    /// @notice Calculates the fee part of an amount `assets` that already includes fees.
+    /// @param assets Amount to calculate the fee part of.
+    /// @param feeBasisPoints Fee basis points.
+    /// @return Fee part of the amount.
+    function feeOnTotal(
+        uint256 assets,
+        uint256 feeBasisPoints
+    ) private pure returns (uint256) {
+        return
+            assets.mulDiv(
+                feeBasisPoints,
+                feeBasisPoints + BASIS_POINT_SCALE,
+                Math.Rounding.Ceil
+            );
+    }
+
+    // TODO: replace feeBasisPoints with FEE_BASIS_POINTS if constant
+    /// @notice Calculates the fees that should be added to an amount `assets` that does not already include fees.
+    /// @param assets Amount to calculate the fee part of.
+    /// @param feeBasisPoints Fee basis points.
+    /// @return Fee part of the amount.
+    function feeOnRaw(
+        uint256 assets,
+        uint256 feeBasisPoints
+    ) private pure returns (uint256) {
+        return
+            assets.mulDiv(
+                feeBasisPoints,
+                BASIS_POINT_SCALE,
+                Math.Rounding.Ceil
+            );
     }
 }
