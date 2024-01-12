@@ -22,13 +22,11 @@ contract Acre is ERC4626, Ownable {
     using SafeERC20 for IERC20;
     using Math for uint256;
 
-    // bp (or bip) is one hundredth of 1 percent
+    /// bp (or bip) standard scale is one hundredth of 1 percent
     uint256 private constant BASIS_POINT_SCALE = 1e4;
-    // TODO: decide on:
-    // - how granular we want to go with the fee basis points
-    // - should this value be a constant or updatable by governance
-    // - are we okay having the same basis points for entry and exit fees
-    uint256 private constant FEE_BASIS_POINTS = 10; // 0.1%
+
+    /// Fee basis points applied to entry and exits.
+    uint256 public feeBasisPoints = 5; // 5bps == 0.05% == 0.0005
 
     /// Address of the treasury wallet, where fees should be transferred to.
     address public treasury;
@@ -57,6 +55,10 @@ contract Acre is ERC4626, Ownable {
     /// @param oldDispatcher Address of the old dispatcher contract.
     /// @param newDispatcher Address of the new dispatcher contract.
     event DispatcherUpdated(address oldDispatcher, address newDispatcher);
+
+    /// Emitted when the fee basis points are updated.
+    /// @param feeBasisPoints New value of the fee basis points.
+    event FeeBasisPointsUpdated(uint256 feeBasisPoints);
 
     /// Reverts if the amount is less than the minimum deposit amount.
     /// @param amount Amount to check.
@@ -124,6 +126,14 @@ contract Acre is ERC4626, Ownable {
         IERC20(asset()).forceApprove(address(dispatcher), type(uint256).max);
     }
 
+    /// Update the fee basis points.
+    /// @param _feeBasisPoints New value of the fee basis points.
+    function updateFeeBasisPoints(uint256 _feeBasisPoints) external onlyOwner {
+        feeBasisPoints = _feeBasisPoints;
+
+        emit FeeBasisPointsUpdated(_feeBasisPoints);
+    }
+
     /// @notice Mints shares to receiver by depositing exactly amount of
     ///         tBTC tokens.
     /// @dev Takes into account a deposit parameter, minimum deposit amount,
@@ -142,9 +152,10 @@ contract Acre is ERC4626, Ownable {
             revert DepositAmountLessThanMin(assets, minimumDepositAmount);
         }
 
-        uint256 fee = feeOnTotal(assets, FEE_BASIS_POINTS);
+        uint256 fee = feeOnTotal(assets);
 
         if (fee > 0) {
+            IERC20(asset()).safeTransferFrom(_msgSender(), address(this), fee);
             IERC20(asset()).safeTransfer(treasury, fee);
         }
 
@@ -170,7 +181,7 @@ contract Acre is ERC4626, Ownable {
         address receiver
     ) public override returns (uint256 assets) {
         uint256 previewAssets = super.previewMint(shares);
-        uint256 fee = feeOnRaw(previewAssets, FEE_BASIS_POINTS);
+        uint256 fee = feeOnRaw(previewAssets);
 
         if (fee > 0) {
             IERC20(asset()).safeTransferFrom(_msgSender(), treasury, fee);
@@ -243,17 +254,16 @@ contract Acre is ERC4626, Ownable {
         return (minimumDepositAmount, maximumTotalAssets);
     }
 
-    // TODO: remove FEE_BASIS_POINTS as a parameter if constant
     /// @notice Preview taking an entry fee on deposit.
     /// @param assets Amount to calculate the fee part of.
+    /// @return shares Amount of shares.
     function previewDeposit(
         uint256 assets
     ) public view virtual override returns (uint256) {
-        uint256 fee = feeOnTotal(assets, FEE_BASIS_POINTS);
+        uint256 fee = feeOnTotal(assets);
         return super.previewDeposit(assets - fee);
     }
 
-    // TODO: remove FEE_BASIS_POINTS as a parameter if constant
     /// @notice Preview adding an entry fee on mint.
     /// @param shares Amount to calculate the fee part of.
     /// @return assets Amount of assets that will be minted for the given amount
@@ -262,40 +272,34 @@ contract Acre is ERC4626, Ownable {
         uint256 shares
     ) public view virtual override returns (uint256) {
         uint256 assets = super.previewMint(shares);
-        return assets + feeOnRaw(assets, FEE_BASIS_POINTS);
+        return assets + feeOnRaw(assets);
     }
 
-    // TODO: replace feeBasisPoints with FEE_BASIS_POINTS if constant
     /// @notice Calculates the fee part of an amount `assets` that already includes fees.
     /// @param assets Amount to calculate the fee part of.
-    /// @param feeBasisPoints Fee basis points.
     /// @return Fee part of the amount.
     function feeOnTotal(
-        uint256 assets,
-        uint256 feeBasisPoints
-    ) private pure returns (uint256) {
+        uint256 assets
+    ) private view returns (uint256) {
         return
             assets.mulDiv(
                 feeBasisPoints,
                 feeBasisPoints + BASIS_POINT_SCALE,
-                Math.Rounding.Ceil
+                Math.Rounding.Trunc
             );
     }
 
-    // TODO: replace feeBasisPoints with FEE_BASIS_POINTS if constant
     /// @notice Calculates the fees that should be added to an amount `assets` that does not already include fees.
     /// @param assets Amount to calculate the fee part of.
-    /// @param feeBasisPoints Fee basis points.
     /// @return Fee part of the amount.
     function feeOnRaw(
-        uint256 assets,
-        uint256 feeBasisPoints
-    ) private pure returns (uint256) {
+        uint256 assets
+    ) private view returns (uint256) {
         return
             assets.mulDiv(
                 feeBasisPoints,
                 BASIS_POINT_SCALE,
-                Math.Rounding.Ceil
+                Math.Rounding.Trunc
             );
     }
 }
