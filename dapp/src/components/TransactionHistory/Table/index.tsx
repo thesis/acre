@@ -6,7 +6,7 @@ import {
   Tr,
   Th,
   Td,
-  Box,
+  TableContainer,
 } from "@chakra-ui/react"
 import { flexRender } from "@tanstack/react-table"
 import { useTransactionHistoryTable } from "#/hooks"
@@ -20,7 +20,7 @@ function Table({ data }: { data: StakeHistory[] }) {
   })
 
   return (
-    <Box overflowX="auto">
+    <TableContainer>
       <ChakraTable variant="double-row">
         <Thead>
           {table.getHeaderGroups().map(({ id, headers }) => (
@@ -51,7 +51,7 @@ function Table({ data }: { data: StakeHistory[] }) {
           ))}
         </Tbody>
       </ChakraTable>
-    </Box>
+    </TableContainer>
   )
 }
 
