@@ -1,7 +1,7 @@
 import React from "react"
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table"
-import { StakeHistory } from "../../../types"
-import { truncateAddress } from "../../../utils"
+import { StakeHistory } from "#/types"
+import { truncateAddress } from "#/utils"
 import CustomCell from "./CustomCell"
 
 const columnHelper = createColumnHelper<StakeHistory>()

@@ -4,7 +4,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { StakeHistory } from "../types"
+import { StakeHistory } from "#/types"
 
 type UseTransactionHistoryTableResult = Table<StakeHistory>
 

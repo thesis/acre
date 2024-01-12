@@ -1,6 +1,6 @@
 import React from "react"
 import { Box, Divider, useMultiStyleConfig } from "@chakra-ui/react"
-import { TextSm } from "../../shared/Typography"
+import { TextSm } from "#/components/shared/Typography"
 
 function Cell({
   children1,

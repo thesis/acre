@@ -1,4 +1,4 @@
-import { StakeHistory } from "../../../types"
+import { StakeHistory } from "#/types"
 
 export const TRANSACTIONS: StakeHistory[] = [
   {

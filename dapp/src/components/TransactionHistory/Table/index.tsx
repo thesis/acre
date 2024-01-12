@@ -8,8 +8,8 @@ import {
   Td,
 } from "@chakra-ui/react"
 import { flexRender } from "@tanstack/react-table"
-import { useTransactionHistoryTable } from "../../../hooks"
-import { StakeHistory } from "../../../types"
+import { useTransactionHistoryTable } from "#/hooks"
+import { StakeHistory } from "#/types"
 import { COLUMNS } from "./columns"
 
 function Table({ data }: { data: StakeHistory[] }) {
