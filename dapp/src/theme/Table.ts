@@ -1,6 +1,9 @@
 import { tableAnatomy as parts } from "@chakra-ui/anatomy"
 import { createMultiStyleConfigHelpers, defineStyle } from "@chakra-ui/react"
 
+const BORDER_RADIUS_SIZE = "md"
+const BORDER_STYLE = "1px solid white"
+
 const KEYS = [...parts.keys, "cellContainer", "cell", "divider"] as const
 
 const { defineMultiStyleConfig, definePartsStyle } =
@@ -14,19 +17,19 @@ const variantDoubleRowTable = defineStyle({
 const variantDoubleRowTd = defineStyle({
   p: 0,
   bg: "gold.100",
-  borderTop: "1px solid white",
-  borderBottom: "1px solid white",
+  borderTop: BORDER_STYLE,
+  borderBottom: BORDER_STYLE,
 
   _last: {
-    borderTopEndRadius: "md",
-    borderBottomEndRadius: "md",
-    borderRight: "1px solid white",
+    borderTopEndRadius: BORDER_RADIUS_SIZE,
+    borderBottomEndRadius: BORDER_RADIUS_SIZE,
+    borderRight: BORDER_STYLE,
   },
 
   _first: {
-    borderTopStartRadius: "md",
-    borderBottomStartRadius: "md",
-    borderLeft: "1px solid white",
+    borderTopStartRadius: BORDER_RADIUS_SIZE,
+    borderBottomStartRadius: BORDER_RADIUS_SIZE,
+    borderLeft: BORDER_STYLE,
   },
 })
 
