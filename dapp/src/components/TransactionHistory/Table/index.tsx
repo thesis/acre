@@ -6,6 +6,7 @@ import {
   Tr,
   Th,
   Td,
+  Box,
 } from "@chakra-ui/react"
 import { flexRender } from "@tanstack/react-table"
 import { useTransactionHistoryTable } from "#/hooks"
@@ -19,36 +20,38 @@ function Table({ data }: { data: StakeHistory[] }) {
   })
 
   return (
-    <ChakraTable variant="double-row">
-      <Thead>
-        {table.getHeaderGroups().map(({ id, headers }) => (
-          <Tr key={id}>
-            {headers.map((header) => (
-              <Th
-                key={header.id}
-                onClick={header.column.getToggleSortingHandler()}
-              >
-                {flexRender(
-                  header.column.columnDef.header,
-                  header.getContext(),
-                )}
-              </Th>
-            ))}
-          </Tr>
-        ))}
-      </Thead>
-      <Tbody>
-        {table.getRowModel().rows.map((row) => (
-          <Tr key={row.id}>
-            {row.getVisibleCells().map(({ id, column, getContext }) => (
-              <Td key={id}>
-                {flexRender(column.columnDef.cell, getContext())}
-              </Td>
-            ))}
-          </Tr>
-        ))}
-      </Tbody>
-    </ChakraTable>
+    <Box overflowX="auto">
+      <ChakraTable variant="double-row">
+        <Thead>
+          {table.getHeaderGroups().map(({ id, headers }) => (
+            <Tr key={id}>
+              {headers.map((header) => (
+                <Th
+                  key={header.id}
+                  onClick={header.column.getToggleSortingHandler()}
+                >
+                  {flexRender(
+                    header.column.columnDef.header,
+                    header.getContext(),
+                  )}
+                </Th>
+              ))}
+            </Tr>
+          ))}
+        </Thead>
+        <Tbody>
+          {table.getRowModel().rows.map((row) => (
+            <Tr key={row.id}>
+              {row.getVisibleCells().map(({ id, column, getContext }) => (
+                <Td key={id}>
+                  {flexRender(column.columnDef.cell, getContext())}
+                </Td>
+              ))}
+            </Tr>
+          ))}
+        </Tbody>
+      </ChakraTable>
+    </Box>
   )
 }
 
