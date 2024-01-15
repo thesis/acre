@@ -12,9 +12,9 @@ import {
   HStack,
   Link,
 } from "@chakra-ui/react"
-import RightSidebar from "../../assets/images/right-sidebar-bg.png"
-import { useDocsDrawer, useSidebar } from "../../hooks"
-import { ArrowUpRight, ShieldPlusIcon } from "../../static/icons"
+import RightSidebar from "#/assets/images/right-sidebar-bg.png"
+import { useSidebar, useDocsDrawer } from "#/hooks"
+import { ArrowUpRight, ShieldPlusIcon } from "#/static/icons"
 import { TextMd, TextSm } from "../shared/Typography"
 
 const readMoreEarnings = "https://#"

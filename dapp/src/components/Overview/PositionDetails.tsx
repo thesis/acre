@@ -10,10 +10,10 @@ import {
   CardProps,
   useBoolean,
 } from "@chakra-ui/react"
-import { Info } from "../../static/icons"
+import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
+import { TextMd } from "#/components/shared/Typography"
+import { Info } from "#/static/icons"
 import StakingModal from "../Modals/Staking"
-import { CurrencyBalanceWithConversion } from "../shared/CurrencyBalanceWithConversion"
-import { TextMd } from "../shared/Typography"
 
 export default function PositionDetails(props: CardProps) {
   const [isOpenStakingModal, stakingModal] = useBoolean()
@@ -30,14 +30,12 @@ export default function PositionDetails(props: CardProps) {
         </HStack>
         <CurrencyBalanceWithConversion
           from={{
-            currencyType: "bitcoin",
+            currency: "bitcoin",
             amount: "2398567898",
             variant: "greater-balance",
           }}
           to={{
-            currencyType: "usd",
-            amount: 419288.98,
-            shouldBeFormatted: false,
+            currency: "usd",
             size: "lg",
           }}
         />

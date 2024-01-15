@@ -24,6 +24,7 @@ type StepperBaseProps = {
   complete?: JSX.Element
   incomplete?: JSX.Element
   active?: JSX.Element
+  hideDescriptionWhenInactive?: boolean
 } & Omit<StepperProps, "children">
 
 export default function StepperBase({
@@ -31,11 +32,13 @@ export default function StepperBase({
   complete,
   incomplete,
   active,
+  index: activeStep,
+  hideDescriptionWhenInactive,
   ...stepperProps
 }: StepperBaseProps) {
   return (
-    <Stepper {...stepperProps}>
-      {steps.map((step) => (
+    <Stepper index={activeStep} {...stepperProps}>
+      {steps.map((step, index) => (
         <Step key={step.id}>
           <StepIndicator>
             <StepStatus
@@ -46,7 +49,9 @@ export default function StepperBase({
           </StepIndicator>
           <Flex direction="column" gap={2}>
             <StepTitle as="div">{step.title}</StepTitle>
-            <StepDescription as="div">{step.description}</StepDescription>
+            {(!hideDescriptionWhenInactive || activeStep === index) && (
+              <StepDescription as="div">{step.description}</StepDescription>
+            )}
           </Flex>
           <StepSeparator />
         </Step>
