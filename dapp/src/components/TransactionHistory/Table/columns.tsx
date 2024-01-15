@@ -25,7 +25,7 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
     ),
   }),
   columnHelper.display({
-    header: "action",
+    header: "Action",
     cell: ({ row: { original } }) => (
       <CustomCell
         type="text"

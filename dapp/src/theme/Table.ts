@@ -33,6 +33,13 @@ const variantDoubleRowTd = defineStyle({
   },
 })
 
+const variantDoubleRowTh = defineStyle({
+  textTransform: "none",
+  fontWeight: "semibold",
+  fontSize: "sm",
+  lineHeight: "sm",
+})
+
 const variantDoubleRowCellContainer = defineStyle({
   display: "flex",
   flexDirection: "column",
@@ -50,6 +57,7 @@ const variantDoubleRowDivider = defineStyle({
 const variantDoubleRow = definePartsStyle({
   table: variantDoubleRowTable,
   td: variantDoubleRowTd,
+  th: variantDoubleRowTh,
   cellContainer: variantDoubleRowCellContainer,
   cell: variantDoubleRowCell,
   divider: variantDoubleRowDivider,
