@@ -21,7 +21,7 @@ contract BridgeStub is IBridge {
     uint64 public depositTxMaxFee = 1000; // 1000 satoshi = 0.00001 BTC
     uint32 public depositRevealAheadPeriod = 15 days;
 
-    mapping(uint256 => DepositRequest) depositsMap;
+    mapping(uint256 => DepositRequest) internal depositsMap;
 
     constructor(TestERC20 _tbtc) {
         tbtc = _tbtc;
@@ -80,6 +80,7 @@ contract BridgeStub is IBridge {
             calculateDepositKey(fundingTxHash, fundingOutputIndex)
         ];
 
+        // solhint-disable-next-line not-rely-on-time
         deposit.sweptAt = uint32(block.timestamp);
 
         (, , uint64 depositTxMaxFee, ) = depositParameters();
