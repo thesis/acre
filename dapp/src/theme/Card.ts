@@ -11,13 +11,11 @@ const Card: ComponentSingleStyleConfig = {
     },
   },
   variants: {
-    sidebar: {
+    light: {
       container: {
-        marginTop: "3",
         bg: "gold.100",
         borderColor: "white",
         borderStyle: "solid",
-        borderRadius: "6px",
       },
     },
   },

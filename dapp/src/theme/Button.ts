@@ -20,33 +20,19 @@ const Button: ComponentSingleStyleConfig = {
     },
   },
   variants: {
-    solid: {
-      bg: "brand.400",
-      color: "white",
-      _hover: {
-        bg: "brand.500",
-      },
-      _active: {
-        bg: "brand.400",
-      },
-    },
-    outline: {
-      color: "grey.700",
-      borderColor: "grey.700",
-      _hover: {
-        bg: "opacity.grey.700.05",
-      },
-      _active: {
-        bg: "transparent",
-      },
-    },
-    sidebar: (props: StyleFunctionProps) => {
+    solid: (props: StyleFunctionProps) => {
       const defaultStyles = {
-        justifyContent: "flex-start",
-        width: "100%",
+        bg: "brand.400",
+        color: "white",
+        _hover: {
+          bg: "brand.500",
+        },
+        _active: {
+          bg: "brand.400",
+        },
       }
 
-      if (props.colorScheme === "solid") {
+      if (props.colorScheme === "link") {
         return {
           ...defaultStyles,
           bg: "brand.400",
@@ -60,7 +46,20 @@ const Button: ComponentSingleStyleConfig = {
         }
       }
 
-      if (props.colorScheme === "outline") {
+      return defaultStyles
+    },
+    outline: (props: StyleFunctionProps) => {
+      const defaultStyles = {
+        color: "grey.700",
+        borderColor: "grey.700",
+        _hover: {
+          bg: "opacity.grey.700.05",
+        },
+        _active: {
+          bg: "transparent",
+        },
+      }
+      if (props.colorScheme === "link") {
         return {
           ...defaultStyles,
           borderWidth: "2px",
@@ -76,9 +75,9 @@ const Button: ComponentSingleStyleConfig = {
           },
         }
       }
-
       return defaultStyles
     },
+    // FIXME: It should be removed and replaced by solid/outline variants
     card: (props: StyleFunctionProps) => {
       const defaultStyles = {
         borderWidth: "2px",

@@ -1,7 +1,6 @@
 import React from "react"
 import {
   Box,
-  Button,
   Icon,
   useMultiStyleConfig,
   Image,
@@ -14,8 +13,9 @@ import {
 } from "@chakra-ui/react"
 import RightSidebar from "#/assets/images/right-sidebar-bg.png"
 import { useSidebar, useDocsDrawer } from "#/hooks"
-import { ArrowUpRight, ShieldPlusIcon } from "#/static/icons"
+import { ShieldPlusIcon } from "#/static/icons"
 import { TextMd, TextSm } from "../shared/Typography"
+import ButtonLink from "../shared/ButtonLink"
 
 const readMoreEarnings = "https://#"
 
@@ -34,22 +34,12 @@ export default function Sidebar() {
     <Box
       as="aside"
       mt="header_height"
-      __css={
-        isOpen
-          ? styles.expandedSidebarContainer
-          : styles.collapsedSidebarContainer
-      }
+      w={isOpen ? "sidebar_width" : "0"}
+      __css={styles.sidebarContainer}
     >
       <Box __css={styles.sidebar}>
-        <Button
-          leftIcon={<Icon as={ArrowUpRight} boxSize={4} />}
-          onClick={openDocsDrawer}
-          variant="sidebar"
-          colorScheme="solid"
-        >
-          Docs
-        </Button>
-        <Card variant="sidebar">
+        <ButtonLink label="Docs" variant="solid" onClick={openDocsDrawer} />
+        <Card variant="light" mt={3}>
           <CardHeader padding="0">
             <Image src={RightSidebar} alt="" width="70.5" height="40" />
           </CardHeader>
@@ -68,7 +58,7 @@ export default function Sidebar() {
           </CardFooter>
         </Card>
 
-        <Card variant="sidebar">
+        <Card variant="light" mt={3}>
           <CardHeader>
             <TextMd fontWeight="bold">How we calculate fees</TextMd>
           </CardHeader>
@@ -82,16 +72,7 @@ export default function Sidebar() {
         </Card>
 
         {BUTTONS.map(({ label }) => (
-          <Button
-            key={label}
-            marginTop="3"
-            variant="sidebar"
-            colorScheme="outline"
-            leftIcon={<Icon as={ArrowUpRight} boxSize={4} color="brand.400" />}
-            onClick={openDocsDrawer}
-          >
-            {label}
-          </Button>
+          <ButtonLink label={label} onClick={openDocsDrawer} marginTop={3} />
         ))}
       </Box>
     </Box>
