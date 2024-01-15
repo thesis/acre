@@ -1,6 +1,6 @@
 import { TBTC } from "@keep-network/tbtc-v2.ts"
 import { AcreContracts } from "./lib/contracts"
-import { ChainEIP712Signer } from "./lib/message-signer"
+import { ChainEIP712Signer } from "./lib/eip712-signer"
 import { EthereumEIP712Signer, EthereumSigner } from "./lib/ethereum"
 import { StakingModule } from "./modules/staking"
 

@@ -4,7 +4,7 @@ import {
   Domain,
   Message,
   Types,
-} from "../../src/lib/message-signer"
+} from "../../src/lib/eip712-signer"
 
 // eslint-disable-next-line import/prefer-default-export
 export class MockMessageSigner implements ChainEIP712Signer {

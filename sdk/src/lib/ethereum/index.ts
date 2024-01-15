@@ -1,3 +1,3 @@
 export * from "./contract"
-export * from "./messages"
+export * from "./eip712-signer"
 export * from "./address"
