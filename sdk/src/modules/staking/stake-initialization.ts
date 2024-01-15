@@ -102,14 +102,11 @@ class StakeInitialization {
       await this.#bitcoinClient.getRawTransaction(transactionHash),
     )
 
-    const depositScript = this.#deposit.getReceipt()
+    const { depositor: _, ...restDepositReceipt } = this.#deposit.getReceipt()
 
     const revealDepositInfo = {
       fundingOutputIndex: outputIndex,
-      blindingFactor: depositScript.blindingFactor,
-      walletPublicKeyHash: depositScript.walletPublicKeyHash,
-      refundPublicKeyHash: depositScript.refundPublicKeyHash,
-      refundLocktime: depositScript.refundLocktime,
+      ...restDepositReceipt,
     }
 
     return this.#contracts.depositor.initializeStake(
