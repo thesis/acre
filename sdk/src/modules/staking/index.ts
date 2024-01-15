@@ -1,46 +1,49 @@
-import { TBTC } from "@keep-network/tbtc-v2.ts"
+import { ChainIdentifier, TBTC } from "@keep-network/tbtc-v2.ts"
 import { AcreContracts } from "../../lib/contracts"
-import { ChainMessageSigner } from "../../lib/message-signer"
+import { ChainEIP712Signer } from "../../lib/message-signer"
 import { StakeInitialization } from "./stake-initialization"
 
 class StakingModule {
   readonly #contracts: AcreContracts
 
-  readonly #chainMessages: ChainMessageSigner
+  readonly #messageSigner: ChainEIP712Signer
 
   readonly #tbtc: TBTC
 
   constructor(
     _contracts: AcreContracts,
-    _chainMessages: ChainMessageSigner,
+    _messageSigner: ChainEIP712Signer,
     _tbtc: TBTC,
   ) {
     this.#contracts = _contracts
-    this.#chainMessages = _chainMessages
+    this.#messageSigner = _messageSigner
     this.#tbtc = _tbtc
   }
 
-  async initializeStake(bitcoinRecoveryAddress: string) {
-    const signedMessage = await this.#signStakeMessage()
+  async initializeStake(
+    bitcoinRecoveryAddress: string,
+    receiver: ChainIdentifier,
+    referral: number,
+  ) {
+    // TODO: Hex: receiver + referral
+    // const extraData = "0x0"
 
     // Generate deposit script parameters.
     // TODO: generate deposit script parameters with extra data once we add this
     // feature to the `@keep-network/tbtc-v2.ts` lib.
     const deposit = await this.#tbtc.deposits.initiateDeposit(
       bitcoinRecoveryAddress,
+      // extraData,
     )
 
     return new StakeInitialization(
       this.#contracts,
-      signedMessage,
+      this.#messageSigner,
+      receiver,
+      referral,
       deposit,
       this.#tbtc.bitcoinClient,
     )
-  }
-
-  #signStakeMessage() {
-    // TODO: Decide on message format.
-    return this.#chainMessages.sign("message")
   }
 }
 
