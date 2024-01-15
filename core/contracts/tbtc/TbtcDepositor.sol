@@ -263,6 +263,11 @@ contract TbtcDepositor is Ownable {
 
         // Check if Depositor revealed to the tBTC Bridge contract matches the
         // current contract address.
+        // This is very unlikely scenario, that would require unexpected change or
+        // bug in tBTC Bridge contract, as the depositor is set automatically
+        // to the reveal deposit message sender, which will be this contract.
+        // Anyway we check if the depositor that got the tBTC tokens minted
+        // is this contract, before we stake them.
         if (bridgeDepositRequest.depositor != address(this))
             revert UnexpectedDepositor(bridgeDepositRequest.depositor);
 
