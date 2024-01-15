@@ -1,11 +1,22 @@
-import { verifyMessage, Signature } from "ethers"
+import { Signature, verifyTypedData } from "ethers"
 import { EthereumAddress } from "../address"
-import { ChainSignedMessage, V } from "../../message-signer"
+import {
+  ChainSignedMessage,
+  Message,
+  Types,
+  Domain,
+  V,
+} from "../../message-signer"
 import { ChainIdentifier } from "../../contracts"
 import { Hex } from "../../utils"
 
+type TypedMessage = { domain: Domain; types: Types; message: Message }
+
 class EthereumSignedMessage implements ChainSignedMessage {
-  static fromRaw(rawSignature: Hex, message: string): EthereumSignedMessage {
+  static fromRaw(
+    rawSignature: Hex,
+    typedMessage: TypedMessage,
+  ): EthereumSignedMessage {
     const { v, r, s } = Signature.from(rawSignature.toPrefixedString())
 
     return new EthereumSignedMessage(
@@ -13,28 +24,36 @@ class EthereumSignedMessage implements ChainSignedMessage {
       v,
       Hex.from(r),
       Hex.from(s),
-      message,
+      typedMessage,
     )
   }
 
   /**
    * Message format to verify signature.
    */
-  readonly #message: string
+  readonly #typedMessage: TypedMessage
 
   constructor(
     readonly signature: Hex,
     readonly v: V,
     readonly r: Hex,
     readonly s: Hex,
-    _message: string,
+    _typedMessage: TypedMessage,
   ) {
-    this.#message = _message
+    this.#typedMessage = _typedMessage
   }
 
   verify(): ChainIdentifier {
-    const addressFromSignature = verifyMessage(
-      this.#message,
+    const ethersDomain = {
+      ...this.#typedMessage.domain,
+      verifyingContract: `0x${this.#typedMessage.domain.verifyingContract.identifierHex}`,
+      salt: this.#typedMessage.domain.salt?.toPrefixedString(),
+    }
+
+    const addressFromSignature = verifyTypedData(
+      ethersDomain,
+      this.#typedMessage.types,
+      this.#typedMessage.message,
       this.signature.toPrefixedString(),
     )
 
