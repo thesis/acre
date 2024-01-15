@@ -4,7 +4,13 @@ import {
   Deposit,
   extractBitcoinRawTxVectors,
 } from "@keep-network/tbtc-v2.ts"
-import { ChainEIP712Signer } from "../../lib/message-signer"
+import {
+  ChainEIP712Signer,
+  ChainSignedMessage,
+  Domain,
+  Message,
+  Types,
+} from "../../lib/message-signer"
 import { AcreContracts } from "../../lib/contracts"
 import { Hex } from "../../lib/utils"
 
@@ -20,6 +26,8 @@ class StakeInitialization {
   readonly #receiver: ChainIdentifier
 
   readonly #referral: number
+
+  #signedMessage?: ChainSignedMessage
 
   constructor(
     _contracts: AcreContracts,
@@ -41,11 +49,43 @@ class StakeInitialization {
     return this.#deposit.getBitcoinAddress()
   }
 
-  async stake(receiver: ChainIdentifier): Promise<Hex> {
-    const addressFromSignature = this.#message.verify()
+  async signMessage() {
+    const { domain, types, message } = this.#getStakeMessageTypedData()
 
-    if (!receiver.equals(addressFromSignature)) {
+    const signedMessage = await this.#messageSigner.sign(domain, types, message)
+
+    const addressFromSignature = signedMessage.verify()
+
+    if (!this.#receiver.equals(addressFromSignature)) {
       throw new Error("Invalid receiver address")
+    }
+
+    this.#signedMessage = signedMessage
+  }
+
+  #getStakeMessageTypedData() {
+    const domain: Domain = {
+      name: "TBTCDepositor",
+      version: "1",
+      // TODO: How to get chainID?
+      chainId: 1,
+      verifyingContract: this.#contracts.depositor.getChainIdentifier(),
+    }
+
+    const types: Types = {
+      Stake: [{ name: "receiver", type: "address" }],
+    }
+
+    const message: Message = {
+      receiver: this.#receiver.identifierHex,
+    }
+
+    return { domain, types, message }
+  }
+
+  async stake(): Promise<Hex> {
+    if (!this.#signedMessage) {
+      throw new Error("Sign message first")
     }
 
     const utxos = await this.#deposit.detectFunding()
