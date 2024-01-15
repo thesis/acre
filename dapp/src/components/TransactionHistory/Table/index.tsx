@@ -59,11 +59,9 @@ function Table({ data }: { data: StakeHistory[] }) {
       </TableContainer>
       <HStack mt={6}>
         {PAGINATION_BUTTONS.map(({ ariaLabel, onClick, isDisabled, icon }) => (
-          // TODO: Update the button styles
           <IconButton
             key={ariaLabel}
-            variant="ghost"
-            background="white"
+            variant="pagination"
             aria-label={ariaLabel}
             onClick={() => onClick(table)}
             isDisabled={isDisabled(table)}

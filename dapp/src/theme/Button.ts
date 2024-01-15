@@ -65,6 +65,22 @@ const Button: ComponentSingleStyleConfig = {
 
       return defaultStyles
     },
+    pagination: {
+      bg: "white",
+      color: "grey.700",
+      border: "1px solid transparent",
+
+      _hover: {
+        borderColor: "white",
+        bg: "opacity.white.6",
+      },
+      _disabled: {
+        color: "grey.200",
+        bg: "white",
+        opacity: 1,
+        pointerEvents: "none",
+      },
+    },
   },
 }
 
