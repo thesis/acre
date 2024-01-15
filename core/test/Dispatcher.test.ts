@@ -1,15 +1,19 @@
 import { ethers } from "hardhat"
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
 import { expect } from "chai"
+import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers"
+
+import { ContractTransactionResponse, ZeroAddress } from "ethers"
 import {
-  SnapshotRestorer,
-  takeSnapshot,
-  loadFixture,
-} from "@nomicfoundation/hardhat-toolbox/network-helpers"
-import { ZeroAddress } from "ethers"
+  beforeAfterEachSnapshotWrapper,
+  beforeAfterSnapshotWrapper,
+  deployment,
+  getNamedSigner,
+  getUnnamedSigner,
+} from "./helpers"
+
 import type { Dispatcher, TestERC4626, Acre, TestERC20 } from "../typechain"
-import { deployment } from "./helpers/context"
-import { getNamedSigner, getUnnamedSigner } from "./helpers/signer"
+
 import { to1e18 } from "./utils"
 
 async function fixture() {
@@ -21,8 +25,6 @@ async function fixture() {
 }
 
 describe("Dispatcher", () => {
-  let snapshot: SnapshotRestorer
-
   let dispatcher: Dispatcher
   let vault: TestERC4626
   let tbtc: TestERC20
@@ -46,16 +48,12 @@ describe("Dispatcher", () => {
     vaultAddress4 = await ethers.Wallet.createRandom().getAddress()
   })
 
-  beforeEach(async () => {
-    snapshot = await takeSnapshot()
-  })
-
-  afterEach(async () => {
-    await snapshot.restore()
-  })
-
   describe("authorizeVault", () => {
+    beforeAfterSnapshotWrapper()
+
     context("when caller is not a governance account", () => {
+      beforeAfterSnapshotWrapper()
+
       it("should revert when adding a vault", async () => {
         await expect(
           dispatcher.connect(thirdParty).authorizeVault(vaultAddress1),
@@ -69,9 +67,11 @@ describe("Dispatcher", () => {
     })
 
     context("when caller is a governance account", () => {
+      beforeAfterSnapshotWrapper()
+
       let tx: ContractTransactionResponse
 
-      beforeEach(async () => {
+      before(async () => {
         tx = await dispatcher.connect(governance).authorizeVault(vaultAddress1)
         await dispatcher.connect(governance).authorizeVault(vaultAddress2)
         await dispatcher.connect(governance).authorizeVault(vaultAddress3)
@@ -103,7 +103,9 @@ describe("Dispatcher", () => {
   })
 
   describe("deauthorizeVault", () => {
-    beforeEach(async () => {
+    beforeAfterSnapshotWrapper()
+
+    before(async () => {
       await dispatcher.connect(governance).authorizeVault(vaultAddress1)
       await dispatcher.connect(governance).authorizeVault(vaultAddress2)
       await dispatcher.connect(governance).authorizeVault(vaultAddress3)
@@ -123,6 +125,8 @@ describe("Dispatcher", () => {
     })
 
     context("when caller is a governance account", () => {
+      beforeAfterEachSnapshotWrapper()
+
       it("should deauthorize vaults", async () => {
         await dispatcher.connect(governance).deauthorizeVault(vaultAddress1)
 
@@ -168,6 +172,8 @@ describe("Dispatcher", () => {
   })
 
   describe("depositToVault", () => {
+    beforeAfterSnapshotWrapper()
+
     const assetsToAllocate = to1e18(100)
     const minSharesOut = to1e18(100)
 
@@ -177,6 +183,8 @@ describe("Dispatcher", () => {
     })
 
     context("when caller is not maintainer", () => {
+      beforeAfterSnapshotWrapper()
+
       it("should revert when depositing to a vault", async () => {
         await expect(
           dispatcher
@@ -192,6 +200,8 @@ describe("Dispatcher", () => {
 
     context("when caller is maintainer", () => {
       context("when vault is not authorized", () => {
+        beforeAfterSnapshotWrapper()
+
         it("should revert", async () => {
           const randomAddress = await ethers.Wallet.createRandom().getAddress()
           await expect(
@@ -210,6 +220,8 @@ describe("Dispatcher", () => {
         })
 
         context("when allocation is successful", () => {
+          beforeAfterSnapshotWrapper()
+
           let tx: ContractTransactionResponse
 
           before(async () => {
@@ -244,6 +256,8 @@ describe("Dispatcher", () => {
         context(
           "when the expected returned shares are less than the actual returned shares",
           () => {
+            beforeAfterSnapshotWrapper()
+
             const sharesOut = assetsToAllocate
             const minShares = to1e18(101)
 
@@ -263,6 +277,8 @@ describe("Dispatcher", () => {
   })
 
   describe("updateMaintainer", () => {
+    beforeAfterSnapshotWrapper()
+
     let newMaintainer: string
 
     before(async () => {
@@ -270,6 +286,8 @@ describe("Dispatcher", () => {
     })
 
     context("when caller is not an owner", () => {
+      beforeAfterSnapshotWrapper()
+
       it("should revert", async () => {
         await expect(
           dispatcher.connect(thirdParty).updateMaintainer(newMaintainer),
@@ -284,6 +302,8 @@ describe("Dispatcher", () => {
 
     context("when caller is an owner", () => {
       context("when maintainer is a zero address", () => {
+        beforeAfterSnapshotWrapper()
+
         it("should revert", async () => {
           await expect(
             dispatcher.connect(governance).updateMaintainer(ZeroAddress),
@@ -292,6 +312,8 @@ describe("Dispatcher", () => {
       })
 
       context("when maintainer is not a zero address", () => {
+        beforeAfterSnapshotWrapper()
+
         let tx: ContractTransactionResponse
 
         before(async () => {

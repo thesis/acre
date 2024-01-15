@@ -1,5 +1,4 @@
 import { deployments } from "hardhat"
-
 import { getDeployedContract } from "./contract"
 
 import type {

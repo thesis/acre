@@ -16,7 +16,8 @@ export const numberToLocaleString = (
  * floating point number truncated to `desiredDecimals`.
  *
  * This function is based on the solution used by the Taho extension.
- * More info: https://github.com/tahowallet/extension/blob/main/background/lib/fixed-point.ts#L216-L239
+ * Source:
+ * https://github.com/tahowallet/extension/blob/main/background/lib/fixed-point.ts#L216-L239
  */
 export function bigIntToUserAmount(
   fixedPoint: bigint,
@@ -85,7 +86,8 @@ export const formatSatoshiAmount = (
  * Used in cases where precision is critical.
  *
  * This function is based on the solution used by the Taho extension.
- * More info: https://github.com/tahowallet/extension/blob/main/background/lib/fixed-point.ts#L172-L214
+ * Source:
+ * https://github.com/tahowallet/extension/blob/main/background/lib/fixed-point.ts#L172-L214
  */
 export function fixedPointNumberToString(
   amount: bigint,
@@ -113,4 +115,84 @@ export function fixedPointNumberToString(
       : ""
 
   return `${preDecimalCharacters}${decimalString}`
+}
+
+/**
+ * Convert a fixed point bigint with precision `fixedPointDecimals` to another
+ * fixed point bigint with precision `targetDecimals`.
+ *
+ * It is highly recommended that the precision of the fixed point bigint is
+ * tracked alongside the number, e.g. as with the FixedPointNumber type. To this
+ * end, prefer `convertFixedPointNumber` unless you are already carrying
+ * precision information separately.
+ *
+ * Source:
+ * https://github.com/tahowallet/extension/blob/main/background/lib/fixed-point.ts#L25-L44
+ */
+function convertFixedPoint(
+  fixedPoint: bigint,
+  fixedPointDecimals: number,
+  targetDecimals: number,
+): bigint {
+  if (fixedPointDecimals >= targetDecimals) {
+    return fixedPoint / 10n ** BigInt(fixedPointDecimals - targetDecimals)
+  }
+
+  return fixedPoint * 10n ** BigInt(targetDecimals - fixedPointDecimals)
+}
+
+/**
+ * Parses a simple floating point string in US decimal format (potentially
+ * using commas as thousands separators, and using a single period as a decimal
+ * separator) to a FixedPointNumber. The decimals in the returned
+ * FixedPointNumber will match the number of digits after the decimal in the
+ * floating point string.
+ *
+ * Source:
+ * https://github.com/tahowallet/extension/blob/main/background/lib/fixed-point.ts#L134-L170
+ */
+function parseToFixedPointNumber(
+  floatingPointString: string,
+): { amount: bigint; decimals: number } | undefined {
+  if (!floatingPointString.match(/^[^0-9]*([0-9,]+)(?:\.([0-9]*))?$/)) {
+    return undefined
+  }
+
+  const [whole, decimals, ...extra] = floatingPointString.split(".")
+
+  // Only one `.` supported.
+  if (extra.length > 0) {
+    return undefined
+  }
+
+  const noThousandsSeparatorWhole = whole.replace(",", "")
+  const setDecimals = decimals ?? ""
+
+  try {
+    return {
+      amount: BigInt([noThousandsSeparatorWhole, setDecimals].join("")),
+      decimals: setDecimals.length,
+    }
+  } catch (error) {
+    return undefined
+  }
+}
+
+/**
+ * Convert a floating point number to bigint.`.
+ * It is necessary to parse floating point number to fixed point first.
+ * Then convert a fixed point bigint with precision `parsedAmount.decimals` to another
+ * fixed point bigint with precision `decimals`.
+ */
+export function userAmountToBigInt(
+  amount: string,
+  decimals = 18,
+): bigint | undefined {
+  const parsedAmount = parseToFixedPointNumber(amount)
+
+  if (typeof parsedAmount === "undefined") {
+    return undefined
+  }
+
+  return convertFixedPoint(parsedAmount.amount, parsedAmount.decimals, decimals)
 }

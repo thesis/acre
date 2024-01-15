@@ -6,8 +6,10 @@ import {
   defineStyle,
 } from "@chakra-ui/react"
 
+const KEYS = [...parts.keys, "rightIconContainer"] as const
+
 const { defineMultiStyleConfig, definePartsStyle } =
-  createMultiStyleConfigHelpers(parts.keys)
+  createMultiStyleConfigHelpers(KEYS)
 
 const baseStyleDialog = defineStyle({
   py: 5,
@@ -24,9 +26,23 @@ const baseStyleIcon = defineStyle({
   mr: 4,
 })
 
+const baseStyleRightIconContainer = defineStyle({
+  position: "absolute",
+  right: 0,
+  top: 0,
+  p: 5,
+  h: "100%",
+  borderLeft: "2px solid white",
+  color: "brand.400",
+  display: "flex",
+  alignItems: "center",
+  w: 14,
+})
+
 const baseStyle = definePartsStyle({
   container: baseStyleDialog,
   icon: baseStyleIcon,
+  rightIconContainer: baseStyleRightIconContainer,
 })
 
 const statusInfo = definePartsStyle({
