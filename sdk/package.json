@@ -11,7 +11,7 @@
     "lint:js:fix": "eslint . --fix",
     "lint:config": "prettier -c '**/*.@(json|yaml|toml)'",
     "lint:config:fix": "prettier -w '**/*.@(json|yaml|toml)'",
-    "test": "jest"
+    "test": "jest --verbose"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.23.7",
