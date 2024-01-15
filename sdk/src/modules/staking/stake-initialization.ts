@@ -29,7 +29,7 @@ class StakeInitialization {
     this.#bitcoinClient = _bitcoinClient
   }
 
-  async getDepositAddress(): Promise<string> {
+  async getBitcoinAddress(): Promise<string> {
     return this.#deposit.getBitcoinAddress()
   }
 
