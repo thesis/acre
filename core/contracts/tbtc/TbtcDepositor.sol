@@ -285,8 +285,8 @@ contract TbtcDepositor is Ownable {
             // call, and not stored in the contract.
             // There is a possibility the fee has changed since the snapshot of
             // the `tbtcOptimisticMintingFeeDivisor`, to cover this scenario
-            // in fee computation we use the bigger of these.
-            uint256 optimisticMintingFeeDivisor = Math.max(
+            // we want to assume the bigger fee, so we use the smaller divisor.
+            uint256 optimisticMintingFeeDivisor = Math.min(
                 request.tbtcOptimisticMintingFeeDivisor,
                 tbtcVault.optimisticMintingFeeDivisor()
             );
