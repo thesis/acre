@@ -336,61 +336,6 @@ contract TbtcDepositor is Ownable {
         acre.stake(amountToStakeTbtc, receiver, referral);
     }
 
-    /// @notice Estimate and breakdown fees taken for `amount` of stake.
-    /// @dev It doesn't validate the amount against minimum and maximum limits
-    ///      for tBTC minting and Acre depositing processes.
-    /// @param amount Amount of Bitcoin the user wants to stake.
-    /// @return maxTbtcMintingFee Maximum tBTC protocol minting fees for the given
-    ///         amount.
-    /// @return tbtcDepositorFee TbtcDepositor fee for the given amount.
-    /// @return acreDepositFee Acre deposit fee for the given amount.
-    function estimateFees(
-        uint256 amount
-    )
-        external
-        view
-        returns (
-            uint256 maxTbtcMintingFee,
-            uint256 tbtcDepositorFee,
-            uint256 acreDepositFee
-        )
-    {
-        (
-            ,
-            uint64 tbtcDepositTreasuryFeeDivisor,
-            uint64 tbtcDepositTxMaxFee,
-
-        ) = bridge.depositParameters();
-
-        // Calculate Treasury fee.
-        uint256 tbtcTreasuryFee = tbtcDepositTreasuryFeeDivisor > 0
-            ? amount / tbtcDepositTreasuryFeeDivisor
-            : 0;
-
-        // Calculate Optimistic Minting fee.
-        uint32 tbtcOptimisticMintingFeeDivisor = tbtcVault
-            .optimisticMintingFeeDivisor();
-        uint256 optimisticMintingFee = tbtcOptimisticMintingFeeDivisor > 0
-            ? (amount / tbtcOptimisticMintingFeeDivisor)
-            : 0;
-
-        // Total maximum tBTC minting fees.
-        maxTbtcMintingFee =
-            tbtcTreasuryFee +
-            tbtcDepositTxMaxFee +
-            optimisticMintingFee;
-
-        // Calculate TbtcDepositor fee.
-        tbtcDepositorFee = depositorFeeDivisor > 0
-            ? amount / depositorFeeDivisor
-            : 0;
-
-        // Calculate Acre deposit fee.
-        // TODO: Make sure the calculation takes into account the Acre contract
-        // deposit fee charged by `Acre.deposit` function once it is implemented.
-        acreDepositFee = 0;
-    }
-
     /// @notice Updates the depositor fee divisor.
     /// @param newDepositorFeeDivisor New depositor fee divisor value.
     function updateDepositorFeeDivisor(
