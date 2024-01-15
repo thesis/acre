@@ -4,27 +4,35 @@ import {
   Deposit,
   extractBitcoinRawTxVectors,
 } from "@keep-network/tbtc-v2.ts"
-import { ChainSignedMessage } from "../../lib/message-signer"
+import { ChainEIP712Signer } from "../../lib/message-signer"
 import { AcreContracts } from "../../lib/contracts"
 import { Hex } from "../../lib/utils"
 
 class StakeInitialization {
   readonly #contracts: AcreContracts
 
-  readonly #message: ChainSignedMessage
+  readonly #messageSigner: ChainEIP712Signer
 
   readonly #deposit: Deposit
 
   readonly #bitcoinClient: BitcoinClient
 
+  readonly #receiver: ChainIdentifier
+
+  readonly #referral: number
+
   constructor(
     _contracts: AcreContracts,
-    _message: ChainSignedMessage,
+    _message: ChainEIP712Signer,
+    _receiver: ChainIdentifier,
+    _referral: number,
     _deposit: Deposit,
     _bitcoinClient: BitcoinClient,
   ) {
     this.#contracts = _contracts
-    this.#message = _message
+    this.#messageSigner = _message
+    this.#receiver = _receiver
+    this.#referral = _referral
     this.#deposit = _deposit
     this.#bitcoinClient = _bitcoinClient
   }
@@ -64,15 +72,11 @@ class StakeInitialization {
       refundLocktime: depositScript.refundLocktime,
     }
 
-    // TODO: decide how to pass referral. Probably we should save it in Acre
-    // context during initialization.
-    const referral = 0
-
     return this.#contracts.depositor.initializeStake(
       depositFundingTx,
       revealDepositInfo,
-      receiver,
-      referral,
+      this.#receiver,
+      this.#referral,
     )
   }
 }
