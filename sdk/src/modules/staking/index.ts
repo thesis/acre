@@ -1,6 +1,6 @@
 import { ChainIdentifier, TBTC } from "@keep-network/tbtc-v2.ts"
 import { AcreContracts } from "../../lib/contracts"
-import { ChainEIP712Signer } from "../../lib/message-signer"
+import { ChainEIP712Signer } from "../../lib/eip712-signer"
 import { StakeInitialization } from "./stake-initialization"
 
 class StakingModule {

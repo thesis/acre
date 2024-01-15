@@ -6,7 +6,7 @@ import {
   Types,
   Domain,
   V,
-} from "../../message-signer"
+} from "../../eip712-signer"
 import { ChainIdentifier } from "../../contracts"
 import { Hex } from "../../utils"
 

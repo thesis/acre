@@ -6,7 +6,7 @@ import {
   Domain,
   Types,
   Message,
-} from "../../message-signer"
+} from "../../eip712-signer"
 import { Hex } from "../../utils"
 
 class EthereumEIP712Signer implements ChainEIP712Signer {
@@ -33,8 +33,11 @@ class EthereumEIP712Signer implements ChainEIP712Signer {
       message,
     )
 
-    // TODO: update how to pass typed domain data.
-    return EthereumSignedMessage.fromRaw(Hex.from(rawSignature), "message")
+    return EthereumSignedMessage.fromRaw(Hex.from(rawSignature), {
+      domain,
+      types,
+      message,
+    })
   }
 }
 

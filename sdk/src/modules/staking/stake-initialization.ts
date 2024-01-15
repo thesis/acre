@@ -10,7 +10,7 @@ import {
   Domain,
   Message,
   Types,
-} from "../../lib/message-signer"
+} from "../../lib/eip712-signer"
 import { AcreContracts } from "../../lib/contracts"
 import { Hex } from "../../lib/utils"
 
