@@ -9,22 +9,27 @@ import {
   TabPanels,
   TabPanel,
 } from "@chakra-ui/react"
+import { useWalletContext } from "#/hooks"
 import ProtocolHistory from "../TransactionHistory/Protocol"
 import AccountHistory from "../TransactionHistory/Account"
 
 export default function TransactionHistory(props: CardProps) {
+  const { isConnected } = useWalletContext()
+
   return (
     <Card {...props}>
       <CardBody>
         <Tabs variant="underline">
           <TabList>
-            <Tab>Account history</Tab>
+            {isConnected && <Tab>Account history</Tab>}
             <Tab>Protocol history</Tab>
           </TabList>
           <TabPanels>
-            <TabPanel>
-              <AccountHistory />
-            </TabPanel>
+            {isConnected && (
+              <TabPanel>
+                <AccountHistory />
+              </TabPanel>
+            )}
             <TabPanel>
               <ProtocolHistory />
             </TabPanel>
