@@ -61,6 +61,7 @@ function Table({ data }: { data: StakeHistory[] }) {
         {PAGINATION_BUTTONS.map(({ ariaLabel, onClick, isDisabled, icon }) => (
           // TODO: Update the button styles
           <IconButton
+            key={ariaLabel}
             variant="ghost"
             background="white"
             aria-label={ariaLabel}
