@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import "./Dispatcher.sol";
+import "./ERC4626Fees.sol";
 
 /// @title Acre
 /// @notice This contract implements the ERC-4626 tokenized vault standard. By
@@ -18,18 +19,12 @@ import "./Dispatcher.sol";
 ///      of yield-bearing vaults. This contract facilitates the minting and
 ///      burning of shares (stBTC), which are represented as standard ERC20
 ///      tokens, providing a seamless exchange with tBTC tokens.
-contract Acre is ERC4626, Ownable {
+contract Acre is ERC4626Fees, Ownable {
     using SafeERC20 for IERC20;
     using Math for uint256;
 
-    /// bp (or bip) standard scale is one hundredth of 1 percent
-    uint256 private constant BASIS_POINT_SCALE = 1e4;
-
-    /// Fee basis points applied to entry and exits.
-    uint256 public feeBasisPoints = 5; // 5bps == 0.05% == 0.0005
-
-    /// Address of the treasury wallet, where fees should be transferred to.
-    address public treasury;
+    /// Entry fee basis points applied to entry and exits.
+    uint256 public entryFeeBasisPoints = 5; // 5bps == 0.05% == 0.0005
 
     /// Dispatcher contract that routes tBTC from Acre to a given vault and back.
     Dispatcher public dispatcher;
@@ -56,9 +51,9 @@ contract Acre is ERC4626, Ownable {
     /// @param newDispatcher Address of the new dispatcher contract.
     event DispatcherUpdated(address oldDispatcher, address newDispatcher);
 
-    /// Emitted when the fee basis points are updated.
-    /// @param feeBasisPoints New value of the fee basis points.
-    event FeeBasisPointsUpdated(uint256 feeBasisPoints);
+    /// Emitted when the entry fee basis points are updated.
+    /// @param entryFeeBasisPoints New value of the fee basis points.
+    event EntryFeeBasisPointsUpdated(uint256 entryFeeBasisPoints);
 
     /// Reverts if the amount is less than the minimum deposit amount.
     /// @param amount Amount to check.
@@ -126,12 +121,14 @@ contract Acre is ERC4626, Ownable {
         IERC20(asset()).forceApprove(address(dispatcher), type(uint256).max);
     }
 
-    /// Update the fee basis points.
-    /// @param _feeBasisPoints New value of the fee basis points.
-    function updateFeeBasisPoints(uint256 _feeBasisPoints) external onlyOwner {
-        feeBasisPoints = _feeBasisPoints;
+    /// Update the entry fee basis points.
+    /// @param newEntryFeeBasisPoints New value of the fee basis points.
+    function updateEntryFeeBasisPoints(
+        uint256 newEntryFeeBasisPoints
+    ) external onlyOwner {
+        entryFeeBasisPoints = newEntryFeeBasisPoints;
 
-        emit FeeBasisPointsUpdated(_feeBasisPoints);
+        emit EntryFeeBasisPointsUpdated(newEntryFeeBasisPoints);
     }
 
     /// @notice Mints shares to receiver by depositing exactly amount of
@@ -152,14 +149,7 @@ contract Acre is ERC4626, Ownable {
             revert DepositAmountLessThanMin(assets, minimumDepositAmount);
         }
 
-        uint256 fee = feeOnTotal(assets);
-
-        if (fee > 0) {
-            IERC20(asset()).safeTransferFrom(_msgSender(), address(this), fee);
-            IERC20(asset()).safeTransfer(treasury, fee);
-        }
-
-        return super.deposit(assets - fee, receiver);
+        return super.deposit(assets, receiver);
     }
 
     /// @notice Mints shares to receiver by depositing tBTC tokens.
@@ -180,13 +170,6 @@ contract Acre is ERC4626, Ownable {
         uint256 shares,
         address receiver
     ) public override returns (uint256 assets) {
-        uint256 previewAssets = super.previewMint(shares);
-        uint256 fee = feeOnRaw(previewAssets);
-
-        if (fee > 0) {
-            IERC20(asset()).safeTransferFrom(_msgSender(), treasury, fee);
-        }
-
         if ((assets = super.mint(shares, receiver)) < minimumDepositAmount) {
             revert DepositAmountLessThanMin(assets, minimumDepositAmount);
         }
@@ -254,52 +237,15 @@ contract Acre is ERC4626, Ownable {
         return (minimumDepositAmount, maximumTotalAssets);
     }
 
-    /// @notice Preview taking an entry fee on deposit.
-    /// @param assets Amount to calculate the fee part of.
-    /// @return shares Amount of shares.
-    function previewDeposit(
-        uint256 assets
-    ) public view virtual override returns (uint256) {
-        uint256 fee = feeOnTotal(assets);
-        return super.previewDeposit(assets - fee);
+    /// @notice Redeems shares for tBTC tokens.
+    function _entryFeeBasisPoints() internal view override returns (uint256) {
+        return entryFeeBasisPoints;
     }
 
-    /// @notice Preview adding an entry fee on mint.
-    /// @param shares Amount to calculate the fee part of.
-    /// @return assets Amount of assets that will be minted for the given amount
-    ///         of shares.
-    function previewMint(
-        uint256 shares
-    ) public view virtual override returns (uint256) {
-        uint256 assets = super.previewMint(shares);
-        return assets + feeOnRaw(assets);
-    }
-
-    /// @notice Calculates the fee part of an amount `assets` that already includes fees.
-    /// @param assets Amount to calculate the fee part of.
-    /// @return Fee part of the amount.
-    function feeOnTotal(
-        uint256 assets
-    ) private view returns (uint256) {
-        return
-            assets.mulDiv(
-                feeBasisPoints,
-                feeBasisPoints + BASIS_POINT_SCALE,
-                Math.Rounding.Trunc
-            );
-    }
-
-    /// @notice Calculates the fees that should be added to an amount `assets` that does not already include fees.
-    /// @param assets Amount to calculate the fee part of.
-    /// @return Fee part of the amount.
-    function feeOnRaw(
-        uint256 assets
-    ) private view returns (uint256) {
-        return
-            assets.mulDiv(
-                feeBasisPoints,
-                BASIS_POINT_SCALE,
-                Math.Rounding.Trunc
-            );
+    /// @notice Returns the address of the treasury wallet, where fees should be
+    ///         transferred to.
+    function _feeRecipient() internal view override returns (address) {
+        // TODO: replace with a treasury address
+        return address(0);
     }
 }
