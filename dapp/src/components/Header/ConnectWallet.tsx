@@ -24,12 +24,18 @@ function ConnectButton({
 }: ConnectButtonsProps) {
   const colorScheme = !account ? "error" : undefined
 
+  const handleClick = () => {
+    requestAccount().catch((error) => {
+      throw error
+    })
+  }
+
   return (
     <Button
       variant="card"
       colorScheme={colorScheme}
       leftIcon={<Icon as={leftIcon} boxSize={6} />}
-      onClick={requestAccount}
+      onClick={handleClick}
     >
       {account ? truncateAddress(account.address) : "Not connected"}
     </Button>

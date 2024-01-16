@@ -25,6 +25,12 @@ export default function MissingAccount({
 }: MissingAccountProps) {
   const { name, symbol } = getCurrencyByType(currency)
 
+  const handleClick = () => {
+    requestAccount().catch((error) => {
+      throw error
+    })
+  }
+
   return (
     <>
       <ModalHeader>{name} account not installed</ModalHeader>
@@ -44,13 +50,7 @@ export default function MissingAccount({
         </Alert>
       </ModalBody>
       <ModalFooter mt={4}>
-        <Button
-          size="lg"
-          width="100%"
-          onClick={async () => {
-            await requestAccount()
-          }}
-        >
+        <Button size="lg" width="100%" onClick={handleClick}>
           Connect wallet
         </Button>
       </ModalFooter>

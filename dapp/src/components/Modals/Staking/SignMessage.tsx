@@ -9,8 +9,14 @@ export default function SignMessage() {
   const { goNext } = useModalFlowContext()
   const { signMessage } = useSignMessage(goNext)
 
+  const handleClick = () => {
+    signMessage().catch((error) => {
+      throw error
+    })
+  }
+
   return (
-    <StakingSteps buttonText="Continue" activeStep={0} onClick={signMessage}>
+    <StakingSteps buttonText="Continue" activeStep={0} onClick={handleClick}>
       {/* TODO: Add the correct action after click */}
       <Alert withActionIcon onclick={() => {}}>
         <TextMd>

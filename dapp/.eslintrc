@@ -23,18 +23,6 @@
   "overrides": [
     {
       "files": [
-        "src/components/Header/ConnectWallet.tsx",
-        "src/components/Modals/Support/MissingAccount.tsx",
-        "src/components/Modals/Staking/SignMessage.tsx",
-        "src/hooks/useDepositBTCTransaction.ts",
-        "src/components/shared/Form/FormTokenBalanceInput.tsx"
-      ],
-      "rules": {
-        "@typescript-eslint/no-misused-promises": "off"
-      }
-    }, 
-    {
-      "files": [
         "src/hooks/useSignMessage.ts"
       ],
       "rules": {
