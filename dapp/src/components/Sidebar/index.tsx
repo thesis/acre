@@ -38,8 +38,8 @@ export default function Sidebar() {
       __css={styles.sidebarContainer}
     >
       <Box __css={styles.sidebar}>
-        <ButtonLink label="Docs" variant="solid" onClick={openDocsDrawer} />
-        <Card variant="light">
+        <ButtonLink label="Docs" onClick={openDocsDrawer} />
+        <Card variant="elevated" colorScheme="gold" size="md">
           <CardHeader padding="0">
             <Image src={RightSidebar} alt="" width="70.5" height="40" />
           </CardHeader>
@@ -58,7 +58,7 @@ export default function Sidebar() {
           </CardFooter>
         </Card>
 
-        <Card variant="light">
+        <Card variant="elevated" colorScheme="gold" size="md">
           <CardHeader>
             <TextMd fontWeight="bold">How we calculate fees</TextMd>
           </CardHeader>
@@ -72,7 +72,12 @@ export default function Sidebar() {
         </Card>
 
         {BUTTONS.map(({ label }) => (
-          <ButtonLink label={label} onClick={openDocsDrawer} />
+          <ButtonLink
+            label={label}
+            onClick={openDocsDrawer}
+            variant="outline"
+            colorScheme="gold"
+          />
         ))}
       </Box>
     </Box>

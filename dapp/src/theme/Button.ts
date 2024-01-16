@@ -20,38 +20,21 @@ const Button: ComponentSingleStyleConfig = {
     },
   },
   variants: {
-    solid: (props: StyleFunctionProps) => {
-      const defaultStyles = {
+    solid: {
+      bg: "brand.400",
+      color: "white",
+      _hover: {
+        bg: "brand.500",
+      },
+      _active: {
         bg: "brand.400",
-        color: "white",
-        _hover: {
-          bg: "brand.500",
-        },
-        _active: {
-          bg: "brand.400",
-        },
-      }
-
-      if (props.colorScheme === "link") {
-        return {
-          ...defaultStyles,
-          bg: "brand.400",
-          color: "white",
-          _hover: {
-            bg: "brand.500",
-          },
-          _active: {
-            bg: "brand.400",
-          },
-        }
-      }
-
-      return defaultStyles
+      },
     },
-    outline: (props: StyleFunctionProps) => {
+    outline: ({ colorScheme }: StyleFunctionProps) => {
       const defaultStyles = {
         color: "grey.700",
         borderColor: "grey.700",
+        borderWidth: "1px",
         _hover: {
           bg: "opacity.grey.700.05",
         },
@@ -59,26 +42,18 @@ const Button: ComponentSingleStyleConfig = {
           bg: "transparent",
         },
       }
-      if (props.colorScheme === "link") {
+      if (colorScheme === "gold") {
         return {
           ...defaultStyles,
-          borderWidth: "2px",
           bg: "gold.100",
-          borderRadius: "6px",
           borderColor: "white",
           borderStyle: "solid",
-          _hover: {
-            bg: "opacity.grey.700.05",
-          },
-          _active: {
-            bg: "transparent",
-          },
         }
       }
       return defaultStyles
     },
     // FIXME: It should be removed and replaced by solid/outline variants
-    card: (props: StyleFunctionProps) => {
+    card: ({ colorScheme }: StyleFunctionProps) => {
       const defaultStyles = {
         borderWidth: "2px",
         borderColor: "gold.100",
@@ -92,7 +67,7 @@ const Button: ComponentSingleStyleConfig = {
         },
       }
 
-      if (props.colorScheme === "error") {
+      if (colorScheme === "error") {
         return {
           ...defaultStyles,
           color: "red.400",

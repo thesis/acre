@@ -1,4 +1,7 @@
-import { ComponentSingleStyleConfig } from "@chakra-ui/react"
+import {
+  ComponentSingleStyleConfig,
+  StyleFunctionProps,
+} from "@chakra-ui/react"
 
 const Card: ComponentSingleStyleConfig = {
   baseStyle: {
@@ -6,19 +9,23 @@ const Card: ComponentSingleStyleConfig = {
       boxShadow: "none",
       borderWidth: "2px",
       borderColor: "gold.100",
-      borderRadius: "xl",
       bg: "gold.200",
     },
   },
   variants: {
-    light: {
-      container: {
-        bg: "gold.100",
-        borderColor: "white",
-        borderStyle: "solid",
-        borderRadius: "md",
-      },
+    elevated: ({ colorScheme }: StyleFunctionProps) => {
+      if (!colorScheme) return {}
+
+      return {
+        container: {
+          bg: "gold.100",
+          borderColor: "white",
+        },
+      }
     },
+  },
+  defaultProps: {
+    size: "lg",
   },
 }
 

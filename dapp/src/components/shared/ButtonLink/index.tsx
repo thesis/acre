@@ -18,7 +18,7 @@ type ButtonLinkProps = ButtonProps & {
 }
 
 export default function ButtonLink({
-  variant = "outline",
+  variant = "solid",
   icon = ArrowUpRight,
   iconColor = "brand.400",
   isFullWidth = true,
@@ -34,9 +34,9 @@ export default function ButtonLink({
       key={key}
       variant={variant}
       onClick={onClick}
-      colorScheme="link"
       width={isFullWidth ? "100%" : "auto"}
       justifyContent={justifyContent}
+      borderRadius="md"
       leftIcon={
         <Icon
           as={icon}
