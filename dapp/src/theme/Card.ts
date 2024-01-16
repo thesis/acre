@@ -7,7 +7,6 @@ const Card: ComponentSingleStyleConfig = {
   baseStyle: {
     container: {
       boxShadow: "none",
-      borderWidth: "2px",
       borderColor: "gold.100",
       bg: "gold.200",
     },
@@ -18,11 +17,22 @@ const Card: ComponentSingleStyleConfig = {
 
       return {
         container: {
-          borderWidth: "1px",
           bg: "gold.100",
           borderColor: "white",
         },
       }
+    },
+  },
+  sizes: {
+    md: {
+      container: {
+        borderWidth: "1px",
+      },
+    },
+    lg: {
+      container: {
+        borderWidth: "2px",
+      },
     },
   },
   defaultProps: {

@@ -34,7 +34,6 @@ const Button: ComponentSingleStyleConfig = {
       const defaultStyles = {
         color: "grey.700",
         borderColor: "grey.700",
-        borderWidth: "1px",
         _hover: {
           bg: "opacity.grey.700.05",
         },
