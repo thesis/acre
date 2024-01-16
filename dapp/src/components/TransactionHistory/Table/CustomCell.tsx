@@ -1,6 +1,9 @@
 import React from "react"
 import { Box, Divider, useMultiStyleConfig } from "@chakra-ui/react"
 import { TextSm } from "#/components/shared/Typography"
+import ViewInBlockExplorer from "#/components/shared/ViewInBlockExplorer"
+import { ExplorerDataType } from "#/types"
+import { isEthereumTransaction } from "#/utils"
 
 function Cell({
   children1,
@@ -19,16 +22,15 @@ function Cell({
     </Box>
   )
 }
-type CellValue = string | number
 
 function CustomCell({
   type,
   value1,
   value2,
 }: {
-  type: "text"
-  value1: CellValue
-  value2: CellValue
+  type: "text" | "block-explorer"
+  value1: string
+  value2: string
 }) {
   switch (type) {
     case "text":
@@ -36,6 +38,25 @@ function CustomCell({
         <Cell
           children1={<TextSm fontWeight="semibold">{value1}</TextSm>}
           children2={<TextSm fontWeight="semibold">{value2}</TextSm>}
+        />
+      )
+    case "block-explorer":
+      return (
+        <Cell
+          children1={
+            <ViewInBlockExplorer
+              id={value1}
+              type={ExplorerDataType.TRANSACTION}
+              chain={isEthereumTransaction(value1) ? "ethereum" : "bitcoin"}
+            />
+          }
+          children2={
+            <ViewInBlockExplorer
+              id={value2}
+              type={ExplorerDataType.TRANSACTION}
+              chain={isEthereumTransaction(value2) ? "ethereum" : "bitcoin"}
+            />
+          }
         />
       )
     default:

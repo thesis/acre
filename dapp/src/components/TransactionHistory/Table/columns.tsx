@@ -19,8 +19,8 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
     cell: ({ row: { original } }) => (
       <CustomCell
         type="text"
-        value1={original.callTx.timestamp}
-        value2={original.receiptTx.timestamp}
+        value1={original.callTx.timestamp.toString()}
+        value2={original.receiptTx.timestamp.toString()}
       />
     ),
   }),
@@ -49,8 +49,8 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
     cell: ({ row: { original } }) => (
       <CustomCell
         type="text"
-        value1={original.callTx.amount}
-        value2={original.receiptTx.amount}
+        value1={original.callTx.amount.toString()}
+        value2={original.receiptTx.amount.toString()}
       />
     ),
   }),
@@ -68,7 +68,7 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
     header: "Transaction",
     cell: ({ row: { original } }) => (
       <CustomCell
-        type="text"
+        type="block-explorer"
         value1={original.callTx.txHash}
         value2={original.receiptTx.txHash}
       />
@@ -79,8 +79,8 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
     cell: ({ row: { original } }) => (
       <CustomCell
         type="text"
-        value1={original.callTx.status}
-        value2={original.receiptTx.status}
+        value1={original.callTx.status.toString()}
+        value2={original.receiptTx.status.toString()}
       />
     ),
   }),
