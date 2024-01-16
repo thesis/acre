@@ -39,18 +39,18 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
     cell: ({ row: { original } }) => (
       <CustomCell
         type="text"
-        value1={original.callTx.asset}
-        value2={original.receiptTx.asset}
+        value1={original.callTx.asset.symbol}
+        value2={original.receiptTx.asset.symbol}
       />
     ),
   }),
-  columnHelper.accessor("callTx.amount", {
+  columnHelper.accessor("callTx.asset.amount", {
     header: "Amount",
     cell: ({ row: { original } }) => (
       <CustomCell
-        type="text"
-        value1={original.callTx.amount.toString()}
-        value2={original.receiptTx.amount.toString()}
+        type="currency-balance"
+        value1={original.callTx.asset}
+        value2={original.receiptTx.asset}
       />
     ),
   }),

@@ -1,3 +1,5 @@
+import { CurrencyType } from "./currency"
+
 type TransactionInfoAction = "stake" | "unstake" | "receive"
 
 enum TransactionInfoStatus {
@@ -6,11 +8,16 @@ enum TransactionInfoStatus {
   SYNCING = 2,
 }
 
+export type Asset = {
+  currency: CurrencyType
+  symbol: string
+  amount: number
+}
+
 type TransactionInfo = {
   timestamp: number
   action: TransactionInfoAction
-  asset: string
-  amount: number
+  asset: Asset
   account: string
   txHash: string
   status: TransactionInfoStatus

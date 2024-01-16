@@ -2,8 +2,9 @@ import React from "react"
 import { Box, Divider, useMultiStyleConfig } from "@chakra-ui/react"
 import { TextSm } from "#/components/shared/Typography"
 import ViewInBlockExplorer from "#/components/shared/ViewInBlockExplorer"
-import { ExplorerDataType } from "#/types"
+import { Asset, ExplorerDataType } from "#/types"
 import { isEthereumTransaction } from "#/utils"
+import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 
 function Cell({
   children1,
@@ -28,37 +29,64 @@ function CustomCell({
   value1,
   value2,
 }: {
-  type: "text" | "block-explorer"
-  value1: string
-  value2: string
+  type: "text" | "currency-balance" | "block-explorer"
+  value1: string | number | Asset
+  value2: string | number | Asset
 }) {
   switch (type) {
     case "text":
       return (
         <Cell
-          children1={<TextSm fontWeight="semibold">{value1}</TextSm>}
-          children2={<TextSm fontWeight="semibold">{value2}</TextSm>}
+          children1={<TextSm fontWeight="semibold">{value1 as string}</TextSm>}
+          children2={<TextSm fontWeight="semibold">{value2 as string}</TextSm>}
         />
       )
-    case "block-explorer":
+    case "currency-balance": {
+      const asset1 = value1 as Asset
+      const asset2 = value2 as Asset
+
+      return (
+        <Cell
+          children1={
+            <CurrencyBalance
+              currency={asset1.currency}
+              amount={asset1.amount}
+              size="sm"
+            />
+          }
+          children2={
+            <CurrencyBalance
+              currency={asset2.currency}
+              amount={asset2.amount}
+              size="sm"
+            />
+          }
+        />
+      )
+    }
+    case "block-explorer": {
+      const id1 = value1 as string
+      const id2 = value2 as string
+
       return (
         <Cell
           children1={
             <ViewInBlockExplorer
-              id={value1}
+              id={id1}
               type={ExplorerDataType.TRANSACTION}
-              chain={isEthereumTransaction(value1) ? "ethereum" : "bitcoin"}
+              chain={isEthereumTransaction(id1) ? "ethereum" : "bitcoin"}
             />
           }
           children2={
             <ViewInBlockExplorer
-              id={value2}
+              id={id2}
               type={ExplorerDataType.TRANSACTION}
-              chain={isEthereumTransaction(value2) ? "ethereum" : "bitcoin"}
+              chain={isEthereumTransaction(id2) ? "ethereum" : "bitcoin"}
             />
           }
         />
       )
+    }
     default:
       return null
   }
