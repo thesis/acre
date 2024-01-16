@@ -5,6 +5,7 @@
 // - in _feeOnRaw() & _feeOnTotal() rounding is changed to Trunc type.
 //   This means that any fractions left during dividing are truncated in favor
 //   for a user (smaller fee). Although, these are really small numbers.
+// - visibility of _feeOnRaw() & _feeOnTotal() is changed to internal.
 
 pragma solidity ^0.8.20;
 
@@ -79,7 +80,7 @@ abstract contract ERC4626Fees is ERC4626 {
     function _feeOnRaw(
         uint256 assets,
         uint256 feeBasisPoints
-    ) private pure returns (uint256) {
+    ) internal pure returns (uint256) {
         return
             assets.mulDiv(
                 feeBasisPoints,
@@ -93,7 +94,7 @@ abstract contract ERC4626Fees is ERC4626 {
     function _feeOnTotal(
         uint256 assets,
         uint256 feeBasisPoints
-    ) private pure returns (uint256) {
+    ) internal pure returns (uint256) {
         return
             assets.mulDiv(
                 feeBasisPoints,
