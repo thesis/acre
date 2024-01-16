@@ -15,7 +15,7 @@ export function FormTokenBalanceInput({
     <TokenBalanceInput
       {...restProps}
       {...field}
-      amount={meta.value}
+      amount={meta.value as bigint}
       setAmount={helpers.setValue}
       hasError={Boolean(meta.touched && meta.error)}
       errorMsgText={meta.error}

@@ -43,14 +43,6 @@
     },
     {
       "files": [
-        "src/components/shared/Form/FormTokenBalanceInput.tsx"
-      ],
-      "rules": {
-        "@typescript-eslint/no-unsafe-assignment": "off"
-      }
-    },
-    {
-      "files": [
         "src/components/shared/TokenAmountForm/index.tsx"
       ],
       "rules": {
