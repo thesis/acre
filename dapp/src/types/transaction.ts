@@ -1,3 +1,4 @@
+import { Chain } from "./chain"
 import { CurrencyType } from "./currency"
 
 type TransactionInfoAction = "stake" | "unstake" | "receive"
@@ -14,8 +15,9 @@ export type Asset = {
   amount: number
 }
 
-type TransactionInfo = {
+export type TransactionInfo = {
   timestamp: number
+  chain: Chain
   action: TransactionInfoAction
   asset: Asset
   account: string

@@ -2,7 +2,8 @@ import React from "react"
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table"
 import { StakeHistory } from "#/types"
 import { truncateAddress } from "#/utils"
-import CustomCell from "./CustomCell"
+import CustomCell from "./Cells/CustomCell"
+import TextCell from "./Cells/TextCell"
 
 const columnHelper = createColumnHelper<StakeHistory>()
 // When defining the columns for the table, columnHelper.accessor  ts returns a type issue.
@@ -17,18 +18,16 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
   columnHelper.accessor("callTx.timestamp", {
     header: "Date",
     cell: ({ row: { original } }) => (
-      <CustomCell
-        type="text"
-        value1={original.callTx.timestamp.toString()}
-        value2={original.receiptTx.timestamp.toString()}
+      <TextCell
+        value1={original.callTx.timestamp}
+        value2={original.receiptTx.timestamp}
       />
     ),
   }),
   columnHelper.display({
     header: "Action",
     cell: ({ row: { original } }) => (
-      <CustomCell
-        type="text"
+      <TextCell
         value1={original.callTx.action}
         value2={original.receiptTx.action}
       />
@@ -37,8 +36,7 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
   columnHelper.display({
     header: "Asset",
     cell: ({ row: { original } }) => (
-      <CustomCell
-        type="text"
+      <TextCell
         value1={original.callTx.asset.symbol}
         value2={original.receiptTx.asset.symbol}
       />
@@ -49,16 +47,15 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
     cell: ({ row: { original } }) => (
       <CustomCell
         type="currency-balance"
-        value1={original.callTx.asset}
-        value2={original.receiptTx.asset}
+        transaction1={original.callTx}
+        transaction2={original.receiptTx}
       />
     ),
   }),
   columnHelper.display({
     header: "Account",
     cell: ({ row: { original } }) => (
-      <CustomCell
-        type="text"
+      <TextCell
         value1={truncateAddress(original.callTx.account)}
         value2={truncateAddress(original.receiptTx.account)}
       />
@@ -69,18 +66,17 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
     cell: ({ row: { original } }) => (
       <CustomCell
         type="block-explorer"
-        value1={original.callTx.txHash}
-        value2={original.receiptTx.txHash}
+        transaction1={original.callTx}
+        transaction2={original.receiptTx}
       />
     ),
   }),
   columnHelper.display({
     header: "Status",
     cell: ({ row: { original } }) => (
-      <CustomCell
-        type="text"
-        value1={original.callTx.status.toString()}
-        value2={original.receiptTx.status.toString()}
+      <TextCell
+        value1={original.callTx.status}
+        value2={original.receiptTx.status}
       />
     ),
   }),
