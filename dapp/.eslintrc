@@ -17,19 +17,6 @@
     ],
     "react/require-default-props": [0],
   },
-  // FIXME: 
-  // This is temporary solution after changes of the eslint-config version: @thesis-co/eslint-config: "github:thesis/eslint-config#7b9bc8c"
-  // Overrides rules should be fixed file by file.
-  "overrides": [
-    {
-      "files": [
-        "src/hooks/useSignMessage.ts"
-      ],
-      "rules": {
-        "@typescript-eslint/no-floating-promises": "off"
-      }
-    },
-  ],
   "settings": {
     "import/resolver": {
       "alias": {

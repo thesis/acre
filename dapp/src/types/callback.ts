@@ -1,1 +1,1 @@
-export type OnSuccessCallback = () => void | Promise<void>
+export type OnSuccessCallback = () => void
