@@ -38,7 +38,7 @@ export default function Sidebar() {
       __css={styles.sidebarContainer}
     >
       <Box __css={styles.sidebar}>
-        <ButtonLink label="Docs" onClick={openDocsDrawer} />
+        <ButtonLink onClick={openDocsDrawer}>Docs</ButtonLink>
         <Card variant="elevated" colorScheme="gold" size="md">
           <CardHeader padding="0">
             <Image src={RightSidebar} alt="" width="70.5" height="40" />
@@ -73,11 +73,13 @@ export default function Sidebar() {
 
         {BUTTONS.map(({ label }) => (
           <ButtonLink
-            label={label}
+            key={label}
             onClick={openDocsDrawer}
             variant="outline"
             colorScheme="gold"
-          />
+          >
+            {label}
+          </ButtonLink>
         ))}
       </Box>
     </Box>

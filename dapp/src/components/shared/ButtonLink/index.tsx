@@ -1,40 +1,27 @@
-import React, { useId } from "react"
-import {
-  Button,
-  ButtonProps,
-  ComponentWithAs,
-  Icon,
-  IconProps,
-} from "@chakra-ui/react"
+import React from "react"
+import { Button, ButtonProps, Icon } from "@chakra-ui/react"
 import { ArrowUpRight } from "#/static/icons"
-import { TextSm } from "../Typography"
 
 type ButtonLinkProps = ButtonProps & {
   label?: string
-  icon?: ComponentWithAs<"svg", IconProps>
+  icon?: typeof Icon
   iconColor?: string
-  isFullWidth?: boolean
   onClick: () => void
 }
 
 export default function ButtonLink({
-  variant = "solid",
+  children,
   icon = ArrowUpRight,
   iconColor = "brand.400",
-  isFullWidth = true,
-  justifyContent = "flex-start",
+  variant = "solid",
   onClick,
-  label,
+  justifyContent = "flex-start",
   ...props
 }: ButtonLinkProps) {
-  const key = useId()
-
   return (
     <Button
-      key={key}
       variant={variant}
       onClick={onClick}
-      width={isFullWidth ? "100%" : "auto"}
       justifyContent={justifyContent}
       borderRadius="md"
       leftIcon={
@@ -46,7 +33,7 @@ export default function ButtonLink({
       }
       {...props}
     >
-      <TextSm>{label}</TextSm>
+      {children}
     </Button>
   )
 }
