@@ -157,7 +157,6 @@ describe("Staking", () => {
               {
                 name: "TBTCDepositor",
                 version: "1",
-                chainId: 1,
                 verifyingContract: contracts.depositor.getChainIdentifier(),
               },
               {

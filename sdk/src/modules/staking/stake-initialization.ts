@@ -67,8 +67,6 @@ class StakeInitialization {
     const domain: Domain = {
       name: "TBTCDepositor",
       version: "1",
-      // TODO: How to get chainID?
-      chainId: 1,
       verifyingContract: this.#contracts.depositor.getChainIdentifier(),
     }
 
