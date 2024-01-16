@@ -5,7 +5,7 @@ import { ChainSignedMessage } from "./signed-message"
 export type Domain = {
   name: string
   version: string
-  chainId: number
+  chainId?: number | bigint
   verifyingContract: ChainIdentifier
   salt?: Hex
 }

@@ -21,8 +21,12 @@ class EthereumEIP712Signer implements ChainEIP712Signer {
     types: Types,
     message: Message,
   ): Promise<ChainSignedMessage> {
+    const chainId = await this.#getChainId()
+    if (!chainId) throw new Error("Chain id not defined")
+
     const ethersDomain = {
       ...domain,
+      chainId,
       verifyingContract: `0x${domain.verifyingContract.identifierHex}`,
       salt: domain.salt?.toPrefixedString(),
     }
@@ -34,10 +38,16 @@ class EthereumEIP712Signer implements ChainEIP712Signer {
     )
 
     return EthereumSignedMessage.fromRaw(Hex.from(rawSignature), {
-      domain,
+      domain: { ...domain, chainId },
       types,
       message,
     })
+  }
+
+  async #getChainId() {
+    const network = await this.#signer.provider?.getNetwork()
+
+    return network?.chainId
   }
 }
 
