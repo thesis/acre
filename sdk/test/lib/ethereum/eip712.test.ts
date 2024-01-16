@@ -5,37 +5,39 @@ import {
 } from "../../../src/lib/ethereum"
 import { EthereumSignedMessage } from "../../../src/lib/ethereum/eip712-signer/signed-message"
 
+const signMessageData = {
+  domain: {
+    name: "TBTCDepositor",
+    version: "1",
+    chainId: 1,
+    verifyingContract: EthereumAddress.from(
+      ethers.Wallet.createRandom().address,
+    ),
+  },
+  types: {
+    Stake: [{ name: "receiver", type: "address" }],
+  },
+  message: {
+    receiver: "0x407C3329eA8f6BEFB984D97AE4Fa71945E43170b",
+  },
+}
+
 describe("EIP712", () => {
+  const wallet = ethers.Wallet.createRandom()
+  const provider = ethers.getDefaultProvider("sepolia")
+  const ethersSigner = wallet.connect(provider)
+  const signer = new EthereumEIP712Signer(ethersSigner)
+
   describe("Signer", () => {
-    const wallet = ethers.Wallet.createRandom()
-    const provider = ethers.getDefaultProvider("sepolia")
-    const ethersSigner = wallet.connect(provider)
-    const signer = new EthereumEIP712Signer(ethersSigner)
-
-    const domain = {
-      name: "TBTCDepositor",
-      version: "1",
-      chainId: 1,
-      verifyingContract: EthereumAddress.from(
-        ethers.Wallet.createRandom().address,
-      ),
-    }
-
-    const types = {
-      Stake: [{ name: "receiver", type: "address" }],
-    }
-
-    const message = {
-      receiver: "0x407C3329eA8f6BEFB984D97AE4Fa71945E43170b",
-    }
-
     describe("sign", () => {
+      const { domain, types, message } = signMessageData
+
       const spyOnEthersSignTypedData = jest.spyOn(ethersSigner, "signTypedData")
       let result: EthereumSignedMessage
 
       beforeAll(async () => {
-        // @ts-expect-error Error: Property '#typedMessage' is missing in type
-        // 'ChainSignedMessage' but required in type 'EthereumSignedMessage'.
+        // @ts-expect-error Error: `Property '#typedMessage' is missing in type
+        // 'ChainSignedMessage' but required in type 'EthereumSignedMessage'`.
         // This is weird because the `typedMessage` is hard private field.
         result = await signer.sign(domain, types, message)
       })
@@ -59,9 +61,46 @@ describe("EIP712", () => {
   })
 
   describe("SignedMessage", () => {
-    it("should verify message", () => {
-      // TODO: add correct test checks.
-      expect(true).toBeTruthy()
+    const { domain, types, message } = signMessageData
+    let signedMessage: EthereumSignedMessage
+
+    beforeAll(async () => {
+      // @ts-expect-error Error: `Property '#typedMessage' is missing in type
+      // 'ChainSignedMessage' but required in type 'EthereumSignedMessage'`.
+      // This is weird because the `typedMessage` is hard private field.
+      signedMessage = await signer.sign(domain, types, message)
+    })
+
+    describe("verify", () => {
+      it("should return Ethereum address from signature", () => {
+        const expectedAddress = EthereumAddress.from(ethersSigner.address)
+
+        expect(signedMessage.verify()).toStrictEqual(expectedAddress)
+      })
+    })
+
+    describe("signature parameters", () => {
+      let v: number
+      let r: string
+      let s: string
+
+      beforeAll(() => {
+        ;({ v, r, s } = ethers.Signature.from(
+          signedMessage.signature.toPrefixedString(),
+        ))
+      })
+
+      it("should return correct v value", () => {
+        expect(signedMessage.v).toBe(v)
+      })
+
+      it("should return correct r value", () => {
+        expect(signedMessage.r.toPrefixedString()).toBe(r)
+      })
+
+      it("should return correct s value", () => {
+        expect(signedMessage.s.toPrefixedString()).toBe(s)
+      })
     })
   })
 })
