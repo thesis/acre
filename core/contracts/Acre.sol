@@ -189,8 +189,21 @@ contract Acre is ERC4626Fees, Ownable {
         uint256 shares,
         address receiver
     ) public override returns (uint256 assets) {
-        if ((assets = super.mint(shares, receiver)) < minimumDepositAmount) {
-            revert DepositAmountLessThanMin(assets, minimumDepositAmount);
+        // There were minted slightly more assets to cover the fee that is
+        // transferred to treasury.
+        uint256 _assets = super.mint(shares, receiver);
+        // Staking amount is not equal a deposited amount. Deposited amount includes
+        // a fee that is transferred to treasury. Staking amount is what goes to
+        // the Acre vault. Staking amount cannot be less than `minimumDepositAmount`.
+        // TODO: I suggest we rename `minimumDepositAmount` to `minimumStakingAmount`.
+        uint256 actualStakingAmount = _assets -
+            _feeOnRaw(convertToAssets(shares), _entryFeeBasisPoints());
+
+        if (actualStakingAmount < minimumDepositAmount) {
+            revert DepositAmountLessThanMin(
+                actualStakingAmount,
+                minimumDepositAmount
+            );
         }
     }
 
@@ -218,7 +231,7 @@ contract Acre is ERC4626Fees, Ownable {
     }
 
     /// @notice Returns the maximum amount of the tBTC token that can be
-    ///         deposited into the vault for the receiver, through a deposit
+    ///         deposited into the vault for the receiver through a deposit
     ///         call. It takes into account the deposit parameter, maximum total
     ///         assets, which determines the total amount of tBTC token held by
     ///         Acre.
@@ -264,7 +277,6 @@ contract Acre is ERC4626Fees, Ownable {
     /// @notice Returns the address of the treasury wallet, where fees should be
     ///         transferred to.
     function _feeRecipient() internal view override returns (address) {
-        // TODO: replace with a treasury address
-        return address(0);
+        return treasury;
     }
 }
