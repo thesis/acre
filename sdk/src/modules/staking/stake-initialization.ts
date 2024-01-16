@@ -72,12 +72,20 @@ class StakeInitialization {
       verifyingContract: this.#contracts.depositor.getChainIdentifier(),
     }
 
+    // TODO: revisit the message structure before the launch.
     const types: Types = {
-      Stake: [{ name: "receiver", type: "address" }],
+      Stake: [
+        { name: "receiver", type: "address" },
+        { name: "bitcoinRecoveryAddress", type: "string" },
+      ],
     }
 
     const message: Message = {
       receiver: this.#receiver.identifierHex,
+      // TODO: Make sure we can to pass the refund public key hash in this form.
+      bitcoinRecoveryAddress: this.#deposit
+        .getReceipt()
+        .refundPublicKeyHash.toPrefixedString(),
     }
 
     return { domain, types, message }

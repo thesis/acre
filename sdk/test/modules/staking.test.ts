@@ -127,6 +127,12 @@ describe("Staking", () => {
     })
 
     describe("StakeInitialization", () => {
+      const { depositReceipt } = stakingInitializationData
+
+      beforeAll(() => {
+        mockedDeposit.getReceipt.mockReturnValue(depositReceipt)
+      })
+
       describe("getDepositAddress", () => {
         it("should return bitcoin deposit address", async () => {
           expect(await result.getBitcoinAddress()).toBe(mockedDepositBTCAddress)
@@ -155,10 +161,15 @@ describe("Staking", () => {
                 verifyingContract: contracts.depositor.getChainIdentifier(),
               },
               {
-                Stake: [{ name: "receiver", type: "address" }],
+                Stake: [
+                  { name: "receiver", type: "address" },
+                  { name: "bitcoinRecoveryAddress", type: "string" },
+                ],
               },
               {
                 receiver: receiver.identifierHex,
+                bitcoinRecoveryAddress:
+                  depositReceipt.refundPublicKeyHash.toPrefixedString(),
               },
             )
           })
@@ -220,7 +231,6 @@ describe("Staking", () => {
           describe("when bitcoin deposit address has utxos", () => {
             const {
               fundingUtxos,
-              depositReceipt,
               bitcoinRawTx,
               bitcoinRawTxVectors,
               mockedInitializeTxHash: mockedTxHash,
@@ -230,7 +240,6 @@ describe("Staking", () => {
 
             beforeAll(async () => {
               mockedDeposit.detectFunding.mockResolvedValue(fundingUtxos)
-              mockedDeposit.getReceipt.mockReturnValue(depositReceipt)
               spyOnExtractBitcoinRawTxVectors = jest
                 .spyOn(TBTCModule, "extractBitcoinRawTxVectors")
                 .mockReturnValue(bitcoinRawTxVectors)
