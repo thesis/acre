@@ -62,7 +62,7 @@ const statusStyles = (props: StyleFunctionProps) => {
     info: statusInfo,
   }
 
-  return styleMap[status] || {}
+  return styleMap[status as string] || {}
 }
 
 const variantSubtle = multiStyleConfig.definePartsStyle((props) =>

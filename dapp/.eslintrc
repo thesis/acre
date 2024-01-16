@@ -43,14 +43,6 @@
     },
     {
       "files": [
-        "src/theme/Alert.ts"
-      ],
-      "rules": {
-        "@typescript-eslint/no-unsafe-member-access": "off"
-      }
-    },
-    {
-      "files": [
         "src/components/shared/Form/FormTokenBalanceInput.tsx"
       ],
       "rules": {
