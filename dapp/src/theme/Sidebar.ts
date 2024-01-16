@@ -24,6 +24,9 @@ const baseStyleSidebar = defineStyle({
   borderLeft: "2px",
   borderColor: "gold.100",
   borderTopLeftRadius: "xl",
+  display: "flex",
+  flexDirection: "column",
+  gap: 3,
 })
 
 const baseStyle = definePartsStyle({

@@ -10,8 +10,7 @@ import { ArrowUpRight } from "#/static/icons"
 import { TextSm } from "../Typography"
 
 type ButtonLinkProps = ButtonProps & {
-  label: string
-  link?: string
+  label?: string
   icon?: ComponentWithAs<"svg", IconProps>
   iconColor?: string
   isFullWidth?: boolean
@@ -20,12 +19,12 @@ type ButtonLinkProps = ButtonProps & {
 
 export default function ButtonLink({
   variant = "outline",
-  label = "",
   icon = ArrowUpRight,
   iconColor = "brand.400",
   isFullWidth = true,
   justifyContent = "flex-start",
   onClick,
+  label,
   ...props
 }: ButtonLinkProps) {
   const key = useId()

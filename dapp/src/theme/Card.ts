@@ -16,7 +16,7 @@ const Card: ComponentSingleStyleConfig = {
         bg: "gold.100",
         borderColor: "white",
         borderStyle: "solid",
-        borderRadius: "lg",
+        borderRadius: "md",
       },
     },
   },
