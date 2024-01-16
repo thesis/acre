@@ -117,6 +117,7 @@ class StakeInitialization {
       ...restDepositReceipt,
     }
 
+    // TODO: change it to the deposit details submission to the relayer bot.
     return this.#contracts.depositor.initializeStake(
       depositFundingTx,
       revealDepositInfo,
