@@ -18,6 +18,7 @@ const Card: ComponentSingleStyleConfig = {
 
       return {
         container: {
+          borderWidth: "1px",
           bg: "gold.100",
           borderColor: "white",
         },
