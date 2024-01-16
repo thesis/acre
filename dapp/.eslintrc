@@ -41,14 +41,6 @@
         "@typescript-eslint/no-floating-promises": "off"
       }
     },
-    {
-      "files": [
-        "src/components/shared/TokenAmountForm/index.tsx"
-      ],
-      "rules": {
-        "@typescript-eslint/require-await": "off"
-      }
-    }
   ],
   "settings": {
     "import/resolver": {
