@@ -1,9 +1,6 @@
 import { modalAnatomy as parts } from "@chakra-ui/anatomy"
 import { createMultiStyleConfigHelpers, defineStyle } from "@chakra-ui/react"
 
-const { defineMultiStyleConfig, definePartsStyle } =
-  createMultiStyleConfigHelpers(parts.keys)
-
 const baseStyleDialog = defineStyle({
   p: 4,
   border: "2px",
@@ -43,7 +40,9 @@ const baseStyleBody = defineStyle({
   gap: 6,
 })
 
-const baseStyle = definePartsStyle({
+const multiStyleConfig = createMultiStyleConfigHelpers(parts.keys)
+
+const baseStyle = multiStyleConfig.definePartsStyle({
   dialog: baseStyleDialog,
   closeButton: baseCloseButton,
   overlay: baseStyleOverlay,
@@ -51,6 +50,6 @@ const baseStyle = definePartsStyle({
   body: baseStyleBody,
 })
 
-const Modal = defineMultiStyleConfig({ baseStyle })
+const Modal = multiStyleConfig.defineMultiStyleConfig({ baseStyle })
 
 export default Modal

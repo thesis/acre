@@ -43,14 +43,6 @@
     },
     {
       "files": [
-        "src/theme/*"
-      ],
-      "rules": {
-        "@typescript-eslint/unbound-method": "off"
-      }
-    },
-    {
-      "files": [
         "src/theme/Alert.ts"
       ],
       "rules": {

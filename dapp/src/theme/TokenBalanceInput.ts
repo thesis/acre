@@ -2,9 +2,6 @@ import { createMultiStyleConfigHelpers, defineStyle } from "@chakra-ui/react"
 
 const PARTS = ["labelContainer", "balanceContainer", "balance"]
 
-const { defineMultiStyleConfig, definePartsStyle } =
-  createMultiStyleConfigHelpers(PARTS)
-
 const baseStyleLabelContainer = defineStyle({
   display: "flex",
   justifyContent: "space-between",
@@ -20,12 +17,14 @@ const baseStyleBalance = defineStyle({
   color: "grey.500",
 })
 
-const baseStyle = definePartsStyle({
+const multiStyleConfig = createMultiStyleConfigHelpers(PARTS)
+
+const baseStyle = multiStyleConfig.definePartsStyle({
   labelContainer: baseStyleLabelContainer,
   balanceContainer: baseStyleBalanceContainer,
   balance: baseStyleBalance,
 })
 
-const TokenBalanceInput = defineMultiStyleConfig({ baseStyle })
+const TokenBalanceInput = multiStyleConfig.defineMultiStyleConfig({ baseStyle })
 
 export default TokenBalanceInput

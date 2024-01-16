@@ -1,16 +1,6 @@
 import { tabsAnatomy as parts } from "@chakra-ui/anatomy"
 import { createMultiStyleConfigHelpers, defineStyle } from "@chakra-ui/react"
 
-const { definePartsStyle, defineMultiStyleConfig } =
-  createMultiStyleConfigHelpers(parts.keys)
-
-const baseStyle = definePartsStyle({
-  tab: {
-    fontWeight: "bold",
-    color: "grey.400",
-  },
-})
-
 const variantUnderlineTab = defineStyle({
   pb: 4,
   borderBottom: "2px solid",
@@ -36,7 +26,9 @@ const variantUnderlineTabPanel = defineStyle({
   px: 0,
 })
 
-const variantUnderline = definePartsStyle({
+const multiStyleConfig = createMultiStyleConfigHelpers(parts.keys)
+
+const variantUnderline = multiStyleConfig.definePartsStyle({
   tab: variantUnderlineTab,
   tablist: variantUnderlineTabList,
   tabpanel: variantUnderlineTabPanel,
@@ -46,6 +38,13 @@ const variants = {
   underline: variantUnderline,
 }
 
-const Tabs = defineMultiStyleConfig({ baseStyle, variants })
+const baseStyle = multiStyleConfig.definePartsStyle({
+  tab: {
+    fontWeight: "bold",
+    color: "grey.400",
+  },
+})
+
+const Tabs = multiStyleConfig.defineMultiStyleConfig({ baseStyle, variants })
 
 export default Tabs

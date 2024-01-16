@@ -2,9 +2,6 @@ import { createMultiStyleConfigHelpers, defineStyle } from "@chakra-ui/react"
 
 const PARTS = ["sidebarContainer", "sidebar"]
 
-const { defineMultiStyleConfig, definePartsStyle } =
-  createMultiStyleConfigHelpers(PARTS)
-
 const baseStyleSidebarContainer = defineStyle({
   top: 0,
   right: 0,
@@ -25,11 +22,13 @@ const baseStyleSidebar = defineStyle({
   borderTopLeftRadius: "xl",
 })
 
-const baseStyle = definePartsStyle({
+const multiStyleConfig = createMultiStyleConfigHelpers(PARTS)
+
+const baseStyle = multiStyleConfig.definePartsStyle({
   sidebarContainer: baseStyleSidebarContainer,
   sidebar: baseStyleSidebar,
 })
 
-const Sidebar = defineMultiStyleConfig({ baseStyle })
+const Sidebar = multiStyleConfig.defineMultiStyleConfig({ baseStyle })
 
 export default Sidebar
