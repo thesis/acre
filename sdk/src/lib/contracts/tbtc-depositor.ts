@@ -52,10 +52,10 @@ export interface TBTCDepositor {
    * Initializes stake for a Bitcoin deposit made by an user with a P2(W)SH
    * transaction. It uses the supplied information to reveal a deposit to the
    * tBTC Bridge contract.
-   * @param bitcoinFundingTransaction - Bitcoin funding transaction data.
-   * @param depositReveal - Data of the revealed deposit.
-   * @param receiver - The address to which the stBTC shares will be minted.
-   * @param referral - Data used for referral program.
+   * @param bitcoinFundingTransaction Bitcoin funding transaction data.
+   * @param depositReveal Data of the revealed deposit.
+   * @param receiver The address to which the stBTC shares will be minted.
+   * @param referral Data used for referral program.
    * @returns Transaction hash of the stake initiation transaction.
    */
   initializeStake(
