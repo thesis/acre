@@ -1,4 +1,4 @@
-import { ethers } from "ethers"
+import { Network, ethers } from "ethers"
 import {
   EthereumEIP712Signer,
   EthereumAddress,
@@ -9,7 +9,6 @@ const signMessageData = {
   domain: {
     name: "TBTCDepositor",
     version: "1",
-    chainId: 1,
     verifyingContract: EthereumAddress.from(
       ethers.Wallet.createRandom().address,
     ),
@@ -30,32 +29,58 @@ describe("EIP712", () => {
 
   describe("Signer", () => {
     describe("sign", () => {
-      const { domain, types, message } = signMessageData
+      describe("when chain id is defined", () => {
+        const { domain, types, message } = signMessageData
+        let spyOnEthersSignTypedData: jest.SpyInstance<Promise<string>>
+        let result: EthereumSignedMessage
 
-      const spyOnEthersSignTypedData = jest.spyOn(ethersSigner, "signTypedData")
-      let result: EthereumSignedMessage
+        beforeAll(async () => {
+          spyOnEthersSignTypedData = jest.spyOn(ethersSigner, "signTypedData")
 
-      beforeAll(async () => {
-        // @ts-expect-error Error: `Property '#typedMessage' is missing in type
-        // 'ChainSignedMessage' but required in type 'EthereumSignedMessage'`.
-        // This is weird because the `typedMessage` is hard private field.
-        result = await signer.sign(domain, types, message)
+          // @ts-expect-error Error: `Property '#typedMessage' is missing in type
+          // 'ChainSignedMessage' but required in type 'EthereumSignedMessage'`.
+          // This is weird because the `typedMessage` is hard private field.
+          result = await signer.sign(domain, types, message)
+        })
+
+        it("should sign message via ethers", async () => {
+          expect(spyOnEthersSignTypedData).toHaveBeenCalledWith(
+            {
+              ...domain,
+              chainId: (await ethersSigner.provider?.getNetwork())?.chainId,
+              verifyingContract: `0x${domain.verifyingContract.identifierHex}`,
+              salt: undefined,
+            },
+            types,
+            message,
+          )
+        })
+
+        it("should return signed message", () => {
+          expect(result).toBeInstanceOf(EthereumSignedMessage)
+        })
       })
 
-      it("should sign message via ethers", () => {
-        expect(spyOnEthersSignTypedData).toHaveBeenCalledWith(
-          {
-            ...domain,
-            verifyingContract: `0x${domain.verifyingContract.identifierHex}`,
-            salt: undefined,
-          },
-          types,
-          message,
-        )
-      })
+      describe("when chain id is not defined", () => {
+        let spyOnGetNetwork: jest.SpyInstance<Promise<Network>>
 
-      it("should return signed message", () => {
-        expect(result).toBeInstanceOf(EthereumSignedMessage)
+        beforeAll(() => {
+          spyOnGetNetwork = jest
+            .spyOn(provider, "getNetwork")
+            .mockResolvedValue({} as unknown as Network)
+        })
+
+        afterAll(() => {
+          spyOnGetNetwork.mockRestore()
+        })
+
+        it("should throw an error", () => {
+          const { domain, types, message } = signMessageData
+
+          expect(async () => {
+            await signer.sign(domain, types, message)
+          }).rejects.toThrow("Chain id not defined")
+        })
       })
     })
   })
