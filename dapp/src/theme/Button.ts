@@ -30,17 +30,29 @@ const Button: ComponentSingleStyleConfig = {
         bg: "brand.400",
       },
     },
-    outline: {
-      color: "grey.700",
-      borderColor: "grey.700",
-      _hover: {
-        bg: "opacity.grey.700.05",
-      },
-      _active: {
-        bg: "transparent",
-      },
+    outline: ({ colorScheme }: StyleFunctionProps) => {
+      const defaultStyles = {
+        color: "grey.700",
+        borderColor: "grey.700",
+        _hover: {
+          bg: "opacity.grey.700.05",
+        },
+        _active: {
+          bg: "transparent",
+        },
+      }
+      if (colorScheme === "gold") {
+        return {
+          ...defaultStyles,
+          bg: "gold.100",
+          borderColor: "white",
+          borderStyle: "solid",
+        }
+      }
+      return defaultStyles
     },
-    card: (props: StyleFunctionProps) => {
+    // FIXME: It should be removed and replaced by solid/outline variants
+    card: ({ colorScheme }: StyleFunctionProps) => {
       const defaultStyles = {
         borderWidth: "2px",
         borderColor: "gold.100",
@@ -54,7 +66,7 @@ const Button: ComponentSingleStyleConfig = {
         },
       }
 
-      if (props.colorScheme === "error") {
+      if (colorScheme === "error") {
         return {
           ...defaultStyles,
           color: "red.400",
