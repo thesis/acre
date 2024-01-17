@@ -34,6 +34,4 @@ const baseStyle = definePartsStyle({
   sidebar: baseStyleSidebar,
 })
 
-const Sidebar = defineMultiStyleConfig({ baseStyle })
-
-export default Sidebar
+export const sidebarTheme = defineMultiStyleConfig({ baseStyle })

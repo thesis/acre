@@ -3,7 +3,7 @@ import {
   StyleFunctionProps,
 } from "@chakra-ui/react"
 
-const Card: ComponentSingleStyleConfig = {
+export const cardTheme: ComponentSingleStyleConfig = {
   baseStyle: {
     container: {
       boxShadow: "none",
@@ -39,5 +39,3 @@ const Card: ComponentSingleStyleConfig = {
     size: "lg",
   },
 }
-
-export default Card

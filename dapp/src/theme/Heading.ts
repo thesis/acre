@@ -1,6 +1,6 @@
 import { ComponentSingleStyleConfig } from "@chakra-ui/react"
 
-const Heading: ComponentSingleStyleConfig = {
+export const headingTheme: ComponentSingleStyleConfig = {
   sizes: {
     "7xl": {
       fontSize: "7xl",
@@ -28,5 +28,3 @@ const Heading: ComponentSingleStyleConfig = {
     },
   },
 }
-
-export default Heading
