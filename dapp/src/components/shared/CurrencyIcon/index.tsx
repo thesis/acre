@@ -1,10 +1,11 @@
 import React from "react"
 import { Box, Icon, useMultiStyleConfig } from "@chakra-ui/react"
 import { CurrencyType } from "#/types"
-import { stBTC } from "#/static/icons"
+import { BTC, stBTC } from "#/static/icons"
 import { getCurrencyByType } from "#/utils"
 
 const ICONS: Partial<Record<CurrencyType, typeof Icon>> = {
+  bitcoin: BTC,
   stbtc: stBTC,
 }
 
