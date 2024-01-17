@@ -8,7 +8,6 @@ export const TRANSACTIONS: StakeHistory[] = [
       action: "stake",
       asset: {
         currency: "bitcoin",
-        symbol: "BTC",
         amount: 224440000,
       },
       account: "2MsjRekULh27YSM17p8gSNkVvbXw6wc4kcZ",
@@ -22,7 +21,6 @@ export const TRANSACTIONS: StakeHistory[] = [
       action: "receive",
       asset: {
         currency: "stbtc",
-        symbol: "stBTC",
         amount: 224000000,
       },
       account: "0x208e94d5661a73360d9387d3ca169e5c130090cd",
@@ -38,7 +36,6 @@ export const TRANSACTIONS: StakeHistory[] = [
       action: "unstake",
       asset: {
         currency: "stbtc",
-        symbol: "stBTC",
         amount: 614000000,
       },
       account: "2MsjRekULh27YSM17p8gSNkVvbXw6wc4kcZ",
@@ -52,7 +49,6 @@ export const TRANSACTIONS: StakeHistory[] = [
       action: "receive",
       asset: {
         currency: "bitcoin",
-        symbol: "BTC",
         amount: 614000000,
       },
       account: "0x208e94d5661a73360d9387d3ca169e5c130090cd",
@@ -68,7 +64,6 @@ export const TRANSACTIONS: StakeHistory[] = [
       action: "unstake",
       asset: {
         currency: "stbtc",
-        symbol: "stBTC",
         amount: 321000000,
       },
       account: "2MsjRekULh27YSM17p8gSNkVvbXw6wc4kcZ",
@@ -82,7 +77,6 @@ export const TRANSACTIONS: StakeHistory[] = [
       action: "receive",
       asset: {
         currency: "bitcoin",
-        symbol: "BTC",
         amount: 321000000,
       },
       account: "0x208e94d5661a73360d9387d3ca169e5c130090cd",

@@ -11,7 +11,6 @@ enum TransactionInfoStatus {
 
 export type Asset = {
   currency: CurrencyType
-  symbol: string
   amount: number
 }
 

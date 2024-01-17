@@ -8,7 +8,6 @@ export const TRANSACTIONS: StakeHistory[] = [
       action: "stake",
       asset: {
         currency: "bitcoin",
-        symbol: "BTC",
         amount: 311000000,
       },
       account: "2MsjRekULh27YSM17p8gSNkVvbXw6wc4kcZ",
@@ -22,7 +21,6 @@ export const TRANSACTIONS: StakeHistory[] = [
       action: "receive",
       asset: {
         currency: "stbtc",
-        symbol: "stBTC",
         amount: 311000000,
       },
       account: "0x208e94d5661a73360d9387d3ca169e5c130090cd",

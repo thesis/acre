@@ -23,5 +23,3 @@ export const createLinkToBlockExplorerForChain = (
   const link = createBlockExplorerLink(url, id, type)
   return { title, link }
 }
-
-export const isEthereumTransaction = (txHash: string) => txHash.includes("0x")
