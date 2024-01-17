@@ -16,11 +16,17 @@ import { EthereumAddress } from "./address"
  */
 export type EthereumSigner = Signer | VoidSigner
 
+/**
+ * Represents a config set required to connect an Ethereum contract.
+ */
 export interface EthersContractConfig
   extends Omit<_EthersContractConfig, "signerOrProvider"> {
   signer: EthereumSigner
 }
 
+/**
+ * Ethers-based contract implementation.
+ */
 export class EthersContractWrapper<T extends EthersContract> {
   /**
    * Ethers instance of the deployed contract.
