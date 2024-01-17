@@ -10,8 +10,15 @@ import {
 import { ChainIdentifier } from "../../contracts"
 import { Hex } from "../../utils"
 
+/**
+ * Represents typed structured data used to sign message.
+ */
 type TypedMessage = { domain: Domain; types: Types; message: Message }
 
+/**
+ * Ethereum implementation of signed message.
+ * @see ChainSignedMessage
+ */
 class EthereumSignedMessage implements ChainSignedMessage {
   static fromRaw(
     rawSignature: Hex,
@@ -43,6 +50,9 @@ class EthereumSignedMessage implements ChainSignedMessage {
     this.#typedMessage = _typedMessage
   }
 
+  /**
+   * @see {ChainSignedMessage#verify}
+   */
   verify(): ChainIdentifier {
     const ethersDomain = {
       ...this.#typedMessage.domain,
