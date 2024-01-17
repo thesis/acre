@@ -3,26 +3,21 @@ import { Button, ButtonProps, Icon } from "@chakra-ui/react"
 import { ArrowUpRight } from "#/static/icons"
 
 type ButtonLinkProps = ButtonProps & {
-  label?: string
   icon?: typeof Icon
   iconColor?: string
-  onClick: () => void
 }
 
 export default function ButtonLink({
   children,
   icon = ArrowUpRight,
   iconColor = "brand.400",
-  variant = "solid",
-  onClick,
-  justifyContent = "flex-start",
+  variant = "outline",
   ...props
 }: ButtonLinkProps) {
   return (
     <Button
       variant={variant}
-      onClick={onClick}
-      justifyContent={justifyContent}
+      justifyContent="flex-start"
       borderRadius="md"
       leftIcon={
         <Icon
