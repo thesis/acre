@@ -20,6 +20,7 @@ import FormError from "./FormError"
 import Tabs from "./Tabs"
 import { spinnerTheme as Spinner } from "./Spinner"
 import { tableTheme as Table } from "./Table"
+import { currencyIconTheme as CurrencyIcon } from "./CurrencyIcon"
 
 const defaultTheme = {
   colors,
@@ -56,6 +57,7 @@ const defaultTheme = {
     Tabs,
     Spinner,
     Table,
+    CurrencyIcon,
   },
 }
 

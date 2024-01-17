@@ -2,12 +2,12 @@ import React from "react"
 import ViewInBlockExplorer from "#/components/shared/ViewInBlockExplorer"
 import { ExplorerDataType, TransactionInfo } from "#/types"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
+import CurrencyIcon from "#/components/shared/CurrencyIcon"
 import CellWrapper from "./CellWrapper"
 
-const getCustomComponent = (
-  type: "currency-balance" | "block-explorer",
-  transaction: TransactionInfo,
-) => {
+type CellType = "currency-balance" | "block-explorer" | "currency-icon"
+
+const getCustomComponent = (type: CellType, transaction: TransactionInfo) => {
   switch (type) {
     case "currency-balance":
       return (
@@ -26,6 +26,9 @@ const getCustomComponent = (
         />
       )
     }
+    case "currency-icon": {
+      return <CurrencyIcon currency={transaction.asset.currency} withSymbol />
+    }
     default:
       // eslint-disable-next-line react/jsx-no-useless-fragment
       return <></>
@@ -37,7 +40,7 @@ function CustomCell({
   transaction1,
   transaction2,
 }: {
-  type: "currency-balance" | "block-explorer"
+  type: CellType
   transaction1: TransactionInfo
   transaction2: TransactionInfo
 }) {

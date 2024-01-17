@@ -36,9 +36,10 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
   columnHelper.display({
     header: "Asset",
     cell: ({ row: { original } }) => (
-      <TextCell
-        value1={original.callTx.asset.symbol}
-        value2={original.receiptTx.asset.symbol}
+      <CustomCell
+        type="currency-icon"
+        transaction1={original.callTx}
+        transaction2={original.receiptTx}
       />
     ),
   }),
