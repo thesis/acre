@@ -9,6 +9,10 @@ import {
 } from "../../eip712-signer"
 import { Hex } from "../../utils"
 
+/**
+ * Ethereum implementation of typed structured data signer.
+ * @see ChainEIP712Signer
+ */
 class EthereumEIP712Signer implements ChainEIP712Signer {
   readonly #signer: EthereumSigner
 
@@ -16,6 +20,9 @@ class EthereumEIP712Signer implements ChainEIP712Signer {
     this.#signer = _signer
   }
 
+  /**
+   * @see {ChainEIP712Signer#sign}
+   */
   async sign(
     domain: Domain,
     types: Types,
@@ -44,6 +51,10 @@ class EthereumEIP712Signer implements ChainEIP712Signer {
     })
   }
 
+  /**
+   * Gets the chain id from the network the signer is connected to.
+   * @returns The EIP-155 chain id.
+   */
   async #getChainId() {
     const network = await this.#signer.provider?.getNetwork()
 
