@@ -18,9 +18,10 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
   columnHelper.accessor("callTx.timestamp", {
     header: "Date",
     cell: ({ row: { original } }) => (
-      <TextCell
-        value1={original.callTx.timestamp}
-        value2={original.receiptTx.timestamp}
+      <CustomCell
+        type="date"
+        transaction1={original.callTx}
+        transaction2={original.receiptTx}
       />
     ),
   }),

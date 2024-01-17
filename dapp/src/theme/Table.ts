@@ -30,6 +30,8 @@ const variantDoubleRowTd = defineStyle({
     borderTopStartRadius: BORDER_RADIUS_SIZE,
     borderBottomStartRadius: BORDER_RADIUS_SIZE,
     borderLeft: BORDER_STYLE,
+    borderRight: "1px solid",
+    borderRightColor: "gold.200",
   },
 })
 

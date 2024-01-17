@@ -3,9 +3,11 @@ import ViewInBlockExplorer from "#/components/shared/ViewInBlockExplorer"
 import { ExplorerDataType, TransactionInfo } from "#/types"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import CurrencyIcon from "#/components/shared/CurrencyIcon"
+import { TextSm } from "#/components/shared/Typography"
+import { displayBlockTimestamp } from "#/utils"
 import CellWrapper from "./CellWrapper"
 
-type CellType = "currency-balance" | "block-explorer" | "currency-icon"
+type CellType = "currency-balance" | "block-explorer" | "currency-icon" | "date"
 
 const getCustomComponent = (type: CellType, transaction: TransactionInfo) => {
   switch (type) {
@@ -29,6 +31,9 @@ const getCustomComponent = (type: CellType, transaction: TransactionInfo) => {
     case "currency-icon": {
       return <CurrencyIcon currency={transaction.asset.currency} withSymbol />
     }
+    case "date": {
+      return <TextSm>{displayBlockTimestamp(transaction.timestamp)}</TextSm>
+    }
     default:
       // eslint-disable-next-line react/jsx-no-useless-fragment
       return <></>
@@ -44,6 +49,10 @@ function CustomCell({
   transaction1: TransactionInfo
   transaction2: TransactionInfo
 }) {
+  if (type === "date") {
+    return <CellWrapper children1={getCustomComponent(type, transaction1)} />
+  }
+
   return (
     <CellWrapper
       children1={getCustomComponent(type, transaction1)}
