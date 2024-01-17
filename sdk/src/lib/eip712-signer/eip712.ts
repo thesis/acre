@@ -54,9 +54,9 @@ export type Message = Record<string, unknown>
 export interface ChainEIP712Signer {
   /**
    * Signs defined typed structured data.
-   * @param {Domain} domain - Definition of domain separator.
-   * @param {Types} types - Data types.
-   * @param {Message} message - Message data.
+   * @param {Domain} domain Definition of domain separator.
+   * @param {Types} types Data types.
+   * @param {Message} message Message data.
    * @returns {ChainSignedMessage} Object that represents chain-specific signed message.
    */
   sign(
