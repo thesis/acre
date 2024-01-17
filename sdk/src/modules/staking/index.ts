@@ -3,11 +3,23 @@ import { AcreContracts } from "../../lib/contracts"
 import { ChainEIP712Signer } from "../../lib/eip712-signer"
 import { StakeInitialization } from "./stake-initialization"
 
+/**
+ * Module exposing features related to the staking.
+ */
 class StakingModule {
+  /**
+   * Acre contracts.
+   */
   readonly #contracts: AcreContracts
 
+  /**
+   * Typed structured data signer.
+   */
   readonly #messageSigner: ChainEIP712Signer
 
+  /**
+   * tBTC SDK.
+   */
   readonly #tbtc: TBTC
 
   constructor(
@@ -20,6 +32,15 @@ class StakingModule {
     this.#tbtc = _tbtc
   }
 
+  /**
+   * Initializes the Acre staking process.
+   * @param bitcoinRecoveryAddress P2PKH or P2WPKH Bitcoin address that can be
+   *                               used for emergency recovery of the deposited
+   *                               funds.
+   * @param receiver The address to which the stBTC shares will be minted.
+   * @param referral Data used for referral program.
+   * @returns Object represents the staking process.
+   */
   async initializeStake(
     bitcoinRecoveryAddress: string,
     receiver: ChainIdentifier,

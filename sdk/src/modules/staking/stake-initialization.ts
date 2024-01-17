@@ -14,19 +14,46 @@ import {
 import { AcreContracts } from "../../lib/contracts"
 import { Hex } from "../../lib/utils"
 
+/**
+ * Represents an instance of the staking flow. Staking flow requires a few steps
+ * which should be done to stake BTC.
+ */
 class StakeInitialization {
+  /**
+   * Acre contracts.
+   */
   readonly #contracts: AcreContracts
 
+  /**
+   * Typed structured data signer.
+   */
   readonly #messageSigner: ChainEIP712Signer
 
+  /**
+   * Component representing an instance of the tBTC v2 deposit process.
+   */
   readonly #deposit: Deposit
 
+  /**
+   * Bitcoin client.
+   */
   readonly #bitcoinClient: BitcoinClient
 
+  /**
+   * Receiver The address to which the stBTC shares will be minted.
+   */
   readonly #receiver: ChainIdentifier
 
+  /**
+   * Param referral Data used for referral program.
+   */
   readonly #referral: number
 
+  /**
+   * Stores the signed staking message required in staking flow. By default is
+   * set to `undefined`, meaning the staking message has not yet been signed by
+   * signer.
+   */
   #signedMessage?: ChainSignedMessage
 
   constructor(
@@ -45,10 +72,21 @@ class StakeInitialization {
     this.#bitcoinClient = _bitcoinClient
   }
 
+  /**
+   * @dev It should be used as a first step of the staking flow and user should
+   *      send BTC to returned Bitcoin address.
+   * @returns Bitcoin address corresponding to this deposit.
+   */
   async getBitcoinAddress(): Promise<string> {
     return this.#deposit.getBitcoinAddress()
   }
 
+  /**
+   * Signs the staking message and stores it in object instance to use it in
+   * {@see StakeInitialization#stake} function.
+   * @dev Use this function as a second step of the staking flow. Signed message
+   *      is required to stake BTC.
+   */
   async signMessage() {
     const { domain, types, message } = this.#getStakeMessageTypedData()
 
@@ -63,6 +101,9 @@ class StakeInitialization {
     this.#signedMessage = signedMessage
   }
 
+  /**
+   * @returns The staking message data to be signed.
+   */
   #getStakeMessageTypedData() {
     const domain: Domain = {
       name: "TBTCDepositor",
@@ -89,6 +130,16 @@ class StakeInitialization {
     return { domain, types, message }
   }
 
+  /**
+   * Stakes BTC based on the Bitcoin funding transaction via TBTCDepositor
+   * contract. It requires signed staking message, which means `stake` should be
+   * called after message signing. By default, it detects and uses the outpoint
+   * of the recent Bitcoin funding transaction and throws if such a transaction
+   * does not exist.
+   * @dev Use it as the last step of the staking flow. It requires signed
+   *      staking message otherwise throws an error.
+   * @returns Transaction hash of the stake initiation transaction.
+   */
   async stake(): Promise<Hex> {
     if (!this.#signedMessage) {
       throw new Error("Sign message first")
