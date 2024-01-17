@@ -134,6 +134,11 @@ describe("Acre", () => {
     })
   })
 
+  // TODO: consider introducing a mocking framework to validate the `deposit()`
+  // function was called with the right params on `stake()` and verify things
+  // like emitted event, assets transfer etc. in the `deposit()` function level
+  // where these things are actually happening. Otherwise we are duplicating the
+  // tests.
   describe("stake", () => {
     context("when staking as first staker", () => {
       beforeAfterEachSnapshotWrapper()
@@ -1190,27 +1195,17 @@ describe("Acre", () => {
       })
     })
 
-    context("preview deposit with fees", () => {
-      beforeEach(async () => {
-        amountToDeposit = minimumDepositAmount
-        await tbtc.approve(await acre.getAddress(), amountToDeposit)
-      })
-
-      it("should return the correct amount of shares", async () => {
-        const preview = await acre.previewDeposit(amountToDeposit)
-        expect(preview).to.be.eq(amountToDeposit)
-      })
-    })
-
     context(
       "when the deposit amount is equal to the minimum deposit amount",
       () => {
         let tx: ContractTransactionResponse
         let expectedReceivedShares: bigint
+        let fee: bigint
 
         beforeEach(async () => {
           amountToDeposit = minimumDepositAmount
-          expectedReceivedShares = amountToDeposit
+          fee = feeOnTotal(amountToDeposit)
+          expectedReceivedShares = amountToDeposit - fee
 
           await tbtc.approve(await acre.getAddress(), amountToDeposit)
           tx = await acre
@@ -1239,11 +1234,21 @@ describe("Acre", () => {
           )
         })
 
-        it("should transfer tBTC tokens", async () => {
+        it("should transfer tBTC tokens to Acre", async () => {
+          const actualStakedAmount = amountToDeposit - fee
+
           await expect(tx).to.changeTokenBalances(
             tbtc,
             [staker1.address, acre],
-            [-amountToDeposit, amountToDeposit],
+            [-amountToDeposit, actualStakedAmount],
+          )
+        })
+
+        it("should transfer tBTC fee to treasury", async () => {
+          await expect(tx).to.changeTokenBalances(
+            tbtc,
+            [treasury.address],
+            [fee],
           )
         })
       },
