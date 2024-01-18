@@ -16,6 +16,4 @@ const baseStyle = definePartsStyle({
   helperText: baseStyleHelperText,
 })
 
-const Form = defineMultiStyleConfig({ baseStyle })
-
-export default Form
+export const formTheme = defineMultiStyleConfig({ baseStyle })

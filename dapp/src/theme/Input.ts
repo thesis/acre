@@ -39,6 +39,4 @@ const variants = {
   balance: variantBalance,
 }
 
-const Input = defineMultiStyleConfig({ variants })
-
-export default Input
+export const inputTheme = defineMultiStyleConfig({ variants })

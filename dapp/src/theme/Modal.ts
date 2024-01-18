@@ -51,6 +51,4 @@ const baseStyle = definePartsStyle({
   body: baseStyleBody,
 })
 
-const Modal = defineMultiStyleConfig({ baseStyle })
-
-export default Modal
+export const modalTheme = defineMultiStyleConfig({ baseStyle })
