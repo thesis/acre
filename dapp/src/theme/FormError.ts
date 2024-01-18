@@ -13,6 +13,6 @@ const baseStyle = multiStyleConfig.definePartsStyle({
   text: baseStyleText,
 })
 
-const FormError = multiStyleConfig.defineMultiStyleConfig({ baseStyle })
-
-export default FormError
+export const formErrorTheme = multiStyleConfig.defineMultiStyleConfig({
+  baseStyle,
+})

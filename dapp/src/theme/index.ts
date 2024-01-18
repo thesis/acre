@@ -1,24 +1,24 @@
 import { StyleFunctionProps, extendTheme } from "@chakra-ui/react"
 import { mode } from "@chakra-ui/theme-tools"
-import Button from "./Button"
-import Switch from "./Switch"
+import { buttonTheme } from "./Button"
+import { switchTheme } from "./Switch"
 import { colors, fonts, lineHeights, semanticTokens, zIndices } from "./utils"
-import Drawer from "./Drawer"
-import Modal from "./Modal"
-import Card from "./Card"
-import Tooltip from "./Tooltip"
-import Heading from "./Heading"
-import Sidebar from "./Sidebar"
-import CurrencyBalance from "./CurrencyBalance"
-import TokenBalanceInput from "./TokenBalanceInput"
-import Input from "./Input"
-import Stepper from "./Stepper"
-import Alert from "./Alert"
-import Form from "./Form"
-import FormLabel from "./FormLabel"
-import FormError from "./FormError"
-import Tabs from "./Tabs"
-import { spinnerTheme as Spinner } from "./Spinner"
+import { drawerTheme } from "./Drawer"
+import { modalTheme } from "./Modal"
+import { cardTheme } from "./Card"
+import { tooltipTheme } from "./Tooltip"
+import { headingTheme } from "./Heading"
+import { sidebarTheme } from "./Sidebar"
+import { currencyBalanceTheme } from "./CurrencyBalance"
+import { tokenBalanceInputTheme } from "./TokenBalanceInput"
+import { inputTheme } from "./Input"
+import { stepperTheme } from "./Stepper"
+import { alertTheme } from "./Alert"
+import { formTheme } from "./Form"
+import { formLabelTheme } from "./FormLabel"
+import { formErrorTheme } from "./FormError"
+import { tabsTheme } from "./Tabs"
+import { spinnerTheme } from "./Spinner"
 
 const defaultTheme = {
   colors,
@@ -36,24 +36,24 @@ const defaultTheme = {
     }),
   },
   components: {
-    Button,
-    Switch,
-    Drawer,
-    Sidebar,
-    Modal,
-    Heading,
-    CurrencyBalance,
-    Card,
-    Tooltip,
-    Input,
-    TokenBalanceInput,
-    Stepper,
-    Alert,
-    Form,
-    FormLabel,
-    FormError,
-    Tabs,
-    Spinner,
+    Alert: alertTheme,
+    Button: buttonTheme,
+    Card: cardTheme,
+    CurrencyBalance: currencyBalanceTheme,
+    Drawer: drawerTheme,
+    Form: formTheme,
+    FormLabel: formLabelTheme,
+    FormError: formErrorTheme,
+    Heading: headingTheme,
+    Input: inputTheme,
+    Modal: modalTheme,
+    Sidebar: sidebarTheme,
+    Spinner: spinnerTheme,
+    Stepper: stepperTheme,
+    Switch: switchTheme,
+    Tabs: tabsTheme,
+    TokenBalanceInput: tokenBalanceInputTheme,
+    Tooltip: tooltipTheme,
   },
 }
 

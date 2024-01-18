@@ -45,6 +45,7 @@ const baseStyle = multiStyleConfig.definePartsStyle({
   },
 })
 
-const Tabs = multiStyleConfig.defineMultiStyleConfig({ baseStyle, variants })
-
-export default Tabs
+export const tabsTheme = multiStyleConfig.defineMultiStyleConfig({
+  baseStyle,
+  variants,
+})

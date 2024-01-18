@@ -25,6 +25,6 @@ const baseStyle = multiStyleConfig.definePartsStyle({
   balance: baseStyleBalance,
 })
 
-const TokenBalanceInput = multiStyleConfig.defineMultiStyleConfig({ baseStyle })
-
-export default TokenBalanceInput
+export const tokenBalanceInputTheme = multiStyleConfig.defineMultiStyleConfig({
+  baseStyle,
+})

@@ -28,6 +28,6 @@ const baseStyle = multiStyleConfig.definePartsStyle({
   overlay: baseStyleOverlay,
 })
 
-const Drawer = multiStyleConfig.defineMultiStyleConfig({ baseStyle })
-
-export default Drawer
+export const drawerTheme = multiStyleConfig.defineMultiStyleConfig({
+  baseStyle,
+})

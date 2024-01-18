@@ -100,10 +100,8 @@ const sizes = {
   xl: sizeXl,
 }
 
-const CurrencyBalance = multiStyleConfig.defineMultiStyleConfig({
+export const currencyBalanceTheme = multiStyleConfig.defineMultiStyleConfig({
   baseStyle,
   variants,
   sizes,
 })
-
-export default CurrencyBalance

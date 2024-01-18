@@ -73,6 +73,7 @@ const variants = {
   subtle: variantSubtle,
 }
 
-const Alert = multiStyleConfig.defineMultiStyleConfig({ baseStyle, variants })
-
-export default Alert
+export const alertTheme = multiStyleConfig.defineMultiStyleConfig({
+  baseStyle,
+  variants,
+})

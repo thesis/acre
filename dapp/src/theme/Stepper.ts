@@ -72,6 +72,6 @@ const baseStyle = multiStyleConfig.definePartsStyle((props) => ({
   separator: baseStyleSeparator(props),
 }))
 
-const Stepper = multiStyleConfig.defineMultiStyleConfig({ baseStyle })
-
-export default Stepper
+export const stepperTheme = multiStyleConfig.defineMultiStyleConfig({
+  baseStyle,
+})
