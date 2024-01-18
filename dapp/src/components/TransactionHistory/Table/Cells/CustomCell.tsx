@@ -6,8 +6,14 @@ import CurrencyIcon from "#/components/shared/CurrencyIcon"
 import { TextSm } from "#/components/shared/Typography"
 import { displayBlockTimestamp } from "#/utils"
 import CellWrapper from "./CellWrapper"
+import Status from "./Status"
 
-type CellType = "currency-balance" | "block-explorer" | "currency-icon" | "date"
+type CellType =
+  | "currency-balance"
+  | "block-explorer"
+  | "currency-icon"
+  | "date"
+  | "status"
 
 const getCustomComponent = (type: CellType, transaction: TransactionInfo) => {
   switch (type) {
@@ -37,6 +43,9 @@ const getCustomComponent = (type: CellType, transaction: TransactionInfo) => {
           {displayBlockTimestamp(transaction.timestamp)}
         </TextSm>
       )
+    }
+    case "status": {
+      return <Status status={transaction.status} />
     }
     default:
       // eslint-disable-next-line react/jsx-no-useless-fragment

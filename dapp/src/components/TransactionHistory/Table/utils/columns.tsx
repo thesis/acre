@@ -77,9 +77,10 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
   columnHelper.display({
     header: "Status",
     cell: ({ row: { original } }) => (
-      <TextCell
-        value1={original.callTx.status}
-        value2={original.receiptTx.status}
+      <CustomCell
+        type="status"
+        transaction1={original.callTx}
+        transaction2={original.receiptTx}
       />
     ),
   }),

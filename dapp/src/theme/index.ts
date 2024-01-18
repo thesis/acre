@@ -21,6 +21,7 @@ import { tabsTheme } from "./Tabs"
 import { spinnerTheme } from "./Spinner"
 import { tableTheme } from "./Table"
 import { currencyIconTheme } from "./CurrencyIcon"
+import { statusInfoTheme } from "./StatusInfo"
 
 const defaultTheme = {
   colors,
@@ -58,6 +59,7 @@ const defaultTheme = {
     Tooltip: tooltipTheme,
     Table: tableTheme,
     CurrencyIcon: currencyIconTheme,
+    StatusInfo: statusInfoTheme,
   },
 }
 

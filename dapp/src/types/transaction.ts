@@ -3,7 +3,7 @@ import { CurrencyType } from "./currency"
 
 type TransactionInfoAction = "stake" | "unstake" | "receive"
 
-type TransactionInfoStatus = "completed" | "pending" | "syncing"
+export type TransactionInfoStatus = "completed" | "pending" | "syncing"
 
 export type Asset = {
   currency: CurrencyType
