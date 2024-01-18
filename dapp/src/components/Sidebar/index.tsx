@@ -74,7 +74,7 @@ export default function Sidebar() {
         </Card>
 
         {BUTTONS.map(({ label }) => (
-          <ButtonLink key={label} onClick={openDocsDrawer} colorScheme="gold">
+          <ButtonLink key={label} onClick={openDocsDrawer}>
             {label}
           </ButtonLink>
         ))}

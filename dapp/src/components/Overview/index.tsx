@@ -1,12 +1,12 @@
 import React from "react"
-import { Button, Flex, Grid, HStack, Icon, Switch } from "@chakra-ui/react"
+import { Flex, Grid, HStack, Switch } from "@chakra-ui/react"
 import { useDocsDrawer } from "#/hooks"
 import { TextSm } from "#/components/shared/Typography"
-import { ArrowUpRight } from "#/static/icons"
 import { USD } from "#/constants"
 import PositionDetails from "./PositionDetails"
 import Statistics from "./Statistics"
 import TransactionHistory from "./TransactionHistory"
+import ButtonLink from "../shared/ButtonLink"
 
 export default function Overview() {
   const { onOpen } = useDocsDrawer()
@@ -19,13 +19,9 @@ export default function Overview() {
           <Switch size="sm" />
           <TextSm fontWeight="bold">Show values in {USD.symbol}</TextSm>
         </HStack>
-        <Button
-          variant="card"
-          onClick={onOpen}
-          leftIcon={<Icon as={ArrowUpRight} color="brand.400" boxSize={4} />}
-        >
+        <ButtonLink colorScheme="gold" onClick={onOpen}>
           Docs
-        </Button>
+        </ButtonLink>
       </Flex>
       <Grid
         templateAreas={`"position-details statistics"
