@@ -46,6 +46,4 @@ const variants = {
   underline: variantUnderline,
 }
 
-const Tabs = defineMultiStyleConfig({ baseStyle, variants })
-
-export default Tabs
+export const tabsTheme = defineMultiStyleConfig({ baseStyle, variants })

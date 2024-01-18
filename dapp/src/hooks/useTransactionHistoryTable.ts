@@ -1,20 +1,17 @@
 import {
   ColumnDef,
   PaginationState,
-  Table,
   getCoreRowModel,
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { StakeHistory } from "#/types"
+import { StakeHistory, UseTransactionHistoryTableResult } from "#/types"
 import { useState } from "react"
 
 const PAGINATION_STATE = {
   pageIndex: 0,
   pageSize: 2,
 }
-
-export type UseTransactionHistoryTableResult = Table<StakeHistory>
 
 export function useTransactionHistoryTable({
   data,

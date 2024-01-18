@@ -2,8 +2,8 @@ import React from "react"
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table"
 import { StakeHistory } from "#/types"
 import { capitalize, truncateAddress } from "#/utils"
-import CustomCell from "./Cells/CustomCell"
-import TextCell from "./Cells/TextCell"
+import TextCell from "../Cells/TextCell"
+import CustomCell from "../Cells/CustomCell"
 
 const columnHelper = createColumnHelper<StakeHistory>()
 // When defining the columns for the table, columnHelper.accessor  ts returns a type issue.

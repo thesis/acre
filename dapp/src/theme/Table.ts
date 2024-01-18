@@ -6,8 +6,7 @@ const BORDER_STYLE = "1px solid white"
 
 const KEYS = [...parts.keys, "cellContainer", "cell", "divider"] as const
 
-const { defineMultiStyleConfig, definePartsStyle } =
-  createMultiStyleConfigHelpers(KEYS)
+const multiStyleConfig = createMultiStyleConfigHelpers(KEYS)
 
 const variantDoubleRowTable = defineStyle({
   borderCollapse: "separate",
@@ -56,7 +55,7 @@ const variantDoubleRowDivider = defineStyle({
   borderBottomWidth: "2px",
 })
 
-const variantDoubleRow = definePartsStyle({
+const variantDoubleRow = multiStyleConfig.definePartsStyle({
   table: variantDoubleRowTable,
   td: variantDoubleRowTd,
   th: variantDoubleRowTh,
@@ -69,4 +68,4 @@ const variants = {
   "double-row": variantDoubleRow,
 }
 
-export const tableTheme = defineMultiStyleConfig({ variants })
+export const tableTheme = multiStyleConfig.defineMultiStyleConfig({ variants })
