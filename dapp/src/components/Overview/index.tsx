@@ -31,8 +31,8 @@ export default function Overview() {
         templateAreas={`"position-details statistics"
                         "transaction-history transaction-history"`}
         gridTemplateColumns={{ base: "30% 1fr", xl: "20% 1fr" }}
-        gridTemplateRows={{ base: "55% 1fr", xl: "40% 1fr" }}
-        h="75vh"
+        gridTemplateRows={{ base: "55% 1fr", xl: "45% 1fr" }}
+        h="80vh"
         gap={4}
       >
         <PositionDetails gridArea="position-details" />
