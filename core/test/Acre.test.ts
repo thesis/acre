@@ -1356,5 +1356,39 @@ describe("Acre", () => {
         await expect(tx).to.changeTokenBalance(tbtc, treasury.address, 0n)
       })
     })
+
+    context("when there is no fee for minting, i.e. fee is 0", () => {
+      let tx: ContractTransactionResponse
+      let expectedShares: bigint
+
+      beforeEach(async () => {
+        expectedShares = to1e18(2)
+        amountToDeposit = expectedShares
+
+        await acre.connect(governance).updateEntryFeeBasisPoints(0n)
+        await tbtc.approve(await acre.getAddress(), amountToDeposit)
+        tx = await acre.connect(staker1).mint(expectedShares, receiver.address)
+      })
+
+      it("should mint stBTC tokens", async () => {
+        await expect(tx).to.changeTokenBalance(
+          acre,
+          receiver.address,
+          expectedShares,
+        )
+      })
+
+      it("should transfer tBTC tokens to Acre", async () => {
+        await expect(tx).to.changeTokenBalances(
+          tbtc,
+          [staker1.address, acre],
+          [-amountToDeposit, amountToDeposit],
+        )
+      })
+
+      it("should not transfer tBTC fee to treasury", async () => {
+        await expect(tx).to.changeTokenBalance(tbtc, treasury.address, 0n)
+      })
+    })
   })
 })
