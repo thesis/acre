@@ -32,7 +32,11 @@ const getCustomComponent = (type: CellType, transaction: TransactionInfo) => {
       return <CurrencyIcon currency={transaction.asset.currency} withSymbol />
     }
     case "date": {
-      return <TextSm>{displayBlockTimestamp(transaction.timestamp)}</TextSm>
+      return (
+        <TextSm whiteSpace="pre-line">
+          {displayBlockTimestamp(transaction.timestamp)}
+        </TextSm>
+      )
     }
     default:
       // eslint-disable-next-line react/jsx-no-useless-fragment

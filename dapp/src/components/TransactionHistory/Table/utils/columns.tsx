@@ -17,6 +17,7 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
   // Let's sort the data by the first transaction.
   columnHelper.accessor("callTx.timestamp", {
     header: "Date",
+    maxSize: 100,
     cell: ({ row: { original } }) => (
       <CustomCell
         type="date"
