@@ -1,10 +1,6 @@
 type TransactionInfoAction = "stake" | "unstake" | "receive"
 
-enum TransactionInfoStatus {
-  COMPLETED = 0,
-  PENDING = 1,
-  SYNCING = 2,
-}
+type TransactionInfoStatus = "completed" | "pending" | "syncing"
 
 type TransactionInfo = {
   timestamp: number
