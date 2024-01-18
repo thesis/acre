@@ -12,6 +12,7 @@ import {
   TransactionContextProvider,
 } from "#/contexts"
 import SupportWrapper from "#/components/Modals/Support"
+import { STAKING_STEPS } from "#/components/Modals/Staking/utils/stakingSteps"
 
 export default function ModalBase({
   isOpen,
@@ -29,17 +30,32 @@ export default function ModalBase({
   const { onOpen: openSideBar, onClose: closeSidebar } = useSidebar()
 
   const [activeStep, setActiveStep] = useState(defaultStep)
+  const [isResumeStep, setResumeStep] = useState(false)
+
+  const handleResume = useCallback(() => {
+    setResumeStep(false)
+  }, [])
 
   const handleGoNext = useCallback(() => {
     setActiveStep((prevStep) => prevStep + 1)
   }, [])
 
+  const isStakingPending = useCallback(() => {
+    const { SIGN_MESSAGE, DEPOSIT_BTC } = STAKING_STEPS
+    return activeStep === SIGN_MESSAGE || activeStep === DEPOSIT_BTC
+  }, [activeStep])
+
   const handleClose = useCallback(() => {
-    onClose()
-  }, [onClose])
+    if (!isResumeStep && isStakingPending()) {
+      setResumeStep(true)
+    } else {
+      onClose()
+    }
+  }, [isResumeStep, isStakingPending, onClose])
 
   const resetState = useCallback(() => {
     setActiveStep(defaultStep)
+    setResumeStep(false)
   }, [defaultStep])
 
   useEffect(() => {
@@ -63,10 +79,12 @@ export default function ModalBase({
   const contextValue: ModalFlowContextValue = useMemo<ModalFlowContextValue>(
     () => ({
       activeStep,
+      isResumeStep,
       onClose: handleClose,
+      onResume: handleResume,
       goNext: handleGoNext,
     }),
-    [activeStep, handleGoNext, handleClose],
+    [activeStep, isResumeStep, handleGoNext, handleClose, handleResume],
   )
 
   return (
