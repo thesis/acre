@@ -23,14 +23,14 @@ contract Acre is ERC4626Fees, Ownable {
     using SafeERC20 for IERC20;
     using Math for uint256;
 
-    /// Entry fee basis points applied to entry and exits.
-    uint256 public entryFeeBasisPoints = 5; // 5bps == 0.05% == 0.0005
-
     /// Dispatcher contract that routes tBTC from Acre to a given vault and back.
     Dispatcher public dispatcher;
 
     /// Address of the treasury wallet, where fees should be transferred to.
     address public treasury;
+
+    /// Entry fee basis points applied to entry.
+    uint256 public entryFeeBasisPoints;
 
     /// Minimum amount for a single deposit operation.
     uint256 public minimumDepositAmount;
@@ -79,6 +79,7 @@ contract Acre is ERC4626Fees, Ownable {
         // TODO: Revisit the exact values closer to the launch.
         minimumDepositAmount = 0.001 * 1e18; // 0.001 tBTC
         maximumTotalAssets = 25 * 1e18; // 25 tBTC
+        entryFeeBasisPoints = 5; // 5bps == 0.05% == 0.0005
     }
 
     /// @notice Updates treasury wallet address.
