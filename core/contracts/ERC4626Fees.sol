@@ -63,12 +63,14 @@ abstract contract ERC4626Fees is ERC4626 {
 
     // === Fee configuration ===
 
+    // slither-disable-next-line dead-code
     function _entryFeeBasisPoints() internal view virtual returns (uint256) {
         return 0; // replace with e.g. 100 for 1%
     }
 
     // TODO: add exitFeeBasisPoints
 
+    // slither-disable-next-line dead-code
     function _feeRecipient() internal view virtual returns (address) {
         return address(0); // replace with e.g. a treasury address
     }
