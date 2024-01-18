@@ -918,6 +918,60 @@ describe("Acre", () => {
     })
   })
 
+  describe("updateEntryFeeBasisPoints", () => {
+    beforeAfterEachSnapshotWrapper()
+
+    const validEntryFeeBasisPoints = 100n // 1%
+
+    context("when is called by governance", () => {
+      context("when entry fee basis points are valid", () => {
+        let tx: ContractTransactionResponse
+
+        beforeEach(async () => {
+          tx = await acre
+            .connect(governance)
+            .updateEntryFeeBasisPoints(validEntryFeeBasisPoints)
+        })
+
+        it("should emit EntryFeeBasisPointsUpdated event", async () => {
+          await expect(tx)
+            .to.emit(acre, "EntryFeeBasisPointsUpdated")
+            .withArgs(validEntryFeeBasisPoints)
+        })
+
+        it("should update entry fee basis points correctly", async () => {
+          expect(await acre.entryFeeBasisPoints()).to.be.eq(
+            validEntryFeeBasisPoints,
+          )
+        })
+      })
+
+      context("when entry fee basis points are 0", () => {
+        const newEntryFeeBasisPoints = 0
+
+        beforeEach(async () => {
+          await acre
+            .connect(governance)
+            .updateEntryFeeBasisPoints(newEntryFeeBasisPoints)
+        })
+
+        it("should update entry fee basis points correctly", async () => {
+          expect(await acre.entryFeeBasisPoints()).to.be.eq(
+            newEntryFeeBasisPoints,
+          )
+        })
+      })
+    })
+
+    context("when is called by non-governance", () => {
+      it("should revert", async () => {
+        await expect(
+          acre.connect(staker1).updateEntryFeeBasisPoints(100n),
+        ).to.be.revertedWithCustomError(acre, "OwnableUnauthorizedAccount")
+      })
+    })
+  })
+
   describe("maxDeposit", () => {
     beforeAfterEachSnapshotWrapper()
 
@@ -1253,5 +1307,54 @@ describe("Acre", () => {
         })
       },
     )
+
+    context("when there is no fee for deposit, i.e. fee is 0", () => {
+      let tx: ContractTransactionResponse
+      let expectedReceivedShares: bigint
+
+      beforeEach(async () => {
+        amountToDeposit = to1e18(2)
+        expectedReceivedShares = amountToDeposit
+
+        await acre.connect(governance).updateEntryFeeBasisPoints(0n)
+        await tbtc.approve(await acre.getAddress(), amountToDeposit)
+        tx = await acre
+          .connect(staker1)
+          .deposit(amountToDeposit, receiver.address)
+      })
+
+      it("should emit Deposit event", async () => {
+        await expect(tx).to.emit(acre, "Deposit").withArgs(
+          // Caller.
+          staker1.address,
+          // Receiver.
+          receiver.address,
+          // Staked tokens.
+          amountToDeposit,
+          // Received shares.
+          expectedReceivedShares,
+        )
+      })
+
+      it("should mint stBTC tokens", async () => {
+        await expect(tx).to.changeTokenBalance(
+          acre,
+          receiver.address,
+          expectedReceivedShares,
+        )
+      })
+
+      it("should transfer tBTC tokens to Acre", async () => {
+        await expect(tx).to.changeTokenBalances(
+          tbtc,
+          [staker1.address, acre],
+          [-amountToDeposit, amountToDeposit],
+        )
+      })
+
+      it("should not transfer tBTC fee to treasury", async () => {
+        await expect(tx).to.changeTokenBalance(tbtc, treasury.address, 0n)
+      })
+    })
   })
 })
