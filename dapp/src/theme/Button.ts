@@ -51,6 +51,14 @@ export const buttonTheme: ComponentSingleStyleConfig = {
       }
       return defaultStyles
     },
+    ghost: {
+      _hover: {
+        bg: "transparent",
+      },
+      _active: {
+        bg: "transparent",
+      },
+    },
     // FIXME: It should be removed and replaced by solid/outline variants
     card: ({ colorScheme }: StyleFunctionProps) => {
       const defaultStyles = {
