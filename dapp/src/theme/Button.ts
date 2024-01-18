@@ -8,6 +8,7 @@ export const buttonTheme: ComponentSingleStyleConfig = {
   baseStyle: {
     size: "md",
     borderRadius: "lg",
+    fontWeight: 500,
   },
   sizes: {
     md: {
@@ -54,12 +55,12 @@ export const buttonTheme: ComponentSingleStyleConfig = {
     // FIXME: It should be removed and replaced by solid/outline variants
     card: ({ colorScheme }: StyleFunctionProps) => {
       const defaultStyles = {
-        borderWidth: "2px",
+        borderWidth: "1px",
         borderColor: "gold.100",
-        borderRadius: "xl",
         bg: "gold.200",
         _hover: {
-          bg: "opacity.grey.700.05",
+          bg: "transparent",
+          borderColor: "grey.500",
         },
         _active: {
           bg: "transparent",
@@ -70,12 +71,30 @@ export const buttonTheme: ComponentSingleStyleConfig = {
         return {
           ...defaultStyles,
           color: "red.400",
-          borderColor: "red.400",
-          bg: "transparent",
+          _hover: {
+            borderColor: "red.400",
+            bg: "transparent",
+          },
         }
       }
 
       return defaultStyles
+    },
+    pagination: {
+      bg: "white",
+      color: "grey.700",
+      border: "1px solid transparent",
+
+      _hover: {
+        borderColor: "white",
+        bg: "opacity.white.6",
+      },
+      _disabled: {
+        color: "grey.200",
+        bg: "white",
+        opacity: 1,
+        pointerEvents: "none",
+      },
     },
   },
 }
