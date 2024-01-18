@@ -141,6 +141,8 @@ contract Acre is ERC4626Fees, Ownable {
         IERC20(asset()).forceApprove(address(dispatcher), type(uint256).max);
     }
 
+    // TODO: Implement a governed upgrade process that initiates an update and
+    //       then finalizes it after a delay.
     /// Update the entry fee basis points.
     /// @param newEntryFeeBasisPoints New value of the fee basis points.
     function updateEntryFeeBasisPoints(
