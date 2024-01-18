@@ -14,12 +14,10 @@ ChakraTooltip.defaultProps = { ...ChakraTooltip.defaultProps, hasArrow: true }
 // https://github.com/chakra-ui/chakra-ui/issues/4695#issuecomment-991023319
 const $arrowBg = cssVar("popper-arrow-bg")
 
-const Tooltip: ComponentSingleStyleConfig = {
+export const tooltipTheme: ComponentSingleStyleConfig = {
   baseStyle: {
     borderRadius: "md",
     bg: "grey.700",
     [$arrowBg.variable]: "colors.grey.700",
   },
 }
-
-export default Tooltip

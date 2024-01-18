@@ -4,7 +4,7 @@ import {
 } from "@chakra-ui/react"
 
 // TODO: Update the button styles correctly when ready
-const Button: ComponentSingleStyleConfig = {
+export const buttonTheme: ComponentSingleStyleConfig = {
   baseStyle: {
     size: "md",
     borderRadius: "lg",
@@ -79,5 +79,3 @@ const Button: ComponentSingleStyleConfig = {
     },
   },
 }
-
-export default Button
