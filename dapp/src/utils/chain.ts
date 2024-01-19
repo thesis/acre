@@ -7,7 +7,7 @@ export const createBlockExplorerLink = (
   type: ExplorerDataType,
 ) => {
   switch (type) {
-    case ExplorerDataType.TRANSACTION:
+    case "transaction":
     default: {
       return `${prefix}/tx/${id}`
     }

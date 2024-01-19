@@ -1,5 +1,5 @@
 import React from "react"
-import { Chain, ExplorerDataType } from "#/types"
+import { Chain } from "#/types"
 import { BLOCK_EXPLORER } from "#/constants"
 import ViewInBlockExplorer from "#/components/shared/ViewInBlockExplorer"
 import SimpleText from "./SimpleText"
@@ -9,7 +9,7 @@ function BlockExplorer({ txHash, chain }: { txHash?: string; chain: Chain }) {
     return (
       <ViewInBlockExplorer
         id={txHash}
-        type={ExplorerDataType.TRANSACTION}
+        type="transaction"
         chain={chain}
         size="sm"
       />
