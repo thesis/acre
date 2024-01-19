@@ -80,15 +80,31 @@ describe("Acre", () => {
   })
 
   // Calculates the fee when it's included in the amount to stake.
+  // One is added to the result if there is a remainder to match the Solidity
+  // mulDiv() math which rounds up towards infinity (Ceil) when fees are
+  // calculated.
   function feeOnTotal(amount: bigint) {
-    return (
+    const result =
       (amount * entryFeeBasisPoints) / (entryFeeBasisPoints + basisPointScale)
-    )
+    if (
+      (amount * entryFeeBasisPoints) % (entryFeeBasisPoints + basisPointScale) >
+      0
+    ) {
+      return result + 1n
+    }
+    return result
   }
 
   // Calculates the fee when it's not included in the amount to stake.
+  // One is added to the result if there is a remainder to match the Solidity
+  // mulDiv() math which rounds up towards infinity (Ceil) when fees are
+  // calculated.
   function feeOnRaw(amount: bigint) {
-    return (amount * entryFeeBasisPoints) / basisPointScale
+    const result = (amount * entryFeeBasisPoints) / basisPointScale
+    if ((amount * entryFeeBasisPoints) % basisPointScale > 0) {
+      return result + 1n
+    }
+    return result
   }
 
   describe("previewDeposit", () => {
@@ -286,7 +302,7 @@ describe("Acre", () => {
               .connect(staker1)
               .stake(amountToStake, staker1.address, referral),
           )
-            .to.revertedWithCustomError(acre, "DepositAmountLessThanMin")
+            .to.revertedWithCustomError(acre, "LessThanMinDeposit")
             .withArgs(amountToStake, minimumDepositAmount)
         })
       })
@@ -390,7 +406,7 @@ describe("Acre", () => {
       })
 
       context("when the vault is in initial state", () => {
-        describe("when two stakers stake", () => {
+        context("when two stakers stake", () => {
           let stakeTx1: ContractTransactionResponse
           let stakeTx2: ContractTransactionResponse
 
@@ -498,12 +514,14 @@ describe("Acre", () => {
             const shares = await acre.balanceOf(staker1.address)
             const availableAssetsToRedeem = await acre.previewRedeem(shares)
 
-            // Expected amount with trancation after 18 decimals:
-            // 6.996501749125437282 * 14.995002498750624689 / 9.995002498750624689 = ~10.496501749125437281
-            // Fractional part after 18 decimals is choped. This is to align with
-            // the current rounding method used in contracts which also aligns with
-            // how big numbers are handled in TS.
-            const expectedAssetsToRedeem = 10496501749125437281n
+            // Expected amount:
+            // 6.996501749125437281 * 14.995002498750624689 / 9.995002498750624689
+            //  =~ 10.496501749125437280
+            // As of writing this test the fractional part after 18 decimals is
+            // floor rounded in Solidity when redeeming tokens. This will change
+            // to ceiling rounding once we introduce fees on reedeming and
+            // withdrawals actions.
+            const expectedAssetsToRedeem = 10496501749125437280n
 
             expect(availableAssetsToRedeem).to.be.eq(expectedAssetsToRedeem)
           })
@@ -513,11 +531,12 @@ describe("Acre", () => {
             const availableAssetsToRedeem = await acre.previewRedeem(shares)
 
             // Expected amount with trancation after 18 decimals:
-            // 2.998500749625187407 * 14.995002498750624689 / 9.995002498750624689 = ~4.498500749625187407
-            // Fractional part after 18 decimals is choped. This is to align with
-            // the current rounding method used in contracts which also aligns with
-            // how big numbers are handled in TS.
-            const expectedAssetsToRedeem = 4498500749625187407n
+            // 2.998500749625187406 * 14.995002498750624689 / 9.995002498750624689 = ~4.498500749625187405
+            // As of writing this test the fractional part after 18 decimals is
+            // floor rounded in Solidity when redeeming tokens. This will change
+            // to ceiling rounding once we introduce fees on reedeming and
+            // withdrawals actions.
+            const expectedAssetsToRedeem = 4498500749625187405n
 
             expect(availableAssetsToRedeem).to.be.eq(expectedAssetsToRedeem)
           })
@@ -531,13 +550,13 @@ describe("Acre", () => {
               // Current state:
               //
               // Stake amount = 7(staker 1) + 3 (staker 2) = 10
-              // Total assets minus fees = 6.996501749125437282(staker 1) + 2.998500749625187407(staker 2) + 5(yield)
-              // Total shares = 6.996501749125437282(staker 1) + 2.998500749625187407(staker 2) = 9.995002498750624689
+              // Total assets minus fees = 6.996501749125437281(staker 1) + 2.998500749625187406(staker 2) + 5(yield)
+              // Total shares = 6.996501749125437281(staker 1) + 2.998500749625187406(staker 2) = 9.995002498750624687
               // New stake amount = 2
-              // New stake amount - fee = 1.999000499750124938
-              // Shares to mint = 1.999000499750124938 * 9.995002498750624689 / 14.995002498750624689 = 1.332444925679136769
+              // New stake amount - fee = 1.999000499750124937
+              // Shares to mint = 1.999000499750124937 * 9.995002498750624689 / 14.995002498750624687 = 1.332444925679136768
               // in stBTC token precision
-              const expectedSharesToMint = 1332444925679136769n
+              const expectedSharesToMint = 1332444925679136768n
               let sharesBefore: bigint
               let availableToRedeemBefore: bigint
 
@@ -555,12 +574,12 @@ describe("Acre", () => {
 
                 // State after stake:
                 //
-                // Total assets = 6996501749125437282(staker 1) +
-                // 2998500749625187407(staker 2) + 5(yield) +
-                // 1999000499750124938(stakerA) = 16.994002998500749627
+                // Total assets = 6.996501749125437281(staker 1) +
+                // 2.998500749625187406(staker 2) + 5(yield) +
+                // 1.999000499750124937(stakerA) = 16.994002998500749624
                 //
-                // Total shares = 6.996501749125437282 + 2.998500749625187407 +
-                // 1.332444925679136769 = 11.327447424429761458
+                // Total shares = 6.996501749125437281 + 2.998500749625187406 +
+                // 1.332444925679136768 = 11.327447424429761455
                 await acre
                   .connect(staker1)
                   .stake(newAmountToStake, staker1.address, referral)
@@ -578,10 +597,10 @@ describe("Acre", () => {
 
                 // Expected amount to redeem by staker 1:
                 //
-                // (6.996501749125437282 + 1.332444925679136769) *
-                // 16.994002998500749627 / 11.327447424429761458 = 12.495502248875562219
+                // (6.996501749125437281 + 1.332444925679136768) *
+                // 16.994002998500749624 / 11.327447424429761455 = 12.495502248875562217
                 const expectedTotalAssetsAvailableToRedeem =
-                  12495502248875562219n
+                  12495502248875562217n
 
                 expect(availableToRedeem).to.be.greaterThan(
                   availableToRedeemBefore,
@@ -807,7 +826,7 @@ describe("Acre", () => {
 
         beforeEach(async () => {
           minimumDepositAmount = await acre.minimumDepositAmount()
-          const shares = await acre.convertToShares(minimumDepositAmount)
+          const shares = await acre.previewDeposit(minimumDepositAmount)
 
           sharesToMint = shares - 1n
           await tbtc
@@ -819,12 +838,11 @@ describe("Acre", () => {
           // In this test case, there is only one staker and the token vault has
           // not earned anything yet so received shares are equal to staked
           // tokens amount.
-          const depositAmount = sharesToMint
-
+          const depositAmount = await acre.previewMint(sharesToMint)
           await expect(
             acre.connect(staker1).mint(sharesToMint, staker1.address),
           )
-            .to.be.revertedWithCustomError(acre, "DepositAmountLessThanMin")
+            .to.be.revertedWithCustomError(acre, "LessThanMinDeposit")
             .withArgs(depositAmount, minimumDepositAmount)
         })
       },
@@ -1174,15 +1192,15 @@ describe("Acre", () => {
         await tbtc.mint(await acre.getAddress(), toMint)
 
         // The current state is:
-        // Total assets: 2 + 2.998500749625187407 (fee was taken) = 4.998500749625187407
-        // Total supply: 2.998500749625187407
+        // Total assets: 2 + 2.998500749625187406 (fee was taken) = 4.998500749625187406
+        // Total supply: 2.998500749625187406
         // Maximum total assets: 30
-        // Current max deposit: 25 - 4.998500749625187407 = 20.001499250374812593
-        // Max stBTC shares:
-        //  20.001499250374812593 * 2.998500749625187407 / 4.998500749625187407 = 11.998499850254836589
+        // Current max deposit: 25 - 4.998500749625187406 = 20.001499250374812594
+        // Max stBTC shares: (mulDiv added 1 to totalSupply and totalAssets to help with floor rounding)
+        //  20.001499250374812594 * 2.998500749625187407 / 4.998500749625187407 = 11.998499850254836590
         // Internal calculation of _convertToShares in ERC4626 added 2 decimals
         // to the result to help with rounding and division.
-        expectedValue = 11998499850254836591n
+        expectedValue = 11998499850254836590n
       })
 
       it("should return correct value", async () => {
@@ -1244,7 +1262,7 @@ describe("Acre", () => {
 
       it("should revert", async () => {
         await expect(acre.deposit(amountToDeposit, receiver.address))
-          .to.be.revertedWithCustomError(acre, "DepositAmountLessThanMin")
+          .to.be.revertedWithCustomError(acre, "LessThanMinDeposit")
           .withArgs(amountToDeposit, minimumDepositAmount)
       })
     })
