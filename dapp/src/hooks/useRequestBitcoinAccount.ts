@@ -1,8 +1,8 @@
 import { useRequestAccount } from "@ledgerhq/wallet-api-client-react"
 import { useCallback, useContext, useEffect } from "react"
-import { CURRENCY_ID_BITCOIN } from "../constants"
-import { UseRequestAccountReturn } from "../types"
-import { WalletContext } from "../contexts"
+import { WalletContext } from "#/contexts"
+import { UseRequestAccountReturn } from "#/types"
+import { CURRENCY_ID_BITCOIN } from "#/constants"
 
 export function useRequestBitcoinAccount(): UseRequestAccountReturn {
   const { setBtcAccount } = useContext(WalletContext)

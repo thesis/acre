@@ -1,12 +1,12 @@
 import React from "react"
 import { Button, Flex, Grid, HStack, Icon, Switch } from "@chakra-ui/react"
+import { useDocsDrawer } from "#/hooks"
+import { TextSm } from "#/components/shared/Typography"
+import { ArrowUpRight } from "#/static/icons"
+import { USD } from "#/constants"
 import PositionDetails from "./PositionDetails"
 import Statistics from "./Statistics"
 import TransactionHistory from "./TransactionHistory"
-import { USD } from "../../constants"
-import { ArrowUpRight } from "../../static/icons"
-import { TextSm } from "../shared/Typography"
-import { useDocsDrawer } from "../../hooks"
 
 export default function Overview() {
   const { onOpen } = useDocsDrawer()
@@ -31,8 +31,8 @@ export default function Overview() {
         templateAreas={`"position-details statistics"
                         "transaction-history transaction-history"`}
         gridTemplateColumns={{ base: "30% 1fr", xl: "20% 1fr" }}
-        gridTemplateRows={{ base: "55% 1fr", xl: "40% 1fr" }}
-        h="75vh"
+        gridTemplateRows={{ base: "55% 1fr", xl: "45% 1fr" }}
+        h="80vh"
         gap={4}
       >
         <PositionDetails gridArea="position-details" />

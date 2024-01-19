@@ -1,15 +1,15 @@
 import React from "react"
 import { Button, HStack, Icon } from "@chakra-ui/react"
 import { Account } from "@ledgerhq/wallet-api-client"
-import { Bitcoin, Ethereum } from "../../static/icons"
 import {
   useRequestBitcoinAccount,
   useRequestEthereumAccount,
   useWalletContext,
-} from "../../hooks"
-import { truncateAddress } from "../../utils"
-import { CurrencyBalance } from "../shared/CurrencyBalance"
-import { TextMd } from "../shared/Typography"
+} from "#/hooks"
+import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
+import { TextMd } from "#/components/shared/Typography"
+import { Bitcoin, Ethereum } from "#/static/icons"
+import { truncateAddress } from "#/utils"
 
 export type ConnectButtonsProps = {
   leftIcon: typeof Icon

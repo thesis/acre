@@ -7,10 +7,10 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@chakra-ui/react"
-import { CurrencyType, RequestAccountParams } from "../../../types"
-import { TextMd } from "../../shared/Typography"
-import Alert from "../../shared/Alert"
-import { getCurrencyByType } from "../../../utils"
+import { TextMd } from "#/components/shared/Typography"
+import Alert from "#/components/shared/Alert"
+import { getCurrencyByType } from "#/utils"
+import { CurrencyType, RequestAccountParams } from "#/types"
 
 type MissingAccountProps = {
   currency: CurrencyType

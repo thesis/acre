@@ -5,13 +5,13 @@ import {
   ModalContent,
   ModalOverlay,
 } from "@chakra-ui/react"
+import { useSidebar } from "#/hooks"
 import {
   ModalFlowContext,
   ModalFlowContextValue,
   TransactionContextProvider,
-} from "../../../contexts"
-import { useSidebar } from "../../../hooks"
-import SupportWrapper from "../../Modals/Support"
+} from "#/contexts"
+import SupportWrapper from "#/components/Modals/Support"
 
 export default function ModalBase({
   isOpen,
