@@ -16,7 +16,7 @@ export type TransactionInfo = {
   action: TransactionInfoAction
   asset: Asset
   account: string
-  txHash: string
+  txHash?: string
   status: TransactionInfoStatus
 }
 

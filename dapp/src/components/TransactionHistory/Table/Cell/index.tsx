@@ -1,7 +1,7 @@
 import React from "react"
 import { Box, Divider, useMultiStyleConfig } from "@chakra-ui/react"
 
-function CellWrapper({
+function Cell({
   children1,
   children2,
 }: {
@@ -24,4 +24,4 @@ function CellWrapper({
   )
 }
 
-export default CellWrapper
+export default Cell

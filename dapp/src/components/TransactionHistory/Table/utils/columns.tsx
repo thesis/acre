@@ -2,8 +2,9 @@ import React from "react"
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table"
 import { StakeHistory } from "#/types"
 import { capitalize, truncateAddress } from "#/utils"
-import TextCell from "../Cells/TextCell"
-import CustomCell from "../Cells/CustomCell"
+import CustomCell from "../Cell/Custom"
+import Cell from "../Cell"
+import SimpleText from "../Cell/components/SimpleText"
 
 const columnHelper = createColumnHelper<StakeHistory>()
 // When defining the columns for the table, columnHelper.accessor  ts returns a type issue.
@@ -29,9 +30,13 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
   columnHelper.display({
     header: "Action",
     cell: ({ row: { original } }) => (
-      <TextCell
-        value1={capitalize(original.callTx.action)}
-        value2={capitalize(original.receiptTx.action)}
+      <Cell
+        children1={
+          <SimpleText>{capitalize(original.callTx.action)}</SimpleText>
+        }
+        children2={
+          <SimpleText>{capitalize(original.receiptTx.action)}</SimpleText>
+        }
       />
     ),
   }),
@@ -58,9 +63,13 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
   columnHelper.display({
     header: "Account",
     cell: ({ row: { original } }) => (
-      <TextCell
-        value1={truncateAddress(original.callTx.account)}
-        value2={truncateAddress(original.receiptTx.account)}
+      <Cell
+        children1={
+          <SimpleText>{truncateAddress(original.callTx.account)}</SimpleText>
+        }
+        children2={
+          <SimpleText>{truncateAddress(original.receiptTx.account)}</SimpleText>
+        }
       />
     ),
   }),
