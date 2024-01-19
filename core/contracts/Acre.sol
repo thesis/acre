@@ -29,7 +29,7 @@ contract Acre is ERC4626Fees, Ownable {
     /// Address of the treasury wallet, where fees should be transferred to.
     address public treasury;
 
-    /// Entry fee basis points applied to entry.
+    /// Entry fee basis points applied to entry fee calculation.
     uint256 public entryFeeBasisPoints;
 
     /// Minimum amount for a single deposit operation. Includes treasury fee.
