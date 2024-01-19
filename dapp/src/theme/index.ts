@@ -22,6 +22,7 @@ import { spinnerTheme } from "./Spinner"
 import { tableTheme } from "./Table"
 import { currencyIconTheme } from "./CurrencyIcon"
 import { statusInfoTheme } from "./StatusInfo"
+import { linkTheme } from "./Link"
 
 const defaultTheme = {
   colors,
@@ -60,6 +61,7 @@ const defaultTheme = {
     Table: tableTheme,
     CurrencyIcon: currencyIconTheme,
     StatusInfo: statusInfoTheme,
+    Link: linkTheme,
   },
 }
 

@@ -1,6 +1,6 @@
 import React from "react"
 import { Chain, ExplorerDataType } from "#/types"
-import { Link } from "@chakra-ui/react"
+import { Link, LinkProps } from "@chakra-ui/react"
 import { createLinkToBlockExplorerForChain } from "#/utils"
 
 type ViewInBlockExplorerProps = {
@@ -8,19 +8,19 @@ type ViewInBlockExplorerProps = {
   id: string
   type: ExplorerDataType
   chain?: Chain
-}
+} & Omit<LinkProps, "isExternal">
 
 function ViewInBlockExplorer({
   text,
   id,
   type,
   chain = "ethereum",
+  ...linkProps
 }: ViewInBlockExplorerProps) {
   const { link, title } = createLinkToBlockExplorerForChain(chain, id, type)
 
   return (
-    // TODO: Use a button link
-    <Link href={link} isExternal>
+    <Link href={link} isExternal {...linkProps}>
       {text ?? title}
     </Link>
   )
