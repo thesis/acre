@@ -6,14 +6,7 @@ import SimpleText from "./SimpleText"
 
 function BlockExplorer({ txHash, chain }: { txHash?: string; chain: Chain }) {
   if (txHash) {
-    return (
-      <ViewInBlockExplorer
-        id={txHash}
-        type="transaction"
-        chain={chain}
-        size="sm"
-      />
-    )
+    return <ViewInBlockExplorer id={txHash} type="transaction" chain={chain} />
   }
   return <SimpleText color="grey.400">{BLOCK_EXPLORER[chain].title}</SimpleText>
 }
