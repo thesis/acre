@@ -1,11 +1,6 @@
 // SPDX-License-Identifier: MIT
 
 // Inspired by https://docs.openzeppelin.com/contracts/5.x/erc4626#fees
-// Differences:
-// - in _feeOnRaw() & _feeOnTotal() rounding is changed to Trunc type.
-//   This means that any fractions left during dividing are truncated in favor
-//   for a user (smaller fee). Although, these are really small numbers.
-// - visibility of _feeOnRaw() & _feeOnTotal() is changed to internal.
 
 pragma solidity ^0.8.20;
 
@@ -82,12 +77,12 @@ abstract contract ERC4626Fees is ERC4626 {
     function _feeOnRaw(
         uint256 assets,
         uint256 feeBasisPoints
-    ) internal pure returns (uint256) {
+    ) private pure returns (uint256) {
         return
             assets.mulDiv(
                 feeBasisPoints,
                 _BASIS_POINT_SCALE,
-                Math.Rounding.Trunc
+                Math.Rounding.Ceil
             );
     }
 
@@ -96,12 +91,12 @@ abstract contract ERC4626Fees is ERC4626 {
     function _feeOnTotal(
         uint256 assets,
         uint256 feeBasisPoints
-    ) internal pure returns (uint256) {
+    ) private pure returns (uint256) {
         return
             assets.mulDiv(
                 feeBasisPoints,
                 feeBasisPoints + _BASIS_POINT_SCALE,
-                Math.Rounding.Trunc
+                Math.Rounding.Ceil
             );
     }
 }
