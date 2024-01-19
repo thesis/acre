@@ -32,7 +32,7 @@ contract Acre is ERC4626Fees, Ownable {
     /// Entry fee basis points applied to entry.
     uint256 public entryFeeBasisPoints;
 
-    /// Minimum amount for a single deposit operation.
+    /// Minimum amount for a single deposit operation. Includes treasury fee.
     uint256 public minimumDepositAmount;
     /// Maximum total amount of tBTC token held by Acre.
     uint256 public maximumTotalAssets;
@@ -66,7 +66,7 @@ contract Acre is ERC4626Fees, Ownable {
     /// Reverts if the amount is less than the minimum deposit amount.
     /// @param amount Amount to check.
     /// @param min Minimum amount to check 'amount' against.
-    error DepositAmountLessThanMin(uint256 amount, uint256 min);
+    error LessThanMinDeposit(uint256 amount, uint256 min);
 
     /// Reverts if the address is zero.
     error ZeroAddress();
@@ -162,13 +162,13 @@ contract Acre is ERC4626Fees, Ownable {
     /// @param assets Approved amount of tBTC tokens to deposit. This includes
     ///               treasury fees for staking tBTC.
     /// @param receiver The address to which the shares will be minted.
-    /// @return Minted shares.
+    /// @return Minted shares adjusted for the fees taken by the treasury.
     function deposit(
         uint256 assets,
         address receiver
     ) public override returns (uint256) {
         if (assets < minimumDepositAmount) {
-            revert DepositAmountLessThanMin(assets, minimumDepositAmount);
+            revert LessThanMinDeposit(assets, minimumDepositAmount);
         }
 
         return super.deposit(assets, receiver);
@@ -185,28 +185,14 @@ contract Acre is ERC4626Fees, Ownable {
     ///      should be equal to the sum of the deposited amount and the fee.
     ///      To determine the total assets amount necessary for approval
     ///      corresponding to a given share amount, use the `previewMint` function.
-    /// @param shares Amount of shares to mint. To get the amount of share use
-    ///        `previewMint`.
+    /// @param shares Amount of shares to mint.
     /// @param receiver The address to which the shares will be minted.
     function mint(
         uint256 shares,
         address receiver
     ) public override returns (uint256 assets) {
-        // There were minted slightly more assets to cover the fee that is
-        // transferred to treasury.
-        uint256 _assets = super.mint(shares, receiver);
-        // Staking amount is not equal a deposited amount. Deposited amount includes
-        // a fee that is transferred to treasury. Staking amount is what goes to
-        // the Acre vault. Staking amount cannot be less than `minimumDepositAmount`.
-        // TODO: I suggest we rename `minimumDepositAmount` to `minimumStakingAmount`.
-        uint256 actualStakingAmount = _assets -
-            _feeOnRaw(convertToAssets(shares), _entryFeeBasisPoints());
-
-        if (actualStakingAmount < minimumDepositAmount) {
-            revert DepositAmountLessThanMin(
-                actualStakingAmount,
-                minimumDepositAmount
-            );
+        if ((assets = super.mint(shares, receiver)) < minimumDepositAmount) {
+            revert LessThanMinDeposit(assets, minimumDepositAmount);
         }
     }
 
