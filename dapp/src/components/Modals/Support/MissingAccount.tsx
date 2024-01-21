@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react"
 import { TextMd } from "#/components/shared/Typography"
 import Alert from "#/components/shared/Alert"
-import { getCurrencyByType } from "#/utils"
+import { asyncWrapper, getCurrencyByType } from "#/utils"
 import { CurrencyType, RequestAccountParams } from "#/types"
 
 type MissingAccountProps = {
@@ -26,9 +26,7 @@ export default function MissingAccount({
   const { name, symbol } = getCurrencyByType(currency)
 
   const handleClick = () => {
-    requestAccount().catch((error) => {
-      throw error
-    })
+    asyncWrapper(requestAccount())
   }
 
   return (

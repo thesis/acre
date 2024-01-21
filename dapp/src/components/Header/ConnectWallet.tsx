@@ -9,7 +9,7 @@ import {
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import { TextMd } from "#/components/shared/Typography"
 import { Bitcoin, Ethereum } from "#/static/icons"
-import { truncateAddress } from "#/utils"
+import { truncateAddress, asyncWrapper } from "#/utils"
 
 export type ConnectButtonsProps = {
   leftIcon: typeof Icon
@@ -25,9 +25,7 @@ function ConnectButton({
   const colorScheme = !account ? "error" : undefined
 
   const handleClick = () => {
-    requestAccount().catch((error) => {
-      throw error
-    })
+    asyncWrapper(requestAccount())
   }
 
   return (

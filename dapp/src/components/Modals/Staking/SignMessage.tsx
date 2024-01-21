@@ -3,6 +3,7 @@ import { Highlight } from "@chakra-ui/react"
 import { useModalFlowContext, useSignMessage } from "#/hooks"
 import Alert from "#/components/shared/Alert"
 import { TextMd } from "#/components/shared/Typography"
+import { asyncWrapper } from "#/utils"
 import StakingSteps from "./components/StakingSteps"
 
 export default function SignMessage() {
@@ -10,9 +11,7 @@ export default function SignMessage() {
   const { signMessage } = useSignMessage(goNext)
 
   const handleClick = () => {
-    signMessage().catch((error) => {
-      throw error
-    })
+    asyncWrapper(signMessage())
   }
 
   return (
