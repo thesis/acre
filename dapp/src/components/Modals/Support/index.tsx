@@ -7,7 +7,7 @@ import {
 } from "#/hooks"
 import { ConnectBTCAccount, ConnectETHAccount } from "#/static/icons"
 import MissingAccount from "./MissingAccount"
-import Resume from "../Staking/Resume"
+import ResumeModal from "./ResumeModal"
 
 export default function SupportWrapper({
   children,
@@ -17,7 +17,7 @@ export default function SupportWrapper({
   const { btcAccount, ethAccount } = useWalletContext()
   const { requestAccount: requestBitcoinAccount } = useRequestBitcoinAccount()
   const { requestAccount: requestEthereumAccount } = useRequestEthereumAccount()
-  const { isResumeStep, onClose, onResume } = useModalFlowContext()
+  const { isPaused, onClose, onResume } = useModalFlowContext()
   if (!btcAccount)
     return (
       <MissingAccount
@@ -36,8 +36,8 @@ export default function SupportWrapper({
       />
     )
 
-  if (isResumeStep) {
-    return <Resume onClose={onClose} onResume={onResume} />
+  if (isPaused) {
+    return <ResumeModal onClose={onClose} onResume={onResume} />
   }
 
   return children

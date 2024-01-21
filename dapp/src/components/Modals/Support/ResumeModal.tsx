@@ -4,14 +4,14 @@ import {
   ModalBody,
   ModalFooter,
   Button,
-  Stack,
+  HStack,
 } from "@chakra-ui/react"
 
 import Spinner from "#/components/shared/Spinner"
-import { PauseIcon } from "#/utils/customIcons"
+import { Pause } from "#/static/icons"
 import { TextMd } from "#/components/shared/Typography"
 
-export default function PausingModal({
+export default function ResumeModal({
   onResume,
   onClose,
 }: {
@@ -22,15 +22,10 @@ export default function PausingModal({
     <>
       <ModalHeader>Paused</ModalHeader>
       <ModalBody textAlign="start" py={6} mx={3}>
-        <Stack
-          position="relative"
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-        >
+        <HStack position="relative" justifyContent="center">
           <Spinner size="xl" />
-          <PauseIcon position="absolute" />
-        </Stack>
+          <Pause position="absolute" boxSize={6} />
+        </HStack>
 
         <TextMd>Are your sure you want to cancel?</TextMd>
       </ModalBody>

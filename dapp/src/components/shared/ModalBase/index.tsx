@@ -79,7 +79,7 @@ export default function ModalBase({
   const contextValue: ModalFlowContextValue = useMemo<ModalFlowContextValue>(
     () => ({
       activeStep,
-      isResumeStep,
+      isPaused: isResumeStep,
       onClose: handleClose,
       onResume: handleResume,
       goNext: handleGoNext,
