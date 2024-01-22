@@ -11,6 +11,8 @@ export type ModalFlowContextValue = {
   onClose: () => void
   onResume: () => void
   goNext: () => void
+  startTransactionProcess: () => void
+  endTransactionProcess: () => void
 }
 
 export const ModalFlowContext = createContext<ModalFlowContextValue>({
@@ -19,4 +21,6 @@ export const ModalFlowContext = createContext<ModalFlowContextValue>({
   onClose: () => {},
   onResume: () => {},
   goNext: () => {},
+  startTransactionProcess: () => {},
+  endTransactionProcess: () => {},
 })

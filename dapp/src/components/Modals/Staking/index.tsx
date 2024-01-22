@@ -8,7 +8,8 @@ import DepositBTC from "./DepositBTC"
 import { STAKING_STEPS } from "./utils/stakingSteps"
 
 function ActiveStakingStep() {
-  const { activeStep } = useModalFlowContext()
+  const { activeStep, startTransactionProcess, endTransactionProcess } =
+    useModalFlowContext()
   const { ACTION_FORM, OVERVIEW, SIGN_MESSAGE, DEPOSIT_BTC } = STAKING_STEPS
 
   switch (activeStep) {
@@ -17,10 +18,12 @@ function ActiveStakingStep() {
     case OVERVIEW:
       return <Overview />
     case SIGN_MESSAGE:
+      startTransactionProcess()
       return <SignMessage />
     case DEPOSIT_BTC:
       return <DepositBTC />
     default:
+      endTransactionProcess()
       return null
   }
 }
