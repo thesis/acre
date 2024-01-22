@@ -1,5 +1,8 @@
-import type { HardhatRuntimeEnvironment } from "hardhat/types"
 import type { DeployFunction } from "hardhat-deploy/types"
+import type {
+  HardhatNetworkConfig,
+  HardhatRuntimeEnvironment,
+} from "hardhat/types"
 import { isNonZeroAddress } from "../helpers/address"
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
@@ -11,13 +14,17 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
   if (tbtc && isNonZeroAddress(tbtc.address)) {
     log(`using TBTC contract at ${tbtc.address}`)
-  } else if (!hre.network.tags.allowStubs) {
+  } else if (
+    !hre.network.tags.allowStubs ||
+    (hre.network.config as HardhatNetworkConfig)?.forking?.enabled
+  ) {
     throw new Error("deployed TBTC contract not found")
   } else {
     log("deploying TBTC contract stub")
 
     await deployments.deploy("TBTC", {
       contract: "TestERC20",
+      args: ["Test tBTC", "TestTBTC"],
       from: deployer,
       log: true,
       waitConfirmations: 1,
@@ -27,4 +34,4 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
 export default func
 
-func.tags = ["TBTC"]
+func.tags = ["TBTC", "TBTCToken"]

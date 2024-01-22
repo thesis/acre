@@ -19,5 +19,4 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 export default func
 
 func.tags = ["TransferOwnershipAcre"]
-// TODO: Enable once Acre extends Ownable
-func.skip = async () => true
+func.dependencies = ["Acre"]
