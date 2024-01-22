@@ -149,6 +149,10 @@ contract TbtcDepositor is Ownable {
     ///      contract doesn't match the current contract address.
     error UnexpectedDepositor(address bridgeDepositRequestDepositor);
 
+    /// @dev Vault address stored in the Deposit Request in the tBTC Bridge
+    ///      contract doesn't match the expected tBTC Vault contract address.
+    error UnexpectedTbtcVault(address bridgeDepositRequestVault);
+
     /// @dev Deposit was not completed on the tBTC side and tBTC was not minted
     ///      to the depositor contract. It is thrown when the deposit neither has
     ///      been optimistically minted nor swept.
@@ -244,6 +248,16 @@ contract TbtcDepositor is Ownable {
         (, , request.tbtcDepositTxMaxFee, ) = bridge.depositParameters();
         request.tbtcOptimisticMintingFeeDivisor = tbtcVault
             .optimisticMintingFeeDivisor();
+
+        // Get deposit details from tBTC Bridge contract.
+        IBridge.DepositRequest memory bridgeDepositRequest = bridge.deposits(
+            depositKey
+        );
+
+        // Check if Vault revealed to the tBTC Bridge contract matches the
+        // tBTC Vault supported by this contract.
+        if (bridgeDepositRequest.vault != address(tbtcVault))
+            revert UnexpectedTbtcVault(bridgeDepositRequest.vault);
     }
 
     /// @notice This function should be called for previously initialized stake
