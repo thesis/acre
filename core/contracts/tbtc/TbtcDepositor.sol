@@ -53,6 +53,9 @@ contract TbtcDepositor is Ownable {
         // tBTC token amount to stake after deducting tBTC minting fees and the
         // Depositor fee.
         uint256 amountToStake;
+        // Marks stake request that has already been deducted from the pending
+        // stakes balance.
+        bool excludedFromPendingStakesBalanceTracker;
     }
 
     /// @notice tBTC Bridge contract.
@@ -82,6 +85,21 @@ contract TbtcDepositor is Ownable {
     ///       `1/50 = 0.02 = 2%`.
     uint64 public depositorFeeDivisor;
 
+    /// @notice Balance of stake requests that were initiated. The balance is
+    ///         used to track asynchronous stake requests, before they are
+    ///         finalized and included in the Acre contract max deposit cap.
+    /// @dev Value in the tBTC token precision (1e18).
+    ///      A stake request amount is added to the pending stakes balance when
+    ///      a stake request is initiated. It will be deducted once the request
+    ///      is finalized. It may happen that a stake request is initialized with
+    ///      invalid funding transaction details. In such case the balance is
+    ///      reduced when this stake request is notified to be timed out.
+    uint256 public pendingStakesBalance;
+
+    // TODO: Confirm the value to include time needed for optimistic minting or sweeping
+    /// @notice A timeout duration to wait for the tBTC Bridge to initiate minting.
+    uint32 public tbtcBridgingInitializationTimeout = 3 days;
+
     /// @notice Emitted when a stake request is initialized.
     /// @dev Deposit details can be fetched from {{ Bridge.DepositRevealed }}
     ///      event emitted in the same transaction.
@@ -95,6 +113,10 @@ contract TbtcDepositor is Ownable {
         address receiver,
         uint16 referral
     );
+
+    /// @notice Emitted when bridging timeout has been notified.
+    /// @param depositKey Deposit identifier.
+    event BridgingTimedOut(uint256 depositKey);
 
     /// @notice Emitted when bridging completion has been notified.
     /// @param depositKey Deposit identifier.
@@ -130,6 +152,18 @@ contract TbtcDepositor is Ownable {
 
     /// @dev Attempted to finalize a stake request that has not been initialized.
     error StakeRequestNotInitialized();
+
+    /// @dev Attempted to notify bridging timeout, while bridging has not timed
+    ///      out yet.
+    error StakeRequestNotTimedOut(uint256 timeoutTimestamp);
+
+    /// @dev Attempted to notify bridging timeout, while optimistic minting
+    ///      was initiated.
+    error OptimisticMintingInProgress();
+
+    /// @dev Attempted to notify bridging timeout, while the deposit was already
+    ///      swept.
+    error DepositAlreadySwept();
 
     /// @dev Attempted to notify about completed bridging while the notification
     ///      was already submitted.
@@ -258,6 +292,62 @@ contract TbtcDepositor is Ownable {
         // tBTC Vault supported by this contract.
         if (bridgeDepositRequest.vault != address(tbtcVault))
             revert UnexpectedTbtcVault(bridgeDepositRequest.vault);
+
+        // Increase pending stakes balance by the funds that stake request was
+        // initiated for.
+        pendingStakesBalance +=
+            bridgeDepositRequest.amount *
+            SATOSHI_MULTIPLIER;
+    }
+
+    /// @notice This function should be called for previously initialized stake
+    ///         request, when tBTC Bridge cannot confirm validity of the funding
+    ///         Bitcoin transaction, meaning the revealed deposit request is
+    ///         most likely invalid.
+    /// @dev When a deposit is revealed to the tBTC Bridge contract, it is expected
+    ///      that funding Bitcoin transaction is confirmed and optimistic minting
+    ///      to be initiated. If optimistic minting is not initiated there is
+    ///      a second path where tBTC nodes sweep the deposit to get tBTC minted.
+    ///      If none of this happens within a bridging timeout duration it
+    ///      means that most likely the revealed deposit was invalid and bridging
+    ///      won't be completed.
+    /// @param depositKey Deposit key computed as
+    ///                   `keccak256(fundingTxHash | fundingOutputIndex)`.
+    function notifyBridgingTimeout(uint256 depositKey) external {
+        StakeRequest storage request = stakeRequests[depositKey];
+
+        if (request.requestedAt == 0) revert StakeRequestNotInitialized();
+        if (request.amountToStake > 0) revert BridgingAlreadyCompleted();
+
+        // Check if timeout has passed.
+        uint64 expectedTimeoutAt = request.requestedAt +
+            tbtcBridgingInitializationTimeout;
+        // solhint-disable-next-line not-rely-on-time
+        if (expectedTimeoutAt > block.timestamp)
+            revert StakeRequestNotTimedOut(expectedTimeoutAt);
+
+        // Check if Optimistic Minting is in progress. If optimistic minting of
+        // the deposit was requested it's very likely the deposit request will be
+        // completed soon, as it is already being processed by tBTC Minters
+        // and Guardians.
+        ITBTCVault.OptimisticMintingRequest
+            memory optimisticMintingRequest = tbtcVault
+                .optimisticMintingRequests(depositKey);
+
+        if (optimisticMintingRequest.requestedAt > 0)
+            revert OptimisticMintingInProgress();
+
+        // Check if the Deposit was swept.
+        IBridge.DepositRequest memory bridgeDepositRequest = bridge.deposits(
+            depositKey
+        );
+        if (bridgeDepositRequest.sweptAt > 0) revert DepositAlreadySwept();
+
+        emit BridgingTimedOut(depositKey);
+
+        // Release the pending bridging amount, as it is unlikely the bridging
+        // will be completed.
+        reducePendingStakesBalance(depositKey);
     }
 
     /// @notice This function should be called for previously initialized stake
@@ -389,6 +479,10 @@ contract TbtcDepositor is Ownable {
         // solhint-disable-next-line not-rely-on-time
         request.finalizedAt = uint64(block.timestamp);
 
+        // Free pending stakes amount as the funds are being deposited to the Acre
+        // contract and will be included in Acre.maxDeposit limit.
+        reducePendingStakesBalance(depositKey);
+
         // Get deposit details from tBTC Bridge.
         IBridge.DepositRequest memory bridgeDepositRequest = bridge.deposits(
             depositKey
@@ -424,6 +518,10 @@ contract TbtcDepositor is Ownable {
         // solhint-disable-next-line not-rely-on-time
         request.finalizedAt = uint64(block.timestamp);
 
+        // Free pending stakes amount as the funds are being withdraw from the
+        // Depositor contract and stake request will be marked as finalized.
+        reducePendingStakesBalance(depositKey);
+
         // Get deposit details from tBTC Bridge and Vault contracts.
         IBridge.DepositRequest memory bridgeDepositRequest = bridge.deposits(
             depositKey
@@ -453,7 +551,21 @@ contract TbtcDepositor is Ownable {
         emit DepositorFeeDivisorUpdated(newDepositorFeeDivisor);
     }
 
-    // TODO: Handle minimum deposit amount in tBTC Bridge vs Acre.
+    /// @notice Maximum stake amount
+    /// @dev The value is returned in tBTC token precision (1e18).
+    ///      This function should be called before Bitcoin transaction funding
+    ///      is made.
+    /// @param receiver The address to which the stBTC shares will be minted.
+    /// @return Maximum allowed stake amount.
+    function maxStake(address receiver) external view returns (uint256) {
+        uint256 acreMaxDeposit = acre.maxDeposit(receiver);
+
+        if (acreMaxDeposit == type(uint256).max) {
+            return type(uint256).max;
+        }
+
+        return acreMaxDeposit - pendingStakesBalance;
+    }
 
     /// @notice Calculates deposit key the same way as the Bridge contract.
     /// @dev The deposit key is computed as
@@ -498,5 +610,33 @@ contract TbtcDepositor is Ownable {
         receiver = address(uint160(bytes20(extraData)));
         // Next 2 bytes of extra data is referral info.
         referral = uint16(bytes2(extraData << (8 * 20)));
+    }
+
+    /// @notice Deduct stake request's amount from the pending stakes balance
+    ///         tracker.
+    /// @dev The function is intended to be called when stake request is finalized
+    ///      or recalled, but also when the bridging request is timed out.
+    ///      It makes sure it is called just once for a given stake request,
+    ///      to avoid reducing the balance multiple times for the same stake
+    ///      request. It may happen that bridging times out due to tBTC Bridge
+    ///      related issues and timeout is notified to the stake request in this
+    ///      contract. But when the deposit in tBTC Bridge is later minted
+    ///      the finalize stake function may be called, so we don't want the balance
+    ///      to be reduced twice.
+    /// @param depositKey Deposit key computed as
+    ///                   `keccak256(fundingTxHash | fundingOutputIndex)`.
+    function reducePendingStakesBalance(uint256 depositKey) internal {
+        StakeRequest storage request = stakeRequests[depositKey];
+
+        if (!request.excludedFromPendingStakesBalanceTracker) {
+            request.excludedFromPendingStakesBalanceTracker = true;
+
+            IBridge.DepositRequest memory bridgeDepositRequest = bridge
+                .deposits(depositKey);
+
+            pendingStakesBalance -=
+                bridgeDepositRequest.amount *
+                SATOSHI_MULTIPLIER;
+        }
     }
 }
