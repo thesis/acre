@@ -43,7 +43,7 @@ export const getCustomContent = (
       )
     }
     case "status": {
-      return <Status status={transaction.status} />
+      return <Status status={transaction.status} textAlign="right" />
     }
     default:
       // eslint-disable-next-line react/jsx-no-useless-fragment

@@ -21,6 +21,7 @@ const baseStyleLabel = defineStyle({
   fontWeight: "semibold",
   fontSize: "sm",
   lineHeight: "sm",
+  w: "100%",
 })
 
 const baseStyle = multiStyleConfig.definePartsStyle(

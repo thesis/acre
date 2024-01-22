@@ -1,6 +1,6 @@
 import React from "react"
 import { TransactionInfoStatus } from "#/types"
-import { Box, Icon, useMultiStyleConfig } from "@chakra-ui/react"
+import { Box, Icon, TextProps, useMultiStyleConfig } from "@chakra-ui/react"
 import { Complete, Pending, Syncing } from "#/static/icons"
 
 const DATA: Record<
@@ -14,16 +14,15 @@ const DATA: Record<
 
 type StatusInfoProps = {
   status: TransactionInfoStatus
-  color?: string
   withDefaultColor?: boolean
   withIcon?: boolean
-}
+} & TextProps
 
 export default function StatusInfo({
   status,
-  color,
   withDefaultColor,
   withIcon,
+  ...textProps
 }: StatusInfoProps) {
   const data = DATA[status]
   const styles = useMultiStyleConfig("StatusInfo", {
@@ -31,7 +30,7 @@ export default function StatusInfo({
   })
 
   return (
-    <Box __css={styles.container} color={color}>
+    <Box __css={styles.container} {...textProps}>
       {withIcon && <Icon as={data.icon} boxSize={5} />}
       <Box as="span" __css={styles.label}>
         {data.label}

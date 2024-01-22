@@ -85,6 +85,9 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
   }),
   columnHelper.display({
     header: "Status",
+    meta: {
+      style: { textAlign: "right" },
+    },
     cell: ({ row: { original } }) => (
       <CustomCell
         type="status"
