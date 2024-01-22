@@ -18,7 +18,7 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
   // Let's sort the data by the first transaction.
   columnHelper.accessor("callTx.timestamp", {
     header: "Date",
-    maxSize: 100,
+    size: 100,
     cell: ({ row: { original } }) => (
       <CustomCell
         type="date"
@@ -62,6 +62,7 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
   }),
   columnHelper.display({
     header: "Account",
+    size: 250,
     cell: ({ row: { original } }) => (
       <Cell
         children1={
@@ -75,6 +76,7 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
   }),
   columnHelper.display({
     header: "Transaction",
+    size: 250,
     cell: ({ row: { original } }) => (
       <CustomCell
         type="block-explorer"
