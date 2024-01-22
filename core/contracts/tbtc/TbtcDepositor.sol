@@ -59,6 +59,8 @@ contract TbtcDepositor is Ownable {
     IBridge public bridge;
     /// @notice tBTC Vault contract.
     ITBTCVault public tbtcVault;
+    /// @notice tBTC Token contract.
+    IERC20 public immutable tbtcToken;
     /// @notice Acre contract.
     Acre public acre;
 
@@ -159,10 +161,12 @@ contract TbtcDepositor is Ownable {
     constructor(
         IBridge _bridge,
         ITBTCVault _tbtcVault,
+        IERC20 _tbtcToken,
         Acre _acre
     ) Ownable(msg.sender) {
         bridge = _bridge;
         tbtcVault = _tbtcVault;
+        tbtcToken = _tbtcToken;
         acre = _acre;
 
         depositorFeeDivisor = 0; // Depositor fee is disabled initially.
@@ -384,10 +388,7 @@ contract TbtcDepositor is Ownable {
         emit StakeFinalized(depositKey, msg.sender);
 
         // Stake tBTC in Acre.
-        IERC20(acre.asset()).safeIncreaseAllowance(
-            address(acre),
-            request.amountToStake
-        );
+        tbtcToken.safeIncreaseAllowance(address(acre), request.amountToStake);
         acre.stake(request.amountToStake, receiver, referral);
     }
 
@@ -424,7 +425,7 @@ contract TbtcDepositor is Ownable {
 
         emit StakeRecalled(depositKey, msg.sender);
 
-        IERC20(acre.asset()).safeTransfer(receiver, request.amountToStake);
+        tbtcToken.safeTransfer(receiver, request.amountToStake);
     }
 
     /// @notice Updates the depositor fee divisor.

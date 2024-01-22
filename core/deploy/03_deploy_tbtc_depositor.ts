@@ -7,11 +7,12 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
   const bridge = await deployments.get("Bridge")
   const tbtcVault = await deployments.get("TBTCVault")
+  const tbtc = await deployments.get("TBTC")
   const acre = await deployments.get("Acre")
 
   await deployments.deploy("TbtcDepositor", {
     from: deployer,
-    args: [bridge.address, tbtcVault.address, acre.address],
+    args: [bridge.address, tbtcVault.address, tbtc.address, acre.address],
     log: true,
     waitConfirmations: 1,
   })
