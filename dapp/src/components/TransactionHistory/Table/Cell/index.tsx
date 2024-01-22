@@ -5,11 +5,13 @@ function Cell({
   children1,
   children2,
 }: {
-  children1: React.ReactElement
+  children1?: React.ReactElement
   children2?: React.ReactElement
 }) {
   const styles = useMultiStyleConfig("Table", { variant: "double-row" })
   const isDoubleRow = !!children2
+
+  if (!children1) return null
 
   return (
     <Box __css={styles.cellContainer}>
