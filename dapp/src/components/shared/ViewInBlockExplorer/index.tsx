@@ -19,6 +19,7 @@ function ViewInBlockExplorer({
 }: ViewInBlockExplorerProps) {
   const { link, title } = createLinkToBlockExplorerForChain(chain, id, type)
 
+  // TODO: Update when ButtonLink is ready
   return (
     <Link href={link} isExternal {...linkProps}>
       {text ?? title}

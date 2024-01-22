@@ -17,7 +17,8 @@ export type TransactionInfo = {
   asset: Asset
   account: string
   txHash?: string
-  status: TransactionInfoStatus
+  // TODO: Update when statuses for transactions are determined
+  status?: TransactionInfoStatus
 }
 
 export type StakeHistory = {

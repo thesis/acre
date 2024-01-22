@@ -18,6 +18,8 @@ type StatusInfoProps = {
   withIcon?: boolean
 } & TextProps
 
+// TODO: Update component for syncing status.
+// Add a timer when the logic is ready.
 export default function StatusInfo({
   status,
   withDefaultColor,
