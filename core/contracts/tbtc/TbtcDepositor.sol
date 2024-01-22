@@ -50,6 +50,9 @@ contract TbtcDepositor is Ownable {
         // tBTC Optimistic Minting Fee Divisor snapshotted from the TBTC Vault
         // contract at the moment of deposit reveal.
         uint32 tbtcOptimisticMintingFeeDivisor;
+        // tBTC token amount to stake after deducting tBTC minting fees and the
+        // Depositor fee.
+        uint256 amountToStake;
     }
 
     /// @notice tBTC Bridge contract.
@@ -91,12 +94,27 @@ contract TbtcDepositor is Ownable {
         uint16 referral
     );
 
+    /// @notice Emitted when bridging completion has been notified.
+    /// @param depositKey Deposit identifier.
+    /// @param caller Address that notified about bridging completion.
+    /// @param amountToStake Amount of tBTC token that is available to stake.
+    event BridgingCompleted(
+        uint256 indexed depositKey,
+        address indexed caller,
+        uint256 amountToStake
+    );
+
     /// @notice Emitted when a stake request is finalized.
     /// @dev Deposit details can be fetched from {{ ERC4626.Deposit }}
     ///      event emitted in the same transaction.
     /// @param depositKey Deposit identifier.
     /// @param caller Address that finalized the stake request.
     event StakeFinalized(uint256 indexed depositKey, address indexed caller);
+
+    /// @notice Emitted when a stake request is recalled.
+    /// @param depositKey Deposit identifier.
+    /// @param caller Address that called the function to recall the stake.
+    event StakeRecalled(uint256 indexed depositKey, address indexed caller);
 
     /// @notice Emitted when a depositor fee divisor is updated.
     /// @param depositorFeeDivisor New value of the depositor fee divisor.
@@ -111,8 +129,19 @@ contract TbtcDepositor is Ownable {
     /// @dev Attempted to finalize a stake request that has not been initialized.
     error StakeRequestNotInitialized();
 
+    /// @dev Attempted to notify about completed bridging while the notification
+    ///      was already submitted.
+    error BridgingAlreadyCompleted();
+
+    /// @dev Attempted to finalize a stake request, while bridging completion has
+    /// not been notified yet.
+    error BridgingNotCompleted();
+
     /// @dev Attempted to finalize a stake request that was already finalized.
     error StakeRequestAlreadyFinalized();
+
+    /// @dev Attempted to call function by an account that is not the receiver.
+    error CallerNotReceiver();
 
     /// @dev Depositor address stored in the Deposit Request in the tBTC Bridge
     ///      contract doesn't match the current contract address.
@@ -169,7 +198,7 @@ contract TbtcDepositor is Ownable {
     /// @param reveal Deposit reveal data, see `IBridge.DepositRevealInfo`.
     /// @param receiver The address to which the stBTC shares will be minted.
     /// @param referral Data used for referral program.
-    function initializeStake(
+    function initializeStakeRequest(
         IBridge.BitcoinTxInfo calldata fundingTx,
         IBridge.DepositRevealInfo calldata reveal,
         address receiver,
@@ -244,14 +273,11 @@ contract TbtcDepositor is Ownable {
     ///      stake request finalization.
     /// @param depositKey Deposit key computed as
     ///                   `keccak256(fundingTxHash | fundingOutputIndex)`.
-    function finalizeStake(uint256 depositKey) external {
+    function notifyBridgingCompleted(uint256 depositKey) public {
         StakeRequest storage request = stakeRequests[depositKey];
 
         if (request.requestedAt == 0) revert StakeRequestNotInitialized();
-        if (request.finalizedAt > 0) revert StakeRequestAlreadyFinalized();
-
-        // solhint-disable-next-line not-rely-on-time
-        request.finalizedAt = uint64(block.timestamp);
+        if (request.amountToStake > 0) revert BridgingAlreadyCompleted();
 
         // Get deposit details from tBTC Bridge and Vault contracts.
         IBridge.DepositRequest memory bridgeDepositRequest = bridge.deposits(
@@ -309,9 +335,46 @@ contract TbtcDepositor is Ownable {
 
         // Calculate tBTC amount available to stake after subtracting all the fees.
         // Convert amount in satoshi to tBTC token precision.
-        uint256 amountToStakeTbtc = (fundingTxAmount -
-            tbtcMintingFees -
-            depositorFee) * SATOSHI_MULTIPLIER;
+        request.amountToStake =
+            (fundingTxAmount - tbtcMintingFees - depositorFee) *
+            SATOSHI_MULTIPLIER;
+
+        emit BridgingCompleted(depositKey, msg.sender, request.amountToStake);
+
+        // Transfer depositor fee to the treasury wallet.
+        if (depositorFee > 0) {
+            tbtcToken.safeTransfer(acre.treasury(), depositorFee);
+        }
+    }
+
+    /// @notice This function should be called for previously initialized stake
+    ///         request, after tBTC minting process completed and tBTC was deposited
+    ///         in this contract.
+    ///         It stakes the tBTC from the given deposit into Acre, emitting the
+    ///         stBTC shares to the receiver specified in the deposit extra data
+    ///         and using the referral provided in the extra data.
+    /// @dev This function is expected to be called after `notifyBridgingCompleted`.
+    ///      In case the call to `Acre.stake` function fails (e.g. because of the
+    ///      maximum deposit limit being reached), the function should be retried
+    ///      after the limit is increased or other user withdraws their funds
+    ///      from Acre contract to make place for another deposit.
+    ///      The staker has a possibility to submit `recallStakeRequest` that
+    ///      will withdraw the minted tBTC token and abort staking in Acre contract.
+    /// @param depositKey Deposit key computed as
+    ///                   `keccak256(fundingTxHash | fundingOutputIndex)`.
+    function finalizeStakeRequest(uint256 depositKey) public {
+        StakeRequest storage request = stakeRequests[depositKey];
+
+        if (request.amountToStake == 0) revert BridgingNotCompleted();
+        if (request.finalizedAt > 0) revert StakeRequestAlreadyFinalized();
+
+        // solhint-disable-next-line not-rely-on-time
+        request.finalizedAt = uint64(block.timestamp);
+
+        // Get deposit details from tBTC Bridge.
+        IBridge.DepositRequest memory bridgeDepositRequest = bridge.deposits(
+            depositKey
+        );
 
         // Fetch receiver and referral stored in extra data in tBTC Bridge Deposit.
         // Request.
@@ -320,20 +383,48 @@ contract TbtcDepositor is Ownable {
 
         emit StakeFinalized(depositKey, msg.sender);
 
-        // Transfer depositor fee to the treasury wallet.
-        if (depositorFee > 0) {
-            IERC20(acre.asset()).safeTransfer(acre.treasury(), depositorFee);
-        }
-
         // Stake tBTC in Acre.
         IERC20(acre.asset()).safeIncreaseAllowance(
             address(acre),
-            amountToStakeTbtc
+            request.amountToStake
+        );
+        acre.stake(request.amountToStake, receiver, referral);
+    }
+
+    /// @notice Recall bridged tBTC tokens from being requested to stake. This
+    ///         function can be called by the staker to recover tBTC that cannot
+    ///         be finalized to stake in Acre contract due to a deposit limit being
+    ///         reached.
+    /// @dev This function can be called only after bridging in tBTC Bridge was
+    ///      completed. Only receiver provided in the extra data of the stake
+    ///      request can call this function.
+    /// @param depositKey Deposit key computed as
+    ///                   `keccak256(fundingTxHash | fundingOutputIndex)`.
+    function recallStakeRequest(uint256 depositKey) external {
+        StakeRequest storage request = stakeRequests[depositKey];
+
+        if (request.amountToStake == 0) revert BridgingNotCompleted();
+        if (request.finalizedAt > 0) revert StakeRequestAlreadyFinalized();
+
+        // solhint-disable-next-line not-rely-on-time
+        request.finalizedAt = uint64(block.timestamp);
+
+        // Get deposit details from tBTC Bridge and Vault contracts.
+        IBridge.DepositRequest memory bridgeDepositRequest = bridge.deposits(
+            depositKey
         );
 
-        // TODO: Figure out what to do if deposit limit is reached in Acre
-        // TODO: Consider extracting stake function with referrals from Acre to this contract.
-        acre.stake(amountToStakeTbtc, receiver, referral);
+        // Fetch receiver and referral stored in extra data in tBTC Bridge Deposit.
+        // Request.
+        bytes32 extraData = bridgeDepositRequest.extraData;
+        (address receiver, ) = decodeExtraData(extraData);
+
+        // Check if caller is the receiver.
+        if (msg.sender != receiver) revert CallerNotReceiver();
+
+        emit StakeRecalled(depositKey, msg.sender);
+
+        IERC20(acre.asset()).safeTransfer(receiver, request.amountToStake);
     }
 
     /// @notice Updates the depositor fee divisor.
