@@ -5,18 +5,16 @@ import {
 
 // TODO: Update the button styles correctly when ready
 export const buttonTheme: ComponentSingleStyleConfig = {
-  baseStyle: {
-    size: "md",
-    borderRadius: "lg",
-  },
   sizes: {
     md: {
       fontSize: "sm",
       py: "0.5rem",
+      borderRadius: "md",
     },
     lg: {
       fontSize: "md",
       py: "1rem",
+      borderRadius: "lg",
     },
   },
   variants: {
