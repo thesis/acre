@@ -21,7 +21,6 @@ export default function ButtonLink({
       variant={variant}
       justifyContent="flex-start"
       borderRadius="md"
-      textDecoration="none"
       leftIcon={
         <Icon
           as={icon}
