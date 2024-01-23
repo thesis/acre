@@ -30,7 +30,7 @@ export const buttonTheme: ComponentSingleStyleConfig = {
         bg: "brand.400",
       },
     },
-    outline: ({ colorScheme }: StyleFunctionProps) => {
+    outline: ({ colorScheme, size }: StyleFunctionProps) => {
       const defaultStyles = {
         color: "grey.700",
         borderColor: "white",
@@ -42,6 +42,13 @@ export const buttonTheme: ComponentSingleStyleConfig = {
         _active: {
           bg: "transparent",
         },
+      }
+      if (size === "lg") {
+        return {
+          ...defaultStyles,
+          borderColor: "grey.700",
+          bg: "transparent",
+        }
       }
       if (colorScheme === "gold") {
         return {
