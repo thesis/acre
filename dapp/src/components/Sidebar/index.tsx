@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react"
 import RightSidebar from "#/assets/images/right-sidebar-bg.png"
 import { useSidebar, useDocsDrawer } from "#/hooks"
-import { ShieldPlusIcon } from "#/static/icons"
+import { ShieldPlusIcon } from "#/assets/icons"
 import { TextMd, TextSm } from "../shared/Typography"
 import ButtonLink from "../shared/ButtonLink"
 
