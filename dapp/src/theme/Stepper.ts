@@ -1,9 +1,6 @@
 import { stepperAnatomy as parts } from "@chakra-ui/anatomy"
 import { createMultiStyleConfigHelpers, defineStyle } from "@chakra-ui/react"
 
-const { defineMultiStyleConfig, definePartsStyle } =
-  createMultiStyleConfigHelpers(parts.keys)
-
 const baseStyleStepper = defineStyle({
   _vertical: {
     gap: 0,
@@ -64,7 +61,9 @@ const baseStyleSeparator = defineStyle(({ colorScheme }) => ({
   },
 }))
 
-const baseStyle = definePartsStyle((props) => ({
+const multiStyleConfig = createMultiStyleConfigHelpers(parts.keys)
+
+const baseStyle = multiStyleConfig.definePartsStyle((props) => ({
   stepper: baseStyleStepper,
   step: baseStyleStep,
   title: baseStyleTitle,
@@ -73,4 +72,6 @@ const baseStyle = definePartsStyle((props) => ({
   separator: baseStyleSeparator(props),
 }))
 
-export const stepperTheme = defineMultiStyleConfig({ baseStyle })
+export const stepperTheme = multiStyleConfig.defineMultiStyleConfig({
+  baseStyle,
+})
