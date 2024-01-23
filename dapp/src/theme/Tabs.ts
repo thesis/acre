@@ -2,7 +2,8 @@ import { tabsAnatomy as parts } from "@chakra-ui/anatomy"
 import { createMultiStyleConfigHelpers, defineStyle } from "@chakra-ui/react"
 
 const variantUnderlineTab = defineStyle({
-  pb: 4,
+  px: 0,
+  pb: 2,
   borderBottom: "2px solid",
   borderColor: "transparent",
   background: "transparent",
@@ -19,7 +20,6 @@ const variantUnderlineTab = defineStyle({
 
 const variantUnderlineTabList = defineStyle({
   gap: 5,
-  pb: 6,
 })
 
 const variantUnderlineTabPanel = defineStyle({

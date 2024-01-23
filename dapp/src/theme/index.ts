@@ -19,6 +19,7 @@ import { formLabelTheme } from "./FormLabel"
 import { formErrorTheme } from "./FormError"
 import { tabsTheme } from "./Tabs"
 import { spinnerTheme } from "./Spinner"
+import { tableTheme } from "./Table"
 
 const defaultTheme = {
   colors,
@@ -54,6 +55,7 @@ const defaultTheme = {
     Tabs: tabsTheme,
     TokenBalanceInput: tokenBalanceInputTheme,
     Tooltip: tooltipTheme,
+    Table: tableTheme,
   },
 }
 
