@@ -59,6 +59,7 @@ export default function ModalBase({
   const resetState = useCallback(() => {
     setActiveStep(defaultStep)
     setIsPaused(false)
+    setIsPendingTransaction(false)
   }, [defaultStep])
 
   useEffect(() => {

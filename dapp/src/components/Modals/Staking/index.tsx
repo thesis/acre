@@ -7,8 +7,7 @@ import SignMessage from "./SignMessage"
 import DepositBTC from "./DepositBTC"
 
 function ActiveStakingStep() {
-  const { activeStep, startTransactionProcess, endTransactionProcess } =
-    useModalFlowContext()
+  const { activeStep } = useModalFlowContext()
 
   switch (activeStep) {
     case 1:
@@ -16,12 +15,10 @@ function ActiveStakingStep() {
     case 2:
       return <Overview />
     case 3:
-      startTransactionProcess()
       return <SignMessage />
     case 4:
       return <DepositBTC />
     default:
-      endTransactionProcess()
       return null
   }
 }

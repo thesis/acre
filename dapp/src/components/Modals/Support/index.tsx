@@ -18,6 +18,7 @@ export default function SupportWrapper({
   const { requestAccount: requestBitcoinAccount } = useRequestBitcoinAccount()
   const { requestAccount: requestEthereumAccount } = useRequestEthereumAccount()
   const { isPaused, onClose, onResume } = useModalFlowContext()
+
   if (!btcAccount)
     return (
       <MissingAccount

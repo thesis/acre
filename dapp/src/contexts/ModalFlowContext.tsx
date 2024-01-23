@@ -2,7 +2,6 @@ import { createContext } from "react"
 
 export type ModalStep = {
   goNext: () => void
-  goBack?: () => void
 }
 
 export type ModalFlowContextValue = {
