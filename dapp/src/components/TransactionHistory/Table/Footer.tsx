@@ -2,7 +2,7 @@ import React from "react"
 import { UseTransactionHistoryTableResult } from "#/types"
 import { HStack, IconButton } from "@chakra-ui/react"
 import { TextSm } from "#/components/shared/Typography"
-import { PAGINATION_BUTTONS, getPaginationState } from "./utils/pagination"
+import { PAGINATION_BUTTONS, getPaginationState } from "./utils"
 
 function TableFooter({ table }: { table: UseTransactionHistoryTableResult }) {
   const { pageIndex, pageSize } = table.getState().pagination

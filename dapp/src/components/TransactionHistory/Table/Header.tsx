@@ -2,7 +2,7 @@ import React from "react"
 import { Thead, Tr, Th, Icon, useMultiStyleConfig, Box } from "@chakra-ui/react"
 import { flexRender } from "@tanstack/react-table"
 import { UseTransactionHistoryTableResult } from "#/types"
-import { SORT_ICONS } from "./utils/sorting"
+import { SORT_ICONS } from "./utils"
 
 function TableHeader({ table }: { table: UseTransactionHistoryTableResult }) {
   const styles = useMultiStyleConfig("Table")
