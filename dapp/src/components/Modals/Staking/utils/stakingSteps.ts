@@ -1,6 +1,0 @@
-export const STAKING_STEPS = {
-  ACTION_FORM: 1,
-  OVERVIEW: 2,
-  SIGN_MESSAGE: 3,
-  DEPOSIT_BTC: 4,
-}
