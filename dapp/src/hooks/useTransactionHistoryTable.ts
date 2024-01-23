@@ -12,7 +12,7 @@ import { useState } from "react"
 
 const PAGINATION_STATE = {
   pageIndex: 0,
-  pageSize: 2,
+  pageSize: 10,
 }
 
 export function useTransactionHistoryTable({

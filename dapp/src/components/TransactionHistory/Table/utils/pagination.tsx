@@ -18,3 +18,14 @@ export const PAGINATION_BUTTONS = [
       !table.getCanNextPage(),
   },
 ]
+
+export const getPaginationState = (
+  pageIndex: number,
+  pageSize: number,
+  rowCount: number,
+) => {
+  const rowMin = pageIndex * pageSize + 1
+  const rowMax = Math.min((pageIndex + 1) * pageSize, rowCount)
+
+  return { rowMin, rowMax }
+}
