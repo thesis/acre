@@ -8,9 +8,6 @@ import {
 
 const KEYS = [...parts.keys, "rightIconContainer"] as const
 
-const { defineMultiStyleConfig, definePartsStyle } =
-  createMultiStyleConfigHelpers(KEYS)
-
 const baseStyleDialog = defineStyle({
   py: 5,
   pl: 5,
@@ -39,13 +36,15 @@ const baseStyleRightIconContainer = defineStyle({
   w: 14,
 })
 
-const baseStyle = definePartsStyle({
+const multiStyleConfig = createMultiStyleConfigHelpers(KEYS)
+
+const baseStyle = multiStyleConfig.definePartsStyle({
   container: baseStyleDialog,
   icon: baseStyleIcon,
   rightIconContainer: baseStyleRightIconContainer,
 })
 
-const statusInfo = definePartsStyle({
+const statusInfo = multiStyleConfig.definePartsStyle({
   container: {
     bg: "gold.200",
   },
@@ -63,13 +62,18 @@ const statusStyles = (props: StyleFunctionProps) => {
     info: statusInfo,
   }
 
-  return styleMap[status] || {}
+  return styleMap[status as string] || {}
 }
 
-const variantSubtle = definePartsStyle((props) => statusStyles(props))
+const variantSubtle = multiStyleConfig.definePartsStyle((props) =>
+  statusStyles(props),
+)
 
 const variants = {
   subtle: variantSubtle,
 }
 
-export const alertTheme = defineMultiStyleConfig({ baseStyle, variants })
+export const alertTheme = multiStyleConfig.defineMultiStyleConfig({
+  baseStyle,
+  variants,
+})
