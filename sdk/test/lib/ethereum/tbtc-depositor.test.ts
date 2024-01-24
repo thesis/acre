@@ -1,9 +1,10 @@
-import ethers, { Contract, Signer } from "ethers"
+import ethers, { Contract } from "ethers"
 import { EthereumTBTCDepositor } from "../../../src/lib/ethereum/tbtc-depositor"
 import { EthereumAddress } from "../../../src/lib/ethereum/address"
 import { Hex } from "../../../src/lib/utils"
+import { EthereumSigner } from "../../../src/lib/ethereum"
 
-jest.mock("ethers", () => ({
+jest.mock("ethers", (): object => ({
   Contract: jest.fn(),
   ...jest.requireActual("ethers"),
 }))
@@ -32,7 +33,7 @@ describe("TBTCDepositor", () => {
     )
 
     depositor = new EthereumTBTCDepositor({
-      signer: {} as Signer,
+      signer: {} as EthereumSigner,
       address: depositorAddress.identifierHex,
     })
   })
@@ -115,7 +116,7 @@ describe("TBTCDepositor", () => {
       expect(mockedContractInstance.initializeStake).toHaveBeenCalledWith(
         btcTxInfo,
         revealInfo,
-        receiver.identifierHex,
+        `0x${receiver.identifierHex}`,
         referral,
       )
       expect(result.toPrefixedString()).toBe(mockedTx.toPrefixedString())

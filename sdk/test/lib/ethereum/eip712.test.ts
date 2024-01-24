@@ -74,12 +74,12 @@ describe("EIP712", () => {
           spyOnGetNetwork.mockRestore()
         })
 
-        it("should throw an error", () => {
+        it("should throw an error", async () => {
           const { domain, types, message } = signMessageData
 
-          expect(async () => {
-            await signer.sign(domain, types, message)
-          }).rejects.toThrow("Chain id not defined")
+          await expect(signer.sign(domain, types, message)).rejects.toThrow(
+            "Chain id not defined",
+          )
         })
       })
     })
