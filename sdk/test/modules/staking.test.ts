@@ -15,7 +15,7 @@ import { MockMessageSigner } from "../utils/mock-message-signer"
 import { MockTBTC } from "../utils/mock-tbtc"
 import { StakeInitialization } from "../../src/modules/staking/stake-initialization"
 
-jest.mock("@keep-network/tbtc-v2.ts", () => ({
+jest.mock("@keep-network/tbtc-v2.ts", (): object => ({
   extractBitcoinRawTxVectors: jest.fn(),
   ...jest.requireActual("@keep-network/tbtc-v2.ts"),
 }))
@@ -119,7 +119,7 @@ describe("Staking", () => {
       )
     })
 
-    it("should return stake initialization object", async () => {
+    it("should return stake initialization object", () => {
       expect(result).toBeInstanceOf(StakeInitialization)
       expect(result.getBitcoinAddress).toBeDefined()
       expect(result.stake).toBeDefined()
@@ -183,16 +183,16 @@ describe("Staking", () => {
             ethers.Wallet.createRandom().address,
           )
 
-          beforeEach(async () => {
+          beforeEach(() => {
             mockedSignedMessage.verify = jest
               .fn()
               .mockResolvedValue(invalidReceiver)
           })
 
-          it("should throw an error", () => {
-            expect(async () => {
-              await result.signMessage()
-            }).rejects.toThrow("Invalid receiver address")
+          it("should throw an error", async () => {
+            await expect(result.signMessage()).rejects.toThrow(
+              "Invalid receiver address",
+            )
           })
         })
       })
@@ -203,10 +203,8 @@ describe("Staking", () => {
         })
 
         describe("when the message has not been signed yet", () => {
-          it("should throw an error", () => {
-            expect(async () => {
-              await result.stake()
-            }).rejects.toThrow("Sign message first")
+          it("should throw an error", async () => {
+            await expect(result.stake()).rejects.toThrow("Sign message first")
           })
         })
 
@@ -220,10 +218,10 @@ describe("Staking", () => {
               mockedDeposit.detectFunding.mockResolvedValue([])
             })
 
-            it("should throw an error", () => {
-              expect(async () => {
-                await result.stake()
-              }).rejects.toThrow("Deposit not found yet")
+            it("should throw an error", async () => {
+              await expect(result.stake()).rejects.toThrow(
+                "Deposit not found yet",
+              )
             })
           })
 
