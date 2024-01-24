@@ -21,6 +21,9 @@ contract BridgeStub is IBridge {
     uint64 public depositTxMaxFee = 1000; // 1000 satoshi = 0.00001 BTC
     uint32 public depositRevealAheadPeriod = 15 days;
 
+    // Used in tests to fake invalid depositor being set.
+    address overrideDepositor;
+
     mapping(uint256 => DepositRequest) internal depositsMap;
 
     constructor(TestERC20 _tbtc) {
@@ -59,7 +62,9 @@ contract BridgeStub is IBridge {
         );
 
         deposit.amount = fundingOutputAmount;
-        deposit.depositor = msg.sender;
+        deposit.depositor = overrideDepositor != address(0)
+            ? overrideDepositor
+            : msg.sender;
         /* solhint-disable-next-line not-rely-on-time */
         deposit.revealedAt = uint32(block.timestamp);
         deposit.vault = reveal.vault;
@@ -134,8 +139,7 @@ contract BridgeStub is IBridge {
         depositTxMaxFee = _depositTxMaxFee;
     }
 
-    function setDepositor(uint256 depositKey, address _depositor) external {
-        DepositRequest storage deposit = depositsMap[depositKey];
-        deposit.depositor = _depositor;
+    function setDepositorOverride(address depositor) external {
+        overrideDepositor = depositor;
     }
 }
