@@ -1,7 +1,7 @@
 import React from "react"
 import { TransactionInfoStatus } from "#/types"
 import { Box, Icon, TextProps, useMultiStyleConfig } from "@chakra-ui/react"
-import { Complete, Pending, Syncing } from "#/static/icons"
+import { Complete, Pending, Syncing } from "#/assets/icons"
 
 const DATA: Record<
   TransactionInfoStatus,

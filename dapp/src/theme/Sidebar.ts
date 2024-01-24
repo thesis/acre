@@ -2,9 +2,6 @@ import { createMultiStyleConfigHelpers, defineStyle } from "@chakra-ui/react"
 
 const PARTS = ["sidebarContainer", "sidebar"]
 
-const { defineMultiStyleConfig, definePartsStyle } =
-  createMultiStyleConfigHelpers(PARTS)
-
 const baseStyleSidebarContainer = defineStyle({
   top: 0,
   right: 0,
@@ -29,9 +26,13 @@ const baseStyleSidebar = defineStyle({
   gap: 3,
 })
 
-const baseStyle = definePartsStyle({
+const multiStyleConfig = createMultiStyleConfigHelpers(PARTS)
+
+const baseStyle = multiStyleConfig.definePartsStyle({
   sidebarContainer: baseStyleSidebarContainer,
   sidebar: baseStyleSidebar,
 })
 
-export const sidebarTheme = defineMultiStyleConfig({ baseStyle })
+export const sidebarTheme = multiStyleConfig.defineMultiStyleConfig({
+  baseStyle,
+})
