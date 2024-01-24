@@ -77,7 +77,7 @@ class EthereumTBTCDepositor
     const tx = await this.instance.initializeStake(
       depositTxInfo,
       depositRevealInfo,
-      receiver.identifierHex,
+      `0x${receiver.identifierHex}`,
       referral,
     )
 
