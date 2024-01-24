@@ -29,7 +29,7 @@ class EthereumTBTCDepositor
       // TODO: get artifact from `core` package.
       {
         abi: TbtcDepositor.abi,
-        address: "0x008b3b2f992c0e14edaa6e2c662bec549caa8df1",
+        address: "0x4a114666C957c189Eca756ad5dD84a1D32CC3e75",
         receipt: {
           blockNumber: 1,
         },
