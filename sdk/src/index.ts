@@ -4,10 +4,10 @@ import { ChainEIP712Signer } from "./lib/eip712-signer"
 import {
   EthereumEIP712Signer,
   EthereumNetwork,
-  EthereumSigner,
   getEthereumContracts,
 } from "./lib/ethereum"
 import { StakingModule } from "./modules/staking"
+import { EthereumSignerCompatibleWithEthersV5 } from "./lib/utils"
 
 class Acre {
   readonly #tbtc: TBTC
@@ -30,7 +30,7 @@ class Acre {
   }
 
   static async initializeEthereum(
-    signer: EthereumSigner,
+    signer: EthereumSignerCompatibleWithEthersV5,
     network: EthereumNetwork,
   ): Promise<Acre> {
     const tbtc = await Acre.#getTBTCEthereumSDK(signer, network)
@@ -45,23 +45,26 @@ class Acre {
     return new Acre(contracts, messages, tbtc)
   }
 
-  static #getTBTCEthereumSDK(signer: EthereumSigner, network: EthereumNetwork) {
-    // TODO: Make sure the tBTC SDK works OK with ethers v6. If not we need to
-    // install ethers v5 as a separate dependency and pass here ethers signer
-    // from v5.
+  static #getTBTCEthereumSDK(
+    signer: EthereumSignerCompatibleWithEthersV5,
+    network: EthereumNetwork,
+  ) {
     switch (network) {
       case "sepolia":
-        // @ts-expect-error The tBTC sdk uses ethers in v5 we are using v6 so
-        // the typescript throws error here.
+        // @ts-expect-error We require the `signer` must include the ether v5
+        // signer's methods used in tBTC-v2.ts SDK so if we pass signer from
+        // ethers v6 it won't break the Acre SDK initialization.
         return TBTC.initializeSepolia(signer)
       case "goerli":
-        // @ts-expect-error The tBTC sdk uses ethers in v5 we are using v6 so
-        // the typescript throws error here.
+        // @ts-expect-error We require the `signer` must include the ether v5
+        // signer's methods used in tBTC-v2.ts SDK so if we pass signer from
+        // ethers v6 it won't break the Acre SDK initialization.
         return TBTC.initializeGoerli(signer)
       case "mainnet":
       default:
-        // @ts-expect-error The tBTC sdk uses ethers in v5 we are using v6 so
-        // the typescript throws error here.
+        // @ts-expect-error We require the `signer` must include the ether v5
+        // signer's methods used in tBTC-v2.ts SDK so if we pass signer from
+        // ethers v6 it won't break the Acre SDK initialization.
         return TBTC.initializeMainnet(signer)
     }
   }
