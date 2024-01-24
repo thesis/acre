@@ -13,6 +13,7 @@ import Overview from "./components/Overview"
 import Sidebar from "./components/Sidebar"
 import DocsDrawer from "./components/DocsDrawer"
 import GlobalStyles from "./components/GlobalStyles"
+import AcreSdkProvider from "./contexts/AcreSdkContext"
 
 function DApp() {
   useDetectThemeMode()
@@ -34,14 +35,16 @@ function DAppProviders() {
   return (
     <LedgerWalletAPIProvider>
       <WalletContextProvider>
-        <DocsDrawerContextProvider>
-          <SidebarContextProvider>
-            <ChakraProvider theme={theme}>
-              <GlobalStyles />
-              <DApp />
-            </ChakraProvider>
-          </SidebarContextProvider>
-        </DocsDrawerContextProvider>
+        <AcreSdkProvider>
+          <DocsDrawerContextProvider>
+            <SidebarContextProvider>
+              <ChakraProvider theme={theme}>
+                <GlobalStyles />
+                <DApp />
+              </ChakraProvider>
+            </SidebarContextProvider>
+          </DocsDrawerContextProvider>
+        </AcreSdkProvider>
       </WalletContextProvider>
     </LedgerWalletAPIProvider>
   )
