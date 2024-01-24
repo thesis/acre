@@ -253,6 +253,21 @@ contract TbtcDepositor is Ownable {
         (, , request.tbtcDepositTxMaxFee, ) = bridge.depositParameters();
         request.tbtcOptimisticMintingFeeDivisor = tbtcVault
             .optimisticMintingFeeDivisor();
+
+        // Get deposit details from tBTC Bridge contract.
+        IBridge.DepositRequest memory bridgeDepositRequest = bridge.deposits(
+            depositKey
+        );
+
+        // Check if Depositor revealed to the tBTC Bridge contract matches the
+        // current contract address.
+        // This is very unlikely scenario, that would require unexpected change or
+        // bug in tBTC Bridge contract, as the depositor is set automatically
+        // to the reveal deposit message sender, which will be this contract.
+        // Anyway we check if the depositor that got the tBTC tokens minted
+        // is this contract, before we stake them.
+        if (bridgeDepositRequest.depositor != address(this))
+            revert UnexpectedDepositor(bridgeDepositRequest.depositor);
     }
 
     /// @notice This function should be called for previously initialized stake
@@ -299,16 +314,6 @@ contract TbtcDepositor is Ownable {
         ITBTCVault.OptimisticMintingRequest
             memory optimisticMintingRequest = tbtcVault
                 .optimisticMintingRequests(depositKey);
-
-        // Check if Depositor revealed to the tBTC Bridge contract matches the
-        // current contract address.
-        // This is very unlikely scenario, that would require unexpected change or
-        // bug in tBTC Bridge contract, as the depositor is set automatically
-        // to the reveal deposit message sender, which will be this contract.
-        // Anyway we check if the depositor that got the tBTC tokens minted
-        // is this contract, before we stake them.
-        if (bridgeDepositRequest.depositor != address(this))
-            revert UnexpectedDepositor(bridgeDepositRequest.depositor);
 
         // Extract funding transaction amount sent by the user in Bitcoin transaction.
         uint256 fundingTxAmount = bridgeDepositRequest.amount;
