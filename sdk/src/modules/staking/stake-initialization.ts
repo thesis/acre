@@ -1,5 +1,6 @@
 import {
   BitcoinClient,
+  BitcoinTxHash,
   ChainIdentifier,
   Deposit as TbtcDeposit,
   BitcoinAddressConverter,
