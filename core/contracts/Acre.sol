@@ -75,6 +75,9 @@ contract Acre is ERC4626Fees, Ownable {
         IERC20 _tbtc,
         address _treasury
     ) ERC4626(_tbtc) ERC20("Acre Staked Bitcoin", "stBTC") Ownable(msg.sender) {
+        if (address(_treasury) == address(0)) {
+            revert ZeroAddress();
+        }
         treasury = _treasury;
         // TODO: Revisit the exact values closer to the launch.
         minimumDepositAmount = 0.001 * 1e18; // 0.001 tBTC
@@ -86,6 +89,9 @@ contract Acre is ERC4626Fees, Ownable {
     /// @param newTreasury New treasury wallet address.
     function updateTreasury(address newTreasury) external onlyOwner {
         // TODO: Introduce a parameters update process.
+        if (address(newTreasury) == address(0)) {
+            revert ZeroAddress();
+        }
         treasury = newTreasury;
 
         emit TreasuryUpdated(newTreasury);

@@ -1141,6 +1141,52 @@ describe("Acre", () => {
     })
   })
 
+  describe("updateTreasury", () => {
+    let snapshot: SnapshotRestorer
+
+    before(async () => {
+      snapshot = await takeSnapshot()
+    })
+
+    after(async () => {
+      await snapshot.restore()
+    })
+
+    context("when caller is not governance", () => {
+      it("should revert", async () => {
+        await expect(acre.connect(thirdParty).updateTreasury(ZeroAddress))
+          .to.be.revertedWithCustomError(acre, "OwnableUnauthorizedAccount")
+          .withArgs(thirdParty.address)
+      })
+    })
+
+    context("when caller is governance", () => {
+      context("when a new treasury is zero address", () => {
+        it("should revert", async () => {
+          await expect(
+            acre.connect(governance).updateTreasury(ZeroAddress),
+          ).to.be.revertedWithCustomError(acre, "ZeroAddress")
+        })
+      })
+
+      context("when a new treasury is non-zero address", () => {
+        let newTreasury: string
+
+        before(async () => {
+          // Treasury is set by the deployment scripts. See deployment tests
+          // where initial parameters are checked.
+          newTreasury = await ethers.Wallet.createRandom().getAddress()
+
+          await acre.connect(governance).updateTreasury(newTreasury)
+        })
+
+        it("should update the treasury", async () => {
+          expect(await acre.treasury()).to.be.equal(newTreasury)
+        })
+      })
+    })
+  })
+
   describe("maxMint", () => {
     beforeAfterEachSnapshotWrapper()
 
