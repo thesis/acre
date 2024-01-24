@@ -316,10 +316,10 @@ contract TbtcDepositor is Ownable {
                 .optimisticMintingRequests(depositKey);
 
         // Extract funding transaction amount sent by the user in Bitcoin transaction.
-        uint256 fundingTxAmount = bridgeDepositRequest.amount;
+        uint256 fundingTxAmountSat = bridgeDepositRequest.amount;
 
         // Estimate tBTC protocol fees for minting.
-        uint256 tbtcMintingFees = bridgeDepositRequest.treasuryFee +
+        uint256 tbtcMintingFeesSat = bridgeDepositRequest.treasuryFee +
             request.tbtcDepositTxMaxFee;
 
         // Check if deposit was optimistically minted.
@@ -336,10 +336,10 @@ contract TbtcDepositor is Ownable {
             );
 
             uint256 optimisticMintingFee = optimisticMintingFeeDivisor > 0
-                ? (fundingTxAmount / optimisticMintingFeeDivisor)
+                ? (fundingTxAmountSat / optimisticMintingFeeDivisor)
                 : 0;
 
-            tbtcMintingFees += optimisticMintingFee;
+            tbtcMintingFeesSat += optimisticMintingFee;
         } else {
             // If the deposit wasn't optimistically minted check if it was swept.
             if (bridgeDepositRequest.sweptAt == 0)
@@ -347,21 +347,22 @@ contract TbtcDepositor is Ownable {
         }
 
         // Compute depositor fee.
-        uint256 depositorFee = depositorFeeDivisor > 0
-            ? (fundingTxAmount / depositorFeeDivisor)
+        uint256 depositorFeeTbtc = depositorFeeDivisor > 0
+            ? (fundingTxAmountSat / depositorFeeDivisor) * SATOSHI_MULTIPLIER
             : 0;
 
         // Calculate tBTC amount available to stake after subtracting all the fees.
         // Convert amount in satoshi to tBTC token precision.
         request.amountToStake =
-            (fundingTxAmount - tbtcMintingFees - depositorFee) *
-            SATOSHI_MULTIPLIER;
+            (fundingTxAmountSat - tbtcMintingFeesSat) *
+            SATOSHI_MULTIPLIER -
+            depositorFeeTbtc;
 
         emit BridgingCompleted(depositKey, msg.sender, request.amountToStake);
 
         // Transfer depositor fee to the treasury wallet.
-        if (depositorFee > 0) {
-            tbtcToken.safeTransfer(acre.treasury(), depositorFee);
+        if (depositorFeeTbtc > 0) {
+            tbtcToken.safeTransfer(acre.treasury(), depositorFeeTbtc);
         }
     }
 
