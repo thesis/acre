@@ -28,6 +28,17 @@ const config: HardhatUserConfig = {
     hardhat: {
       tags: ["allowStubs"],
     },
+    // Temporary solution to deploy the stub contract necessary for integration
+    // with Acre contracts.
+    goerli: {
+      // TODO: Set API key.
+      url: "https://goerli.infura.io/v3/<API-KEY>",
+      chainId: 5,
+      accounts: {
+        // TODO: Set you mnemonic
+        mnemonic: "test test test test test test test test test test test test",
+      },
+    },
     sepolia: {
       url: process.env.CHAIN_API_URL || "",
       chainId: 11155111,
@@ -63,6 +74,7 @@ const config: HardhatUserConfig = {
   namedAccounts: {
     deployer: {
       default: 1,
+      goerli: 0,
       sepolia: 0, // TODO: updated to the actual address once available
       mainnet: "", // TODO: updated to the actual address once available
     },
