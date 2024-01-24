@@ -212,6 +212,11 @@ contract TbtcDepositor is Ownable {
         address receiver,
         uint16 referral
     ) external {
+        // Check if Vault revealed to the tBTC Bridge contract matches the
+        // tBTC Vault supported by this contract.
+        if (reveal.vault != address(tbtcVault))
+            revert UnexpectedTbtcVault(reveal.vault);
+
         if (receiver == address(0)) revert ReceiverIsZeroAddress();
 
         // Calculate Bitcoin transaction hash.
@@ -248,16 +253,6 @@ contract TbtcDepositor is Ownable {
         (, , request.tbtcDepositTxMaxFee, ) = bridge.depositParameters();
         request.tbtcOptimisticMintingFeeDivisor = tbtcVault
             .optimisticMintingFeeDivisor();
-
-        // Get deposit details from tBTC Bridge contract.
-        IBridge.DepositRequest memory bridgeDepositRequest = bridge.deposits(
-            depositKey
-        );
-
-        // Check if Vault revealed to the tBTC Bridge contract matches the
-        // tBTC Vault supported by this contract.
-        if (bridgeDepositRequest.vault != address(tbtcVault))
-            revert UnexpectedTbtcVault(bridgeDepositRequest.vault);
     }
 
     /// @notice This function should be called for previously initialized stake
