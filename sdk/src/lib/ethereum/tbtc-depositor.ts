@@ -1,6 +1,8 @@
 import { BitcoinRawTxVectors, Hex } from "@keep-network/tbtc-v2.ts"
 import { TbtcDepositor as TbtcDepositorTypechain } from "core/typechain/contracts/tbtc/TbtcDepositor"
-import TbtcDepositor from "core/build/contracts/tbtc/TbtcDepositor.sol/TbtcDepositor.json"
+// TODO: How to fix this import?
+// eslint-disable-next-line import/no-unresolved
+import TbtcDepositor from "core/build/contracts/test/TBTCDepositorStub.sol/TBTCDepositorStub.json"
 import { ChainIdentifier, DepositRevealInfo, TBTCDepositor } from "../contracts"
 import { EthereumAddress } from "./address"
 import { EthersContractConfig, EthersContractWrapper } from "./contract"
