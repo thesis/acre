@@ -1,9 +1,6 @@
 import { drawerAnatomy as parts } from "@chakra-ui/anatomy"
 import { createMultiStyleConfigHelpers, defineStyle } from "@chakra-ui/react"
 
-const { defineMultiStyleConfig, definePartsStyle } =
-  createMultiStyleConfigHelpers(parts.keys)
-
 const baseStyleDialogContainer = defineStyle({
   zIndex: "drawer",
 })
@@ -23,10 +20,14 @@ const baseStyleOverlay = defineStyle({
   backdropBlur: "8px",
 })
 
-const baseStyle = definePartsStyle({
+const multiStyleConfig = createMultiStyleConfigHelpers(parts.keys)
+
+const baseStyle = multiStyleConfig.definePartsStyle({
   dialogContainer: baseStyleDialogContainer,
   dialog: baseStyleDialog,
   overlay: baseStyleOverlay,
 })
 
-export const drawerTheme = defineMultiStyleConfig({ baseStyle })
+export const drawerTheme = multiStyleConfig.defineMultiStyleConfig({
+  baseStyle,
+})

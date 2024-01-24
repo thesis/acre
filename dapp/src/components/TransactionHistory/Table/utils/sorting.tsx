@@ -1,4 +1,4 @@
-import { SortASC, SortDESC } from "#/static/icons"
+import { SortASC, SortDESC } from "#/assets/icons"
 import { SortDirection } from "@tanstack/react-table"
 import { Icon } from "@chakra-ui/react"
 
