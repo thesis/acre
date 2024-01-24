@@ -28,6 +28,6 @@
   "dependencies": {
     "@keep-network/tbtc-v2.ts": "^2.3.0",
     "core": "workspace:*",
-    "ethers": "^6.9.2"
+    "ethers": "^6.10.0"
   }
 }
