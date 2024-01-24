@@ -2,8 +2,7 @@ import { createMultiStyleConfigHelpers, defineStyle } from "@chakra-ui/react"
 
 const PARTS = ["container", "symbol"]
 
-const { defineMultiStyleConfig, definePartsStyle } =
-  createMultiStyleConfigHelpers(PARTS)
+const multiStyleConfig = createMultiStyleConfigHelpers(PARTS)
 
 const baseStyleContainer = defineStyle({
   display: "flex",
@@ -17,9 +16,11 @@ const baseStyleSymbol = defineStyle({
   lineHeight: "sm",
 })
 
-const baseStyle = definePartsStyle({
+const baseStyle = multiStyleConfig.definePartsStyle({
   container: baseStyleContainer,
   symbol: baseStyleSymbol,
 })
 
-export const currencyIconTheme = defineMultiStyleConfig({ baseStyle })
+export const currencyIconTheme = multiStyleConfig.defineMultiStyleConfig({
+  baseStyle,
+})
