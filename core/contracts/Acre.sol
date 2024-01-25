@@ -149,7 +149,7 @@ contract Acre is ERC4626Fees, Ownable {
 
     // TODO: Implement a governed upgrade process that initiates an update and
     //       then finalizes it after a delay.
-    /// Update the entry fee basis points.
+    /// @notice Update the entry fee basis points.
     /// @param newEntryFeeBasisPoints New value of the fee basis points.
     function updateEntryFeeBasisPoints(
         uint256 newEntryFeeBasisPoints
