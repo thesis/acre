@@ -13,7 +13,7 @@ import Overview from "./components/Overview"
 import Sidebar from "./components/Sidebar"
 import DocsDrawer from "./components/DocsDrawer"
 import GlobalStyles from "./components/GlobalStyles"
-import AcreSdkProvider from "./contexts/AcreSdkContext"
+import AcreSdkProvider from "./acre-react/AcreSdkContext"
 
 function DApp() {
   useDetectThemeMode()

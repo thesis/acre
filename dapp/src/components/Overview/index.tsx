@@ -6,10 +6,10 @@ import { ArrowUpRight } from "#/static/icons"
 import { USD } from "#/constants"
 import { EthereumAddress } from "sdk/dist/src/lib/ethereum"
 import { StakeInitialization } from "sdk/dist/src/modules/staking/stake-initialization"
+import { useAcreContext } from "#/acre-react"
 import PositionDetails from "./PositionDetails"
 import Statistics from "./Statistics"
 import TransactionHistory from "./TransactionHistory"
-import { useAcreContext } from "../../contexts/AcreSdkContext"
 
 export default function Overview() {
   const { onOpen } = useDocsDrawer()
