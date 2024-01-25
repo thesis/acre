@@ -32,6 +32,9 @@ contract Acre is ERC4626Fees, Ownable {
     /// Entry fee basis points applied to entry fee calculation.
     uint256 public entryFeeBasisPoints;
 
+    /// Exit fee basis points applied to exit fee calculation.
+    uint256 public exitFeeBasisPoints;
+
     /// Minimum amount for a single deposit operation. Includes treasury fee.
     uint256 public minimumDepositAmount;
     /// Maximum total amount of tBTC token held by Acre.
@@ -41,6 +44,11 @@ contract Acre is ERC4626Fees, Ownable {
     /// @param referral Used for referral program.
     /// @param assets Amount of tBTC tokens staked.
     event StakeReferral(bytes32 indexed referral, uint256 assets);
+
+    /// Emitted when a referral is used during unstaking.
+    /// @param referral Used for referral program.
+    /// @param shares Amount of stBTC tokens unstaked.
+    event UnstakeReferral(bytes32 indexed referral, uint256 shares);
 
     /// Emitted when the treasury wallet address is updated.
     /// @param treasury New treasury wallet address.
@@ -63,6 +71,10 @@ contract Acre is ERC4626Fees, Ownable {
     /// @param entryFeeBasisPoints New value of the fee basis points.
     event EntryFeeBasisPointsUpdated(uint256 entryFeeBasisPoints);
 
+    /// Emitted when the exit fee basis points are updated.
+    /// @param exitFeeBasisPoints New value of the exit fee basis points.
+    event ExitFeeBasisPointsUpdated(uint256 exitFeeBasisPoints);
+
     /// Reverts if the amount is less than the minimum deposit amount.
     /// @param amount Amount to check.
     /// @param min Minimum amount to check 'amount' against.
@@ -83,6 +95,7 @@ contract Acre is ERC4626Fees, Ownable {
         minimumDepositAmount = 0.001 * 1e18; // 0.001 tBTC
         maximumTotalAssets = 25 * 1e18; // 25 tBTC
         entryFeeBasisPoints = 5; // 5bps == 0.05% == 0.0005
+        exitFeeBasisPoints = 5; // 5bps == 0.05% == 0.0005
     }
 
     /// @notice Updates treasury wallet address.
@@ -159,6 +172,18 @@ contract Acre is ERC4626Fees, Ownable {
         emit EntryFeeBasisPointsUpdated(newEntryFeeBasisPoints);
     }
 
+    // TODO: Implement a governed upgrade process that initiates an update and
+    //       then finalizes it after a delay.
+    /// @notice Update the exit fee basis points.
+    /// @param newExitFeeBasisPoints New value of the exit fee basis points.
+    function updateExitFeeBasisPoints(
+        uint256 newExitFeeBasisPoints
+    ) external onlyOwner {
+        exitFeeBasisPoints = newExitFeeBasisPoints;
+
+        emit ExitFeeBasisPointsUpdated(newExitFeeBasisPoints);
+    }
+
     /// @notice Mints shares to receiver by depositing exactly amount of
     ///         tBTC tokens.
     /// @dev Takes into account a deposit parameter, minimum deposit amount,
@@ -225,6 +250,23 @@ contract Acre is ERC4626Fees, Ownable {
         return shares;
     }
 
+    /// @notice Redeems stBTC shares for tBTC tokens.
+    /// @param shares Amount of shares to redeem for tBTC tokens.
+    /// @param receiver The address to which the tBTC tokens will be transferred.
+    /// @param referral Data used for referral program.
+    /// @return Redeemed tBTC tokens.
+    function unstake(
+        uint256 shares,
+        address receiver,
+        bytes32 referral
+    ) public returns (uint256) {
+        if (referral != bytes32(0)) {
+            emit UnstakeReferral(referral, shares);
+        }
+
+        return super.redeem(shares, receiver, receiver);
+    }
+
     /// @notice Returns the maximum amount of the tBTC token that can be
     ///         deposited into the vault for the receiver through a deposit
     ///         call. It takes into account the deposit parameter, maximum total
@@ -267,6 +309,11 @@ contract Acre is ERC4626Fees, Ownable {
     /// @notice Redeems shares for tBTC tokens.
     function _entryFeeBasisPoints() internal view override returns (uint256) {
         return entryFeeBasisPoints;
+    }
+
+    /// @notice Returns exit fee basis points applied to exit fee calculation.
+    function _exitFeeBasisPoints() internal view override returns (uint256) {
+        return exitFeeBasisPoints;
     }
 
     /// @notice Returns the address of the treasury wallet, where fees should be
