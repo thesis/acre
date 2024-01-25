@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import {
   BitcoinClient,
+  BitcoinNetwork,
   DepositsService,
   MaintenanceService,
   RedemptionsService,
@@ -24,6 +26,8 @@ export class MockTBTC implements TBTC {
     this.maintenance = jest.fn() as unknown as MaintenanceService
     this.redemptions = jest.fn() as unknown as RedemptionsService
     this.tbtcContracts = jest.fn() as unknown as TBTCContracts
-    this.bitcoinClient = jest.fn() as unknown as BitcoinClient
+    this.bitcoinClient = {
+      getNetwork: jest.fn().mockResolvedValue(BitcoinNetwork.Testnet),
+    } as unknown as BitcoinClient
   }
 }

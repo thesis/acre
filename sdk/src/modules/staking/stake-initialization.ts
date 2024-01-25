@@ -3,6 +3,7 @@ import {
   ChainIdentifier,
   Deposit as TbtcDeposit,
   extractBitcoinRawTxVectors,
+  BitcoinAddressConverter,
 } from "@keep-network/tbtc-v2.ts"
 import {
   ChainEIP712Signer,
@@ -88,7 +89,7 @@ class StakeInitialization {
    *      is required to stake BTC.
    */
   async signMessage() {
-    const { domain, types, message } = this.#getStakeMessageTypedData()
+    const { domain, types, message } = await this.#getStakeMessageTypedData()
 
     const signedMessage = await this.#messageSigner.sign(domain, types, message)
 
@@ -104,7 +105,7 @@ class StakeInitialization {
   /**
    * @returns The staking message data to be signed.
    */
-  #getStakeMessageTypedData() {
+  async #getStakeMessageTypedData() {
     const domain: Domain = {
       name: "TbtcDepositor",
       version: "1",
@@ -121,10 +122,12 @@ class StakeInitialization {
 
     const message: Message = {
       receiver: this.#staker.identifierHex,
-      // TODO: Make sure we can to pass the refund public key hash in this form.
-      bitcoinRecoveryAddress: this.#tbtcDeposit
-        .getReceipt()
-        .refundPublicKeyHash.toPrefixedString(),
+      bitcoinRecoveryAddress: BitcoinAddressConverter.publicKeyHashToAddress(
+        this.#tbtcDeposit.getReceipt().refundPublicKeyHash,
+        // TODO: Figure out when to pass false or true.
+        false,
+        await this.#bitcoinClient.getNetwork(),
+      ),
     }
 
     return { domain, types, message }

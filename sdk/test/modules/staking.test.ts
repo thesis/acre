@@ -70,7 +70,7 @@ const stakingInitializationData: {
   depositReceipt: {
     blindingFactor: Hex.from("555555"),
     walletPublicKeyHash: Hex.from("666666"),
-    refundPublicKeyHash: Hex.from("777777"),
+    refundPublicKeyHash: Hex.from("0x2cd680318747b720d67bf4246eb7403b476adb34"),
     refundLocktime: Hex.from("888888"),
   },
   mockedInitializeTxHash: Hex.from("999999"),
@@ -167,8 +167,7 @@ describe("Staking", () => {
               },
               {
                 receiver: receiver.identifierHex,
-                bitcoinRecoveryAddress:
-                  depositReceipt.refundPublicKeyHash.toPrefixedString(),
+                bitcoinRecoveryAddress,
               },
             )
           })
