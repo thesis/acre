@@ -53,7 +53,7 @@ class EthereumTBTCDepositor
   async initializeStake(
     bitcoinFundingTransaction: BitcoinRawTxVectors,
     depositReveal: DepositRevealInfo,
-    receiver: ChainIdentifier,
+    staker: ChainIdentifier,
     referral: number,
   ): Promise<Hex> {
     const depositTxInfo = {
@@ -77,7 +77,7 @@ class EthereumTBTCDepositor
     const tx = await this.instance.initializeStake(
       depositTxInfo,
       depositRevealInfo,
-      `0x${receiver.identifierHex}`,
+      `0x${staker.identifierHex}`,
       referral,
     )
 

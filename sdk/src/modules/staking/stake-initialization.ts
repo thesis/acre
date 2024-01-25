@@ -40,9 +40,9 @@ class StakeInitialization {
   readonly #bitcoinClient: BitcoinClient
 
   /**
-   * Receiver The address to which the stBTC shares will be minted.
+   * The address to which the stBTC shares will be minted.
    */
-  readonly #receiver: ChainIdentifier
+  readonly #staker: ChainIdentifier
 
   /**
    * Param referral Data used for referral program.
@@ -59,14 +59,14 @@ class StakeInitialization {
   constructor(
     _contracts: AcreContracts,
     _messageSigner: ChainEIP712Signer,
-    _receiver: ChainIdentifier,
+    _staker: ChainIdentifier,
     _referral: number,
     _deposit: Deposit,
     _bitcoinClient: BitcoinClient,
   ) {
     this.#contracts = _contracts
     this.#messageSigner = _messageSigner
-    this.#receiver = _receiver
+    this.#staker = _staker
     this.#referral = _referral
     this.#deposit = _deposit
     this.#bitcoinClient = _bitcoinClient
@@ -94,7 +94,7 @@ class StakeInitialization {
 
     const addressFromSignature = signedMessage.verify()
 
-    if (!this.#receiver.equals(addressFromSignature)) {
+    if (!this.#staker.equals(addressFromSignature)) {
       throw new Error("Invalid receiver address")
     }
 
@@ -120,7 +120,7 @@ class StakeInitialization {
     }
 
     const message: Message = {
-      receiver: this.#receiver.identifierHex,
+      receiver: this.#staker.identifierHex,
       // TODO: Make sure we can to pass the refund public key hash in this form.
       bitcoinRecoveryAddress: this.#deposit
         .getReceipt()
@@ -170,7 +170,7 @@ class StakeInitialization {
     return this.#contracts.tbtcDepositor.initializeStake(
       depositFundingTx,
       revealDepositInfo,
-      this.#receiver,
+      this.#staker,
       this.#referral,
     )
   }
