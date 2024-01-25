@@ -155,7 +155,7 @@ describe("Staking", () => {
           it("should sign message", () => {
             expect(messageSigner.sign).toHaveBeenCalledWith(
               {
-                name: "TBTCDepositor",
+                name: "TbtcDepositor",
                 version: "1",
                 verifyingContract: contracts.tbtcDepositor.getChainIdentifier(),
               },
