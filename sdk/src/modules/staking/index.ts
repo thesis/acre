@@ -43,10 +43,10 @@ class StakingModule {
    */
   async initializeStake(
     bitcoinRecoveryAddress: string,
-    receiver: ChainIdentifier,
+    staker: ChainIdentifier,
     referral: number,
   ) {
-    // TODO: Hex: receiver + referral
+    // TODO: Hex: staker + referral
     // const extraData = "0x0"
 
     // Generate deposit script parameters.
@@ -60,7 +60,7 @@ class StakingModule {
     return new StakeInitialization(
       this.#contracts,
       this.#messageSigner,
-      receiver,
+      staker,
       referral,
       deposit,
       this.#tbtc.bitcoinClient,
