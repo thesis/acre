@@ -8,9 +8,6 @@ export const buttonTheme: ComponentSingleStyleConfig = {
   baseStyle: {
     size: "md",
     borderRadius: "lg",
-    _hover: {
-      textDecoration: "none",
-    },
   },
   sizes: {
     md: {
