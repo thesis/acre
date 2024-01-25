@@ -106,7 +106,7 @@ class StakeInitialization {
    */
   #getStakeMessageTypedData() {
     const domain: Domain = {
-      name: "TBTCDepositor",
+      name: "TbtcDepositor",
       version: "1",
       verifyingContract: this.#contracts.tbtcDepositor.getChainIdentifier(),
     }
