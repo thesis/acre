@@ -96,6 +96,7 @@ class LedgerWalletSigner extends EthereumSignerCompatibleWithEthersV5 {
       dappTransport,
       client,
       account,
+      // TODO: Pass the Ethereum node url via Env variable.
       new JsonRpcProvider(
         "https://goerli.infura.io/v3/c80e8ccdcc4c4a809bce4fc165310617",
       ),
