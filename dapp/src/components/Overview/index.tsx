@@ -24,7 +24,7 @@ export default function Overview() {
   const initSDK = useCallback(async () => {
     if (!ethAddress) return
 
-    await init(ethAddress)
+    await init(ethAddress, "goerli")
   }, [ethAddress, init])
 
   const signMessage = useCallback(async () => {
