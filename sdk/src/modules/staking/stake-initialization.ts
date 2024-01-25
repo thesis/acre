@@ -108,7 +108,7 @@ class StakeInitialization {
     const domain: Domain = {
       name: "TBTCDepositor",
       version: "1",
-      verifyingContract: this.#contracts.depositor.getChainIdentifier(),
+      verifyingContract: this.#contracts.tbtcDepositor.getChainIdentifier(),
     }
 
     // TODO: revisit the message structure before the launch.
@@ -167,7 +167,7 @@ class StakeInitialization {
     }
 
     // TODO: change it to the deposit details submission to the relayer bot.
-    return this.#contracts.depositor.initializeStake(
+    return this.#contracts.tbtcDepositor.initializeStake(
       depositFundingTx,
       revealDepositInfo,
       this.#receiver,

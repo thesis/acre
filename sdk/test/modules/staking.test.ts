@@ -145,7 +145,7 @@ describe("Staking", () => {
 
           beforeEach(async () => {
             mockedSignedMessage.verify.mockReturnValue(receiver)
-            contracts.depositor.getChainIdentifier = jest
+            contracts.tbtcDepositor.getChainIdentifier = jest
               .fn()
               .mockReturnValue(EthereumAddress.from(depositorAddress))
 
@@ -157,7 +157,7 @@ describe("Staking", () => {
               {
                 name: "TBTCDepositor",
                 version: "1",
-                verifyingContract: contracts.depositor.getChainIdentifier(),
+                verifyingContract: contracts.tbtcDepositor.getChainIdentifier(),
               },
               {
                 Stake: [
@@ -245,7 +245,7 @@ describe("Staking", () => {
                 .fn()
                 .mockResolvedValue(bitcoinRawTx)
 
-              contracts.depositor.initializeStake = jest
+              contracts.tbtcDepositor.initializeStake = jest
                 .fn()
                 .mockResolvedValue(mockedTxHash)
 
@@ -285,7 +285,9 @@ describe("Staking", () => {
                 refundLocktime: depositReceipt.refundLocktime,
               }
 
-              expect(contracts.depositor.initializeStake).toHaveBeenCalledWith(
+              expect(
+                contracts.tbtcDepositor.initializeStake,
+              ).toHaveBeenCalledWith(
                 bitcoinRawTxVectors,
                 revealInfo,
                 receiver,

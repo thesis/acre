@@ -16,7 +16,7 @@ export function getEthereumContracts(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   network: EthereumNetwork,
 ): AcreContracts {
-  const depositor = new EthereumTBTCDepositor({ signer })
+  const tbtcDepositor = new EthereumTBTCDepositor({ signer })
 
-  return { depositor }
+  return { tbtcDepositor }
 }
