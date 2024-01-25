@@ -1,43 +1,28 @@
-import React, { useCallback, useState } from "react"
+import React, { useCallback } from "react"
 import { Button, Flex, Grid, HStack, Icon, Switch } from "@chakra-ui/react"
 import { useDocsDrawer, useWalletContext } from "#/hooks"
 import { TextSm } from "#/components/shared/Typography"
 import { ArrowUpRight } from "#/static/icons"
 import { USD } from "#/constants"
-import { EthereumAddress } from "sdk/dist/src/lib/ethereum"
-import { StakeInitialization } from "sdk/dist/src/modules/staking/stake-initialization"
-import { useAcreContext } from "#/acre-react"
+import { useStakeFlow } from "#/acre-react/hooks"
 import PositionDetails from "./PositionDetails"
 import Statistics from "./Statistics"
 import TransactionHistory from "./TransactionHistory"
+import { useAcreContext } from "../../acre-react/AcreSdkContext"
 
 export default function Overview() {
   const { onOpen } = useDocsDrawer()
-  const [stake, setStake] = useState<StakeInitialization | undefined>(undefined)
-  const [btcAddress, setBtcAddress] = useState<string | undefined>(undefined)
   const { ethAccount } = useWalletContext()
-
   const ethAddress = ethAccount?.address
 
-  const { init, acre, isInitialized } = useAcreContext()
+  const { init, isInitialized } = useAcreContext()
+  const { initStake, btcAddress, signMessage, stake } = useStakeFlow()
 
   const initSDK = useCallback(async () => {
     if (!ethAddress) return
 
     await init(ethAddress, "goerli")
   }, [ethAddress, init])
-
-  const signMessage = useCallback(async () => {
-    if (!stake) return
-
-    await stake.signMessage()
-  }, [stake])
-
-  const stakeBTC = useCallback(async () => {
-    if (!stake) return
-
-    await stake.stake()
-  }, [stake])
 
   return (
     <Flex direction="column" gap={2} p={6}>
@@ -57,28 +42,11 @@ export default function Overview() {
             isDisabled={!isInitialized}
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             onClick={async () => {
-              const stakeFlow = await acre?.staking.initializeStake(
-                "mjc2zGWypwpNyDi4ZxGbBNnUA84bfgiwYc",
-                EthereumAddress.from(
-                  "0xafB62Ac8Fec36dFeD78094D5F7592558ddcf7FE8",
-                ),
-                123,
-              )
-              setStake(stakeFlow)
+              await initStake("mjc2zGWypwpNyDi4ZxGbBNnUA84bfgiwYc", ethAddress!)
             }}
           >
             Initialize stake
           </Button>
-          <Button
-            isDisabled={!stake}
-            // eslint-disable-next-line @typescript-eslint/no-misused-promises
-            onClick={async () => {
-              setBtcAddress(await stake?.getBitcoinAddress())
-            }}
-          >
-            Get BTC deposit address
-          </Button>
-
           <Button
             isDisabled={!btcAddress}
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -86,10 +54,11 @@ export default function Overview() {
           >
             Sign message
           </Button>
-          <TextSm>Deposit address: {btcAddress}</TextSm>
+          <TextSm>Deposit address: {btcAddress ?? "not available yet"}</TextSm>
           <Button
+            isDisabled={!btcAddress}
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
-            onClick={stakeBTC}
+            onClick={stake}
           >
             Stake
           </Button>
