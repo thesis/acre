@@ -19,7 +19,7 @@ export default function Overview() {
           <Switch size="sm" />
           <TextSm fontWeight="bold">Show values in {USD.symbol}</TextSm>
         </HStack>
-        <ButtonLink colorScheme="gold" onClick={onOpen}>
+        <ButtonLink colorScheme="gold" bg="gold.200" onClick={onOpen}>
           Docs
         </ButtonLink>
       </Flex>

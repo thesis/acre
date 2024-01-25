@@ -28,30 +28,29 @@ export const buttonTheme: ComponentSingleStyleConfig = {
         bg: "brand.400",
       },
     },
-    outline: ({ colorScheme, size }: StyleFunctionProps) => {
+    outline: ({ colorScheme }: StyleFunctionProps) => {
       const defaultStyles = {
         color: "grey.700",
-        borderColor: "white",
-        bg: "gold.100",
+        borderColor: "grey.700",
+
         _hover: {
-          borderColor: "grey.500",
           bg: "opacity.grey.700.05",
         },
         _active: {
           bg: "transparent",
         },
       }
-      if (size === "lg") {
-        return {
-          ...defaultStyles,
-          borderColor: "grey.700",
-          bg: "transparent",
-        }
-      }
       if (colorScheme === "gold") {
         return {
           ...defaultStyles,
-          bg: "gold.200",
+          bg: "gold.100",
+          borderColor: "white",
+          borderStyle: "solid",
+
+          _hover: {
+            borderColor: "grey.500",
+            bg: "transparent",
+          },
         }
       }
       return defaultStyles
