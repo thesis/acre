@@ -50,7 +50,7 @@ class Acre {
   static #getTBTCEthereumSDK(
     signer: EthereumSignerCompatibleWithEthersV5,
     network: EthereumNetwork,
-  ) {
+  ): Promise<TBTC> {
     switch (network) {
       case "sepolia":
         // @ts-expect-error We require the `signer` must include the ether v5
