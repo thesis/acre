@@ -93,9 +93,8 @@ abstract contract ERC4626Fees is ERC4626 {
         return 0; // replace with e.g. 100 for 1%
     }
 
-    function _exitFeeBasisPoints() internal view virtual returns (uint256) {
-        return 0; // replace with e.g. 100 for 1%
-    }
+    // slither-disable-next-line dead-code
+    function _exitFeeBasisPoints() internal view virtual returns (uint256);
 
     /// @notice Fee recipient for both entry and exit.
     // slither-disable-next-line dead-code
