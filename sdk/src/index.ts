@@ -12,7 +12,7 @@ import { EthereumSignerCompatibleWithEthersV5 } from "./lib/utils"
 class Acre {
   readonly #tbtc: TBTC
 
-  readonly #messages: ChainEIP712Signer
+  readonly #messageSigner: ChainEIP712Signer
 
   public readonly contracts: AcreContracts
 
@@ -20,13 +20,17 @@ class Acre {
 
   constructor(
     _contracts: AcreContracts,
-    _messages: ChainEIP712Signer,
+    _messageSigner: ChainEIP712Signer,
     _tbtc: TBTC,
   ) {
     this.contracts = _contracts
     this.#tbtc = _tbtc
-    this.#messages = _messages
-    this.staking = new StakingModule(this.contracts, this.#messages, this.#tbtc)
+    this.#messageSigner = _messageSigner
+    this.staking = new StakingModule(
+      this.contracts,
+      this.#messageSigner,
+      this.#tbtc,
+    )
   }
 
   static async initializeEthereum(
