@@ -23,7 +23,7 @@ function AcreSdkProvider({ children }: Props) {
   const [isInitialized, setIsInitialized] = useState<boolean>(false)
 
   const init = useCallback<AcreSdkContextType["init"]>(
-    async (ethereumAddress) => {
+    async (ethereumAddress: string) => {
       if (!ethereumAddress) throw new Error("Ethereum address not defined")
 
       const sdk = await Acre.initializeEthereum(
