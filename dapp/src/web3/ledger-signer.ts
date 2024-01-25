@@ -16,6 +16,7 @@ import {
   JsonRpcProvider,
 } from "ethers"
 import { EthereumSignerCompatibleWithEthersV5, Hex } from "sdk/src/lib/utils"
+import { CURRENCY_ID_ETHEREUM } from "#/constants"
 import { getLedgerWalletAPITransport as getDappLedgerWalletAPITransport } from "../contexts"
 
 // Created based on the
@@ -83,7 +84,7 @@ class LedgerWalletSigner extends EthereumSignerCompatibleWithEthersV5 {
     const client = new WalletAPIClient(dappTransport)
 
     const accountsList = await client.account.list({
-      currencyIds: ["ethereum_goerli"],
+      currencyIds: [CURRENCY_ID_ETHEREUM],
     })
 
     dappTransport.disconnect()
