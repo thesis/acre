@@ -1,7 +1,7 @@
 import {
   BitcoinClient,
   ChainIdentifier,
-  Deposit,
+  Deposit as TbtcDeposit,
   extractBitcoinRawTxVectors,
 } from "@keep-network/tbtc-v2.ts"
 import {
@@ -32,7 +32,7 @@ class StakeInitialization {
   /**
    * Component representing an instance of the tBTC v2 deposit process.
    */
-  readonly #deposit: Deposit
+  readonly #tbtcDeposit: TbtcDeposit
 
   /**
    * Bitcoin client.
@@ -61,14 +61,14 @@ class StakeInitialization {
     _messageSigner: ChainEIP712Signer,
     _staker: ChainIdentifier,
     _referral: number,
-    _deposit: Deposit,
+    _tbtcDeposit: TbtcDeposit,
     _bitcoinClient: BitcoinClient,
   ) {
     this.#contracts = _contracts
     this.#messageSigner = _messageSigner
     this.#staker = _staker
     this.#referral = _referral
-    this.#deposit = _deposit
+    this.#tbtcDeposit = _tbtcDeposit
     this.#bitcoinClient = _bitcoinClient
   }
 
@@ -78,7 +78,7 @@ class StakeInitialization {
    * @returns Bitcoin address corresponding to this deposit.
    */
   async getBitcoinAddress(): Promise<string> {
-    return this.#deposit.getBitcoinAddress()
+    return this.#tbtcDeposit.getBitcoinAddress()
   }
 
   /**
@@ -122,7 +122,7 @@ class StakeInitialization {
     const message: Message = {
       receiver: this.#staker.identifierHex,
       // TODO: Make sure we can to pass the refund public key hash in this form.
-      bitcoinRecoveryAddress: this.#deposit
+      bitcoinRecoveryAddress: this.#tbtcDeposit
         .getReceipt()
         .refundPublicKeyHash.toPrefixedString(),
     }
@@ -145,7 +145,7 @@ class StakeInitialization {
       throw new Error("Sign message first")
     }
 
-    const utxos = await this.#deposit.detectFunding()
+    const utxos = await this.#tbtcDeposit.detectFunding()
 
     if (utxos.length === 0) {
       throw new Error("Deposit not found yet")
@@ -159,7 +159,8 @@ class StakeInitialization {
       await this.#bitcoinClient.getRawTransaction(transactionHash),
     )
 
-    const { depositor: _, ...restDepositReceipt } = this.#deposit.getReceipt()
+    const { depositor: _, ...restDepositReceipt } =
+      this.#tbtcDeposit.getReceipt()
 
     const revealDepositInfo = {
       fundingOutputIndex: outputIndex,
