@@ -8,7 +8,7 @@ import {
 } from "@chakra-ui/react"
 
 import Spinner from "#/components/shared/Spinner"
-import { Pause } from "#/assets/icons"
+import { PauseIcon } from "#/assets/icons"
 import { TextMd } from "#/components/shared/Typography"
 
 export default function ResumeModal({
@@ -24,7 +24,7 @@ export default function ResumeModal({
       <ModalBody textAlign="start" py={6} mx={3}>
         <HStack position="relative" justifyContent="center">
           <Spinner size="xl" />
-          <Pause position="absolute" boxSize={6} />
+          <PauseIcon position="absolute" boxSize={6} color="brand.400" />
         </HStack>
 
         <TextMd>Are your sure you want to cancel?</TextMd>

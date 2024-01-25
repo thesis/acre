@@ -7,14 +7,12 @@ import StakingSteps from "./components/StakingSteps"
 export default function DepositBTC() {
   const { goNext, endTransactionProcess } = useModalFlowContext()
 
-  const onDepositBTCTransactionSuccess = useCallback(() => {
+  const onDepositSuccess = useCallback(() => {
     endTransactionProcess()
     goNext()
   }, [endTransactionProcess, goNext])
 
-  const { depositBTC } = useDepositBTCTransaction(
-    onDepositBTCTransactionSuccess,
-  )
+  const { depositBTC } = useDepositBTCTransaction(onDepositSuccess)
 
   return (
     <StakingSteps buttonText="Deposit BTC" activeStep={1} onClick={depositBTC}>
