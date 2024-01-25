@@ -58,14 +58,14 @@ class StakeInitialization {
 
   constructor(
     _contracts: AcreContracts,
-    _message: ChainEIP712Signer,
+    _messageSigner: ChainEIP712Signer,
     _receiver: ChainIdentifier,
     _referral: number,
     _deposit: Deposit,
     _bitcoinClient: BitcoinClient,
   ) {
     this.#contracts = _contracts
-    this.#messageSigner = _message
+    this.#messageSigner = _messageSigner
     this.#receiver = _receiver
     this.#referral = _referral
     this.#deposit = _deposit
