@@ -1,9 +1,6 @@
 import { formAnatomy as parts } from "@chakra-ui/anatomy"
 import { createMultiStyleConfigHelpers, defineStyle } from "@chakra-ui/react"
 
-const { defineMultiStyleConfig, definePartsStyle } =
-  createMultiStyleConfigHelpers(parts.keys)
-
 const baseStyleHelperText = defineStyle({
   display: "flex",
   alignItems: "center",
@@ -12,8 +9,10 @@ const baseStyleHelperText = defineStyle({
   color: "grey.500",
 })
 
-const baseStyle = definePartsStyle({
+const multiStyleConfig = createMultiStyleConfigHelpers(parts.keys)
+
+const baseStyle = multiStyleConfig.definePartsStyle({
   helperText: baseStyleHelperText,
 })
 
-export const formTheme = defineMultiStyleConfig({ baseStyle })
+export const formTheme = multiStyleConfig.defineMultiStyleConfig({ baseStyle })

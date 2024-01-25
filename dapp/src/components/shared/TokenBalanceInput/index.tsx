@@ -17,7 +17,7 @@ import {
   getCurrencyByType,
   userAmountToBigInt,
 } from "#/utils"
-import { AlertInfo } from "#/static/icons"
+import { AlertInfo } from "#/assets/icons"
 import { CurrencyType } from "#/types"
 import NumberFormatInput, {
   NumberFormatInputValues,

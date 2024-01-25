@@ -1,6 +1,6 @@
 import React from "react"
 import { Button, ButtonProps, Icon } from "@chakra-ui/react"
-import { ArrowUpRight } from "#/static/icons"
+import { ArrowUpRight } from "#/assets/icons"
 
 type ButtonLinkProps = ButtonProps & {
   icon?: typeof Icon

@@ -8,7 +8,7 @@ import {
 } from "@chakra-ui/react"
 
 import Spinner from "#/components/shared/Spinner"
-import { Pause } from "#/static/icons"
+import { Pause } from "#/assets/icons"
 import { TextMd } from "#/components/shared/Typography"
 
 export default function ResumeModal({

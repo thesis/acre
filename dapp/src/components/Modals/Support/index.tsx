@@ -5,7 +5,7 @@ import {
   useRequestEthereumAccount,
   useWalletContext,
 } from "#/hooks"
-import { ConnectBTCAccount, ConnectETHAccount } from "#/static/icons"
+import { ConnectBTCAccount, ConnectETHAccount } from "#/assets/icons"
 import MissingAccount from "./MissingAccount"
 import ResumeModal from "./ResumeModal"
 

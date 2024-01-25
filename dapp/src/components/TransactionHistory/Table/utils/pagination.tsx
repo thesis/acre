@@ -1,6 +1,6 @@
 import React from "react"
 import { UseTransactionHistoryTableResult } from "#/types"
-import { ArrowLeft, ArrowRight } from "#/static/icons"
+import { ArrowLeft, ArrowRight } from "#/assets/icons"
 
 export const PAGINATION_BUTTONS = [
   {
