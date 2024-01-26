@@ -1,4 +1,4 @@
-import { BitcoinRawTxVectors } from "../bitcoin"
+import { DepositorProxy } from "@keep-network/tbtc-v2.ts"
 import { Hex } from "../utils"
 import { ChainIdentifier } from "./chain-identifier"
 
@@ -34,10 +34,15 @@ export interface DepositRevealInfo {
   refundLocktime: Hex
 }
 
+export type DecodedExtraData = {
+  staker: string
+  referral: number
+}
+
 /**
  * Interface for communication with the TBTCDepositor on-chain contract.
  */
-export interface TBTCDepositor {
+export interface TBTCDepositor extends DepositorProxy {
   /**
    * @returns The chain-specific identifier of this contract.
    */
@@ -49,19 +54,15 @@ export interface TBTCDepositor {
   getTbtcVaultChainIdentifier(): Promise<ChainIdentifier>
 
   /**
-   * Initializes stake for a Bitcoin deposit made by an user with a P2(W)SH
-   * transaction. It uses the supplied information to reveal a deposit to the
-   * tBTC Bridge contract.
-   * @param bitcoinFundingTransaction Bitcoin funding transaction data.
-   * @param depositReveal Data of the revealed deposit.
+   * Encodes staker address and referral as extra data.
    * @param staker The address to which the stBTC shares will be minted.
    * @param referral Data used for referral program.
-   * @returns Transaction hash of the stake initiation transaction.
    */
-  initializeStake(
-    bitcoinFundingTransaction: BitcoinRawTxVectors,
-    depositReveal: DepositRevealInfo,
-    staker: ChainIdentifier,
-    referral: number,
-  ): Promise<Hex>
+  encodeExtraData(staker: ChainIdentifier, referral: number): Hex
+
+  /**
+   * Decodes staker address and referral from extra data.
+   * @param extraData Encoded extra data.
+   */
+  decodeExtraData(extraData: string): DecodedExtraData
 }
