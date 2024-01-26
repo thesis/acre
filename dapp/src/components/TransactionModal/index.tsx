@@ -6,6 +6,7 @@ import {
   TransactionContextProvider,
 } from "#/contexts"
 import ModalBase from "../shared/ModalBase"
+import SupportWrapper from "../Modals/Support"
 
 export default function TransactionModal({
   isOpen,
@@ -67,7 +68,7 @@ export default function TransactionModal({
     <ModalBase isOpen={isOpen} onClose={onClose}>
       <TransactionContextProvider>
         <ModalFlowContext.Provider value={contextValue}>
-          {children}
+          <SupportWrapper>{children}</SupportWrapper>
         </ModalFlowContext.Provider>
       </TransactionContextProvider>
     </ModalBase>
