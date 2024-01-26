@@ -1,11 +1,17 @@
-import { BitcoinRawTxVectors, Hex } from "@keep-network/tbtc-v2.ts"
+import {
+  DepositReceipt,
+  packRevealDepositParameters as tbtcPackRevealDepositParameters,
+} from "@keep-network/tbtc-v2.ts"
 import { TbtcDepositor as TbtcDepositorTypechain } from "core/typechain/contracts/tbtc/TbtcDepositor"
 // TODO: How to fix this import?
 // eslint-disable-next-line import/no-unresolved
-import TbtcDepositor from "core/build/contracts/test/TBTCDepositorStub.sol/TBTCDepositorStub.json"
-import { ChainIdentifier, DepositRevealInfo, TBTCDepositor } from "../contracts"
+import TbtcDepositor from "core/build/contracts/tbtc/TBTCDepositor.sol/TBTCDepositor.json"
+import { dataSlice, getAddress, solidityPacked, zeroPadBytes } from "ethers"
+import { ChainIdentifier, DecodedExtraData, TBTCDepositor } from "../contracts"
+import { BitcoinRawTxVectors } from "../bitcoin"
 import { EthereumAddress } from "./address"
 import { EthersContractConfig, EthersContractWrapper } from "./contract"
+import { Hex } from "../utils"
 
 /**
  * Ethereum implementation of the TBTCDepositor.
@@ -48,40 +54,60 @@ class EthereumTBTCDepositor
   }
 
   /**
-   * @see {TBTCDepositor#initializeStake}
+   * @see {TBTCDepositor#revealDeposit}
    */
-  async initializeStake(
-    bitcoinFundingTransaction: BitcoinRawTxVectors,
-    depositReveal: DepositRevealInfo,
-    staker: ChainIdentifier,
-    referral: number,
+  async revealDeposit(
+    depositTx: BitcoinRawTxVectors,
+    depositOutputIndex: number,
+    deposit: DepositReceipt,
   ): Promise<Hex> {
-    const depositTxInfo = {
-      version: bitcoinFundingTransaction.version.toPrefixedString(),
-      inputVector: bitcoinFundingTransaction.inputs.toPrefixedString(),
-      outputVector: bitcoinFundingTransaction.outputs.toPrefixedString(),
-      locktime: bitcoinFundingTransaction.locktime.toPrefixedString(),
-    }
+    const { fundingTx, reveal, extraData } = tbtcPackRevealDepositParameters(
+      depositTx,
+      depositOutputIndex,
+      deposit,
+      await this.getTbtcVaultChainIdentifier(),
+    )
 
-    const vault = await this.getTbtcVaultChainIdentifier()
+    if (!extraData) throw new Error("Invalid extra data")
 
-    const depositRevealInfo = {
-      fundingOutputIndex: depositReveal.fundingOutputIndex,
-      blindingFactor: depositReveal.blindingFactor.toPrefixedString(),
-      walletPubKeyHash: depositReveal.walletPublicKeyHash.toPrefixedString(),
-      refundPubKeyHash: depositReveal.refundPublicKeyHash.toPrefixedString(),
-      refundLocktime: depositReveal.refundLocktime.toPrefixedString(),
-      vault: `0x${vault.identifierHex}`,
-    }
+    const { staker, referral } = this.decodeExtraData(extraData)
 
-    const tx = await this.instance.initializeStake(
-      depositTxInfo,
-      depositRevealInfo,
-      `0x${staker.identifierHex}`,
+    const tx = await this.instance.initializeStakeRequest(
+      fundingTx,
+      reveal,
+      staker,
       referral,
     )
 
     return Hex.from(tx.hash)
+  }
+
+  /**
+   * @see {TBTCDepositor#encodeExtraData}
+   * @dev Packs the data to bytes32: 20 bytes of receiver address and 2 bytes of
+   *      referral, 10 bytes of trailing zeros.
+   */
+  // eslint-disable-next-line class-methods-use-this
+  encodeExtraData(staker: ChainIdentifier, referral: number): Hex {
+    const encodedData = solidityPacked(
+      ["address", "int16"],
+      [`0x${staker.identifierHex}`, referral],
+    )
+
+    return Hex.from(zeroPadBytes(encodedData, 32))
+  }
+
+  /**
+   * @see {TBTCDepositor#decodeExtraData}
+   * @dev Unpacks the data from bytes32: 20 bytes of receiver address and 2
+   *      bytes of referral, 10 bytes of trailing zeros.
+   */
+  // eslint-disable-next-line class-methods-use-this
+  decodeExtraData(extraData: string): DecodedExtraData {
+    const staker = getAddress(dataSlice(extraData, 0, 20))
+    const referral = Number(dataSlice(extraData, 20, 22))
+
+    return { staker, referral }
   }
 }
 

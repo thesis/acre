@@ -41,13 +41,6 @@ class Acre {
     const contracts = getEthereumContracts(signer, network)
     const messages = new EthereumEIP712Signer(signer)
 
-    // The `TBTCDepositor` contract reveals the deposit to the tBTC Bridge
-    // contract on behalf of the user so we need to set the default depositor to
-    // `TBTCDepositor` contract address.
-    tbtc.deposits.setDefaultDepositor(
-      contracts.tbtcDepositor.getChainIdentifier(),
-    )
-
     return new Acre(contracts, messages, tbtc)
   }
 
