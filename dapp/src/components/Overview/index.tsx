@@ -1,12 +1,12 @@
 import React from "react"
 import { Flex, Grid, HStack, Switch } from "@chakra-ui/react"
 import { useDocsDrawer } from "#/hooks"
-import { TextSm } from "#/components/shared/Typography"
-import ButtonLink from "#/components/shared/ButtonLink"
 import { USD } from "#/constants"
 import PositionDetails from "./PositionDetails"
 import Statistics from "./Statistics"
 import TransactionHistory from "./TransactionHistory"
+import { TextSm } from "../shared/Typography"
+import ButtonLink from "../shared/ButtonLink"
 
 export default function Overview() {
   const { onOpen } = useDocsDrawer()
