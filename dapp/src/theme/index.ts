@@ -20,6 +20,7 @@ import { formErrorTheme } from "./FormError"
 import { tabsTheme } from "./Tabs"
 import { spinnerTheme } from "./Spinner"
 import { tableTheme } from "./Table"
+import { linkTheme } from "./Link"
 
 const defaultTheme = {
   colors,
@@ -47,6 +48,7 @@ const defaultTheme = {
     FormError: formErrorTheme,
     Heading: headingTheme,
     Input: inputTheme,
+    Link: linkTheme,
     Modal: modalTheme,
     Sidebar: sidebarTheme,
     Spinner: spinnerTheme,
