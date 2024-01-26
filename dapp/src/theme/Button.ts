@@ -97,7 +97,6 @@ export const buttonTheme: ComponentSingleStyleConfig = {
       _hover: {
         borderColor: "white",
         bg: "opacity.white.6",
-        textDecoration: "underline",
       },
       _disabled: {
         color: "grey.200",
