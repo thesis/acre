@@ -79,34 +79,6 @@ describe("Acre", () => {
     } = await loadFixture(fixture))
   })
 
-  // Calculates the fee when it's included in the amount to stake.
-  // One is added to the result if there is a remainder to match the Solidity
-  // mulDiv() math which rounds up towards infinity (Ceil) when fees are
-  // calculated.
-  function feeOnTotal(amount: bigint) {
-    const result =
-      (amount * entryFeeBasisPoints) / (entryFeeBasisPoints + basisPointScale)
-    if (
-      (amount * entryFeeBasisPoints) % (entryFeeBasisPoints + basisPointScale) >
-      0
-    ) {
-      return result + 1n
-    }
-    return result
-  }
-
-  // Calculates the fee when it's not included in the amount to stake.
-  // One is added to the result if there is a remainder to match the Solidity
-  // mulDiv() math which rounds up towards infinity (Ceil) when fees are
-  // calculated.
-  function feeOnRaw(amount: bigint) {
-    const result = (amount * entryFeeBasisPoints) / basisPointScale
-    if ((amount * entryFeeBasisPoints) % basisPointScale > 0) {
-      return result + 1n
-    }
-    return result
-  }
-
   describe("previewDeposit", () => {
     beforeAfterEachSnapshotWrapper()
 
@@ -1455,4 +1427,32 @@ describe("Acre", () => {
       })
     })
   })
+
+  // Calculates the fee when it's included in the amount to stake.
+  // One is added to the result if there is a remainder to match the Solidity
+  // mulDiv() math which rounds up towards infinity (Ceil) when fees are
+  // calculated.
+  function feeOnTotal(amount: bigint) {
+    const result =
+      (amount * entryFeeBasisPoints) / (entryFeeBasisPoints + basisPointScale)
+    if (
+      (amount * entryFeeBasisPoints) % (entryFeeBasisPoints + basisPointScale) >
+      0
+    ) {
+      return result + 1n
+    }
+    return result
+  }
+
+  // Calculates the fee when it's not included in the amount to stake.
+  // One is added to the result if there is a remainder to match the Solidity
+  // mulDiv() math which rounds up towards infinity (Ceil) when fees are
+  // calculated.
+  function feeOnRaw(amount: bigint) {
+    const result = (amount * entryFeeBasisPoints) / basisPointScale
+    if ((amount * entryFeeBasisPoints) % basisPointScale > 0) {
+      return result + 1n
+    }
+    return result
+  }
 })
