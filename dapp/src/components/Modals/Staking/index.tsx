@@ -1,6 +1,6 @@
 import React from "react"
 import { useModalFlowContext } from "#/hooks"
-import ModalBase from "#/components/shared/ModalBase"
+import TransactionModal from "#/components/TransactionModal"
 import Overview from "./Overview"
 import ActionForm from "../ActionForm"
 import SignMessage from "./SignMessage"
@@ -31,8 +31,8 @@ export default function StakingModal({
   onClose: () => void
 }) {
   return (
-    <ModalBase isOpen={isOpen} onClose={onClose} numberOfSteps={4}>
+    <TransactionModal isOpen={isOpen} onClose={onClose} numberOfSteps={4}>
       <ActiveStakingStep />
-    </ModalBase>
+    </TransactionModal>
   )
 }
