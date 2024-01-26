@@ -8,8 +8,8 @@ import {
 } from "#/hooks"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import { TextMd } from "#/components/shared/Typography"
-import { Bitcoin, Ethereum } from "#/static/icons"
-import { truncateAddress } from "#/utils"
+import { Bitcoin, Ethereum } from "#/assets/icons"
+import { truncateAddress, asyncWrapper } from "#/utils"
 
 export type ConnectButtonsProps = {
   leftIcon: typeof Icon
@@ -24,12 +24,16 @@ function ConnectButton({
 }: ConnectButtonsProps) {
   const colorScheme = !account ? "error" : undefined
 
+  const handleClick = () => {
+    asyncWrapper(requestAccount())
+  }
+
   return (
     <Button
       variant="card"
       colorScheme={colorScheme}
       leftIcon={<Icon as={leftIcon} boxSize={6} />}
-      onClick={requestAccount}
+      onClick={handleClick}
     >
       {account ? truncateAddress(account.address) : "Not connected"}
     </Button>
