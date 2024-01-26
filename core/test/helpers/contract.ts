@@ -1,5 +1,4 @@
-import { ethers } from "ethers"
-import { deployments } from "hardhat"
+import { deployments, ethers } from "hardhat"
 
 import type { BaseContract } from "ethers"
 import { getUnnamedSigner } from "./signer"

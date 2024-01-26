@@ -1,6 +1,6 @@
 import { ComponentSingleStyleConfig } from "@chakra-ui/react"
 
-const Switch: ComponentSingleStyleConfig = {
+export const switchTheme: ComponentSingleStyleConfig = {
   baseStyle: {
     track: {
       bg: "grey.700",
@@ -10,5 +10,3 @@ const Switch: ComponentSingleStyleConfig = {
     },
   },
 }
-
-export default Switch

@@ -3,9 +3,9 @@ import {
   useRequestBitcoinAccount,
   useRequestEthereumAccount,
   useWalletContext,
-} from "../../../hooks"
+} from "#/hooks"
+import { ConnectBTCAccount, ConnectETHAccount } from "#/assets/icons"
 import MissingAccount from "./MissingAccount"
-import { ConnectBTCAccount, ConnectETHAccount } from "../../../static/icons"
 
 export default function SupportWrapper({
   children,
@@ -19,7 +19,7 @@ export default function SupportWrapper({
   if (!btcAccount)
     return (
       <MissingAccount
-        currencyType="bitcoin"
+        currency="bitcoin"
         icon={ConnectBTCAccount}
         requestAccount={requestBitcoinAccount}
       />
@@ -28,7 +28,7 @@ export default function SupportWrapper({
   if (!ethAccount)
     return (
       <MissingAccount
-        currencyType="ethereum"
+        currency="ethereum"
         icon={ConnectETHAccount}
         requestAccount={requestEthereumAccount}
       />

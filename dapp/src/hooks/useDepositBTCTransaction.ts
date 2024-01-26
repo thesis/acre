@@ -1,5 +1,5 @@
 import { useCallback } from "react"
-import { OnSuccessCallback } from "../types"
+import { OnSuccessCallback } from "#/types"
 
 export function useDepositBTCTransaction(onSuccess?: OnSuccessCallback) {
   // TODO: sending transactions using the SDK

@@ -8,33 +8,37 @@ import {
   ModalHeader,
   ModalCloseButton,
 } from "@chakra-ui/react"
-import { CurrencyType, RequestAccountParams } from "../../../types"
-import { TextMd } from "../../shared/Typography"
-import Alert from "../../shared/Alert"
-import { CURRENCIES_BY_TYPE } from "../../../constants"
+import { TextMd } from "#/components/shared/Typography"
+import Alert from "#/components/shared/Alert"
+import { asyncWrapper, getCurrencyByType } from "#/utils"
+import { CurrencyType, RequestAccountParams } from "#/types"
 
 type MissingAccountProps = {
-  currencyType: CurrencyType
+  currency: CurrencyType
   icon: typeof Icon
   requestAccount: (...params: RequestAccountParams) => Promise<void>
 }
 
 export default function MissingAccount({
-  currencyType,
+  currency,
   icon,
   requestAccount,
 }: MissingAccountProps) {
-  const currency = CURRENCIES_BY_TYPE[currencyType]
+  const { name, symbol } = getCurrencyByType(currency)
+
+  const handleClick = () => {
+    asyncWrapper(requestAccount())
+  }
 
   return (
     <>
       <ModalCloseButton />
-      <ModalHeader>{currency.name} account not installed</ModalHeader>
+      <ModalHeader>{name} account not installed</ModalHeader>
       <ModalBody>
         <Icon as={icon} boxSize={32} my={2} />
         <TextMd>
-          {currency.name} account is required to make transactions for
-          depositing and staking your {currency.symbol}.
+          {name} account is required to make transactions for depositing and
+          staking your {symbol}.
         </TextMd>
         <Alert>
           <TextMd>
@@ -46,13 +50,7 @@ export default function MissingAccount({
         </Alert>
       </ModalBody>
       <ModalFooter mt={4}>
-        <Button
-          size="lg"
-          width="100%"
-          onClick={async () => {
-            await requestAccount()
-          }}
-        >
+        <Button size="lg" width="100%" onClick={handleClick}>
           Connect wallet
         </Button>
       </ModalFooter>

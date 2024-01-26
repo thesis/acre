@@ -7,7 +7,7 @@ import {
   Icon,
   useMultiStyleConfig,
 } from "@chakra-ui/react"
-import { AlertInfo, ArrowUpRight } from "../../../static/icons"
+import { AlertInfo, ArrowUpRight } from "#/assets/icons"
 
 const ICONS = {
   info: AlertInfo,

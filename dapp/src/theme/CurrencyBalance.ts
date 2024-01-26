@@ -2,9 +2,6 @@ import { createMultiStyleConfigHelpers, defineStyle } from "@chakra-ui/react"
 
 const PARTS = ["balance", "symbol"]
 
-const { defineMultiStyleConfig, definePartsStyle } =
-  createMultiStyleConfigHelpers(PARTS)
-
 const baseStyleBalance = defineStyle({
   fontWeight: "bold",
   fontSize: "md",
@@ -18,12 +15,14 @@ const baseStyleSymbol = defineStyle({
   lineHeight: "md",
 })
 
-const baseStyle = definePartsStyle({
+const multiStyleConfig = createMultiStyleConfigHelpers(PARTS)
+
+const baseStyle = multiStyleConfig.definePartsStyle({
   balance: baseStyleBalance,
   symbol: baseStyleSymbol,
 })
 
-const variantGreaterBalance = definePartsStyle({
+const variantGreaterBalance = multiStyleConfig.definePartsStyle({
   balance: {
     fontSize: "4xl",
     lineHeight: "4xl",
@@ -38,7 +37,7 @@ const variants = {
   "greater-balance": variantGreaterBalance,
 }
 
-const sizeXs = definePartsStyle({
+const sizeXs = multiStyleConfig.definePartsStyle({
   balance: {
     fontSize: "xs",
     lineHeight: "xs",
@@ -49,7 +48,7 @@ const sizeXs = definePartsStyle({
   },
 })
 
-const sizeSm = definePartsStyle({
+const sizeSm = multiStyleConfig.definePartsStyle({
   balance: {
     fontSize: "sm",
     lineHeight: "sm",
@@ -60,7 +59,7 @@ const sizeSm = definePartsStyle({
   },
 })
 
-const sizeMd = definePartsStyle({
+const sizeMd = multiStyleConfig.definePartsStyle({
   balance: {
     fontSize: "md",
     lineHeight: "md",
@@ -71,7 +70,7 @@ const sizeMd = definePartsStyle({
   },
 })
 
-const sizeLg = definePartsStyle({
+const sizeLg = multiStyleConfig.definePartsStyle({
   balance: {
     fontSize: "lg",
     lineHeight: "lg",
@@ -82,7 +81,7 @@ const sizeLg = definePartsStyle({
   },
 })
 
-const sizeXl = definePartsStyle({
+const sizeXl = multiStyleConfig.definePartsStyle({
   balance: {
     fontSize: "xl",
     lineHeight: "xl",
@@ -113,6 +112,8 @@ const sizes = {
   "4xl": size4Xl,
 }
 
-const CurrencyBalance = defineMultiStyleConfig({ baseStyle, variants, sizes })
-
-export default CurrencyBalance
+export const currencyBalanceTheme = multiStyleConfig.defineMultiStyleConfig({
+  baseStyle,
+  variants,
+  sizes,
+})

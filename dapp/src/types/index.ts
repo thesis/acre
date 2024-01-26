@@ -1,3 +1,6 @@
 export * from "./ledger-live-app"
 export * from "./currency"
+export * from "./staking"
 export * from "./callback"
+export * from "./transaction"
+export * from "./table"

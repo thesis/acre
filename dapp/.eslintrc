@@ -15,6 +15,16 @@
       2,
       { "allowRequiredDefaults": true }
     ],
-    "react/require-default-props": [0]
+    "react/require-default-props": [0],
+  },
+  "settings": {
+    "import/resolver": {
+      "alias": {
+        "map": [
+          ["#", "./src"]
+        ],
+        "extensions": [".js", ".jsx",".ts", ".tsx"]
+      }
+    }
   }
 }

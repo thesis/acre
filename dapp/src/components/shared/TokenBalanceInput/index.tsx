@@ -1,4 +1,4 @@
-import React, { useMemo } from "react"
+import React, { useRef } from "react"
 import {
   Box,
   Button,
@@ -12,14 +12,17 @@ import {
   InputRightElement,
   useMultiStyleConfig,
 } from "@chakra-ui/react"
-import { fixedPointNumberToString } from "../../../utils"
-import { CurrencyType } from "../../../types"
-import { CURRENCIES_BY_TYPE } from "../../../constants"
+import {
+  fixedPointNumberToString,
+  getCurrencyByType,
+  userAmountToBigInt,
+} from "#/utils"
+import { AlertInfo } from "#/assets/icons"
+import { CurrencyType } from "#/types"
 import NumberFormatInput, {
   NumberFormatInputValues,
 } from "../NumberFormatInput"
 import { CurrencyBalance } from "../CurrencyBalance"
-import { AlertInfo } from "../../../static/icons"
 
 const VARIANT = "balance"
 
@@ -56,20 +59,20 @@ function HelperErrorText({
 
 type FiatCurrencyBalanceProps = {
   fiatAmount?: string
-  fiatCurrencyType?: CurrencyType
+  fiatCurrency?: CurrencyType
 }
 
 function FiatCurrencyBalance({
   fiatAmount,
-  fiatCurrencyType,
+  fiatCurrency,
 }: FiatCurrencyBalanceProps) {
   const styles = useMultiStyleConfig("Form")
   const { fontWeight } = styles.helperText
 
-  if (fiatAmount && fiatCurrencyType) {
+  if (fiatAmount && fiatCurrency) {
     return (
       <CurrencyBalance
-        currencyType={fiatCurrencyType}
+        currency={fiatCurrency}
         amount={fiatAmount}
         shouldBeFormatted={false}
         fontWeight={fontWeight as string}
@@ -81,20 +84,20 @@ function FiatCurrencyBalance({
   return null
 }
 
-type TokenBalanceInputProps = {
-  amount?: string
-  currencyType: CurrencyType
+export type TokenBalanceInputProps = {
+  amount?: bigint
+  currency: CurrencyType
   tokenBalance: string | number
   placeholder?: string
   size?: "lg" | "md"
-  setAmount: (value: string) => void
+  setAmount: (value?: bigint) => void
 } & InputProps &
   HelperErrorTextProps &
   FiatCurrencyBalanceProps
 
 export default function TokenBalanceInput({
   amount,
-  currencyType,
+  currency,
   tokenBalance,
   placeholder,
   size = "lg",
@@ -103,19 +106,17 @@ export default function TokenBalanceInput({
   helperText,
   hasError = false,
   fiatAmount,
-  fiatCurrencyType,
+  fiatCurrency,
   ...inputProps
 }: TokenBalanceInputProps) {
+  const valueRef = useRef<bigint | undefined>(amount)
   const styles = useMultiStyleConfig("TokenBalanceInput", { size })
 
-  const tokenBalanceAmount = useMemo(
-    () =>
-      fixedPointNumberToString(
-        BigInt(tokenBalance || 0),
-        CURRENCIES_BY_TYPE[currencyType].decimals,
-      ),
-    [currencyType, tokenBalance],
-  )
+  const { decimals } = getCurrencyByType(currency)
+
+  const handleValueChange = (value: string) => {
+    valueRef.current = value ? userAmountToBigInt(value, decimals) : undefined
+  }
 
   return (
     <FormControl isInvalid={hasError} isDisabled={inputProps.isDisabled}>
@@ -129,7 +130,7 @@ export default function TokenBalanceInput({
             <CurrencyBalance
               size={size === "lg" ? "md" : "sm"}
               amount={tokenBalance}
-              currencyType={currencyType}
+              currency={currency}
             />
           </Box>
         </Box>
@@ -137,17 +138,24 @@ export default function TokenBalanceInput({
       <InputGroup variant={VARIANT}>
         <NumberFormatInput
           size={size}
-          value={amount}
           variant={VARIANT}
           isInvalid={hasError}
           placeholder={placeholder}
-          onValueChange={(values: NumberFormatInputValues) =>
-            setAmount(values.value)
-          }
           {...inputProps}
+          value={
+            amount
+              ? fixedPointNumberToString(BigInt(amount), decimals)
+              : undefined
+          }
+          onValueChange={(values: NumberFormatInputValues) =>
+            handleValueChange(values.value)
+          }
+          onChange={() => {
+            setAmount(valueRef?.current)
+          }}
         />
         <InputRightElement>
-          <Button h="70%" onClick={() => setAmount(tokenBalanceAmount)}>
+          <Button h="70%" onClick={() => setAmount(BigInt(tokenBalance))}>
             Max
           </Button>
         </InputRightElement>
@@ -161,7 +169,7 @@ export default function TokenBalanceInput({
         <FormHelperText>
           <FiatCurrencyBalance
             fiatAmount={fiatAmount}
-            fiatCurrencyType={fiatCurrencyType}
+            fiatCurrency={fiatCurrency}
           />
         </FormHelperText>
       )}

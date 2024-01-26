@@ -1,15 +1,15 @@
 import React from "react"
 import { Button, HStack, Icon } from "@chakra-ui/react"
 import { Account } from "@ledgerhq/wallet-api-client"
-import { Bitcoin, Ethereum } from "../../static/icons"
 import {
   useRequestBitcoinAccount,
   useRequestEthereumAccount,
   useWalletContext,
-} from "../../hooks"
-import { truncateAddress } from "../../utils"
-import { CurrencyBalance } from "../shared/CurrencyBalance"
-import { TextMd } from "../shared/Typography"
+} from "#/hooks"
+import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
+import { TextMd } from "#/components/shared/Typography"
+import { Bitcoin, Ethereum } from "#/assets/icons"
+import { truncateAddress, asyncWrapper } from "#/utils"
 
 export type ConnectButtonsProps = {
   leftIcon: typeof Icon
@@ -24,12 +24,16 @@ function ConnectButton({
 }: ConnectButtonsProps) {
   const colorScheme = !account ? "error" : undefined
 
+  const handleClick = () => {
+    asyncWrapper(requestAccount())
+  }
+
   return (
     <Button
       variant="card"
       colorScheme={colorScheme}
       leftIcon={<Icon as={leftIcon} boxSize={6} />}
-      onClick={requestAccount}
+      onClick={handleClick}
     >
       {account ? truncateAddress(account.address) : "Not connected"}
     </Button>
@@ -46,7 +50,7 @@ export default function ConnectWallet() {
       <HStack display={{ base: "none", md: "flex" }}>
         <TextMd color="grey.500">Balance</TextMd>
         <CurrencyBalance
-          currencyType="bitcoin"
+          currency="bitcoin"
           amount={btcAccount?.balance.toString()}
         />
       </HStack>
