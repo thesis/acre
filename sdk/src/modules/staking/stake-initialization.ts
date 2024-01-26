@@ -2,7 +2,6 @@ import {
   BitcoinClient,
   ChainIdentifier,
   Deposit as TbtcDeposit,
-  extractBitcoinRawTxVectors,
   BitcoinAddressConverter,
 } from "@keep-network/tbtc-v2.ts"
 import {
@@ -148,35 +147,7 @@ class StakeInitialization {
       throw new Error("Sign message first")
     }
 
-    const utxos = await this.#tbtcDeposit.detectFunding()
-
-    if (utxos.length === 0) {
-      throw new Error("Deposit not found yet")
-    }
-
-    // Take the most recent one.
-    // TODO: Add support to pick exact funding tx.
-    const { transactionHash, outputIndex } = utxos[0]
-
-    const depositFundingTx = extractBitcoinRawTxVectors(
-      await this.#bitcoinClient.getRawTransaction(transactionHash),
-    )
-
-    const { depositor: _, ...restDepositReceipt } =
-      this.#tbtcDeposit.getReceipt()
-
-    const revealDepositInfo = {
-      fundingOutputIndex: outputIndex,
-      ...restDepositReceipt,
-    }
-
-    // TODO: change it to the deposit details submission to the relayer bot.
-    return this.#contracts.tbtcDepositor.initializeStake(
-      depositFundingTx,
-      revealDepositInfo,
-      this.#staker,
-      this.#referral,
-    )
+    return this.#tbtcDeposit.initiateMinting()
   }
 }
 

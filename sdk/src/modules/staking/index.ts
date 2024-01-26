@@ -46,15 +46,10 @@ class StakingModule {
     staker: ChainIdentifier,
     referral: number,
   ) {
-    // TODO: Hex: staker + referral
-    // const extraData = "0x0"
-
-    // Generate deposit script parameters.
-    // TODO: generate deposit script parameters with extra data once we add this
-    // feature to the `@keep-network/tbtc-v2.ts` lib.
-    const deposit = await this.#tbtc.deposits.initiateDeposit(
+    const deposit = await this.#tbtc.deposits.initiateDepositWithProxy(
       bitcoinRecoveryAddress,
-      // extraData,
+      this.#contracts.tbtcDepositor,
+      this.#contracts.tbtcDepositor.encodeExtraData(staker, referral),
     )
 
     return new StakeInitialization(
