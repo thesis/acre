@@ -62,7 +62,6 @@ const defaultTheme = {
     Table: tableTheme,
     CurrencyIcon: currencyIconTheme,
     StatusInfo: statusInfoTheme,
-    Link: linkTheme,
   },
 }
 
