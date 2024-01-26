@@ -92,7 +92,7 @@ const sizeXl = multiStyleConfig.definePartsStyle({
   },
 })
 
-const size4Xl = definePartsStyle({
+const size4Xl = multiStyleConfig.definePartsStyle({
   balance: {
     fontSize: "4xl",
     lineHeight: "4xl",

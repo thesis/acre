@@ -9,11 +9,11 @@ import {
   ModalHeader,
   VStack,
 } from "@chakra-ui/react"
-import { TextMd } from "../../shared/Typography"
-import Alert from "../../shared/Alert"
-import { useModalFlowContext } from "../../../hooks"
-import { CurrencyBalanceWithConversion } from "../../shared/CurrencyBalanceWithConversion"
-import { LoadingSpinner } from "../../../static/icons"
+import { LoadingSpinner } from "#/assets/icons"
+import { useModalFlowContext } from "#/hooks"
+import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
+import { TextMd } from "#/components/shared/Typography"
+import Alert from "#/components/shared/Alert"
 
 export default function Success() {
   const { onClose } = useModalFlowContext()
@@ -27,14 +27,12 @@ export default function Success() {
           <Box>
             <CurrencyBalanceWithConversion
               from={{
-                currencyType: "bitcoin",
+                currency: "bitcoin",
                 amount: "2398567898",
                 size: "4xl",
               }}
               to={{
-                currencyType: "usd",
-                amount: 419288.98,
-                shouldBeFormatted: false,
+                currency: "usd",
                 size: "lg",
                 withBrackets: true,
               }}

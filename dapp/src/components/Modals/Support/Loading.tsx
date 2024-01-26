@@ -1,7 +1,7 @@
 import React from "react"
 import { ModalBody, ModalHeader, VStack } from "@chakra-ui/react"
-import Spinner from "../../shared/Spinner"
-import Skeleton from "../../shared/Skeleton"
+import Spinner from "#/components/shared/Spinner"
+import Skeleton from "#/components/shared/Skeleton"
 
 export default function Loading() {
   return (
