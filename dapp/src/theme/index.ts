@@ -50,6 +50,7 @@ const defaultTheme = {
     FormError: formErrorTheme,
     Heading: headingTheme,
     Input: inputTheme,
+    Link: linkTheme,
     Modal: modalTheme,
     Sidebar: sidebarTheme,
     Spinner: spinnerTheme,
