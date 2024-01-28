@@ -66,12 +66,13 @@ export const buttonTheme: ComponentSingleStyleConfig = {
     // FIXME: It should be removed and replaced by solid/outline variants
     card: ({ colorScheme }: StyleFunctionProps) => {
       const defaultStyles = {
-        borderWidth: "2px",
+        fontWeight: "medium",
+        borderWidth: "1px",
         borderColor: "gold.100",
-        borderRadius: "xl",
         bg: "gold.200",
         _hover: {
-          bg: "opacity.grey.700.05",
+          bg: "transparent",
+          borderColor: "grey.500",
         },
         _active: {
           bg: "transparent",
@@ -82,8 +83,10 @@ export const buttonTheme: ComponentSingleStyleConfig = {
         return {
           ...defaultStyles,
           color: "red.400",
-          borderColor: "red.400",
-          bg: "transparent",
+          _hover: {
+            bg: "transparent",
+            borderColor: "red.400",
+          },
         }
       }
 

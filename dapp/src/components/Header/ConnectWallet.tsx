@@ -8,7 +8,7 @@ import {
 } from "#/hooks"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import { TextMd } from "#/components/shared/Typography"
-import { Bitcoin, Ethereum } from "#/assets/icons"
+import { Bitcoin, EthereumIcon } from "#/assets/icons"
 import { truncateAddress, asyncWrapper } from "#/utils"
 
 export type ConnectButtonsProps = {
@@ -22,7 +22,7 @@ function ConnectButton({
   account,
   requestAccount,
 }: ConnectButtonsProps) {
-  const colorScheme = !account ? "error" : undefined
+  const colorScheme = !account ? "error" : "gold"
 
   const handleClick = () => {
     asyncWrapper(requestAccount())
@@ -62,7 +62,7 @@ export default function ConnectWallet() {
         }}
       />
       <ConnectButton
-        leftIcon={Ethereum}
+        leftIcon={EthereumIcon}
         account={ethAccount}
         requestAccount={async () => {
           await requestEthereumAccount()
