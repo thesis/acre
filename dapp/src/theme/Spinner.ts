@@ -9,8 +9,8 @@ const baseStyle = defineStyle({
 })
 
 const sizeXl = defineStyle({
-  width: "4.5rem",
-  height: "4.5rem",
+  width: 16,
+  height: 16,
 })
 
 const sizes = {

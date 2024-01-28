@@ -24,17 +24,37 @@ export default function TransactionModal({
   const { onOpen: openSideBar, onClose: closeSidebar } = useSidebar()
 
   const [activeStep, setActiveStep] = useState(defaultStep)
+  const [isPaused, setIsPaused] = useState(false)
+  const [isPendingTransaction, setIsPendingTransaction] = useState(false)
+
+  const handleResume = useCallback(() => {
+    setIsPaused(false)
+  }, [])
 
   const handleGoNext = useCallback(() => {
     setActiveStep((prevStep) => prevStep + 1)
   }, [])
 
   const handleClose = useCallback(() => {
-    onClose()
-  }, [onClose])
+    if (!isPaused && isPendingTransaction) {
+      setIsPaused(true)
+    } else {
+      onClose()
+    }
+  }, [isPaused, isPendingTransaction, onClose])
+
+  const handleStartTransactionProcess = useCallback(() => {
+    setIsPendingTransaction(true)
+  }, [setIsPendingTransaction])
+
+  const handleStopTransactionProcess = useCallback(() => {
+    setIsPendingTransaction(false)
+  }, [setIsPendingTransaction])
 
   const resetState = useCallback(() => {
     setActiveStep(defaultStep)
+    setIsPaused(false)
+    setIsPendingTransaction(false)
   }, [defaultStep])
 
   useEffect(() => {
@@ -58,14 +78,26 @@ export default function TransactionModal({
   const contextValue: ModalFlowContextValue = useMemo<ModalFlowContextValue>(
     () => ({
       activeStep,
+      isPaused,
       onClose: handleClose,
+      onResume: handleResume,
       goNext: handleGoNext,
+      startTransactionProcess: handleStartTransactionProcess,
+      endTransactionProcess: handleStopTransactionProcess,
     }),
-    [activeStep, handleGoNext, handleClose],
+    [
+      activeStep,
+      isPaused,
+      handleGoNext,
+      handleClose,
+      handleResume,
+      handleStartTransactionProcess,
+      handleStopTransactionProcess,
+    ],
   )
 
   return (
-    <ModalBase isOpen={isOpen} onClose={onClose}>
+    <ModalBase isOpen={isOpen} onClose={handleClose}>
       <TransactionContextProvider>
         <ModalFlowContext.Provider value={contextValue}>
           <SupportWrapper>{children}</SupportWrapper>
