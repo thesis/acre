@@ -8,7 +8,9 @@ export class MockAcreContracts implements AcreContracts {
     this.tbtcDepositor = {
       getChainIdentifier: jest.fn(),
       getTbtcVaultChainIdentifier: jest.fn(),
-      initializeStake: jest.fn(),
+      decodeExtraData: jest.fn(),
+      encodeExtraData: jest.fn(),
+      revealDeposit: jest.fn(),
     } as TBTCDepositor
   }
 }

@@ -1,11 +1,4 @@
-import TBTCModule, {
-  BitcoinRawTx,
-  BitcoinRawTxVectors,
-  BitcoinTxHash,
-  BitcoinUtxo,
-  DepositReceipt,
-  EthereumAddress,
-} from "@keep-network/tbtc-v2.ts"
+import { DepositReceipt, EthereumAddress } from "@keep-network/tbtc-v2.ts"
 import { ethers } from "ethers"
 import { AcreContracts } from "../../src/lib/contracts"
 import { StakingModule } from "../../src/modules/staking"
@@ -15,21 +8,16 @@ import { MockMessageSigner } from "../utils/mock-message-signer"
 import { MockTBTC } from "../utils/mock-tbtc"
 import { StakeInitialization } from "../../src/modules/staking/stake-initialization"
 
-jest.mock("@keep-network/tbtc-v2.ts", (): object => ({
-  extractBitcoinRawTxVectors: jest.fn(),
-  ...jest.requireActual("@keep-network/tbtc-v2.ts"),
-}))
-
 const stakingModuleData: {
   initializeStake: {
-    receiver: EthereumAddress
+    staker: EthereumAddress
     referral: number
     bitcoinRecoveryAddress: string
     mockedDepositBTCAddress: string
   }
 } = {
   initializeStake: {
-    receiver: EthereumAddress.from(ethers.Wallet.createRandom().address),
+    staker: EthereumAddress.from(ethers.Wallet.createRandom().address),
     referral: 1,
     bitcoinRecoveryAddress: "mjc2zGWypwpNyDi4ZxGbBNnUA84bfgiwYc",
     mockedDepositBTCAddress:
@@ -38,35 +26,9 @@ const stakingModuleData: {
 }
 
 const stakingInitializationData: {
-  fundingUtxos: Array<Omit<BitcoinUtxo, "value"> & { value: bigint }>
-  bitcoinRawTx: BitcoinRawTx
-  bitcoinRawTxVectors: BitcoinRawTxVectors
   depositReceipt: Omit<DepositReceipt, "depositor">
   mockedInitializeTxHash: Hex
 } = {
-  fundingUtxos: [
-    {
-      transactionHash: BitcoinTxHash.from(
-        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-      ),
-      outputIndex: 1,
-      value: 2222n,
-    },
-    {
-      transactionHash: BitcoinTxHash.from(
-        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-      ),
-      outputIndex: 0,
-      value: 1111n,
-    },
-  ],
-  bitcoinRawTx: { transactionHex: "" },
-  bitcoinRawTxVectors: {
-    version: Hex.from("111111"),
-    inputs: Hex.from("222222"),
-    outputs: Hex.from("333333"),
-    locktime: Hex.from("444444"),
-  },
   depositReceipt: {
     blindingFactor: Hex.from("555555"),
     walletPublicKeyHash: Hex.from("666666"),
@@ -91,31 +53,45 @@ describe("Staking", () => {
     const {
       mockedDepositBTCAddress,
       bitcoinRecoveryAddress,
-      receiver,
+      staker,
       referral,
     } = stakingModuleData.initializeStake
     const mockedDeposit = {
       getBitcoinAddress: jest.fn().mockResolvedValue(mockedDepositBTCAddress),
       detectFunding: jest.fn(),
       getReceipt: jest.fn(),
+      initiateMinting: jest.fn(),
     }
     const mockedSignedMessage = { verify: jest.fn() }
+    const mockEncodedExtraData =
+      "0xeb098d6cde6a202981316b24b19e64d82721e89e4d0000000000000000000000"
     let result: StakeInitialization
 
     beforeEach(async () => {
-      tbtc.deposits.initiateDeposit = jest.fn().mockReturnValue(mockedDeposit)
+      contracts.tbtcDepositor.encodeExtraData = jest
+        .fn()
+        .mockReturnValue(mockEncodedExtraData)
+      tbtc.deposits.initiateDepositWithProxy = jest
+        .fn()
+        .mockReturnValue(mockedDeposit)
       messageSigner.sign = jest.fn().mockResolvedValue(mockedSignedMessage)
 
       result = await staking.initializeStake(
         bitcoinRecoveryAddress,
-        receiver,
+        staker,
         referral,
       )
     })
 
+    it("should encode extra data", () => {
+      expect(contracts.tbtcDepositor.encodeExtraData(staker, referral))
+    })
+
     it("should initiate tBTC deposit", () => {
-      expect(tbtc.deposits.initiateDeposit).toHaveBeenCalledWith(
+      expect(tbtc.deposits.initiateDepositWithProxy).toHaveBeenCalledWith(
         bitcoinRecoveryAddress,
+        contracts.tbtcDepositor,
+        mockEncodedExtraData,
       )
     })
 
@@ -144,7 +120,7 @@ describe("Staking", () => {
           const depositorAddress = ethers.Wallet.createRandom().address
 
           beforeEach(async () => {
-            mockedSignedMessage.verify.mockReturnValue(receiver)
+            mockedSignedMessage.verify.mockReturnValue(staker)
             contracts.tbtcDepositor.getChainIdentifier = jest
               .fn()
               .mockReturnValue(EthereumAddress.from(depositorAddress))
@@ -166,7 +142,7 @@ describe("Staking", () => {
                 ],
               },
               {
-                receiver: receiver.identifierHex,
+                receiver: staker.identifierHex,
                 bitcoinRecoveryAddress,
               },
             )
@@ -198,7 +174,7 @@ describe("Staking", () => {
 
       describe("stake", () => {
         beforeAll(() => {
-          mockedSignedMessage.verify.mockReturnValue(receiver)
+          mockedSignedMessage.verify.mockReturnValue(staker)
         })
 
         describe("when the message has not been signed yet", () => {
@@ -208,95 +184,23 @@ describe("Staking", () => {
         })
 
         describe("when message has already been signed", () => {
-          beforeEach(async () => {
+          let tx: Hex
+          const { mockedInitializeTxHash: mockedTxHash } =
+            stakingInitializationData
+
+          beforeAll(async () => {
+            mockedDeposit.initiateMinting.mockResolvedValue(mockedTxHash)
             await result.signMessage()
+
+            tx = await result.stake()
           })
 
-          describe("when bitcoin deposit address doesn't have utxos yet", () => {
-            beforeEach(() => {
-              mockedDeposit.detectFunding.mockResolvedValue([])
-            })
-
-            it("should throw an error", async () => {
-              await expect(result.stake()).rejects.toThrow(
-                "Deposit not found yet",
-              )
-            })
+          it("should stake tokens via tbtc depositor proxy", () => {
+            expect(mockedDeposit.initiateMinting).toHaveBeenCalled()
           })
 
-          describe("when bitcoin deposit address has utxos", () => {
-            const {
-              fundingUtxos,
-              bitcoinRawTx,
-              bitcoinRawTxVectors,
-              mockedInitializeTxHash: mockedTxHash,
-            } = stakingInitializationData
-            let spyOnExtractBitcoinRawTxVectors: jest.SpyInstance<TBTCModule.BitcoinRawTxVectors>
-            let tx: Hex
-
-            beforeAll(async () => {
-              mockedDeposit.detectFunding.mockResolvedValue(fundingUtxos)
-              spyOnExtractBitcoinRawTxVectors = jest
-                .spyOn(TBTCModule, "extractBitcoinRawTxVectors")
-                .mockReturnValue(bitcoinRawTxVectors)
-
-              tbtc.bitcoinClient.getRawTransaction = jest
-                .fn()
-                .mockResolvedValue(bitcoinRawTx)
-
-              contracts.tbtcDepositor.initializeStake = jest
-                .fn()
-                .mockResolvedValue(mockedTxHash)
-
-              tx = await result.stake()
-            })
-
-            it("should look for deposits", () => {
-              expect(mockedDeposit.detectFunding).toHaveBeenCalled()
-            })
-
-            it("should get raw transaction for the most recent utxo", () => {
-              const txHash = fundingUtxos[0].transactionHash
-
-              expect(tbtc.bitcoinClient.getRawTransaction).toHaveBeenCalledWith(
-                txHash,
-              )
-            })
-
-            it("should extract bitcoin raw tx vectors", () => {
-              expect(spyOnExtractBitcoinRawTxVectors).toHaveBeenCalledWith(
-                bitcoinRawTx,
-              )
-            })
-
-            it("should get deposit receipt", () => {
-              expect(mockedDeposit.getReceipt).toHaveBeenCalled()
-            })
-
-            it("should initialize stake in tBTC depositor contract", () => {
-              const { outputIndex } = fundingUtxos[0]
-
-              const revealInfo = {
-                fundingOutputIndex: outputIndex,
-                blindingFactor: depositReceipt.blindingFactor,
-                walletPublicKeyHash: depositReceipt.walletPublicKeyHash,
-                refundPublicKeyHash: depositReceipt.refundPublicKeyHash,
-                refundLocktime: depositReceipt.refundLocktime,
-              }
-
-              expect(
-                contracts.tbtcDepositor.initializeStake,
-              ).toHaveBeenCalledWith(
-                bitcoinRawTxVectors,
-                revealInfo,
-                receiver,
-                referral,
-              )
-            })
-
-            it("should return transaction hash", () => {
-              expect(tx).toBe(mockedTxHash)
-            })
+          it("should return transaction hash", () => {
+            expect(tx).toBe(mockedTxHash)
           })
         })
       })
