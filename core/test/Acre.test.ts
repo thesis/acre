@@ -80,7 +80,7 @@ describe("Acre", () => {
   })
 
   describe("previewDeposit", () => {
-    beforeAfterEachSnapshotWrapper()
+    beforeAfterSnapshotWrapper()
 
     context("when the vault is empty", () => {
       const amountToStake = to1e18(1)
@@ -667,7 +667,7 @@ describe("Acre", () => {
   })
 
   describe("previewMint", () => {
-    beforeAfterEachSnapshotWrapper()
+    beforeAfterSnapshotWrapper()
 
     context("when minting as first staker", () => {
       const sharesToMint = to1e18(1)
@@ -822,7 +822,7 @@ describe("Acre", () => {
   })
 
   describe("updateDepositParameters", () => {
-    beforeAfterEachSnapshotWrapper()
+    beforeAfterSnapshotWrapper()
 
     const validMinimumDepositAmount = to1e18(1)
     const validMaximumTotalAssetsAmount = to1e18(30)
@@ -909,7 +909,7 @@ describe("Acre", () => {
   })
 
   describe("updateEntryFeeBasisPoints", () => {
-    beforeAfterEachSnapshotWrapper()
+    beforeAfterSnapshotWrapper()
 
     const validEntryFeeBasisPoints = 100n // 1%
 
@@ -1114,15 +1114,7 @@ describe("Acre", () => {
   })
 
   describe("updateTreasury", () => {
-    let snapshot: SnapshotRestorer
-
-    before(async () => {
-      snapshot = await takeSnapshot()
-    })
-
-    after(async () => {
-      await snapshot.restore()
-    })
+    beforeAfterSnapshotWrapper()
 
     context("when caller is not governance", () => {
       it("should revert", async () => {
