@@ -1,11 +1,13 @@
 import React from "react"
 import {
+  useModalFlowContext,
   useRequestBitcoinAccount,
   useRequestEthereumAccount,
   useWalletContext,
 } from "#/hooks"
 import { ConnectBTCAccount, ConnectETHAccount } from "#/assets/icons"
 import MissingAccount from "./MissingAccount"
+import ResumeModal from "./ResumeModal"
 
 export default function SupportWrapper({
   children,
@@ -15,6 +17,7 @@ export default function SupportWrapper({
   const { btcAccount, ethAccount } = useWalletContext()
   const { requestAccount: requestBitcoinAccount } = useRequestBitcoinAccount()
   const { requestAccount: requestEthereumAccount } = useRequestEthereumAccount()
+  const { isPaused, onClose, onResume } = useModalFlowContext()
 
   if (!btcAccount)
     return (
@@ -33,6 +36,10 @@ export default function SupportWrapper({
         requestAccount={requestEthereumAccount}
       />
     )
+
+  if (isPaused) {
+    return <ResumeModal onClose={onClose} onResume={onResume} />
+  }
 
   return children
 }
