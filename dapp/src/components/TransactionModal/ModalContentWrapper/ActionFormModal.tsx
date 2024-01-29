@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback } from "react"
+import React, { useCallback } from "react"
 import {
   ModalBody,
   Tabs,
@@ -12,24 +12,7 @@ import StakeForm from "#/components/Modals/Staking/StakeForm"
 import { ActionFlowType } from "#/types"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 
-const TABS_DATA: {
-  type: ActionFlowType
-  title: string
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  Component: (...args: any[]) => ReactElement | null
-}[] = [
-  {
-    type: "stake",
-    title: "Stake",
-    Component: StakeForm,
-  },
-  {
-    type: "unstake",
-    title: "Unstake",
-    // TODO: Use the correct form for unstaking
-    Component: StakeForm,
-  },
-]
+const TABS: ActionFlowType[] = ["stake", "unstake"]
 
 function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
   const { goNext, setType } = useModalFlowContext()
@@ -50,21 +33,23 @@ function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
       <Tabs
         w="100%"
         variant="underline"
-        defaultIndex={TABS_DATA.findIndex(({ type }) => type === defaultType)}
+        defaultIndex={TABS.indexOf(defaultType)}
       >
         <TabList pb={6}>
-          {TABS_DATA.map(({ title, type }) => (
+          {TABS.map((type) => (
             <Tab key={type} w="50%" pb={4} onClick={() => setType(type)}>
-              {title}
+              {type}
             </Tab>
           ))}
         </TabList>
         <TabPanels>
-          {TABS_DATA.map(({ title, Component }) => (
-            <TabPanel key={title}>
-              <Component onSubmitForm={handleSubmitForm} />
-            </TabPanel>
-          ))}
+          <TabPanel>
+            <StakeForm onSubmitForm={handleSubmitForm} />
+          </TabPanel>
+          <TabPanel>
+            {/* TODO: Use the correct form for unstaking */}
+            <StakeForm onSubmitForm={handleSubmitForm} />
+          </TabPanel>
         </TabPanels>
       </Tabs>
     </ModalBody>
