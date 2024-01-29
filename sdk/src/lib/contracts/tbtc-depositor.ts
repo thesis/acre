@@ -35,7 +35,7 @@ export interface DepositRevealInfo {
 }
 
 export type DecodedExtraData = {
-  staker: string
+  staker: ChainIdentifier
   referral: number
 }
 
