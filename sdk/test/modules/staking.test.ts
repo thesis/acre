@@ -1,12 +1,14 @@
 import { DepositReceipt, EthereumAddress } from "@keep-network/tbtc-v2.ts"
 import { ethers } from "ethers"
-import { AcreContracts } from "../../src/lib/contracts"
-import { StakingModule } from "../../src/modules/staking"
-import { Hex } from "../../src/lib/utils"
+import {
+  AcreContracts,
+  StakingModule,
+  Hex,
+  StakeInitialization,
+} from "../../src"
 import { MockAcreContracts } from "../utils/mock-acre-contracts"
 import { MockMessageSigner } from "../utils/mock-message-signer"
 import { MockTBTC } from "../utils/mock-tbtc"
-import { StakeInitialization } from "../../src/modules/staking/stake-initialization"
 
 const stakingModuleData: {
   initializeStake: {

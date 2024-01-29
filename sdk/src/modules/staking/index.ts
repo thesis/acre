@@ -61,5 +61,4 @@ class StakingModule {
   }
 }
 
-// eslint-disable-next-line import/prefer-default-export
-export { StakingModule }
+export { StakingModule, StakeInitialization }

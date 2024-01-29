@@ -2,8 +2,8 @@ import { Network, ethers } from "ethers"
 import {
   EthereumEIP712Signer,
   EthereumAddress,
-} from "../../../src/lib/ethereum"
-import { EthereumSignedMessage } from "../../../src/lib/ethereum/eip712-signer/signed-message"
+  EthereumSignedMessage,
+} from "../../../src"
 
 const signMessageData = {
   domain: {
