@@ -22,8 +22,8 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
     cell: ({ row: { original } }) => (
       <CustomCell
         type="date"
-        transaction1={original.callTx}
-        transaction2={original.receiptTx}
+        firstTransaction={original.callTx}
+        secondTransaction={original.receiptTx}
       />
     ),
   }),
@@ -31,10 +31,10 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
     header: "Action",
     cell: ({ row: { original } }) => (
       <Cell
-        children1={
+        firstField={
           <SimpleText>{capitalize(original.callTx.action)}</SimpleText>
         }
-        children2={
+        secondField={
           <SimpleText>{capitalize(original.receiptTx.action)}</SimpleText>
         }
       />
@@ -45,8 +45,8 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
     cell: ({ row: { original } }) => (
       <CustomCell
         type="currency-icon"
-        transaction1={original.callTx}
-        transaction2={original.receiptTx}
+        firstTransaction={original.callTx}
+        secondTransaction={original.receiptTx}
       />
     ),
   }),
@@ -55,8 +55,8 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
     cell: ({ row: { original } }) => (
       <CustomCell
         type="currency-balance"
-        transaction1={original.callTx}
-        transaction2={original.receiptTx}
+        firstTransaction={original.callTx}
+        secondTransaction={original.receiptTx}
       />
     ),
   }),
@@ -65,10 +65,10 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
     size: 250,
     cell: ({ row: { original } }) => (
       <Cell
-        children1={
+        firstField={
           <SimpleText>{truncateAddress(original.callTx.account)}</SimpleText>
         }
-        children2={
+        secondField={
           <SimpleText>{truncateAddress(original.receiptTx.account)}</SimpleText>
         }
       />
@@ -80,8 +80,8 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
     cell: ({ row: { original } }) => (
       <CustomCell
         type="block-explorer"
-        transaction1={original.callTx}
-        transaction2={original.receiptTx}
+        firstTransaction={original.callTx}
+        secondTransaction={original.receiptTx}
       />
     ),
   }),
@@ -93,8 +93,8 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
     cell: ({ row: { original } }) => (
       <CustomCell
         type="status"
-        transaction1={original.callTx}
-        transaction2={original.receiptTx}
+        firstTransaction={original.callTx}
+        secondTransaction={original.receiptTx}
       />
     ),
   }),
