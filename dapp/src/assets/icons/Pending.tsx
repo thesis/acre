@@ -1,8 +1,8 @@
 import React from "react"
 import { createIcon } from "@chakra-ui/react"
 
-export const Pending = createIcon({
-  displayName: "Pending",
+export const PendingIcon = createIcon({
+  displayName: "PendingIcon",
   viewBox: "0 0 16 16",
   defaultProps: {
     fill: "none",

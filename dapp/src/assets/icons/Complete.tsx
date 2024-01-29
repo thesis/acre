@@ -1,8 +1,8 @@
 import React from "react"
 import { createIcon } from "@chakra-ui/react"
 
-export const Complete = createIcon({
-  displayName: "Complete",
+export const CompleteIcon = createIcon({
+  displayName: "CompleteIcon",
   viewBox: "0 0 20 20",
   path: [
     <rect width="20" height="20" rx="10" fill="currentColor" />,

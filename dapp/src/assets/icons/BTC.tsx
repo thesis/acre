@@ -1,8 +1,8 @@
 import React from "react"
 import { createIcon } from "@chakra-ui/react"
 
-export const BTC = createIcon({
-  displayName: "BTC",
+export const BTCIcon = createIcon({
+  displayName: "BTCIcon",
   viewBox: "0 0 64 64",
   path: [
     <path

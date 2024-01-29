@@ -1,15 +1,15 @@
 import React from "react"
 import { TransactionInfoStatus } from "#/types"
 import { Box, Icon, TextProps, useMultiStyleConfig } from "@chakra-ui/react"
-import { Complete, Pending, Syncing } from "#/assets/icons"
+import { CompleteIcon, PendingIcon, SyncingIcon } from "#/assets/icons"
 
 const DATA: Record<
   TransactionInfoStatus,
   { icon: typeof Icon; label: string; colorScheme: string }
 > = {
-  completed: { label: "Completed", icon: Complete, colorScheme: "green" },
-  syncing: { label: "Syncing", icon: Syncing, colorScheme: "blue" },
-  pending: { label: "Pending", icon: Pending, colorScheme: "brand" },
+  completed: { label: "Completed", icon: CompleteIcon, colorScheme: "green" },
+  syncing: { label: "Syncing", icon: SyncingIcon, colorScheme: "blue" },
+  pending: { label: "Pending", icon: PendingIcon, colorScheme: "brand" },
 }
 
 type StatusInfoProps = {
