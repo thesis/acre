@@ -2,23 +2,29 @@ import React from "react"
 import {
   useRequestBitcoinAccount,
   useRequestEthereumAccount,
+  useTransactionContext,
   useWalletContext,
 } from "#/hooks"
 import { ConnectBTCAccount, ConnectETHAccount } from "#/assets/icons"
-import MissingAccount from "./MissingAccount"
+import { ActionFlowType } from "#/types"
+import ActionFormModal from "./ActionFormModal"
+import MissingAccountModal from "./MissingAccountModal"
 
-export default function SupportWrapper({
+export default function ModalContentWrapper({
+  defaultType,
   children,
 }: {
+  defaultType: ActionFlowType
   children: React.ReactNode
 }) {
   const { btcAccount, ethAccount } = useWalletContext()
   const { requestAccount: requestBitcoinAccount } = useRequestBitcoinAccount()
   const { requestAccount: requestEthereumAccount } = useRequestEthereumAccount()
+  const { tokenAmount } = useTransactionContext()
 
   if (!btcAccount)
     return (
-      <MissingAccount
+      <MissingAccountModal
         currency="bitcoin"
         icon={ConnectBTCAccount}
         requestAccount={requestBitcoinAccount}
@@ -27,12 +33,14 @@ export default function SupportWrapper({
 
   if (!ethAccount)
     return (
-      <MissingAccount
+      <MissingAccountModal
         currency="ethereum"
         icon={ConnectETHAccount}
         requestAccount={requestEthereumAccount}
       />
     )
+
+  if (!tokenAmount) return <ActionFormModal defaultType={defaultType} />
 
   return children
 }
