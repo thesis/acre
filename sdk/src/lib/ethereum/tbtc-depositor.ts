@@ -75,7 +75,7 @@ class EthereumTBTCDepositor
     const tx = await this.instance.initializeStakeRequest(
       fundingTx,
       reveal,
-      staker,
+      `0x${staker.identifierHex}`,
       referral,
     )
 
@@ -104,7 +104,7 @@ class EthereumTBTCDepositor
    */
   // eslint-disable-next-line class-methods-use-this
   decodeExtraData(extraData: string): DecodedExtraData {
-    const staker = getAddress(dataSlice(extraData, 0, 20))
+    const staker = EthereumAddress.from(getAddress(dataSlice(extraData, 0, 20)))
     const referral = Number(dataSlice(extraData, 20, 22))
 
     return { staker, referral }

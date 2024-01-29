@@ -12,6 +12,7 @@ const stakingModuleData: {
   initializeStake: {
     staker: EthereumAddress
     referral: number
+    extraData: Hex
     bitcoinRecoveryAddress: string
     mockedDepositBTCAddress: string
   }
@@ -19,6 +20,9 @@ const stakingModuleData: {
   initializeStake: {
     staker: EthereumAddress.from(ethers.Wallet.createRandom().address),
     referral: 1,
+    extraData: Hex.from(
+      "0xeb098d6cde6a202981316b24b19e64d82721e89e4d0000000000000000000000",
+    ),
     bitcoinRecoveryAddress: "mjc2zGWypwpNyDi4ZxGbBNnUA84bfgiwYc",
     mockedDepositBTCAddress:
       "tb1qma629cu92skg0t86lftyaf9uflzwhp7jk63h6mpmv3ezh6puvdhs6w2r05",
@@ -34,6 +38,7 @@ const stakingInitializationData: {
     walletPublicKeyHash: Hex.from("666666"),
     refundPublicKeyHash: Hex.from("0x2cd680318747b720d67bf4246eb7403b476adb34"),
     refundLocktime: Hex.from("888888"),
+    extraData: stakingModuleData.initializeStake.extraData,
   },
   mockedInitializeTxHash: Hex.from("999999"),
 }
@@ -55,25 +60,31 @@ describe("Staking", () => {
       bitcoinRecoveryAddress,
       staker,
       referral,
+      extraData,
     } = stakingModuleData.initializeStake
     const mockedDeposit = {
       getBitcoinAddress: jest.fn().mockResolvedValue(mockedDepositBTCAddress),
       detectFunding: jest.fn(),
-      getReceipt: jest.fn(),
+      getReceipt: jest.fn().mockReturnValue({ extraData }),
       initiateMinting: jest.fn(),
     }
     const mockedSignedMessage = { verify: jest.fn() }
-    const mockEncodedExtraData =
-      "0xeb098d6cde6a202981316b24b19e64d82721e89e4d0000000000000000000000"
+
     let result: StakeInitialization
 
     beforeEach(async () => {
+      contracts.tbtcDepositor.decodeExtraData = jest
+        .fn()
+        .mockReturnValue({ staker, referral })
+
       contracts.tbtcDepositor.encodeExtraData = jest
         .fn()
-        .mockReturnValue(mockEncodedExtraData)
+        .mockReturnValue(extraData)
+
       tbtc.deposits.initiateDepositWithProxy = jest
         .fn()
         .mockReturnValue(mockedDeposit)
+
       messageSigner.sign = jest.fn().mockResolvedValue(mockedSignedMessage)
 
       result = await staking.initializeStake(
@@ -91,7 +102,7 @@ describe("Staking", () => {
       expect(tbtc.deposits.initiateDepositWithProxy).toHaveBeenCalledWith(
         bitcoinRecoveryAddress,
         contracts.tbtcDepositor,
-        mockEncodedExtraData,
+        extraData,
       )
     })
 

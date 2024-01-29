@@ -1,4 +1,4 @@
-import ethers, { Contract, getAddress } from "ethers"
+import ethers, { Contract } from "ethers"
 import { EthereumTBTCDepositor } from "../../../src/lib/ethereum/tbtc-depositor"
 import { EthereumAddress } from "../../../src/lib/ethereum/address"
 import { Hex } from "../../../src/lib/utils"
@@ -153,7 +153,7 @@ describe("TBTCDepositor", () => {
         ).toHaveBeenCalledWith(
           btcTxInfo,
           revealInfo,
-          getAddress(`0x${staker.identifierHex}`),
+          `0x${staker.identifierHex}`,
           referral,
         )
         expect(result.toPrefixedString()).toBe(mockedTx.toPrefixedString())
@@ -229,7 +229,7 @@ describe("TBTCDepositor", () => {
         22,
       )
 
-      expect(EthereumAddress.from(staker).equals(extraData.staker)).toBeTruthy()
+      expect(staker.equals(extraData.staker)).toBeTruthy()
       expect(referral).toBe(extraData.referral)
     })
   })

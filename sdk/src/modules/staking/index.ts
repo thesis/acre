@@ -55,8 +55,6 @@ class StakingModule {
     return new StakeInitialization(
       this.#contracts,
       this.#messageSigner,
-      staker,
-      referral,
       deposit,
       this.#tbtc.bitcoinClient,
     )
