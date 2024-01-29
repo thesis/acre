@@ -50,8 +50,8 @@ commands:
 # Execute hooks for all files:
 pre-commit run --all-files
 
-# Execute hooks for specific files (e.g. Acre.sol):
-pre-commit run --files ./core/contracts/Acre.sol
+# Execute hooks for specific files (e.g. stBTC.sol):
+pre-commit run --files ./core/contracts/stBTC.sol
 ```
 
 ### Syncpack

@@ -7,7 +7,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
   const tbtc = await deployments.get("TBTC")
 
-  await deployments.deploy("Acre", {
+  await deployments.deploy("stBTC", {
     from: deployer,
     args: [tbtc.address],
     log: true,
@@ -20,5 +20,5 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
 export default func
 
-func.tags = ["Acre"]
+func.tags = ["stBTC"]
 func.dependencies = ["TBTC"]

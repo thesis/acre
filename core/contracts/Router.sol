@@ -4,13 +4,13 @@ pragma solidity ^0.8.21;
 import "@openzeppelin/contracts/interfaces/IERC4626.sol";
 
 /// @title Router
-/// @notice Router is a contract that routes tBTC from stBTC (Acre) to
+/// @notice Router is a contract that routes tBTC from stBTC to
 ///         a given vault and back. Vaults supply yield strategies with tBTC that
 ///         generate yield for Bitcoin holders.
 abstract contract Router {
     /// Thrown when amount of shares received is below the min set by caller.
     /// @param vault Address of the vault.
-    /// @param sharesOut Amount of shares received by Acre.
+    /// @param sharesOut Amount of shares received by stBTC.
     /// @param minSharesOut Minimum amount of shares expected to receive.
     error MinSharesError(
         address vault,
@@ -18,7 +18,7 @@ abstract contract Router {
         uint256 minSharesOut
     );
 
-    /// @notice Routes funds from stBTC (Acre) to a vault. The amount of tBTC to
+    /// @notice Routes funds from stBTC to a vault. The amount of tBTC to
     ///         Shares of deposited tBTC are minted to the stBTC contract.
     /// @param vault Address of the vault to route the funds to.
     /// @param receiver Address of the receiver of the shares.
