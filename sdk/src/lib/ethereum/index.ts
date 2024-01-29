@@ -6,9 +6,9 @@ export * from "./contract"
 export * from "./eip712-signer"
 export * from "./address"
 
-export type EthereumNetwork = "mainnet" | "sepolia" | "goerli"
+type EthereumNetwork = "mainnet" | "sepolia" | "goerli"
 
-export function getEthereumContracts(
+function getEthereumContracts(
   signer: EthereumSigner,
   // TODO: Once we have artifacts for contracts we can pass the network to
   // contract constructor and pass correct contract address and abi based on the
@@ -20,3 +20,5 @@ export function getEthereumContracts(
 
   return { tbtcDepositor }
 }
+
+export { EthereumTBTCDepositor, EthereumNetwork, getEthereumContracts }

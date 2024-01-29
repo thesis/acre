@@ -62,5 +62,4 @@ class EthereumEIP712Signer implements ChainEIP712Signer {
   }
 }
 
-// eslint-disable-next-line import/prefer-default-export
-export { EthereumEIP712Signer }
+export { EthereumEIP712Signer, EthereumSignedMessage }

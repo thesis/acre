@@ -1,8 +1,10 @@
 import ethers, { Contract } from "ethers"
-import { EthereumTBTCDepositor } from "../../../src/lib/ethereum/tbtc-depositor"
-import { EthereumAddress } from "../../../src/lib/ethereum/address"
-import { Hex } from "../../../src/lib/utils"
-import { EthereumSigner } from "../../../src/lib/ethereum"
+import {
+  EthereumTBTCDepositor,
+  EthereumAddress,
+  Hex,
+  EthereumSigner,
+} from "../../../src"
 
 jest.mock("ethers", (): object => ({
   Contract: jest.fn(),
