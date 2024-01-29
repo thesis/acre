@@ -1,9 +1,10 @@
-import React from "react"
+import React, { useEffect } from "react"
 import {
   ModalFlowContextProvider,
   TransactionContextProvider,
 } from "#/contexts"
 import { ActionFlowType } from "#/types"
+import { useSidebar } from "#/hooks"
 import ModalBase from "../shared/ModalBase"
 import ModalContentWrapper from "./ModalContentWrapper"
 import { ActiveFlowStep } from "./ActiveFlowStep"
@@ -17,6 +18,16 @@ export default function TransactionModal({
   onClose: () => void
   defaultType?: ActionFlowType
 }) {
+  const { onOpen: openSideBar, onClose: closeSidebar } = useSidebar()
+
+  useEffect(() => {
+    if (isOpen) {
+      openSideBar()
+    } else {
+      closeSidebar()
+    }
+  }, [closeSidebar, isOpen, openSideBar])
+
   return (
     <ModalBase isOpen={isOpen} onClose={onClose}>
       <TransactionContextProvider>
