@@ -1,4 +1,4 @@
-import { SortASC, SortDESC } from "#/assets/icons"
+import { SortASCIcon, SortDESCIcon } from "#/assets/icons"
 import { SortDirection } from "@tanstack/react-table"
 import { Icon } from "@chakra-ui/react"
 
@@ -21,13 +21,13 @@ export const SORT_ICONS: {
 }[] = [
   {
     key: "asc",
-    icon: SortASC,
+    icon: SortASCIcon,
     boxSize: BOX_SIZE,
     getColor: (isSorted) => getSortIconColor(isSorted, "asc"),
   },
   {
     key: "desc",
-    icon: SortDESC,
+    icon: SortDESCIcon,
     boxSize: BOX_SIZE,
     getColor: (isSorted) => getSortIconColor(isSorted, "desc"),
   },
