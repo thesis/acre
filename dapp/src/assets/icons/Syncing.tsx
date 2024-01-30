@@ -1,8 +1,8 @@
 import React from "react"
 import { createIcon } from "@chakra-ui/react"
 
-export const Syncing = createIcon({
-  displayName: "Syncing",
+export const SyncingIcon = createIcon({
+  displayName: "SyncingIcon",
   viewBox: "0 0 20 22",
   defaultProps: {
     fill: "none",

@@ -5,18 +5,16 @@ import {
 
 // TODO: Update the button styles correctly when ready
 export const buttonTheme: ComponentSingleStyleConfig = {
-  baseStyle: {
-    size: "md",
-    borderRadius: "lg",
-  },
   sizes: {
     md: {
       fontSize: "sm",
       py: "0.5rem",
+      borderRadius: "md",
     },
     lg: {
       fontSize: "md",
       py: "1rem",
+      borderRadius: "lg",
     },
   },
   variants: {
@@ -34,6 +32,7 @@ export const buttonTheme: ComponentSingleStyleConfig = {
       const defaultStyles = {
         color: "grey.700",
         borderColor: "grey.700",
+
         _hover: {
           bg: "opacity.grey.700.05",
         },
@@ -47,9 +46,22 @@ export const buttonTheme: ComponentSingleStyleConfig = {
           bg: "gold.100",
           borderColor: "white",
           borderStyle: "solid",
+
+          _hover: {
+            borderColor: "grey.500",
+            bg: "transparent",
+          },
         }
       }
       return defaultStyles
+    },
+    ghost: {
+      _hover: {
+        bg: "transparent",
+      },
+      _active: {
+        bg: "transparent",
+      },
     },
     // FIXME: It should be removed and replaced by solid/outline variants
     card: ({ colorScheme }: StyleFunctionProps) => {

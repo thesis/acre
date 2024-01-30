@@ -1,16 +1,7 @@
 import React from "react"
 import { TransactionInfoStatus } from "#/types"
 import { Box, Icon, TextProps, useMultiStyleConfig } from "@chakra-ui/react"
-import { Complete, Pending, Syncing } from "#/assets/icons"
-
-const DATA: Record<
-  TransactionInfoStatus,
-  { icon: typeof Icon; label: string; colorScheme: string }
-> = {
-  completed: { label: "Completed", icon: Complete, colorScheme: "green" },
-  syncing: { label: "Syncing", icon: Syncing, colorScheme: "blue" },
-  pending: { label: "Pending", icon: Pending, colorScheme: "brand" },
-}
+import { STATUS_DATA } from "./data"
 
 type StatusInfoProps = {
   status: TransactionInfoStatus
@@ -26,7 +17,7 @@ export default function StatusInfo({
   withIcon,
   ...textProps
 }: StatusInfoProps) {
-  const data = DATA[status]
+  const data = STATUS_DATA[status]
   const styles = useMultiStyleConfig("StatusInfo", {
     ...(withDefaultColor && { colorScheme: data.colorScheme }),
   })

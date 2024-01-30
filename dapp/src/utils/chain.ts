@@ -1,6 +1,10 @@
 import { BLOCK_EXPLORER } from "#/constants"
 import { Chain, ExplorerDataType } from "#/types"
 
+// At this moment, the function returns
+// the correct part of the URL only for the transaction.
+//  However, it provides us with an easy way
+// to handle the next data for block explorer.
 export const createBlockExplorerLink = (
   prefix: string,
   id: string,

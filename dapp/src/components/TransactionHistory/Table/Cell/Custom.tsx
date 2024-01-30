@@ -5,21 +5,21 @@ import { ContentType, getCustomContent } from "./utils"
 
 function CustomCell({
   type,
-  transaction1,
-  transaction2,
+  firstTransaction,
+  secondTransaction,
 }: {
   type: ContentType
-  transaction1: TransactionInfo
-  transaction2: TransactionInfo
+  firstTransaction: TransactionInfo
+  secondTransaction: TransactionInfo
 }) {
   if (type === "date") {
-    return <Cell children1={getCustomContent(type, transaction1)} />
+    return <Cell firstField={getCustomContent(type, firstTransaction)} />
   }
 
   return (
     <Cell
-      children1={getCustomContent(type, transaction1)}
-      children2={getCustomContent(type, transaction2)}
+      firstField={getCustomContent(type, firstTransaction)}
+      secondField={getCustomContent(type, secondTransaction)}
     />
   )
 }
