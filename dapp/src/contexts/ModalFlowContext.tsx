@@ -6,12 +6,20 @@ export type ModalStep = {
 
 export type ModalFlowContextValue = {
   activeStep?: number
+  isPaused?: boolean
   onClose: () => void
+  onResume: () => void
   goNext: () => void
+  startTransactionProcess: () => void
+  endTransactionProcess: () => void
 }
 
 export const ModalFlowContext = createContext<ModalFlowContextValue>({
   activeStep: undefined,
-  goNext: () => {},
+  isPaused: false,
   onClose: () => {},
+  onResume: () => {},
+  goNext: () => {},
+  startTransactionProcess: () => {},
+  endTransactionProcess: () => {},
 })
