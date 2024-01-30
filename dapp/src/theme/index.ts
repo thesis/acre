@@ -20,6 +20,8 @@ import { formErrorTheme } from "./FormError"
 import { tabsTheme } from "./Tabs"
 import { spinnerTheme } from "./Spinner"
 import { tableTheme } from "./Table"
+import { currencyIconTheme } from "./CurrencyIcon"
+import { statusInfoTheme } from "./StatusInfo"
 import { linkTheme } from "./Link"
 
 const defaultTheme = {
@@ -58,6 +60,8 @@ const defaultTheme = {
     TokenBalanceInput: tokenBalanceInputTheme,
     Tooltip: tooltipTheme,
     Table: tableTheme,
+    CurrencyIcon: currencyIconTheme,
+    StatusInfo: statusInfoTheme,
   },
 }
 

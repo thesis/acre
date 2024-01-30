@@ -8,12 +8,13 @@ function TableHeader({ table }: { table: UseTransactionHistoryTableResult }) {
     <Thead>
       {table.getHeaderGroups().map(({ id, headers }) => (
         <Tr key={id}>
-          {headers.map((header) => (
+          {headers.map(({ id: headerId, column, getContext }) => (
             <Th
-              key={header.id}
-              onClick={header.column.getToggleSortingHandler()}
+              key={headerId}
+              onClick={column.getToggleSortingHandler()}
+              textAlign={column.columnDef.meta?.style.textAlign}
             >
-              {flexRender(header.column.columnDef.header, header.getContext())}
+              {flexRender(column.columnDef.header, getContext())}
             </Th>
           ))}
         </Tr>

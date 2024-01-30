@@ -9,7 +9,14 @@ function TableBody({ table }: { table: UseTransactionHistoryTableResult }) {
       {table.getRowModel().rows.map((row) => (
         <Tr key={row.id}>
           {row.getVisibleCells().map(({ id, column, getContext }) => (
-            <Td key={id}>{flexRender(column.columnDef.cell, getContext())}</Td>
+            <Td
+              key={id}
+              style={{
+                width: column.getSize(),
+              }}
+            >
+              {flexRender(column.columnDef.cell, getContext())}
+            </Td>
           ))}
         </Tr>
       ))}
