@@ -4,9 +4,13 @@ import { ActionFlowType } from "#/types"
 export type ModalFlowContextValue = {
   type: ActionFlowType
   activeStep: number
+  isPaused?: boolean
   setType: React.Dispatch<React.SetStateAction<ActionFlowType>>
   onClose: () => void
+  onResume: () => void
   goNext: () => void
+  startTransactionProcess: () => void
+  endTransactionProcess: () => void
 }
 
 export const ModalFlowContext = createContext<
@@ -24,30 +28,64 @@ export function ModalFlowContextProvider({
 }): React.ReactElement {
   const [type, setType] = useState(defaultType)
   const [activeStep, setActiveStep] = useState(0)
+  const [isPaused, setIsPaused] = useState(false)
+  const [isPendingTransaction, setIsPendingTransaction] = useState(false)
 
   const resetState = useCallback(() => {
     setType(defaultType)
     setActiveStep(0)
+    setIsPaused(false)
+    setIsPendingTransaction(false)
   }, [defaultType])
+
+  const handleResume = useCallback(() => {
+    setIsPaused(false)
+  }, [])
 
   const handleGoNext = useCallback(() => {
     setActiveStep((prevStep) => prevStep + 1)
   }, [])
 
   const handleClose = useCallback(() => {
-    resetState()
-    onClose()
-  }, [onClose, resetState])
+    if (!isPaused && isPendingTransaction) {
+      setIsPaused(true)
+    } else {
+      resetState()
+      onClose()
+    }
+  }, [isPaused, isPendingTransaction, onClose, resetState])
+
+  const handleStartTransactionProcess = useCallback(() => {
+    setIsPendingTransaction(true)
+  }, [setIsPendingTransaction])
+
+  const handleStopTransactionProcess = useCallback(() => {
+    setIsPendingTransaction(false)
+  }, [setIsPendingTransaction])
 
   const contextValue: ModalFlowContextValue = useMemo<ModalFlowContextValue>(
     () => ({
       type,
       activeStep,
+      isPaused,
       setType,
       onClose: handleClose,
+      onResume: handleResume,
       goNext: handleGoNext,
+      startTransactionProcess: handleStartTransactionProcess,
+      endTransactionProcess: handleStopTransactionProcess,
     }),
-    [type, activeStep, handleClose, handleGoNext],
+    [
+      type,
+      activeStep,
+      isPaused,
+      setType,
+      handleGoNext,
+      handleClose,
+      handleResume,
+      handleStartTransactionProcess,
+      handleStopTransactionProcess,
+    ],
   )
 
   return (

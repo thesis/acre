@@ -1,5 +1,6 @@
 import React from "react"
 import {
+  useModalFlowContext,
   useRequestBitcoinAccount,
   useRequestEthereumAccount,
   useTransactionContext,
@@ -9,6 +10,7 @@ import { ConnectBTCAccount, ConnectETHAccount } from "#/assets/icons"
 import { ActionFlowType } from "#/types"
 import ActionFormModal from "./ActionFormModal"
 import MissingAccountModal from "./MissingAccountModal"
+import ResumeModal from "./ResumeModal"
 
 export default function ModalContentWrapper({
   defaultType,
@@ -20,6 +22,7 @@ export default function ModalContentWrapper({
   const { btcAccount, ethAccount } = useWalletContext()
   const { requestAccount: requestBitcoinAccount } = useRequestBitcoinAccount()
   const { requestAccount: requestEthereumAccount } = useRequestEthereumAccount()
+  const { isPaused, onClose, onResume } = useModalFlowContext()
   const { tokenAmount } = useTransactionContext()
 
   if (!btcAccount)
@@ -39,6 +42,10 @@ export default function ModalContentWrapper({
         requestAccount={requestEthereumAccount}
       />
     )
+
+  if (isPaused) {
+    return <ResumeModal onClose={onClose} onResume={onResume} />
+  }
 
   if (!tokenAmount) return <ActionFormModal defaultType={defaultType} />
 
