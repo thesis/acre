@@ -229,19 +229,23 @@ contract Acre is ERC4626Fees, Ownable {
     ///         deposited into the vault for the receiver through a deposit
     ///         call. It takes into account the deposit parameter, maximum total
     ///         assets, which determines the total amount of tBTC token held by
-    ///         Acre.
-    /// @return The maximum amount of the tBTC token.
+    ///         Acre. This function always returns available limit for deposits,
+    ///         but the fee is not taken into account. As a result of this, there
+    ///         always will be some dust left. If the dust if lower than the
+    ///         minumum deposit amount, this function will return 0.
+    /// @return The maximum amount of the tBTC token that can be deposited into
+    ///         the Acre for the receiver.
     function maxDeposit(address) public view override returns (uint256) {
         if (maximumTotalAssets == type(uint256).max) {
             return type(uint256).max;
         }
 
-        uint256 _totalAssets = totalAssets();
+        uint256 currentTotalAssets = totalAssets();
+        if (currentTotalAssets >= maximumTotalAssets) return 0;
 
-        return
-            _totalAssets >= maximumTotalAssets
-                ? 0
-                : maximumTotalAssets - _totalAssets;
+        uint256 unusedLimit = maximumTotalAssets - currentTotalAssets;
+
+        return minimumDepositAmount > unusedLimit ? 0 : unusedLimit;
     }
 
     /// @notice Returns the maximum amount of the vault shares that can be

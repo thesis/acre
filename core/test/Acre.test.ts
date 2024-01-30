@@ -1011,6 +1011,32 @@ describe("Acre", () => {
       })
     })
 
+    context(
+      "when the unused limit is less than the minimum deposit amount",
+      () => {
+        it("should return 0", async () => {
+          const toMint = 24999100000000000000n // 24.9991 tBTC
+          await tbtc.mint(await acre.getAddress(), toMint)
+
+          expect(await acre.maxDeposit(staker1.address)).to.be.eq(0)
+        })
+      },
+    )
+
+    context(
+      "when the unused limit is equal to the minimum deposit amount",
+      () => {
+        it("should return 0", async () => {
+          const toMint = 24999000000000000000n // 24.999 tBTC
+          await tbtc.mint(await acre.getAddress(), toMint)
+
+          expect(await acre.maxDeposit(staker1.address)).to.be.eq(
+            minimumDepositAmount,
+          )
+        })
+      },
+    )
+
     context("when the maximum total amount has not yet been reached", () => {
       let expectedValue: bigint
 
