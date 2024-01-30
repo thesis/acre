@@ -4,7 +4,7 @@ import { useTransactionHistoryTable } from "#/hooks"
 import { StakeHistory } from "#/types"
 import TableHeader from "./Header"
 import TableBody from "./Body"
-import { COLUMNS } from "./utils/columns"
+import { COLUMNS } from "./utils"
 import TableFooter from "./Footer"
 
 function Table({ data }: { data: StakeHistory[] }) {
