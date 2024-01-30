@@ -1,9 +1,6 @@
 import {
-  BitcoinClient,
-  BitcoinTxHash,
   ChainIdentifier,
   Deposit as TbtcDeposit,
-  BitcoinAddressConverter,
 } from "@keep-network/tbtc-v2.ts"
 import {
   ChainEIP712Signer,
@@ -36,19 +33,15 @@ class StakeInitialization {
   readonly #tbtcDeposit: TbtcDeposit
 
   /**
-   * Bitcoin client.
-   */
-  readonly #bitcoinClient: BitcoinClient
-
-  /**
    * The address to which the stBTC shares will be minted.
    */
   readonly #staker: ChainIdentifier
 
   /**
-   * Param referral Data used for referral program.
+   * P2PKH or P2WPKH Bitcoin address that can be used for emergency recovery of
+   * the deposited funds.
    */
-  readonly #referral: number
+  readonly #bitcoinRecoveryAddress: string
 
   /**
    * Stores the signed staking message required in staking flow. By default is
@@ -60,23 +53,22 @@ class StakeInitialization {
   constructor(
     _contracts: AcreContracts,
     _messageSigner: ChainEIP712Signer,
+    _bitcoinRecoveryAddress: string,
     _tbtcDeposit: TbtcDeposit,
-    _bitcoinClient: BitcoinClient,
   ) {
     const { extraData } = _tbtcDeposit.getReceipt()
 
     if (!extraData) throw new Error("Invalid extra data")
 
-    const { staker, referral } = _contracts.tbtcDepositor.decodeExtraData(
+    const { staker } = _contracts.tbtcDepositor.decodeExtraData(
       extraData.toPrefixedString(),
     )
 
     this.#contracts = _contracts
     this.#messageSigner = _messageSigner
     this.#staker = staker
-    this.#referral = referral
+    this.#bitcoinRecoveryAddress = _bitcoinRecoveryAddress
     this.#tbtcDeposit = _tbtcDeposit
-    this.#bitcoinClient = _bitcoinClient
   }
 
   /**
@@ -95,7 +87,7 @@ class StakeInitialization {
    *      is required to stake BTC.
    */
   async signMessage() {
-    const { domain, types, message } = await this.#getStakeMessageTypedData()
+    const { domain, types, message } = this.#getStakeMessageTypedData()
 
     const signedMessage = await this.#messageSigner.sign(domain, types, message)
 
@@ -111,7 +103,7 @@ class StakeInitialization {
   /**
    * @returns The staking message data to be signed.
    */
-  async #getStakeMessageTypedData() {
+  #getStakeMessageTypedData() {
     const domain: Domain = {
       name: "TbtcDepositor",
       version: "1",
@@ -128,12 +120,7 @@ class StakeInitialization {
 
     const message: Message = {
       receiver: this.#staker.identifierHex,
-      bitcoinRecoveryAddress: BitcoinAddressConverter.publicKeyHashToAddress(
-        this.#tbtcDeposit.getReceipt().refundPublicKeyHash,
-        // TODO: Figure out when to pass false or true.
-        false,
-        await this.#bitcoinClient.getNetwork(),
-      ),
+      bitcoinRecoveryAddress: this.#bitcoinRecoveryAddress,
     }
 
     return { domain, types, message }
