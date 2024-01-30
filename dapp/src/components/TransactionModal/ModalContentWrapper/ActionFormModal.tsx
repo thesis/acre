@@ -15,7 +15,7 @@ import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/Token
 const TABS: ActionFlowType[] = ["stake", "unstake"]
 
 function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
-  const { goNext, setType } = useModalFlowContext()
+  const { setType } = useModalFlowContext()
   const { setTokenAmount } = useTransactionContext()
 
   const handleSubmitForm = useCallback(
@@ -23,9 +23,8 @@ function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
       if (!values.amount) return
 
       setTokenAmount({ amount: values.amount, currency: "bitcoin" })
-      goNext()
     },
-    [goNext, setTokenAmount],
+    [setTokenAmount],
   )
 
   return (
