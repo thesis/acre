@@ -1,7 +1,7 @@
 import React from "react"
 import { TransactionInfo } from "#/types"
 import Cell from "."
-import { ContentType, getCustomContent } from "./utils/content"
+import { ContentType, getCustomContent } from "./utils"
 
 function CustomCell({
   type,

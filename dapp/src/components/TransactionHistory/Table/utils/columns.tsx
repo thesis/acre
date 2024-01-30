@@ -50,7 +50,7 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
       />
     ),
   }),
-  columnHelper.accessor("callTx.asset.amount", {
+  columnHelper.accessor("callTx.amount", {
     header: "Amount",
     cell: ({ row: { original } }) => (
       <CustomCell

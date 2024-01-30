@@ -22,8 +22,8 @@ export const getCustomContent = (
     case "currency-balance":
       return (
         <CurrencyBalance
-          currency={transaction.asset.currency}
-          amount={transaction.asset.amount}
+          currency={transaction.currency}
+          amount={transaction.amount}
           size="sm"
         />
       )
@@ -33,7 +33,7 @@ export const getCustomContent = (
       )
     }
     case "currency-icon": {
-      return <CurrencyIcon currency={transaction.asset.currency} withSymbol />
+      return <CurrencyIcon currency={transaction.currency} withSymbol />
     }
     case "date": {
       return (

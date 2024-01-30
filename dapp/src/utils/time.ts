@@ -8,7 +8,7 @@ import {
   ONE_YEAR_IN_SECONDS,
 } from "#/constants"
 
-const dateToUnixTimestamp = (date: Date = new Date()) =>
+export const dateToUnixTimestamp = (date: Date = new Date()) =>
   Math.floor(date.getTime() / ONE_SEC_IN_MILLISECONDS)
 
 // unit, max diff, divisor

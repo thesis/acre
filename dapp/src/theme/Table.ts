@@ -4,7 +4,14 @@ import { createMultiStyleConfigHelpers, defineStyle } from "@chakra-ui/react"
 const BORDER_RADIUS_SIZE = "md"
 const BORDER_STYLE = "1px solid white"
 
-const KEYS = [...parts.keys, "cellContainer", "cell", "divider"] as const
+const KEYS = [
+  ...parts.keys,
+  "cellContainer",
+  "cell",
+  "divider",
+  "header",
+  "sortContainer",
+] as const
 
 const multiStyleConfig = createMultiStyleConfigHelpers(KEYS)
 
@@ -55,6 +62,17 @@ const variantDoubleRowDivider = defineStyle({
   borderBottomWidth: "2px",
 })
 
+const baseStyleSortContainer = defineStyle({
+  display: "flex",
+  flexDirection: "column",
+})
+
+const baseStyleHeader = defineStyle({
+  display: "flex",
+  alignItems: "center",
+  gap: 2.5,
+})
+
 const variantDoubleRow = multiStyleConfig.definePartsStyle({
   table: variantDoubleRowTable,
   td: variantDoubleRowTd,
@@ -68,4 +86,12 @@ const variants = {
   "double-row": variantDoubleRow,
 }
 
-export const tableTheme = multiStyleConfig.defineMultiStyleConfig({ variants })
+const baseStyle = multiStyleConfig.definePartsStyle({
+  header: baseStyleHeader,
+  sortContainer: baseStyleSortContainer,
+})
+
+export const tableTheme = multiStyleConfig.defineMultiStyleConfig({
+  baseStyle,
+  variants,
+})

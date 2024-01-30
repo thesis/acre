@@ -5,16 +5,12 @@ type TransactionInfoAction = "stake" | "unstake" | "receive"
 
 export type TransactionInfoStatus = "completed" | "pending" | "syncing"
 
-export type Asset = {
-  currency: CurrencyType
-  amount: number
-}
-
 export type TransactionInfo = {
   timestamp: number
   chain: Chain
   action: TransactionInfoAction
-  asset: Asset
+  currency: CurrencyType
+  amount: number
   account: string
   txHash?: string
   // TODO: Update when statuses for transactions are determined
