@@ -1,6 +1,5 @@
 import { useCallback, useState } from "react"
-import { StakeInitialization } from "sdk/dist/src/modules/staking/stake-initialization"
-import { EthereumAddress } from "sdk/dist/src/lib/ethereum"
+import { StakeInitialization, EthereumAddress } from "@acre/sdk"
 import { useAcreContext } from "../AcreSdkContext"
 
 // TODO: Hardcode referral value.

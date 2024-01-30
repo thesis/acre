@@ -1,6 +1,5 @@
 import React, { useCallback, useContext, useMemo, useState } from "react"
-import Acre from "sdk"
-import { EthereumNetwork } from "sdk/dist/src/lib/ethereum"
+import { Acre, EthereumNetwork } from "@acre/sdk"
 import { LedgerWalletSigner } from "../web3"
 
 type AcreSdkContextType = {

@@ -15,7 +15,7 @@ import {
   TransactionResponse,
   JsonRpcProvider,
 } from "ethers"
-import { EthereumSignerCompatibleWithEthersV5, Hex } from "sdk/src/lib/utils"
+import { EthereumSignerCompatibleWithEthersV5, Hex } from "@acre/sdk"
 import { CURRENCY_ID_ETHEREUM } from "#/constants"
 import { getLedgerWalletAPITransport as getDappLedgerWalletAPITransport } from "../contexts"
 
