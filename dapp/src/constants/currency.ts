@@ -22,7 +22,7 @@ export const CURRENCY_ID_BITCOIN =
   import.meta.env.VITE_USE_TESTNET === "true" ? "bitcoin_testnet" : "bitcoin"
 
 export const CURRENCY_ID_ETHEREUM =
-  import.meta.env.VITE_USE_TESTNET === "true" ? "ethereum_goerli" : "ethereum"
+  import.meta.env.VITE_USE_TESTNET === "true" ? "ethereum_sepolia" : "ethereum"
 
 export const CURRENCIES_BY_TYPE: Record<CurrencyType, Currency> = {
   bitcoin: BITCOIN,

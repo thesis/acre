@@ -2,10 +2,8 @@ import {
   DepositReceipt,
   packRevealDepositParameters as tbtcPackRevealDepositParameters,
 } from "@keep-network/tbtc-v2.ts"
-import { TbtcDepositor as TbtcDepositorTypechain } from "core/typechain/contracts/tbtc/TbtcDepositor"
-// TODO: How to fix this import?
-// eslint-disable-next-line import/no-unresolved
-import TbtcDepositor from "core/build/contracts/tbtc/TBTCDepositor.sol/TBTCDepositor.json"
+import { TbtcDepositor as TbtcDepositorTypechain } from "@acre/core/typechain/contracts/tbtc/TbtcDepositor"
+import TbtcDepositor from "@acre/core/build/contracts/tbtc/TbtcDepositor.sol/TbtcDepositor.json"
 import { dataSlice, getAddress, solidityPacked, zeroPadBytes } from "ethers"
 import { ChainIdentifier, DecodedExtraData, TBTCDepositor } from "../contracts"
 import { BitcoinRawTxVectors } from "../bitcoin"
@@ -29,7 +27,7 @@ class EthereumTBTCDepositor
       // TODO: get artifact from `core` package.
       {
         abi: TbtcDepositor.abi,
-        address: "0x4a114666C957c189Eca756ad5dD84a1D32CC3e75",
+        address: "0x829fdCDf6Be747FEA37518fBd83dF70EE371fCf2",
         receipt: {
           blockNumber: 1,
         },

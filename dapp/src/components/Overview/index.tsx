@@ -21,7 +21,7 @@ export default function Overview() {
   const initSDK = useCallback(async () => {
     if (!ethAddress) return
 
-    await init(ethAddress, "goerli")
+    await init(ethAddress, "sepolia")
   }, [ethAddress, init])
 
   return (
