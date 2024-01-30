@@ -23,7 +23,7 @@ import {
 
 import { to1e18 } from "./utils"
 
-import type { Acre, TestERC20, Dispatcher, TestERC4626 } from "../typechain"
+import type { Acre, TestERC20, Dispatcher } from "../typechain"
 
 async function fixture() {
   const { tbtc, acre, dispatcher, vault } = await deployment()
@@ -57,7 +57,6 @@ describe("Acre", () => {
   let acre: Acre
   let tbtc: TestERC20
   let dispatcher: Dispatcher
-  let testingERC4626: TestERC4626
 
   let governance: HardhatEthersSigner
   let staker1: HardhatEthersSigner
@@ -75,7 +74,6 @@ describe("Acre", () => {
       governance,
       thirdParty,
       treasury,
-      testingERC4626,
     } = await loadFixture(fixture))
   })
 
@@ -91,10 +89,31 @@ describe("Acre", () => {
           .approve(await acre.getAddress(), amountToStake)
       })
 
-      it("should return the correct amount of shares", async () => {
-        const shares = await acre.previewDeposit(amountToStake)
-        const expectedShares = amountToStake - feeOnTotal(amountToStake)
-        expect(shares).to.be.eq(expectedShares)
+      context("when validating preview deposit manually", () => {
+        it("should return the correct amount of fees", () => {
+          // feeOnTotal - this is a test internal function
+          const fee = feeOnTotal(amountToStake)
+          // fee = (1e18 * 5) / (10000 + 5) = 499750124937532
+          const expectedFee = 499750124937532
+          expect(fee).to.be.eq(expectedFee)
+        })
+
+        it("should return the correct amount of shares", async () => {
+          const shares = await acre.previewDeposit(amountToStake)
+          // amount to stake = 1 tBTC
+          // fee = (1e18 * 5) / (10000 + 5) = 499750124937532
+          // shares = 1e18 - 499750124937532 = 999500249875062468
+          const expectedShares = 999500249875062468n
+          expect(shares).to.be.eq(expectedShares)
+        })
+      })
+
+      context("when previewing shares programatically", () => {
+        it("should return the correct amount of shares", async () => {
+          const shares = await acre.previewDeposit(amountToStake)
+          const expectedShares = amountToStake - feeOnTotal(amountToStake)
+          expect(shares).to.be.eq(expectedShares)
+        })
       })
     })
 
@@ -111,13 +130,64 @@ describe("Acre", () => {
       })
 
       it("should return the correct amount of shares", async () => {
-        // testingERC4626 is the "clean" ERC4626 vault. We can use it to calculate
-        // the expected shares when adjusting for a fee.
-        const expectedShares = await testingERC4626.previewDeposit(
-          amountToStake2 - feeOnTotal(amountToStake2),
-        )
+        const expectedShares = amountToStake2 - feeOnTotal(amountToStake2)
         const shares = await acre.previewDeposit(amountToStake2)
         expect(shares).to.be.eq(expectedShares)
+      })
+    })
+  })
+
+  describe("previewMint", () => {
+    const sharesToMint = to1e18(1)
+    let amountToDeposit: bigint
+
+    beforeAfterSnapshotWrapper()
+
+    context("when validating preview mint manually", () => {
+      it("should return the correct amount of fees", () => {
+        // feeOnRaw - this is a test internal function
+        const fee = feeOnRaw(sharesToMint)
+        // fee = (1e18 * 5) / (10000) = 500000000000000
+        const expectedFee = 500000000000000
+        expect(fee).to.be.eq(expectedFee)
+      })
+
+      it("should return the correct amount of assets", async () => {
+        // 1e18 + 500000000000000
+        amountToDeposit = 1000500000000000000n
+
+        const assetsToDeposit = await acre.previewMint(sharesToMint)
+        expect(assetsToDeposit).to.be.eq(amountToDeposit)
+      })
+    })
+
+    context("when validating preview mint programatically", () => {
+      context("when the vault is not empty", () => {
+        const sharesToMint1 = to1e18(1)
+        const sharesToMint2 = to1e18(2)
+
+        // To receive 1 stBTC, a user must stake 1.0005 tBTC where 0.0005 tBTC
+        // is a fee.
+        const amountToDeposit1 = sharesToMint1 + feeOnRaw(sharesToMint1)
+
+        // To receive 2 stBTC, a user must stake 2.001 tBTC where 0.001 tBTC
+        // is a fee.
+        const amountToDeposit2 = sharesToMint2 + feeOnRaw(sharesToMint2)
+
+        it("should preview the correct amount of assets for deposit 2", async () => {
+          await tbtc
+            .connect(staker1)
+            .approve(await acre.getAddress(), amountToDeposit1)
+
+          await tbtc
+            .connect(staker2)
+            .approve(await acre.getAddress(), amountToDeposit2)
+
+          await acre.connect(staker1).mint(sharesToMint1, staker1.address)
+
+          const assets = await acre.previewMint(sharesToMint2)
+          expect(assets).to.be.eq(amountToDeposit2)
+        })
       })
     })
   })
@@ -428,11 +498,17 @@ describe("Acre", () => {
           })
 
           it("should transfer fee to treasury after staking by two stakers", async () => {
-            const expectedFee =
-              feeOnTotal(staker1AmountToStake) +
-              feeOnTotal(staker2AmountToStake)
+            await expect(stakeTx1).to.changeTokenBalances(
+              tbtc,
+              [treasury],
+              [feeOnTotal(staker1AmountToStake)],
+            )
 
-            expect(await tbtc.balanceOf(treasury.address)).to.be.eq(expectedFee)
+            await expect(stakeTx2).to.changeTokenBalances(
+              tbtc,
+              [treasury],
+              [feeOnTotal(staker2AmountToStake)],
+            )
           })
         })
       })
@@ -519,16 +595,6 @@ describe("Acre", () => {
             "when total tBTC amount after staking would not exceed max amount",
             () => {
               const newAmountToStake = to1e18(2)
-              // Current state:
-              //
-              // Stake amount = 7(staker 1) + 3 (staker 2) = 10
-              // Total assets minus fees = 6.996501749125437281(staker 1) + 2.998500749625187406(staker 2) + 5(yield)
-              // Total shares = 6.996501749125437281(staker 1) + 2.998500749625187406(staker 2) = 9.995002498750624687
-              // New stake amount = 2
-              // New stake amount - fee = 1.999000499750124937
-              // Shares to mint = 1.999000499750124937 * 9.995002498750624689 / 14.995002498750624687 = 1.332444925679136768
-              // in stBTC token precision
-              const expectedSharesToMint = 1332444925679136768n
               let sharesBefore: bigint
               let availableToRedeemBefore: bigint
 
@@ -558,6 +624,9 @@ describe("Acre", () => {
               })
 
               it("should receive more shares", async () => {
+                const expectedSharesToMint =
+                  await acre.previewDeposit(newAmountToStake)
+
                 const shares = await acre.balanceOf(staker1.address)
 
                 expect(shares).to.be.eq(sharesBefore + expectedSharesToMint)
@@ -662,60 +731,6 @@ describe("Acre", () => {
             },
           )
         })
-      })
-    })
-  })
-
-  describe("previewMint", () => {
-    beforeAfterSnapshotWrapper()
-
-    context("when minting as first staker", () => {
-      const sharesToMint = to1e18(1)
-      let amountToDeposit: bigint
-
-      beforeEach(async () => {
-        // To receive 1 stBTC, a user must stake 1.0005 tBTC where 0.0005 tBTC
-        // is a fee.
-        amountToDeposit = sharesToMint + feeOnRaw(sharesToMint)
-
-        await tbtc
-          .connect(staker1)
-          .approve(await acre.getAddress(), amountToDeposit)
-      })
-
-      it("should return the correct amount of assets", async () => {
-        const assetsToDeposit = await acre.previewMint(sharesToMint)
-        expect(assetsToDeposit).to.be.eq(amountToDeposit)
-      })
-    })
-
-    context("when the vault is not empty", () => {
-      const sharesToMint1 = to1e18(1)
-      const sharesToMint2 = to1e18(2)
-
-      // To receive 1 stBTC, a user must stake 1.0005 tBTC where 0.0005 tBTC
-      // is a fee.
-      const amountToDeposit1 = sharesToMint1 + feeOnRaw(sharesToMint1)
-
-      // To receive 2 stBTC, a user must stake 2.001 tBTC where 0.001 tBTC
-      // is a fee.
-      const amountToDeposit2 = sharesToMint2 + feeOnRaw(sharesToMint2)
-
-      beforeEach(async () => {
-        await tbtc
-          .connect(staker1)
-          .approve(await acre.getAddress(), amountToDeposit1)
-
-        await tbtc
-          .connect(staker2)
-          .approve(await acre.getAddress(), amountToDeposit2)
-
-        await acre.connect(staker1).mint(sharesToMint1, staker1.address)
-      })
-
-      it("should preview the correct amount of assets for deposit 2", async () => {
-        const assets = await acre.previewMint(sharesToMint2)
-        expect(assets).to.be.eq(amountToDeposit2)
       })
     })
   })
