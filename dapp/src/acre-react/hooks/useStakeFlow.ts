@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react"
-import { StakeInitialization, EthereumAddress } from "@acre/sdk"
+import { StakeInitialization, EthereumAddress, DepositReceipt } from "@acre/sdk"
 import { useAcreContext } from "../AcreSdkContext"
 
 // TODO: Hardcode referral value.
@@ -12,6 +12,9 @@ export function useStakeFlow() {
     undefined,
   )
   const [btcAddress, setBtcAddress] = useState<string | undefined>(undefined)
+  const [depositReceipt, setDepositReceipt] = useState<
+    DepositReceipt | undefined
+  >(undefined)
 
   const initStake = useCallback(
     async (bitcoinRecoveryAddress: string, ethereumAddress: string) => {
@@ -24,10 +27,12 @@ export function useStakeFlow() {
       )
 
       const btcDepositAddress = await initializedStakeFlow.getBitcoinAddress()
+      const btcDepositReceipt = initializedStakeFlow.getTbtcDepositReceipt()
       // TODO: add loading indicators or we can `@tanstack/react-query` lib for
       // handling requests.
       setStakeFlow(initializedStakeFlow)
       setBtcAddress(btcDepositAddress)
+      setDepositReceipt(btcDepositReceipt)
     },
     [isInitialized, acre],
   )
@@ -49,5 +54,6 @@ export function useStakeFlow() {
     btcAddress,
     signMessage,
     stake,
+    depositReceipt,
   }
 }
