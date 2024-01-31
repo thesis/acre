@@ -1,6 +1,5 @@
 import {
   ChainIdentifier,
-  DepositReceipt,
   Deposit as TbtcDeposit,
 } from "@keep-network/tbtc-v2.ts"
 import {
@@ -79,13 +78,6 @@ class StakeInitialization {
    */
   async getBitcoinAddress(): Promise<string> {
     return this.#tbtcDeposit.getBitcoinAddress()
-  }
-
-  /**
-   * @returns Receipt corresponding to the tbtc deposit.
-   */
-  getTbtcDepositReceipt(): DepositReceipt {
-    return this.#tbtcDeposit.getReceipt()
   }
 
   /**
