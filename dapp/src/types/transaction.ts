@@ -1,15 +1,20 @@
+import { Chain } from "./chain"
+import { CurrencyType } from "./currency"
+
 type TransactionInfoAction = "stake" | "unstake" | "receive"
 
-type TransactionInfoStatus = "completed" | "pending" | "syncing"
+export type TransactionInfoStatus = "completed" | "pending" | "syncing"
 
-type TransactionInfo = {
+export type TransactionInfo = {
   timestamp: number
+  chain: Chain
   action: TransactionInfoAction
-  asset: string
+  currency: CurrencyType
   amount: number
   account: string
-  txHash: string
-  status: TransactionInfoStatus
+  txHash?: string
+  // TODO: Update when statuses for transactions are determined
+  status?: TransactionInfoStatus
 }
 
 export type StakeHistory = {

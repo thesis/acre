@@ -8,4 +8,13 @@ const baseStyle = defineStyle({
   borderLeftColor: "gold.400",
 })
 
-export const spinnerTheme = defineStyleConfig({ baseStyle })
+const sizeXl = defineStyle({
+  width: 16,
+  height: 16,
+})
+
+const sizes = {
+  xl: sizeXl,
+}
+
+export const spinnerTheme = defineStyleConfig({ baseStyle, sizes })

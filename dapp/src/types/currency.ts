@@ -4,4 +4,4 @@ export type Currency = {
   decimals: number
 }
 
-export type CurrencyType = "bitcoin" | "ethereum" | "usd"
+export type CurrencyType = "bitcoin" | "ethereum" | "usd" | "stbtc"

@@ -1,11 +1,12 @@
 import React from "react"
-import { Button, ButtonProps, Icon } from "@chakra-ui/react"
+import { Button, ButtonProps, Icon, Link, LinkProps } from "@chakra-ui/react"
 import { ArrowUpRight } from "#/assets/icons"
 
-type ButtonLinkProps = ButtonProps & {
-  icon?: typeof Icon
-  iconColor?: string
-}
+type ButtonLinkProps = ButtonProps &
+  LinkProps & {
+    icon?: typeof Icon
+    iconColor?: string
+  }
 
 export default function ButtonLink({
   children,
@@ -16,9 +17,9 @@ export default function ButtonLink({
 }: ButtonLinkProps) {
   return (
     <Button
+      as={Link}
       variant={variant}
       justifyContent="flex-start"
-      borderRadius="md"
       leftIcon={
         <Icon
           as={icon}

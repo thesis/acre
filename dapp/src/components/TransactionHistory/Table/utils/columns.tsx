@@ -1,8 +1,10 @@
 import React from "react"
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table"
 import { StakeHistory } from "#/types"
-import { truncateAddress } from "#/utils"
-import CustomCell from "../CustomCell"
+import { capitalize, truncateAddress } from "#/utils"
+import CustomCell from "../Cell/Custom"
+import Cell from "../Cell"
+import SimpleText from "../Cell/components/SimpleText"
 
 const columnHelper = createColumnHelper<StakeHistory>()
 // When defining the columns for the table, columnHelper.accessor  ts returns a type issue.
@@ -16,21 +18,25 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
   // Let's sort the data by the first transaction.
   columnHelper.accessor("callTx.timestamp", {
     header: "Date",
+    size: 100,
     cell: ({ row: { original } }) => (
       <CustomCell
-        type="text"
-        value1={original.callTx.timestamp}
-        value2={original.receiptTx.timestamp}
+        type="date"
+        firstTransaction={original.callTx}
+        secondTransaction={original.receiptTx}
       />
     ),
   }),
   columnHelper.display({
     header: "Action",
     cell: ({ row: { original } }) => (
-      <CustomCell
-        type="text"
-        value1={original.callTx.action}
-        value2={original.receiptTx.action}
+      <Cell
+        firstField={
+          <SimpleText>{capitalize(original.callTx.action)}</SimpleText>
+        }
+        secondField={
+          <SimpleText>{capitalize(original.receiptTx.action)}</SimpleText>
+        }
       />
     ),
   }),
@@ -38,9 +44,9 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
     header: "Asset",
     cell: ({ row: { original } }) => (
       <CustomCell
-        type="text"
-        value1={original.callTx.asset}
-        value2={original.receiptTx.asset}
+        type="currency-icon"
+        firstTransaction={original.callTx}
+        secondTransaction={original.receiptTx}
       />
     ),
   }),
@@ -48,39 +54,47 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
     header: "Amount",
     cell: ({ row: { original } }) => (
       <CustomCell
-        type="text"
-        value1={original.callTx.amount}
-        value2={original.receiptTx.amount}
+        type="currency-balance"
+        firstTransaction={original.callTx}
+        secondTransaction={original.receiptTx}
       />
     ),
   }),
   columnHelper.display({
     header: "Account",
+    size: 250,
     cell: ({ row: { original } }) => (
-      <CustomCell
-        type="text"
-        value1={truncateAddress(original.callTx.account)}
-        value2={truncateAddress(original.receiptTx.account)}
+      <Cell
+        firstField={
+          <SimpleText>{truncateAddress(original.callTx.account)}</SimpleText>
+        }
+        secondField={
+          <SimpleText>{truncateAddress(original.receiptTx.account)}</SimpleText>
+        }
       />
     ),
   }),
   columnHelper.display({
     header: "Transaction",
+    size: 250,
     cell: ({ row: { original } }) => (
       <CustomCell
-        type="text"
-        value1={original.callTx.txHash}
-        value2={original.receiptTx.txHash}
+        type="block-explorer"
+        firstTransaction={original.callTx}
+        secondTransaction={original.receiptTx}
       />
     ),
   }),
   columnHelper.display({
     header: "Status",
+    meta: {
+      style: { textAlign: "right" },
+    },
     cell: ({ row: { original } }) => (
       <CustomCell
-        type="text"
-        value1={original.callTx.status}
-        value2={original.receiptTx.status}
+        type="status"
+        firstTransaction={original.callTx}
+        secondTransaction={original.receiptTx}
       />
     ),
   }),
