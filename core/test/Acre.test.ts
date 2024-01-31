@@ -77,6 +77,53 @@ describe("Acre", () => {
     } = await loadFixture(fixture))
   })
 
+  describe("feeOnTotal - internal test helper", () => {
+    context("when the fee's modulo remainder is greater than 0", () => {
+      it("should add 1 to the result", () => {
+        // feeOnTotal - test's internal function simulating the OZ mulDiv
+        // function.
+        const fee = feeOnTotal(to1e18(1))
+        // fee = (1e18 * 5) / (10000 + 5) = 499750124937531 + 1
+        const expectedFee = 499750124937532
+        expect(fee).to.be.eq(expectedFee)
+      })
+    })
+
+    context("when the fee's modulo remainder is equal to 0", () => {
+      it("should return the actual result", () => {
+        // feeOnTotal - test's internal function simulating the OZ mulDiv
+        // function.
+        const fee = feeOnTotal(2001n)
+        // fee = (2001 * 5) / (10000 + 5) = 1
+        const expectedFee = 1n
+        expect(fee).to.be.eq(expectedFee)
+      })
+    })
+  })
+
+  describe("feeOnRaw - internal test helper", () => {
+    context("when the fee's modulo remainder is greater than 0", () => {
+      it("should return the correct amount of fees", () => {
+        // feeOnRaw - this is a test internal function
+        const fee = feeOnRaw(to1e18(1))
+        // fee = (1e18 * 5) / (10000) = 500000000000000
+        const expectedFee = 500000000000000
+        expect(fee).to.be.eq(expectedFee)
+      })
+    })
+
+    context("when the fee's modulo remainder is equal to 0", () => {
+      it("should return the actual result", () => {
+        // feeOnTotal - test's internal function simulating the OZ mulDiv
+        // function.
+        const fee = feeOnTotal(2000n)
+        // fee = (2000 * 5) / 10000 = 1
+        const expectedFee = 1n
+        expect(fee).to.be.eq(expectedFee)
+      })
+    })
+  })
+
   describe("previewDeposit", () => {
     beforeAfterSnapshotWrapper()
 
@@ -89,15 +136,7 @@ describe("Acre", () => {
           .approve(await acre.getAddress(), amountToStake)
       })
 
-      context("when validating preview deposit manually", () => {
-        it("should return the correct amount of fees", () => {
-          // feeOnTotal - this is a test internal function
-          const fee = feeOnTotal(amountToStake)
-          // fee = (1e18 * 5) / (10000 + 5) = 499750124937532
-          const expectedFee = 499750124937532
-          expect(fee).to.be.eq(expectedFee)
-        })
-
+      context("when validating preview deposit against hardcoded value", () => {
         it("should return the correct amount of shares", async () => {
           const shares = await acre.previewDeposit(amountToStake)
           // amount to stake = 1 tBTC
@@ -108,13 +147,16 @@ describe("Acre", () => {
         })
       })
 
-      context("when previewing shares programatically", () => {
-        it("should return the correct amount of shares", async () => {
-          const shares = await acre.previewDeposit(amountToStake)
-          const expectedShares = amountToStake - feeOnTotal(amountToStake)
-          expect(shares).to.be.eq(expectedShares)
-        })
-      })
+      context(
+        "when previewing shares against programatically calculated values",
+        () => {
+          it("should return the correct amount of shares", async () => {
+            const shares = await acre.previewDeposit(amountToStake)
+            const expectedShares = amountToStake - feeOnTotal(amountToStake)
+            expect(shares).to.be.eq(expectedShares)
+          })
+        },
+      )
     })
 
     context("when the vault is not empty", () => {
@@ -138,58 +180,52 @@ describe("Acre", () => {
   })
 
   describe("previewMint", () => {
-    const sharesToMint = to1e18(1)
     let amountToDeposit: bigint
 
     beforeAfterSnapshotWrapper()
 
-    context("when validating preview mint manually", () => {
-      it("should return the correct amount of fees", () => {
-        // feeOnRaw - this is a test internal function
-        const fee = feeOnRaw(sharesToMint)
-        // fee = (1e18 * 5) / (10000) = 500000000000000
-        const expectedFee = 500000000000000
-        expect(fee).to.be.eq(expectedFee)
-      })
-
+    context("when validating preview mint against hardcoded value", () => {
       it("should return the correct amount of assets", async () => {
         // 1e18 + 500000000000000
         amountToDeposit = 1000500000000000000n
 
-        const assetsToDeposit = await acre.previewMint(sharesToMint)
+        const assetsToDeposit = await acre.previewMint(to1e18(1))
         expect(assetsToDeposit).to.be.eq(amountToDeposit)
       })
     })
 
-    context("when validating preview mint programatically", () => {
-      context("when the vault is not empty", () => {
-        const sharesToMint1 = to1e18(1)
-        const sharesToMint2 = to1e18(2)
+    context(
+      "when validating preview mint against programatically calculated value",
+      () => {
+        context("when the vault is not empty", () => {
+          const sharesToMint1 = to1e18(1)
+          const sharesToMint2 = to1e18(2)
 
-        // To receive 1 stBTC, a user must stake 1.0005 tBTC where 0.0005 tBTC
-        // is a fee.
-        const amountToDeposit1 = sharesToMint1 + feeOnRaw(sharesToMint1)
+          // To receive 1 stBTC, a user must stake 1.0005 tBTC where 0.0005 tBTC
+          // is a fee.
+          const amountToDeposit1 = sharesToMint1 + feeOnRaw(sharesToMint1)
 
-        // To receive 2 stBTC, a user must stake 2.001 tBTC where 0.001 tBTC
-        // is a fee.
-        const amountToDeposit2 = sharesToMint2 + feeOnRaw(sharesToMint2)
+          // To receive 2 stBTC, a user must stake 2.001 tBTC where 0.001 tBTC
+          // is a fee.
+          const amountToDeposit2 = sharesToMint2 + feeOnRaw(sharesToMint2)
 
-        it("should preview the correct amount of assets for deposit 2", async () => {
-          await tbtc
-            .connect(staker1)
-            .approve(await acre.getAddress(), amountToDeposit1)
+          it("should preview the correct amount of assets for deposit 2", async () => {
+            await tbtc
+              .connect(staker1)
+              .approve(await acre.getAddress(), amountToDeposit1)
 
-          await tbtc
-            .connect(staker2)
-            .approve(await acre.getAddress(), amountToDeposit2)
+            await tbtc
+              .connect(staker2)
+              .approve(await acre.getAddress(), amountToDeposit2)
 
-          await acre.connect(staker1).mint(sharesToMint1, staker1.address)
+            await acre.connect(staker1).mint(sharesToMint1, staker1.address)
 
-          const assets = await acre.previewMint(sharesToMint2)
-          expect(assets).to.be.eq(amountToDeposit2)
+            const assets = await acre.previewMint(sharesToMint2)
+            expect(assets).to.be.eq(amountToDeposit2)
+          })
         })
-      })
-    })
+      },
+    )
   })
 
   // TODO: consider introducing a mocking framework to validate the `deposit()`
