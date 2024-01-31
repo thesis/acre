@@ -69,6 +69,9 @@ contract Acre is ERC4626Fees, Ownable {
     /// Reverts if the address is zero.
     error ZeroAddress();
 
+    /// Reverts if the address is disallowed.
+    error DisallowedAddress();
+
     constructor(
         IERC20 _tbtc,
         address _treasury
@@ -87,8 +90,11 @@ contract Acre is ERC4626Fees, Ownable {
     /// @param newTreasury New treasury wallet address.
     function updateTreasury(address newTreasury) external onlyOwner {
         // TODO: Introduce a parameters update process.
-        if (address(newTreasury) == address(0)) {
+        if (newTreasury == address(0)) {
             revert ZeroAddress();
+        }
+        if (newTreasury == address(this)) {
+            revert DisallowedAddress();
         }
         treasury = newTreasury;
 

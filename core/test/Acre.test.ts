@@ -1210,7 +1210,15 @@ describe("Acre", () => {
         })
       })
 
-      context("when a new treasury is non-zero address", () => {
+      context("when a new treasury is Acre address", () => {
+        it("should revert", async () => {
+          await expect(
+            acre.connect(governance).updateTreasury(acre),
+          ).to.be.revertedWithCustomError(acre, "DisallowedAddress")
+        })
+      })
+
+      context("when a new treasury is an allowed address", () => {
         let newTreasury: string
 
         before(async () => {
