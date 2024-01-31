@@ -8,9 +8,9 @@ import {
   TabPanel,
 } from "@chakra-ui/react"
 import { useModalFlowContext, useTransactionContext } from "#/hooks"
-import StakeForm from "#/components/Modals/Staking/StakeForm"
 import { ActionFlowType } from "#/types"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
+import StakeFormModal from "../ActiveStakingStep/StakeFormModal"
 
 const TABS: ActionFlowType[] = ["stake", "unstake"]
 
@@ -43,11 +43,11 @@ function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
         </TabList>
         <TabPanels>
           <TabPanel>
-            <StakeForm onSubmitForm={handleSubmitForm} />
+            <StakeFormModal onSubmitForm={handleSubmitForm} />
           </TabPanel>
           <TabPanel>
             {/* TODO: Use the correct form for unstaking */}
-            <StakeForm onSubmitForm={handleSubmitForm} />
+            <StakeFormModal onSubmitForm={handleSubmitForm} />
           </TabPanel>
         </TabPanels>
       </Tabs>

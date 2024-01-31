@@ -4,9 +4,9 @@ import { useModalFlowContext, useSignMessage } from "#/hooks"
 import Alert from "#/components/shared/Alert"
 import { TextMd } from "#/components/shared/Typography"
 import { asyncWrapper } from "#/utils"
-import StakingSteps from "./components/StakingSteps"
+import StakingSteps from "./StakingSteps"
 
-export default function SignMessage() {
+export default function SignMessageModal() {
   const { goNext, startTransactionProcess } = useModalFlowContext()
   const { signMessage } = useSignMessage(goNext)
 

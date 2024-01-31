@@ -4,9 +4,9 @@ import { BITCOIN_MIN_AMOUNT } from "#/constants"
 import TokenAmountForm from "#/components/shared/TokenAmountForm"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { useWalletContext } from "#/hooks"
-import Details from "./Details"
+import Details from "./StakeDetails"
 
-function StakeForm({
+function StakeFormModal({
   onSubmitForm,
 }: {
   onSubmitForm: (values: TokenAmountFormValues) => void
@@ -29,4 +29,4 @@ function StakeForm({
   )
 }
 
-export default StakeForm
+export default StakeFormModal
