@@ -22,7 +22,7 @@ function ConnectButton({
   account,
   requestAccount,
 }: ConnectButtonsProps) {
-  const colorScheme = !account ? "error" : "gold"
+  const colorScheme = !account ? "error" : undefined
 
   const handleClick = () => {
     asyncWrapper(requestAccount())
