@@ -14,7 +14,7 @@ const DEFAULT_ACTIVE_STEP = 1
 
 export type TransactionModalProps = {
   isOpen: boolean
-  defaultType: ActionFlowType
+  defaultType?: ActionFlowType
   onClose: () => void
 }
 
