@@ -68,7 +68,8 @@ abstract contract ERC4626Fees is ERC4626 {
 
     // === Fee operations ===
 
-    /// @dev Calculates the fees that should be added to an amount `assets` that does not already include fees.
+    /// @dev Calculates the fees that should be added to an amount `assets`
+    ///      that does not already include fees.
     /// Used in {IERC4626-mint} and {IERC4626-withdraw} operations.
     function _feeOnRaw(
         uint256 assets,

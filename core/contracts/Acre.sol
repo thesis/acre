@@ -4,7 +4,6 @@ pragma solidity ^0.8.21;
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import "./Dispatcher.sol";
 import "./ERC4626Fees.sol";
 
@@ -21,7 +20,6 @@ import "./ERC4626Fees.sol";
 ///      tokens, providing a seamless exchange with tBTC tokens.
 contract Acre is ERC4626Fees, Ownable {
     using SafeERC20 for IERC20;
-    using Math for uint256;
 
     /// Dispatcher contract that routes tBTC from Acre to a given vault and back.
     Dispatcher public dispatcher;
@@ -231,8 +229,8 @@ contract Acre is ERC4626Fees, Ownable {
     ///         assets, which determines the total amount of tBTC token held by
     ///         Acre. This function always returns available limit for deposits,
     ///         but the fee is not taken into account. As a result of this, there
-    ///         always will be some dust left. If the dust if lower than the
-    ///         minumum deposit amount, this function will return 0.
+    ///         always will be some dust left. If the dust is lower than the
+    ///         minimum deposit amount, this function will return 0.
     /// @return The maximum amount of the tBTC token that can be deposited into
     ///         the Acre for the receiver.
     function maxDeposit(address) public view override returns (uint256) {
@@ -243,6 +241,8 @@ contract Acre is ERC4626Fees, Ownable {
         uint256 currentTotalAssets = totalAssets();
         if (currentTotalAssets >= maximumTotalAssets) return 0;
 
+        // Max amount left for next deposits. If it is lower than the minimum
+        // deposit amount, return 0.
         uint256 unusedLimit = maximumTotalAssets - currentTotalAssets;
 
         return minimumDepositAmount > unusedLimit ? 0 : unusedLimit;
