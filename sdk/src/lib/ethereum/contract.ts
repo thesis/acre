@@ -20,6 +20,8 @@ export type EthereumSigner = Signer | VoidSigner
  * Represents a config set required to connect an Ethereum contract.
  */
 export interface EthersContractConfig
+  // We want to omit the `signerOrProvider` because it points to ethers v5. We
+  // use ethers v6 in Acre SDK.
   extends Omit<_EthersContractConfig, "signerOrProvider"> {
   signer: EthereumSigner
 }
