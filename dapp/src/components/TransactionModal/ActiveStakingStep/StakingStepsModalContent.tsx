@@ -41,7 +41,7 @@ const STEPS: StepBase[] = [
   },
 ]
 
-export default function StakingSteps({
+export default function StakingStepsModalContent({
   buttonText,
   activeStep,
   onClick,
