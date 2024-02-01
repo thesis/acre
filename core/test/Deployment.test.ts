@@ -10,9 +10,9 @@ import type { StBTC as stBTC, Dispatcher, TestERC20 } from "../typechain"
 
 async function fixture() {
   const { tbtc, stbtc, dispatcher } = await deployment()
-  const { governance, maintainer } = await getNamedSigner()
+  const { governance, maintainer, treasury } = await getNamedSigner()
 
-  return { stbtc, dispatcher, tbtc, governance, maintainer }
+  return { stbtc, dispatcher, tbtc, governance, maintainer, treasury }
 }
 
 describe("Deployment", () => {
@@ -20,12 +20,24 @@ describe("Deployment", () => {
   let dispatcher: Dispatcher
   let tbtc: TestERC20
   let maintainer: HardhatEthersSigner
+  let treasury: HardhatEthersSigner
 
   before(async () => {
-    ;({ stbtc, dispatcher, tbtc, maintainer } = await loadFixture(fixture))
+    ;({ stbtc, dispatcher, tbtc, maintainer, treasury } =
+      await loadFixture(fixture))
   })
 
-  describe("stBTC", () => {
+  describe("Acre", () => {
+    describe("constructor", () => {
+      context("when treasury has been set", () => {
+        it("should be set to a treasury address", async () => {
+          const actualTreasury = await stbtc.treasury()
+
+          expect(actualTreasury).to.be.equal(await treasury.getAddress())
+        })
+      })
+    })
+
     describe("updateDispatcher", () => {
       context("when a dispatcher has been set", () => {
         it("should be set to a dispatcher address by the deployment script", async () => {
