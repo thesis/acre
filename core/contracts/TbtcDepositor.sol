@@ -112,11 +112,11 @@ contract TbtcDepositor is TBTCDepositorProxy, Ownable {
 
     /// @notice Emitted when a stake request is recalled.
     /// @param depositKey Deposit key identifying the deposit.
-    /// @param caller Address that called the function to recall the stake.
+    /// @param receiver Address of the receiver.
     /// @param amountToStake Amount of recalled tBTC tokens.
     event StakeRequestRecalled(
         uint256 indexed depositKey,
-        address indexed caller,
+        address indexed receiver,
         uint256 amountToStake
     );
 
@@ -312,7 +312,7 @@ contract TbtcDepositor is TBTCDepositorProxy, Ownable {
 
         emit StakeRequestRecalled(
             depositKey,
-            msg.sender,
+            request.receiver,
             request.amountToStake
         );
 
