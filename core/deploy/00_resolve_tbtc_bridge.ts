@@ -19,11 +19,9 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   } else {
     log("deploying Bridge contract stub")
 
-    const tbtc = await deployments.get("TBTC")
-
     await deployments.deploy("Bridge", {
       contract: "BridgeStub",
-      args: [tbtc.address],
+      args: [],
       from: deployer,
       log: true,
       waitConfirmations: 1,
@@ -34,4 +32,3 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 export default func
 
 func.tags = ["TBTC", "Bridge"]
-func.dependencies = ["TBTCToken"]
