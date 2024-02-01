@@ -7,8 +7,8 @@ const STAKING_STEPS = {
 const UNSTAKING_STEPS = { SIGN_MESSAGE: 1 }
 
 export const ACTION_FLOW_STEPS_TYPES = {
-  stake: STAKING_STEPS,
-  unstake: UNSTAKING_STEPS,
+  STAKE: STAKING_STEPS,
+  UNSTAKE: UNSTAKING_STEPS,
 } as const
 
 export type ActionFlowType = keyof typeof ACTION_FLOW_STEPS_TYPES

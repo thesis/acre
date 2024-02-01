@@ -20,7 +20,7 @@ type TransactionModalProps = {
 
 export default function TransactionModal({
   isOpen,
-  defaultType = "stake",
+  defaultType = "STAKE",
   onClose,
 }: TransactionModalProps) {
   const { onOpen: openSideBar, onClose: closeSidebar } = useSidebar()

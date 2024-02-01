@@ -4,7 +4,7 @@ import Overview from "./Overview"
 import SignMessage from "./SignMessage"
 import DepositBTC from "./DepositBTC"
 
-const STEPS = ACTION_FLOW_STEPS_TYPES.stake
+const STEPS = ACTION_FLOW_STEPS_TYPES.STAKE
 
 export function ActiveStakingStep({ activeStep }: { activeStep: number }) {
   switch (activeStep) {

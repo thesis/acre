@@ -43,13 +43,13 @@ export default function PositionDetails(props: CardProps) {
         />
       </CardBody>
       <CardFooter flexDirection="column" gap={2}>
-        <Button size="lg" onClick={() => setActionFlowType("stake")}>
+        <Button size="lg" onClick={() => setActionFlowType("STAKE")}>
           Stake
         </Button>
         <Button
           size="lg"
           variant="outline"
-          onClick={() => setActionFlowType("unstake")}
+          onClick={() => setActionFlowType("UNSTAKE")}
         >
           Unstake
         </Button>

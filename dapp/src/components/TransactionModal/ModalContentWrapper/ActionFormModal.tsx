@@ -9,10 +9,10 @@ import {
 } from "@chakra-ui/react"
 import { useModalFlowContext, useTransactionContext } from "#/hooks"
 import StakeForm from "#/components/Modals/Staking/StakeForm"
-import { ActionFlowType } from "#/types"
+import { ACTION_FLOW_STEPS_TYPES, ActionFlowType } from "#/types"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 
-const TABS: ActionFlowType[] = ["stake", "unstake"]
+const TABS = Object.keys(ACTION_FLOW_STEPS_TYPES) as ActionFlowType[]
 
 function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
   const { setType } = useModalFlowContext()
@@ -37,7 +37,7 @@ function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
         <TabList pb={6}>
           {TABS.map((type) => (
             <Tab key={type} w="50%" pb={4} onClick={() => setType(type)}>
-              {type}
+              {type.toLowerCase()}
             </Tab>
           ))}
         </TabList>
