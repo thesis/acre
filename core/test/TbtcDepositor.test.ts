@@ -75,6 +75,8 @@ describe("TbtcDepositor", () => {
     await tbtcDepositor
       .connect(governance)
       .updateDepositorFeeDivisor(defaultDepositorFeeDivisor)
+
+    await stbtc.connect(governance).updateEntryFeeBasisPoints(0)
   })
 
   describe("initializeStakeRequest", () => {
