@@ -12,7 +12,7 @@ import { ActiveFlowStep } from "./ActiveFlowStep"
 
 const DEFAULT_ACTIVE_STEP = 1
 
-export type TransactionModalProps = {
+type TransactionModalProps = {
   isOpen: boolean
   defaultType?: ActionFlowType
   onClose: () => void
