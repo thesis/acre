@@ -5,10 +5,10 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/interfaces/IERC4626.sol";
 import "./Router.sol";
-import "./Acre.sol";
+import "./stBTC.sol";
 
 /// @title Dispatcher
-/// @notice Dispatcher is a contract that routes tBTC from Acre (stBTC) to
+/// @notice Dispatcher is a contract that routes tBTC from stBTC to
 ///         yield vaults and back. Vaults supply yield strategies with tBTC that
 ///         generate yield for Bitcoin holders.
 contract Dispatcher is Router, Ownable {
@@ -19,8 +19,8 @@ contract Dispatcher is Router, Ownable {
         bool authorized;
     }
 
-    /// The main Acre contract holding tBTC deposited by stakers.
-    Acre public immutable acre;
+    /// The main stBTC contract holding tBTC deposited by stakers.
+    stBTC public immutable stbtc;
     /// tBTC token contract.
     IERC20 public immutable tbtc;
     /// Address of the maintainer bot.
@@ -47,7 +47,7 @@ contract Dispatcher is Router, Ownable {
     /// Emitted when tBTC is routed to a vault.
     /// @param vault Address of the vault.
     /// @param amount Amount of tBTC.
-    /// @param sharesOut Amount of shares received by Acre.
+    /// @param sharesOut Amount of received shares.
     event DepositAllocated(
         address indexed vault,
         uint256 amount,
@@ -78,8 +78,8 @@ contract Dispatcher is Router, Ownable {
         _;
     }
 
-    constructor(Acre _acre, IERC20 _tbtc) Ownable(msg.sender) {
-        acre = _acre;
+    constructor(stBTC _stbtc, IERC20 _tbtc) Ownable(msg.sender) {
+        stbtc = _stbtc;
         tbtc = _tbtc;
     }
 
@@ -131,11 +131,11 @@ contract Dispatcher is Router, Ownable {
 
     /// TODO: make this function internal once the allocation distribution is
     /// implemented
-    /// @notice Routes tBTC from Acre to a vault. Can be called by the maintainer
+    /// @notice Routes tBTC from stBTC to a vault. Can be called by the maintainer
     ///         only.
     /// @param vault Address of the vault to route the assets to.
     /// @param amount Amount of tBTC to deposit.
-    /// @param minSharesOut Minimum amount of shares to receive by Acre.
+    /// @param minSharesOut Minimum amount of shares to receive.
     function depositToVault(
         address vault,
         uint256 amount,
@@ -146,12 +146,12 @@ contract Dispatcher is Router, Ownable {
         }
 
         // slither-disable-next-line arbitrary-send-erc20
-        tbtc.safeTransferFrom(address(acre), address(this), amount);
+        tbtc.safeTransferFrom(address(stbtc), address(this), amount);
         tbtc.forceApprove(address(vault), amount);
 
         uint256 sharesOut = deposit(
             IERC4626(vault),
-            address(acre),
+            address(stbtc),
             amount,
             minSharesOut
         );
