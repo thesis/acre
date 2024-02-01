@@ -20,9 +20,9 @@ function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
 
   const handleSubmitForm = useCallback(
     (values: TokenAmountFormValues) => {
-      if (!values.amount) return
-
-      setTokenAmount({ amount: values.amount, currency: "bitcoin" })
+      if (values.amount) {
+        setTokenAmount({ amount: values.amount, currency: "bitcoin" })
+      }
     },
     [setTokenAmount],
   )
