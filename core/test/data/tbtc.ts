@@ -1,5 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 
+import { ethers } from "hardhat"
+
 // TODO: Revisit the data once full integration is tested on testnet with valid
 // contracts integration.
 // Fixture used for revealDepositWithExtraData test scenario.
@@ -41,6 +43,7 @@ export const tbtcDepositData = {
   extraData:
     "0xa9b38ea6435c8941d6eda6a46b68e3e2117196995bd100000000000000000000",
   // Deposit key is keccak256(fundingTxHash | fundingOutputIndex).
-  depositKey:
+  depositKey: ethers.getBigInt(
     "0x8dde6118338ae2a046eb77a4acceb0521699275f9cc8e9b50057b29d9de1e844",
+  ),
 }
