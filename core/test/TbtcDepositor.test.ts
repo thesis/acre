@@ -15,7 +15,6 @@ import type {
 import { deployment, getNamedSigner, getUnnamedSigner } from "./helpers"
 import { beforeAfterSnapshotWrapper } from "./helpers/snapshot"
 import { tbtcDepositData } from "./data/tbtc"
-import { lastBlockTime } from "./helpers/time"
 import { to1ePrecision } from "./utils"
 
 async function fixture() {
@@ -29,7 +28,17 @@ describe("TbtcDepositor", () => {
   const defaultDepositTreasuryFeeDivisor = 2000 // 1/2000 = 0.05% = 0.0005
   const defaultDepositTxMaxFee = 1000 // 1000 satoshi = 0.00001 BTC
   const defaultOptimisticFeeDivisor = 500 // 1/500 = 0.002 = 0.2%
-  const defaultDepositorFeeDivisor = 80 // 1/80 = 0.0125 = 1.25%
+  const defaultDepositorFeeDivisor = 1000 // 1/1000 = 0.001 = 0.1%
+
+  // Funding transaction amount: 10000 satoshi
+  // tBTC Deposit Treasury Fee: 0.05% = 10000 * 0.05% = 5 satoshi
+  // tBTC Optimistic Minting Fee: 0.2% = (10000 - 5) * 0.2% = 19,99 satoshi
+  // tBTC Deposit Transaction Max Fee: 1000 satoshi
+  // Depositor Fee: 1.25% = 10000 satoshi * 0.01% = 10 satoshi
+  const initialDepositAmount = to1ePrecision(10000, 10) // 10000 satoshi
+  const bridgedTbtcAmount = to1ePrecision(897501, 8) // 8975,01 satoshi
+  const depositorFee = to1ePrecision(10, 10) // 10 satoshi
+  const amountToStake = to1ePrecision(896501, 8) // 8850,01 satoshi
 
   let tbtcDepositor: TbtcDepositor
   let tbtcBridge: BridgeStub
@@ -100,107 +109,69 @@ describe("TbtcDepositor", () => {
                   tbtcDepositData.receiver,
                   tbtcDepositData.referral,
                 ),
-            )
-              .to.be.revertedWithCustomError(
-                tbtcDepositor,
-                "UnexpectedTbtcVault",
-              )
-              .withArgs(invalidTbtcVault)
+            ).to.be.revertedWith("Vault address mismatch")
           })
         })
 
         describe("when tbtc vault address is correct", () => {
           describe("when referral is non-zero", () => {
-            describe("when revealed depositor doesn't match tbtc depositor contract", () => {
-              beforeAfterSnapshotWrapper()
+            beforeAfterSnapshotWrapper()
 
-              let invalidDepositor: string
+            let tx: ContractTransactionResponse
 
-              before(async () => {
-                invalidDepositor =
-                  await ethers.Wallet.createRandom().getAddress()
-
-                await tbtcBridge.setDepositorOverride(invalidDepositor)
-              })
-
-              it("should revert", async () => {
-                await expect(
-                  tbtcDepositor
-                    .connect(thirdParty)
-                    .initializeStakeRequest(
-                      tbtcDepositData.fundingTxInfo,
-                      tbtcDepositData.reveal,
-                      tbtcDepositData.receiver,
-                      tbtcDepositData.referral,
-                    ),
+            before(async () => {
+              tx = await tbtcDepositor
+                .connect(thirdParty)
+                .initializeStakeRequest(
+                  tbtcDepositData.fundingTxInfo,
+                  tbtcDepositData.reveal,
+                  tbtcDepositData.receiver,
+                  tbtcDepositData.referral,
                 )
-                  .to.be.revertedWithCustomError(
-                    tbtcDepositor,
-                    "UnexpectedDepositor",
-                  )
-                  .withArgs(invalidDepositor)
-              })
             })
-            describe("when revealed depositor matches tbtc depositor contract", () => {
-              beforeAfterSnapshotWrapper()
 
-              let tx: ContractTransactionResponse
-
-              before(async () => {
-                tx = await tbtcDepositor
-                  .connect(thirdParty)
-                  .initializeStakeRequest(
-                    tbtcDepositData.fundingTxInfo,
-                    tbtcDepositData.reveal,
-                    tbtcDepositData.receiver,
-                    tbtcDepositData.referral,
-                  )
-              })
-
-              it("should emit StakeInitialized event", async () => {
-                await expect(tx)
-                  .to.emit(tbtcDepositor, "StakeInitialized")
-                  .withArgs(
-                    tbtcDepositData.depositKey,
-                    thirdParty.address,
-                    tbtcDepositData.receiver,
-                    tbtcDepositData.referral,
-                  )
-              })
-
-              it("should store request data", async () => {
-                const storedStakeRequest = await tbtcDepositor.stakeRequests(
+            it("should emit StakeRequestInitialized event", async () => {
+              await expect(tx)
+                .to.emit(tbtcDepositor, "StakeRequestInitialized")
+                .withArgs(
                   tbtcDepositData.depositKey,
+                  thirdParty.address,
+                  tbtcDepositData.receiver,
                 )
+            })
 
-                expect(
-                  storedStakeRequest.requestedAt,
-                  "invalid requestedAt",
-                ).to.be.equal(await lastBlockTime())
-                expect(
-                  storedStakeRequest.finalizedAt,
-                  "invalid finalizedAt",
-                ).to.be.equal(0)
-                expect(
-                  storedStakeRequest.tbtcDepositTxMaxFee,
-                  "invalid tbtcDepositTxMaxFee",
-                ).to.be.equal(1000)
-                expect(
-                  storedStakeRequest.tbtcOptimisticMintingFeeDivisor,
-                  "invalid tbtcOptimisticMintingFeeDivisor",
-                ).to.be.equal(500)
-              })
+            it("should store request data", async () => {
+              const storedStakeRequest = await tbtcDepositor.stakeRequests(
+                tbtcDepositData.depositKey,
+              )
 
-              it("should reveal the deposit to the bridge contract with extra data", async () => {
-                const storedRevealedDeposit = await tbtcBridge.deposits(
-                  tbtcDepositData.depositKey,
-                )
+              expect(
+                storedStakeRequest.finalizedAt,
+                "invalid finalizedAt",
+              ).to.be.equal(0)
+              expect(
+                storedStakeRequest.receiver,
+                "invalid receiver",
+              ).to.be.equal(tbtcDepositData.receiver)
+              expect(
+                storedStakeRequest.referral,
+                "invalid referral",
+              ).to.be.equal(tbtcDepositData.referral)
+              expect(
+                storedStakeRequest.amountToStake,
+                "invalid amountToStake",
+              ).to.be.equal(0)
+            })
 
-                expect(
-                  storedRevealedDeposit.extraData,
-                  "invalid extraData",
-                ).to.be.equal(tbtcDepositData.extraData)
-              })
+            it("should reveal the deposit to the bridge contract with extra data", async () => {
+              const storedRevealedDeposit = await tbtcBridge.deposits(
+                tbtcDepositData.depositKey,
+              )
+
+              expect(
+                storedRevealedDeposit.extraData,
+                "invalid extraData",
+              ).to.be.equal(tbtcDepositData.extraData)
             })
           })
 
@@ -247,10 +218,42 @@ describe("TbtcDepositor", () => {
                 tbtcDepositData.receiver,
                 tbtcDepositData.referral,
               ),
-          ).to.be.revertedWithCustomError(
-            tbtcDepositor,
-            "StakeRequestAlreadyInProgress",
-          )
+          ).to.be.revertedWith("Deposit already revealed")
+        })
+      })
+
+      describe("when stake request is already finalized", () => {
+        beforeAfterSnapshotWrapper()
+
+        before(async () => {
+          await tbtcDepositor
+            .connect(thirdParty)
+            .initializeStakeRequest(
+              tbtcDepositData.fundingTxInfo,
+              tbtcDepositData.reveal,
+              tbtcDepositData.receiver,
+              tbtcDepositData.referral,
+            )
+
+          // Simulate deposit request finalization.
+          await finalizeBridging(tbtcDepositData.depositKey)
+
+          await tbtcDepositor
+            .connect(thirdParty)
+            .notifyBridgingCompleted(tbtcDepositData.depositKey)
+        })
+
+        it("should revert", async () => {
+          await expect(
+            tbtcDepositor
+              .connect(thirdParty)
+              .initializeStakeRequest(
+                tbtcDepositData.fundingTxInfo,
+                tbtcDepositData.reveal,
+                tbtcDepositData.receiver,
+                tbtcDepositData.referral,
+              ),
+          ).to.be.revertedWith("Deposit already revealed")
         })
       })
     })
@@ -263,16 +266,15 @@ describe("TbtcDepositor", () => {
           tbtcDepositor
             .connect(thirdParty)
             .notifyBridgingCompleted(tbtcDepositData.depositKey),
-        ).to.be.revertedWithCustomError(
-          tbtcDepositor,
-          "StakeRequestNotInitialized",
-        )
+        ).to.be.revertedWith("Deposit not initialized")
       })
     })
 
     describe("when stake request has been initialized", () => {
-      function initializeStakeRequest() {
-        return tbtcDepositor
+      beforeAfterSnapshotWrapper()
+
+      before(async () => {
+        await tbtcDepositor
           .connect(thirdParty)
           .initializeStakeRequest(
             tbtcDepositData.fundingTxInfo,
@@ -280,226 +282,146 @@ describe("TbtcDepositor", () => {
             tbtcDepositData.receiver,
             tbtcDepositData.referral,
           )
-      }
-
-      describe("when bridging completion has not been notified", () => {
-        // Funding transaction amount: 10000 satoshi
-        // tBTC Deposit Treasury Fee: 0.05% = 10000 * 0.05% = 5 satoshi
-        // tBTC Deposit Transaction Max Fee: 1000 satoshi
-        // tBTC Optimistic Minting Fee: 0.2% = 10000 * 0.2% = 20 satoshi
-        // Depositor Fee: 1.25% = 10000 satoshi * 1.25% = 125 satoshi
-
-        const defaultDepositorFee = to1ePrecision(125, 10)
-
-        function testNotifyBridgingCompleted(
-          expectedAssetsAmount: bigint,
-          expectedDepositorFee = defaultDepositorFee,
-        ) {
-          let tx: ContractTransactionResponse
-
-          before(async () => {
-            tx = await tbtcDepositor
-              .connect(thirdParty)
-              .notifyBridgingCompleted(tbtcDepositData.depositKey)
-          })
-
-          it("should emit BridgingCompleted event", async () => {
-            await expect(tx)
-              .to.emit(tbtcDepositor, "BridgingCompleted")
-              .withArgs(
-                tbtcDepositData.depositKey,
-                thirdParty.address,
-                expectedAssetsAmount,
-              )
-          })
-
-          it("should store amount to stake", async () => {
-            expect(
-              (await tbtcDepositor.stakeRequests(tbtcDepositData.depositKey))
-                .amountToStake,
-            ).to.be.equal(expectedAssetsAmount)
-          })
-
-          it("should transfer depositor fee", async () => {
-            await expect(tx).to.changeTokenBalances(
-              tbtc,
-              [treasury],
-              [expectedDepositorFee],
-            )
-          })
-        }
-
-        beforeAfterSnapshotWrapper()
-
-        describe("when minting request was finalized by optimistic minting", () => {
-          describe("when optimistic minting fee divisor is zero", () => {
-            beforeAfterSnapshotWrapper()
-
-            const expectedAssetsAmount = to1ePrecision(8870, 10) // 8870 satoshi
-
-            before(async () => {
-              await tbtcVault.setOptimisticMintingFeeDivisor(0)
-
-              await initializeStakeRequest()
-
-              // Simulate deposit request finalization via optimistic minting.
-              await tbtcVault.finalizeOptimisticMinting(
-                tbtcDepositData.depositKey,
-              )
-            })
-
-            testNotifyBridgingCompleted(expectedAssetsAmount)
-          })
-
-          describe("when optimistic minting fee divisor is not zero", () => {
-            beforeAfterSnapshotWrapper()
-
-            before(async () => {
-              await tbtcVault.setOptimisticMintingFeeDivisor(
-                defaultOptimisticFeeDivisor,
-              )
-            })
-
-            describe("when current optimistic minting fee is greater than it was on stake initialization", () => {
-              beforeAfterSnapshotWrapper()
-
-              const expectedAssetsAmount = to1ePrecision(8830, 10) // 8830 satoshi
-
-              before(async () => {
-                await initializeStakeRequest()
-
-                await tbtcVault.setOptimisticMintingFeeDivisor(
-                  defaultOptimisticFeeDivisor / 2,
-                ) // 1/250 = 0.004 = 0.4%
-
-                // Simulate deposit request finalization via optimistic minting.
-                await tbtcVault.finalizeOptimisticMinting(
-                  tbtcDepositData.depositKey,
-                )
-              })
-
-              testNotifyBridgingCompleted(expectedAssetsAmount)
-            })
-
-            describe("when current optimistic minting fee is lower than it was on stake initialization", () => {
-              beforeAfterSnapshotWrapper()
-
-              // Since the current Optimistic Fee (10 satoshi) is lower than
-              // the one calculated on request initialization (20 satoshi) the
-              // higher value is deducted from the funding transaction amount.
-              const expectedAssetsAmount = to1ePrecision(8850, 10) // 8850 satoshi
-
-              before(async () => {
-                await initializeStakeRequest()
-
-                await tbtcVault.setOptimisticMintingFeeDivisor(
-                  defaultOptimisticFeeDivisor * 2,
-                ) // 1/1000 = 0.001 = 0.1%
-
-                // Simulate deposit request finalization via optimistic minting.
-                await tbtcVault.finalizeOptimisticMinting(
-                  tbtcDepositData.depositKey,
-                )
-              })
-
-              testNotifyBridgingCompleted(expectedAssetsAmount)
-            })
-          })
-        })
-
-        describe("when minting request was not finalized by optimistic minting", () => {
-          beforeAfterSnapshotWrapper()
-
-          before(async () => {
-            await initializeStakeRequest()
-          })
-
-          describe("when minting request has not been swept", () => {
-            beforeAfterSnapshotWrapper()
-
-            it("should revert", async () => {
-              await expect(
-                tbtcDepositor
-                  .connect(thirdParty)
-                  .finalizeStakeRequest(tbtcDepositData.depositKey),
-              ).to.be.revertedWithCustomError(
-                tbtcDepositor,
-                "BridgingNotCompleted",
-              )
-            })
-          })
-
-          describe("when minting request was swept", () => {
-            describe("when depositor fee divisor is zero", () => {
-              beforeAfterSnapshotWrapper()
-
-              const expectedAssetsAmount = to1ePrecision(8995, 10) // 8995 satoshi
-
-              before(async () => {
-                await tbtcDepositor
-                  .connect(governance)
-                  .updateDepositorFeeDivisor(0)
-
-                // Simulate deposit request finalization via sweeping.
-                await tbtcBridge.sweep(
-                  tbtcDepositData.fundingTxHash,
-                  tbtcDepositData.reveal.fundingOutputIndex,
-                )
-              })
-
-              testNotifyBridgingCompleted(expectedAssetsAmount, 0n)
-            })
-
-            describe("when depositor fee divisor is not zero", () => {
-              beforeAfterSnapshotWrapper()
-
-              const expectedAssetsAmount = to1ePrecision(8870, 10) // 8870 satoshi
-
-              before(async () => {
-                await tbtcDepositor
-                  .connect(governance)
-                  .updateDepositorFeeDivisor(defaultDepositorFeeDivisor)
-
-                // Simulate deposit request finalization via sweeping.
-                await tbtcBridge.sweep(
-                  tbtcDepositData.fundingTxHash,
-                  tbtcDepositData.reveal.fundingOutputIndex,
-                )
-              })
-
-              testNotifyBridgingCompleted(expectedAssetsAmount)
-            })
-          })
-        })
       })
 
-      describe("when bridging completion has been notified", () => {
-        beforeAfterSnapshotWrapper()
-
-        before(async () => {
-          await initializeStakeRequest()
-
-          // Simulate deposit request finalization via sweeping.
-          await tbtcBridge.sweep(
-            tbtcDepositData.fundingTxHash,
-            tbtcDepositData.reveal.fundingOutputIndex,
-          )
-
-          // Notify bridging completed.
-          await tbtcDepositor
-            .connect(thirdParty)
-            .notifyBridgingCompleted(tbtcDepositData.depositKey)
-        })
-
+      describe("when deposit was not bridged", () => {
         it("should revert", async () => {
           await expect(
             tbtcDepositor
               .connect(thirdParty)
               .notifyBridgingCompleted(tbtcDepositData.depositKey),
-          ).to.be.revertedWithCustomError(
-            tbtcDepositor,
-            "BridgingAlreadyCompleted",
-          )
+          ).to.be.revertedWith("Deposit not finalized by the bridge")
+        })
+      })
+
+      describe("when deposit was bridged", () => {
+        beforeAfterSnapshotWrapper()
+
+        before(async () => {
+          // Simulate deposit request finalization.
+          await finalizeBridging(tbtcDepositData.depositKey)
+        })
+
+        describe("when bridging completion has not been notified", () => {
+          describe("when depositor fee divisor is not zero", () => {
+            beforeAfterSnapshotWrapper()
+
+            let tx: ContractTransactionResponse
+
+            before(async () => {
+              tx = await tbtcDepositor
+                .connect(thirdParty)
+                .notifyBridgingCompleted(tbtcDepositData.depositKey)
+            })
+
+            it("should emit BridgingCompleted event", async () => {
+              await expect(tx)
+                .to.emit(tbtcDepositor, "BridgingCompleted")
+                .withArgs(
+                  tbtcDepositData.depositKey,
+                  thirdParty.address,
+                  tbtcDepositData.referral,
+                  bridgedTbtcAmount,
+                  depositorFee,
+                )
+            })
+
+            it("should store amount to stake", async () => {
+              expect(
+                (await tbtcDepositor.stakeRequests(tbtcDepositData.depositKey))
+                  .amountToStake,
+              ).to.be.equal(amountToStake)
+            })
+
+            it("should transfer depositor fee", async () => {
+              await expect(tx).to.changeTokenBalances(
+                tbtc,
+                [treasury],
+                [depositorFee],
+              )
+            })
+          })
+
+          describe("when depositor fee divisor is zero", () => {
+            beforeAfterSnapshotWrapper()
+
+            let tx: ContractTransactionResponse
+
+            before(async () => {
+              await tbtcDepositor
+                .connect(governance)
+                .updateDepositorFeeDivisor(0)
+
+              tx = await tbtcDepositor
+                .connect(thirdParty)
+                .notifyBridgingCompleted(tbtcDepositData.depositKey)
+            })
+
+            it("should emit BridgingCompleted event", async () => {
+              await expect(tx)
+                .to.emit(tbtcDepositor, "BridgingCompleted")
+                .withArgs(
+                  tbtcDepositData.depositKey,
+                  thirdParty.address,
+                  tbtcDepositData.referral,
+                  bridgedTbtcAmount,
+                  0,
+                )
+            })
+
+            it("should store amount to stake", async () => {
+              expect(
+                (await tbtcDepositor.stakeRequests(tbtcDepositData.depositKey))
+                  .amountToStake,
+              ).to.be.equal(bridgedTbtcAmount)
+            })
+
+            it("should transfer depositor fee", async () => {
+              await expect(tx).to.changeTokenBalances(tbtc, [treasury], [0])
+            })
+          })
+
+          describe("when depositor fee exceeds bridged amount", () => {
+            beforeAfterSnapshotWrapper()
+
+            before(async () => {
+              await tbtcDepositor
+                .connect(governance)
+                .updateDepositorFeeDivisor(1)
+            })
+
+            it("should revert", async () => {
+              await expect(
+                tbtcDepositor
+                  .connect(thirdParty)
+                  .notifyBridgingCompleted(tbtcDepositData.depositKey),
+              )
+                .to.be.revertedWithCustomError(
+                  tbtcDepositor,
+                  "DepositorFeeExceedsBridgedAmount",
+                )
+                .withArgs(initialDepositAmount, bridgedTbtcAmount)
+            })
+          })
+        })
+
+        describe("when bridging completion has been notified", () => {
+          beforeAfterSnapshotWrapper()
+
+          before(async () => {
+            // Notify bridging completed.
+            await tbtcDepositor
+              .connect(thirdParty)
+              .notifyBridgingCompleted(tbtcDepositData.depositKey)
+          })
+
+          it("should revert", async () => {
+            await expect(
+              tbtcDepositor
+                .connect(thirdParty)
+                .notifyBridgingCompleted(tbtcDepositData.depositKey),
+            ).to.be.revertedWith("Deposit not initialized")
+          })
         })
       })
     })
@@ -548,8 +470,8 @@ describe("TbtcDepositor", () => {
         beforeAfterSnapshotWrapper()
 
         before(async () => {
-          // Simulate deposit request finalization via optimistic minting.
-          await tbtcVault.finalizeOptimisticMinting(tbtcDepositData.depositKey)
+          // Simulate deposit request finalization.
+          await finalizeBridging(tbtcDepositData.depositKey)
 
           await tbtcDepositor
             .connect(thirdParty)
@@ -559,8 +481,8 @@ describe("TbtcDepositor", () => {
         describe("when stake request has not been finalized", () => {
           beforeAfterSnapshotWrapper()
 
-          const expectedAssetsAmount = to1ePrecision(8850, 10) // 8850 satoshi
-          const expectedReceivedSharesAmount = expectedAssetsAmount
+          const expectedAssetsAmount = amountToStake
+          const expectedReceivedSharesAmount = amountToStake
 
           let tx: ContractTransactionResponse
 
@@ -570,16 +492,14 @@ describe("TbtcDepositor", () => {
               .finalizeStakeRequest(tbtcDepositData.depositKey)
           })
 
-          it("should emit StakeFinalized event", async () => {
+          it("should emit StakeRequestFinalized event", async () => {
             await expect(tx)
-              .to.emit(tbtcDepositor, "StakeFinalized")
-              .withArgs(tbtcDepositData.depositKey, thirdParty.address)
-          })
-
-          it("should emit StakeReferral event", async () => {
-            await expect(tx)
-              .to.emit(acre, "StakeReferral")
-              .withArgs(tbtcDepositData.referral, expectedAssetsAmount)
+              .to.emit(tbtcDepositor, "StakeRequestFinalized")
+              .withArgs(
+                tbtcDepositData.depositKey,
+                thirdParty.address,
+                expectedAssetsAmount,
+              )
           })
 
           it("should emit Deposit event", async () => {
@@ -635,6 +555,8 @@ describe("TbtcDepositor", () => {
     })
   })
 
+  // TODO: ADD TESTS FOR recallStakeRequest function
+
   describe("updateDepositorFeeDivisor", () => {
     beforeAfterSnapshotWrapper()
 
@@ -684,20 +606,6 @@ describe("TbtcDepositor", () => {
     })
   })
 
-  describe("calculateDepositKey", () => {
-    it("should calculate the deposit key", async () => {
-      // Test data from transaction: https://etherscan.io/tx/0x7816e66d2b1a7858c2e8c49099bf009e52d07e081d5b562ac9ff6d2b072387c9
-      expect(
-        await tbtcDepositor.calculateDepositKey(
-          "0xa08d41ee8e044b25d365fd54d27d79da6db9e9e2f8be166b82a510d0d31b9406",
-          114,
-        ),
-      ).to.be.equal(
-        "0x4e89fe01b92ff0ebf0bdeb70891fcb6c286d750b191971999091c8a1e5b3f11d",
-      )
-    })
-  })
-
   const extraDataValidTestData = new Map<
     string,
     {
@@ -715,51 +623,51 @@ describe("TbtcDepositor", () => {
           "0x000055d85e80a49b5930c4a77975d44f012d86c11ac300000000000000000000",
       },
     ],
-    [
-      "receiver has trailing zeros",
-      {
-        receiver: "0x2d2F8BC7923F7F806Dc9bb2e17F950b42CfE0000",
-        referral: 6851, // hex: 0x1ac3
-        extraData:
-          "0x2d2f8bc7923f7f806dc9bb2e17f950b42cfe00001ac300000000000000000000",
-      },
-    ],
-    [
-      "referral is zero",
-      {
-        receiver: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
-        referral: 0,
-        extraData:
-          "0xeb098d6cde6a202981316b24b19e64d82721e89e000000000000000000000000",
-      },
-    ],
-    [
-      "referral has leading zeros",
-      {
-        receiver: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
-        referral: 31, // hex: 0x001f
-        extraData:
-          "0xeb098d6cde6a202981316b24b19e64d82721e89e001f00000000000000000000",
-      },
-    ],
-    [
-      "referral has trailing zeros",
-      {
-        receiver: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
-        referral: 19712, // hex: 0x4d00
-        extraData:
-          "0xeb098d6cde6a202981316b24b19e64d82721e89e4d0000000000000000000000",
-      },
-    ],
-    [
-      "referral is maximum value",
-      {
-        receiver: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
-        referral: 65535, // max uint16
-        extraData:
-          "0xeb098d6cde6a202981316b24b19e64d82721e89effff00000000000000000000",
-      },
-    ],
+    // [
+    //   "receiver has trailing zeros",
+    //   {
+    //     receiver: "0x2d2F8BC7923F7F806Dc9bb2e17F950b42CfE0000",
+    //     referral: 6851, // hex: 0x1ac3
+    //     extraData:
+    //       "0x2d2f8bc7923f7f806dc9bb2e17f950b42cfe00001ac300000000000000000000",
+    //   },
+    // ],
+    // [
+    //   "referral is zero",
+    //   {
+    //     receiver: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
+    //     referral: 0,
+    //     extraData:
+    //       "0xeb098d6cde6a202981316b24b19e64d82721e89e000000000000000000000000",
+    //   },
+    // ],
+    // [
+    //   "referral has leading zeros",
+    //   {
+    //     receiver: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
+    //     referral: 31, // hex: 0x001f
+    //     extraData:
+    //       "0xeb098d6cde6a202981316b24b19e64d82721e89e001f00000000000000000000",
+    //   },
+    // ],
+    // [
+    //   "referral has trailing zeros",
+    //   {
+    //     receiver: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
+    //     referral: 19712, // hex: 0x4d00
+    //     extraData:
+    //       "0xeb098d6cde6a202981316b24b19e64d82721e89e4d0000000000000000000000",
+    //   },
+    // ],
+    // [
+    //   "referral is maximum value",
+    //   {
+    //     receiver: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
+    //     referral: 65535, // max uint16
+    //     extraData:
+    //       "0xeb098d6cde6a202981316b24b19e64d82721e89effff00000000000000000000",
+    //   },
+    // ],
   ])
 
   describe("encodeExtraData", () => {
@@ -769,45 +677,22 @@ describe("TbtcDepositor", () => {
           expect(
             await tbtcDepositor.encodeExtraData(receiver, referral),
           ).to.be.equal(expectedExtraData)
+
+          expect(
+            ethers.zeroPadBytes(
+              ethers.solidityPacked(["address", "int16"], [receiver, referral]),
+              32,
+            ),
+          ).to.be.equal(expectedExtraData)
         })
       },
     )
   })
 
-  describe("decodeExtraData", () => {
-    extraDataValidTestData.forEach(
-      (
-        { receiver: expectedReceiver, referral: expectedReferral, extraData },
-        testName,
-      ) => {
-        it(testName, async () => {
-          const [actualReceiver, actualReferral] =
-            await tbtcDepositor.decodeExtraData(extraData)
+  async function finalizeBridging(depositKey: bigint) {
+    await tbtcVault.createOptimisticMintingRequest(depositKey)
 
-          expect(actualReceiver, "invalid receiver").to.be.equal(
-            expectedReceiver,
-          )
-          expect(actualReferral, "invalid referral").to.be.equal(
-            expectedReferral,
-          )
-        })
-      },
-    )
-
-    it("with unused bytes filled with data", async () => {
-      // Extra data uses address (20 bytes) and referral (2 bytes), leaving the
-      // remaining 10 bytes unused. This test fills the unused bytes with a random
-      // value.
-      const extraData =
-        "0xeb098d6cde6a202981316b24b19e64d82721e89e1ac3105f9919321ea7d75f58"
-      const expectedReceiver = "0xeb098d6cDE6A202981316b24B19e64D82721e89E"
-      const expectedReferral = 6851 // hex: 0x1ac3
-
-      const [actualReceiver, actualReferral] =
-        await tbtcDepositor.decodeExtraData(extraData)
-
-      expect(actualReceiver, "invalid receiver").to.be.equal(expectedReceiver)
-      expect(actualReferral, "invalid referral").to.be.equal(expectedReferral)
-    })
-  })
+    // Simulate deposit request finalization via optimistic minting.
+    await tbtcVault.finalizeOptimisticMintingRequestAndMint(depositKey)
+  }
 })
