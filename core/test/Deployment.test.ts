@@ -6,24 +6,24 @@ import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signer
 import { deployment } from "./helpers/context"
 import { getNamedSigner } from "./helpers/signer"
 
-import type { Acre, Dispatcher, TestERC20 } from "../typechain"
+import type { StBTC as stBTC, Dispatcher, TestERC20 } from "../typechain"
 
 async function fixture() {
-  const { tbtc, acre, dispatcher } = await deployment()
+  const { tbtc, stbtc, dispatcher } = await deployment()
   const { governance, maintainer, treasury } = await getNamedSigner()
 
-  return { acre, dispatcher, tbtc, governance, maintainer, treasury }
+  return { stbtc, dispatcher, tbtc, governance, maintainer, treasury }
 }
 
 describe("Deployment", () => {
-  let acre: Acre
+  let stbtc: stBTC
   let dispatcher: Dispatcher
   let tbtc: TestERC20
   let maintainer: HardhatEthersSigner
   let treasury: HardhatEthersSigner
 
   before(async () => {
-    ;({ acre, dispatcher, tbtc, maintainer, treasury } =
+    ;({ stbtc, dispatcher, tbtc, maintainer, treasury } =
       await loadFixture(fixture))
   })
 
@@ -31,7 +31,7 @@ describe("Deployment", () => {
     describe("constructor", () => {
       context("when treasury has been set", () => {
         it("should be set to a treasury address", async () => {
-          const actualTreasury = await acre.treasury()
+          const actualTreasury = await stbtc.treasury()
 
           expect(actualTreasury).to.be.equal(await treasury.getAddress())
         })
@@ -41,15 +41,15 @@ describe("Deployment", () => {
     describe("updateDispatcher", () => {
       context("when a dispatcher has been set", () => {
         it("should be set to a dispatcher address by the deployment script", async () => {
-          const actualDispatcher = await acre.dispatcher()
+          const actualDispatcher = await stbtc.dispatcher()
 
           expect(actualDispatcher).to.be.equal(await dispatcher.getAddress())
         })
 
         it("should approve max amount for the dispatcher", async () => {
-          const actualDispatcher = await acre.dispatcher()
+          const actualDispatcher = await stbtc.dispatcher()
           const allowance = await tbtc.allowance(
-            await acre.getAddress(),
+            await stbtc.getAddress(),
             actualDispatcher,
           )
 

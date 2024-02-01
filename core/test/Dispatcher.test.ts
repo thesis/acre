@@ -12,23 +12,28 @@ import {
   getUnnamedSigner,
 } from "./helpers"
 
-import type { Dispatcher, TestERC4626, Acre, TestERC20 } from "../typechain"
+import {
+  Dispatcher,
+  TestERC4626,
+  StBTC as stBTC,
+  TestERC20,
+} from "../typechain"
 
 import { to1e18 } from "./utils"
 
 async function fixture() {
-  const { tbtc, acre, dispatcher, vault } = await deployment()
+  const { tbtc, stbtc, dispatcher, vault } = await deployment()
   const { governance, maintainer } = await getNamedSigner()
   const [thirdParty] = await getUnnamedSigner()
 
-  return { dispatcher, governance, thirdParty, maintainer, vault, tbtc, acre }
+  return { dispatcher, governance, thirdParty, maintainer, vault, tbtc, stbtc }
 }
 
 describe("Dispatcher", () => {
   let dispatcher: Dispatcher
   let vault: TestERC4626
   let tbtc: TestERC20
-  let acre: Acre
+  let stbtc: stBTC
 
   let governance: HardhatEthersSigner
   let thirdParty: HardhatEthersSigner
@@ -39,7 +44,7 @@ describe("Dispatcher", () => {
   let vaultAddress4: string
 
   before(async () => {
-    ;({ dispatcher, governance, thirdParty, maintainer, vault, tbtc, acre } =
+    ;({ dispatcher, governance, thirdParty, maintainer, vault, tbtc, stbtc } =
       await loadFixture(fixture))
 
     vaultAddress1 = await ethers.Wallet.createRandom().getAddress()
@@ -179,7 +184,7 @@ describe("Dispatcher", () => {
 
     before(async () => {
       await dispatcher.connect(governance).authorizeVault(vault.getAddress())
-      await tbtc.mint(await acre.getAddress(), to1e18(100000))
+      await tbtc.mint(await stbtc.getAddress(), to1e18(100000))
     })
 
     context("when caller is not maintainer", () => {
@@ -233,15 +238,15 @@ describe("Dispatcher", () => {
           it("should deposit tBTC to a vault", async () => {
             await expect(tx).to.changeTokenBalances(
               tbtc,
-              [acre, vault],
+              [stbtc, vault],
               [-assetsToAllocate, assetsToAllocate],
             )
           })
 
-          it("should mint vault's shares for Acre contract", async () => {
+          it("should mint vault's shares for stBTC contract", async () => {
             await expect(tx).to.changeTokenBalances(
               vault,
-              [acre],
+              [stbtc],
               [minSharesOut],
             )
           })

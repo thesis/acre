@@ -6,10 +6,10 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { deployer, governance } = await getNamedAccounts()
   const { log } = deployments
 
-  log(`transferring ownership of Acre contract to ${governance}`)
+  log(`transferring ownership of Dispatcher contract to ${governance}`)
 
   await deployments.execute(
-    "Acre",
+    "Dispatcher",
     { from: deployer, log: true, waitConfirmations: 1 },
     "transferOwnership",
     governance,
@@ -18,4 +18,5 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
 export default func
 
-func.tags = ["TransferOwnershipAcre"]
+func.tags = ["TransferOwnershipDispatcher"]
+func.dependencies = ["Dispatcher"]
