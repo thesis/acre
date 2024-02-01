@@ -68,9 +68,6 @@ describe("Staking", () => {
       getBitcoinAddress: jest.fn().mockResolvedValue(mockedDepositBTCAddress),
       detectFunding: jest.fn(),
       getReceipt: jest.fn().mockReturnValue({ extraData }),
-      getTbctcDepositReceipt: jest
-        .fn()
-        .mockResolvedValue(stakingInitializationData.depositReceipt),
       initiateMinting: jest.fn(),
     }
     const mockedSignedMessage = { verify: jest.fn() }
@@ -134,6 +131,7 @@ describe("Staking", () => {
 
       describe("getTbtcDepositReceipt", () => {
         it("should return tbtc deposit receipt", () => {
+          expect(mockedDeposit.getReceipt).toHaveBeenCalled()
           expect(result.getTbtcDepositReceipt()).toBe(depositReceipt)
         })
       })

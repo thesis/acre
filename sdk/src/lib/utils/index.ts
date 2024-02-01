@@ -1,2 +1,2 @@
-export * from "./tbtc-v2"
+export * from "./hex"
 export * from "./ethereum-signer"

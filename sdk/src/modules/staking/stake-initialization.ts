@@ -1,6 +1,5 @@
 import {
   ChainIdentifier,
-  DepositReceipt,
   Deposit as TbtcDeposit,
 } from "@keep-network/tbtc-v2.ts"
 import {
@@ -12,6 +11,7 @@ import {
 } from "../../lib/eip712-signer"
 import { AcreContracts } from "../../lib/contracts"
 import { Hex } from "../../lib/utils"
+import { DepositReceipt } from "../../lib/contracts/tbtc-depositor"
 
 /**
  * Represents an instance of the staking flow. Staking flow requires a few steps
