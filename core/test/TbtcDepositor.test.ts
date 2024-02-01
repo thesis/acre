@@ -625,66 +625,60 @@ describe("TbtcDepositor", () => {
           "0x000055d85e80a49b5930c4a77975d44f012d86c11ac300000000000000000000",
       },
     ],
-    // [
-    //   "receiver has trailing zeros",
-    //   {
-    //     receiver: "0x2d2F8BC7923F7F806Dc9bb2e17F950b42CfE0000",
-    //     referral: 6851, // hex: 0x1ac3
-    //     extraData:
-    //       "0x2d2f8bc7923f7f806dc9bb2e17f950b42cfe00001ac300000000000000000000",
-    //   },
-    // ],
-    // [
-    //   "referral is zero",
-    //   {
-    //     receiver: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
-    //     referral: 0,
-    //     extraData:
-    //       "0xeb098d6cde6a202981316b24b19e64d82721e89e000000000000000000000000",
-    //   },
-    // ],
-    // [
-    //   "referral has leading zeros",
-    //   {
-    //     receiver: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
-    //     referral: 31, // hex: 0x001f
-    //     extraData:
-    //       "0xeb098d6cde6a202981316b24b19e64d82721e89e001f00000000000000000000",
-    //   },
-    // ],
-    // [
-    //   "referral has trailing zeros",
-    //   {
-    //     receiver: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
-    //     referral: 19712, // hex: 0x4d00
-    //     extraData:
-    //       "0xeb098d6cde6a202981316b24b19e64d82721e89e4d0000000000000000000000",
-    //   },
-    // ],
-    // [
-    //   "referral is maximum value",
-    //   {
-    //     receiver: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
-    //     referral: 65535, // max uint16
-    //     extraData:
-    //       "0xeb098d6cde6a202981316b24b19e64d82721e89effff00000000000000000000",
-    //   },
-    // ],
+    [
+      "receiver has trailing zeros",
+      {
+        receiver: "0x2d2F8BC7923F7F806Dc9bb2e17F950b42CfE0000",
+        referral: 6851, // hex: 0x1ac3
+        extraData:
+          "0x2d2f8bc7923f7f806dc9bb2e17f950b42cfe00001ac300000000000000000000",
+      },
+    ],
+    [
+      "referral is zero",
+      {
+        receiver: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
+        referral: 0,
+        extraData:
+          "0xeb098d6cde6a202981316b24b19e64d82721e89e000000000000000000000000",
+      },
+    ],
+    [
+      "referral has leading zeros",
+      {
+        receiver: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
+        referral: 31, // hex: 0x001f
+        extraData:
+          "0xeb098d6cde6a202981316b24b19e64d82721e89e001f00000000000000000000",
+      },
+    ],
+    [
+      "referral has trailing zeros",
+      {
+        receiver: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
+        referral: 19712, // hex: 0x4d00
+        extraData:
+          "0xeb098d6cde6a202981316b24b19e64d82721e89e4d0000000000000000000000",
+      },
+    ],
+    [
+      "referral is maximum value",
+      {
+        receiver: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
+        referral: 65535, // max uint16
+        extraData:
+          "0xeb098d6cde6a202981316b24b19e64d82721e89effff00000000000000000000",
+      },
+    ],
   ])
 
   describe("encodeExtraData", () => {
     extraDataValidTestData.forEach(
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       ({ receiver, referral, extraData: expectedExtraData }, testName) => {
         it(testName, async () => {
           expect(
             await tbtcDepositor.encodeExtraData(receiver, referral),
-          ).to.be.equal(expectedExtraData)
-
-          expect(
-            ethers.zeroPadBytes(
-              ethers.solidityPacked(["address", "int16"], [receiver, referral]),
-              32,
-            ),
           ).to.be.equal(expectedExtraData)
         })
       },
