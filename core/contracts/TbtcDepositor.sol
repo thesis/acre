@@ -9,7 +9,7 @@ import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import "@keep-network/tbtc-v2/contracts/integrator/TBTCDepositorProxy.sol";
 
-import {stBTC} from "../stBTC.sol";
+import {stBTC} from "./stBTC.sol";
 
 // TODO: Add Missfund token protection.
 // TODO: Make Upgradable
