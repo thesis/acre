@@ -6,7 +6,7 @@ import { expect } from "chai"
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
 import { ContractTransactionResponse, ZeroAddress } from "ethers"
 import type {
-  Acre,
+  StBTC,
   BridgeStub,
   TBTCVaultStub,
   TbtcDepositor,
@@ -18,10 +18,10 @@ import { tbtcDepositData } from "./data/tbtc"
 import { to1ePrecision } from "./utils"
 
 async function fixture() {
-  const { tbtcDepositor, tbtcBridge, tbtcVault, acre, tbtc } =
+  const { tbtcDepositor, tbtcBridge, tbtcVault, stbtc, tbtc } =
     await deployment()
 
-  return { tbtcDepositor, tbtcBridge, tbtcVault, acre, tbtc }
+  return { tbtcDepositor, tbtcBridge, tbtcVault, stbtc, tbtc }
 }
 
 describe("TbtcDepositor", () => {
@@ -43,7 +43,7 @@ describe("TbtcDepositor", () => {
   let tbtcDepositor: TbtcDepositor
   let tbtcBridge: BridgeStub
   let tbtcVault: TBTCVaultStub
-  let acre: Acre
+  let stbtc: StBTC
   let tbtc: TestERC20
 
   let governance: HardhatEthersSigner
@@ -51,14 +51,14 @@ describe("TbtcDepositor", () => {
   let thirdParty: HardhatEthersSigner
 
   before(async () => {
-    ;({ tbtcDepositor, tbtcBridge, tbtcVault, acre, tbtc } =
+    ;({ tbtcDepositor, tbtcBridge, tbtcVault, stbtc, tbtc } =
       await loadFixture(fixture))
     ;({ governance, treasury } = await getNamedSigner())
     ;[thirdParty] = await getUnnamedSigner()
 
-    await acre.connect(governance).updateDepositParameters(
+    await stbtc.connect(governance).updateDepositParameters(
       10000000000000, // 0.00001
-      await acre.maximumTotalAssets(),
+      await stbtc.maximumTotalAssets(),
     )
 
     tbtcDepositData.reveal.vault = await tbtcVault.getAddress()
@@ -504,7 +504,7 @@ describe("TbtcDepositor", () => {
 
           it("should emit Deposit event", async () => {
             await expect(tx)
-              .to.emit(acre, "Deposit")
+              .to.emit(stbtc, "Deposit")
               .withArgs(
                 await tbtcDepositor.getAddress(),
                 tbtcDepositData.receiver,
@@ -518,7 +518,7 @@ describe("TbtcDepositor", () => {
               tx,
               "invalid minted stBTC amount",
             ).to.changeTokenBalances(
-              acre,
+              stbtc,
               [tbtcDepositData.receiver],
               [expectedReceivedSharesAmount],
             )
@@ -526,7 +526,7 @@ describe("TbtcDepositor", () => {
             await expect(
               tx,
               "invalid staked tBTC amount",
-            ).to.changeTokenBalances(tbtc, [acre], [expectedAssetsAmount])
+            ).to.changeTokenBalances(tbtc, [stbtc], [expectedAssetsAmount])
           })
         })
 

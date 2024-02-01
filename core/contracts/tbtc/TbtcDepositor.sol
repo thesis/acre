@@ -9,7 +9,7 @@ import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import "@keep-network/tbtc-v2/contracts/integrator/TBTCDepositorProxy.sol";
 
-import {Acre} from "../Acre.sol";
+import {stBTC} from "../stBTC.sol";
 
 // TODO: Add Missfund token protection.
 // TODO: Make Upgradable
@@ -32,7 +32,7 @@ import {Acre} from "../Acre.sol";
 ///         the sweep operation is confirmed on the Bitcoin network, the tBTC Bridge
 ///         and tBTC vault mint the tBTC token to the Depositor address.
 ///         After tBTC is minted to the Depositor, on the stake finalization
-///         tBTC is staked in Acre contract and stBTC shares are emitted to the
+///         tBTC is staked in stBTC contract and stBTC shares are emitted to the
 ///         receiver pointed by the staker.
 contract TbtcDepositor is TBTCDepositorProxy, Ownable {
     using BTCUtils for bytes;
@@ -56,8 +56,8 @@ contract TbtcDepositor is TBTCDepositorProxy, Ownable {
 
     /// @notice tBTC Token contract.
     IERC20 public immutable tbtcToken;
-    /// @notice Acre contract.
-    Acre public acre;
+    /// @notice stBTC contract.
+    stBTC public stbtc;
 
     /// @notice Mapping of stake requests.
     /// @dev The key is a deposit key identifying the deposit.
@@ -146,21 +146,21 @@ contract TbtcDepositor is TBTCDepositorProxy, Ownable {
     /// @notice Tbtc Depositor contract constructor.
     /// @param _bridge tBTC Bridge contract instance.
     /// @param _tbtcVault tBTC Vault contract instance.
-    /// @param _acre Acre contract instance.
+    /// @param _stbtc stBTC contract instance.
     // TODO: Move to initializer when making the contract upgradeable.
     constructor(
         address _bridge,
         address _tbtcVault,
         address _tbtcToken,
-        address _acre
+        address _stbtc
     ) Ownable(msg.sender) {
         __TBTCDepositorProxy_initialize(_bridge, _tbtcVault);
 
         require(_tbtcToken != address(0), "TBTCToken address cannot be zero");
-        require(_acre != address(0), "Acre address cannot be zero");
+        require(_stbtc != address(0), "stBTC address cannot be zero");
 
         tbtcToken = IERC20(_tbtcToken);
-        acre = Acre(_acre);
+        stbtc = stBTC(_stbtc);
 
         depositorFeeDivisor = 1000; // 1/1000 == 10bps == 0.1% == 0.001
     }
@@ -253,13 +253,13 @@ contract TbtcDepositor is TBTCDepositorProxy, Ownable {
 
         // Transfer depositor fee to the treasury wallet.
         if (depositorFee > 0) {
-            tbtcToken.safeTransfer(acre.treasury(), depositorFee);
+            tbtcToken.safeTransfer(stbtc.treasury(), depositorFee);
         }
     }
 
     /// @notice This function should be called for previously initialized stake
     ///         request, after tBTC bridging process was finalized.
-    ///         It stakes the tBTC from the given deposit into Acre, emitting the
+    ///         It stakes the tBTC from the given deposit into stBTC, emitting the
     ///         stBTC shares to the receiver specified in the deposit extra data
     ///         and using the referral provided in the extra data.
     /// @dev This function is expected to be called after `notifyBridgingCompleted`.
@@ -285,14 +285,14 @@ contract TbtcDepositor is TBTCDepositorProxy, Ownable {
             request.amountToStake
         );
 
-        // Stake tBTC in Acre.
-        tbtcToken.safeIncreaseAllowance(address(acre), request.amountToStake);
-        acre.deposit(request.amountToStake, request.receiver);
+        // Deposit tBTC in stBTC.
+        tbtcToken.safeIncreaseAllowance(address(stbtc), request.amountToStake);
+        stbtc.deposit(request.amountToStake, request.receiver);
     }
 
     /// @notice Recall bridged tBTC tokens from being requested to stake. This
     ///         function can be called by the staker to recover tBTC that cannot
-    ///         be finalized to stake in Acre contract due to a deposit limit being
+    ///         be finalized to stake in stBTC contract due to a deposit limit being
     ///         reached.
     /// @dev This function can be called only after bridging in tBTC Bridge was
     ///      completed. Only receiver provided in the extra data of the stake
@@ -330,7 +330,7 @@ contract TbtcDepositor is TBTCDepositorProxy, Ownable {
         emit DepositorFeeDivisorUpdated(newDepositorFeeDivisor);
     }
 
-    // TODO: Handle minimum deposit amount in tBTC Bridge vs Acre.
+    // TODO: Handle minimum deposit amount in tBTC Bridge vs stBTC.
 
     /// @notice Encode receiver address and referral as extra data.
     /// @dev Packs the data to bytes32: 20 bytes of receiver address and
