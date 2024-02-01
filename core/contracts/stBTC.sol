@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Dispatcher.sol";
 
-/// @title Acre
+/// @title stBTC
 /// @notice This contract implements the ERC-4626 tokenized vault standard. By
 ///         staking tBTC, users acquire a liquid staking token called stBTC,
 ///         commonly referred to as "shares". The staked tBTC is securely
@@ -17,14 +17,14 @@ import "./Dispatcher.sol";
 ///      of yield-bearing vaults. This contract facilitates the minting and
 ///      burning of shares (stBTC), which are represented as standard ERC20
 ///      tokens, providing a seamless exchange with tBTC tokens.
-contract Acre is ERC4626, Ownable {
+contract stBTC is ERC4626, Ownable {
     using SafeERC20 for IERC20;
 
-    /// Dispatcher contract that routes tBTC from Acre to a given vault and back.
+    /// Dispatcher contract that routes tBTC from stBTC to a given vault and back.
     Dispatcher public dispatcher;
     /// Minimum amount for a single deposit operation.
     uint256 public minimumDepositAmount;
-    /// Maximum total amount of tBTC token held by Acre.
+    /// Maximum total amount of tBTC token held by Acre protocol.
     uint256 public maximumTotalAssets;
 
     /// Emitted when a referral is used.
@@ -67,8 +67,8 @@ contract Acre is ERC4626, Ownable {
     /// @param _minimumDepositAmount New value of the minimum deposit amount. It
     ///        is the minimum amount for a single deposit operation.
     /// @param _maximumTotalAssets New value of the maximum total assets amount.
-    ///        It is the maximum amount of the tBTC token that the Acre can
-    ///        hold.
+    ///        It is the maximum amount of the tBTC token that the Acre protocol
+    ///        can hold.
     function updateDepositParameters(
         uint256 _minimumDepositAmount,
         uint256 _maximumTotalAssets
@@ -175,7 +175,7 @@ contract Acre is ERC4626, Ownable {
     ///         deposited into the vault for the receiver, through a deposit
     ///         call. It takes into account the deposit parameter, maximum total
     ///         assets, which determines the total amount of tBTC token held by
-    ///         Acre.
+    ///         Acre protocol.
     /// @return The maximum amount of the tBTC token.
     function maxDeposit(address) public view override returns (uint256) {
         if (maximumTotalAssets == type(uint256).max) {
@@ -192,7 +192,7 @@ contract Acre is ERC4626, Ownable {
 
     /// @notice Returns the maximum amount of the vault shares that can be
     ///         minted for the receiver, through a mint call.
-    /// @dev Since the Acre contract limits the maximum total tBTC tokens this
+    /// @dev Since the stBTC contract limits the maximum total tBTC tokens this
     ///      function converts the maximum deposit amount to shares.
     /// @return The maximum amount of the vault shares.
     function maxMint(address receiver) public view override returns (uint256) {
