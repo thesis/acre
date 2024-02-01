@@ -1,7 +1,7 @@
 /* eslint-disable func-names */
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 
-import { ethers } from "hardhat"
+import { ethers, helpers } from "hardhat"
 import { expect } from "chai"
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
 import { ContractTransactionResponse, ZeroAddress } from "ethers"
@@ -16,6 +16,7 @@ import { deployment, getNamedSigner, getUnnamedSigner } from "./helpers"
 import { beforeAfterSnapshotWrapper } from "./helpers/snapshot"
 import { tbtcDepositData } from "./data/tbtc"
 import { to1ePrecision } from "./utils"
+import { lastBlockTime } from "./helpers/time"
 
 async function fixture() {
   const { tbtcDepositor, tbtcBridge, tbtcVault, stbtc, tbtc } =
@@ -49,12 +50,20 @@ describe("TbtcDepositor", () => {
   let governance: HardhatEthersSigner
   let treasury: HardhatEthersSigner
   let thirdParty: HardhatEthersSigner
+  let receiver: HardhatEthersSigner
 
   before(async () => {
     ;({ tbtcDepositor, tbtcBridge, tbtcVault, stbtc, tbtc } =
       await loadFixture(fixture))
     ;({ governance, treasury } = await getNamedSigner())
     ;[thirdParty] = await getUnnamedSigner()
+
+    receiver = await helpers.account.impersonateAccount(
+      tbtcDepositData.receiver,
+      {
+        from: thirdParty,
+      },
+    )
 
     await stbtc.connect(governance).updateDepositParameters(
       10000000000000, // 0.00001
@@ -200,14 +209,7 @@ describe("TbtcDepositor", () => {
         beforeAfterSnapshotWrapper()
 
         before(async () => {
-          await tbtcDepositor
-            .connect(thirdParty)
-            .initializeStakeRequest(
-              tbtcDepositData.fundingTxInfo,
-              tbtcDepositData.reveal,
-              tbtcDepositData.receiver,
-              tbtcDepositData.referral,
-            )
+          await initializeStakeRequest()
         })
 
         it("should revert", async () => {
@@ -228,14 +230,7 @@ describe("TbtcDepositor", () => {
         beforeAfterSnapshotWrapper()
 
         before(async () => {
-          await tbtcDepositor
-            .connect(thirdParty)
-            .initializeStakeRequest(
-              tbtcDepositData.fundingTxInfo,
-              tbtcDepositData.reveal,
-              tbtcDepositData.receiver,
-              tbtcDepositData.referral,
-            )
+          await initializeStakeRequest()
 
           // Simulate deposit request finalization.
           await finalizeBridging(tbtcDepositData.depositKey)
@@ -276,14 +271,7 @@ describe("TbtcDepositor", () => {
       beforeAfterSnapshotWrapper()
 
       before(async () => {
-        await tbtcDepositor
-          .connect(thirdParty)
-          .initializeStakeRequest(
-            tbtcDepositData.fundingTxInfo,
-            tbtcDepositData.reveal,
-            tbtcDepositData.receiver,
-            tbtcDepositData.referral,
-          )
+        await initializeStakeRequest()
       })
 
       describe("when deposit was not bridged", () => {
@@ -446,14 +434,7 @@ describe("TbtcDepositor", () => {
       beforeAfterSnapshotWrapper()
 
       before(async () => {
-        await tbtcDepositor
-          .connect(thirdParty)
-          .initializeStakeRequest(
-            tbtcDepositData.fundingTxInfo,
-            tbtcDepositData.reveal,
-            tbtcDepositData.receiver,
-            tbtcDepositData.referral,
-          )
+        await initializeStakeRequest()
       })
 
       describe("when bridging completion has not been notified", () => {
@@ -494,6 +475,13 @@ describe("TbtcDepositor", () => {
               .finalizeStakeRequest(tbtcDepositData.depositKey)
           })
 
+          it("should set finalizedAt timestamp", async () => {
+            expect(
+              (await tbtcDepositor.stakeRequests(tbtcDepositData.depositKey))
+                .finalizedAt,
+            ).to.be.equal(await lastBlockTime())
+          })
+
           it("should emit StakeRequestFinalized event", async () => {
             await expect(tx)
               .to.emit(tbtcDepositor, "StakeRequestFinalized")
@@ -532,6 +520,27 @@ describe("TbtcDepositor", () => {
           })
         })
 
+        describe("when stake request has been recalled", () => {
+          beforeAfterSnapshotWrapper()
+
+          before(async () => {
+            await tbtcDepositor
+              .connect(receiver)
+              .recallStakeRequest(tbtcDepositData.depositKey)
+          })
+
+          it("should revert", async () => {
+            await expect(
+              tbtcDepositor
+                .connect(thirdParty)
+                .finalizeStakeRequest(tbtcDepositData.depositKey),
+            ).to.be.revertedWithCustomError(
+              tbtcDepositor,
+              "StakeRequestAlreadyFinalized",
+            )
+          })
+        })
+
         describe("when stake request has been finalized", () => {
           beforeAfterSnapshotWrapper()
 
@@ -557,7 +566,146 @@ describe("TbtcDepositor", () => {
     })
   })
 
-  // TODO: ADD TESTS FOR recallStakeRequest function
+  describe("recallStakeRequest", () => {
+    describe("when stake request has not been initialized", () => {
+      it("should revert", async () => {
+        await expect(
+          tbtcDepositor
+            .connect(receiver)
+            .recallStakeRequest(tbtcDepositData.depositKey),
+        ).to.be.revertedWithCustomError(tbtcDepositor, "BridgingNotCompleted")
+      })
+    })
+
+    describe("when stake request has been initialized", () => {
+      beforeAfterSnapshotWrapper()
+
+      before(async () => {
+        await initializeStakeRequest()
+      })
+
+      describe("when bridging completion has not been notified", () => {
+        beforeAfterSnapshotWrapper()
+
+        it("should revert", async () => {
+          await expect(
+            tbtcDepositor
+              .connect(thirdParty)
+              .recallStakeRequest(tbtcDepositData.depositKey),
+          ).to.be.revertedWithCustomError(tbtcDepositor, "BridgingNotCompleted")
+        })
+      })
+
+      describe("when bridging completion has been notified", () => {
+        beforeAfterSnapshotWrapper()
+
+        before(async () => {
+          // Simulate deposit request finalization.
+          await finalizeBridging(tbtcDepositData.depositKey)
+
+          await tbtcDepositor
+            .connect(thirdParty)
+            .notifyBridgingCompleted(tbtcDepositData.depositKey)
+        })
+
+        describe("when stake request has not been recalled", () => {
+          describe("when caller is non-receiver", () => {
+            it("should revert", async () => {
+              await expect(
+                tbtcDepositor
+                  .connect(thirdParty)
+                  .recallStakeRequest(tbtcDepositData.depositKey),
+              ).to.be.revertedWithCustomError(
+                tbtcDepositor,
+                "CallerNotReceiver",
+              )
+            })
+          })
+
+          describe("when caller is receiver", () => {
+            beforeAfterSnapshotWrapper()
+
+            let tx: ContractTransactionResponse
+
+            before(async () => {
+              tx = await tbtcDepositor
+                .connect(receiver)
+                .recallStakeRequest(tbtcDepositData.depositKey)
+            })
+
+            it("should set finalizedAt timestamp", async () => {
+              expect(
+                (await tbtcDepositor.stakeRequests(tbtcDepositData.depositKey))
+                  .finalizedAt,
+              ).to.be.equal(await lastBlockTime())
+            })
+
+            it("should emit StakeRequestRecalled event", async () => {
+              await expect(tx)
+                .to.emit(tbtcDepositor, "StakeRequestRecalled")
+                .withArgs(
+                  tbtcDepositData.depositKey,
+                  receiver.address,
+                  amountToStake,
+                )
+            })
+
+            it("should transfer tbtc to receiver", async () => {
+              await expect(tx).to.changeTokenBalances(
+                tbtc,
+                [tbtcDepositor, receiver],
+                [-amountToStake, amountToStake],
+              )
+            })
+          })
+        })
+
+        describe("when stake request has been recalled", () => {
+          beforeAfterSnapshotWrapper()
+
+          before(async () => {
+            // Finalize stake request.
+            await tbtcDepositor
+              .connect(receiver)
+              .recallStakeRequest(tbtcDepositData.depositKey)
+          })
+
+          it("should revert", async () => {
+            await expect(
+              tbtcDepositor
+                .connect(thirdParty)
+                .recallStakeRequest(tbtcDepositData.depositKey),
+            ).to.be.revertedWithCustomError(
+              tbtcDepositor,
+              "StakeRequestAlreadyFinalized",
+            )
+          })
+        })
+
+        describe("when stake request has been finalized", () => {
+          beforeAfterSnapshotWrapper()
+
+          before(async () => {
+            // Finalize stake request.
+            await tbtcDepositor
+              .connect(thirdParty)
+              .finalizeStakeRequest(tbtcDepositData.depositKey)
+          })
+
+          it("should revert", async () => {
+            await expect(
+              tbtcDepositor
+                .connect(thirdParty)
+                .recallStakeRequest(tbtcDepositData.depositKey),
+            ).to.be.revertedWithCustomError(
+              tbtcDepositor,
+              "StakeRequestAlreadyFinalized",
+            )
+          })
+        })
+      })
+    })
+  })
 
   describe("updateDepositorFeeDivisor", () => {
     beforeAfterSnapshotWrapper()
@@ -684,6 +832,17 @@ describe("TbtcDepositor", () => {
       },
     )
   })
+
+  async function initializeStakeRequest() {
+    await tbtcDepositor
+      .connect(thirdParty)
+      .initializeStakeRequest(
+        tbtcDepositData.fundingTxInfo,
+        tbtcDepositData.reveal,
+        tbtcDepositData.receiver,
+        tbtcDepositData.referral,
+      )
+  }
 
   async function finalizeBridging(depositKey: bigint) {
     await tbtcVault.createOptimisticMintingRequest(depositKey)
