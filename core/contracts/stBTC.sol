@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Dispatcher.sol";
-import "./lib/ERC4626Fees.sol";
+import "./lib/xERC4626.sol";
 
 /// @title stBTC
 /// @notice This contract implements the ERC-4626 tokenized vault standard. By
@@ -18,7 +18,7 @@ import "./lib/ERC4626Fees.sol";
 ///      of yield-bearing vaults. This contract facilitates the minting and
 ///      burning of shares (stBTC), which are represented as standard ERC20
 ///      tokens, providing a seamless exchange with tBTC tokens.
-contract stBTC is ERC4626Fees, Ownable {
+contract stBTC is xERC4626, Ownable {
     using SafeERC20 for IERC20;
 
     /// Dispatcher contract that routes tBTC from stBTC to a given vault and back.
@@ -75,7 +75,12 @@ contract stBTC is ERC4626Fees, Ownable {
     constructor(
         IERC20 _tbtc,
         address _treasury
-    ) ERC4626(_tbtc) ERC20("Acre Staked Bitcoin", "stBTC") Ownable(msg.sender) {
+    )
+        ERC4626(_tbtc)
+        ERC20("Acre Staked Bitcoin", "stBTC")
+        Ownable(msg.sender)
+        xERC4626(600) // 10min TODO: revisit
+    {
         if (address(_treasury) == address(0)) {
             revert ZeroAddress();
         }
