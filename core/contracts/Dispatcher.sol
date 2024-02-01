@@ -28,10 +28,10 @@ contract Dispatcher is Router, Ownable {
 
     /// Authorized Yield Vaults that implement ERC4626 standard. These
     /// vaults deposit assets to yield strategies, e.g. Uniswap V3
-    /// WBTC/TBTC pool. Vault can be a part of stBTC ecosystem or can be
+    /// WBTC/TBTC pool. Vault can be a part of Acre ecosystem or can be
     /// implemented externally. As long as it complies with ERC4626
     /// standard and is authorized by the owner it can be plugged into
-    /// stBTC.
+    /// Acre.
     address[] public vaults;
     /// Mapping of vaults to their information.
     mapping(address => VaultInfo) public vaultsInfo;
@@ -47,7 +47,7 @@ contract Dispatcher is Router, Ownable {
     /// Emitted when tBTC is routed to a vault.
     /// @param vault Address of the vault.
     /// @param amount Amount of tBTC.
-    /// @param sharesOut Amount of shares received by stBTC.
+    /// @param sharesOut Amount of received shares.
     event DepositAllocated(
         address indexed vault,
         uint256 amount,
@@ -135,7 +135,7 @@ contract Dispatcher is Router, Ownable {
     ///         only.
     /// @param vault Address of the vault to route the assets to.
     /// @param amount Amount of tBTC to deposit.
-    /// @param minSharesOut Minimum amount of shares to receive by stBTC.
+    /// @param minSharesOut Minimum amount of shares to receive.
     function depositToVault(
         address vault,
         uint256 amount,

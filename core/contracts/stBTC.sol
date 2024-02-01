@@ -10,7 +10,7 @@ import "./Dispatcher.sol";
 /// @notice This contract implements the ERC-4626 tokenized vault standard. By
 ///         staking tBTC, users acquire a liquid staking token called stBTC,
 ///         commonly referred to as "shares". The staked tBTC is securely
-///         deposited into stBTC's vaults, where it generates yield over time.
+///         deposited into Acre's vaults, where it generates yield over time.
 ///         Users have the flexibility to redeem stBTC, enabling them to
 ///         withdraw their staked tBTC along with the accrued yield.
 /// @dev ERC-4626 is a standard to optimize and unify the technical parameters
@@ -24,7 +24,7 @@ contract stBTC is ERC4626, Ownable {
     Dispatcher public dispatcher;
     /// Minimum amount for a single deposit operation.
     uint256 public minimumDepositAmount;
-    /// Maximum total amount of tBTC token held by stBTC.
+    /// Maximum total amount of tBTC token held by Acre protocol.
     uint256 public maximumTotalAssets;
 
     /// Emitted when a referral is used.
@@ -67,8 +67,8 @@ contract stBTC is ERC4626, Ownable {
     /// @param _minimumDepositAmount New value of the minimum deposit amount. It
     ///        is the minimum amount for a single deposit operation.
     /// @param _maximumTotalAssets New value of the maximum total assets amount.
-    ///        It is the maximum amount of the tBTC token that the stBTC can
-    ///        hold.
+    ///        It is the maximum amount of the tBTC token that the Acre protocol
+    ///        can hold.
     function updateDepositParameters(
         uint256 _minimumDepositAmount,
         uint256 _maximumTotalAssets
@@ -175,7 +175,7 @@ contract stBTC is ERC4626, Ownable {
     ///         deposited into the vault for the receiver, through a deposit
     ///         call. It takes into account the deposit parameter, maximum total
     ///         assets, which determines the total amount of tBTC token held by
-    ///         stBTC.
+    ///         Acre protocol.
     /// @return The maximum amount of the tBTC token.
     function maxDeposit(address) public view override returns (uint256) {
         if (maximumTotalAssets == type(uint256).max) {

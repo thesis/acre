@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/interfaces/IERC4626.sol";
 abstract contract Router {
     /// Thrown when amount of shares received is below the min set by caller.
     /// @param vault Address of the vault.
-    /// @param sharesOut Amount of shares received by stBTC.
+    /// @param sharesOut Amount of received shares.
     /// @param minSharesOut Minimum amount of shares expected to receive.
     error MinSharesError(
         address vault,
