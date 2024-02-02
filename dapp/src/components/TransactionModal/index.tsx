@@ -62,6 +62,10 @@ export default function TransactionModal({
   }, [defaultType])
 
   useEffect(() => {
+    setType(defaultType)
+  }, [defaultType])
+
+  useEffect(() => {
     let timeout: NodeJS.Timeout
 
     if (isOpen) {
