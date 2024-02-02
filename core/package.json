@@ -62,6 +62,7 @@
   },
   "dependencies": {
     "@keep-network/bitcoin-spv-sol": "3.4.0-solc-0.8",
+    "@keep-network/tbtc-v2": "^1.6.0-dev.18",
     "@openzeppelin/contracts": "^5.0.0"
   }
 }

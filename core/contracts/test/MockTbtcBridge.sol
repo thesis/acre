@@ -1,10 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity ^0.8.21;
-import {MockTBTCVault} from "@keep-network/tbtc-v2/contracts/test/TestTBTCDepositorProxy.sol";
+
+import {MockBridge, MockTBTCVault} from "@keep-network/tbtc-v2/contracts/test/TestTBTCDepositor.sol";
 import {IBridge} from "@keep-network/tbtc-v2/contracts/integrator/IBridge.sol";
 import {IBridgeTypes} from "@keep-network/tbtc-v2/contracts/integrator/IBridge.sol";
 
 import {TestERC20} from "./TestERC20.sol";
+
+contract BridgeStub is MockBridge {}
 
 contract TBTCVaultStub is MockTBTCVault {
     TestERC20 public tbtc;
