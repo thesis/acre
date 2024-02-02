@@ -88,7 +88,7 @@ class EthereumTBTCDepositor
   // eslint-disable-next-line class-methods-use-this
   encodeExtraData(staker: ChainIdentifier, referral: number): Hex {
     const encodedData = solidityPacked(
-      ["address", "int16"],
+      ["address", "uint16"],
       [`0x${staker.identifierHex}`, referral],
     )
 
