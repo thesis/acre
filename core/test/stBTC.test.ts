@@ -9,7 +9,6 @@ import { ethers } from "hardhat"
 import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
 import type { SnapshotRestorer } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 import {
-  beforeAfterEachSnapshotWrapper,
   beforeAfterSnapshotWrapper,
   deployment,
   getNamedSigner,
@@ -122,7 +121,7 @@ describe("stBTC", () => {
     context("when the vault is empty", () => {
       const amountToDeposit = to1e18(1)
 
-      beforeEach(async () => {
+      before(async () => {
         await tbtc
           .connect(depositor1)
           .approve(await stbtc.getAddress(), amountToDeposit)
@@ -152,10 +151,12 @@ describe("stBTC", () => {
     })
 
     context("when the vault is not empty", () => {
+      beforeAfterSnapshotWrapper()
+
       const amountToDeposit1 = to1e18(1)
       const amountToDeposit2 = to1e18(2)
 
-      beforeEach(async () => {
+      before(async () => {
         await tbtc
           .connect(depositor1)
           .approve(await stbtc.getAddress(), amountToDeposit1)
@@ -758,7 +759,7 @@ describe("stBTC", () => {
   })
 
   describe("mint", () => {
-    beforeAfterEachSnapshotWrapper()
+    beforeAfterSnapshotWrapper()
 
     let receiver: HardhatEthersSigner
 
@@ -923,9 +924,11 @@ describe("stBTC", () => {
 
     context("when is called by governance", () => {
       context("when all parameters are valid", () => {
+        beforeAfterSnapshotWrapper()
+
         let tx: ContractTransactionResponse
 
-        beforeEach(async () => {
+        before(async () => {
           tx = await stbtc
             .connect(governance)
             .updateDepositParameters(
@@ -950,9 +953,11 @@ describe("stBTC", () => {
       })
 
       context("when minimum deposit amount is 0", () => {
+        beforeAfterSnapshotWrapper()
+
         const newMinimumDepositAmount = 0
 
-        beforeEach(async () => {
+        before(async () => {
           await stbtc
             .connect(governance)
             .updateDepositParameters(
@@ -969,9 +974,11 @@ describe("stBTC", () => {
       })
 
       context("when the maximum total assets amount is 0", () => {
+        beforeAfterSnapshotWrapper()
+
         const newMaximumTotalAssets = 0
 
-        beforeEach(async () => {
+        before(async () => {
           await stbtc
             .connect(governance)
             .updateDepositParameters(
@@ -1009,9 +1016,11 @@ describe("stBTC", () => {
 
     context("when is called by governance", () => {
       context("when entry fee basis points are valid", () => {
+        beforeAfterSnapshotWrapper()
+
         let tx: ContractTransactionResponse
 
-        beforeEach(async () => {
+        before(async () => {
           tx = await stbtc
             .connect(governance)
             .updateEntryFeeBasisPoints(validEntryFeeBasisPoints)
@@ -1031,9 +1040,11 @@ describe("stBTC", () => {
       })
 
       context("when entry fee basis points are 0", () => {
+        beforeAfterSnapshotWrapper()
+
         const newEntryFeeBasisPoints = 0
 
-        beforeEach(async () => {
+        before(async () => {
           await stbtc
             .connect(governance)
             .updateEntryFeeBasisPoints(newEntryFeeBasisPoints)
@@ -1057,12 +1068,12 @@ describe("stBTC", () => {
   })
 
   describe("maxDeposit", () => {
-    beforeAfterEachSnapshotWrapper()
+    beforeAfterSnapshotWrapper()
 
     let maximumTotalAssets: bigint
     let minimumDepositAmount: bigint
 
-    beforeEach(async () => {
+    before(async () => {
       ;[minimumDepositAmount, maximumTotalAssets] =
         await stbtc.depositParameters()
     })
@@ -1070,7 +1081,9 @@ describe("stBTC", () => {
     context(
       "when total assets is greater than maximum total assets amount",
       () => {
-        beforeEach(async () => {
+        beforeAfterSnapshotWrapper()
+
+        before(async () => {
           const toMint = maximumTotalAssets + 1n
 
           await tbtc.mint(await stbtc.getAddress(), toMint)
@@ -1093,10 +1106,14 @@ describe("stBTC", () => {
     context(
       "when the unused limit is less than the minimum deposit amount",
       () => {
-        it("should return 0", async () => {
+        beforeAfterSnapshotWrapper()
+
+        before(async () => {
           const toMint = 24999100000000000000n // 24.9991 tBTC
           await tbtc.mint(await stbtc.getAddress(), toMint)
+        })
 
+        it("should return 0", async () => {
           expect(await stbtc.maxDeposit(depositor1.address)).to.be.eq(0)
         })
       },
@@ -1105,10 +1122,14 @@ describe("stBTC", () => {
     context(
       "when the unused limit is equal to the minimum deposit amount",
       () => {
-        it("should return 0", async () => {
+        beforeAfterSnapshotWrapper()
+
+        before(async () => {
           const toMint = 24999000000000000000n // 24.999 tBTC
           await tbtc.mint(await stbtc.getAddress(), toMint)
+        })
 
+        it("should return 0", async () => {
           expect(await stbtc.maxDeposit(depositor1.address)).to.be.eq(
             minimumDepositAmount,
           )
@@ -1117,9 +1138,11 @@ describe("stBTC", () => {
     )
 
     context("when the maximum total amount has not yet been reached", () => {
+      beforeAfterSnapshotWrapper()
+
       let expectedValue: bigint
 
-      beforeEach(async () => {
+      before(async () => {
         const toMint = to1e18(2)
         expectedValue = maximumTotalAssets - toMint
 
@@ -1134,9 +1157,11 @@ describe("stBTC", () => {
     })
 
     context("when the deposit limit is disabled", () => {
+      beforeAfterSnapshotWrapper()
+
       const maximum = MaxUint256
 
-      beforeEach(async () => {
+      before(async () => {
         await stbtc
           .connect(governance)
           .updateDepositParameters(minimumDepositAmount, maximum)
@@ -1151,7 +1176,7 @@ describe("stBTC", () => {
       context("when the vault is not empty", () => {
         const amountToDeposit = to1e18(1)
 
-        beforeEach(async () => {
+        before(async () => {
           await tbtc
             .connect(depositor1)
             .approve(await stbtc.getAddress(), amountToDeposit)
@@ -1285,12 +1310,12 @@ describe("stBTC", () => {
   })
 
   describe("maxMint", () => {
-    beforeAfterEachSnapshotWrapper()
+    beforeAfterSnapshotWrapper()
 
     let maximumTotalAssets: bigint
     let minimumDepositAmount: bigint
 
-    beforeEach(async () => {
+    before(async () => {
       ;[minimumDepositAmount, maximumTotalAssets] =
         await stbtc.depositParameters()
     })
@@ -1298,7 +1323,9 @@ describe("stBTC", () => {
     context(
       "when total assets is greater than maximum total assets amount",
       () => {
-        beforeEach(async () => {
+        beforeAfterSnapshotWrapper()
+
+        before(async () => {
           const toMint = maximumTotalAssets + 1n
 
           await tbtc.mint(await stbtc.getAddress(), toMint)
@@ -1321,9 +1348,11 @@ describe("stBTC", () => {
     })
 
     context("when the maximum total amount has not yet been reached", () => {
+      beforeAfterSnapshotWrapper()
+
       let expectedValue: bigint
 
-      beforeEach(async () => {
+      before(async () => {
         const toMint = to1e18(2)
         const amountToDeposit = to1e18(3)
 
@@ -1356,9 +1385,11 @@ describe("stBTC", () => {
     })
 
     context("when the deposit limit is disabled", () => {
+      beforeAfterSnapshotWrapper()
+
       const maximum = MaxUint256
 
-      beforeEach(async () => {
+      before(async () => {
         await stbtc
           .connect(governance)
           .updateDepositParameters(minimumDepositAmount, maximum)
@@ -1371,9 +1402,11 @@ describe("stBTC", () => {
       })
 
       context("when the vault is not empty", () => {
+        beforeAfterSnapshotWrapper()
+
         const amountToDeposit = to1e18(1)
 
-        beforeEach(async () => {
+        before(async () => {
           await tbtc
             .connect(depositor1)
             .approve(await stbtc.getAddress(), amountToDeposit)
