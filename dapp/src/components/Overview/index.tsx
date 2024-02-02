@@ -1,14 +1,14 @@
 import React, { useCallback } from "react"
-import { Button, Flex, Grid, HStack, Icon, Switch } from "@chakra-ui/react"
+import { Button, Flex, Grid, HStack, Switch } from "@chakra-ui/react"
 import { useDocsDrawer, useWalletContext } from "#/hooks"
 import { TextSm } from "#/components/shared/Typography"
-import { ArrowUpRight } from "#/static/icons"
 import { USD } from "#/constants"
 import { useStakeFlow } from "#/acre-react/hooks"
 import PositionDetails from "./PositionDetails"
 import Statistics from "./Statistics"
 import TransactionHistory from "./TransactionHistory"
 import { useAcreContext } from "../../acre-react/AcreSdkContext"
+import ButtonLink from "../shared/ButtonLink"
 
 export default function Overview() {
   const { onOpen } = useDocsDrawer()
@@ -63,20 +63,16 @@ export default function Overview() {
             Stake
           </Button>
         </HStack>
-        <Button
-          variant="card"
-          onClick={onOpen}
-          leftIcon={<Icon as={ArrowUpRight} color="brand.400" boxSize={4} />}
-        >
+        <ButtonLink colorScheme="gold" bg="gold.200" onClick={onOpen}>
           Docs
-        </Button>
+        </ButtonLink>
       </Flex>
       <Grid
         templateAreas={`"position-details statistics"
                         "transaction-history transaction-history"`}
         gridTemplateColumns={{ base: "30% 1fr", xl: "20% 1fr" }}
-        gridTemplateRows={{ base: "55% 1fr", xl: "40% 1fr" }}
-        h="75vh"
+        gridTemplateRows={{ base: "55% 1fr", xl: "45% 1fr" }}
+        h="80vh"
         gap={4}
       >
         <PositionDetails gridArea="position-details" />

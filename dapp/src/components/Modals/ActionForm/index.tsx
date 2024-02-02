@@ -20,9 +20,9 @@ function ActionForm({ action }: { action: Action }) {
   return (
     <ModalBody>
       <Tabs w="100%" variant="underline" defaultIndex={TABS.indexOf(action)}>
-        <TabList>
+        <TabList pb={6}>
           {TABS.map((tab) => (
-            <Tab key={tab} w="50%">
+            <Tab key={tab} w="50%" pb={4}>
               {tab}
             </Tab>
           ))}

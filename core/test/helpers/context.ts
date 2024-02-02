@@ -2,7 +2,7 @@ import { deployments } from "hardhat"
 import { getDeployedContract } from "./contract"
 
 import type {
-  Acre,
+  StBTC as stBTC,
   Dispatcher,
   TestERC20,
   TbtcDepositor,
@@ -15,7 +15,7 @@ import type {
 export async function deployment() {
   await deployments.fixture()
 
-  const acre: Acre = await getDeployedContract("Acre")
+  const stbtc: stBTC = await getDeployedContract("stBTC")
   const tbtcDepositor: TbtcDepositor =
     await getDeployedContract("TbtcDepositor")
 
@@ -27,5 +27,13 @@ export async function deployment() {
 
   const vault: TestERC4626 = await getDeployedContract("Vault")
 
-  return { tbtc, acre, tbtcDepositor, tbtcBridge, tbtcVault, dispatcher, vault }
+  return {
+    tbtc,
+    stbtc,
+    tbtcDepositor,
+    tbtcBridge,
+    tbtcVault,
+    dispatcher,
+    vault,
+  }
 }

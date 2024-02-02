@@ -12,7 +12,8 @@
           "test/**"
         ]
       }
-    ]
+    ],
+    "@typescript-eslint/no-use-before-define": "off"
   },
   "overrides": [
     {
@@ -24,7 +25,8 @@
     {
       "files": ["*.test.ts"],
       "rules": {
-        "@typescript-eslint/no-unused-expressions": "off"
+        "@typescript-eslint/no-unused-expressions": "off",
+        "@typescript-eslint/no-use-before-define": "off"
       }
     }
   ]
