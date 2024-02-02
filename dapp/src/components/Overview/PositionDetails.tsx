@@ -12,7 +12,7 @@ import {
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import { TextMd } from "#/components/shared/Typography"
 import { Info } from "#/assets/icons"
-import { ActionFlowType } from "#/types"
+import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
 import TransactionModal from "../TransactionModal"
 
 export default function PositionDetails(props: CardProps) {
@@ -47,13 +47,16 @@ export default function PositionDetails(props: CardProps) {
         />
       </CardBody>
       <CardFooter flexDirection="column" gap={2}>
-        <Button size="lg" onClick={() => setActionFlowType("STAKE")}>
+        <Button
+          size="lg"
+          onClick={() => setActionFlowType(ACTION_FLOW_TYPES.STAKE)}
+        >
           Stake
         </Button>
         <Button
           size="lg"
           variant="outline"
-          onClick={() => setActionFlowType("UNSTAKE")}
+          onClick={() => setActionFlowType(ACTION_FLOW_TYPES.UNSTAKE)}
         >
           Unstake
         </Button>

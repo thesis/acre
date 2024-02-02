@@ -1,10 +1,10 @@
 import React from "react"
-import { ACTION_FLOW_STEPS_TYPES } from "#/types"
+import { ACTION_FLOW_STEPS_TYPES, ACTION_FLOW_TYPES } from "#/types"
 import Overview from "./Overview"
 import SignMessage from "./SignMessage"
 import DepositBTC from "./DepositBTC"
 
-const STEPS = ACTION_FLOW_STEPS_TYPES.STAKE
+const STEPS = ACTION_FLOW_STEPS_TYPES[ACTION_FLOW_TYPES.STAKE]
 
 export function ActiveStakingStep({ activeStep }: { activeStep: number }) {
   switch (activeStep) {

@@ -1,12 +1,20 @@
 import React, { ReactElement, useEffect } from "react"
 import { useModalFlowContext } from "#/hooks"
-import { ACTION_FLOW_STEPS_TYPES, ActionFlowType } from "#/types"
+import {
+  ACTION_FLOW_STEPS_TYPES,
+  ACTION_FLOW_TYPES,
+  ActionFlowType,
+} from "#/types"
 import { ActiveUnstakingStep } from "../Modals/Unstaking"
 import { ActiveStakingStep } from "../Modals/Staking"
 
 const FLOW: Record<ActionFlowType, (activeStep: number) => ReactElement> = {
-  STAKE: (activeStep) => <ActiveStakingStep activeStep={activeStep} />,
-  UNSTAKE: (activeStep) => <ActiveUnstakingStep activeStep={activeStep} />,
+  [ACTION_FLOW_TYPES.STAKE]: (activeStep) => (
+    <ActiveStakingStep activeStep={activeStep} />
+  ),
+  [ACTION_FLOW_TYPES.UNSTAKE]: (activeStep) => (
+    <ActiveUnstakingStep activeStep={activeStep} />
+  ),
 }
 
 export function ActiveFlowStep() {
