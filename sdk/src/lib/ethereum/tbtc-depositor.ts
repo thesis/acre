@@ -2,7 +2,7 @@ import {
   DepositReceipt,
   packRevealDepositParameters as tbtcPackRevealDepositParameters,
 } from "@keep-network/tbtc-v2.ts"
-import { TbtcDepositor as TbtcDepositorTypechain } from "@acre/core/typechain/contracts/tbtc/TbtcDepositor"
+import { TbtcDepositor as TbtcDepositorTypechain } from "@acre/core/typechain/contracts/TbtcDepositor"
 import SepoliaTbtcDepositor from "@acre/core/deployments/sepolia/TbtcDepositor.json"
 import { dataSlice, getAddress, solidityPacked, zeroPadBytes } from "ethers"
 import { ChainIdentifier, DecodedExtraData, TBTCDepositor } from "../contracts"
@@ -78,7 +78,7 @@ class EthereumTBTCDepositor
   // eslint-disable-next-line class-methods-use-this
   encodeExtraData(staker: ChainIdentifier, referral: number): Hex {
     const encodedData = solidityPacked(
-      ["address", "int16"],
+      ["address", "uint16"],
       [`0x${staker.identifierHex}`, referral],
     )
 

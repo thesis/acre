@@ -5,6 +5,7 @@ import {
   Hex,
   EthereumSigner,
 } from "../../../src"
+import { extraDataValidTestData } from "./data"
 
 jest.mock("ethers", (): object => ({
   Contract: jest.fn(),
@@ -178,61 +179,50 @@ describe("TBTCDepositor", () => {
   })
 
   describe("encodeExtraData", () => {
-    const extraData = {
-      staker: EthereumAddress.from(
-        "0x000055d85E80A49B5930C4a77975d44f012D86C1",
-      ),
-      referral: 6851,
-      hex: "0x000055d85e80a49b5930c4a77975d44f012d86c11ac300000000000000000000",
-    }
     const spyOnSolidityPacked = jest.spyOn(ethers, "solidityPacked")
 
-    it("should return correct staker and referral", () => {
-      const result = depositor.encodeExtraData(
-        extraData.staker,
-        extraData.referral,
-      )
+    it.each(extraDataValidTestData)(
+      "$testDescription",
+      ({ staker, referral, extraData }) => {
+        const result = depositor.encodeExtraData(staker, referral)
 
-      expect(spyOnSolidityPacked).toHaveBeenCalledWith(
-        ["address", "int16"],
-        [`0x${extraData.staker.identifierHex}`, extraData.referral],
-      )
+        expect(spyOnSolidityPacked).toHaveBeenCalledWith(
+          ["address", "uint16"],
+          [`0x${staker.identifierHex}`, referral],
+        )
 
-      expect(result.toPrefixedString()).toEqual(extraData.hex)
-    })
+        expect(result.toPrefixedString()).toEqual(extraData)
+      },
+    )
   })
 
   describe("decodeExtraData", () => {
-    const extraData = {
-      staker: EthereumAddress.from(
-        "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
-      ),
-      referral: 19712,
-      hex: "0xeb098d6cde6a202981316b24b19e64d82721e89e4d0000000000000000000000",
-    }
     beforeEach(() => {
       spyOnEthersDataSlice.mockClear()
     })
 
-    it("should return correct staker and referral", () => {
-      const { staker, referral } = depositor.decodeExtraData(extraData.hex)
+    it.each(extraDataValidTestData)(
+      "$testDescription",
+      ({ staker: expectedStaker, extraData, referral: expectedReferral }) => {
+        const { staker, referral } = depositor.decodeExtraData(extraData)
 
-      expect(spyOnEthersDataSlice).toHaveBeenNthCalledWith(
-        1,
-        extraData.hex,
-        0,
-        20,
-      )
+        expect(spyOnEthersDataSlice).toHaveBeenNthCalledWith(
+          1,
+          extraData,
+          0,
+          20,
+        )
 
-      expect(spyOnEthersDataSlice).toHaveBeenNthCalledWith(
-        2,
-        extraData.hex,
-        20,
-        22,
-      )
+        expect(spyOnEthersDataSlice).toHaveBeenNthCalledWith(
+          2,
+          extraData,
+          20,
+          22,
+        )
 
-      expect(staker.equals(extraData.staker)).toBeTruthy()
-      expect(referral).toBe(extraData.referral)
-    })
+        expect(expectedStaker.equals(staker)).toBeTruthy()
+        expect(expectedReferral).toBe(referral)
+      },
+    )
   })
 })
