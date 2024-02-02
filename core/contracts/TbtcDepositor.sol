@@ -154,7 +154,7 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable {
         address _tbtcToken,
         address _stbtc
     ) Ownable(msg.sender) {
-        __TBTCDepositorProxy_initialize(_bridge, _tbtcVault);
+        __AbstractTBTCDepositor_initialize(_bridge, _tbtcVault);
 
         require(_tbtcToken != address(0), "TBTCToken address cannot be zero");
         require(_stbtc != address(0), "stBTC address cannot be zero");
