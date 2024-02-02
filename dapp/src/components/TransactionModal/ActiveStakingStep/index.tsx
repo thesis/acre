@@ -1,19 +1,19 @@
 import React from "react"
 import { ACTION_FLOW_STEPS_TYPES, ACTION_FLOW_TYPES } from "#/types"
-import Overview from "./Overview"
-import SignMessage from "./SignMessage"
-import DepositBTC from "./DepositBTC"
+import SignMessageModal from "./SignMessageModal"
+import DepositBTCModal from "./DepositBTCModal"
+import OverviewModal from "./OverviewModal"
 
 const STEPS = ACTION_FLOW_STEPS_TYPES[ACTION_FLOW_TYPES.STAKE]
 
 export function ActiveStakingStep({ activeStep }: { activeStep: number }) {
   switch (activeStep) {
     case STEPS.OVERVIEW:
-      return <Overview />
+      return <OverviewModal />
     case STEPS.SIGN_MESSAGE:
-      return <SignMessage />
+      return <SignMessageModal />
     case STEPS.DEPOSIT_BTC:
-      return <DepositBTC />
+      return <DepositBTCModal />
     default: {
       return null
     }
