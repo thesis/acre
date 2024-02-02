@@ -5,7 +5,7 @@ import { useTokenAmountFormValue } from "#/components/shared/TokenAmountForm/Tok
 import { useTransactionDetails } from "#/hooks"
 import { CurrencyType } from "#/types"
 
-function Details({ currency }: { currency: CurrencyType }) {
+function StakeDetails({ currency }: { currency: CurrencyType }) {
   const value = useTokenAmountFormValue()
   const details = useTransactionDetails(value ?? 0n)
 
@@ -45,4 +45,4 @@ function Details({ currency }: { currency: CurrencyType }) {
   )
 }
 
-export default Details
+export default StakeDetails

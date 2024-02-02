@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useCallback, useState } from "react"
 import {
   Button,
   Tooltip,
@@ -8,15 +8,21 @@ import {
   CardFooter,
   HStack,
   CardProps,
-  useBoolean,
 } from "@chakra-ui/react"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import { TextMd } from "#/components/shared/Typography"
 import { Info } from "#/assets/icons"
-import StakingModal from "../Modals/Staking"
+import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
+import TransactionModal from "../TransactionModal"
 
 export default function PositionDetails(props: CardProps) {
-  const [isOpenStakingModal, stakingModal] = useBoolean()
+  const [actionFlowType, setActionFlowType] = useState<
+    ActionFlowType | undefined
+  >(undefined)
+
+  const handleCloseTransactionModal = useCallback(() => {
+    setActionFlowType(undefined)
+  }, [])
 
   return (
     <Card {...props}>
@@ -41,15 +47,25 @@ export default function PositionDetails(props: CardProps) {
         />
       </CardBody>
       <CardFooter flexDirection="column" gap={2}>
-        {/* TODO: Handle click actions */}
-        <Button size="lg" onClick={stakingModal.on}>
+        <Button
+          size="lg"
+          onClick={() => setActionFlowType(ACTION_FLOW_TYPES.STAKE)}
+        >
           Stake
         </Button>
-        <Button size="lg" variant="outline">
+        <Button
+          size="lg"
+          variant="outline"
+          onClick={() => setActionFlowType(ACTION_FLOW_TYPES.UNSTAKE)}
+        >
           Unstake
         </Button>
       </CardFooter>
-      <StakingModal isOpen={isOpenStakingModal} onClose={stakingModal.off} />
+      <TransactionModal
+        isOpen={!!actionFlowType}
+        defaultType={actionFlowType}
+        onClose={handleCloseTransactionModal}
+      />
     </Card>
   )
 }
