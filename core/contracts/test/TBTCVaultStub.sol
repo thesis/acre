@@ -1,56 +1,46 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity ^0.8.21;
-import {ITBTCVault} from "../tbtc/TbtcDepositor.sol";
-import {IBridge} from "../external/tbtc/IBridge.sol";
+import {MockTBTCVault} from "@keep-network/tbtc-v2/contracts/test/TestTBTCDepositorProxy.sol";
+import {IBridge} from "@keep-network/tbtc-v2/contracts/integrator/IBridge.sol";
+import {IBridgeTypes} from "@keep-network/tbtc-v2/contracts/integrator/IBridge.sol";
+
 import {TestERC20} from "./TestERC20.sol";
 
-contract TBTCVaultStub is ITBTCVault {
+contract TBTCVaultStub is MockTBTCVault {
     TestERC20 public tbtc;
     IBridge public bridge;
 
     /// @notice Multiplier to convert satoshi to TBTC token units.
     uint256 public constant SATOSHI_MULTIPLIER = 10 ** 10;
 
-    uint32 public optimisticMintingFeeDivisor = 500; // 1/500 = 0.002 = 0.2%
-
-    mapping(uint256 => OptimisticMintingRequest) public requests;
-
     constructor(TestERC20 _tbtc, IBridge _bridge) {
         tbtc = _tbtc;
         bridge = _bridge;
     }
 
-    function optimisticMintingRequests(
+    function finalizeOptimisticMintingRequestAndMint(
         uint256 depositKey
-    ) external view returns (OptimisticMintingRequest memory) {
-        return requests[depositKey];
-    }
+    ) public {
+        MockTBTCVault.finalizeOptimisticMintingRequest(depositKey);
 
-    function mintTbtc(address account, uint256 valueSat) public {
-        tbtc.mint(account, valueSat * SATOSHI_MULTIPLIER);
-    }
+        IBridgeTypes.DepositRequest memory deposit = bridge.deposits(
+            depositKey
+        );
 
-    function finalizeOptimisticMinting(uint256 depositKey) external {
-        OptimisticMintingRequest storage request = requests[depositKey];
-
-        IBridge.DepositRequest memory deposit = bridge.deposits(depositKey);
-
-        uint256 amountToMint = (deposit.amount - deposit.treasuryFee) *
+        uint256 amountSubTreasury = (deposit.amount - deposit.treasuryFee) *
             SATOSHI_MULTIPLIER;
 
-        uint256 optimisticMintFee = optimisticMintingFeeDivisor > 0
-            ? (amountToMint / optimisticMintingFeeDivisor)
+        uint256 omFee = optimisticMintingFeeDivisor > 0
+            ? (amountSubTreasury / optimisticMintingFeeDivisor)
             : 0;
 
-        tbtc.mint(deposit.depositor, amountToMint - optimisticMintFee);
+        // The deposit transaction max fee is in the 1e8 satoshi precision.
+        // We need to convert them to the 1e18 TBTC precision.
+        (, , uint64 depositTxMaxFee, ) = bridge.depositParameters();
+        uint256 txMaxFee = depositTxMaxFee * SATOSHI_MULTIPLIER;
 
-        /* solhint-disable-next-line not-rely-on-time */
-        request.finalizedAt = uint64(block.timestamp);
-    }
+        uint256 amountToMint = amountSubTreasury - omFee - txMaxFee;
 
-    function setOptimisticMintingFeeDivisor(
-        uint32 _optimisticMintingFeeDivisor
-    ) public {
-        optimisticMintingFeeDivisor = _optimisticMintingFeeDivisor;
+        tbtc.mint(deposit.depositor, amountToMint);
     }
 }

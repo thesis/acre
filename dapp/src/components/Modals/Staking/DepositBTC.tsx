@@ -1,12 +1,18 @@
-import React from "react"
+import React, { useCallback } from "react"
 import { useDepositBTCTransaction, useModalFlowContext } from "#/hooks"
 import Alert from "#/components/shared/Alert"
 import { TextMd } from "#/components/shared/Typography"
 import StakingSteps from "./components/StakingSteps"
 
 export default function DepositBTC() {
-  const { goNext } = useModalFlowContext()
-  const { depositBTC } = useDepositBTCTransaction(goNext)
+  const { goNext, endTransactionProcess } = useModalFlowContext()
+
+  const onDepositSuccess = useCallback(() => {
+    endTransactionProcess()
+    goNext()
+  }, [endTransactionProcess, goNext])
+
+  const { depositBTC } = useDepositBTCTransaction(onDepositSuccess)
 
   return (
     <StakingSteps buttonText="Deposit BTC" activeStep={1} onClick={depositBTC}>
