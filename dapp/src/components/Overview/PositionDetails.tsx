@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useCallback, useState } from "react"
 import {
   Button,
   Tooltip,
@@ -19,6 +19,10 @@ export default function PositionDetails(props: CardProps) {
   const [actionFlowType, setActionFlowType] = useState<
     ActionFlowType | undefined
   >(undefined)
+
+  const handleCloseTransactionModal = useCallback(() => {
+    setActionFlowType(undefined)
+  }, [])
 
   return (
     <Card {...props}>
@@ -57,7 +61,7 @@ export default function PositionDetails(props: CardProps) {
       <TransactionModal
         isOpen={!!actionFlowType}
         defaultType={actionFlowType}
-        onClose={() => setActionFlowType(undefined)}
+        onClose={handleCloseTransactionModal}
       />
     </Card>
   )
