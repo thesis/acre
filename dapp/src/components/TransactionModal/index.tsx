@@ -1,29 +1,32 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react"
-import { useSidebar } from "#/hooks"
 import {
   ModalFlowContext,
   ModalFlowContextValue,
   TransactionContextProvider,
 } from "#/contexts"
+import { useSidebar } from "#/hooks"
+import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
 import ModalBase from "../shared/ModalBase"
-import SupportWrapper from "../Modals/Support"
+import ModalContentWrapper from "./ModalContentWrapper"
+import { ActiveFlowStep } from "./ActiveFlowStep"
+
+const DEFAULT_ACTIVE_STEP = 1
+
+type TransactionModalProps = {
+  isOpen: boolean
+  defaultType?: ActionFlowType
+  onClose: () => void
+}
 
 export default function TransactionModal({
   isOpen,
+  defaultType = ACTION_FLOW_TYPES.STAKE,
   onClose,
-  numberOfSteps,
-  defaultStep = 1,
-  children,
-}: {
-  isOpen: boolean
-  onClose: () => void
-  numberOfSteps: number
-  defaultStep?: number
-  children: React.ReactNode
-}) {
+}: TransactionModalProps) {
   const { onOpen: openSideBar, onClose: closeSidebar } = useSidebar()
 
-  const [activeStep, setActiveStep] = useState(defaultStep)
+  const [type, setType] = useState(defaultType)
+  const [activeStep, setActiveStep] = useState(DEFAULT_ACTIVE_STEP)
   const [isPaused, setIsPaused] = useState(false)
   const [isPendingTransaction, setIsPendingTransaction] = useState(false)
 
@@ -52,16 +55,11 @@ export default function TransactionModal({
   }, [setIsPendingTransaction])
 
   const resetState = useCallback(() => {
-    setActiveStep(defaultStep)
+    setType(defaultType)
+    setActiveStep(DEFAULT_ACTIVE_STEP)
     setIsPaused(false)
     setIsPendingTransaction(false)
-  }, [defaultStep])
-
-  useEffect(() => {
-    if (activeStep > numberOfSteps) {
-      handleClose()
-    }
-  }, [activeStep, numberOfSteps, handleClose])
+  }, [defaultType])
 
   useEffect(() => {
     let timeout: NodeJS.Timeout
@@ -77,8 +75,10 @@ export default function TransactionModal({
 
   const contextValue: ModalFlowContextValue = useMemo<ModalFlowContextValue>(
     () => ({
+      type,
       activeStep,
       isPaused,
+      setType,
       onClose: handleClose,
       onResume: handleResume,
       goNext: handleGoNext,
@@ -86,11 +86,12 @@ export default function TransactionModal({
       endTransactionProcess: handleStopTransactionProcess,
     }),
     [
+      type,
       activeStep,
       isPaused,
-      handleGoNext,
       handleClose,
       handleResume,
+      handleGoNext,
       handleStartTransactionProcess,
       handleStopTransactionProcess,
     ],
@@ -100,7 +101,9 @@ export default function TransactionModal({
     <ModalBase isOpen={isOpen} onClose={handleClose}>
       <TransactionContextProvider>
         <ModalFlowContext.Provider value={contextValue}>
-          <SupportWrapper>{children}</SupportWrapper>
+          <ModalContentWrapper defaultType={defaultType}>
+            <ActiveFlowStep />
+          </ModalContentWrapper>
         </ModalFlowContext.Provider>
       </TransactionContextProvider>
     </ModalBase>

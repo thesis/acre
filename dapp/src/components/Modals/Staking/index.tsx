@@ -1,38 +1,21 @@
 import React from "react"
-import { useModalFlowContext } from "#/hooks"
-import TransactionModal from "#/components/TransactionModal"
+import { ACTION_FLOW_STEPS_TYPES, ACTION_FLOW_TYPES } from "#/types"
 import Overview from "./Overview"
-import ActionForm from "../ActionForm"
 import SignMessage from "./SignMessage"
 import DepositBTC from "./DepositBTC"
 
-function ActiveStakingStep() {
-  const { activeStep } = useModalFlowContext()
+const STEPS = ACTION_FLOW_STEPS_TYPES[ACTION_FLOW_TYPES.STAKE]
 
+export function ActiveStakingStep({ activeStep }: { activeStep: number }) {
   switch (activeStep) {
-    case 1:
-      return <ActionForm action="stake" />
-    case 2:
+    case STEPS.OVERVIEW:
       return <Overview />
-    case 3:
+    case STEPS.SIGN_MESSAGE:
       return <SignMessage />
-    case 4:
+    case STEPS.DEPOSIT_BTC:
       return <DepositBTC />
-    default:
+    default: {
       return null
+    }
   }
-}
-
-export default function StakingModal({
-  isOpen,
-  onClose,
-}: {
-  isOpen: boolean
-  onClose: () => void
-}) {
-  return (
-    <TransactionModal isOpen={isOpen} onClose={onClose} numberOfSteps={4}>
-      <ActiveStakingStep />
-    </TransactionModal>
-  )
 }
