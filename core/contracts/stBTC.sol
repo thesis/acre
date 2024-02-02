@@ -206,29 +206,6 @@ contract stBTC is ERC4626Fees, Ownable {
         }
     }
 
-    /// @notice Stakes a given amount of tBTC token and mints shares to a
-    ///         receiver.
-    /// @dev This function calls `deposit` function from `ERC4626` contract. The
-    ///      amount of the assets has to be pre-approved in the tBTC contract.
-    /// @param assets Approved amount for the transfer and stake.
-    /// @param receiver The address to which the shares will be minted.
-    /// @param referral Data used for referral program.
-    /// @return shares Minted shares.
-    function stake(
-        uint256 assets,
-        address receiver,
-        bytes32 referral
-    ) public returns (uint256) {
-        // TODO: revisit the type of referral.
-        uint256 shares = deposit(assets, receiver);
-
-        if (referral != bytes32(0)) {
-            emit StakeReferral(referral, assets);
-        }
-
-        return shares;
-    }
-
     /// @notice Returns the maximum amount of the tBTC token that can be
     ///         deposited into the vault for the receiver through a deposit
     ///         call. It takes into account the deposit parameter, maximum total
