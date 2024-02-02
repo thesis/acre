@@ -2,8 +2,8 @@ import {
   DepositReceipt,
   packRevealDepositParameters as tbtcPackRevealDepositParameters,
 } from "@keep-network/tbtc-v2.ts"
-import { TbtcDepositor as TbtcDepositorTypechain } from "core/typechain/contracts/tbtc/TbtcDepositor"
-import TbtcDepositor from "core/build/contracts/tbtc/TbtcDepositor.sol/TbtcDepositor.json"
+import { TbtcDepositor as TbtcDepositorTypechain } from "core/typechain/contracts/TbtcDepositor"
+import TbtcDepositor from "core/build/contracts/TbtcDepositor.sol/TbtcDepositor.json"
 import { dataSlice, getAddress, solidityPacked, zeroPadBytes } from "ethers"
 import { ChainIdentifier, DecodedExtraData, TBTCDepositor } from "../contracts"
 import { BitcoinRawTxVectors } from "../bitcoin"

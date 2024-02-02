@@ -57,7 +57,7 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable {
     /// @notice tBTC Token contract.
     IERC20 public immutable tbtcToken;
     /// @notice stBTC contract.
-    stBTC public stbtc;
+    stBTC public immutable stbtc;
 
     /// @notice Mapping of stake requests.
     /// @dev The key is a deposit key identifying the deposit.
@@ -287,6 +287,7 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable {
 
         // Deposit tBTC in stBTC.
         tbtcToken.safeIncreaseAllowance(address(stbtc), request.amountToStake);
+        // slither-disable-next-line unused-return
         stbtc.deposit(request.amountToStake, request.receiver);
     }
 
