@@ -3,12 +3,7 @@ import {
   loadFixture,
 } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 import { expect } from "chai"
-import {
-  ContractTransactionResponse,
-  MaxUint256,
-  ZeroAddress,
-  encodeBytes32String,
-} from "ethers"
+import { ContractTransactionResponse, MaxUint256, ZeroAddress } from "ethers"
 import { ethers } from "hardhat"
 
 import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
