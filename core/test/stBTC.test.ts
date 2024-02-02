@@ -226,22 +226,25 @@ describe("stBTC", () => {
 
   describe("deposit", () => {
     beforeAfterSnapshotWrapper()
+
     context("when staking as first depositor", () => {
-      beforeAfterEachSnapshotWrapper()
+      beforeAfterSnapshotWrapper()
 
       let receiver: HardhatEthersSigner
 
-      beforeEach(() => {
+      before(() => {
         receiver = ethers.Wallet.createRandom()
       })
 
       context(
         "when amount to deposit is greater than the approved amount",
         () => {
+          beforeAfterSnapshotWrapper()
+
           const approvedAmount = to1e18(10)
           const amountToDeposit = approvedAmount + 1n
 
-          beforeEach(async () => {
+          before(async () => {
             await tbtc
               .connect(depositor1)
               .approve(await stbtc.getAddress(), approvedAmount)
@@ -264,10 +267,12 @@ describe("stBTC", () => {
       )
 
       context("when amount to deposit is less than minimum", () => {
+        beforeAfterSnapshotWrapper()
+
         let amountToDeposit: bigint
         let minimumDepositAmount: bigint
 
-        beforeEach(async () => {
+        before(async () => {
           minimumDepositAmount = await stbtc.minimumDepositAmount()
           amountToDeposit = minimumDepositAmount - 1n
         })
@@ -284,12 +289,14 @@ describe("stBTC", () => {
       })
 
       context("when amount to deposit is equal to the minimum amount", () => {
+        beforeAfterSnapshotWrapper()
+
         let amountToDeposit: bigint
         let tx: ContractTransactionResponse
         let expectedReceivedShares: bigint
         let fee: bigint
 
-        beforeEach(async () => {
+        before(async () => {
           const minimumDepositAmount = await stbtc.minimumDepositAmount()
           amountToDeposit = minimumDepositAmount
 
@@ -347,9 +354,11 @@ describe("stBTC", () => {
       })
 
       context("when the receiver is zero address", () => {
+        beforeAfterSnapshotWrapper()
+
         const amountToDeposit = to1e18(10)
 
-        beforeEach(async () => {
+        before(async () => {
           await tbtc
             .connect(depositor1)
             .approve(await stbtc.getAddress(), amountToDeposit)
@@ -367,9 +376,11 @@ describe("stBTC", () => {
       context(
         "when a depositor approved and deposited tokens and wants to deposit more but w/o another approval",
         () => {
+          beforeAfterSnapshotWrapper()
+
           const amountToDeposit = to1e18(10)
 
-          beforeEach(async () => {
+          before(async () => {
             await tbtc
               .connect(depositor1)
               .approve(await stbtc.getAddress(), amountToDeposit)
@@ -414,7 +425,7 @@ describe("stBTC", () => {
         it("should mint stBTC tokens", async () => {
           await expect(tx).to.changeTokenBalance(
             stbtc,
-            receiver.address,
+            receiver,
             expectedReceivedShares,
           )
         })
@@ -422,7 +433,7 @@ describe("stBTC", () => {
         it("should transfer tBTC tokens to stBTC contract", async () => {
           await expect(tx).to.changeTokenBalances(
             tbtc,
-            [depositor1.address, stbtc],
+            [depositor1, stbtc],
             [-amountToDeposit, amountToDeposit],
           )
         })
