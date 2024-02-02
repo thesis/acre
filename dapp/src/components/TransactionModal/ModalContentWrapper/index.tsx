@@ -3,25 +3,31 @@ import {
   useModalFlowContext,
   useRequestBitcoinAccount,
   useRequestEthereumAccount,
+  useTransactionContext,
   useWalletContext,
 } from "#/hooks"
 import { ConnectBTCAccount, ConnectETHAccount } from "#/assets/icons"
-import MissingAccount from "./MissingAccount"
+import { ActionFlowType } from "#/types"
+import ActionFormModal from "./ActionFormModal"
+import MissingAccountModal from "./MissingAccountModal"
 import ResumeModal from "./ResumeModal"
 
-export default function SupportWrapper({
+export default function ModalContentWrapper({
+  defaultType,
   children,
 }: {
+  defaultType: ActionFlowType
   children: React.ReactNode
 }) {
   const { btcAccount, ethAccount } = useWalletContext()
   const { requestAccount: requestBitcoinAccount } = useRequestBitcoinAccount()
   const { requestAccount: requestEthereumAccount } = useRequestEthereumAccount()
   const { isPaused, onClose, onResume } = useModalFlowContext()
+  const { tokenAmount } = useTransactionContext()
 
   if (!btcAccount)
     return (
-      <MissingAccount
+      <MissingAccountModal
         currency="bitcoin"
         icon={ConnectBTCAccount}
         requestAccount={requestBitcoinAccount}
@@ -30,7 +36,7 @@ export default function SupportWrapper({
 
   if (!ethAccount)
     return (
-      <MissingAccount
+      <MissingAccountModal
         currency="ethereum"
         icon={ConnectETHAccount}
         requestAccount={requestEthereumAccount}
@@ -40,6 +46,8 @@ export default function SupportWrapper({
   if (isPaused) {
     return <ResumeModal onClose={onClose} onResume={onResume} />
   }
+
+  if (!tokenAmount) return <ActionFormModal defaultType={defaultType} />
 
   return children
 }
