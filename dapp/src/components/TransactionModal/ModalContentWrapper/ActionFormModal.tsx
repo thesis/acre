@@ -8,11 +8,11 @@ import {
   TabPanel,
 } from "@chakra-ui/react"
 import { useModalFlowContext, useTransactionContext } from "#/hooks"
-import { ActionFlowType } from "#/types"
+import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import StakeFormModal from "../ActiveStakingStep/StakeFormModal"
 
-const TABS: ActionFlowType[] = ["stake", "unstake"]
+const TABS = Object.values(ACTION_FLOW_TYPES)
 
 function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
   const { setType } = useModalFlowContext()
@@ -20,9 +20,9 @@ function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
 
   const handleSubmitForm = useCallback(
     (values: TokenAmountFormValues) => {
-      if (!values.amount) return
-
-      setTokenAmount({ amount: values.amount, currency: "bitcoin" })
+      if (values.amount) {
+        setTokenAmount({ amount: values.amount, currency: "bitcoin" })
+      }
     },
     [setTokenAmount],
   )

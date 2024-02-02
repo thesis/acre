@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useCallback, useState } from "react"
 import {
   Button,
   Tooltip,
@@ -12,13 +12,17 @@ import {
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import { TextMd } from "#/components/shared/Typography"
 import { Info } from "#/assets/icons"
-import { ActionFlowType } from "#/types"
+import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
 import TransactionModal from "../TransactionModal"
 
 export default function PositionDetails(props: CardProps) {
   const [actionFlowType, setActionFlowType] = useState<
     ActionFlowType | undefined
   >(undefined)
+
+  const handleCloseTransactionModal = useCallback(() => {
+    setActionFlowType(undefined)
+  }, [])
 
   return (
     <Card {...props}>
@@ -43,13 +47,16 @@ export default function PositionDetails(props: CardProps) {
         />
       </CardBody>
       <CardFooter flexDirection="column" gap={2}>
-        <Button size="lg" onClick={() => setActionFlowType("stake")}>
+        <Button
+          size="lg"
+          onClick={() => setActionFlowType(ACTION_FLOW_TYPES.STAKE)}
+        >
           Stake
         </Button>
         <Button
           size="lg"
           variant="outline"
-          onClick={() => setActionFlowType("unstake")}
+          onClick={() => setActionFlowType(ACTION_FLOW_TYPES.UNSTAKE)}
         >
           Unstake
         </Button>
@@ -57,7 +64,7 @@ export default function PositionDetails(props: CardProps) {
       <TransactionModal
         isOpen={!!actionFlowType}
         defaultType={actionFlowType}
-        onClose={() => setActionFlowType(undefined)}
+        onClose={handleCloseTransactionModal}
       />
     </Card>
   )

@@ -8,7 +8,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const dispatcher = await deployments.get("Dispatcher")
 
   await deployments.execute(
-    "Acre",
+    "stBTC",
     { from: deployer, log: true, waitConfirmations: 1 },
     "updateDispatcher",
     dispatcher.address,
@@ -18,4 +18,4 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 export default func
 
 func.tags = ["AcreUpdateDispatcher"]
-func.dependencies = ["Acre", "Dispatcher"]
+func.dependencies = ["stBTC", "Dispatcher"]

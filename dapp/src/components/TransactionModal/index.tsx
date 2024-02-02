@@ -5,14 +5,14 @@ import {
   TransactionContextProvider,
 } from "#/contexts"
 import { useSidebar } from "#/hooks"
-import { ActionFlowType } from "#/types"
+import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
 import ModalBase from "../shared/ModalBase"
 import ModalContentWrapper from "./ModalContentWrapper"
 import { ActiveFlowStep } from "./ActiveFlowStep"
 
 const DEFAULT_ACTIVE_STEP = 1
 
-export type TransactionModalProps = {
+type TransactionModalProps = {
   isOpen: boolean
   defaultType?: ActionFlowType
   onClose: () => void
@@ -20,7 +20,7 @@ export type TransactionModalProps = {
 
 export default function TransactionModal({
   isOpen,
-  defaultType = "stake",
+  defaultType = ACTION_FLOW_TYPES.STAKE,
   onClose,
 }: TransactionModalProps) {
   const { onOpen: openSideBar, onClose: closeSidebar } = useSidebar()
