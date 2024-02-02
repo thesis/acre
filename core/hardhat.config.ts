@@ -63,16 +63,21 @@ const config: HardhatUserConfig = {
   namedAccounts: {
     deployer: {
       default: 1,
-      sepolia: 0,
-      mainnet: "",
+      sepolia: 0, // TODO: updated to the actual address once available
+      mainnet: "", // TODO: updated to the actual address once available
     },
     governance: {
       default: 2,
       sepolia: 0, // TODO: updated to the actual address once available
       mainnet: "", // TODO: updated to the actual address once available
     },
-    maintainer: {
+    treasury: {
       default: 3,
+      sepolia: 0, // TODO: updated to the actual address once available
+      mainnet: "", // TODO: updated to the actual address once available
+    },
+    maintainer: {
+      default: 4,
       sepolia: 0, // TODO: updated to the actual address once available
       mainnet: "", // TODO: updated to the actual address once available
     },

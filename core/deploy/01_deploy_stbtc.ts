@@ -3,13 +3,13 @@ import type { DeployFunction } from "hardhat-deploy/types"
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { getNamedAccounts, deployments } = hre
-  const { deployer } = await getNamedAccounts()
+  const { deployer, treasury } = await getNamedAccounts()
 
   const tbtc = await deployments.get("TBTC")
 
-  await deployments.deploy("Acre", {
+  await deployments.deploy("stBTC", {
     from: deployer,
-    args: [tbtc.address],
+    args: [tbtc.address, treasury],
     log: true,
     waitConfirmations: 1,
   })
@@ -20,5 +20,5 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
 export default func
 
-func.tags = ["Acre"]
+func.tags = ["stBTC"]
 func.dependencies = ["TBTC"]
