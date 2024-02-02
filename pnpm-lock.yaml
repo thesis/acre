@@ -24,7 +24,7 @@ importers:
         specifier: 3.4.0-solc-0.8
         version: 3.4.0-solc-0.8
       '@keep-network/tbtc-v2':
-        specifier: ^1.6.0-dev.18
+        specifier: development
         version: 1.6.0-dev.18(@keep-network/keep-core@1.8.1-dev.0)
       '@openzeppelin/contracts':
         specifier: ^5.0.0
