@@ -10,8 +10,8 @@ import {TestERC20} from "./TestERC20.sol";
 contract BridgeStub is MockBridge {}
 
 contract TBTCVaultStub is MockTBTCVault {
-    TestERC20 public tbtc;
-    IBridge public bridge;
+    TestERC20 public immutable tbtc;
+    IBridge public immutable bridge;
 
     /// @notice Multiplier to convert satoshi to TBTC token units.
     uint256 public constant SATOSHI_MULTIPLIER = 10 ** 10;
@@ -39,6 +39,7 @@ contract TBTCVaultStub is MockTBTCVault {
 
         // The deposit transaction max fee is in the 1e8 satoshi precision.
         // We need to convert them to the 1e18 TBTC precision.
+        // slither-disable-next-line unused-return
         (, , uint64 depositTxMaxFee, ) = bridge.depositParameters();
         uint256 txMaxFee = depositTxMaxFee * SATOSHI_MULTIPLIER;
 
