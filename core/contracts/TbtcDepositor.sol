@@ -7,7 +7,7 @@ import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-import "@keep-network/tbtc-v2/contracts/integrator/TBTCDepositorProxy.sol";
+import "@keep-network/tbtc-v2/contracts/integrator/AbstractTBTCDepositor.sol";
 
 import {stBTC} from "./stBTC.sol";
 
@@ -34,7 +34,7 @@ import {stBTC} from "./stBTC.sol";
 ///         After tBTC is minted to the Depositor, on the stake finalization
 ///         tBTC is staked in stBTC contract and stBTC shares are emitted to the
 ///         receiver pointed by the staker.
-contract TbtcDepositor is TBTCDepositorProxy, Ownable {
+contract TbtcDepositor is AbstractTBTCDepositor, Ownable {
     using BTCUtils for bytes;
     using SafeERC20 for IERC20;
 
