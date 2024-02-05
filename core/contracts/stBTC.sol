@@ -35,11 +35,6 @@ contract stBTC is ERC4626Fees, Ownable {
     /// Maximum total amount of tBTC token held by Acre protocol.
     uint256 public maximumTotalAssets;
 
-    /// Emitted when a referral is used.
-    /// @param referral Used for referral program.
-    /// @param assets Amount of tBTC tokens staked.
-    event StakeReferral(bytes32 indexed referral, uint256 assets);
-
     /// Emitted when the treasury wallet address is updated.
     /// @param treasury New treasury wallet address.
     event TreasuryUpdated(address treasury);
