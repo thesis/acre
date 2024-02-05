@@ -7,18 +7,20 @@ import Statistics from "./Statistics"
 import TransactionHistory from "./TransactionHistory"
 import { TextSm } from "../shared/Typography"
 import ButtonLink from "../shared/ButtonLink"
+import ActivityBar from "../ActivityDetails/ActivityBar"
 
 export default function Overview() {
   const { onOpen } = useDocsDrawer()
 
   return (
     <Flex direction="column" gap={2} p={6}>
-      <Flex justifyContent="space-between" alignItems="center">
-        <HStack>
-          {/* TODO: Handle click actions */}
-          <Switch size="sm" />
-          <TextSm fontWeight="bold">Show values in {USD.symbol}</TextSm>
-        </HStack>
+      <HStack>
+        {/* TODO: Handle click actions */}
+        <Switch size="sm" />
+        <TextSm fontWeight="bold">Show values in {USD.symbol}</TextSm>
+      </HStack>
+      <Flex marginBottom={2} justifyContent="space-between">
+        <ActivityBar />
         <ButtonLink colorScheme="gold" bg="gold.200" onClick={onOpen}>
           Docs
         </ButtonLink>

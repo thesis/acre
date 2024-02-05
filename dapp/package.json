@@ -26,7 +26,8 @@
     "framer-motion": "^10.16.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-number-format": "^5.3.1"
+    "react-number-format": "^5.3.1",
+    "react-router-dom": "^6.22.0"
   },
   "devDependencies": {
     "@thesis-co/eslint-config": "github:thesis/eslint-config#7b9bc8c",

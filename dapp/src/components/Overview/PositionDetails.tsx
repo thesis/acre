@@ -38,7 +38,8 @@ export default function PositionDetails(props: CardProps) {
           from={{
             currency: "bitcoin",
             amount: "2398567898",
-            variant: "greater-balance",
+            variant: "greater-balance-xl",
+            symbolFontWeight: "semibold",
           }}
           to={{
             currency: "usd",
