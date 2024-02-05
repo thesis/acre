@@ -1,47 +1,69 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react"
-import { useSidebar } from "#/hooks"
 import {
   ModalFlowContext,
   ModalFlowContextValue,
   TransactionContextProvider,
 } from "#/contexts"
+import { useSidebar } from "#/hooks"
+import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
 import ModalBase from "../shared/ModalBase"
-import SupportWrapper from "../Modals/Support"
+import ModalContentWrapper from "./ModalContentWrapper"
+import { ActiveFlowStep } from "./ActiveFlowStep"
+
+const DEFAULT_ACTIVE_STEP = 1
+
+type TransactionModalProps = {
+  isOpen: boolean
+  defaultType?: ActionFlowType
+  onClose: () => void
+}
 
 export default function TransactionModal({
   isOpen,
+  defaultType = ACTION_FLOW_TYPES.STAKE,
   onClose,
-  numberOfSteps,
-  defaultStep = 1,
-  children,
-}: {
-  isOpen: boolean
-  onClose: () => void
-  numberOfSteps: number
-  defaultStep?: number
-  children: React.ReactNode
-}) {
+}: TransactionModalProps) {
   const { onOpen: openSideBar, onClose: closeSidebar } = useSidebar()
 
-  const [activeStep, setActiveStep] = useState(defaultStep)
+  const [type, setType] = useState(defaultType)
+  const [activeStep, setActiveStep] = useState(DEFAULT_ACTIVE_STEP)
+  const [isPaused, setIsPaused] = useState(false)
+  const [isPendingTransaction, setIsPendingTransaction] = useState(false)
+
+  const handleResume = useCallback(() => {
+    setIsPaused(false)
+  }, [])
 
   const handleGoNext = useCallback(() => {
     setActiveStep((prevStep) => prevStep + 1)
   }, [])
 
   const handleClose = useCallback(() => {
-    onClose()
-  }, [onClose])
+    if (!isPaused && isPendingTransaction) {
+      setIsPaused(true)
+    } else {
+      onClose()
+    }
+  }, [isPaused, isPendingTransaction, onClose])
+
+  const handleStartTransactionProcess = useCallback(() => {
+    setIsPendingTransaction(true)
+  }, [setIsPendingTransaction])
+
+  const handleStopTransactionProcess = useCallback(() => {
+    setIsPendingTransaction(false)
+  }, [setIsPendingTransaction])
 
   const resetState = useCallback(() => {
-    setActiveStep(defaultStep)
-  }, [defaultStep])
+    setType(defaultType)
+    setActiveStep(DEFAULT_ACTIVE_STEP)
+    setIsPaused(false)
+    setIsPendingTransaction(false)
+  }, [defaultType])
 
   useEffect(() => {
-    if (activeStep > numberOfSteps) {
-      handleClose()
-    }
-  }, [activeStep, numberOfSteps, handleClose])
+    setType(defaultType)
+  }, [defaultType])
 
   useEffect(() => {
     let timeout: NodeJS.Timeout
@@ -57,18 +79,35 @@ export default function TransactionModal({
 
   const contextValue: ModalFlowContextValue = useMemo<ModalFlowContextValue>(
     () => ({
+      type,
       activeStep,
+      isPaused,
+      setType,
       onClose: handleClose,
+      onResume: handleResume,
       goNext: handleGoNext,
+      startTransactionProcess: handleStartTransactionProcess,
+      endTransactionProcess: handleStopTransactionProcess,
     }),
-    [activeStep, handleGoNext, handleClose],
+    [
+      type,
+      activeStep,
+      isPaused,
+      handleClose,
+      handleResume,
+      handleGoNext,
+      handleStartTransactionProcess,
+      handleStopTransactionProcess,
+    ],
   )
 
   return (
-    <ModalBase isOpen={isOpen} onClose={onClose}>
+    <ModalBase isOpen={isOpen} onClose={handleClose}>
       <TransactionContextProvider>
         <ModalFlowContext.Provider value={contextValue}>
-          <SupportWrapper>{children}</SupportWrapper>
+          <ModalContentWrapper defaultType={defaultType}>
+            <ActiveFlowStep />
+          </ModalContentWrapper>
         </ModalFlowContext.Provider>
       </TransactionContextProvider>
     </ModalBase>
