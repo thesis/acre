@@ -1,6 +1,7 @@
 import {
   takeSnapshot,
   loadFixture,
+  SnapshotRestorer,
 } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 import { expect } from "chai"
 import {
@@ -12,7 +13,6 @@ import {
 import { ethers } from "hardhat"
 
 import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
-import type { SnapshotRestorer } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 import {
   beforeAfterEachSnapshotWrapper,
   beforeAfterSnapshotWrapper,
@@ -167,6 +167,7 @@ describe("stBTC", () => {
           .approve(await stbtc.getAddress(), amountToStake1)
 
         await stbtc.connect(staker1).deposit(amountToStake1, staker1.address)
+        // await stbtc.syncRewards()
       })
 
       it("should return the correct amount of shares", async () => {
@@ -465,7 +466,6 @@ describe("stBTC", () => {
 
       const staker1AmountToStake = to1e18(7)
       const staker2AmountToStake = to1e18(3)
-      const earnedYield = to1e18(5)
 
       let afterStakesSnapshot: SnapshotRestorer
       let afterSimulatingYieldSnapshot: SnapshotRestorer
@@ -559,16 +559,11 @@ describe("stBTC", () => {
             // Current state:
             // Staker 1 shares = stake amount - fee = 7 - (~0,0035) = ~6.9965
             // Staker 2 shares = stake amount - fee = 3 - (~0,0015) = ~2.9985
-            // Total assets = ~6.9965(staker 1) + 2.9985(staker 2) + 5(yield)
+            // Total assets = ~6.9965(staker 1) + 2.9985(staker 2) = 9.995
             await afterStakesSnapshot.restore()
 
             staker1SharesBefore = await stbtc.balanceOf(staker1.address)
             staker2SharesBefore = await stbtc.balanceOf(staker2.address)
-
-            // Simulating yield returned from strategies. The vault now contains
-            // more tokens than deposited which causes the exchange rate to
-            // change.
-            await tbtc.mint(await stbtc.getAddress(), earnedYield)
           })
 
           after(async () => {
@@ -582,7 +577,7 @@ describe("stBTC", () => {
               staker2AmountToStake - feeOnTotal(staker2AmountToStake)
 
             expect(await stbtc.totalAssets()).to.be.eq(
-              actualStakeAmount1 + actualStakeAmount2 + earnedYield,
+              actualStakeAmount1 + actualStakeAmount2,
             )
           })
 
@@ -595,33 +590,33 @@ describe("stBTC", () => {
             )
           })
 
-          it("the staker A should be able to redeem more tokens than before", async () => {
+          it("the staker A should be able to redeem same amount of tokens", async () => {
             const shares = await stbtc.balanceOf(staker1.address)
             const availableAssetsToRedeem = await stbtc.previewRedeem(shares)
 
             // Expected amount:
-            // 6.996501749125437281 * 14.995002498750624689 / 9.995002498750624689
-            //  =~ 10.496501749125437280
+            // 6.996501749125437281 * 9.995002498750624689 / 9.995002498750624689
+            //  = 6.996501749125437281
             // As of writing this test the fractional part after 18 decimals is
             // floor rounded in Solidity when redeeming tokens. This will change
             // to ceiling rounding once we introduce fees on reedeming and
             // withdrawals actions.
-            const expectedAssetsToRedeem = 10496501749125437280n
+            const expectedAssetsToRedeem = 6996501749125437281n
 
             expect(availableAssetsToRedeem).to.be.eq(expectedAssetsToRedeem)
           })
 
-          it("the staker B should be able to redeem more tokens than before", async () => {
+          it("the staker B should be able to redeem same amount of tokens", async () => {
             const shares = await stbtc.balanceOf(staker2.address)
             const availableAssetsToRedeem = await stbtc.previewRedeem(shares)
 
             // Expected amount with trancation after 18 decimals:
-            // 2.998500749625187406 * 14.995002498750624689 / 9.995002498750624689 = ~4.498500749625187405
+            // 2.998500749625187406 * 9.995002498750624689 / 9.995002498750624689 = 2.998500749625187406
             // As of writing this test the fractional part after 18 decimals is
             // floor rounded in Solidity when redeeming tokens. This will change
             // to ceiling rounding once we introduce fees on reedeming and
             // withdrawals actions.
-            const expectedAssetsToRedeem = 4498500749625187405n
+            const expectedAssetsToRedeem = 2998500749625187406n
 
             expect(availableAssetsToRedeem).to.be.eq(expectedAssetsToRedeem)
           })
@@ -651,11 +646,11 @@ describe("stBTC", () => {
                 // State after stake:
                 //
                 // Total assets = 6.996501749125437281(staker 1) +
-                // 2.998500749625187406(staker 2) + 5(yield) +
-                // 1.999000499750124937(stakerA) = 16.994002998500749624
+                // 2.998500749625187406(staker 2) +
+                // 1.999000499750124937(staker 1) = 11.994002998500749624
                 //
                 // Total shares = 6.996501749125437281 + 2.998500749625187406 +
-                // 1.332444925679136768 = 11.327447424429761455
+                // 1.999000499750124937 = 11.994002998500749624
                 await stbtc
                   .connect(staker1)
                   .stake(newAmountToStake, staker1.address, referral)
@@ -676,10 +671,10 @@ describe("stBTC", () => {
 
                 // Expected amount to redeem by staker 1:
                 //
-                // (6.996501749125437281 + 1.332444925679136768) *
-                // 16.994002998500749624 / 11.327447424429761455 = 12.495502248875562217
+                // (6.996501749125437281 + 1.999000499750124937) *
+                // 11.994002998500749624 / 11.994002998500749624 = 8.995502248875562218
                 const expectedTotalAssetsAvailableToRedeem =
-                  12495502248875562217n
+                  8995502248875562218n
 
                 expect(availableToRedeem).to.be.greaterThan(
                   availableToRedeemBefore,
@@ -1026,21 +1021,6 @@ describe("stBTC", () => {
         await stbtc.depositParameters()
     })
 
-    context(
-      "when total assets is greater than maximum total assets amount",
-      () => {
-        beforeEach(async () => {
-          const toMint = maximumTotalAssets + 1n
-
-          await tbtc.mint(await stbtc.getAddress(), toMint)
-        })
-
-        it("should return 0", async () => {
-          expect(await stbtc.maxDeposit(staker1.address)).to.be.eq(0)
-        })
-      },
-    )
-
     context("when the vault is empty", () => {
       it("should return maximum total assets amount", async () => {
         expect(await stbtc.maxDeposit(staker1.address)).to.be.eq(
@@ -1053,24 +1033,18 @@ describe("stBTC", () => {
       "when the unused limit is less than the minimum deposit amount",
       () => {
         it("should return 0", async () => {
-          const toMint = 24999100000000000000n // 24.9991 tBTC
-          await tbtc.mint(await stbtc.getAddress(), toMint)
+          const toMint = maximumTotalAssets
+          // Here we make two transactions. First for the maximum limit, and the
+          // second one for the fee taken from the first transaction. This way
+          // we can go below the mimimum deposit amoung the the return value
+          // of the maxDeposit function should be 0.
+          await tbtc.connect(staker1).approve(await stbtc.getAddress(), toMint)
+          const left = feeOnTotal(toMint) // fee taken
+          await stbtc.connect(staker1).deposit(toMint, staker1.address)
+          await tbtc.connect(staker1).approve(await stbtc.getAddress(), left)
+          await stbtc.connect(staker1).deposit(left, staker1.address)
 
           expect(await stbtc.maxDeposit(staker1.address)).to.be.eq(0)
-        })
-      },
-    )
-
-    context(
-      "when the unused limit is equal to the minimum deposit amount",
-      () => {
-        it("should return 0", async () => {
-          const toMint = 24999000000000000000n // 24.999 tBTC
-          await tbtc.mint(await stbtc.getAddress(), toMint)
-
-          expect(await stbtc.maxDeposit(staker1.address)).to.be.eq(
-            minimumDepositAmount,
-          )
         })
       },
     )
@@ -1080,7 +1054,11 @@ describe("stBTC", () => {
 
       beforeEach(async () => {
         const toMint = to1e18(2)
-        expectedValue = maximumTotalAssets - toMint
+        await tbtc.connect(staker1).approve(await stbtc.getAddress(), toMint)
+        await stbtc.connect(staker1).deposit(toMint, staker1.address)
+        const fee = feeOnTotal(toMint)
+
+        expectedValue = maximumTotalAssets - toMint + fee
 
         await tbtc.mint(await stbtc.getAddress(), toMint)
       })
@@ -1253,12 +1231,20 @@ describe("stBTC", () => {
     })
 
     context(
-      "when total assets is greater than maximum total assets amount",
+      "when total assets is greater than the minimum deposit amount",
       () => {
         beforeEach(async () => {
-          const toMint = maximumTotalAssets + 1n
+          const toMint = maximumTotalAssets
 
-          await tbtc.mint(await stbtc.getAddress(), toMint)
+          // Here we make two transactions. First for the maximum limit, and the
+          // second one for the fee taken from the first transaction. This way
+          // we can go below the mimimum deposit amoung the the return value
+          // of the maxDeposit function should be 0.
+          await tbtc.connect(staker1).approve(await stbtc.getAddress(), toMint)
+          const left = feeOnTotal(toMint) // fee taken
+          await stbtc.connect(staker1).deposit(toMint, staker1.address)
+          await tbtc.connect(staker1).approve(await stbtc.getAddress(), left)
+          await stbtc.connect(staker1).deposit(left, staker1.address)
         })
 
         it("should return 0", async () => {
@@ -1281,7 +1267,6 @@ describe("stBTC", () => {
       let expectedValue: bigint
 
       beforeEach(async () => {
-        const toMint = to1e18(2)
         const amountToStake = to1e18(3)
 
         // Staker stakes 3 tBTC including fee.
@@ -1290,19 +1275,16 @@ describe("stBTC", () => {
           .approve(await stbtc.getAddress(), amountToStake)
         await stbtc.connect(staker1).deposit(amountToStake, staker1.address)
 
-        // Vault earns 2 tBTC.
-        await tbtc.mint(await stbtc.getAddress(), toMint)
-
         // The current state is:
-        // Total assets: 2 + 2.998500749625187406 (fee was taken) = 4.998500749625187406
+        // Total assets: 2.998500749625187406 (fee was taken)
         // Total supply: 2.998500749625187406
         // Maximum total assets: 30
-        // Current max deposit: 25 - 4.998500749625187406 = 20.001499250374812594
+        // Current max deposit: 25 - 2.998500749625187406 = 22.001499250374812594
         // Max stBTC shares: (mulDiv added 1 to totalSupply and totalAssets to help with floor rounding)
-        //  20.001499250374812594 * 2.998500749625187407 / 4.998500749625187407 = 11.998499850254836590
+        //  22.001499250374812594 * 2.998500749625187407 / 2.998500749625187407 = 22.001499250374812594
         // Internal calculation of _convertToShares in ERC4626 added 2 decimals
         // to the result to help with rounding and division.
-        expectedValue = 11998499850254836590n
+        expectedValue = 22001499250374812594n
       })
 
       it("should return correct value", async () => {

@@ -186,7 +186,12 @@ contract stBTC is xERC4626, Ownable {
             revert LessThanMinDeposit(assets, minimumDepositAmount);
         }
 
-        return super.deposit(assets, receiver);
+        uint256 shares = super.deposit(assets, receiver);
+        uint256 assetsUpdated = assets -
+            _feeOnTotal(assets, _entryFeeBasisPoints());
+        afterDeposit(assetsUpdated);
+
+        return shares;
     }
 
     /// @notice Mints shares to receiver by depositing tBTC tokens.
@@ -209,6 +214,9 @@ contract stBTC is xERC4626, Ownable {
         if ((assets = super.mint(shares, receiver)) < minimumDepositAmount) {
             revert LessThanMinDeposit(assets, minimumDepositAmount);
         }
+        uint256 assetsUpdated = assets -
+            _feeOnTotal(assets, _entryFeeBasisPoints());
+        afterDeposit(assetsUpdated);
     }
 
     /// @notice Stakes a given amount of tBTC token and mints shares to a
