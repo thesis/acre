@@ -35,11 +35,6 @@ contract stBTC is xERC4626, Ownable {
     /// Maximum total amount of tBTC token held by Acre protocol.
     uint256 public maximumTotalAssets;
 
-    /// Emitted when a referral is used.
-    /// @param referral Used for referral program.
-    /// @param assets Amount of tBTC tokens staked.
-    event StakeReferral(bytes32 indexed referral, uint256 assets);
-
     /// Emitted when the treasury wallet address is updated.
     /// @param treasury New treasury wallet address.
     event TreasuryUpdated(address treasury);
@@ -217,29 +212,6 @@ contract stBTC is xERC4626, Ownable {
         uint256 assetsUpdated = assets -
             _feeOnTotal(assets, _entryFeeBasisPoints());
         afterDeposit(assetsUpdated);
-    }
-
-    /// @notice Stakes a given amount of tBTC token and mints shares to a
-    ///         receiver.
-    /// @dev This function calls `deposit` function from `ERC4626` contract. The
-    ///      amount of the assets has to be pre-approved in the tBTC contract.
-    /// @param assets Approved amount for the transfer and stake.
-    /// @param receiver The address to which the shares will be minted.
-    /// @param referral Data used for referral program.
-    /// @return shares Minted shares.
-    function stake(
-        uint256 assets,
-        address receiver,
-        bytes32 referral
-    ) public returns (uint256) {
-        // TODO: revisit the type of referral.
-        uint256 shares = deposit(assets, receiver);
-
-        if (referral != bytes32(0)) {
-            emit StakeReferral(referral, assets);
-        }
-
-        return shares;
     }
 
     /// @notice Returns the maximum amount of the tBTC token that can be

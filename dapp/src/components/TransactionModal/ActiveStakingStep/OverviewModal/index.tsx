@@ -10,7 +10,7 @@ import StepperBase from "#/components/shared/StepperBase"
 import { useModalFlowContext } from "#/hooks"
 import { STEPS } from "./steps"
 
-export default function Overview() {
+export default function OverviewModal() {
   const { goNext } = useModalFlowContext()
 
   return (

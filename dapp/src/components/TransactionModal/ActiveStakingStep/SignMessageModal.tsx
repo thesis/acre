@@ -4,9 +4,9 @@ import { useModalFlowContext, useSignMessage } from "#/hooks"
 import Alert from "#/components/shared/Alert"
 import { TextMd } from "#/components/shared/Typography"
 import { asyncWrapper } from "#/utils"
-import StakingSteps from "./components/StakingSteps"
+import StakingStepsModalContent from "./StakingStepsModalContent"
 
-export default function SignMessage() {
+export default function SignMessageModal() {
   const { goNext, startTransactionProcess } = useModalFlowContext()
   const { signMessage } = useSignMessage(goNext)
 
@@ -19,7 +19,11 @@ export default function SignMessage() {
   }
 
   return (
-    <StakingSteps buttonText="Continue" activeStep={0} onClick={handleClick}>
+    <StakingStepsModalContent
+      buttonText="Continue"
+      activeStep={0}
+      onClick={handleClick}
+    >
       {/* TODO: Add the correct action after click */}
       <Alert withActionIcon onclick={() => {}}>
         <TextMd>
@@ -29,6 +33,6 @@ export default function SignMessage() {
           </Highlight>
         </TextMd>
       </Alert>
-    </StakingSteps>
+    </StakingStepsModalContent>
   )
 }

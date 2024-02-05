@@ -12,17 +12,17 @@ import Alert from "#/components/shared/Alert"
 import { asyncWrapper, getCurrencyByType } from "#/utils"
 import { CurrencyType, RequestAccountParams } from "#/types"
 
-type MissingAccountProps = {
+type MissingAccountModalProps = {
   currency: CurrencyType
   icon: typeof Icon
   requestAccount: (...params: RequestAccountParams) => Promise<void>
 }
 
-export default function MissingAccount({
+export default function MissingAccountModal({
   currency,
   icon,
   requestAccount,
-}: MissingAccountProps) {
+}: MissingAccountModalProps) {
   const { name, symbol } = getCurrencyByType(currency)
 
   const handleClick = () => {
