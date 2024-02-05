@@ -25,4 +25,6 @@ func.tags = ["TestERC4626"]
 func.dependencies = ["TBTC"]
 
 func.skip = async (hre: HardhatRuntimeEnvironment): Promise<boolean> =>
-  Promise.resolve(hre.network.name === "mainnet")
+  Promise.resolve(
+    hre.network.name === "mainnet" || hre.network.name === "sepolia",
+  )
