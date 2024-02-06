@@ -158,10 +158,10 @@ contract stBTC is ERC4626Fees, Ownable {
         emit EntryFeeBasisPointsUpdated(newEntryFeeBasisPoints);
     }
 
-    /// @notice Returns average value of assets that would be exchanged for
-    ///         the amount of shares owned by the `account`.
+    /// @notice Returns value of assets that would be exchanged for the amount of
+    ///         shares owned by the `account`.
     /// @param account Owner of shares.
-    /// @return Averages.
+    /// @return Assets amount.
     function assetsBalanceOf(address account) public view returns (uint256) {
         return convertToAssets(balanceOf(account));
     }
