@@ -2,7 +2,6 @@ import React from "react"
 import {
   Box,
   Button,
-  Highlight,
   ModalBody,
   ModalFooter,
   ModalHeader,
@@ -11,8 +10,7 @@ import {
 import { LoadingSpinnerSuccessIcon } from "#/assets/icons"
 import { useModalFlowContext } from "#/hooks"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
-import { TextMd } from "#/components/shared/Typography"
-import Alert from "#/components/shared/Alert"
+import AlertReceiveSTBTC from "#/components/shared/AlertReceiveSTBTC"
 
 export default function SuccessModal() {
   const { onClose } = useModalFlowContext()
@@ -37,17 +35,7 @@ export default function SuccessModal() {
             />
           </Box>
         </VStack>
-        <Alert status="info" withActionIcon onclick={() => {}}>
-          <TextMd>
-            <Highlight
-              query="stBTC"
-              styles={{ textDecorationLine: "underline" }}
-            >
-              You will receive stBTC liquid staking token at this Ethereum
-              address once the staking transaction is completed.
-            </Highlight>
-          </TextMd>
-        </Alert>
+        <AlertReceiveSTBTC />
       </ModalBody>
       <ModalFooter mt={4}>
         <Button size="lg" width="100%" variant="outline" onClick={onClose}>

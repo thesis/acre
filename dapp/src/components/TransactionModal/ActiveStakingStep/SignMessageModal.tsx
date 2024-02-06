@@ -1,9 +1,7 @@
 import React, { useEffect } from "react"
-import { Highlight } from "@chakra-ui/react"
 import { useModalFlowContext, useSignMessage } from "#/hooks"
-import Alert from "#/components/shared/Alert"
-import { TextMd } from "#/components/shared/Typography"
 import { asyncWrapper } from "#/utils"
+import AlertReceiveSTBTC from "#/components/shared/AlertReceiveSTBTC"
 import StakingStepsModalContent from "./StakingStepsModalContent"
 
 export default function SignMessageModal() {
@@ -24,15 +22,7 @@ export default function SignMessageModal() {
       activeStep={0}
       onClick={handleClick}
     >
-      {/* TODO: Add the correct action after click */}
-      <Alert withActionIcon onclick={() => {}}>
-        <TextMd>
-          <Highlight query="stBTC" styles={{ textDecorationLine: "underline" }}>
-            You will receive stBTC liquid staking token at this Ethereum address
-            once the staking transaction is completed.
-          </Highlight>
-        </TextMd>
-      </Alert>
+      <AlertReceiveSTBTC />
     </StakingStepsModalContent>
   )
 }
