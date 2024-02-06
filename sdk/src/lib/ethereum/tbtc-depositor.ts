@@ -89,7 +89,7 @@ class EthereumTBTCDepositor
 
   /**
    * @see {TBTCDepositor#encodeExtraData}
-   * @dev Packs the data to bytes32: 20 bytes of receiver address and 2 bytes of
+   * @dev Packs the data to bytes32: 20 bytes of staker address and 2 bytes of
    *      referral, 10 bytes of trailing zeros.
    */
   // eslint-disable-next-line class-methods-use-this
@@ -104,7 +104,7 @@ class EthereumTBTCDepositor
 
   /**
    * @see {TBTCDepositor#decodeExtraData}
-   * @dev Unpacks the data from bytes32: 20 bytes of receiver address and 2
+   * @dev Unpacks the data from bytes32: 20 bytes of staker address and 2
    *      bytes of referral, 10 bytes of trailing zeros.
    */
   // eslint-disable-next-line class-methods-use-this

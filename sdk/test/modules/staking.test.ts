@@ -129,7 +129,7 @@ describe("Staking", () => {
       })
 
       describe("signMessage", () => {
-        describe("when signing by valid receiver", () => {
+        describe("when signing by valid staker", () => {
           const depositorAddress = ethers.Wallet.createRandom().address
 
           beforeEach(async () => {
@@ -166,20 +166,20 @@ describe("Staking", () => {
           })
         })
 
-        describe("when signing by invalid receiver", () => {
-          const invalidReceiver = EthereumAddress.from(
+        describe("when signing by invalid staker", () => {
+          const invalidStaker = EthereumAddress.from(
             ethers.Wallet.createRandom().address,
           )
 
           beforeEach(() => {
             mockedSignedMessage.verify = jest
               .fn()
-              .mockResolvedValue(invalidReceiver)
+              .mockResolvedValue(invalidStaker)
           })
 
           it("should throw an error", async () => {
             await expect(result.signMessage()).rejects.toThrow(
-              "Invalid receiver address",
+              "Invalid staker address",
             )
           })
         })

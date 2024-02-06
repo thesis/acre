@@ -8,14 +8,14 @@ export const extraDataValidTestData: {
   extraData: string
 }[] = [
   {
-    testDescription: "receiver has leading zeros",
+    testDescription: "staker has leading zeros",
     staker: EthereumAddress.from("0x000055d85E80A49B5930C4a77975d44f012D86C1"),
     referral: 6851, // hex: 0x1ac3
     extraData:
       "0x000055d85e80a49b5930c4a77975d44f012d86c11ac300000000000000000000",
   },
   {
-    testDescription: "receiver has trailing zeros",
+    testDescription: "staker has trailing zeros",
     staker: EthereumAddress.from("0x2d2F8BC7923F7F806Dc9bb2e17F950b42CfE0000"),
     referral: 6851, // hex: 0x1ac3
     extraData:

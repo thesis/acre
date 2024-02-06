@@ -94,7 +94,7 @@ class StakeInitialization {
     const addressFromSignature = signedMessage.verify()
 
     if (!this.#staker.equals(addressFromSignature)) {
-      throw new Error("Invalid receiver address")
+      throw new Error("Invalid staker address")
     }
 
     this.#signedMessage = signedMessage
