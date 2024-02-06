@@ -38,10 +38,13 @@ describe("TBTCDepositor", () => {
       await ethers.Wallet.createRandom().getAddress(),
     )
 
-    depositor = new EthereumTBTCDepositor({
-      signer: {} as EthereumSigner,
-      address: depositorAddress.identifierHex,
-    })
+    depositor = new EthereumTBTCDepositor(
+      {
+        signer: {} as EthereumSigner,
+        address: depositorAddress.identifierHex,
+      },
+      "sepolia",
+    )
   })
 
   describe("getChainIdentifier", () => {

@@ -2,14 +2,20 @@ import {
   DepositReceipt,
   packRevealDepositParameters as tbtcPackRevealDepositParameters,
 } from "@keep-network/tbtc-v2.ts"
-import { TbtcDepositor as TbtcDepositorTypechain } from "core/typechain/contracts/tbtc/TbtcDepositor"
-import TbtcDepositor from "core/build/contracts/tbtc/TbtcDepositor.sol/TbtcDepositor.json"
+import { TbtcDepositor as TbtcDepositorTypechain } from "core/typechain/contracts/TbtcDepositor"
 import { dataSlice, getAddress, solidityPacked, zeroPadBytes } from "ethers"
 import { ChainIdentifier, DecodedExtraData, TBTCDepositor } from "../contracts"
 import { BitcoinRawTxVectors } from "../bitcoin"
 import { EthereumAddress } from "./address"
-import { EthersContractConfig, EthersContractWrapper } from "./contract"
+import {
+  EthersContractConfig,
+  EthersContractDeployment,
+  EthersContractWrapper,
+} from "./contract"
 import { Hex } from "../utils"
+import { EthereumNetwork } from "./network"
+
+import SepoliaTbtcDepositor from "./artifacts/sepolia/TbtcDepositor.json"
 
 /**
  * Ethereum implementation of the TBTCDepositor.
@@ -21,18 +27,19 @@ class EthereumTBTCDepositor
   extends EthersContractWrapper<TbtcDepositorTypechain>
   implements TBTCDepositor
 {
-  constructor(config: EthersContractConfig) {
-    super(
-      config,
-      // TODO: get artifact from `core` package.
-      {
-        abi: TbtcDepositor.abi,
-        address: "0x008b3b2f992c0e14edaa6e2c662bec549caa8df1",
-        receipt: {
-          blockNumber: 1,
-        },
-      },
-    )
+  constructor(config: EthersContractConfig, network: EthereumNetwork) {
+    let artifact: EthersContractDeployment
+
+    switch (network) {
+      case "sepolia":
+        artifact = SepoliaTbtcDepositor
+        break
+      case "mainnet":
+      default:
+        throw new Error("Unsupported network")
+    }
+
+    super(config, artifact)
   }
 
   /**

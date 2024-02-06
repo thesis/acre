@@ -1,24 +1,19 @@
 import { AcreContracts } from "../contracts"
 import { EthereumSigner } from "./contract"
 import { EthereumTBTCDepositor } from "./tbtc-depositor"
+import { EthereumNetwork } from "./network"
 
-export * from "./contract"
 export * from "./eip712-signer"
 export * from "./address"
-
-type EthereumNetwork = "mainnet" | "sepolia"
+export { EthereumSigner }
 
 function getEthereumContracts(
   signer: EthereumSigner,
-  // TODO: Once we have artifacts for contracts we can pass the network to
-  // contract constructor and pass correct contract address and abi based on the
-  // network param.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   network: EthereumNetwork,
 ): AcreContracts {
-  const tbtcDepositor = new EthereumTBTCDepositor({ signer })
+  const tbtcDepositor = new EthereumTBTCDepositor({ signer }, network)
 
   return { tbtcDepositor }
 }
 
-export { EthereumTBTCDepositor, EthereumNetwork, getEthereumContracts }
+export { EthereumTBTCDepositor, getEthereumContracts, EthereumNetwork }

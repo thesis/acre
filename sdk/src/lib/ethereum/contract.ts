@@ -10,6 +10,8 @@ import {
 } from "ethers"
 import { EthereumAddress } from "./address"
 
+export { EthersContractDeployment }
+
 /**
  * Use `VoidSigner` from `ethers` if you want to initialize the Ethereum Acre
  * SDK in readonly mode.
