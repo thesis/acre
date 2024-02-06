@@ -1,4 +1,4 @@
-import ethers, { Contract } from "ethers"
+import ethers, { Contract, ZeroAddress } from "ethers"
 import {
   EthereumTBTCDepositor,
   EthereumAddress,
@@ -197,6 +197,21 @@ describe("TBTCDepositor", () => {
         expect(result.toPrefixedString()).toEqual(extraData)
       },
     )
+
+    describe("when staker is zero address", () => {
+      const staker = EthereumAddress.from(ZeroAddress)
+
+      beforeEach(() => {
+        spyOnSolidityPacked.mockClear()
+      })
+
+      it("should throw an error", () => {
+        expect(() => {
+          depositor.encodeExtraData(staker, 0)
+        }).toThrow("Invalid staker address")
+        expect(spyOnSolidityPacked).not.toHaveBeenCalled()
+      })
+    })
   })
 
   describe("decodeExtraData", () => {

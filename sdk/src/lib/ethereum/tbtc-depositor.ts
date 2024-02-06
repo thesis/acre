@@ -3,7 +3,14 @@ import {
   packRevealDepositParameters as tbtcPackRevealDepositParameters,
 } from "@keep-network/tbtc-v2.ts"
 import { TbtcDepositor as TbtcDepositorTypechain } from "core/typechain/contracts/TbtcDepositor"
-import { dataSlice, getAddress, solidityPacked, zeroPadBytes } from "ethers"
+import {
+  ZeroAddress,
+  dataSlice,
+  getAddress,
+  isAddress,
+  solidityPacked,
+  zeroPadBytes,
+} from "ethers"
 import { ChainIdentifier, DecodedExtraData, TBTCDepositor } from "../contracts"
 import { BitcoinRawTxVectors } from "../bitcoin"
 import { EthereumAddress } from "./address"
@@ -94,9 +101,14 @@ class EthereumTBTCDepositor
    */
   // eslint-disable-next-line class-methods-use-this
   encodeExtraData(staker: ChainIdentifier, referral: number): Hex {
+    const stakerAddress = `0x${staker.identifierHex}`
+
+    if (!isAddress(stakerAddress) || stakerAddress === ZeroAddress)
+      throw new Error("Invalid staker address")
+
     const encodedData = solidityPacked(
       ["address", "uint16"],
-      [`0x${staker.identifierHex}`, referral],
+      [stakerAddress, referral],
     )
 
     return Hex.from(zeroPadBytes(encodedData, 32))
