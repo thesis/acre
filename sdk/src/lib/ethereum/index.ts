@@ -6,7 +6,7 @@ export * from "./contract"
 export * from "./eip712-signer"
 export * from "./address"
 
-type EthereumNetwork = "mainnet" | "sepolia" | "goerli"
+type EthereumNetwork = "mainnet" | "sepolia"
 
 function getEthereumContracts(
   signer: EthereumSigner,

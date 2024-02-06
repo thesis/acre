@@ -54,11 +54,6 @@ class Acre {
         // signer's methods used in tBTC-v2.ts SDK so if we pass signer from
         // ethers v6 it won't break the Acre SDK initialization.
         return TBTC.initializeSepolia(signer)
-      case "goerli":
-        // @ts-expect-error We require the `signer` must include the ether v5
-        // signer's methods used in tBTC-v2.ts SDK so if we pass signer from
-        // ethers v6 it won't break the Acre SDK initialization.
-        return TBTC.initializeGoerli(signer)
       case "mainnet":
       default:
         // @ts-expect-error We require the `signer` must include the ether v5
