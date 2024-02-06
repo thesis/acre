@@ -9,9 +9,8 @@ import {
   Message,
   Types,
 } from "../../lib/eip712-signer"
-import { AcreContracts } from "../../lib/contracts"
+import { AcreContracts, DepositReceipt } from "../../lib/contracts"
 import { Hex } from "../../lib/utils"
-import { DepositReceipt } from "../../lib/contracts/tbtc-depositor"
 
 /**
  * Represents an instance of the staking flow. Staking flow requires a few steps
@@ -77,7 +76,7 @@ class StakeInitialization {
   /**
    * @returns Receipt corresponding to the tbtc deposit.
    */
-  getTbtcDepositReceipt(): DepositReceipt {
+  getDepositReceipt(): DepositReceipt {
     return this.#tbtcDeposit.getReceipt()
   }
 
