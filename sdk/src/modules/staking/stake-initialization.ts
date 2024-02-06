@@ -113,13 +113,13 @@ class StakeInitialization {
     // TODO: revisit the message structure before the launch.
     const types: Types = {
       Stake: [
-        { name: "receiver", type: "address" },
+        { name: "ethereumStakerAddress", type: "address" },
         { name: "bitcoinRecoveryAddress", type: "string" },
       ],
     }
 
     const message: Message = {
-      receiver: this.#staker.identifierHex,
+      ethereumStakerAddress: this.#staker.identifierHex,
       bitcoinRecoveryAddress: this.#bitcoinRecoveryAddress,
     }
 

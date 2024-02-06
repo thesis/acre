@@ -150,12 +150,12 @@ describe("Staking", () => {
               },
               {
                 Stake: [
-                  { name: "receiver", type: "address" },
+                  { name: "ethereumStakerAddress", type: "address" },
                   { name: "bitcoinRecoveryAddress", type: "string" },
                 ],
               },
               {
-                receiver: staker.identifierHex,
+                ethereumStakerAddress: staker.identifierHex,
                 bitcoinRecoveryAddress,
               },
             )

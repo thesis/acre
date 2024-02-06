@@ -14,10 +14,10 @@ const signMessageData = {
     ),
   },
   types: {
-    Stake: [{ name: "receiver", type: "address" }],
+    Stake: [{ name: "ethereumStakerAddress", type: "address" }],
   },
   message: {
-    receiver: "0x407C3329eA8f6BEFB984D97AE4Fa71945E43170b",
+    ethereumStakerAddress: "0x407C3329eA8f6BEFB984D97AE4Fa71945E43170b",
   },
 }
 
