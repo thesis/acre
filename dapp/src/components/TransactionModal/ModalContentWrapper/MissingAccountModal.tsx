@@ -4,6 +4,7 @@ import {
   Highlight,
   Icon,
   ModalBody,
+  ModalCloseButton,
   ModalFooter,
   ModalHeader,
 } from "@chakra-ui/react"
@@ -31,6 +32,7 @@ export default function MissingAccountModal({
 
   return (
     <>
+      <ModalCloseButton />
       <ModalHeader>{name} account not installed</ModalHeader>
       <ModalBody>
         <Icon as={icon} boxSize={32} my={2} />

@@ -6,6 +6,7 @@ import {
   Tab,
   TabPanels,
   TabPanel,
+  ModalCloseButton,
 } from "@chakra-ui/react"
 import { useModalFlowContext, useTransactionContext } from "#/hooks"
 import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
@@ -28,30 +29,33 @@ function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
   )
 
   return (
-    <ModalBody>
-      <Tabs
-        w="100%"
-        variant="underline"
-        defaultIndex={TABS.indexOf(defaultType)}
-      >
-        <TabList pb={6}>
-          {TABS.map((type) => (
-            <Tab key={type} w="50%" pb={4} onClick={() => setType(type)}>
-              {type}
-            </Tab>
-          ))}
-        </TabList>
-        <TabPanels>
-          <TabPanel>
-            <StakeFormModal onSubmitForm={handleSubmitForm} />
-          </TabPanel>
-          <TabPanel>
-            {/* TODO: Use the correct form for unstaking */}
-            <StakeFormModal onSubmitForm={handleSubmitForm} />
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
-    </ModalBody>
+    <>
+      <ModalCloseButton />
+      <ModalBody>
+        <Tabs
+          w="100%"
+          variant="underline"
+          defaultIndex={TABS.indexOf(defaultType)}
+        >
+          <TabList pb={6}>
+            {TABS.map((type) => (
+              <Tab key={type} w="50%" pb={4} onClick={() => setType(type)}>
+                {type}
+              </Tab>
+            ))}
+          </TabList>
+          <TabPanels>
+            <TabPanel>
+              <StakeFormModal onSubmitForm={handleSubmitForm} />
+            </TabPanel>
+            <TabPanel>
+              {/* TODO: Use the correct form for unstaking */}
+              <StakeFormModal onSubmitForm={handleSubmitForm} />
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </ModalBody>
+    </>
   )
 }
 
