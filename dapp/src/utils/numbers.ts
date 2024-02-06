@@ -69,7 +69,7 @@ export const formatTokenAmount = (
     return `<0.${"0".repeat(desiredDecimals - 1)}1`
   }
 
-  return numberToLocaleString(formattedAmount)
+  return numberToLocaleString(formattedAmount, desiredDecimals)
 }
 
 export const formatSatoshiAmount = (
