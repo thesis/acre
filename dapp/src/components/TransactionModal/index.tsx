@@ -102,7 +102,11 @@ export default function TransactionModal({
   )
 
   return (
-    <ModalBase isOpen={isOpen} onClose={handleClose}>
+    <ModalBase
+      isOpen={isOpen}
+      onClose={handleClose}
+      closeOnOverlayClick={false}
+    >
       <TransactionContextProvider>
         <ModalFlowContext.Provider value={contextValue}>
           <ModalContentWrapper defaultType={defaultType}>
