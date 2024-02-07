@@ -11,21 +11,32 @@ import { LoadingSpinnerSuccessIcon } from "#/assets/icons"
 import { useModalFlowContext } from "#/hooks"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import AlertReceiveSTBTC from "#/components/shared/AlertReceiveSTBTC"
+import { ACTION_FLOW_TYPES, ActionFlowType, TokenAmount } from "#/types"
 
-export default function SuccessModal() {
+const HEADER = {
+  [ACTION_FLOW_TYPES.STAKE]: "Staking successful!",
+  [ACTION_FLOW_TYPES.UNSTAKE]: "Unstaking successful!",
+}
+
+type SuccessModalProps = {
+  type: ActionFlowType
+  tokenAmount: TokenAmount
+}
+
+export default function SuccessModal({ type, tokenAmount }: SuccessModalProps) {
   const { onClose } = useModalFlowContext()
 
   return (
     <>
-      <ModalHeader>Staking successful!</ModalHeader>
+      <ModalHeader>{HEADER[type]}</ModalHeader>
       <ModalBody gap={10}>
         <VStack gap={4}>
           <LoadingSpinnerSuccessIcon boxSize={20} />
           <Box>
             <CurrencyBalanceWithConversion
               from={{
-                currency: "bitcoin",
-                amount: "2398567898",
+                currency: tokenAmount.currency,
+                amount: tokenAmount.amount.toString(),
                 size: "4xl",
               }}
               to={{

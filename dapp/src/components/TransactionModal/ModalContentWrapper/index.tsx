@@ -7,10 +7,12 @@ import {
   useWalletContext,
 } from "#/hooks"
 import { ConnectBTCAccount, ConnectETHAccount } from "#/assets/icons"
-import { ActionFlowType } from "#/types"
+import { ActionFlowType, TRANSACTION_STATUSES } from "#/types"
 import ActionFormModal from "./ActionFormModal"
 import MissingAccountModal from "./MissingAccountModal"
 import ResumeModal from "./ResumeModal"
+import SuccessModal from "./SuccessModal"
+import LoadingModal from "./LoadingModal"
 
 export default function ModalContentWrapper({
   defaultType,
@@ -22,8 +24,8 @@ export default function ModalContentWrapper({
   const { btcAccount, ethAccount } = useWalletContext()
   const { requestAccount: requestBitcoinAccount } = useRequestBitcoinAccount()
   const { requestAccount: requestEthereumAccount } = useRequestEthereumAccount()
-  const { isPaused, onClose, onResume } = useModalFlowContext()
-  const { tokenAmount } = useTransactionContext()
+  const { type, isPaused, onClose, onResume } = useModalFlowContext()
+  const { tokenAmount, status } = useTransactionContext()
 
   if (!btcAccount)
     return (
@@ -48,6 +50,11 @@ export default function ModalContentWrapper({
   }
 
   if (!tokenAmount) return <ActionFormModal defaultType={defaultType} />
+
+  if (status === TRANSACTION_STATUSES.SUCCEEDED)
+    return <SuccessModal type={type} tokenAmount={tokenAmount} />
+
+  if (status === TRANSACTION_STATUSES.PENDING) return <LoadingModal />
 
   return children
 }

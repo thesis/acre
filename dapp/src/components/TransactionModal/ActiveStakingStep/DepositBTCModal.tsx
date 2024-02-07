@@ -5,12 +5,11 @@ import { TextMd } from "#/components/shared/Typography"
 import StakingStepsModalContent from "./StakingStepsModalContent"
 
 export default function DepositBTCModal() {
-  const { goNext, endTransactionProcess } = useModalFlowContext()
+  const { endTransactionProcess } = useModalFlowContext()
 
   const onDepositSuccess = useCallback(() => {
     endTransactionProcess()
-    goNext()
-  }, [endTransactionProcess, goNext])
+  }, [endTransactionProcess])
 
   const { depositBTC } = useDepositBTCTransaction(onDepositSuccess)
 

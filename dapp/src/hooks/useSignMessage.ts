@@ -1,26 +1,28 @@
-import { useSignMessage as useSignMessageLedgerLive } from "@ledgerhq/wallet-api-client-react"
-import { useCallback, useEffect } from "react"
+import { useCallback } from "react"
 import { OnSuccessCallback } from "#/types"
-import { useWalletContext } from "./useWalletContext"
+import { useStakeFlow } from "#/acre-react/hooks"
 
-const SIGN_MESSAGE = "Test message"
+type UseSignMessageReturn = {
+  errorMessage?: string
+  signMessage: () => Promise<void>
+}
 
-export function useSignMessage(onSuccess?: OnSuccessCallback) {
-  const { ethAccount } = useWalletContext()
-  const { signMessage, signature } = useSignMessageLedgerLive()
+export function useSignMessage(
+  onSuccess?: OnSuccessCallback,
+): UseSignMessageReturn {
+  const { signMessage } = useStakeFlow()
 
-  useEffect(() => {
-    if (signature && onSuccess) {
-      onSuccess()
-    }
-  }, [onSuccess, signature])
-
-  // TODO: signing message using the SDK
   const handleSignMessage = useCallback(async () => {
-    if (!ethAccount?.id) return
+    try {
+      await signMessage()
 
-    await signMessage(ethAccount.id, Buffer.from(SIGN_MESSAGE, "utf-8"))
-  }, [ethAccount, signMessage])
+      if (onSuccess) {
+        onSuccess()
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }, [onSuccess, signMessage])
 
   return { signMessage: handleSignMessage }
 }
