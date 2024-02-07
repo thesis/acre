@@ -17,7 +17,7 @@
   },
   "overrides": [
     {
-      "files": ["deploy/*.ts"],
+      "files": ["deploy/**/*.ts", "test/**/*.ts"],
       "rules": {
         "@typescript-eslint/unbound-method": "off"
       }

@@ -5,6 +5,7 @@ import { ethers, helpers } from "hardhat"
 import { expect } from "chai"
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
 import { ContractTransactionResponse, ZeroAddress } from "ethers"
+
 import type {
   StBTC,
   BridgeStub,
@@ -12,11 +13,10 @@ import type {
   TbtcDepositor,
   TestERC20,
 } from "../typechain"
-import { deployment, getNamedSigner, getUnnamedSigner } from "./helpers"
+import { deployment } from "./helpers"
 import { beforeAfterSnapshotWrapper } from "./helpers/snapshot"
 import { tbtcDepositData } from "./data/tbtc"
 import { to1ePrecision } from "./utils"
-import { lastBlockTime } from "./helpers/time"
 
 async function fixture() {
   const { tbtcDepositor, tbtcBridge, tbtcVault, stbtc, tbtc } =
@@ -24,6 +24,9 @@ async function fixture() {
 
   return { tbtcDepositor, tbtcBridge, tbtcVault, stbtc, tbtc }
 }
+
+const { lastBlockTime } = helpers.time
+const { getNamedSigners, getUnnamedSigners } = helpers.signers
 
 describe("TbtcDepositor", () => {
   const defaultDepositTreasuryFeeDivisor = 2000 // 1/2000 = 0.05% = 0.0005
@@ -55,8 +58,8 @@ describe("TbtcDepositor", () => {
   before(async () => {
     ;({ tbtcDepositor, tbtcBridge, tbtcVault, stbtc, tbtc } =
       await loadFixture(fixture))
-    ;({ governance, treasury } = await getNamedSigner())
-    ;[thirdParty] = await getUnnamedSigner()
+    ;({ governance, treasury } = await getNamedSigners())
+    ;[thirdParty] = await getUnnamedSigners()
 
     receiver = await helpers.account.impersonateAccount(
       tbtcDepositData.receiver,
