@@ -54,19 +54,12 @@ class StakeInitialization {
     _contracts: AcreContracts,
     _messageSigner: ChainEIP712Signer,
     _bitcoinRecoveryAddress: string,
+    _staker: ChainIdentifier,
     _tbtcDeposit: TbtcDeposit,
   ) {
-    const { extraData } = _tbtcDeposit.getReceipt()
-
-    if (!extraData) throw new Error("Invalid extra data")
-
-    const { staker } = _contracts.tbtcDepositor.decodeExtraData(
-      extraData.toPrefixedString(),
-    )
-
     this.#contracts = _contracts
     this.#messageSigner = _messageSigner
-    this.#staker = staker
+    this.#staker = _staker
     this.#bitcoinRecoveryAddress = _bitcoinRecoveryAddress
     this.#tbtcDeposit = _tbtcDeposit
   }

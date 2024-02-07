@@ -56,6 +56,7 @@ class StakingModule {
       this.#contracts,
       this.#messageSigner,
       bitcoinRecoveryAddress,
+      staker,
       deposit,
     )
   }
