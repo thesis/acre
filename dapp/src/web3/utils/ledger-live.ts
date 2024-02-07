@@ -5,10 +5,9 @@ import {
 import { TransactionRequest, ZeroAddress, JsonRpcProvider } from "ethers"
 import { Hex } from "@acre/sdk"
 
-export const getLedgerLiveAppWalletAPITransport = () =>
-  new WindowMessageTransport()
+export const getLedgerWalletAPITransport = () => new WindowMessageTransport()
 
-export const getLedgerLiveAppProvider = () =>
+export const getLedgerLiveProvider = () =>
   new JsonRpcProvider(import.meta.env.VITE_ETH_HOSTNAME_HTTP)
 
 // Created based on the

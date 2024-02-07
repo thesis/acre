@@ -13,11 +13,14 @@ import {
   TypedDataField,
   ZeroAddress,
   TransactionResponse,
-  JsonRpcProvider,
 } from "ethers"
 import { EthereumSignerCompatibleWithEthersV5, Hex } from "@acre/sdk"
 import { CURRENCY_ID_ETHEREUM } from "#/constants"
-import { getLedgerWalletAPITransport as getDappLedgerWalletAPITransport } from "../contexts"
+import {
+  getLedgerWalletAPITransport as getDappLedgerWalletAPITransport,
+  getLedgerLiveProvider,
+  serializeLedgerWalletApiEthereumTransaction,
+} from "./utils"
 
 // Created based on the
 // https://github.com/keep-network/tbtc-v2/blob/main/typescript/src/lib/utils/ledger.ts.
@@ -97,10 +100,7 @@ class LedgerWalletSigner extends EthereumSignerCompatibleWithEthersV5 {
       dappTransport,
       client,
       account,
-      // TODO: Pass the Ethereum node url via Env variable.
-      new JsonRpcProvider(
-        "https://sepolia.infura.io/v3/c80e8ccdcc4c4a809bce4fc165310617",
-      ),
+      getLedgerLiveProvider(),
     )
   }
 
@@ -149,7 +149,6 @@ class LedgerWalletSigner extends EthereumSignerCompatibleWithEthersV5 {
     return buffer.toString()
   }
 
-  // eslint-disable-next-line consistent-return
   async sendTransaction(tx: TransactionRequest): Promise<TransactionResponse> {
     const populatedTransaction = await this.populateTransaction(tx)
 
