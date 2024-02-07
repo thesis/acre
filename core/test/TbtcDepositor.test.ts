@@ -536,7 +536,7 @@ describe("TbtcDepositor", () => {
                 .finalizeStakeRequest(tbtcDepositData.depositKey),
             ).to.be.revertedWithCustomError(
               tbtcDepositor,
-              "StakeRequestAlreadyFinalized",
+              "StakeRequestAlreadyRecalled",
             )
           })
         })
@@ -633,10 +633,10 @@ describe("TbtcDepositor", () => {
                 .recallStakeRequest(tbtcDepositData.depositKey)
             })
 
-            it("should set finalizedAt timestamp", async () => {
+            it("should set recalledAt timestamp", async () => {
               expect(
                 (await tbtcDepositor.stakeRequests(tbtcDepositData.depositKey))
-                  .finalizedAt,
+                  .recalledAt,
               ).to.be.equal(await lastBlockTime())
             })
 
@@ -677,7 +677,7 @@ describe("TbtcDepositor", () => {
                 .recallStakeRequest(tbtcDepositData.depositKey),
             ).to.be.revertedWithCustomError(
               tbtcDepositor,
-              "StakeRequestAlreadyFinalized",
+              "StakeRequestAlreadyRecalled",
             )
           })
         })

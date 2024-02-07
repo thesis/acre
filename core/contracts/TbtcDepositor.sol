@@ -43,9 +43,12 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable2Step {
         // Timestamp at which the deposit request was initialized is not stored
         // in this structure, as it is available under `Bridge.DepositRequest.revealedAt`.
 
-        // UNIX timestamp at which the deposit request was finalized.
+        // UNIX timestamp at which the stake request was finalized.
         // 0 if not yet finalized.
         uint64 finalizedAt;
+        // UNIX timestamp at which the stake request was recalled.
+        // 0 if not yet recalled.
+        uint64 recalledAt;
         // The address to which the stBTC shares will be minted.
         address receiver;
         // Identifier of a partner in the referral program.
@@ -138,8 +141,11 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable2Step {
         uint256 bridgedAmount
     );
 
-    /// @dev Attempted to finalize a stake request that was already finalized.
+    /// @dev Attempted to finalize or recall a stake request that was already finalized.
     error StakeRequestAlreadyFinalized();
+
+    /// @dev Attempted to finalize or recall a stake request that was already recalled.
+    error StakeRequestAlreadyRecalled();
 
     /// @dev Attempted to call function by an account that is not the receiver.
     error CallerNotReceiver();
@@ -271,6 +277,7 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable2Step {
 
         if (request.amountToStake == 0) revert BridgingNotCompleted();
         if (request.finalizedAt > 0) revert StakeRequestAlreadyFinalized();
+        if (request.recalledAt > 0) revert StakeRequestAlreadyRecalled();
 
         // solhint-disable-next-line not-rely-on-time
         request.finalizedAt = uint64(block.timestamp);
@@ -300,12 +307,13 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable2Step {
 
         if (request.amountToStake == 0) revert BridgingNotCompleted();
         if (request.finalizedAt > 0) revert StakeRequestAlreadyFinalized();
+        if (request.recalledAt > 0) revert StakeRequestAlreadyRecalled();
 
         // Check if caller is the receiver.
         if (msg.sender != request.receiver) revert CallerNotReceiver();
 
         // solhint-disable-next-line not-rely-on-time
-        request.finalizedAt = uint64(block.timestamp);
+        request.recalledAt = uint64(block.timestamp);
 
         emit StakeRequestRecalled(
             depositKey,
