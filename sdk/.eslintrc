@@ -1,4 +1,12 @@
 {
   "root": true,
-  "extends": ["@thesis-co"]
+  "extends": ["@thesis-co"],
+  "overrides": [
+    {
+      "files": ["test/*/*.test.ts"],
+      "rules": {
+        "@typescript-eslint/unbound-method": "off"
+      }
+    }
+  ]
 }

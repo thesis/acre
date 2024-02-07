@@ -1,12 +1,11 @@
+import { ActionFlowType } from "#/types"
 import { createContext } from "react"
 
-export type ModalStep = {
-  goNext: () => void
-}
-
 export type ModalFlowContextValue = {
-  activeStep?: number
-  isPaused?: boolean
+  type: ActionFlowType
+  activeStep: number
+  isPaused: boolean
+  setType: React.Dispatch<React.SetStateAction<ActionFlowType>>
   onClose: () => void
   onResume: () => void
   goNext: () => void
@@ -14,12 +13,6 @@ export type ModalFlowContextValue = {
   endTransactionProcess: () => void
 }
 
-export const ModalFlowContext = createContext<ModalFlowContextValue>({
-  activeStep: undefined,
-  isPaused: false,
-  onClose: () => {},
-  onResume: () => {},
-  goNext: () => {},
-  startTransactionProcess: () => {},
-  endTransactionProcess: () => {},
-})
+export const ModalFlowContext = createContext<
+  ModalFlowContextValue | undefined
+>(undefined)

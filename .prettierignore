@@ -2,6 +2,7 @@
 core/
 dapp/
 website/
+sdk/
 
 # Auto-generated files.
 pnpm-lock.yaml
