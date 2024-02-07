@@ -26,5 +26,5 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
 export default func
 
-func.tags = ["TransferOwnershipAcre"]
+func.tags = ["TransferOwnershipTbtcDepositor"]
 func.dependencies = ["TbtcDepositor"]
