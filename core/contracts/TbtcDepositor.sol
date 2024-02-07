@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity ^0.8.21;
 
-import {BTCUtils} from "@keep-network/bitcoin-spv-sol/contracts/BTCUtils.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import "@keep-network/tbtc-v2/contracts/integrator/AbstractTBTCDepositor.sol";
 
@@ -35,7 +33,6 @@ import {stBTC} from "./stBTC.sol";
 ///         tBTC is staked in stBTC contract and stBTC shares are emitted to the
 ///         receiver pointed by the staker.
 contract TbtcDepositor is AbstractTBTCDepositor, Ownable {
-    using BTCUtils for bytes;
     using SafeERC20 for IERC20;
 
     struct StakeRequest {
