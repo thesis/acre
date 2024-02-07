@@ -3,7 +3,6 @@ import { OnSuccessCallback } from "#/types"
 import { useStakeFlow } from "#/acre-react/hooks"
 
 type UseSignMessageReturn = {
-  errorMessage?: string
   signMessage: () => Promise<void>
 }
 

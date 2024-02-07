@@ -2,13 +2,13 @@ import React, { useCallback, useContext, useMemo, useState } from "react"
 import { Acre, EthereumNetwork } from "@acre/sdk"
 import { LedgerWalletSigner } from "../web3"
 
-type AcreSdkContextType = {
-  acre: Acre | undefined
+type AcreSdkContextValue = {
+  acre?: Acre
   init: (ethereumAddress: string, network: EthereumNetwork) => Promise<void>
   isInitialized: boolean
 }
 
-const AcreSdkContext = React.createContext<AcreSdkContextType>({
+const AcreSdkContext = React.createContext<AcreSdkContextValue>({
   acre: undefined,
   init: async () => {},
   isInitialized: false,
@@ -22,7 +22,7 @@ function AcreSdkProvider({ children }: Props) {
   const [acre, setAcre] = useState<Acre | undefined>(undefined)
   const [isInitialized, setIsInitialized] = useState<boolean>(false)
 
-  const init = useCallback<AcreSdkContextType["init"]>(
+  const init = useCallback<AcreSdkContextValue["init"]>(
     async (ethereumAddress: string, network: EthereumNetwork) => {
       if (!ethereumAddress) throw new Error("Ethereum address not defined")
 

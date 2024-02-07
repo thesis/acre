@@ -6,7 +6,6 @@ import { useTransactionContext } from "./useTransactionContext"
 import { useSendTransaction } from "./useSendTransaction"
 
 type UseDepositBTCReturn = {
-  errorMessage?: string
   depositBTC: () => Promise<void>
 }
 
