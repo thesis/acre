@@ -1,13 +1,19 @@
 import React, { useCallback } from "react"
-import { useModalFlowContext, useDepositBTC } from "#/hooks"
+import { useDepositBTC, useModalFlowContext } from "#/hooks"
 import Alert from "#/components/shared/Alert"
 import { TextMd } from "#/components/shared/Typography"
 import { asyncWrapper } from "#/utils"
+import { PROCESS_STATUSES } from "#/types"
 import StakingStepsModalContent from "./StakingStepsModalContent"
 
 export default function DepositBTCModal() {
-  const { endTransactionProcess } = useModalFlowContext()
-  const { depositBTC } = useDepositBTC(endTransactionProcess)
+  const { setStatus } = useModalFlowContext()
+
+  const onDepositSuccess = useCallback(() => {
+    setStatus(PROCESS_STATUSES.LOADING)
+  }, [setStatus])
+
+  const { depositBTC } = useDepositBTC(onDepositSuccess)
 
   const handledDepositBTC = useCallback(() => {
     asyncWrapper(depositBTC())

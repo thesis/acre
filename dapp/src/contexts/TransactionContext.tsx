@@ -1,11 +1,9 @@
 import React, { createContext, useMemo, useState } from "react"
-import { TRANSACTION_STATUSES, TokenAmount, TransactionStatus } from "#/types"
+import { TokenAmount } from "#/types"
 
 type TransactionContextValue = {
   tokenAmount?: TokenAmount
-  status: TransactionStatus
   setTokenAmount: React.Dispatch<React.SetStateAction<TokenAmount | undefined>>
-  setStatus: React.Dispatch<React.SetStateAction<TransactionStatus>>
 }
 
 export const TransactionContext = createContext<
@@ -20,19 +18,14 @@ export function TransactionContextProvider({
   const [tokenAmount, setTokenAmount] = useState<TokenAmount | undefined>(
     undefined,
   )
-  const [status, setStatus] = useState<TransactionStatus>(
-    TRANSACTION_STATUSES.IDLE,
-  )
 
   const contextValue: TransactionContextValue =
     useMemo<TransactionContextValue>(
       () => ({
         tokenAmount,
-        status,
         setTokenAmount,
-        setStatus,
       }),
-      [status, tokenAmount],
+      [tokenAmount],
     )
 
   return (

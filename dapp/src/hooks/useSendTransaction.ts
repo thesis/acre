@@ -1,12 +1,13 @@
-import { useCallback } from "react"
+import { useCallback, useState } from "react"
 import {
   OnErrorCallback,
   OnSuccessCallback,
   TRANSACTION_STATUSES,
+  TransactionStatus,
 } from "#/types"
-import { useTransactionContext } from "./useTransactionContext"
 
 type UseSendTransactionReturn = {
+  status: TransactionStatus
   sendTransaction: () => Promise<void>
 }
 
@@ -17,28 +18,30 @@ export function useSendTransaction<
   onSuccess?: OnSuccessCallback,
   onError?: OnErrorCallback,
 ): UseSendTransactionReturn {
-  const { setStatus } = useTransactionContext()
+  const [transactionStatus, setTransactionStatus] = useState<TransactionStatus>(
+    TRANSACTION_STATUSES.IDLE,
+  )
 
   const handleSendTransaction = useCallback(
     async (...args: Parameters<typeof fn>) => {
       try {
-        setStatus(TRANSACTION_STATUSES.PENDING)
+        setTransactionStatus(TRANSACTION_STATUSES.PENDING)
         await fn(...args)
 
-        setStatus(TRANSACTION_STATUSES.SUCCEEDED)
+        setTransactionStatus(TRANSACTION_STATUSES.SUCCEEDED)
         if (onSuccess) {
           onSuccess()
         }
       } catch (error) {
-        setStatus(TRANSACTION_STATUSES.FAILED)
+        setTransactionStatus(TRANSACTION_STATUSES.FAILED)
         if (onError) {
           onError(error)
         }
         console.error(error)
       }
     },
-    [fn, onError, onSuccess, setStatus],
+    [fn, onError, onSuccess, setTransactionStatus],
   )
 
-  return { sendTransaction: handleSendTransaction }
+  return { sendTransaction: handleSendTransaction, status: transactionStatus }
 }
