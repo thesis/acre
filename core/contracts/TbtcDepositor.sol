@@ -219,36 +219,31 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable2Step {
     ///      this value for more details.
     /// @param depositKey Deposit key identifying the deposit.
     function notifyBridgingCompleted(uint256 depositKey) external {
-        (
-            uint256 depositAmount,
-            uint256 depositSubBridgingFeesAmount,
-
-        ) = _finalizeDeposit(depositKey);
+        (uint256 initialDepositAmount, uint256 tbtcAmount, ) = _finalizeDeposit(
+            depositKey
+        );
 
         // Compute depositor fee. The fee is calculated based on the initial funding
         // transaction amount, before the tBTC protocol network fees were taken.
         uint256 depositorFee = depositorFeeDivisor > 0
-            ? (depositAmount / depositorFeeDivisor)
+            ? (initialDepositAmount / depositorFeeDivisor)
             : 0;
 
         // Ensure the depositor fee does not exceed the approximate minted tBTC
         // amount.
-        if (depositorFee >= depositSubBridgingFeesAmount) {
-            revert DepositorFeeExceedsBridgedAmount(
-                depositorFee,
-                depositSubBridgingFeesAmount
-            );
+        if (depositorFee >= tbtcAmount) {
+            revert DepositorFeeExceedsBridgedAmount(depositorFee, tbtcAmount);
         }
 
         StakeRequest storage request = stakeRequests[depositKey];
 
-        request.amountToStake = depositSubBridgingFeesAmount - depositorFee;
+        request.amountToStake = tbtcAmount - depositorFee;
 
         emit BridgingCompleted(
             depositKey,
             msg.sender,
             request.referral,
-            depositSubBridgingFeesAmount,
+            tbtcAmount,
             depositorFee
         );
 
