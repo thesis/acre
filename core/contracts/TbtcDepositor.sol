@@ -23,15 +23,19 @@ import {stBTC} from "./stBTC.sol";
 ///         address along with their deposit blinding factor, refund public key
 ///         hash and refund locktime on the tBTC Bridge through this Depositor
 ///         contract.
-///         The off-chain ECDSA wallet listens for these sorts of
-///         messages and when it gets one, it checks the Bitcoin network to make
-///         sure the deposit lines up. If it does, the off-chain ECDSA wallet
-///         may decide to pick the deposit transaction for sweeping, and when
-///         the sweep operation is confirmed on the Bitcoin network, the tBTC Bridge
-///         and tBTC vault mint the tBTC token to the Depositor address.
-///         After tBTC is minted to the Depositor, on the stake finalization
-///         tBTC is staked in stBTC contract and stBTC shares are emitted to the
-///         receiver pointed by the staker.
+///         The off-chain ECDSA wallet and Optimistic Minting bots listen for these
+///         sorts of messages and when they get one, they check the Bitcoin network
+///         to make sure the deposit lines up. Majority of tBTC minting is finalized
+///         by the Optimistic Minting process, where Minter bot initializes
+///         minting process and if there is no veto from the Guardians, the
+///         process is finalized and tBTC minted to the Depositor address. If
+///         the revealed deposit is not handled by the Optimistic Minting process
+///         the off-chain ECDSA wallet may decide to pick the deposit transaction
+///         for sweeping, and when the sweep operation is confirmed on the Bitcoin
+///         network, the tBTC Bridge and tBTC vault mint the tBTC token to the
+///         Depositor address. After tBTC is minted to the Depositor, on the stake
+///         finalization tBTC is staked in stBTC contract and stBTC shares are emitted
+///         to the receiver pointed by the staker.
 contract TbtcDepositor is AbstractTBTCDepositor, Ownable {
     using SafeERC20 for IERC20;
 
