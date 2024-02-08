@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@keep-network/tbtc-v2.ts": "2.4.0-dev.3",
-    "@acre/core": "workspace:core@*",
+    "core": "workspace:*",
     "ethers": "^6.10.0"
   }
 }
