@@ -27,13 +27,21 @@ describe("Deployment", () => {
       await loadFixture(fixture))
   })
 
-  describe("Acre", () => {
+  describe("stBTC", () => {
     describe("constructor", () => {
       context("when treasury has been set", () => {
         it("should be set to a treasury address", async () => {
           const actualTreasury = await stbtc.treasury()
 
           expect(actualTreasury).to.be.equal(await treasury.getAddress())
+        })
+      })
+
+      context("when rewardsCycleLength has been set", () => {
+        it("should be set to a rewardsCycleLength", async () => {
+          const actualRewardsCycleLength = await stbtc.rewardsCycleLength()
+
+          expect(actualRewardsCycleLength).to.be.equal(7 * 24 * 60 * 60)
         })
       })
     })

@@ -54,7 +54,7 @@ describe("stBTC", () => {
   let depositor2: HardhatEthersSigner
   let thirdParty: HardhatEthersSigner
 
-  const rewardsCycleLength = 600n // 10min
+  const rewardsCycleLength = 604800n // 7days
 
   before(async () => {
     ;({
