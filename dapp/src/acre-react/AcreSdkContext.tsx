@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useMemo, useState } from "react"
 import { Acre, EthereumNetwork } from "@acre/sdk"
-import { LedgerLiveEthereumSigner } from "../web3"
+import { LedgerLiveEthereumSigner } from "#/web3"
 
 type AcreSdkContextValue = {
   acre?: Acre
@@ -14,11 +14,7 @@ const AcreSdkContext = React.createContext<AcreSdkContextValue>({
   isInitialized: false,
 })
 
-type Props = {
-  children: React.ReactNode
-}
-
-function AcreSdkProvider({ children }: Props) {
+export function AcreSdkProvider({ children }: { children: React.ReactNode }) {
   const [acre, setAcre] = useState<Acre | undefined>(undefined)
   const [isInitialized, setIsInitialized] = useState<boolean>(false)
 
@@ -53,7 +49,11 @@ function AcreSdkProvider({ children }: Props) {
 }
 
 export function useAcreContext() {
-  return useContext(AcreSdkContext)
-}
+  const context = useContext(AcreSdkContext)
 
-export default AcreSdkProvider
+  if (!context) {
+    throw new Error("AcreSdkContext used outside of AcreSdkContext component")
+  }
+
+  return context
+}

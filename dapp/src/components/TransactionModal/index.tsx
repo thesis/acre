@@ -11,6 +11,7 @@ import {
   PROCESS_STATUSES,
   ProcessStatus,
 } from "#/types"
+import { StakeFlowProvider } from "#/acre-react/contexts"
 import ModalBase from "../shared/ModalBase"
 import ModalContentWrapper from "./ModalContentWrapper"
 import { ActiveFlowStep } from "./ActiveFlowStep"
@@ -94,9 +95,11 @@ export default function TransactionModal({
     >
       <TransactionContextProvider>
         <ModalFlowContext.Provider value={contextValue}>
-          <ModalContentWrapper defaultType={defaultType}>
-            <ActiveFlowStep />
-          </ModalContentWrapper>
+          <StakeFlowProvider>
+            <ModalContentWrapper defaultType={defaultType}>
+              <ActiveFlowStep />
+            </ModalContentWrapper>
+          </StakeFlowProvider>
         </ModalFlowContext.Provider>
       </TransactionContextProvider>
     </ModalBase>
