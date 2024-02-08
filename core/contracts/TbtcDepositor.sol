@@ -75,6 +75,16 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable2Step {
     ///      made in the dApp being blocked by another big deposit.
     uint256 public maxSingleStakeAmountSat;
 
+    /// @notice Total balance of pending stake requests (in satoshi).
+    /// @dev stBTC contract introduces limits for total deposits amount. Due to
+    ///      asynchronous manner of the staking flow, this contract needs to track
+    ///      balance of pending stake requests to ensure new stake request are
+    ///      not initialized if they won't be able to finalize.
+    ///      Amounts are gross deposit amounts in satoshi precision. It
+    ///      means, the value from Bitcoin funding transaction is used, including
+    ///      the fees taken by tBTC or Acre protocols.
+    uint256 public pendingStakesBalanceSat;
+
     /// @notice Divisor used to compute the depositor fee taken from each deposit
     ///         and transferred to the treasury upon stake request finalization.
     /// @dev That fee is computed as follows:
@@ -235,8 +245,8 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable2Step {
         request.receiver = receiver;
         request.referral = referral;
 
-        // Increase pending stakes amount.
-        pendingStakesAmount += depositAmount;
+        // Increase pending stakes balance.
+        pendingStakesBalanceSat += depositAmountSat;
 
         emit StakeRequestInitialized(depositKey, msg.sender, receiver);
     }
@@ -312,6 +322,9 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable2Step {
         // solhint-disable-next-line not-rely-on-time
         request.finalizedAt = uint64(block.timestamp);
 
+        // Decrease pending stakes balance.
+        pendingStakesBalanceSat -= bridge.deposits(depositKey).amount;
+
         emit StakeRequestFinalized(
             depositKey,
             msg.sender,
@@ -359,6 +372,9 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable2Step {
 
         // solhint-disable-next-line not-rely-on-time
         request.recalledAt = uint64(block.timestamp);
+
+        // Decrease pending stakes balance.
+        pendingStakesBalanceSat -= bridge.deposits(depositKey).amount;
 
         emit StakeRequestRecalled(
             depositKey,
