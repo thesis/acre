@@ -16,6 +16,7 @@
       { "allowRequiredDefaults": true }
     ],
     "react/require-default-props": [0],
+    "no-console": ["error", { "allow": ["error"] }],
   },
   "settings": {
     "import/resolver": {
