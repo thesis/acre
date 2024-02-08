@@ -25,7 +25,7 @@ importers:
         version: 3.4.0-solc-0.8
       '@keep-network/tbtc-v2':
         specifier: development
-        version: 1.6.0-dev.18(@keep-network/keep-core@1.8.1-dev.0)
+        version: 1.6.0-dev.19(@keep-network/keep-core@1.8.1-dev.0)
       '@openzeppelin/contracts':
         specifier: ^5.0.0
         version: 5.0.0
@@ -4486,8 +4486,8 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@keep-network/tbtc-v2@1.6.0-dev.18(@keep-network/keep-core@1.8.1-dev.0):
-    resolution: {integrity: sha512-62QBEPAsE3dju5Hk+yqeLhE5ohmVg8ZdFE+x+lmkDPbVz6DrHx0NqF6a1TLC/yH826zhnVCTNpXoPuOv3QUnvA==}
+  /@keep-network/tbtc-v2@1.6.0-dev.19(@keep-network/keep-core@1.8.1-dev.0):
+    resolution: {integrity: sha512-b29a5AzRX+ub3oJctTEOIphEpBD2pYqVzmebyGZl43WN61q3gCFy9k5rDJYTYWTT1ly2mSt5DB51+sUwzToqFA==}
     engines: {node: '>= 14.0.0'}
     dependencies:
       '@keep-network/bitcoin-spv-sol': 3.4.0-solc-0.8
