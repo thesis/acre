@@ -398,6 +398,38 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable2Step {
 
     // TODO: Handle minimum deposit amount in tBTC Bridge vs stBTC.
 
+    /// @notice Maximum stake amount in satoshi precision.
+    /// @dev This function should be called before Bitcoin transaction funding
+    ///      is made. The `initializeStakeRequest` function is not enforcing this
+    ///      limit, not to block the reveal deposit operation of the concurrent
+    ///      deposits made in the dApp in the short window between limit check,
+    ///      submission of Bitcoin funding transaction and stake request
+    ///      initialization.
+    ///      In case of an unfortunate coincidence of concurrent deposit request
+    ///      reaching the limit, the Acre protocol will work towards stake request
+    ///      finalization by raising the limit to let the queued stake request in.
+    /// @param receiver The address to which the stBTC shares will be minted.
+    /// @return Maximum allowed stake amount.
+    function maxStakeAmountInSatoshi(
+        address receiver
+    ) external view returns (uint256) {
+        uint256 stbtcMaxDepositTbtc = stbtc.maxDeposit(receiver);
+
+        if (stbtcMaxDepositTbtc == type(uint256).max) {
+            return maxSingleStakeAmountSat;
+        }
+
+        uint256 stbtcMaxDepositSat = stbtcMaxDepositTbtc / SATOSHI_MULTIPLIER;
+
+        uint256 availableLimitSat = stbtcMaxDepositSat -
+            pendingStakesBalanceSat;
+
+        return
+            availableLimitSat > maxSingleStakeAmountSat
+                ? maxSingleStakeAmountSat
+                : availableLimitSat;
+    }
+
     /// @notice Encode receiver address and referral as extra data.
     /// @dev Packs the data to bytes32: 20 bytes of receiver address and
     ///      2 bytes of referral, 10 bytes of trailing zeros.
