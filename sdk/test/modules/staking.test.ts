@@ -131,8 +131,8 @@ describe("Staking", () => {
 
       describe("getDepositReceipt", () => {
         it("should return tbtc deposit receipt", () => {
-          expect(mockedDeposit.getReceipt).toHaveBeenCalled()
           expect(result.getDepositReceipt()).toBe(depositReceipt)
+          expect(mockedDeposit.getReceipt).toHaveBeenCalled()
         })
       })
 
