@@ -1,6 +1,6 @@
 import React from "react"
 import { Box, ChakraProvider } from "@chakra-ui/react"
-import { useDetectThemeMode, useSentry } from "./hooks"
+import { useDetectThemeMode, useInitializeAcreSdk, useSentry } from "./hooks"
 import theme from "./theme"
 import {
   DocsDrawerContextProvider,
@@ -18,6 +18,7 @@ import AcreSdkProvider from "./acre-react/AcreSdkContext"
 function DApp() {
   useDetectThemeMode()
   useSentry()
+  useInitializeAcreSdk()
 
   return (
     <>
