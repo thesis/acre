@@ -1,13 +1,50 @@
 import { useCallback } from "react"
-import { OnSuccessCallback } from "#/types"
+import { useSignAndBroadcastTransaction } from "@ledgerhq/wallet-api-client-react"
+import BigNumber from "bignumber.js"
+import { Transaction } from "@ledgerhq/wallet-api-client"
+import { useWalletContext } from "./useWalletContext"
+import { useWalletApiReactTransport } from "./useWalletApiReactTransport"
 
-export function useDepositBTCTransaction(onSuccess?: OnSuccessCallback) {
-  // TODO: sending transactions using the SDK
-  const depositBTC = useCallback(() => {
-    if (onSuccess) {
-      setTimeout(onSuccess, 1000)
-    }
-  }, [onSuccess])
+type UseSendBitcoinTransactionState = {
+  pending: boolean
+  transactionHash: string | null
+  error: unknown
+}
 
-  return { depositBTC }
+type SendBitcoinTransactionParams = Parameters<
+  (amount: bigint, recipient: string) => void
+>
+
+type UseDepositBTCTransactionReturn = {
+  sendBitcoinTransaction: (
+    ...params: SendBitcoinTransactionParams
+  ) => Promise<void>
+} & UseSendBitcoinTransactionState
+
+export function useDepositBTCTransaction(): UseDepositBTCTransactionReturn {
+  const { btcAccount } = useWalletContext()
+  const { walletApiReactTransport } = useWalletApiReactTransport()
+
+  const { signAndBroadcastTransaction, ...rest } =
+    useSignAndBroadcastTransaction()
+
+  const sendBitcoinTransaction = useCallback(
+    async (amount: bigint, recipient: string) => {
+      if (!btcAccount) {
+        throw new Error("Bitcoin account was not connected.")
+      }
+
+      const bitcoinTransaction: Transaction = {
+        family: "bitcoin",
+        amount: new BigNumber(amount.toString()),
+        recipient,
+      }
+      walletApiReactTransport.connect()
+      await signAndBroadcastTransaction(btcAccount.id, bitcoinTransaction)
+      walletApiReactTransport.disconnect()
+    },
+    [btcAccount, signAndBroadcastTransaction, walletApiReactTransport],
+  )
+
+  return { ...rest, sendBitcoinTransaction }
 }
