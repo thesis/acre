@@ -6,9 +6,8 @@
 // - replaced import from Solmate's SafeCastLib with OpenZeppelin SafeCast
 // - removed super.beforeWithdraw and super.afterDeposit calls
 // - removed overrides from beforeWithdraw and afterDeposit
-// - replaced `asset.balanceOf(address(this))` with `totalAssets()`
+// - replaced `asset.balanceOf(address(this))` with `IERC20(asset()).balanceOf(address(this))`
 // - removed unused `shares` param from `beforeWithdraw` and `afterDeposit`
-// - inherting from ERC4626Fees
 // - minor formatting changes and solhint additions
 
 pragma solidity ^0.8.0;
@@ -17,7 +16,6 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
 import "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
 import "../interfaces/IxERC4626.sol";
-import "../lib/ERC4626Fees.sol";
 
 /**
  @title  An xERC4626 Single Staking Contract
@@ -28,7 +26,7 @@ import "../lib/ERC4626Fees.sol";
 
          Operates on "cycles" which distribute the rewards surplus over the internal balance to users linearly over the remainder of the cycle window.
 */
-abstract contract xERC4626 is IxERC4626, ERC4626Fees {
+abstract contract xERC4626 is IxERC4626, ERC4626 {
     using SafeCast for *;
 
     /// @notice the maximum length of a rewards cycle
@@ -65,7 +63,7 @@ abstract contract xERC4626 is IxERC4626, ERC4626Fees {
         if (timestamp < rewardsCycleEnd) revert SyncError();
 
         uint256 storedTotalAssets_ = storedTotalAssets;
-        uint256 nextRewards = totalAssets() -
+        uint256 nextRewards = IERC20(asset()).balanceOf(address(this)) -
             storedTotalAssets_ -
             lastRewardAmount_;
 

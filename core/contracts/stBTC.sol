@@ -27,10 +27,7 @@ contract stBTC is xERC4626, Ownable {
     /// Address of the treasury wallet, where fees should be transferred to.
     address public treasury;
 
-    /// Entry fee basis points applied to entry fee calculation.
-    uint256 public entryFeeBasisPoints;
-
-    /// Minimum amount for a single deposit operation. Includes treasury fee.
+    /// Minimum amount for a single deposit operation.
     uint256 public minimumDepositAmount;
     /// Maximum total amount of tBTC token held by Acre protocol.
     uint256 public maximumTotalAssets;
@@ -52,10 +49,6 @@ contract stBTC is xERC4626, Ownable {
     /// @param newDispatcher Address of the new dispatcher contract.
     event DispatcherUpdated(address oldDispatcher, address newDispatcher);
 
-    /// Emitted when the entry fee basis points are updated.
-    /// @param entryFeeBasisPoints New value of the fee basis points.
-    event EntryFeeBasisPointsUpdated(uint256 entryFeeBasisPoints);
-
     /// Reverts if the amount is less than the minimum deposit amount.
     /// @param amount Amount to check.
     /// @param min Minimum amount to check 'amount' against.
@@ -74,7 +67,7 @@ contract stBTC is xERC4626, Ownable {
         ERC4626(_tbtc)
         ERC20("Acre Staked Bitcoin", "stBTC")
         Ownable(msg.sender)
-        xERC4626(600) // 10min TODO: revisit
+        xERC4626(600) // 10min TODO: revisit, add param
     {
         if (address(_treasury) == address(0)) {
             revert ZeroAddress();
@@ -83,7 +76,6 @@ contract stBTC is xERC4626, Ownable {
         // TODO: Revisit the exact values closer to the launch.
         minimumDepositAmount = 0.001 * 1e18; // 0.001 tBTC
         maximumTotalAssets = 25 * 1e18; // 25 tBTC
-        entryFeeBasisPoints = 5; // 5bps == 0.05% == 0.0005
     }
 
     /// @notice Updates treasury wallet address.
@@ -151,42 +143,25 @@ contract stBTC is xERC4626, Ownable {
         IERC20(asset()).forceApprove(address(dispatcher), type(uint256).max);
     }
 
-    // TODO: Implement a governed upgrade process that initiates an update and
-    //       then finalizes it after a delay.
-    /// @notice Update the entry fee basis points.
-    /// @param newEntryFeeBasisPoints New value of the fee basis points.
-    function updateEntryFeeBasisPoints(
-        uint256 newEntryFeeBasisPoints
-    ) external onlyOwner {
-        entryFeeBasisPoints = newEntryFeeBasisPoints;
-
-        emit EntryFeeBasisPointsUpdated(newEntryFeeBasisPoints);
-    }
-
     /// @notice Mints shares to receiver by depositing exactly amount of
     ///         tBTC tokens.
     /// @dev Takes into account a deposit parameter, minimum deposit amount,
     ///      which determines the minimum amount for a single deposit operation.
     ///      The amount of the assets has to be pre-approved in the tBTC
     ///      contract.
-    /// @param assets Approved amount of tBTC tokens to deposit. This includes
-    ///               treasury fees for staking tBTC.
+    /// @param assets Approved amount of tBTC tokens to deposit.
     /// @param receiver The address to which the shares will be minted.
-    /// @return Minted shares adjusted for the fees taken by the treasury.
+    /// @return shares Minted shares.
     function deposit(
         uint256 assets,
         address receiver
-    ) public override returns (uint256) {
+    ) public override returns (uint256 shares) {
         if (assets < minimumDepositAmount) {
             revert LessThanMinDeposit(assets, minimumDepositAmount);
         }
 
-        uint256 shares = super.deposit(assets, receiver);
-        uint256 assetsUpdated = assets -
-            _feeOnTotal(assets, _entryFeeBasisPoints());
-        afterDeposit(assetsUpdated);
-
-        return shares;
+        shares = super.deposit(assets, receiver);
+        afterDeposit(assets);
     }
 
     /// @notice Mints shares to receiver by depositing tBTC tokens.
@@ -195,9 +170,7 @@ contract stBTC is xERC4626, Ownable {
     ///      The amount of the assets has to be pre-approved in the tBTC
     ///      contract.
     ///      The msg.sender is required to grant approval for the transfer of a
-    ///      certain amount of tBTC, and in addition, approval for the associated
-    ///      fee. Specifically, the total amount to be approved (amountToApprove)
-    ///      should be equal to the sum of the deposited amount and the fee.
+    ///      certain amount of tBTC.
     ///      To determine the total assets amount necessary for approval
     ///      corresponding to a given share amount, use the `previewMint` function.
     /// @param shares Amount of shares to mint.
@@ -209,19 +182,16 @@ contract stBTC is xERC4626, Ownable {
         if ((assets = super.mint(shares, receiver)) < minimumDepositAmount) {
             revert LessThanMinDeposit(assets, minimumDepositAmount);
         }
-        uint256 assetsUpdated = assets -
-            _feeOnTotal(assets, _entryFeeBasisPoints());
-        afterDeposit(assetsUpdated);
+        afterDeposit(assets);
     }
 
     /// @notice Returns the maximum amount of the tBTC token that can be
     ///         deposited into the vault for the receiver through a deposit
     ///         call. It takes into account the deposit parameter, maximum total
     ///         assets, which determines the total amount of tBTC token held by
-    ///         Acre. This function always returns available limit for deposits,
-    ///         but the fee is not taken into account. As a result of this, there
-    ///         always will be some dust left. If the dust is lower than the
-    ///         minimum deposit amount, this function will return 0.
+    ///         Acre protocol.
+    /// @dev When the remaining amount of unused limit is less than the minimum
+    ///      deposit amount, this function returns 0.
     /// @return The maximum amount of tBTC token that can be deposited into
     ///         Acre protocol for the receiver.
     function maxDeposit(address) public view override returns (uint256) {
@@ -229,14 +199,12 @@ contract stBTC is xERC4626, Ownable {
             return type(uint256).max;
         }
 
-        uint256 currentTotalAssets = totalAssets();
-        if (currentTotalAssets >= maximumTotalAssets) return 0;
+        uint256 _totalAssets = totalAssets();
 
-        // Max amount left for next deposits. If it is lower than the minimum
-        // deposit amount, return 0.
-        uint256 unusedLimit = maximumTotalAssets - currentTotalAssets;
-
-        return minimumDepositAmount > unusedLimit ? 0 : unusedLimit;
+        return
+            _totalAssets >= maximumTotalAssets
+                ? 0
+                : maximumTotalAssets - _totalAssets;
     }
 
     /// @notice Returns the maximum amount of the vault shares that can be
@@ -257,16 +225,5 @@ contract stBTC is xERC4626, Ownable {
     /// @return Returns deposit parameters.
     function depositParameters() public view returns (uint256, uint256) {
         return (minimumDepositAmount, maximumTotalAssets);
-    }
-
-    /// @notice Redeems shares for tBTC tokens.
-    function _entryFeeBasisPoints() internal view override returns (uint256) {
-        return entryFeeBasisPoints;
-    }
-
-    /// @notice Returns the address of the treasury wallet, where fees should be
-    ///         transferred to.
-    function _feeRecipient() internal view override returns (address) {
-        return treasury;
     }
 }
