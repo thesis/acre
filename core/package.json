@@ -60,6 +60,8 @@
     "typescript": "^5.3.2"
   },
   "dependencies": {
+    "@keep-network/bitcoin-spv-sol": "3.4.0-solc-0.8",
+    "@keep-network/tbtc-v2": "development",
     "@openzeppelin/contracts": "^5.0.0"
   }
 }

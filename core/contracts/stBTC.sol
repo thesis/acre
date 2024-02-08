@@ -144,6 +144,14 @@ contract stBTC is xERC4626, Ownable {
         IERC20(asset()).forceApprove(address(dispatcher), type(uint256).max);
     }
 
+    /// @notice Returns value of assets that would be exchanged for the amount of
+    ///         shares owned by the `account`.
+    /// @param account Owner of shares.
+    /// @return Assets amount.
+    function assetsBalanceOf(address account) public view returns (uint256) {
+        return convertToAssets(balanceOf(account));
+    }
+
     /// @notice Mints shares to receiver by depositing exactly amount of
     ///         tBTC tokens.
     /// @dev Takes into account a deposit parameter, minimum deposit amount,
