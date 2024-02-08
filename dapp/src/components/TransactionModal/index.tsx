@@ -12,6 +12,7 @@ import {
   ProcessStatus,
 } from "#/types"
 import { StakeFlowProvider } from "#/acre-react/contexts"
+import { ModalCloseButton } from "@chakra-ui/react"
 import ModalBase from "../shared/ModalBase"
 import ModalContentWrapper from "./ModalContentWrapper"
 import { ActiveFlowStep } from "./ActiveFlowStep"
@@ -97,6 +98,7 @@ export default function TransactionModal({
         <ModalFlowContext.Provider value={contextValue}>
           <StakeFlowProvider>
             <ModalContentWrapper defaultType={defaultType}>
+              <ModalCloseButton />
               <ActiveFlowStep />
             </ModalContentWrapper>
           </StakeFlowProvider>
