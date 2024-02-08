@@ -1,4 +1,4 @@
-import { DepositReceipt, EthereumAddress } from "@keep-network/tbtc-v2.ts"
+import { EthereumAddress } from "@keep-network/tbtc-v2.ts"
 import { ethers } from "ethers"
 import {
   AcreContracts,
@@ -6,6 +6,7 @@ import {
   Hex,
   StakeInitialization,
   DepositorProxy,
+  DepositReceipt,
 } from "../../src"
 import { MockAcreContracts } from "../utils/mock-acre-contracts"
 import { MockMessageSigner } from "../utils/mock-message-signer"
