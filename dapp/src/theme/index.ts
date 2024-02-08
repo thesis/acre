@@ -23,6 +23,7 @@ import { tableTheme } from "./Table"
 import { currencyIconTheme } from "./CurrencyIcon"
 import { statusInfoTheme } from "./StatusInfo"
 import { linkTheme } from "./Link"
+import { skeletonTheme } from "./Skeleton"
 
 const defaultTheme = {
   colors,
@@ -62,6 +63,7 @@ const defaultTheme = {
     Table: tableTheme,
     CurrencyIcon: currencyIconTheme,
     StatusInfo: statusInfoTheme,
+    Skeleton: skeletonTheme,
   },
 }
 
