@@ -1,4 +1,6 @@
 import { Currency, CurrencyType } from "#/types"
+import { EthereumNetwork } from "@acre/sdk"
+import { ETHEREUM_NETWORK } from "./chains"
 
 export const BITCOIN: Currency = {
   name: "Bitcoin",
@@ -24,11 +26,16 @@ export const USD: Currency = {
   decimals: 10,
 }
 
+const CURRENCY_ID_BY_ETHEREUM_NETWORK: Record<EthereumNetwork, string> = {
+  mainnet: "ethereum",
+  sepolia: "ethereum_sepolia",
+}
+
 export const CURRENCY_ID_BITCOIN =
   import.meta.env.VITE_USE_TESTNET === "true" ? "bitcoin_testnet" : "bitcoin"
 
 export const CURRENCY_ID_ETHEREUM =
-  import.meta.env.VITE_USE_TESTNET === "true" ? "ethereum_sepolia" : "ethereum"
+  CURRENCY_ID_BY_ETHEREUM_NETWORK[ETHEREUM_NETWORK]
 
 export const CURRENCIES_BY_TYPE: Record<CurrencyType, Currency> = {
   bitcoin: BITCOIN,
