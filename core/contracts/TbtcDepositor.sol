@@ -67,6 +67,14 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable2Step {
     /// @dev The key is a deposit key identifying the deposit.
     mapping(uint256 => StakeRequest) public stakeRequests;
 
+    /// @notice Maximum amount of a single stake request (in satoshi).
+    /// @dev The staking flow in the dApp is asynchronous and there is a short period
+    ///      of time between a deposit funding transaction is made on Bitcoin chain
+    ///      and revealed to this contract.This limit is used to gain better control
+    ///      on the stakes queue, and reduce a risk of concurrent stake requests
+    ///      made in the dApp being blocked by another big deposit.
+    uint256 public maxSingleStakeAmountSat;
+
     /// @notice Divisor used to compute the depositor fee taken from each deposit
     ///         and transferred to the treasury upon stake request finalization.
     /// @dev That fee is computed as follows:
@@ -130,6 +138,10 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable2Step {
 
     /// @dev Receiver address is zero.
     error ReceiverIsZeroAddress();
+
+    /// @dev Attempted to initialize a stake request with a deposit amount
+    ///      exceeding the maximum limit for a single stake amount.
+    error ExceededMaxSingleStake(uint256 amount, uint256 max);
 
     /// @dev Attempted to notify a bridging completion, while it was already
     ///      notified.
@@ -211,9 +223,20 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable2Step {
             encodeExtraData(receiver, referral)
         );
 
+        uint256 depositAmountSat = bridge.deposits(depositKey).amount;
+
+        if (depositAmountSat > maxSingleStakeAmountSat)
+            revert ExceededMaxSingleStake(
+                depositAmountSat,
+                maxSingleStakeAmountSat
+            );
+
         StakeRequest storage request = stakeRequests[depositKey];
         request.receiver = receiver;
         request.referral = referral;
+
+        // Increase pending stakes amount.
+        pendingStakesAmount += depositAmount;
 
         emit StakeRequestInitialized(depositKey, msg.sender, receiver);
     }
