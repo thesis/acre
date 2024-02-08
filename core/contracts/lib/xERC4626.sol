@@ -47,6 +47,7 @@ abstract contract xERC4626 is IxERC4626, ERC4626 {
         rewardsCycleLength = _rewardsCycleLength;
         // seed initial rewardsCycleEnd
         /* solhint-disable not-rely-on-time */
+        // slither-disable-next-line divide-before-multiply
         rewardsCycleEnd =
             (block.timestamp.toUint32() / rewardsCycleLength) *
             rewardsCycleLength;
@@ -69,6 +70,7 @@ abstract contract xERC4626 is IxERC4626, ERC4626 {
 
         storedTotalAssets = storedTotalAssets_ + lastRewardAmount_; // SSTORE
 
+        // slither-disable-next-line divide-before-multiply
         uint32 end = ((timestamp + rewardsCycleLength) / rewardsCycleLength) *
             rewardsCycleLength;
 
@@ -105,10 +107,12 @@ abstract contract xERC4626 is IxERC4626, ERC4626 {
         return storedTotalAssets_ + unlockedRewards;
     }
 
+    // Commenting out for Slither to pass the "dead-code" warning. Uncomment once
+    // we add withdrawals.
     // Update storedTotalAssets on withdraw/redeem
-    function beforeWithdraw(uint256 amount) internal virtual {
-        storedTotalAssets -= amount;
-    }
+    // function beforeWithdraw(uint256 amount) internal virtual {
+    //     storedTotalAssets -= amount;
+    // }
 
     // Update storedTotalAssets on deposit/mint
     function afterDeposit(uint256 amount) internal virtual {

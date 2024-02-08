@@ -63,12 +63,12 @@ contract stBTC is xERC4626, Ownable {
     constructor(
         IERC20 _tbtc,
         address _treasury,
-        uint32 rewardsCycleLength
+        uint32 _rewardsCycleLength
     )
         ERC4626(_tbtc)
         ERC20("Acre Staked Bitcoin", "stBTC")
         Ownable(msg.sender)
-        xERC4626(rewardsCycleLength) // TODO: revisit initialization
+        xERC4626(_rewardsCycleLength) // TODO: revisit initialization
     {
         if (address(_treasury) == address(0)) {
             revert ZeroAddress();
