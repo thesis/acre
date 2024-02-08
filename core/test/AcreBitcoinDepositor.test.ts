@@ -1257,6 +1257,57 @@ describe("AcreBitcoinDepositor", () => {
     })
   })
 
+  describe("updateMaxSingleStakeAmount", () => {
+    beforeAfterSnapshotWrapper()
+
+    describe("when caller is not governance", () => {
+      it("should revert", async () => {
+        await expect(
+          bitcoinDepositor.connect(thirdParty).updateMaxSingleStakeAmount(1234),
+        )
+          .to.be.revertedWithCustomError(
+            bitcoinDepositor,
+            "OwnableUnauthorizedAccount",
+          )
+          .withArgs(thirdParty.address)
+      })
+    })
+
+    describe("when caller is governance", () => {
+      const testUpdateMaxSingleStakeAmount = (newValue: number) =>
+        function () {
+          beforeAfterSnapshotWrapper()
+
+          let tx: ContractTransactionResponse
+
+          before(async () => {
+            tx = await bitcoinDepositor
+              .connect(governance)
+              .updateMaxSingleStakeAmount(newValue)
+          })
+
+          it("should emit MaxSingleStakeAmountUpdated event", async () => {
+            await expect(tx)
+              .to.emit(bitcoinDepositor, "MaxSingleStakeAmountUpdated")
+              .withArgs(newValue)
+          })
+
+          it("should update value correctly", async () => {
+            expect(await bitcoinDepositor.maxSingleStakeAmountSat()).to.be.eq(
+              newValue,
+            )
+          })
+        }
+
+      describe(
+        "when new value is non-zero",
+        testUpdateMaxSingleStakeAmount(47281),
+      )
+
+      describe("when new value is zero", testUpdateMaxSingleStakeAmount(0))
+    })
+  })
+
   describe("updateDepositorFeeDivisor", () => {
     beforeAfterSnapshotWrapper()
 
