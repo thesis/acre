@@ -9,7 +9,7 @@ import {
   Message,
   Types,
 } from "../../lib/eip712-signer"
-import { AcreContracts } from "../../lib/contracts"
+import { AcreContracts, DepositReceipt } from "../../lib/contracts"
 import { Hex } from "../../lib/utils"
 
 /**
@@ -71,6 +71,13 @@ class StakeInitialization {
    */
   async getBitcoinAddress(): Promise<string> {
     return this.#tbtcDeposit.getBitcoinAddress()
+  }
+
+  /**
+   * @returns Receipt corresponding to the tbtc deposit.
+   */
+  getDepositReceipt(): DepositReceipt {
+    return this.#tbtcDeposit.getReceipt()
   }
 
   /**

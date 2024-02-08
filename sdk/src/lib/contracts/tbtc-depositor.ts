@@ -2,6 +2,7 @@ import { DepositorProxy } from "@keep-network/tbtc-v2.ts"
 import { Hex } from "../utils"
 import { ChainIdentifier } from "./chain-identifier"
 
+export { DepositReceipt } from "@keep-network/tbtc-v2.ts"
 /**
  * Represents data of the revealed deposit.
  */
