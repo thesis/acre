@@ -222,6 +222,112 @@ describe("stBTC", () => {
     )
   })
 
+  describe("assetsBalanceOf", () => {
+    beforeAfterSnapshotWrapper()
+
+    before(async () => {
+      // Disable entry fee
+      await stbtc.connect(governance).updateEntryFeeBasisPoints(0n)
+    })
+
+    context("when the vault is empty", () => {
+      it("should return zero", async () => {
+        expect(await stbtc.assetsBalanceOf(depositor1.address)).to.be.equal(0)
+      })
+    })
+
+    context("when the vault is not empty", () => {
+      context("when there is one depositor", () => {
+        beforeAfterSnapshotWrapper()
+
+        const amountToDeposit = to1e18(1)
+
+        before(async () => {
+          await tbtc
+            .connect(depositor1)
+            .approve(await stbtc.getAddress(), amountToDeposit)
+
+          await stbtc
+            .connect(depositor1)
+            .deposit(amountToDeposit, depositor1.address)
+        })
+
+        it("should return the correct amount of assets", async () => {
+          expect(await stbtc.assetsBalanceOf(depositor1.address)).to.be.equal(
+            amountToDeposit,
+          )
+        })
+      })
+
+      context("when there are two depositors", () => {
+        beforeAfterSnapshotWrapper()
+
+        const depositor1AmountToDeposit = to1e18(1)
+        const depositor2AmountToDeposit = to1e18(2)
+
+        before(async () => {
+          await tbtc
+            .connect(depositor1)
+            .approve(await stbtc.getAddress(), depositor1AmountToDeposit)
+
+          await stbtc
+            .connect(depositor1)
+            .deposit(depositor1AmountToDeposit, depositor1.address)
+
+          await tbtc
+            .connect(depositor2)
+            .approve(await stbtc.getAddress(), depositor2AmountToDeposit)
+
+          await stbtc
+            .connect(depositor2)
+            .deposit(depositor2AmountToDeposit, depositor2.address)
+        })
+
+        context("when there is no yield generated", () => {
+          beforeAfterSnapshotWrapper()
+
+          it("should return the correct amount of assets", async () => {
+            expect(
+              await stbtc.assetsBalanceOf(depositor1.address),
+              "invalid assets balance of depositor 1",
+            ).to.be.equal(depositor1AmountToDeposit)
+
+            expect(
+              await stbtc.assetsBalanceOf(depositor2.address),
+              "invalid assets balance of depositor 2",
+            ).to.be.equal(depositor2AmountToDeposit)
+          })
+        })
+
+        context("when there is yield generated", () => {
+          beforeAfterSnapshotWrapper()
+
+          const earnedYield = to1e18(6)
+
+          // Values are floor rounded as per the `convertToAssets` function.
+          const expectedAssets1 = 2999999999999999999n // 1 + (1/3 * 6)
+          const expectedAssets2 = 5999999999999999998n // 2 + (2/3 * 6)
+
+          before(async () => {
+            await tbtc.mint(await stbtc.getAddress(), earnedYield)
+          })
+
+          it("should return the correct amount of assets", async () => {
+            expect(
+              await stbtc.assetsBalanceOf(depositor1.address),
+              "invalid assets balance of depositor 1",
+            ).to.be.equal(expectedAssets1)
+
+            expect(
+              await stbtc.assetsBalanceOf(depositor2.address),
+              "invalid assets balance of depositor 2",
+            ).to.be.equal(expectedAssets2)
+          })
+        })
+      })
+    })
+  })
+
   describe("deposit", () => {
     beforeAfterSnapshotWrapper()
 

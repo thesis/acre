@@ -163,6 +163,14 @@ contract stBTC is ERC4626Fees, Ownable2Step {
         emit EntryFeeBasisPointsUpdated(newEntryFeeBasisPoints);
     }
 
+    /// @notice Returns value of assets that would be exchanged for the amount of
+    ///         shares owned by the `account`.
+    /// @param account Owner of shares.
+    /// @return Assets amount.
+    function assetsBalanceOf(address account) public view returns (uint256) {
+        return convertToAssets(balanceOf(account));
+    }
+
     /// @notice Mints shares to receiver by depositing exactly amount of
     ///         tBTC tokens.
     /// @dev Takes into account a deposit parameter, minimum deposit amount,

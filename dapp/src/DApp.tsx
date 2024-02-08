@@ -1,6 +1,6 @@
 import React from "react"
 import { Box, ChakraProvider } from "@chakra-ui/react"
-import { useDetectThemeMode } from "./hooks"
+import { useDetectThemeMode, useSentry } from "./hooks"
 import theme from "./theme"
 import {
   DocsDrawerContextProvider,
@@ -16,6 +16,7 @@ import GlobalStyles from "./components/GlobalStyles"
 
 function DApp() {
   useDetectThemeMode()
+  useSentry()
 
   return (
     <>
