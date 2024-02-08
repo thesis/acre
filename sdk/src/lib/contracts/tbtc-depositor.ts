@@ -2,38 +2,6 @@ import { DepositorProxy } from "@keep-network/tbtc-v2.ts"
 import { Hex } from "../utils"
 import { ChainIdentifier } from "./chain-identifier"
 
-/**
- * Represents data of the revealed deposit.
- */
-export interface DepositRevealInfo {
-  /**
-   * Index of the deposit transaction output that funds the revealed deposit.
-   */
-  fundingOutputIndex: number
-
-  /**
-   * An 8-byte blinding factor. Must be unique for the given depositor, wallet
-   * public key and refund public key.
-   */
-  blindingFactor: Hex
-
-  /**
-   * Public key hash of the wallet that is meant to receive the deposit.
-   */
-  walletPublicKeyHash: Hex
-
-  /**
-   * Public key hash that is meant to be used during deposit refund after the
-   * locktime passes.
-   */
-  refundPublicKeyHash: Hex
-
-  /**
-   * A 4-byte little-endian refund locktime.
-   */
-  refundLocktime: Hex
-}
-
 export type DecodedExtraData = {
   staker: ChainIdentifier
   referral: number
