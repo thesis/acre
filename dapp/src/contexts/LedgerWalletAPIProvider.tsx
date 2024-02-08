@@ -1,31 +1,20 @@
 import React from "react"
-import { WindowMessageTransport } from "@ledgerhq/wallet-api-client"
 import { WalletAPIProvider } from "@ledgerhq/wallet-api-client-react"
-
-function initLedgerWalletAPITransport(): WindowMessageTransport {
-  const transport = new WindowMessageTransport()
-
-  transport.connect()
-
-  return transport
-}
-
-const transport = initLedgerWalletAPITransport()
-
-export function getLedgerWalletAPITransport() {
-  return transport
-}
-
-type LedgerWalletAPIProviderProps = {
-  children: React.ReactElement
-}
+import {
+  WalletApiReactTransportProvider,
+  walletApiReactTransport,
+} from "./WalletApiReactTransportProvider"
 
 export function LedgerWalletAPIProvider({
   children,
-}: LedgerWalletAPIProviderProps): JSX.Element {
+}: {
+  children: React.ReactElement
+}): JSX.Element {
   return (
-    <WalletAPIProvider transport={getLedgerWalletAPITransport()}>
-      {children}
+    <WalletAPIProvider transport={walletApiReactTransport}>
+      <WalletApiReactTransportProvider>
+        {children}
+      </WalletApiReactTransportProvider>
     </WalletAPIProvider>
   )
 }
