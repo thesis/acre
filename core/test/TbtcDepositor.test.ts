@@ -414,7 +414,10 @@ describe("TbtcDepositor", () => {
                 tbtcDepositor
                   .connect(thirdParty)
                   .notifyBridgingCompleted(tbtcDepositData.depositKey),
-              ).to.be.revertedWith("Deposit not initialized")
+              ).to.be.revertedWithCustomError(
+                tbtcDepositor,
+                "BridgingCompletionAlreadyNotified",
+              )
             })
           })
 
@@ -431,7 +434,10 @@ describe("TbtcDepositor", () => {
                 tbtcDepositor
                   .connect(thirdParty)
                   .notifyBridgingCompleted(tbtcDepositData.depositKey),
-              ).to.be.revertedWith("Deposit not initialized")
+              ).to.be.revertedWithCustomError(
+                tbtcDepositor,
+                "BridgingCompletionAlreadyNotified",
+              )
             })
           })
         })
@@ -801,7 +807,10 @@ describe("TbtcDepositor", () => {
                 .notifyBridgingCompletedAndFinalizeStakeRequest(
                   tbtcDepositData.depositKey,
                 ),
-            ).to.be.revertedWith("Deposit not initialized")
+            ).to.be.revertedWithCustomError(
+              tbtcDepositor,
+              "BridgingCompletionAlreadyNotified",
+            )
           })
         })
 
@@ -824,7 +833,10 @@ describe("TbtcDepositor", () => {
                 .notifyBridgingCompletedAndFinalizeStakeRequest(
                   tbtcDepositData.depositKey,
                 ),
-            ).to.be.revertedWith("Deposit not initialized")
+            ).to.be.revertedWithCustomError(
+              tbtcDepositor,
+              "BridgingCompletionAlreadyNotified",
+            )
           })
         })
       })

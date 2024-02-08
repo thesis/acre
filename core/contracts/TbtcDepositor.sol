@@ -131,6 +131,10 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable2Step {
     /// @dev Receiver address is zero.
     error ReceiverIsZeroAddress();
 
+    /// @dev Attempted to notify a bridging completion, while it was already
+    ///      notified.
+    error BridgingCompletionAlreadyNotified();
+
     /// @dev Attempted to finalize a stake request, while bridging completion has
     /// not been notified yet.
     error BridgingNotCompleted();
@@ -225,6 +229,11 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable2Step {
     ///      this value for more details.
     /// @param depositKey Deposit key identifying the deposit.
     function notifyBridgingCompleted(uint256 depositKey) public {
+        StakeRequest storage request = stakeRequests[depositKey];
+
+        if (request.amountToStake > 0)
+            revert BridgingCompletionAlreadyNotified();
+
         (uint256 initialDepositAmount, uint256 tbtcAmount, ) = _finalizeDeposit(
             depositKey
         );
@@ -240,8 +249,6 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable2Step {
         if (depositorFee >= tbtcAmount) {
             revert DepositorFeeExceedsBridgedAmount(depositorFee, tbtcAmount);
         }
-
-        StakeRequest storage request = stakeRequests[depositKey];
 
         request.amountToStake = tbtcAmount - depositorFee;
 
