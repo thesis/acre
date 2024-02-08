@@ -6,6 +6,7 @@ import { USD } from "#/constants"
 import PositionDetails from "./PositionDetails"
 import Statistics from "./Statistics"
 import TransactionHistory from "./TransactionHistory"
+import ButtonLink from "../shared/ButtonLink"
 
 export default function Overview() {
   const { onOpen } = useDocsDrawer()
