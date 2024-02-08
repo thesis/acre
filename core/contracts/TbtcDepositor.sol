@@ -224,7 +224,7 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable2Step {
     ///      {{TBTCDepositorProxy#_calculateTbtcAmount}} responsible for calculating
     ///      this value for more details.
     /// @param depositKey Deposit key identifying the deposit.
-    function notifyBridgingCompleted(uint256 depositKey) external {
+    function notifyBridgingCompleted(uint256 depositKey) public {
         (uint256 initialDepositAmount, uint256 tbtcAmount, ) = _finalizeDeposit(
             depositKey
         );
@@ -272,7 +272,7 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable2Step {
     ///      The staker has a possibility to submit `recallStakeRequest` that
     ///      will withdraw the minted tBTC token and abort staking process.
     /// @param depositKey Deposit key identifying the deposit.
-    function finalizeStakeRequest(uint256 depositKey) external {
+    function finalizeStakeRequest(uint256 depositKey) public {
         StakeRequest storage request = stakeRequests[depositKey];
 
         if (request.amountToStake == 0) revert BridgingNotCompleted();
@@ -292,6 +292,21 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable2Step {
         tbtcToken.safeIncreaseAllowance(address(stbtc), request.amountToStake);
         // slither-disable-next-line unused-return
         stbtc.deposit(request.amountToStake, request.receiver);
+    }
+
+    /// @notice This function combines execution of `notifyBridgingCompleted` and
+    ///         `finalizeStakeRequest` in one transaction.
+    /// @dev It should be used by default to finalize staking process after minting
+    ///      tBTC. Execution may fail at the very end of `stbtc.deposit` call
+    ///      due to reaching a max deposit limit. In such case only `notifyBridgingCompleted`
+    ///      should be executed, and once stBTC contract is ready to accept new
+    ///      deposit the `finalizeStakeRequest` function should be executed.
+    /// @param depositKey Deposit key identifying the deposit.
+    function notifyBridgingCompletedAndFinalizeStakeRequest(
+        uint256 depositKey
+    ) external {
+        notifyBridgingCompleted(depositKey);
+        finalizeStakeRequest(depositKey);
     }
 
     /// @notice Recall bridged tBTC tokens from being requested to stake. This
