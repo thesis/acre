@@ -1,1 +1,1 @@
-export * from "./ledger-signer"
+export * from "./ledger-live-signer"

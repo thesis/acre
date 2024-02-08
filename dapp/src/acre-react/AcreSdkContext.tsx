@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useMemo, useState } from "react"
 import { Acre, EthereumNetwork } from "@acre/sdk"
-import { LedgerWalletSigner } from "../web3"
+import { LedgerLiveEthereumSigner } from "../web3"
 
 type AcreSdkContextValue = {
   acre?: Acre
@@ -27,7 +27,7 @@ function AcreSdkProvider({ children }: Props) {
       if (!ethereumAddress) throw new Error("Ethereum address not defined")
 
       const sdk = await Acre.initializeEthereum(
-        await LedgerWalletSigner.fromAddress(ethereumAddress),
+        await LedgerLiveEthereumSigner.fromAddress(ethereumAddress),
         network,
       )
       setAcre(sdk)
