@@ -12,8 +12,8 @@ import {
   TypedDataField,
   TransactionResponse,
 } from "ethers"
-import { EthereumSignerCompatibleWithEthersV5 } from "@acre/sdk"
 import { CURRENCY_ID_ETHEREUM } from "#/constants"
+import { EthereumSignerCompatibleWithEthersV5 } from "sdk"
 import {
   getLedgerWalletAPITransport as getDappLedgerWalletAPITransport,
   getLedgerLiveProvider,

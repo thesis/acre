@@ -3,7 +3,7 @@ import {
   WindowMessageTransport,
 } from "@ledgerhq/wallet-api-client"
 import { TransactionRequest, ZeroAddress, JsonRpcProvider } from "ethers"
-import { Hex } from "@acre/sdk"
+import { Hex } from "sdk"
 
 export const getLedgerWalletAPITransport = () => new WindowMessageTransport()
 
