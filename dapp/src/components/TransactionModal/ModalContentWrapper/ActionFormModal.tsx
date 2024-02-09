@@ -8,24 +8,46 @@ import {
   TabPanel,
   ModalCloseButton,
 } from "@chakra-ui/react"
-import { useModalFlowContext, useTransactionContext } from "#/hooks"
+import {
+  useModalFlowContext,
+  useStakeFlowContext,
+  useTransactionContext,
+  useWalletContext,
+} from "#/hooks"
 import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
+import { asyncWrapper } from "#/utils"
+import { REFERRAL } from "#/constants"
 import StakeFormModal from "../ActiveStakingStep/StakeFormModal"
 
 const TABS = Object.values(ACTION_FLOW_TYPES)
 
 function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
-  const { setType } = useModalFlowContext()
+  const { btcAccount, ethAccount } = useWalletContext()
+  const { type, setType } = useModalFlowContext()
   const { setTokenAmount } = useTransactionContext()
+  const { initStake } = useStakeFlowContext()
+
+  const handleInitStake = useCallback(async () => {
+    const btcAddress = btcAccount?.address
+    const ethAddress = ethAccount?.address
+
+    if (btcAddress && ethAddress) {
+      // TODO: We should make sure that the user does not move on before the initialization is done
+      // Probably we want to lock the button or show a loading screen
+      await initStake(btcAddress, ethAddress, REFERRAL)
+    }
+  }, [btcAccount?.address, ethAccount?.address, initStake])
 
   const handleSubmitForm = useCallback(
     (values: TokenAmountFormValues) => {
-      if (values.amount) {
-        setTokenAmount({ amount: values.amount, currency: "bitcoin" })
-      }
+      if (!values.amount) return
+
+      if (type === ACTION_FLOW_TYPES.STAKE) asyncWrapper(handleInitStake())
+
+      setTokenAmount({ amount: values.amount, currency: "bitcoin" })
     },
-    [setTokenAmount],
+    [handleInitStake, setTokenAmount, type],
   )
 
   return (
@@ -38,9 +60,14 @@ function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
           defaultIndex={TABS.indexOf(defaultType)}
         >
           <TabList pb={6}>
-            {TABS.map((type) => (
-              <Tab key={type} w="50%" pb={4} onClick={() => setType(type)}>
-                {type}
+            {TABS.map((actionFlowType) => (
+              <Tab
+                key={actionFlowType}
+                w="50%"
+                pb={4}
+                onClick={() => setType(actionFlowType)}
+              >
+                {actionFlowType}
               </Tab>
             ))}
           </TabList>
