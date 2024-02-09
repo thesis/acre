@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react"
-import { EthereumAddress, StakeInitialization } from "sdk"
+import { EthereumAddress, StakeInitialization } from "@acre-btc/sdk"
 import { useAcreContext } from "../AcreSdkContext"
 
 const referral = 123

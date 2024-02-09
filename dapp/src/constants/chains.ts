@@ -1,5 +1,5 @@
 import { Chain } from "#/types"
-import { EthereumNetwork } from "sdk"
+import { EthereumNetwork } from "@acre-btc/sdk"
 
 export const BLOCK_EXPLORER: Record<Chain, { title: string; url: string }> = {
   ethereum: { title: "Etherscan", url: "https://etherscan.io" },

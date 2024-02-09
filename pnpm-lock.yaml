@@ -120,6 +120,9 @@ importers:
 
   dapp:
     dependencies:
+      '@acre-btc/sdk':
+        specifier: workspace:sdk@*
+        version: link:../sdk
       '@chakra-ui/react':
         specifier: ^2.8.2
         version: 2.8.2(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(@types/react@18.2.38)(framer-motion@10.16.5)(react-dom@18.2.0)(react@18.2.0)
@@ -162,9 +165,6 @@ importers:
       react-number-format:
         specifier: ^5.3.1
         version: 5.3.1(react-dom@18.2.0)(react@18.2.0)
-      sdk:
-        specifier: workspace:*
-        version: link:../sdk
     devDependencies:
       '@thesis-co/eslint-config':
         specifier: github:thesis/eslint-config#7b9bc8c

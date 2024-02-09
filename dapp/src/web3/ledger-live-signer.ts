@@ -13,7 +13,7 @@ import {
   TransactionResponse,
 } from "ethers"
 import { CURRENCY_ID_ETHEREUM } from "#/constants"
-import { EthereumSignerCompatibleWithEthersV5 } from "sdk"
+import { EthereumSignerCompatibleWithEthersV5 } from "@acre-btc/sdk"
 import {
   getLedgerWalletAPITransport as getDappLedgerWalletAPITransport,
   getLedgerLiveProvider,

@@ -1,5 +1,5 @@
 import { Currency, CurrencyType } from "#/types"
-import { EthereumNetwork } from "sdk"
+import { EthereumNetwork } from "@acre-btc/sdk"
 import { ETHEREUM_NETWORK } from "./chains"
 
 export const BITCOIN: Currency = {
