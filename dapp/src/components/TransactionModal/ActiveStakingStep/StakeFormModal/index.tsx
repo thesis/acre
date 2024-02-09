@@ -3,8 +3,7 @@ import { Button } from "@chakra-ui/react"
 import { BITCOIN_MIN_AMOUNT, REFERRAL } from "#/constants"
 import TokenAmountForm from "#/components/shared/TokenAmountForm"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
-import { useWalletContext } from "#/hooks"
-import { useStakeFlow } from "#/acre-react/hooks"
+import { useStakeFlowContext, useWalletContext } from "#/hooks"
 import { asyncWrapper } from "#/utils"
 import Details from "./StakeDetails"
 
@@ -14,7 +13,7 @@ function StakeFormModal({
   onSubmitForm: (values: TokenAmountFormValues) => void
 }) {
   const { btcAccount, ethAccount } = useWalletContext()
-  const { initStake } = useStakeFlow()
+  const { initStake } = useStakeFlowContext()
 
   useEffect(() => {
     const btcAddress = btcAccount?.address

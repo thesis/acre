@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { ETHEREUM_NETWORK } from "#/constants"
-import { useAcreContext } from "#/acre-react/AcreSdkContext"
 import { asyncWrapper } from "#/utils"
+import { useAcreContext } from "#/acre-react/hooks"
 import { useWalletContext } from "./useWalletContext"
 
 export function useInitializeAcreSdk() {

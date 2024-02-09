@@ -1,6 +1,6 @@
 import { useCallback } from "react"
 import { OnSuccessCallback } from "#/types"
-import { useStakeFlow } from "#/acre-react/hooks"
+import { useStakeFlowContext } from "./useStakeFlowContext"
 
 type UseSignMessageReturn = {
   signMessage: () => Promise<void>
@@ -9,7 +9,7 @@ type UseSignMessageReturn = {
 export function useSignMessage(
   onSuccess?: OnSuccessCallback,
 ): UseSignMessageReturn {
-  const { signMessage } = useStakeFlow()
+  const { signMessage } = useStakeFlowContext()
 
   const handleSignMessage = useCallback(async () => {
     try {

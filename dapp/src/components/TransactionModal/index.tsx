@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react"
 import {
   ModalFlowContext,
   ModalFlowContextValue,
+  StakeFlowProvider,
   TransactionContextProvider,
 } from "#/contexts"
 import { useSidebar } from "#/hooks"
@@ -11,7 +12,6 @@ import {
   PROCESS_STATUSES,
   ProcessStatus,
 } from "#/types"
-import { StakeFlowProvider } from "#/acre-react/contexts"
 import { ModalCloseButton } from "@chakra-ui/react"
 import ModalBase from "../shared/ModalBase"
 import ModalContentWrapper from "./ModalContentWrapper"

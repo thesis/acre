@@ -1,9 +1,9 @@
 import { useCallback, useEffect } from "react"
 import { OnSuccessCallback } from "#/types"
-import { useStakeFlow } from "#/acre-react/hooks"
 import { useDepositBTCTransaction } from "./useDepositBTCTransaction"
 import { useTransactionContext } from "./useTransactionContext"
 import { useSendTransaction } from "./useSendTransaction"
+import { useStakeFlowContext } from "./useStakeFlowContext"
 
 type UseDepositBTCReturn = {
   depositBTC: () => Promise<void>
@@ -13,7 +13,7 @@ export function useDepositBTC(
   onSuccess?: OnSuccessCallback,
 ): UseDepositBTCReturn {
   const { tokenAmount } = useTransactionContext()
-  const { btcAddress } = useStakeFlow()
+  const { btcAddress } = useStakeFlowContext()
   const { sendBitcoinTransaction, transactionHash } = useDepositBTCTransaction()
 
   useEffect(() => {
