@@ -2,12 +2,11 @@ import React, { useCallback, useMemo, useState } from "react"
 import { EthereumAddress, StakeInitialization } from "@acre-btc/sdk"
 import { useAcreContext } from "../AcreSdkContext"
 
-const referral = 123
-
 type StakeFlowContextValue = {
   initStake: (
     bitcoinRecoveryAddress: string,
     ethereumAddress: string,
+    referral: number,
   ) => Promise<void>
   btcAddress?: string
   signMessage: () => Promise<void>
@@ -29,7 +28,11 @@ export function StakeFlowProvider({ children }: { children: React.ReactNode }) {
   const [btcAddress, setBtcAddress] = useState<string | undefined>(undefined)
 
   const initStake = useCallback(
-    async (bitcoinRecoveryAddress: string, ethereumAddress: string) => {
+    async (
+      bitcoinRecoveryAddress: string,
+      ethereumAddress: string,
+      referral: number,
+    ) => {
       if (!acre || !isInitialized) throw new Error("Acre SDK not defined")
 
       const initializedStakeFlow = await acre.staking.initializeStake(

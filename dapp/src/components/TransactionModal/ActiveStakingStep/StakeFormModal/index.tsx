@@ -1,6 +1,6 @@
 import React, { useEffect } from "react"
 import { Button } from "@chakra-ui/react"
-import { BITCOIN_MIN_AMOUNT } from "#/constants"
+import { BITCOIN_MIN_AMOUNT, REFERRAL } from "#/constants"
 import TokenAmountForm from "#/components/shared/TokenAmountForm"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { useWalletContext } from "#/hooks"
@@ -22,7 +22,7 @@ function StakeFormModal({
 
     if (btcAddress && ethAddress) {
       const init = async () => {
-        await initStake(btcAddress, ethAddress)
+        await initStake(btcAddress, ethAddress, REFERRAL)
       }
       asyncWrapper(init())
     }
