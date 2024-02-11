@@ -60,6 +60,14 @@ class StakingModule {
       deposit,
     )
   }
+
+  balanceOf(identifier: ChainIdentifier) {
+    return this.#contracts.stBTC.balanceOf(identifier)
+  }
+
+  assetsBalanceOf(identifier: ChainIdentifier) {
+    return this.#contracts.stBTC.assetsBalanceOf(identifier)
+  }
 }
 
 export { StakingModule, StakeInitialization }
