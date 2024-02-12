@@ -1,4 +1,4 @@
-import React, { useCallback } from "react"
+import React, { useCallback, useState } from "react"
 import {
   ModalBody,
   Tabs,
@@ -28,31 +28,43 @@ function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
   const { setTokenAmount } = useTransactionContext()
   const { initStake } = useStakeFlowContext()
 
+  const [isLoading, setIsLoading] = useState(false)
+
   const handleInitStake = useCallback(async () => {
     const btcAddress = btcAccount?.address
     const ethAddress = ethAccount?.address
 
     if (btcAddress && ethAddress) {
-      // TODO: We should make sure that the user does not move on before the initialization is done
-      // Probably we want to lock the button or show a loading screen
       await initStake(btcAddress, ethAddress, REFERRAL)
     }
   }, [btcAccount?.address, ethAccount?.address, initStake])
 
   const handleSubmitForm = useCallback(
-    (values: TokenAmountFormValues) => {
+    async (values: TokenAmountFormValues) => {
       if (!values.amount) return
 
-      if (type === ACTION_FLOW_TYPES.STAKE) asyncWrapper(handleInitStake())
+      try {
+        setIsLoading(true)
+        if (type === ACTION_FLOW_TYPES.STAKE) await handleInitStake()
 
-      setTokenAmount({ amount: values.amount, currency: "bitcoin" })
+        setTokenAmount({ amount: values.amount, currency: "bitcoin" })
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setIsLoading(false)
+      }
     },
     [handleInitStake, setTokenAmount, type],
   )
 
+  const handleSubmitFormWrapper = useCallback(
+    (values: TokenAmountFormValues) => asyncWrapper(handleSubmitForm(values)),
+    [handleSubmitForm],
+  )
+
   return (
     <>
-      <ModalCloseButton />
+      {!isLoading && <ModalCloseButton />}
       <ModalBody>
         <Tabs
           w="100%"
@@ -66,6 +78,7 @@ function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
                 w="50%"
                 pb={4}
                 onClick={() => setType(actionFlowType)}
+                isDisabled={actionFlowType !== type && isLoading}
               >
                 {actionFlowType}
               </Tab>
@@ -73,11 +86,14 @@ function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
           </TabList>
           <TabPanels>
             <TabPanel>
-              <StakeFormModal onSubmitForm={handleSubmitForm} />
+              <StakeFormModal
+                onSubmitForm={handleSubmitFormWrapper}
+                isLoading={isLoading}
+              />
             </TabPanel>
             <TabPanel>
               {/* TODO: Use the correct form for unstaking */}
-              <StakeFormModal onSubmitForm={handleSubmitForm} />
+              <StakeFormModal onSubmitForm={handleSubmitFormWrapper} />
             </TabPanel>
           </TabPanels>
         </Tabs>
