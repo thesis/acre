@@ -5,7 +5,7 @@ import TokenAmountForm from "#/components/shared/TokenAmountForm"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { useWalletContext } from "#/hooks"
 import Spinner from "#/components/shared/Spinner"
-import Details from "./StakeDetails"
+import StakeDetails from "./StakeDetails"
 
 const LOADING_STYLE = {
   _disabled: { background: "gold.300", opacity: 1 },
@@ -20,16 +20,21 @@ function StakeFormModal({
   isLoading?: boolean
 }) {
   const { btcAccount } = useWalletContext()
+  const tokenBalance = btcAccount?.balance.toString() ?? "0"
 
   return (
     <TokenAmountForm
       tokenBalanceInputPlaceholder="BTC"
       currency="bitcoin"
-      tokenBalance={btcAccount?.balance.toString() ?? "0"}
+      tokenBalance={tokenBalance}
       minTokenAmount={BITCOIN_MIN_AMOUNT}
       onSubmitForm={onSubmitForm}
     >
-      <Details currency="bitcoin" />
+      <StakeDetails
+        currency="bitcoin"
+        minTokenAmount={BITCOIN_MIN_AMOUNT}
+        maxTokenAmount={tokenBalance}
+      />
       <Button
         type="submit"
         size="lg"
