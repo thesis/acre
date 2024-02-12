@@ -54,7 +54,7 @@ class RelayerDepositorProxy<T extends TBTCDepositor> implements DepositorProxy {
       {
         fundingTx,
         reveal,
-        staker,
+        staker: `0x${staker.identifierHex}`,
         referral,
       },
     )
