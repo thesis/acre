@@ -17,7 +17,6 @@ import {
 import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { asyncWrapper } from "#/utils"
-import { REFERRAL } from "#/constants"
 import StakeFormModal from "../ActiveStakingStep/StakeFormModal"
 
 const TABS = Object.values(ACTION_FLOW_TYPES)
@@ -35,7 +34,7 @@ function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
     const ethAddress = ethAccount?.address
 
     if (btcAddress && ethAddress) {
-      await initStake(btcAddress, ethAddress, REFERRAL)
+      await initStake(btcAddress, ethAddress)
     }
   }, [btcAccount?.address, ethAccount?.address, initStake])
 
