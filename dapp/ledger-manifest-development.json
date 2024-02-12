@@ -1,0 +1,30 @@
+{
+  "id": "acre-dev",
+  "name": "Acre [dev]",
+  "url": "http://localhost:5173/",
+  "homepageUrl": "http://localhost:5173/",
+  "icon": "http://localhost:5173/acre.svg",
+  "platforms": "desktop",
+  "apiVersion": "^2.0.0",
+  "manifestVersion": "2",
+  "branch": "stable",
+  "categories": ["staking"],
+  "currencies": ["bitcoin", "bitcoin_testnet", "ethereum", "ethereum_sepolia"],
+  "content": {
+    "shortDescription": {
+      "en": "Bitcoin Liquid Staking"
+    },
+    "description": {
+      "en": "Bitcoin Liquid Staking"
+    }
+  },
+  "permissions": [
+    "account.request",
+    "account.list",
+    "message.sign",
+    "transaction.sign",
+    "transaction.signAndBroadcast"
+  ],
+  "domains": ["http://*"],
+  "type": "walletApp"
+}
