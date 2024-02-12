@@ -1,13 +1,15 @@
 import {
   takeSnapshot,
   loadFixture,
+  SnapshotRestorer,
+  time,
+  mine,
 } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 import { expect } from "chai"
 import { ContractTransactionResponse, MaxUint256, ZeroAddress } from "ethers"
 import { ethers } from "hardhat"
 
 import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
-import type { SnapshotRestorer } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 import {
   beforeAfterSnapshotWrapper,
   deployment,
@@ -50,6 +52,8 @@ describe("stBTC", () => {
   let depositor1: HardhatEthersSigner
   let depositor2: HardhatEthersSigner
   let thirdParty: HardhatEthersSigner
+
+  const rewardsCycleLength = 604800n // 7days in sec
 
   before(async () => {
     ;({
@@ -146,6 +150,7 @@ describe("stBTC", () => {
 
           before(async () => {
             await tbtc.mint(await stbtc.getAddress(), earnedYield)
+            await syncRewards()
           })
 
           it("should return the correct amount of assets", async () => {
@@ -365,6 +370,7 @@ describe("stBTC", () => {
             // more tokens than deposited which causes the exchange rate to
             // change.
             await tbtc.mint(await stbtc.getAddress(), earnedYield)
+            await syncRewards()
           })
 
           after(async () => {
@@ -781,6 +787,7 @@ describe("stBTC", () => {
             await stbtc.getAddress(),
             BigInt(maximumTotalAssets) + 1n,
           )
+          await syncRewards()
           expect(await stbtc.maxDeposit(depositor1.address)).to.be.eq(0)
         })
       },
@@ -989,6 +996,7 @@ describe("stBTC", () => {
           const toMint = maximumTotalAssets + 1n
 
           await tbtc.mint(await stbtc.getAddress(), toMint)
+          await syncRewards()
 
           expect(await stbtc.maxMint(depositor1.address)).to.be.eq(0)
         })
@@ -1014,6 +1022,7 @@ describe("stBTC", () => {
 
         // Vault earns 4 tBTC.
         await tbtc.mint(await stbtc.getAddress(), toMint)
+        await syncRewards()
 
         // The current state is:
         // Total assets: 4 + 2 = 6
@@ -1068,4 +1077,13 @@ describe("stBTC", () => {
       })
     })
   })
+
+  async function syncRewards() {
+    // sync rewards
+    await stbtc.syncRewards()
+    const rewardsCycleEnd = await stbtc.rewardsCycleEnd()
+    await time.setNextBlockTimestamp(rewardsCycleEnd + rewardsCycleLength)
+    await mine(1)
+    await stbtc.syncRewards()
+  }
 })

@@ -6,10 +6,11 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { deployer, treasury } = await getNamedAccounts()
 
   const tbtc = await deployments.get("TBTC")
+  const rewardsCycleLength = 7 * 24 * 60 * 60 // 7 days
 
   await deployments.deploy("stBTC", {
     from: deployer,
-    args: [tbtc.address, treasury],
+    args: [tbtc.address, treasury, rewardsCycleLength],
     log: true,
     waitConfirmations: 1,
   })
