@@ -49,7 +49,7 @@ class RelayerDepositorProxy<T extends TBTCDepositor> implements DepositorProxy {
     const { staker, referral } = this.#tbtcDepositor.decodeExtraData(extraData)
 
     // TODO: Catch and handle errors + sentry.
-    const response = await axios.post<{ txHash: string }>(
+    const response = await axios.post<{ result: string }>(
       this.#defenderWebhookUrl,
       {
         fundingTx,
@@ -59,7 +59,8 @@ class RelayerDepositorProxy<T extends TBTCDepositor> implements DepositorProxy {
       },
     )
 
-    const { txHash } = response.data
+    // Defender returns result as string so we need to parse it.
+    const { txHash } = JSON.parse(response.data.result) as { txHash: string }
 
     return Hex.from(txHash)
   }
