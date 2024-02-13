@@ -43,19 +43,30 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable2Step {
         // Timestamp at which the deposit request was initialized is not stored
         // in this structure, as it is available under `Bridge.DepositRequest.revealedAt`.
 
+        // UNIX timestamp at which tBTC bridging was notified to the stake request.
+        // It is used by `finalizeBridging` to ensure it is called only once for
+        // a given stake request, as the `AbstractTBTCDepositor#_finalizeDeposit`
+        // function is not validating that.
+        // For request finalized with `finalizeStakeRequest` function it will match
+        // the finalization timestamp. For request added to the queue it will match
+        // the queueing timestamp.
+        // 0 if bridging finalization has not been called yet.
+        // XXX: Unsigned 32-bit int unix seconds, will break February 7th 2106.
+        uint32 bridgingFinalizedAt;
         // UNIX timestamp at which the stake request was finalized.
         // 0 if not yet finalized.
-        uint64 finalizedAt;
+        // XXX: Unsigned 32-bit int unix seconds, will break February 7th 2106.
+        uint32 finalizedAt;
         // UNIX timestamp at which the stake request was recalled.
         // 0 if not yet recalled.
-        uint64 recalledAt;
-        // The address to which the stBTC shares will be minted.
+        // XXX: Unsigned 32-bit int unix seconds, will break February 7th 2106.
+        uint32 recalledAt;
+        // The address to which the stBTC shares will be minted. Stored only when
+        // request is queued.
         address receiver;
-        // Identifier of a partner in the referral program.
-        uint16 referral;
         // tBTC token amount to stake after deducting tBTC minting fees and the
-        // Depositor fee.
-        uint256 amountToStake;
+        // Depositor fee. Stored only when request is queued.
+        uint256 queuedAmount;
     }
 
     /// @notice tBTC Token contract.
@@ -107,11 +118,33 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable2Step {
     ///      event emitted in the same transaction.
     /// @param depositKey Deposit key identifying the deposit.
     /// @param caller Address that finalized the stake request.
-    /// @param amountToStake Amount of staked tBTC tokens.
+    /// @param stakedAmount Amount of staked tBTC tokens.
     event StakeRequestFinalized(
         uint256 indexed depositKey,
         address indexed caller,
-        uint256 amountToStake
+        uint256 stakedAmount
+    );
+
+    /// @notice Emitted when a stake request is queued.
+    /// @param depositKey Deposit key identifying the deposit.
+    /// @param caller Address that finalized the stake request.
+    /// @param queuedAmount Amount of queued tBTC tokens.
+    event StakeRequestQueued(
+        uint256 indexed depositKey,
+        address indexed caller,
+        uint256 queuedAmount
+    );
+
+    /// @notice Emitted when a stake request is finalized from the queue.
+    /// @dev Deposit details can be fetched from {{ ERC4626.Deposit }}
+    ///      event emitted in the same transaction.
+    /// @param depositKey Deposit key identifying the deposit.
+    /// @param caller Address that finalized the stake request.
+    /// @param stakedAmount Amount of staked tBTC tokens.
+    event StakeRequestFinalizedFromQueue(
+        uint256 indexed depositKey,
+        address indexed caller,
+        uint256 stakedAmount
     );
 
     /// @notice Emitted when a stake request is recalled.
@@ -145,11 +178,13 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable2Step {
         uint256 bridgedAmount
     );
 
-    /// @dev Attempted to finalize or recall a stake request that was already finalized.
-    error StakeRequestAlreadyFinalized();
+    /// @dev Attempted to call bridging finalization for a stake request for
+    ///      which the function was already called.
+    error BridgingFinalizationAlreadyCalled();
 
-    /// @dev Attempted to finalize or recall a stake request that was already recalled.
-    error StakeRequestAlreadyRecalled();
+    /// @dev Attempted to finalize or recall a stake request that was not added
+    ///      to the queue, or was already finalized or recalled.
+    error StakeRequestNotQueued();
 
     /// @dev Attempted to call function by an account that is not the receiver.
     error CallerNotReceiver();
@@ -211,10 +246,6 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable2Step {
             encodeExtraData(receiver, referral)
         );
 
-        StakeRequest storage request = stakeRequests[depositKey];
-        request.receiver = receiver;
-        request.referral = referral;
-
         emit StakeRequestInitialized(depositKey, msg.sender, receiver);
     }
 
@@ -228,15 +259,28 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable2Step {
     ///      {{TBTCDepositorProxy#_calculateTbtcAmount}} responsible for calculating
     ///      this value for more details.
     /// @param depositKey Deposit key identifying the deposit.
-    function notifyBridgingCompleted(uint256 depositKey) public {
+    /// @return amountToStake tBTC token amount to stake after deducting tBTC bridging
+    ///         fees and the depositor fee.
+    /// @return receiver The address to which the stBTC shares will be minted.
+    function finalizeBridging(
+        uint256 depositKey
+    ) internal returns (uint256, address) {
         StakeRequest storage request = stakeRequests[depositKey];
 
-        if (request.amountToStake > 0)
-            revert BridgingCompletionAlreadyNotified();
+        if (request.bridgingFinalizedAt > 0)
+            revert BridgingFinalizationAlreadyCalled();
 
-        (uint256 initialDepositAmount, uint256 tbtcAmount, ) = _finalizeDeposit(
-            depositKey
-        );
+        // solhint-disable-next-line not-rely-on-time
+        request.bridgingFinalizedAt = uint32(block.timestamp);
+
+        // TODO: Don't store the referral, but read it from extraData
+        (
+            uint256 initialDepositAmount,
+            uint256 tbtcAmount,
+            bytes32 extraData
+        ) = _finalizeDeposit(depositKey);
+
+        (address receiver, uint16 referral) = decodeExtraData(extraData);
 
         // Compute depositor fee. The fee is calculated based on the initial funding
         // transaction amount, before the tBTC protocol network fees were taken.
@@ -250,12 +294,12 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable2Step {
             revert DepositorFeeExceedsBridgedAmount(depositorFee, tbtcAmount);
         }
 
-        request.amountToStake = tbtcAmount - depositorFee;
+        uint256 amountToStake = tbtcAmount - depositorFee;
 
         emit BridgingCompleted(
             depositKey,
             msg.sender,
-            request.referral,
+            referral,
             tbtcAmount,
             depositorFee
         );
@@ -264,6 +308,8 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable2Step {
         if (depositorFee > 0) {
             tbtcToken.safeTransfer(stbtc.treasury(), depositorFee);
         }
+
+        return (amountToStake, receiver);
     }
 
     /// @notice This function should be called for previously initialized stake
@@ -271,79 +317,97 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable2Step {
     ///         It stakes the tBTC from the given deposit into stBTC, emitting the
     ///         stBTC shares to the receiver specified in the deposit extra data
     ///         and using the referral provided in the extra data.
-    /// @dev This function is expected to be called after `notifyBridgingCompleted`.
-    ///      In case depositing in stBTC vault fails (e.g. because of the
-    ///      maximum deposit limit being reached), the function should be retried
-    ///      after the limit is increased or other user withdraws their funds
-    ///      from the stBTC contract to make place for another deposit.
-    ///      The staker has a possibility to submit `recallStakeRequest` that
-    ///      will withdraw the minted tBTC token and abort staking process.
+    /// @dev In case depositing in stBTC vault fails (e.g. because of the
+    ///      maximum deposit limit being reached), the `queueForStaking` function
+    ///      should be called to add the stake request to the staking queue.
     /// @param depositKey Deposit key identifying the deposit.
     function finalizeStakeRequest(uint256 depositKey) public {
-        StakeRequest storage request = stakeRequests[depositKey];
+        (uint256 amountToStake, address receiver) = finalizeBridging(
+            depositKey
+        );
 
-        if (request.amountToStake == 0) revert BridgingNotCompleted();
-        if (request.finalizedAt > 0) revert StakeRequestAlreadyFinalized();
-        if (request.recalledAt > 0) revert StakeRequestAlreadyRecalled();
+        emit StakeRequestFinalized(depositKey, msg.sender, amountToStake);
 
         // solhint-disable-next-line not-rely-on-time
-        request.finalizedAt = uint64(block.timestamp);
+        stakeRequests[depositKey].finalizedAt = uint32(block.timestamp);
 
-        emit StakeRequestFinalized(
+        // Deposit tBTC in stBTC.
+        tbtcToken.safeIncreaseAllowance(address(stbtc), amountToStake);
+        // slither-disable-next-line unused-return
+        stbtc.deposit(amountToStake, receiver);
+    }
+
+    /// @notice This function should be called for previously initialized stake
+    ///         request, after tBTC bridging process was finalized, in case the
+    ///         `finalizeStakeRequest` failed due to stBTC vault deposit limit
+    ///         being reached.
+    /// @dev It queues the stake request, until the stBTC vault is ready to
+    ///      accept the deposit. The request must be finalized with `stakeFromQueue`
+    ///      after the limit is increased or other user withdraws their funds
+    ///      from the stBTC contract to make place for another deposit.
+    ///      The staker has a possibility to submit `recallFromQueue` that
+    ///      will withdraw the minted tBTC token and abort staking process.
+    /// @param depositKey Deposit key identifying the deposit.
+    function queueForStaking(uint256 depositKey) external {
+        StakeRequest storage request = stakeRequests[depositKey];
+
+        (request.queuedAmount, request.receiver) = finalizeBridging(depositKey);
+
+        emit StakeRequestQueued(depositKey, msg.sender, request.queuedAmount);
+    }
+
+    /// @notice This function should be called for previously queued stake
+    ///         request, when stBTC vault is able to accept a deposit.
+    /// @param depositKey Deposit key identifying the deposit.
+    function stakeFromQueue(uint256 depositKey) external {
+        StakeRequest storage request = stakeRequests[depositKey];
+
+        if (request.queuedAmount == 0) revert StakeRequestNotQueued();
+
+        uint256 amountToStake = request.queuedAmount;
+        delete (request.queuedAmount);
+
+        // solhint-disable-next-line not-rely-on-time
+        request.finalizedAt = uint32(block.timestamp);
+
+        emit StakeRequestFinalizedFromQueue(
             depositKey,
             msg.sender,
-            request.amountToStake
+            amountToStake
         );
 
         // Deposit tBTC in stBTC.
-        tbtcToken.safeIncreaseAllowance(address(stbtc), request.amountToStake);
+        tbtcToken.safeIncreaseAllowance(address(stbtc), amountToStake);
         // slither-disable-next-line unused-return
-        stbtc.deposit(request.amountToStake, request.receiver);
+        stbtc.deposit(amountToStake, request.receiver);
     }
 
-    /// @notice This function combines execution of `notifyBridgingCompleted` and
-    ///         `finalizeStakeRequest` in one transaction.
-    /// @dev It should be used by default to finalize staking process after minting
-    ///      tBTC. Execution may fail at the very end of `stbtc.deposit` call
-    ///      due to reaching a max deposit limit. In such case only `notifyBridgingCompleted`
-    ///      should be executed, and once stBTC contract is ready to accept new
-    ///      deposit the `finalizeStakeRequest` function should be executed.
-    /// @param depositKey Deposit key identifying the deposit.
-    function notifyBridgingCompletedAndFinalizeStakeRequest(
-        uint256 depositKey
-    ) external {
-        notifyBridgingCompleted(depositKey);
-        finalizeStakeRequest(depositKey);
-    }
-
-    /// @notice Recall bridged tBTC tokens from being requested to stake. This
+    /// @notice Recall bridged tBTC tokens from the staking queue. This
     ///         function can be called by the staker to recover tBTC that cannot
     ///         be finalized to stake in stBTC contract due to a deposit limit being
     ///         reached.
-    /// @dev This function can be called only after bridging in tBTC Bridge was
-    ///      completed. Only receiver provided in the extra data of the stake
-    ///      request can call this function.
+    /// @dev This function can be called only after the stake request was added
+    ///      to queue.
+    /// @dev Only receiver provided in the extra data of the stake request can
+    ///      call this function.
     /// @param depositKey Deposit key identifying the deposit.
-    function recallStakeRequest(uint256 depositKey) external {
+    function recallFromQueue(uint256 depositKey) external {
         StakeRequest storage request = stakeRequests[depositKey];
 
-        if (request.amountToStake == 0) revert BridgingNotCompleted();
-        if (request.finalizedAt > 0) revert StakeRequestAlreadyFinalized();
-        if (request.recalledAt > 0) revert StakeRequestAlreadyRecalled();
+        if (request.queuedAmount == 0) revert StakeRequestNotQueued();
 
         // Check if caller is the receiver.
         if (msg.sender != request.receiver) revert CallerNotReceiver();
 
+        uint256 amount = request.queuedAmount;
+        delete (request.queuedAmount);
+
         // solhint-disable-next-line not-rely-on-time
-        request.recalledAt = uint64(block.timestamp);
+        request.recalledAt = uint32(block.timestamp);
 
-        emit StakeRequestRecalled(
-            depositKey,
-            request.receiver,
-            request.amountToStake
-        );
+        emit StakeRequestRecalled(depositKey, request.receiver, amount);
 
-        tbtcToken.safeTransfer(request.receiver, request.amountToStake);
+        tbtcToken.safeTransfer(request.receiver, amount);
     }
 
     /// @notice Updates the depositor fee divisor.
