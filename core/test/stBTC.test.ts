@@ -53,8 +53,6 @@ describe("stBTC", () => {
   let depositor2: HardhatEthersSigner
   let thirdParty: HardhatEthersSigner
 
-  const rewardsCycleLength = 604800n // 7days in sec
-
   before(async () => {
     ;({
       stbtc,
@@ -150,7 +148,7 @@ describe("stBTC", () => {
 
           before(async () => {
             await tbtc.mint(await stbtc.getAddress(), earnedYield)
-            await syncRewards()
+            await syncRewards(1n)
           })
 
           it("should return the correct amount of assets", async () => {
@@ -320,7 +318,6 @@ describe("stBTC", () => {
             const expectedShares = await stbtc.previewDeposit(
               depositor1AmountToDeposit,
             )
-
             await expect(depositTx1).to.changeTokenBalances(
               stbtc,
               [depositor1.address],
@@ -352,7 +349,103 @@ describe("stBTC", () => {
       })
 
       context("when vault has two depositors", () => {
-        context("when vault earns yield", () => {
+        context(
+          "when the vault earns yield after sync and 1/2 cycle length",
+          () => {
+            let depositor1SharesBefore: bigint
+            let depositor2SharesBefore: bigint
+
+            before(async () => {
+              // Current state:
+              // depositor 1 shares = deposit amount = 7
+              // depositor 2 shares = deposit amount = 3
+              // yield after a 1/2 cycle length = 2.5.
+              // Total assets = 7 + 3 + 2.5 (yield) = 12.5
+              await afterDepositsSnapshot.restore()
+
+              depositor1SharesBefore = await stbtc.balanceOf(depositor1.address)
+              depositor2SharesBefore = await stbtc.balanceOf(depositor2.address)
+
+              // Simulating yield returned from strategies. The vault now contains
+              // more tokens than deposited which causes the exchange rate to
+              // change.
+              await tbtc.mint(await stbtc.getAddress(), earnedYield)
+              await syncRewards(2n)
+            })
+
+            after(async () => {
+              afterSimulatingYieldSnapshot = await takeSnapshot()
+            })
+
+            it("the vault should hold more assets", async () => {
+              const actualDepositAmount1 = depositor1AmountToDeposit
+              const actualDepositAmount2 = depositor2AmountToDeposit
+
+              // check approximate value +1%
+              expect(await stbtc.totalAssets()).to.be.lt(
+                ((actualDepositAmount1 +
+                  actualDepositAmount2 +
+                  earnedYield / 2n) *
+                  101n) /
+                  100n,
+              )
+              // check approximate value -1%
+              expect(await stbtc.totalAssets()).to.be.gt(
+                ((actualDepositAmount1 +
+                  actualDepositAmount2 +
+                  earnedYield / 2n) *
+                  99n) /
+                  100n,
+              )
+            })
+
+            it("the depositors shares should be the same", async () => {
+              expect(await stbtc.balanceOf(depositor1.address)).to.be.eq(
+                depositor1SharesBefore,
+              )
+              expect(await stbtc.balanceOf(depositor2.address)).to.be.eq(
+                depositor2SharesBefore,
+              )
+            })
+
+            it("the depositor 1 should be able to redeem more tokens than before", async () => {
+              const shares = await stbtc.balanceOf(depositor1.address)
+              const availableAssetsToRedeem = await stbtc.previewRedeem(shares)
+
+              // 7 * 12.5 / 10 = 8.75
+              const expectedAssetsToRedeem = 8750000000000000000n
+
+              // +1% due to roundings
+              expect(availableAssetsToRedeem).to.be.lt(
+                (expectedAssetsToRedeem * 101n) / 100n,
+              )
+              // -1% due to roundings
+              expect(availableAssetsToRedeem).to.be.gt(
+                (expectedAssetsToRedeem * 99n) / 100n,
+              )
+            })
+
+            it("the depositor 2 should be able to redeem more tokens than before", async () => {
+              const shares = await stbtc.balanceOf(depositor2.address)
+              const availableAssetsToRedeem = await stbtc.previewRedeem(shares)
+
+              // 3 * 12.5 / 10 = 3.75
+              // Due to Solidity's mulDiv functions the result is floor rounded.
+              const expectedAssetsToRedeem = 3750000000000000000n
+
+              // +1% due to roundings
+              expect(availableAssetsToRedeem).to.be.lt(
+                (expectedAssetsToRedeem * 101n) / 100n,
+              )
+              // -1% due to roundings
+              expect(availableAssetsToRedeem).to.be.gt(
+                (expectedAssetsToRedeem * 99n) / 100n,
+              )
+            })
+          },
+        )
+
+        context("when vault earns yield after a full cycle length", () => {
           let depositor1SharesBefore: bigint
           let depositor2SharesBefore: bigint
 
@@ -370,14 +463,14 @@ describe("stBTC", () => {
             // more tokens than deposited which causes the exchange rate to
             // change.
             await tbtc.mint(await stbtc.getAddress(), earnedYield)
-            await syncRewards()
+            await syncRewards(1n)
           })
 
           after(async () => {
             afterSimulatingYieldSnapshot = await takeSnapshot()
           })
 
-          it("the vault should hold more assets minus fees", async () => {
+          it("the vault should hold more assets", async () => {
             const actualDepositAmount1 = depositor1AmountToDeposit
             const actualDepositAmount2 = depositor2AmountToDeposit
 
@@ -787,7 +880,7 @@ describe("stBTC", () => {
             await stbtc.getAddress(),
             BigInt(maximumTotalAssets) + 1n,
           )
-          await syncRewards()
+          await syncRewards(1n)
           expect(await stbtc.maxDeposit(depositor1.address)).to.be.eq(0)
         })
       },
@@ -996,7 +1089,7 @@ describe("stBTC", () => {
           const toMint = maximumTotalAssets + 1n
 
           await tbtc.mint(await stbtc.getAddress(), toMint)
-          await syncRewards()
+          await syncRewards(1n)
 
           expect(await stbtc.maxMint(depositor1.address)).to.be.eq(0)
         })
@@ -1022,7 +1115,7 @@ describe("stBTC", () => {
 
         // Vault earns 4 tBTC.
         await tbtc.mint(await stbtc.getAddress(), toMint)
-        await syncRewards()
+        await syncRewards(1n)
 
         // The current state is:
         // Total assets: 4 + 2 = 6
@@ -1078,12 +1171,36 @@ describe("stBTC", () => {
     })
   })
 
-  async function syncRewards() {
+  // Interval divisor split the rewards cycle into smaller parts after the sync
+  // was called.
+  // E.g. 1 (cycle 7 days)
+  //
+  // ---|----------------------------|----------|---------|---> time
+  //  Day 1                        Day 4      (now)     Day 7
+  //                             syncRewards()
+  // intervalDivisor = 2 split the interval between Day 4 - Day 7 into 2 parts because
+  // the last sync was called on Day 4. If the rewards for last week was 0.1tBTC, then
+  // at timestamp "now" 0.05tBTC would be unlocked. Other half would be unlocked
+  // on Day 7.
+  //
+  // E.g. 2 (cycle 7 days)
+  //
+  // ---|-------------------------|------------------------|---> time
+  //  Day 1                      now                     Day 7
+  // syncRewards()
+  //
+  // intervalDivisor = 2 split the interval between Day 1 - Day 7 into 2 parts because
+  // the last sync was called on Day 1. If the rewards for last week was 0.1tBTC, then
+  // at timestamp "now" 0.05 tBTC would be unlocked. Other half would be unlocked
+  // on Day 7.
+  async function syncRewards(intervalDivisor: bigint) {
     // sync rewards
     await stbtc.syncRewards()
+    const blockTimestamp = BigInt(await time.latest())
     const rewardsCycleEnd = await stbtc.rewardsCycleEnd()
-    await time.setNextBlockTimestamp(rewardsCycleEnd + rewardsCycleLength)
+    await time.setNextBlockTimestamp(
+      blockTimestamp + (rewardsCycleEnd - blockTimestamp) / intervalDivisor,
+    )
     await mine(1)
-    await stbtc.syncRewards()
   }
 })
