@@ -1,7 +1,6 @@
 import { useCallback } from "react"
 import { useSignAndBroadcastTransaction } from "@ledgerhq/wallet-api-client-react"
-import BigNumber from "bignumber.js"
-import { Transaction } from "@ledgerhq/wallet-api-client"
+import { RawBitcoinTransaction } from "@ledgerhq/wallet-api-client"
 import { useWalletContext } from "./useWalletContext"
 import { useWalletApiReactTransport } from "./useWalletApiReactTransport"
 
@@ -34,12 +33,17 @@ export function useDepositBTCTransaction(): UseDepositBTCTransactionReturn {
         throw new Error("Bitcoin account was not connected.")
       }
 
-      const bitcoinTransaction: Transaction = {
+      const bitcoinTransaction: RawBitcoinTransaction = {
         family: "bitcoin",
-        amount: new BigNumber(amount.toString()),
+        amount: amount.toString(),
         recipient,
       }
+
       walletApiReactTransport.connect()
+      // @ts-expect-error We do not want to install external bignumber.js lib so
+      // here we use bigint. The Ledger Wallet Api just converts the bignumber.js
+      // object to string so we can pass bigint. See:
+      // https://github.com/LedgerHQ/wallet-api/blob/main/packages/core/src/families/bitcoin/serializer.ts#L13
       await signAndBroadcastTransaction(btcAccount.id, bitcoinTransaction)
       walletApiReactTransport.disconnect()
     },
