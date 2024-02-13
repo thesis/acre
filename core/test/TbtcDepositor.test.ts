@@ -1110,6 +1110,43 @@ describe("TbtcDepositor", () => {
     )
   })
 
+  describe("decodeExtraData", () => {
+    extraDataValidTestData.forEach(
+      (
+        { receiver: expectedReceiver, referral: expectedReferral, extraData },
+        testName,
+      ) => {
+        it(testName, async () => {
+          const [actualReceiver, actualReferral] =
+            await tbtcDepositor.decodeExtraData(extraData)
+
+          expect(actualReceiver, "invalid receiver").to.be.equal(
+            expectedReceiver,
+          )
+          expect(actualReferral, "invalid referral").to.be.equal(
+            expectedReferral,
+          )
+        })
+      },
+    )
+
+    it("with unused bytes filled with data", async () => {
+      // Extra data uses address (20 bytes) and referral (2 bytes), leaving the
+      // remaining 10 bytes unused. This test fills the unused bytes with a random
+      // value.
+      const extraData =
+        "0xeb098d6cde6a202981316b24b19e64d82721e89e1ac3105f9919321ea7d75f58"
+      const expectedReceiver = "0xeb098d6cDE6A202981316b24B19e64D82721e89E"
+      const expectedReferral = 6851 // hex: 0x1ac3
+
+      const [actualReceiver, actualReferral] =
+        await tbtcDepositor.decodeExtraData(extraData)
+
+      expect(actualReceiver, "invalid receiver").to.be.equal(expectedReceiver)
+      expect(actualReferral, "invalid referral").to.be.equal(expectedReferral)
+    })
+  })
+
   async function initializeStakeRequest() {
     await tbtcDepositor
       .connect(thirdParty)

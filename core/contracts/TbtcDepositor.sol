@@ -371,4 +371,19 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable2Step {
     ) public pure returns (bytes32) {
         return bytes32(abi.encodePacked(receiver, referral));
     }
+
+    /// @notice Decodes receiver address and referral from extra data,
+    /// @dev Unpacks the data from bytes32: 20 bytes of receiver address and
+    ///      2 bytes of referral, 10 bytes of trailing zeros.
+    /// @param extraData Encoded extra data.
+    /// @return receiver The address to which the stBTC shares will be minted.
+    /// @return referral Data used for referral program.
+    function decodeExtraData(
+        bytes32 extraData
+    ) public pure returns (address receiver, uint16 referral) {
+        // First 20 bytes of extra data is receiver address.
+        receiver = address(uint160(bytes20(extraData)));
+        // Next 2 bytes of extra data is referral info.
+        referral = uint16(bytes2(extraData << (8 * 20)));
+    }
 }
