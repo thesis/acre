@@ -11,6 +11,10 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const stbtc = await deployments.get("stBTC")
 
   await deployments.deploy("TbtcDepositor", {
+    contract:
+      process.env.HARDHAT_TEST === "true"
+        ? "TbtcDepositorHarness"
+        : "TbtcDepositor",
     from: deployer,
     args: [bridge.address, tbtcVault.address, tbtc.address, stbtc.address],
     log: true,

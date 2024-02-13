@@ -5,7 +5,7 @@ import type {
   StBTC as stBTC,
   Dispatcher,
   TestERC20,
-  TbtcDepositor,
+  TbtcDepositorHarness,
   BridgeStub,
   TestERC4626,
   TBTCVaultStub,
@@ -16,7 +16,7 @@ export async function deployment() {
   await deployments.fixture()
 
   const stbtc: stBTC = await getDeployedContract("stBTC")
-  const tbtcDepositor: TbtcDepositor =
+  const tbtcDepositor: TbtcDepositorHarness =
     await getDeployedContract("TbtcDepositor")
 
   const tbtc: TestERC20 = await getDeployedContract("TBTC")
