@@ -1,6 +1,8 @@
 import React from "react"
 import { Box, ChakraProvider } from "@chakra-ui/react"
+import { Provider as ReduxProvider } from "react-redux"
 import { useSentry } from "./hooks"
+import { reduxStore } from "./redux/store"
 import theme from "./theme"
 import {
   DocsDrawerContextProvider,
@@ -37,10 +39,12 @@ function DAppProviders() {
       <WalletContextProvider>
         <DocsDrawerContextProvider>
           <SidebarContextProvider>
-            <ChakraProvider theme={theme}>
-              <GlobalStyles />
-              <DApp />
-            </ChakraProvider>
+            <ReduxProvider store={reduxStore}>
+              <ChakraProvider theme={theme}>
+                <GlobalStyles />
+                <DApp />
+              </ChakraProvider>
+            </ReduxProvider>
           </SidebarContextProvider>
         </DocsDrawerContextProvider>
       </WalletContextProvider>
