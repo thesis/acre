@@ -55,15 +55,7 @@ function ActivityDetails() {
               <TextSm marginBottom={7}>(62,317.15 USD)</TextSm>
 
               {transaction?.callTx.status && (
-                <Tag
-                  size="lg"
-                  marginTop={2}
-                  borderRadius="full"
-                  w="fit-content"
-                  bg="gold.100"
-                  borderColor="white"
-                  borderWidth={1}
-                >
+                <Tag mt={2}>
                   <StatusInfo
                     status={transaction.callTx.status}
                     fontWeight="semibold"

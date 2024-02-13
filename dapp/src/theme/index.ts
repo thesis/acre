@@ -18,6 +18,7 @@ import { formTheme } from "./Form"
 import { formLabelTheme } from "./FormLabel"
 import { formErrorTheme } from "./FormError"
 import { tabsTheme } from "./Tabs"
+import { tagTheme } from "./Tag"
 import { spinnerTheme } from "./Spinner"
 import { tableTheme } from "./Table"
 import { currencyIconTheme } from "./CurrencyIcon"
@@ -57,6 +58,7 @@ const defaultTheme = {
     Stepper: stepperTheme,
     Switch: switchTheme,
     Tabs: tabsTheme,
+    Tag: tagTheme,
     TokenBalanceInput: tokenBalanceInputTheme,
     Tooltip: tooltipTheme,
     Table: tableTheme,

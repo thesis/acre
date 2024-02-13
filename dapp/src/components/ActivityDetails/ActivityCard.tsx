@@ -15,8 +15,8 @@ import { capitalize } from "#/utils"
 import { CloseIcon, ChevronRightIcon } from "#/assets/icons"
 import { LocationState } from "#/types/location"
 import StatusInfo from "../shared/StatusInfo"
-import SimpleText from "../TransactionHistory/Table/Cell/components/SimpleText"
 import { CurrencyBalance } from "../shared/CurrencyBalance"
+import { TextSm } from "../shared/Typography"
 
 type ActivityCardType = CardProps & {
   transaction: StakeHistory
@@ -103,9 +103,9 @@ function ActivityCard({ transaction, onRemove, ...props }: ActivityCardType) {
         </HStack>
       </CardHeader>
       <CardBody p={0}>
-        <SimpleText marginBottom={4}>
+        <TextSm fontWeight="semibold" marginBottom={4}>
           {capitalize(transaction.receiptTx.action)}
-        </SimpleText>
+        </TextSm>
       </CardBody>
       <CardFooter p={0}>
         {" "}
