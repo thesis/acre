@@ -1,6 +1,7 @@
-import { useCallback } from "react"
+import { useCallback, useEffect } from "react"
 import { useSignAndBroadcastTransaction } from "@ledgerhq/wallet-api-client-react"
 import { RawBitcoinTransaction } from "@ledgerhq/wallet-api-client"
+import { OnErrorCallback, OnSuccessCallback } from "#/types"
 import { useWalletContext } from "./useWalletContext"
 import { useWalletApiReactTransport } from "./useWalletApiReactTransport"
 
@@ -20,12 +21,27 @@ type UseDepositBTCTransactionReturn = {
   ) => Promise<void>
 } & UseSendBitcoinTransactionState
 
-export function useDepositBTCTransaction(): UseDepositBTCTransactionReturn {
+export function useDepositBTCTransaction(
+  onSuccess?: OnSuccessCallback,
+  onError?: OnErrorCallback,
+): UseDepositBTCTransactionReturn {
   const { btcAccount } = useWalletContext()
   const { walletApiReactTransport } = useWalletApiReactTransport()
 
-  const { signAndBroadcastTransaction, ...rest } =
+  const { signAndBroadcastTransaction, transactionHash, error, ...rest } =
     useSignAndBroadcastTransaction()
+
+  useEffect(() => {
+    if (transactionHash && onSuccess) {
+      onSuccess()
+    }
+  }, [onSuccess, transactionHash])
+
+  useEffect(() => {
+    if (error && onError) {
+      onError(error)
+    }
+  }, [onError, error])
 
   const sendBitcoinTransaction = useCallback(
     async (amount: bigint, recipient: string) => {
@@ -50,5 +66,5 @@ export function useDepositBTCTransaction(): UseDepositBTCTransactionReturn {
     [btcAccount, signAndBroadcastTransaction, walletApiReactTransport],
   )
 
-  return { ...rest, sendBitcoinTransaction }
+  return { ...rest, sendBitcoinTransaction, transactionHash, error }
 }

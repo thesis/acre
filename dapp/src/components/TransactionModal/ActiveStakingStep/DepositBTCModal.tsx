@@ -1,5 +1,11 @@
 import React, { useCallback } from "react"
-import { useDepositBTC, useModalFlowContext, useStakeBTC } from "#/hooks"
+import {
+  useDepositBTCTransaction,
+  useModalFlowContext,
+  useSendTransaction,
+  useStakeFlowContext,
+  useTransactionContext,
+} from "#/hooks"
 import Alert from "#/components/shared/Alert"
 import { TextMd } from "#/components/shared/Typography"
 import { asyncWrapper } from "#/utils"
@@ -7,7 +13,9 @@ import { PROCESS_STATUSES } from "#/types"
 import StakingStepsModalContent from "./StakingStepsModalContent"
 
 export default function DepositBTCModal() {
+  const { tokenAmount } = useTransactionContext()
   const { setStatus } = useModalFlowContext()
+  const { btcAddress, stake } = useStakeFlowContext()
 
   const onStakeBTCSuccess = useCallback(() => {
     setStatus(PROCESS_STATUSES.SUCCEEDED)
@@ -18,7 +26,11 @@ export default function DepositBTCModal() {
     setStatus(PROCESS_STATUSES.FAILED)
   }, [setStatus])
 
-  const { stakeBTC } = useStakeBTC(onStakeBTCSuccess, onStakeBTCError)
+  const { sendTransaction: sendStakeTransaction } = useSendTransaction(
+    stake,
+    onStakeBTCSuccess,
+    onStakeBTCError,
+  )
 
   const onDepositBTCSuccess = useCallback(() => {
     setStatus(PROCESS_STATUSES.LOADING)
@@ -26,15 +38,18 @@ export default function DepositBTCModal() {
     // to make sure for the moment that it doesn't return an error about funds not found
     // TODO: Remove the delay when SDK is updated
     setTimeout(() => {
-      asyncWrapper(stakeBTC())
+      asyncWrapper(sendStakeTransaction())
     }, 10000)
-  }, [setStatus, stakeBTC])
+  }, [sendStakeTransaction, setStatus])
 
-  const { depositBTC } = useDepositBTC(onDepositBTCSuccess)
+  const { sendBitcoinTransaction } =
+    useDepositBTCTransaction(onDepositBTCSuccess)
 
   const handledDepositBTC = useCallback(() => {
-    asyncWrapper(depositBTC())
-  }, [depositBTC])
+    if (!tokenAmount?.amount || !btcAddress) return
+
+    asyncWrapper(sendBitcoinTransaction(tokenAmount?.amount, btcAddress))
+  }, [btcAddress, sendBitcoinTransaction, tokenAmount])
 
   return (
     <StakingStepsModalContent
