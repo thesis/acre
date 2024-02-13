@@ -26,6 +26,10 @@ import { linkTheme } from "./Link"
 import { skeletonTheme } from "./Skeleton"
 
 const defaultTheme = {
+  // TODO: Remove when dark mode is ready
+  // Color mode should be detected by hook useDetectThemeMode
+  initialColorMode: "light",
+  useSystemColorMode: false,
   colors,
   fonts,
   lineHeights,
