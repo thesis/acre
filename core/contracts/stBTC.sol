@@ -31,7 +31,7 @@ contract stBTC is ERC4626Fees, Ownable2Step {
     uint256 public entryFeeBasisPoints;
 
     /// Minimum amount for a single deposit operation. The value should be set
-    /// low enough so the deposits routed through TbtcDepositor contract won't
+    /// low enough so the deposits routed through Bitcoin Depositor contract won't
     /// be rejected. It means that minimumDepositAmount should be lower than
     /// tBTC protocol's depositDustThreshold reduced by all the minting fees taken
     /// before depositing in the Acre contract.

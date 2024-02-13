@@ -10,11 +10,11 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const tbtc = await deployments.get("TBTC")
   const stbtc = await deployments.get("stBTC")
 
-  await deployments.deploy("TbtcDepositor", {
+  await deployments.deploy("AcreBitcoinDepositor", {
     contract:
       process.env.HARDHAT_TEST === "true"
-        ? "TbtcDepositorHarness"
-        : "TbtcDepositor",
+        ? "AcreBitcoinDepositorHarness"
+        : "AcreBitcoinDepositor",
     from: deployer,
     args: [bridge.address, tbtcVault.address, tbtc.address, stbtc.address],
     log: true,
@@ -27,5 +27,5 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
 export default func
 
-func.tags = ["TbtcDepositor"]
+func.tags = ["AcreBitcoinDepositor"]
 func.dependencies = ["TBTC", "stBTC"]

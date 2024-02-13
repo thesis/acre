@@ -6,10 +6,12 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { deployer, governance } = await getNamedAccounts()
   const { log } = deployments
 
-  log(`transferring ownership of TbtcDepositor contract to ${governance}`)
+  log(
+    `transferring ownership of AcreBitcoinDepositor contract to ${governance}`,
+  )
 
   await deployments.execute(
-    "TbtcDepositor",
+    "AcreBitcoinDepositor",
     { from: deployer, log: true, waitConfirmations: 1 },
     "transferOwnership",
     governance,
@@ -17,7 +19,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
   if (hre.network.name !== "mainnet") {
     await deployments.execute(
-      "TbtcDepositor",
+      "AcreBitcoinDepositor",
       { from: governance, log: true, waitConfirmations: 1 },
       "acceptOwnership",
     )
@@ -26,5 +28,5 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
 export default func
 
-func.tags = ["TransferOwnershipTbtcDepositor"]
-func.dependencies = ["TbtcDepositor"]
+func.tags = ["TransferOwnershipAcreBitcoinDepositor"]
+func.dependencies = ["AcreBitcoinDepositor"]

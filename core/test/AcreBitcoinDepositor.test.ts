@@ -10,7 +10,7 @@ import type {
   StBTC,
   BridgeStub,
   TBTCVaultStub,
-  TbtcDepositorHarness,
+  AcreBitcoinDepositorHarness,
   TestERC20,
 } from "../typechain"
 import { deployment } from "./helpers"
@@ -19,16 +19,16 @@ import { tbtcDepositData } from "./data/tbtc"
 import { to1ePrecision } from "./utils"
 
 async function fixture() {
-  const { tbtcDepositor, tbtcBridge, tbtcVault, stbtc, tbtc } =
+  const { bitcoinDepositor, tbtcBridge, tbtcVault, stbtc, tbtc } =
     await deployment()
 
-  return { tbtcDepositor, tbtcBridge, tbtcVault, stbtc, tbtc }
+  return { bitcoinDepositor, tbtcBridge, tbtcVault, stbtc, tbtc }
 }
 
 const { lastBlockTime } = helpers.time
 const { getNamedSigners, getUnnamedSigners } = helpers.signers
 
-describe("TbtcDepositor", () => {
+describe("AcreBitcoinDepositor", () => {
   const defaultDepositTreasuryFeeDivisor = 2000 // 1/2000 = 0.05% = 0.0005
   const defaultDepositTxMaxFee = 1000 // 1000 satoshi = 0.00001 BTC
   const defaultOptimisticFeeDivisor = 500 // 1/500 = 0.002 = 0.2%
@@ -44,7 +44,7 @@ describe("TbtcDepositor", () => {
   const depositorFee = to1ePrecision(10, 10) // 10 satoshi
   const amountToStake = to1ePrecision(896501, 8) // 8965,01 satoshi
 
-  let tbtcDepositor: TbtcDepositorHarness
+  let bitcoinDepositor: AcreBitcoinDepositorHarness
   let tbtcBridge: BridgeStub
   let tbtcVault: TBTCVaultStub
   let stbtc: StBTC
@@ -56,7 +56,7 @@ describe("TbtcDepositor", () => {
   let receiver: HardhatEthersSigner
 
   before(async () => {
-    ;({ tbtcDepositor, tbtcBridge, tbtcVault, stbtc, tbtc } =
+    ;({ bitcoinDepositor, tbtcBridge, tbtcVault, stbtc, tbtc } =
       await loadFixture(fixture))
     ;({ governance, treasury } = await getNamedSigners())
     ;[thirdParty] = await getUnnamedSigners()
@@ -84,7 +84,7 @@ describe("TbtcDepositor", () => {
     await tbtcVault
       .connect(governance)
       .setOptimisticMintingFeeDivisor(defaultOptimisticFeeDivisor)
-    await tbtcDepositor
+    await bitcoinDepositor
       .connect(governance)
       .updateDepositorFeeDivisor(defaultDepositorFeeDivisor)
 
@@ -95,13 +95,16 @@ describe("TbtcDepositor", () => {
     describe("when receiver is zero address", () => {
       it("should revert", async () => {
         await expect(
-          tbtcDepositor.initializeStakeRequest(
+          bitcoinDepositor.initializeStakeRequest(
             tbtcDepositData.fundingTxInfo,
             tbtcDepositData.reveal,
             ZeroAddress,
             0,
           ),
-        ).to.be.revertedWithCustomError(tbtcDepositor, "ReceiverIsZeroAddress")
+        ).to.be.revertedWithCustomError(
+          bitcoinDepositor,
+          "ReceiverIsZeroAddress",
+        )
       })
     })
 
@@ -115,7 +118,7 @@ describe("TbtcDepositor", () => {
               await ethers.Wallet.createRandom().getAddress()
 
             await expect(
-              tbtcDepositor
+              bitcoinDepositor
                 .connect(thirdParty)
                 .initializeStakeRequest(
                   tbtcDepositData.fundingTxInfo,
@@ -134,7 +137,7 @@ describe("TbtcDepositor", () => {
             let tx: ContractTransactionResponse
 
             before(async () => {
-              tx = await tbtcDepositor
+              tx = await bitcoinDepositor
                 .connect(thirdParty)
                 .initializeStakeRequest(
                   tbtcDepositData.fundingTxInfo,
@@ -146,7 +149,7 @@ describe("TbtcDepositor", () => {
 
             it("should emit StakeRequestInitialized event", async () => {
               await expect(tx)
-                .to.emit(tbtcDepositor, "StakeRequestInitialized")
+                .to.emit(bitcoinDepositor, "StakeRequestInitialized")
                 .withArgs(
                   tbtcDepositData.depositKey,
                   thirdParty.address,
@@ -155,7 +158,7 @@ describe("TbtcDepositor", () => {
             })
 
             it("should not store stake request data", async () => {
-              const storedStakeRequest = await tbtcDepositor.stakeRequests(
+              const storedStakeRequest = await bitcoinDepositor.stakeRequests(
                 tbtcDepositData.depositKey,
               )
 
@@ -203,7 +206,7 @@ describe("TbtcDepositor", () => {
 
             it("should succeed", async () => {
               await expect(
-                tbtcDepositor
+                bitcoinDepositor
                   .connect(thirdParty)
                   .initializeStakeRequest(
                     tbtcDepositData.fundingTxInfo,
@@ -226,7 +229,7 @@ describe("TbtcDepositor", () => {
 
         it("should revert", async () => {
           await expect(
-            tbtcDepositor
+            bitcoinDepositor
               .connect(thirdParty)
               .initializeStakeRequest(
                 tbtcDepositData.fundingTxInfo,
@@ -247,14 +250,14 @@ describe("TbtcDepositor", () => {
           // Simulate deposit request finalization.
           await finalizeMinting(tbtcDepositData.depositKey)
 
-          await tbtcDepositor
+          await bitcoinDepositor
             .connect(thirdParty)
             .finalizeStakeRequest(tbtcDepositData.depositKey)
         })
 
         it("should revert", async () => {
           await expect(
-            tbtcDepositor
+            bitcoinDepositor
               .connect(thirdParty)
               .initializeStakeRequest(
                 tbtcDepositData.fundingTxInfo,
@@ -275,14 +278,14 @@ describe("TbtcDepositor", () => {
           // Simulate deposit request finalization.
           await finalizeMinting(tbtcDepositData.depositKey)
 
-          await tbtcDepositor
+          await bitcoinDepositor
             .connect(thirdParty)
             .queueForStaking(tbtcDepositData.depositKey)
         })
 
         it("should revert", async () => {
           await expect(
-            tbtcDepositor
+            bitcoinDepositor
               .connect(thirdParty)
               .initializeStakeRequest(
                 tbtcDepositData.fundingTxInfo,
@@ -303,18 +306,18 @@ describe("TbtcDepositor", () => {
           // Simulate deposit request finalization.
           await finalizeMinting(tbtcDepositData.depositKey)
 
-          await tbtcDepositor
+          await bitcoinDepositor
             .connect(thirdParty)
             .queueForStaking(tbtcDepositData.depositKey)
 
-          await tbtcDepositor
+          await bitcoinDepositor
             .connect(receiver)
             .recallFromQueue(tbtcDepositData.depositKey)
         })
 
         it("should revert", async () => {
           await expect(
-            tbtcDepositor
+            bitcoinDepositor
               .connect(thirdParty)
               .initializeStakeRequest(
                 tbtcDepositData.fundingTxInfo,
@@ -332,7 +335,7 @@ describe("TbtcDepositor", () => {
     describe("when stake request has not been initialized", () => {
       it("should revert", async () => {
         await expect(
-          tbtcDepositor
+          bitcoinDepositor
             .connect(thirdParty)
             .exposed_finalizeBridging(tbtcDepositData.depositKey),
         ).to.be.revertedWith("Deposit not initialized")
@@ -349,7 +352,7 @@ describe("TbtcDepositor", () => {
       describe("when deposit was not bridged", () => {
         it("should revert", async () => {
           await expect(
-            tbtcDepositor
+            bitcoinDepositor
               .connect(thirdParty)
               .exposed_finalizeBridging(tbtcDepositData.depositKey),
           ).to.be.revertedWith("Deposit not finalized by the bridge")
@@ -372,18 +375,18 @@ describe("TbtcDepositor", () => {
             let tx: ContractTransactionResponse
 
             before(async () => {
-              returnedValue = await tbtcDepositor
+              returnedValue = await bitcoinDepositor
                 .connect(thirdParty)
                 .exposed_finalizeBridging.staticCall(tbtcDepositData.depositKey)
 
-              tx = await tbtcDepositor
+              tx = await bitcoinDepositor
                 .connect(thirdParty)
                 .exposed_finalizeBridging(tbtcDepositData.depositKey)
             })
 
             it("should emit BridgingCompleted event", async () => {
               await expect(tx)
-                .to.emit(tbtcDepositor, "BridgingCompleted")
+                .to.emit(bitcoinDepositor, "BridgingCompleted")
                 .withArgs(
                   tbtcDepositData.depositKey,
                   thirdParty.address,
@@ -403,8 +406,11 @@ describe("TbtcDepositor", () => {
 
             it("should set bridgingFinalizedAt timestamp", async () => {
               expect(
-                (await tbtcDepositor.stakeRequests(tbtcDepositData.depositKey))
-                  .bridgingFinalizedAt,
+                (
+                  await bitcoinDepositor.stakeRequests(
+                    tbtcDepositData.depositKey,
+                  )
+                ).bridgingFinalizedAt,
               ).to.be.equal(await lastBlockTime())
             })
 
@@ -424,22 +430,22 @@ describe("TbtcDepositor", () => {
             let tx: ContractTransactionResponse
 
             before(async () => {
-              await tbtcDepositor
+              await bitcoinDepositor
                 .connect(governance)
                 .updateDepositorFeeDivisor(0)
 
-              returnedValue = await tbtcDepositor
+              returnedValue = await bitcoinDepositor
                 .connect(thirdParty)
                 .exposed_finalizeBridging.staticCall(tbtcDepositData.depositKey)
 
-              tx = await tbtcDepositor
+              tx = await bitcoinDepositor
                 .connect(thirdParty)
                 .exposed_finalizeBridging(tbtcDepositData.depositKey)
             })
 
             it("should emit BridgingCompleted event", async () => {
               await expect(tx)
-                .to.emit(tbtcDepositor, "BridgingCompleted")
+                .to.emit(bitcoinDepositor, "BridgingCompleted")
                 .withArgs(
                   tbtcDepositData.depositKey,
                   thirdParty.address,
@@ -459,8 +465,11 @@ describe("TbtcDepositor", () => {
 
             it("should set bridgingFinalizedAt timestamp", async () => {
               expect(
-                (await tbtcDepositor.stakeRequests(tbtcDepositData.depositKey))
-                  .bridgingFinalizedAt,
+                (
+                  await bitcoinDepositor.stakeRequests(
+                    tbtcDepositData.depositKey,
+                  )
+                ).bridgingFinalizedAt,
               ).to.be.equal(await lastBlockTime())
             })
 
@@ -473,19 +482,19 @@ describe("TbtcDepositor", () => {
             beforeAfterSnapshotWrapper()
 
             before(async () => {
-              await tbtcDepositor
+              await bitcoinDepositor
                 .connect(governance)
                 .updateDepositorFeeDivisor(1)
             })
 
             it("should revert", async () => {
               await expect(
-                tbtcDepositor
+                bitcoinDepositor
                   .connect(thirdParty)
                   .exposed_finalizeBridging(tbtcDepositData.depositKey),
               )
                 .to.be.revertedWithCustomError(
-                  tbtcDepositor,
+                  bitcoinDepositor,
                   "DepositorFeeExceedsBridgedAmount",
                 )
                 .withArgs(initialDepositAmount, bridgedTbtcAmount)
@@ -498,18 +507,18 @@ describe("TbtcDepositor", () => {
 
           before(async () => {
             // Notify bridging completed.
-            await tbtcDepositor
+            await bitcoinDepositor
               .connect(thirdParty)
               .exposed_finalizeBridging(tbtcDepositData.depositKey)
           })
 
           it("should revert", async () => {
             await expect(
-              tbtcDepositor
+              bitcoinDepositor
                 .connect(thirdParty)
                 .exposed_finalizeBridging(tbtcDepositData.depositKey),
             ).to.be.revertedWithCustomError(
-              tbtcDepositor,
+              bitcoinDepositor,
               "BridgingFinalizationAlreadyCalled",
             )
           })
@@ -524,7 +533,7 @@ describe("TbtcDepositor", () => {
     describe("when stake request has not been initialized", () => {
       it("should revert", async () => {
         await expect(
-          tbtcDepositor
+          bitcoinDepositor
             .connect(thirdParty)
             .finalizeStakeRequest(tbtcDepositData.depositKey),
         ).to.be.revertedWith("Deposit not initialized")
@@ -541,7 +550,7 @@ describe("TbtcDepositor", () => {
       describe("when deposit was not bridged", () => {
         it("should revert", async () => {
           await expect(
-            tbtcDepositor
+            bitcoinDepositor
               .connect(thirdParty)
               .finalizeStakeRequest(tbtcDepositData.depositKey),
           ).to.be.revertedWith("Deposit not finalized by the bridge")
@@ -565,14 +574,14 @@ describe("TbtcDepositor", () => {
           let tx: ContractTransactionResponse
 
           before(async () => {
-            tx = await tbtcDepositor
+            tx = await bitcoinDepositor
               .connect(thirdParty)
               .finalizeStakeRequest(tbtcDepositData.depositKey)
           })
 
           it("should emit BridgingCompleted event", async () => {
             await expect(tx)
-              .to.emit(tbtcDepositor, "BridgingCompleted")
+              .to.emit(bitcoinDepositor, "BridgingCompleted")
               .withArgs(
                 tbtcDepositData.depositKey,
                 thirdParty.address,
@@ -592,14 +601,14 @@ describe("TbtcDepositor", () => {
 
           it("should set finalizedAt timestamp", async () => {
             expect(
-              (await tbtcDepositor.stakeRequests(tbtcDepositData.depositKey))
+              (await bitcoinDepositor.stakeRequests(tbtcDepositData.depositKey))
                 .finalizedAt,
             ).to.be.equal(await lastBlockTime())
           })
 
           it("should emit StakeRequestFinalized event", async () => {
             await expect(tx)
-              .to.emit(tbtcDepositor, "StakeRequestFinalized")
+              .to.emit(bitcoinDepositor, "StakeRequestFinalized")
               .withArgs(
                 tbtcDepositData.depositKey,
                 thirdParty.address,
@@ -611,7 +620,7 @@ describe("TbtcDepositor", () => {
             await expect(tx)
               .to.emit(stbtc, "Deposit")
               .withArgs(
-                await tbtcDepositor.getAddress(),
+                await bitcoinDepositor.getAddress(),
                 tbtcDepositData.receiver,
                 expectedAssetsAmount,
                 expectedReceivedSharesAmount,
@@ -639,7 +648,7 @@ describe("TbtcDepositor", () => {
           beforeAfterSnapshotWrapper()
 
           before(async () => {
-            await tbtcDepositor
+            await bitcoinDepositor
               .connect(thirdParty)
               .queueForStaking(tbtcDepositData.depositKey)
           })
@@ -647,11 +656,11 @@ describe("TbtcDepositor", () => {
           describe("when stake request is still in the queue", () => {
             it("should revert", async () => {
               await expect(
-                tbtcDepositor
+                bitcoinDepositor
                   .connect(thirdParty)
                   .finalizeStakeRequest(tbtcDepositData.depositKey),
               ).to.be.revertedWithCustomError(
-                tbtcDepositor,
+                bitcoinDepositor,
                 "BridgingFinalizationAlreadyCalled",
               )
             })
@@ -661,18 +670,18 @@ describe("TbtcDepositor", () => {
             beforeAfterSnapshotWrapper()
 
             before(async () => {
-              await tbtcDepositor
+              await bitcoinDepositor
                 .connect(thirdParty)
                 .stakeFromQueue(tbtcDepositData.depositKey)
             })
 
             it("should revert", async () => {
               await expect(
-                tbtcDepositor
+                bitcoinDepositor
                   .connect(thirdParty)
                   .finalizeStakeRequest(tbtcDepositData.depositKey),
               ).to.be.revertedWithCustomError(
-                tbtcDepositor,
+                bitcoinDepositor,
                 "BridgingFinalizationAlreadyCalled",
               )
             })
@@ -682,18 +691,18 @@ describe("TbtcDepositor", () => {
             beforeAfterSnapshotWrapper()
 
             before(async () => {
-              await tbtcDepositor
+              await bitcoinDepositor
                 .connect(receiver)
                 .recallFromQueue(tbtcDepositData.depositKey)
             })
 
             it("should revert", async () => {
               await expect(
-                tbtcDepositor
+                bitcoinDepositor
                   .connect(thirdParty)
                   .finalizeStakeRequest(tbtcDepositData.depositKey),
               ).to.be.revertedWithCustomError(
-                tbtcDepositor,
+                bitcoinDepositor,
                 "BridgingFinalizationAlreadyCalled",
               )
             })
@@ -705,18 +714,18 @@ describe("TbtcDepositor", () => {
 
           before(async () => {
             // Finalize stake request.
-            await tbtcDepositor
+            await bitcoinDepositor
               .connect(thirdParty)
               .finalizeStakeRequest(tbtcDepositData.depositKey)
           })
 
           it("should revert", async () => {
             await expect(
-              tbtcDepositor
+              bitcoinDepositor
                 .connect(thirdParty)
                 .finalizeStakeRequest(tbtcDepositData.depositKey),
             ).to.be.revertedWithCustomError(
-              tbtcDepositor,
+              bitcoinDepositor,
               "BridgingFinalizationAlreadyCalled",
             )
           })
@@ -731,7 +740,7 @@ describe("TbtcDepositor", () => {
     describe("when stake request has not been initialized", () => {
       it("should revert", async () => {
         await expect(
-          tbtcDepositor
+          bitcoinDepositor
             .connect(thirdParty)
             .queueForStaking(tbtcDepositData.depositKey),
         ).to.be.revertedWith("Deposit not initialized")
@@ -748,7 +757,7 @@ describe("TbtcDepositor", () => {
       describe("when deposit was not bridged", () => {
         it("should revert", async () => {
           await expect(
-            tbtcDepositor
+            bitcoinDepositor
               .connect(thirdParty)
               .queueForStaking(tbtcDepositData.depositKey),
           ).to.be.revertedWith("Deposit not finalized by the bridge")
@@ -769,14 +778,14 @@ describe("TbtcDepositor", () => {
           let tx: ContractTransactionResponse
 
           before(async () => {
-            tx = await tbtcDepositor
+            tx = await bitcoinDepositor
               .connect(thirdParty)
               .queueForStaking(tbtcDepositData.depositKey)
           })
 
           it("should emit BridgingCompleted event", async () => {
             await expect(tx)
-              .to.emit(tbtcDepositor, "BridgingCompleted")
+              .to.emit(bitcoinDepositor, "BridgingCompleted")
               .withArgs(
                 tbtcDepositData.depositKey,
                 thirdParty.address,
@@ -796,28 +805,28 @@ describe("TbtcDepositor", () => {
 
           it("should not set finalizedAt timestamp", async () => {
             expect(
-              (await tbtcDepositor.stakeRequests(tbtcDepositData.depositKey))
+              (await bitcoinDepositor.stakeRequests(tbtcDepositData.depositKey))
                 .finalizedAt,
             ).to.be.equal(0)
           })
 
           it("should set receiver", async () => {
             expect(
-              (await tbtcDepositor.stakeRequests(tbtcDepositData.depositKey))
+              (await bitcoinDepositor.stakeRequests(tbtcDepositData.depositKey))
                 .receiver,
             ).to.be.equal(tbtcDepositData.receiver)
           })
 
           it("should set queuedAmount", async () => {
             expect(
-              (await tbtcDepositor.stakeRequests(tbtcDepositData.depositKey))
+              (await bitcoinDepositor.stakeRequests(tbtcDepositData.depositKey))
                 .queuedAmount,
             ).to.be.equal(amountToStake)
           })
 
           it("should not emit StakeRequestQueued event", async () => {
             await expect(tx)
-              .to.emit(tbtcDepositor, "StakeRequestQueued")
+              .to.emit(bitcoinDepositor, "StakeRequestQueued")
               .withArgs(
                 tbtcDepositData.depositKey,
                 thirdParty.address,
@@ -826,7 +835,10 @@ describe("TbtcDepositor", () => {
           })
 
           it("should not emit StakeRequestFinalized event", async () => {
-            await expect(tx).to.not.emit(tbtcDepositor, "StakeRequestFinalized")
+            await expect(tx).to.not.emit(
+              bitcoinDepositor,
+              "StakeRequestFinalized",
+            )
           })
 
           it("should not emit Deposit event", async () => {
@@ -850,7 +862,7 @@ describe("TbtcDepositor", () => {
           beforeAfterSnapshotWrapper()
 
           before(async () => {
-            await tbtcDepositor
+            await bitcoinDepositor
               .connect(thirdParty)
               .queueForStaking(tbtcDepositData.depositKey)
           })
@@ -858,11 +870,11 @@ describe("TbtcDepositor", () => {
           describe("when stake request is still in the queue", () => {
             it("should revert", async () => {
               await expect(
-                tbtcDepositor
+                bitcoinDepositor
                   .connect(thirdParty)
                   .queueForStaking(tbtcDepositData.depositKey),
               ).to.be.revertedWithCustomError(
-                tbtcDepositor,
+                bitcoinDepositor,
                 "BridgingFinalizationAlreadyCalled",
               )
             })
@@ -872,18 +884,18 @@ describe("TbtcDepositor", () => {
             beforeAfterSnapshotWrapper()
 
             before(async () => {
-              await tbtcDepositor
+              await bitcoinDepositor
                 .connect(thirdParty)
                 .stakeFromQueue(tbtcDepositData.depositKey)
             })
 
             it("should revert", async () => {
               await expect(
-                tbtcDepositor
+                bitcoinDepositor
                   .connect(thirdParty)
                   .queueForStaking(tbtcDepositData.depositKey),
               ).to.be.revertedWithCustomError(
-                tbtcDepositor,
+                bitcoinDepositor,
                 "BridgingFinalizationAlreadyCalled",
               )
             })
@@ -893,18 +905,18 @@ describe("TbtcDepositor", () => {
             beforeAfterSnapshotWrapper()
 
             before(async () => {
-              await tbtcDepositor
+              await bitcoinDepositor
                 .connect(receiver)
                 .recallFromQueue(tbtcDepositData.depositKey)
             })
 
             it("should revert", async () => {
               await expect(
-                tbtcDepositor
+                bitcoinDepositor
                   .connect(thirdParty)
                   .queueForStaking(tbtcDepositData.depositKey),
               ).to.be.revertedWithCustomError(
-                tbtcDepositor,
+                bitcoinDepositor,
                 "BridgingFinalizationAlreadyCalled",
               )
             })
@@ -916,18 +928,18 @@ describe("TbtcDepositor", () => {
 
           before(async () => {
             // Finalize stake request.
-            await tbtcDepositor
+            await bitcoinDepositor
               .connect(thirdParty)
               .finalizeStakeRequest(tbtcDepositData.depositKey)
           })
 
           it("should revert", async () => {
             await expect(
-              tbtcDepositor
+              bitcoinDepositor
                 .connect(thirdParty)
                 .queueForStaking(tbtcDepositData.depositKey),
             ).to.be.revertedWithCustomError(
-              tbtcDepositor,
+              bitcoinDepositor,
               "BridgingFinalizationAlreadyCalled",
             )
           })
@@ -940,10 +952,13 @@ describe("TbtcDepositor", () => {
     describe("when stake request has not been initialized", () => {
       it("should revert", async () => {
         await expect(
-          tbtcDepositor
+          bitcoinDepositor
             .connect(receiver)
             .stakeFromQueue(tbtcDepositData.depositKey),
-        ).to.be.revertedWithCustomError(tbtcDepositor, "StakeRequestNotQueued")
+        ).to.be.revertedWithCustomError(
+          bitcoinDepositor,
+          "StakeRequestNotQueued",
+        )
       })
     })
 
@@ -951,11 +966,11 @@ describe("TbtcDepositor", () => {
       describe("when stake request has not been queued", () => {
         it("should revert", async () => {
           await expect(
-            tbtcDepositor
+            bitcoinDepositor
               .connect(thirdParty)
               .stakeFromQueue(tbtcDepositData.depositKey),
           ).to.be.revertedWithCustomError(
-            tbtcDepositor,
+            bitcoinDepositor,
             "StakeRequestNotQueued",
           )
         })
@@ -969,7 +984,7 @@ describe("TbtcDepositor", () => {
 
           await finalizeMinting(tbtcDepositData.depositKey)
 
-          await tbtcDepositor
+          await bitcoinDepositor
             .connect(thirdParty)
             .queueForStaking(tbtcDepositData.depositKey)
         })
@@ -983,28 +998,28 @@ describe("TbtcDepositor", () => {
           let tx: ContractTransactionResponse
 
           before(async () => {
-            tx = await tbtcDepositor
+            tx = await bitcoinDepositor
               .connect(thirdParty)
               .stakeFromQueue(tbtcDepositData.depositKey)
           })
 
           it("should set finalizedAt timestamp", async () => {
             expect(
-              (await tbtcDepositor.stakeRequests(tbtcDepositData.depositKey))
+              (await bitcoinDepositor.stakeRequests(tbtcDepositData.depositKey))
                 .finalizedAt,
             ).to.be.equal(await lastBlockTime())
           })
 
           it("should set queuedAmount to zero", async () => {
             expect(
-              (await tbtcDepositor.stakeRequests(tbtcDepositData.depositKey))
+              (await bitcoinDepositor.stakeRequests(tbtcDepositData.depositKey))
                 .queuedAmount,
             ).to.be.equal(0)
           })
 
           it("should emit StakeRequestFinalizedFromQueue event", async () => {
             await expect(tx)
-              .to.emit(tbtcDepositor, "StakeRequestFinalizedFromQueue")
+              .to.emit(bitcoinDepositor, "StakeRequestFinalizedFromQueue")
               .withArgs(
                 tbtcDepositData.depositKey,
                 thirdParty.address,
@@ -1016,7 +1031,7 @@ describe("TbtcDepositor", () => {
             await expect(tx)
               .to.emit(stbtc, "Deposit")
               .withArgs(
-                await tbtcDepositor.getAddress(),
+                await bitcoinDepositor.getAddress(),
                 tbtcDepositData.receiver,
                 expectedAssetsAmount,
                 expectedReceivedSharesAmount,
@@ -1044,18 +1059,18 @@ describe("TbtcDepositor", () => {
           beforeAfterSnapshotWrapper()
 
           before(async () => {
-            await tbtcDepositor
+            await bitcoinDepositor
               .connect(thirdParty)
               .stakeFromQueue(tbtcDepositData.depositKey)
           })
 
           it("should revert", async () => {
             await expect(
-              tbtcDepositor
+              bitcoinDepositor
                 .connect(thirdParty)
                 .stakeFromQueue(tbtcDepositData.depositKey),
             ).to.be.revertedWithCustomError(
-              tbtcDepositor,
+              bitcoinDepositor,
               "StakeRequestNotQueued",
             )
           })
@@ -1065,18 +1080,18 @@ describe("TbtcDepositor", () => {
           beforeAfterSnapshotWrapper()
 
           before(async () => {
-            await tbtcDepositor
+            await bitcoinDepositor
               .connect(receiver)
               .recallFromQueue(tbtcDepositData.depositKey)
           })
 
           it("should revert", async () => {
             await expect(
-              tbtcDepositor
+              bitcoinDepositor
                 .connect(thirdParty)
                 .stakeFromQueue(tbtcDepositData.depositKey),
             ).to.be.revertedWithCustomError(
-              tbtcDepositor,
+              bitcoinDepositor,
               "StakeRequestNotQueued",
             )
           })
@@ -1089,10 +1104,13 @@ describe("TbtcDepositor", () => {
     describe("when stake request has not been initialized", () => {
       it("should revert", async () => {
         await expect(
-          tbtcDepositor
+          bitcoinDepositor
             .connect(receiver)
             .recallFromQueue(tbtcDepositData.depositKey),
-        ).to.be.revertedWithCustomError(tbtcDepositor, "StakeRequestNotQueued")
+        ).to.be.revertedWithCustomError(
+          bitcoinDepositor,
+          "StakeRequestNotQueued",
+        )
       })
     })
 
@@ -1108,11 +1126,11 @@ describe("TbtcDepositor", () => {
 
         it("should revert", async () => {
           await expect(
-            tbtcDepositor
+            bitcoinDepositor
               .connect(receiver)
               .recallFromQueue(tbtcDepositData.depositKey),
           ).to.be.revertedWithCustomError(
-            tbtcDepositor,
+            bitcoinDepositor,
             "StakeRequestNotQueued",
           )
         })
@@ -1124,7 +1142,7 @@ describe("TbtcDepositor", () => {
         before(async () => {
           await finalizeMinting(tbtcDepositData.depositKey)
 
-          await tbtcDepositor
+          await bitcoinDepositor
             .connect(thirdParty)
             .queueForStaking(tbtcDepositData.depositKey)
         })
@@ -1133,11 +1151,11 @@ describe("TbtcDepositor", () => {
           describe("when caller is non-receiver", () => {
             it("should revert", async () => {
               await expect(
-                tbtcDepositor
+                bitcoinDepositor
                   .connect(thirdParty)
                   .recallFromQueue(tbtcDepositData.depositKey),
               ).to.be.revertedWithCustomError(
-                tbtcDepositor,
+                bitcoinDepositor,
                 "CallerNotReceiver",
               )
             })
@@ -1149,28 +1167,34 @@ describe("TbtcDepositor", () => {
             let tx: ContractTransactionResponse
 
             before(async () => {
-              tx = await tbtcDepositor
+              tx = await bitcoinDepositor
                 .connect(receiver)
                 .recallFromQueue(tbtcDepositData.depositKey)
             })
 
             it("should set recalledAt timestamp", async () => {
               expect(
-                (await tbtcDepositor.stakeRequests(tbtcDepositData.depositKey))
-                  .recalledAt,
+                (
+                  await bitcoinDepositor.stakeRequests(
+                    tbtcDepositData.depositKey,
+                  )
+                ).recalledAt,
               ).to.be.equal(await lastBlockTime())
             })
 
             it("should set queuedAmount to zero", async () => {
               expect(
-                (await tbtcDepositor.stakeRequests(tbtcDepositData.depositKey))
-                  .queuedAmount,
+                (
+                  await bitcoinDepositor.stakeRequests(
+                    tbtcDepositData.depositKey,
+                  )
+                ).queuedAmount,
               ).to.be.equal(0)
             })
 
             it("should emit StakeRequestRecalled event", async () => {
               await expect(tx)
-                .to.emit(tbtcDepositor, "StakeRequestRecalled")
+                .to.emit(bitcoinDepositor, "StakeRequestRecalled")
                 .withArgs(
                   tbtcDepositData.depositKey,
                   receiver.address,
@@ -1181,7 +1205,7 @@ describe("TbtcDepositor", () => {
             it("should transfer tbtc to receiver", async () => {
               await expect(tx).to.changeTokenBalances(
                 tbtc,
-                [tbtcDepositor, receiver],
+                [bitcoinDepositor, receiver],
                 [-amountToStake, amountToStake],
               )
             })
@@ -1192,18 +1216,18 @@ describe("TbtcDepositor", () => {
           beforeAfterSnapshotWrapper()
 
           before(async () => {
-            await tbtcDepositor
+            await bitcoinDepositor
               .connect(thirdParty)
               .stakeFromQueue(tbtcDepositData.depositKey)
           })
 
           it("should revert", async () => {
             await expect(
-              tbtcDepositor
+              bitcoinDepositor
                 .connect(receiver)
                 .recallFromQueue(tbtcDepositData.depositKey),
             ).to.be.revertedWithCustomError(
-              tbtcDepositor,
+              bitcoinDepositor,
               "StakeRequestNotQueued",
             )
           })
@@ -1213,18 +1237,18 @@ describe("TbtcDepositor", () => {
           beforeAfterSnapshotWrapper()
 
           before(async () => {
-            await tbtcDepositor
+            await bitcoinDepositor
               .connect(receiver)
               .recallFromQueue(tbtcDepositData.depositKey)
           })
 
           it("should revert", async () => {
             await expect(
-              tbtcDepositor
+              bitcoinDepositor
                 .connect(receiver)
                 .recallFromQueue(tbtcDepositData.depositKey),
             ).to.be.revertedWithCustomError(
-              tbtcDepositor,
+              bitcoinDepositor,
               "StakeRequestNotQueued",
             )
           })
@@ -1239,10 +1263,10 @@ describe("TbtcDepositor", () => {
     describe("when caller is not governance", () => {
       it("should revert", async () => {
         await expect(
-          tbtcDepositor.connect(thirdParty).updateDepositorFeeDivisor(1234),
+          bitcoinDepositor.connect(thirdParty).updateDepositorFeeDivisor(1234),
         )
           .to.be.revertedWithCustomError(
-            tbtcDepositor,
+            bitcoinDepositor,
             "OwnableUnauthorizedAccount",
           )
           .withArgs(thirdParty.address)
@@ -1257,19 +1281,21 @@ describe("TbtcDepositor", () => {
           let tx: ContractTransactionResponse
 
           before(async () => {
-            tx = await tbtcDepositor
+            tx = await bitcoinDepositor
               .connect(governance)
               .updateDepositorFeeDivisor(newValue)
           })
 
           it("should emit DepositorFeeDivisorUpdated event", async () => {
             await expect(tx)
-              .to.emit(tbtcDepositor, "DepositorFeeDivisorUpdated")
+              .to.emit(bitcoinDepositor, "DepositorFeeDivisorUpdated")
               .withArgs(newValue)
           })
 
           it("should update value correctly", async () => {
-            expect(await tbtcDepositor.depositorFeeDivisor()).to.be.eq(newValue)
+            expect(await bitcoinDepositor.depositorFeeDivisor()).to.be.eq(
+              newValue,
+            )
           })
         }
 
@@ -1352,7 +1378,7 @@ describe("TbtcDepositor", () => {
       ({ receiver, referral, extraData: expectedExtraData }, testName) => {
         it(testName, async () => {
           expect(
-            await tbtcDepositor.encodeExtraData(receiver, referral),
+            await bitcoinDepositor.encodeExtraData(receiver, referral),
           ).to.be.equal(expectedExtraData)
         })
       },
@@ -1367,7 +1393,7 @@ describe("TbtcDepositor", () => {
       ) => {
         it(testName, async () => {
           const [actualReceiver, actualReferral] =
-            await tbtcDepositor.decodeExtraData(extraData)
+            await bitcoinDepositor.decodeExtraData(extraData)
 
           expect(actualReceiver, "invalid receiver").to.be.equal(
             expectedReceiver,
@@ -1389,7 +1415,7 @@ describe("TbtcDepositor", () => {
       const expectedReferral = 6851 // hex: 0x1ac3
 
       const [actualReceiver, actualReferral] =
-        await tbtcDepositor.decodeExtraData(extraData)
+        await bitcoinDepositor.decodeExtraData(extraData)
 
       expect(actualReceiver, "invalid receiver").to.be.equal(expectedReceiver)
       expect(actualReferral, "invalid referral").to.be.equal(expectedReferral)
@@ -1397,7 +1423,7 @@ describe("TbtcDepositor", () => {
   })
 
   async function initializeStakeRequest() {
-    await tbtcDepositor
+    await bitcoinDepositor
       .connect(thirdParty)
       .initializeStakeRequest(
         tbtcDepositData.fundingTxInfo,

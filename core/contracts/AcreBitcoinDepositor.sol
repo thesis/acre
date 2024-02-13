@@ -12,7 +12,7 @@ import {stBTC} from "./stBTC.sol";
 // TODO: Add Missfund token protection.
 // TODO: Make Upgradable
 
-/// @title tBTC Depositor contract.
+/// @title Acre Bitcoin Depositor contract.
 /// @notice The contract integrates Acre staking with tBTC minting.
 ///         User who wants to stake BTC in Acre should submit a Bitcoin transaction
 ///         to the most recently created off-chain ECDSA wallets of the tBTC Bridge
@@ -36,7 +36,7 @@ import {stBTC} from "./stBTC.sol";
 ///         Depositor address. After tBTC is minted to the Depositor, on the stake
 ///         finalization tBTC is staked in stBTC contract and stBTC shares are emitted
 ///         to the receiver pointed by the staker.
-contract TbtcDepositor is AbstractTBTCDepositor, Ownable2Step {
+contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     using SafeERC20 for IERC20;
 
     struct StakeRequest {
@@ -189,7 +189,7 @@ contract TbtcDepositor is AbstractTBTCDepositor, Ownable2Step {
     /// @dev Attempted to call function by an account that is not the receiver.
     error CallerNotReceiver();
 
-    /// @notice Tbtc Depositor contract constructor.
+    /// @notice Acre Bitcoin Depositor contract constructor.
     /// @param _bridge tBTC Bridge contract instance.
     /// @param _tbtcVault tBTC Vault contract instance.
     /// @param _stbtc stBTC contract instance.
