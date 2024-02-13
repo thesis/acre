@@ -10,16 +10,16 @@ import {
   WalletContextProvider,
 } from "./contexts"
 import Header from "./components/Header"
-import Overview from "./components/Overview"
+import OverviewPage from "./pages/Overview"
 import Sidebar from "./components/Sidebar"
 import DocsDrawer from "./components/DocsDrawer"
 import GlobalStyles from "./components/GlobalStyles"
-import ActivityPage from "./components/ActivityDetails/ActivityPage"
+import ActivityPage from "./pages/ActivityDetails/ActivityPage"
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Overview />,
+    element: <OverviewPage />,
   },
   {
     path: "activity-details",

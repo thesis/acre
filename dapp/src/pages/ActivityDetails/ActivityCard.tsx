@@ -14,9 +14,9 @@ import { StakeHistory } from "#/types"
 import { capitalize } from "#/utils"
 import { CloseIcon, ChevronRightIcon } from "#/assets/icons"
 import { LocationState } from "#/types/location"
-import StatusInfo from "../shared/StatusInfo"
-import { CurrencyBalance } from "../shared/CurrencyBalance"
-import { TextSm } from "../shared/Typography"
+import StatusInfo from "../../components/shared/StatusInfo"
+import { CurrencyBalance } from "../../components/shared/CurrencyBalance"
+import { TextSm } from "../../components/shared/Typography"
 
 type ActivityCardType = CardProps & {
   transaction: StakeHistory

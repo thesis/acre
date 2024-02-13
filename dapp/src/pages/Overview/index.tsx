@@ -5,11 +5,11 @@ import { USD } from "#/constants"
 import PositionDetails from "./PositionDetails"
 import Statistics from "./Statistics"
 import TransactionHistory from "./TransactionHistory"
-import { TextSm } from "../shared/Typography"
-import ButtonLink from "../shared/ButtonLink"
+import { TextSm } from "../../components/shared/Typography"
+import ButtonLink from "../../components/shared/ButtonLink"
 import ActivityBar from "../ActivityDetails/ActivityBar"
 
-export default function Overview() {
+export default function OverviewPage() {
   const { onOpen } = useDocsDrawer()
 
   return (

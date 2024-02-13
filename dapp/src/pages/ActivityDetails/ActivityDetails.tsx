@@ -4,10 +4,10 @@ import { Card, CardBody, HStack, VStack, Image, Tag } from "@chakra-ui/react"
 import { capitalize } from "#/utils"
 import ActivityDetailsImg from "#/assets/images/activity-details.png"
 import { LocationState } from "#/types"
-import { TextMd, TextSm } from "../shared/Typography"
-import { CurrencyBalance } from "../shared/CurrencyBalance"
-import StatusInfo from "../shared/StatusInfo"
-import Spinner from "../shared/Spinner"
+import { TextMd, TextSm } from "../../components/shared/Typography"
+import { CurrencyBalance } from "../../components/shared/CurrencyBalance"
+import StatusInfo from "../../components/shared/StatusInfo"
+import Spinner from "../../components/shared/Spinner"
 
 function ActivityDetails() {
   const location = useLocation()

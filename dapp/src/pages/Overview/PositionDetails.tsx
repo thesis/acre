@@ -13,7 +13,7 @@ import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalan
 import { TextMd } from "#/components/shared/Typography"
 import { Info } from "#/assets/icons"
 import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
-import TransactionModal from "../TransactionModal"
+import TransactionModal from "../../components/TransactionModal"
 
 export default function PositionDetails(props: CardProps) {
   const [actionFlowType, setActionFlowType] = useState<
