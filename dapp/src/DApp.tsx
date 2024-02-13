@@ -1,6 +1,6 @@
 import React from "react"
 import { Box, ChakraProvider } from "@chakra-ui/react"
-import { useDetectThemeMode, useSentry } from "./hooks"
+import { useSentry } from "./hooks"
 import theme from "./theme"
 import {
   DocsDrawerContextProvider,
@@ -15,7 +15,8 @@ import DocsDrawer from "./components/DocsDrawer"
 import GlobalStyles from "./components/GlobalStyles"
 
 function DApp() {
-  useDetectThemeMode()
+  // TODO: Let's uncomment when dark mode is ready
+  // useDetectThemeMode()
   useSentry()
 
   return (
