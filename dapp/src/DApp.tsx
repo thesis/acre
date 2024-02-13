@@ -1,7 +1,7 @@
 import React from "react"
 import { Box, ChakraProvider } from "@chakra-ui/react"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
-import { useDetectThemeMode, useSentry } from "./hooks"
+import { useSentry } from "./hooks"
 import theme from "./theme"
 import {
   DocsDrawerContextProvider,
@@ -28,7 +28,8 @@ const router = createBrowserRouter([
 ])
 
 function DApp() {
-  useDetectThemeMode()
+  // TODO: Let's uncomment when dark mode is ready
+  // useDetectThemeMode()
   useSentry()
 
   return (

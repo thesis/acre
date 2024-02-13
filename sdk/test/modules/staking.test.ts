@@ -111,6 +111,7 @@ describe("Staking", () => {
     it("should return stake initialization object", () => {
       expect(result).toBeInstanceOf(StakeInitialization)
       expect(result.getBitcoinAddress).toBeDefined()
+      expect(result.getDepositReceipt).toBeDefined()
       expect(result.stake).toBeDefined()
       expect(result.signMessage).toBeDefined()
     })
@@ -125,6 +126,13 @@ describe("Staking", () => {
       describe("getDepositAddress", () => {
         it("should return bitcoin deposit address", async () => {
           expect(await result.getBitcoinAddress()).toBe(mockedDepositBTCAddress)
+        })
+      })
+
+      describe("getDepositReceipt", () => {
+        it("should return tbtc deposit receipt", () => {
+          expect(result.getDepositReceipt()).toBe(depositReceipt)
+          expect(mockedDeposit.getReceipt).toHaveBeenCalled()
         })
       })
 
