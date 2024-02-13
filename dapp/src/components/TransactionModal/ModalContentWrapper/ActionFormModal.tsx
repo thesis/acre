@@ -86,10 +86,7 @@ function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
           </TabList>
           <TabPanels>
             <TabPanel>
-              <StakeFormModal
-                onSubmitForm={handleSubmitFormWrapper}
-                isLoading={isLoading}
-              />
+              <StakeFormModal onSubmitForm={handleSubmitFormWrapper} />
             </TabPanel>
             <TabPanel>
               {/* TODO: Use the correct form for unstaking */}
