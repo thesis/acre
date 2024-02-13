@@ -10,9 +10,7 @@ import {
 } from "@acre-btc/sdk"
 import axios from "axios"
 
-// TODO: Get this URL from env variable.
-const DEFENDER_WEBHOOK_URL =
-  "https://api.defender.openzeppelin.com/actions/a0d6d2e2-ce9c-4619-aa2b-6c874fe97af7/runs/webhook/b1f17c89-8230-46e3-866f-a3213887974c/Sbddsy54cJ6sPg2bLPyuHJ"
+const DEFENDER_WEBHOOK_URL = import.meta.env.VITE_DEFENDER_ACTION_WEBHOOK_URL
 
 class RelayerDepositorProxy<T extends TBTCDepositor> implements DepositorProxy {
   #tbtcDepositor: T
