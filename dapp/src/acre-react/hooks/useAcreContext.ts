@@ -5,7 +5,7 @@ export function useAcreContext() {
   const context = useContext(AcreSdkContext)
 
   if (!context) {
-    throw new Error("AcreSdkContext used outside of AcreSdkContext component")
+    throw new Error("AcreSdkContext used outside of AcreSdkProvider component")
   }
 
   return context
