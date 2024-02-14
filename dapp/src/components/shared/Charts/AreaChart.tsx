@@ -39,6 +39,7 @@ export function AreaChart({ data }: { data: AreaChartType[] }) {
         />
         <XAxis
           dataKey="xAxis"
+          axisLine={false}
           style={{
             fontSize: "0.8rem",
             fontWeight: "semibold",
@@ -51,6 +52,7 @@ export function AreaChart({ data }: { data: AreaChartType[] }) {
           tickFormatter={(tick) => `${tick}.00%`}
           dataKey="yAxis"
           orientation="right"
+          axisLine={false}
           style={{
             fontSize: "0.8rem",
             fontWeight: "semibold",
