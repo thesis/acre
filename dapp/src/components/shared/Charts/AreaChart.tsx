@@ -42,7 +42,7 @@ export function AreaChart({ data }: { data: AreaChartType[] }) {
           tickLine={false}
           axisLine={false}
           style={{
-            fontSize: "0.8rem",
+            fontSize: "0.75rem",
             fontWeight: "semibold",
             color: "#675E60",
           }}
@@ -55,10 +55,11 @@ export function AreaChart({ data }: { data: AreaChartType[] }) {
           orientation="right"
           tickLine={false}
           axisLine={false}
+          tickMargin={30}
+          width={100}
           style={{
-            fontSize: "0.8rem",
+            fontSize: "0.75rem",
             fontWeight: "semibold",
-            color: "#675E60",
           }}
         />
         <Tooltip content={<AreaChartTooltip />} />
