@@ -349,6 +349,21 @@ describe("stBTC", () => {
       })
 
       context("when vault has two depositors", () => {
+        let depositTx1: ContractTransactionResponse
+        let depositTx2: ContractTransactionResponse
+
+        before(async () => {
+          depositTx1 = await stbtc
+            .connect(depositor1)
+            .deposit(depositor1AmountToDeposit, depositor1.address)
+
+          depositTx2 = await stbtc
+            .connect(depositor2)
+            .deposit(depositor2AmountToDeposit, depositor2.address)
+
+          afterDepositsSnapshot = await takeSnapshot()
+        })
+
         context(
           "when the vault earns yield after sync and 1/2 cycle length",
           () => {
@@ -510,6 +525,79 @@ describe("stBTC", () => {
             expect(availableAssetsToRedeem).to.be.eq(expectedAssetsToRedeem)
           })
         })
+
+        context.only(
+          "when vault losses funds after a full cycle length",
+          () => {
+            let depositor1SharesBefore: bigint
+            let depositor2SharesBefore: bigint
+
+            const lostFunds = to1e18(2)
+
+            before(async () => {
+              // Current state:
+              // depositor 1 shares = deposit amount = 7
+              // depositor 2 shares = deposit amount = 3
+              // Total assets = 7 + 3 - 2 (loss) = 8
+              await afterDepositsSnapshot.restore()
+
+              depositor1SharesBefore = 7000000000000000000n
+
+              depositor2SharesBefore = 3000000000000000000n
+
+              // Simulating assets loss from strategies. The vault now contains
+              // less tokens than deposited which causes the exchange rate to
+              // change.
+              await stbtc.transferAssets(thirdParty, lostFunds)
+
+              await syncRewards(1n)
+            })
+
+            after(async () => {
+              afterSimulatingYieldSnapshot = await takeSnapshot()
+            })
+
+            it("the vault should hold less assets", async () => {
+              const actualDepositAmount1 = depositor1AmountToDeposit
+              const actualDepositAmount2 = depositor2AmountToDeposit
+
+              expect(await stbtc.totalAssets()).to.be.eq(
+                actualDepositAmount1 + actualDepositAmount2 - lostFunds,
+              )
+            })
+
+            it("the depositors shares should be the same", async () => {
+              expect(await stbtc.balanceOf(depositor1.address)).to.be.eq(
+                depositor1SharesBefore,
+              )
+              expect(await stbtc.balanceOf(depositor2.address)).to.be.eq(
+                depositor2SharesBefore,
+              )
+            })
+
+            it("the depositor 1 should be able to redeem less tokens than before", async () => {
+              const shares = await stbtc.balanceOf(depositor1.address)
+              const availableAssetsToRedeem = await stbtc.previewRedeem(shares)
+
+              // 7 * 8 / 10 = 5.6
+              // Due to Solidity's mulDiv functions the result is floor rounded.
+              const expectedAssetsToRedeem = 5600000000000000000n
+
+              expect(availableAssetsToRedeem).to.be.eq(expectedAssetsToRedeem)
+            })
+
+            it("the depositor 2 should be able to redeem less tokens than before", async () => {
+              const shares = await stbtc.balanceOf(depositor2.address)
+              const availableAssetsToRedeem = await stbtc.previewRedeem(shares)
+
+              // 3 * 8 / 10 = 2.4
+              // Due to Solidity's mulDiv functions the result is floor rounded.
+              const expectedAssetsToRedeem = 2400000000000000000n
+
+              expect(availableAssetsToRedeem).to.be.eq(expectedAssetsToRedeem)
+            })
+          },
+        )
 
         context("when depositor 1 deposits more tokens", () => {
           context(

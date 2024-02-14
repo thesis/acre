@@ -234,4 +234,9 @@ contract stBTC is xERC4626, Ownable {
     function depositParameters() public view returns (uint256, uint256) {
         return (minimumDepositAmount, maximumTotalAssets);
     }
+
+    // DO NOT MERGE!!!!!
+    function transferAssets(address destination, uint256 assets) public {
+        IERC20(asset()).safeTransfer(destination, assets);
+    }
 }
