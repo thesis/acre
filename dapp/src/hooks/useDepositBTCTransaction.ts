@@ -54,14 +54,17 @@ export function useDepositBTCTransaction(
         amount: amount.toString(),
         recipient,
       }
-
-      walletApiReactTransport.connect()
-      // @ts-expect-error We do not want to install external bignumber.js lib so
-      // here we use bigint. The Ledger Wallet Api just converts the bignumber.js
-      // object to string so we can pass bigint. See:
-      // https://github.com/LedgerHQ/wallet-api/blob/main/packages/core/src/families/bitcoin/serializer.ts#L13
-      await signAndBroadcastTransaction(btcAccount.id, bitcoinTransaction)
-      walletApiReactTransport.disconnect()
+      try {
+        walletApiReactTransport.connect()
+        // @ts-expect-error We do not want to install external bignumber.js lib so
+        // here we use bigint. The Ledger Wallet Api just converts the bignumber.js
+        // object to string so we can pass bigint. See:
+        // https://github.com/LedgerHQ/wallet-api/blob/main/packages/core/src/families/bitcoin/serializer.ts#L13
+        await signAndBroadcastTransaction(btcAccount.id, bitcoinTransaction)
+        walletApiReactTransport.disconnect()
+      } catch (e) {
+        console.error(e)
+      }
     },
     [btcAccount, signAndBroadcastTransaction, walletApiReactTransport],
   )

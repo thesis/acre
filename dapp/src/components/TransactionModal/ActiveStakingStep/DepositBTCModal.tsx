@@ -1,8 +1,8 @@
 import React, { useCallback } from "react"
 import {
   useDepositBTCTransaction,
+  useExecuteFunction,
   useModalFlowContext,
-  useSendTransaction,
   useStakeFlowContext,
   useTransactionContext,
 } from "#/hooks"
@@ -26,7 +26,7 @@ export default function DepositBTCModal() {
     setStatus(PROCESS_STATUSES.FAILED)
   }, [setStatus])
 
-  const { sendTransaction: sendStakeTransaction } = useSendTransaction(
+  const handleStake = useExecuteFunction(
     stake,
     onStakeBTCSuccess,
     onStakeBTCError,
@@ -38,9 +38,9 @@ export default function DepositBTCModal() {
     // to make sure for the moment that it doesn't return an error about funds not found
     // TODO: Remove the delay when SDK is updated
     setTimeout(() => {
-      asyncWrapper(sendStakeTransaction())
+      asyncWrapper(handleStake())
     }, 10000)
-  }, [sendStakeTransaction, setStatus])
+  }, [setStatus, handleStake])
 
   const { sendBitcoinTransaction } =
     useDepositBTCTransaction(onDepositBTCSuccess)
