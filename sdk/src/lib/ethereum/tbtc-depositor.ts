@@ -1,4 +1,4 @@
-import { packRevealDepositParameters as tbtcPackRevealDepositParameters } from "@keep-network/tbtc-v2.ts"
+import { packRevealDepositParameters } from "@keep-network/tbtc-v2.ts"
 import { TbtcDepositor as TbtcDepositorTypechain } from "core/typechain/contracts/TbtcDepositor"
 import {
   ZeroAddress,
@@ -25,8 +25,6 @@ import { Hex } from "../utils"
 import { EthereumNetwork } from "./network"
 
 import SepoliaTbtcDepositor from "./artifacts/sepolia/TbtcDepositor.json"
-
-const packRevealDepositParameters = tbtcPackRevealDepositParameters
 
 /**
  * Ethereum implementation of the TBTCDepositor.
