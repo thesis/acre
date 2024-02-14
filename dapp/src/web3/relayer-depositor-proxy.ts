@@ -10,7 +10,7 @@ import {
 } from "@acre-btc/sdk"
 import axios from "axios"
 
-const DEFENDER_WEBHOOK_URL = import.meta.env.VITE_DEFENDER_ACTION_WEBHOOK_URL
+const DEFENDER_WEBHOOK_URL = import.meta.env.VITE_DEFENDER_RELAYER_WEBHOOK_URL
 
 class RelayerDepositorProxy<T extends TBTCDepositor> implements DepositorProxy {
   #tbtcDepositor: T
