@@ -1437,6 +1437,6 @@ describe("AcreBitcoinDepositor", () => {
     await tbtcVault.createOptimisticMintingRequest(depositKey)
 
     // Simulate deposit request finalization via optimistic minting.
-    await tbtcVault.finalizeOptimisticMintingRequestAndMint(depositKey)
+    await tbtcVault.finalizeOptimisticMintingRequest(depositKey)
   }
 })
