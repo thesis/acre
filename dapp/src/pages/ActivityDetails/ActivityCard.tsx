@@ -96,7 +96,7 @@ function ActivityCard({ transaction, onRemove, ...props }: ActivityCardType) {
               as={ChevronRightIcon}
               boxSize={5}
               color={isActive ? "gold.700" : "grey.400"}
-              _hover={isActive && { color: "gold.700" }}
+              _hover={isActive ? { color: "gold.700" } : undefined}
             />
           )}
         </HStack>
