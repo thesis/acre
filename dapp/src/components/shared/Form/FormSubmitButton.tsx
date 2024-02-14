@@ -8,7 +8,7 @@ const LOADING_STYLE = {
   _hover: { opacity: 1 },
 }
 
-export function FormSubmitButton({ ...props }: ButtonProps) {
+export function FormSubmitButton({ children, ...props }: ButtonProps) {
   const { isSubmitting } = useFormikContext()
 
   return (
@@ -22,7 +22,7 @@ export function FormSubmitButton({ ...props }: ButtonProps) {
       {...(isSubmitting && LOADING_STYLE)}
       {...props}
     >
-      Stake
+      {children}
     </Button>
   )
 }
