@@ -10,16 +10,16 @@ import {
   Icon,
   Tooltip,
 } from "@chakra-ui/react"
-import { StakeHistory } from "#/types"
+import { TransactionInfo } from "#/types"
 import { capitalize } from "#/utils"
 import { CloseIcon, ChevronRightIcon } from "#/assets/icons"
 import { LocationState } from "#/types/location"
-import StatusInfo from "../../components/shared/StatusInfo"
-import { CurrencyBalance } from "../../components/shared/CurrencyBalance"
-import { TextSm } from "../../components/shared/Typography"
+import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
+import StatusInfo from "#/components/shared/StatusInfo"
+import { TextSm } from "#/components/shared/Typography"
 
 type ActivityCardType = CardProps & {
-  transaction: StakeHistory
+  transaction: TransactionInfo
   onRemove: (transactionHash: string) => void
 }
 
@@ -31,11 +31,10 @@ function ActivityCard({ transaction, onRemove, ...props }: ActivityCardType) {
   let isActive
 
   if (state) {
-    isActive =
-      transaction.receiptTx.txHash === state.transaction.receiptTx?.txHash
+    isActive = transaction.txHash === state.transaction.txHash
   }
 
-  const isCompleted = transaction.callTx.status === "completed"
+  const isCompleted = transaction.status === "completed"
 
   if (isCompleted) {
     colorScheme = "green"
@@ -46,11 +45,11 @@ function ActivityCard({ transaction, onRemove, ...props }: ActivityCardType) {
   const onClose = useCallback(
     (event: React.MouseEvent) => {
       event.preventDefault()
-      if (transaction.receiptTx.txHash) {
-        onRemove(transaction.receiptTx.txHash)
+      if (transaction.txHash) {
+        onRemove(transaction.txHash)
       }
     },
-    [onRemove, transaction.receiptTx.txHash],
+    [onRemove, transaction.txHash],
   )
 
   return (
@@ -77,8 +76,8 @@ function ActivityCard({ transaction, onRemove, ...props }: ActivityCardType) {
       <CardHeader p={0} w="100%">
         <HStack justifyContent="space-between">
           <CurrencyBalance
-            currency={transaction.receiptTx.currency}
-            amount={transaction.receiptTx.amount}
+            currency={transaction.currency}
+            amount={transaction.amount}
             size="xl"
             balanceFontWeight="black"
             symbolFontWeight="medium"
@@ -104,14 +103,14 @@ function ActivityCard({ transaction, onRemove, ...props }: ActivityCardType) {
       </CardHeader>
       <CardBody p={0}>
         <TextSm fontWeight="semibold" marginBottom={4}>
-          {capitalize(transaction.receiptTx.action)}
+          {capitalize(transaction.action)}
         </TextSm>
       </CardBody>
       <CardFooter p={0}>
         {" "}
-        {transaction.callTx.status && (
+        {transaction.status && (
           <StatusInfo
-            status={transaction.callTx.status}
+            status={transaction.status}
             withIcon
             withDefaultColor
             fontWeight="normal"

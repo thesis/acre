@@ -1,5 +1,5 @@
-import { StakeHistory } from "./transaction"
+import { TransactionInfo } from "./transaction"
 
 export type LocationState = {
-  transaction: StakeHistory
+  transaction: TransactionInfo
 }

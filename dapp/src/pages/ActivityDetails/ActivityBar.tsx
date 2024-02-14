@@ -10,7 +10,7 @@ function ActivityBar(props: FlexboxProps) {
   const onRemove = useCallback(
     (transactionHash: string) => {
       const filteredTransactions = transactions.filter(
-        (transaction) => transaction.receiptTx.txHash !== transactionHash,
+        (transaction) => transaction.txHash !== transactionHash,
       )
       setTransactions(filteredTransactions)
     },
@@ -23,7 +23,7 @@ function ActivityBar(props: FlexboxProps) {
           as={ReactRouterLink}
           to="/activity-details"
           state={{ transaction }}
-          key={transaction.receiptTx.txHash}
+          key={transaction.txHash}
         >
           <ActivityCard transaction={transaction} onRemove={onRemove} />
         </ChakraLink>
