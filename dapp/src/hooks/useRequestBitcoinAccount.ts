@@ -3,10 +3,12 @@ import { useCallback, useContext, useEffect } from "react"
 import { WalletContext } from "#/contexts"
 import { UseRequestAccountReturn } from "#/types"
 import { CURRENCY_ID_BITCOIN } from "#/constants"
+import { useWalletApiReactTransport } from "./useWalletApiReactTransport"
 
 export function useRequestBitcoinAccount(): UseRequestAccountReturn {
   const { setBtcAccount } = useContext(WalletContext)
   const { account, requestAccount } = useRequestAccount()
+  const { walletApiReactTransport } = useWalletApiReactTransport()
 
   useEffect(() => {
     if (account) {
@@ -15,8 +17,10 @@ export function useRequestBitcoinAccount(): UseRequestAccountReturn {
   }, [account, setBtcAccount])
 
   const requestBitcoinAccount = useCallback(async () => {
+    walletApiReactTransport.connect()
     await requestAccount({ currencyIds: [CURRENCY_ID_BITCOIN] })
-  }, [requestAccount])
+    walletApiReactTransport.disconnect()
+  }, [requestAccount, walletApiReactTransport])
 
   return { requestAccount: requestBitcoinAccount }
 }

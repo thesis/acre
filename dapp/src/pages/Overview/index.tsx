@@ -1,12 +1,12 @@
 import React from "react"
 import { Flex, Grid, HStack, Switch } from "@chakra-ui/react"
 import { useDocsDrawer } from "#/hooks"
+import { TextSm } from "#/components/shared/Typography"
 import { USD } from "#/constants"
+import ButtonLink from "#/components/shared/ButtonLink"
 import PositionDetails from "./PositionDetails"
 import Statistics from "./Statistics"
 import TransactionHistory from "./TransactionHistory"
-import { TextSm } from "../../components/shared/Typography"
-import ButtonLink from "../../components/shared/ButtonLink"
 import ActivityBar from "../ActivityDetails/ActivityBar"
 
 export default function OverviewPage() {

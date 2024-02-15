@@ -1,7 +1,7 @@
 import React from "react"
 import { Box, ChakraProvider } from "@chakra-ui/react"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
-import { useSentry } from "./hooks"
+import { useSentry, useInitializeAcreSdk } from "./hooks"
 import theme from "./theme"
 import {
   DocsDrawerContextProvider,
@@ -9,6 +9,7 @@ import {
   SidebarContextProvider,
   WalletContextProvider,
 } from "./contexts"
+import { AcreSdkProvider } from "./acre-react/contexts"
 import Header from "./components/Header"
 import OverviewPage from "./pages/Overview"
 import Sidebar from "./components/Sidebar"
@@ -31,6 +32,7 @@ function DApp() {
   // TODO: Let's uncomment when dark mode is ready
   // useDetectThemeMode()
   useSentry()
+  useInitializeAcreSdk()
 
   return (
     <>
@@ -48,14 +50,16 @@ function DAppProviders() {
   return (
     <LedgerWalletAPIProvider>
       <WalletContextProvider>
-        <DocsDrawerContextProvider>
-          <SidebarContextProvider>
-            <ChakraProvider theme={theme}>
-              <GlobalStyles />
-              <DApp />
-            </ChakraProvider>
-          </SidebarContextProvider>
-        </DocsDrawerContextProvider>
+        <AcreSdkProvider>
+          <DocsDrawerContextProvider>
+            <SidebarContextProvider>
+              <ChakraProvider theme={theme}>
+                <GlobalStyles />
+                <DApp />
+              </ChakraProvider>
+            </SidebarContextProvider>
+          </DocsDrawerContextProvider>
+        </AcreSdkProvider>
       </WalletContextProvider>
     </LedgerWalletAPIProvider>
   )

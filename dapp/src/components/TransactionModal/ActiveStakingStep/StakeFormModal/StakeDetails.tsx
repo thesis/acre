@@ -5,9 +5,21 @@ import { useTokenAmountFormValue } from "#/components/shared/TokenAmountForm/Tok
 import { useTransactionDetails } from "#/hooks"
 import { CurrencyType } from "#/types"
 
-function StakeDetails({ currency }: { currency: CurrencyType }) {
-  const value = useTokenAmountFormValue()
-  const details = useTransactionDetails(value ?? 0n)
+function StakeDetails({
+  currency,
+  minTokenAmount,
+  maxTokenAmount,
+}: {
+  currency: CurrencyType
+  minTokenAmount: string
+  maxTokenAmount: string
+}) {
+  const value = useTokenAmountFormValue() ?? 0n
+  const isMaximumValueExceeded = value > BigInt(maxTokenAmount)
+  const isMinimumValueFulfilled = value >= BigInt(minTokenAmount)
+  // Let's not calculate the details of the transaction when the value is not valid.
+  const amount = !isMaximumValueExceeded && isMinimumValueFulfilled ? value : 0n
+  const details = useTransactionDetails(amount)
 
   return (
     <List spacing={3} mt={10}>

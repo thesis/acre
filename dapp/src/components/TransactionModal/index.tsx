@@ -2,10 +2,17 @@ import React, { useCallback, useEffect, useMemo, useState } from "react"
 import {
   ModalFlowContext,
   ModalFlowContextValue,
+  StakeFlowProvider,
   TransactionContextProvider,
 } from "#/contexts"
 import { useSidebar } from "#/hooks"
-import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
+import {
+  ACTION_FLOW_TYPES,
+  ActionFlowType,
+  PROCESS_STATUSES,
+  ProcessStatus,
+} from "#/types"
+import { ModalCloseButton } from "@chakra-ui/react"
 import ModalBase from "../shared/ModalBase"
 import ModalContentWrapper from "./ModalContentWrapper"
 import { ActiveFlowStep } from "./ActiveFlowStep"
@@ -27,11 +34,10 @@ export default function TransactionModal({
 
   const [type, setType] = useState(defaultType)
   const [activeStep, setActiveStep] = useState(DEFAULT_ACTIVE_STEP)
-  const [isPaused, setIsPaused] = useState(false)
-  const [isPendingTransaction, setIsPendingTransaction] = useState(false)
+  const [status, setStatus] = useState<ProcessStatus>(PROCESS_STATUSES.IDLE)
 
   const handleResume = useCallback(() => {
-    setIsPaused(false)
+    setStatus(PROCESS_STATUSES.PENDING)
   }, [])
 
   const handleGoNext = useCallback(() => {
@@ -39,27 +45,18 @@ export default function TransactionModal({
   }, [])
 
   const handleClose = useCallback(() => {
-    if (!isPaused && isPendingTransaction) {
-      setIsPaused(true)
+    if (status === PROCESS_STATUSES.PENDING) {
+      setStatus(PROCESS_STATUSES.PAUSED)
     } else {
       onClose()
     }
-  }, [isPaused, isPendingTransaction, onClose])
-
-  const handleStartTransactionProcess = useCallback(() => {
-    setIsPendingTransaction(true)
-  }, [setIsPendingTransaction])
-
-  const handleStopTransactionProcess = useCallback(() => {
-    setIsPendingTransaction(false)
-  }, [setIsPendingTransaction])
+  }, [onClose, status])
 
   const resetState = useCallback(() => {
     setType(defaultType)
     setActiveStep(DEFAULT_ACTIVE_STEP)
-    setIsPaused(false)
-    setIsPendingTransaction(false)
-  }, [defaultType])
+    setStatus(PROCESS_STATUSES.IDLE)
+  }, [defaultType, setStatus])
 
   useEffect(() => {
     setType(defaultType)
@@ -81,33 +78,30 @@ export default function TransactionModal({
     () => ({
       type,
       activeStep,
-      isPaused,
+      status,
       setType,
+      setStatus,
       onClose: handleClose,
       onResume: handleResume,
       goNext: handleGoNext,
-      startTransactionProcess: handleStartTransactionProcess,
-      endTransactionProcess: handleStopTransactionProcess,
     }),
-    [
-      type,
-      activeStep,
-      isPaused,
-      handleClose,
-      handleResume,
-      handleGoNext,
-      handleStartTransactionProcess,
-      handleStopTransactionProcess,
-    ],
+    [type, activeStep, status, handleClose, handleResume, handleGoNext],
   )
 
   return (
-    <ModalBase isOpen={isOpen} onClose={handleClose}>
+    <ModalBase
+      isOpen={isOpen}
+      onClose={handleClose}
+      closeOnOverlayClick={false}
+    >
       <TransactionContextProvider>
         <ModalFlowContext.Provider value={contextValue}>
-          <ModalContentWrapper defaultType={defaultType}>
-            <ActiveFlowStep />
-          </ModalContentWrapper>
+          <StakeFlowProvider>
+            <ModalContentWrapper defaultType={defaultType}>
+              <ModalCloseButton />
+              <ActiveFlowStep />
+            </ModalContentWrapper>
+          </StakeFlowProvider>
         </ModalFlowContext.Provider>
       </TransactionContextProvider>
     </ModalBase>
