@@ -1345,6 +1345,59 @@ describe("AcreBitcoinDepositor", () => {
     })
   })
 
+  describe("updateMaxTotalAssetsSoftLimit", () => {
+    beforeAfterSnapshotWrapper()
+
+    describe("when caller is not governance", () => {
+      it("should revert", async () => {
+        await expect(
+          bitcoinDepositor
+            .connect(thirdParty)
+            .updateMaxTotalAssetsSoftLimit(1234),
+        )
+          .to.be.revertedWithCustomError(
+            bitcoinDepositor,
+            "OwnableUnauthorizedAccount",
+          )
+          .withArgs(thirdParty.address)
+      })
+    })
+
+    describe("when caller is governance", () => {
+      const testUpdateMaxTotalAssetsSoftLimit = (newValue: number) =>
+        function () {
+          beforeAfterSnapshotWrapper()
+
+          let tx: ContractTransactionResponse
+
+          before(async () => {
+            tx = await bitcoinDepositor
+              .connect(governance)
+              .updateMaxTotalAssetsSoftLimit(newValue)
+          })
+
+          it("should emit MaxTotalAssetsSoftLimitUpdated event", async () => {
+            await expect(tx)
+              .to.emit(bitcoinDepositor, "MaxTotalAssetsSoftLimitUpdated")
+              .withArgs(newValue)
+          })
+
+          it("should update value correctly", async () => {
+            expect(
+              await bitcoinDepositor.maxTotalAssetsSoftLimitSat(),
+            ).to.be.eq(newValue)
+          })
+        }
+
+      describe(
+        "when new value is non-zero",
+        testUpdateMaxTotalAssetsSoftLimit(47281),
+      )
+
+      describe("when new value is zero", testUpdateMaxTotalAssetsSoftLimit(0))
+    })
+  })
+
   describe("updateDepositorFeeDivisor", () => {
     beforeAfterSnapshotWrapper()
 

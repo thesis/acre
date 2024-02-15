@@ -86,6 +86,14 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     ///      made in the dApp being blocked by another big deposit.
     uint256 public maxSingleStakeAmount;
 
+    /// @notice Maximum total assets soft limit (in tBTC token precision).
+    /// @dev stBTC contract defines a maximum total assets limit held by the protocol
+    ///      that new deposits cannot exceed (hard cap). Due to the asynchronous
+    ///      manner of Bitcoin deposits process we introduce a soft limit (soft cap)
+    ///      set to a value lower than the hard cap to let the dApp initialize
+    ///      Bitcoin deposits only up to the soft cap limit.
+    uint256 public maxTotalAssetsSoftLimit;
+
     /// @notice Total balance of pending stake requests (in tBTC token precision).
     /// @dev stBTC contract introduces limits for total deposits amount. Due to
     ///      asynchronous manner of the staking flow, this contract needs to track
@@ -177,6 +185,11 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     ///        amount (in tBTC token precision).
     event MaxSingleStakeAmountUpdated(uint64 maxSingleStakeAmount);
 
+    /// @notice Emitted when a maximum total assets soft limit is updated.
+    /// @param maxTotalAssetsSoftLimit New value of the maximum total assets
+    ///        soft limit (in tBTC token precision).
+    event MaxTotalAssetsSoftLimitUpdated(uint64 maxTotalAssetsSoftLimit);
+
     /// @notice Emitted when a depositor fee divisor is updated.
     /// @param depositorFeeDivisor New value of the depositor fee divisor.
     event DepositorFeeDivisorUpdated(uint64 depositorFeeDivisor);
@@ -234,7 +247,7 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
 
         // TODO: Revisit initial values before mainnet deployment.
         maxSingleStakeAmount = 0.5 * 1e18; // 0.5 BTC
-
+        maxTotalAssetsSoftLimit = 7 * 1e18; // 7 BTC
         depositorFeeDivisor = 1000; // 1/1000 == 10bps == 0.1% == 0.001
     }
 
@@ -397,6 +410,17 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
         maxSingleStakeAmount = newMaxSingleStakeAmount;
 
         emit MaxSingleStakeAmountUpdated(newMaxSingleStakeAmount);
+    }
+
+    /// @notice Updates the maximum total assets soft limit.
+    /// @param newMaxTotalAssetsSoftLimit New maximum total assets soft limit
+    ///        (in tBTC precision).
+    function updateMaxTotalAssetsSoftLimit(
+        uint64 newMaxTotalAssetsSoftLimit
+    ) external onlyOwner {
+        maxTotalAssetsSoftLimit = newMaxTotalAssetsSoftLimit;
+
+        emit MaxTotalAssetsSoftLimitUpdated(newMaxTotalAssetsSoftLimit);
     }
 
     /// @notice Updates the depositor fee divisor.
