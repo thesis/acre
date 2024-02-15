@@ -7,26 +7,23 @@ import {
   VStack,
   Image,
   Tag,
-  Spinner,
+  Flex,
 } from "@chakra-ui/react"
 import { capitalize } from "#/utils"
-import ActivityDetailsImg from "#/assets/images/activity-details.png"
+import ActivityProgress from "#/assets/images/activity-progress.png"
 import { LocationState } from "#/types"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import StatusInfo from "#/components/shared/StatusInfo"
 import { TextMd, TextSm } from "#/components/shared/Typography"
+import Spinner from "#/components/shared/Spinner"
 
 function ActivityDetails() {
   const location = useLocation()
 
   const { transaction } = location.state as LocationState
 
-  if (!transaction) {
-    return null
-  }
-
   return (
-    <VStack w="100%">
+    <Flex flexDirection="column" gap={2}>
       {transaction?.status === "pending" && (
         <Card w="100%">
           <CardBody paddingX={10} paddingY={6}>
@@ -72,11 +69,11 @@ function ActivityDetails() {
                 </Tag>
               )}
             </VStack>
-            <Image justifyItems="right" src={ActivityDetailsImg} />
+            <Image src={ActivityProgress} />
           </HStack>
         </CardBody>
       </Card>
-    </VStack>
+    </Flex>
   )
 }
 

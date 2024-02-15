@@ -9,11 +9,11 @@ import {
   HStack,
   Icon,
   Tooltip,
+  CloseButton,
 } from "@chakra-ui/react"
-import { TransactionInfo } from "#/types"
+import { TransactionInfo, LocationState } from "#/types"
 import { capitalize } from "#/utils"
-import { CloseIcon, ChevronRightIcon } from "#/assets/icons"
-import { LocationState } from "#/types/location"
+import { ChevronRightIcon } from "#/assets/icons"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import StatusInfo from "#/components/shared/StatusInfo"
 import { TextSm } from "#/components/shared/Typography"
@@ -24,16 +24,12 @@ type ActivityCardType = CardProps & {
 }
 
 function ActivityCard({ transaction, onRemove, ...props }: ActivityCardType) {
-  const location = useLocation()
-
-  const state = location.state as LocationState
   let colorScheme
-  let isActive
 
-  if (state) {
-    isActive = transaction.txHash === state.transaction.txHash
-  }
-
+  const state = useLocation().state as LocationState | null
+  const isActive = state
+    ? transaction.txHash === state.transaction.txHash
+    : false
   const isCompleted = transaction.status === "completed"
 
   if (isCompleted) {
@@ -84,12 +80,7 @@ function ActivityCard({ transaction, onRemove, ...props }: ActivityCardType) {
           />
           {isCompleted ? (
             <Tooltip label="Remove" placement="top" paddingX={3} paddingY={2}>
-              <Icon
-                as={CloseIcon}
-                boxSize={5}
-                color="grey.700"
-                onClick={onClose}
-              />
+              <CloseButton size="sm" onClick={onClose} />
             </Tooltip>
           ) : (
             <Icon

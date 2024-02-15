@@ -4,7 +4,7 @@ import { Flex, Link as ChakraLink, Icon, VStack } from "@chakra-ui/react"
 import { Link as ReactRouterLink } from "react-router-dom"
 import { useSidebar } from "#/hooks"
 import { ArrowLeft } from "#/assets/icons"
-import ActivityBar from "./ActivityBar"
+import ActivityBar from "../../components/shared/Activity/ActivityBar"
 import ActivityDetails from "./ActivityDetails"
 
 export default function ActivityPage() {

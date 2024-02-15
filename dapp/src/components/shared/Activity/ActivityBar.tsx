@@ -1,8 +1,8 @@
 import React, { useCallback, useState } from "react"
 import { Link as ReactRouterLink } from "react-router-dom"
 import { Flex, Link as ChakraLink, FlexboxProps } from "@chakra-ui/react"
+import { mockedTransactions } from "#/pages/Activity/mock-transactions"
 import ActivityCard from "./ActivityCard"
-import { mockedTransactions } from "./mock-transactions"
 
 function ActivityBar(props: FlexboxProps) {
   const [transactions, setTransactions] = useState(mockedTransactions)

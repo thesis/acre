@@ -7,7 +7,7 @@ import ButtonLink from "#/components/shared/ButtonLink"
 import PositionDetails from "./PositionDetails"
 import Statistics from "./Statistics"
 import TransactionHistory from "./TransactionHistory"
-import ActivityBar from "../ActivityDetails/ActivityBar"
+import ActivityBar from "../../components/shared/Activity/ActivityBar"
 
 export default function OverviewPage() {
   const { onOpen } = useDocsDrawer()
