@@ -30,7 +30,13 @@ function UnstakeFormModal({
           <CardBody py={4} px={5}>
             <HStack justifyContent="space-between">
               <TextMd fontWeight="bold">Next batch starts in...</TextMd>
-              <Spinner />
+              <HStack>
+                {/* TODO: Use a correct time for batch */}
+                <TextMd fontWeight="bold" color="brand.400">
+                  23h 34m left
+                </TextMd>
+                <Spinner />
+              </HStack>
             </HStack>
             <TextSm mt={4}>
               Extra informative text. Maximize your earnings by using tBTC to
