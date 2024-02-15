@@ -34,11 +34,14 @@ describe("AcreBitcoinDepositor", () => {
   const defaultOptimisticFeeDivisor = 500 // 1/500 = 0.002 = 0.2%
   const defaultDepositorFeeDivisor = 1000 // 1/1000 = 0.001 = 0.1%
 
+  const initialQueuedStakesBalance = to1ePrecision(30000, 10) // 30000 satoshi
+
   // Funding transaction amount: 10000 satoshi
   // tBTC Deposit Treasury Fee: 0.05% = 10000 * 0.05% = 5 satoshi
   // tBTC Optimistic Minting Fee: 0.2% = (10000 - 5) * 0.2% = 19,99 satoshi
   // tBTC Deposit Transaction Max Fee: 1000 satoshi
   // Depositor Fee: 1.25% = 10000 satoshi * 0.01% = 10 satoshi
+  // Amounts below are calculated in 1e18 precision:
   const initialDepositAmount = to1ePrecision(10000, 10) // 10000 satoshi
   const bridgedTbtcAmount = to1ePrecision(897501, 8) // 8975,01 satoshi
   const depositorFee = to1ePrecision(10, 10) // 10 satoshi
@@ -89,6 +92,10 @@ describe("AcreBitcoinDepositor", () => {
       .updateDepositorFeeDivisor(defaultDepositorFeeDivisor)
 
     await stbtc.connect(governance).updateEntryFeeBasisPoints(0)
+
+    await bitcoinDepositor.exposed_setQueuedStakesBalance(
+      initialQueuedStakesBalance,
+    )
   })
 
   describe("initializeStakeRequest", () => {
@@ -182,6 +189,12 @@ describe("AcreBitcoinDepositor", () => {
                 storedStakeRequest.queuedAmount,
                 "invalid queuedAmount",
               ).to.be.equal(0)
+            })
+
+            it("should not update queuedStakesBalance", async () => {
+              expect(await bitcoinDepositor.queuedStakesBalance()).to.be.equal(
+                initialQueuedStakesBalance,
+              )
             })
 
             it("should reveal the deposit to the bridge contract with extra data", async () => {
@@ -606,6 +619,12 @@ describe("AcreBitcoinDepositor", () => {
             ).to.be.equal(await lastBlockTime())
           })
 
+          it("should not update queuedStakesBalance", async () => {
+            expect(await bitcoinDepositor.queuedStakesBalance()).to.be.equal(
+              initialQueuedStakesBalance,
+            )
+          })
+
           it("should emit StakeRequestFinalized event", async () => {
             await expect(tx)
               .to.emit(bitcoinDepositor, "StakeRequestFinalized")
@@ -824,6 +843,12 @@ describe("AcreBitcoinDepositor", () => {
             ).to.be.equal(amountToStake)
           })
 
+          it("should update queuedStakesBalance", async () => {
+            expect(await bitcoinDepositor.queuedStakesBalance()).to.be.equal(
+              initialQueuedStakesBalance + amountToStake,
+            )
+          })
+
           it("should not emit StakeRequestQueued event", async () => {
             await expect(tx)
               .to.emit(bitcoinDepositor, "StakeRequestQueued")
@@ -1017,6 +1042,12 @@ describe("AcreBitcoinDepositor", () => {
             ).to.be.equal(0)
           })
 
+          it("should update queuedStakesBalance", async () => {
+            expect(await bitcoinDepositor.queuedStakesBalance()).to.be.equal(
+              initialQueuedStakesBalance,
+            )
+          })
+
           it("should emit StakeRequestFinalizedFromQueue event", async () => {
             await expect(tx)
               .to.emit(bitcoinDepositor, "StakeRequestFinalizedFromQueue")
@@ -1190,6 +1221,12 @@ describe("AcreBitcoinDepositor", () => {
                   )
                 ).queuedAmount,
               ).to.be.equal(0)
+            })
+
+            it("should update queuedStakesBalance", async () => {
+              expect(await bitcoinDepositor.queuedStakesBalance()).to.be.equal(
+                initialQueuedStakesBalance,
+              )
             })
 
             it("should emit StakeRequestRecalled event", async () => {

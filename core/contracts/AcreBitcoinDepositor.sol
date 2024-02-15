@@ -86,6 +86,13 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     ///      made in the dApp being blocked by another big deposit.
     uint256 public maxSingleStakeAmount;
 
+    /// @notice Total balance of pending stake requests (in tBTC token precision).
+    /// @dev stBTC contract introduces limits for total deposits amount. Due to
+    ///      asynchronous manner of the staking flow, this contract needs to track
+    ///      balance of pending stake requests to ensure new stake request are
+    ///      not initialized if they won't be able to finalize.
+    uint256 public queuedStakesBalance;
+
     /// @notice Divisor used to compute the depositor fee taken from each deposit
     ///         and transferred to the treasury upon stake request finalization.
     /// @dev That fee is computed as follows:
@@ -316,6 +323,9 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
 
         (request.queuedAmount, request.receiver) = finalizeBridging(depositKey);
 
+        // Increase pending stakes balance.
+        queuedStakesBalance += request.queuedAmount;
+
         emit StakeRequestQueued(depositKey, msg.sender, request.queuedAmount);
     }
 
@@ -332,6 +342,9 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
 
         // solhint-disable-next-line not-rely-on-time
         request.finalizedAt = uint32(block.timestamp);
+
+        // Decrease pending stakes balance.
+        queuedStakesBalance -= amountToStake;
 
         emit StakeRequestFinalizedFromQueue(
             depositKey,
@@ -367,6 +380,9 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
 
         // solhint-disable-next-line not-rely-on-time
         request.recalledAt = uint32(block.timestamp);
+
+        // Decrease pending stakes balance.
+        queuedStakesBalance -= amount;
 
         emit StakeRequestRecalled(depositKey, request.receiver, amount);
 
