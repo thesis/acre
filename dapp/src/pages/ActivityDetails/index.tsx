@@ -7,7 +7,7 @@ import { ArrowLeft } from "#/assets/icons"
 import ActivityBar from "./ActivityBar"
 import ActivityDetails from "./ActivityDetails"
 
-function ActivityPage() {
+export default function ActivityPage() {
   const { onOpen: openSideBar, onClose: closeSidebar } = useSidebar()
 
   useEffect(() => {
@@ -37,5 +37,3 @@ function ActivityPage() {
     </Flex>
   )
 }
-
-export default ActivityPage

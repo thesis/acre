@@ -1,6 +1,6 @@
 import React from "react"
 import { Box, ChakraProvider } from "@chakra-ui/react"
-import { createBrowserRouter, RouterProvider } from "react-router-dom"
+import { RouterProvider } from "react-router-dom"
 import { useSentry, useInitializeAcreSdk } from "./hooks"
 import theme from "./theme"
 import {
@@ -11,22 +11,10 @@ import {
 } from "./contexts"
 import { AcreSdkProvider } from "./acre-react/contexts"
 import Header from "./components/Header"
-import OverviewPage from "./pages/Overview"
 import Sidebar from "./components/Sidebar"
 import DocsDrawer from "./components/DocsDrawer"
 import GlobalStyles from "./components/GlobalStyles"
-import ActivityPage from "./pages/ActivityDetails/ActivityPage"
-
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <OverviewPage />,
-  },
-  {
-    path: "activity-details",
-    element: <ActivityPage />,
-  },
-])
+import { router } from "./router"
 
 function DApp() {
   // TODO: Let's uncomment when dark mode is ready
