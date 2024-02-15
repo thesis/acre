@@ -401,6 +401,37 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
 
         tbtcToken.safeTransfer(request.receiver, amount);
     }
+
+    /// @notice Maximum stake amount in satoshi precision.
+    /// @dev It takes into consideration the maximum total assets soft limit (soft
+    ///      cap), that is expected to be set below the stBTC maximum total assets
+    ///      limit (hard cap).
+    /// @dev This function should be called before Bitcoin transaction funding
+    ///      is made. The `initializeStakeRequest` function is not enforcing this
+    ///      limit, not to block the reveal deposit operation of the concurrent
+    ///      deposits made in the dApp in the short window between limit check,
+    ///      submission of Bitcoin funding transaction and stake request
+    ///      initialization.
+    /// @return Maximum allowed stake amount.
+    function maxStakeInSatoshi() external view returns (uint256) {
+        uint256 currentTotalAssets = stbtc.totalAssets();
+
+        if (currentTotalAssets >= maxTotalAssetsSoftLimit) {
+            return 0;
+        }
+
+        uint256 availableLimit = maxTotalAssetsSoftLimit - currentTotalAssets;
+
+        if (queuedStakesBalance >= availableLimit) {
+            return 0;
+        }
+        availableLimit -= queuedStakesBalance;
+
+        uint256 result = Math.min(availableLimit, maxSingleStakeAmount);
+
+        return result / SATOSHI_MULTIPLIER;
+    }
+
     /// @notice Updates the maximum single stake amount.
     /// @param newMaxSingleStakeAmount New maximum single stake amount (in tBTC
     ///        precision).
