@@ -69,3 +69,7 @@ jobs:
 
       - name: Build
         run: pnpm run build
+        env:
+          ETH_HOSTNAME_HTTP: ${{ secrets.ETH_HOSTNAME_HTTP }}
+          ETH_REFERRAL: ${{ secrets.ETH_REFERRAL }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
