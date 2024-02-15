@@ -4,23 +4,40 @@ The application is compatible with Ledger Live and allows people to earn yield o
 
 This project was bootstrapped with [Create Vite](https://github.com/vitejs/vite/tree/main/packages/create-vite).
 
-## Quickstart
+To access the dApp in Ledger Live import manifest as described in the
+[Ledger Live Setup](#ledger-live-setup) section.
 
-Install dependencies and start the app.
+### Development
+
+Install dependencies and start the dApp:
 
  ```bash
     pnpm install
     pnpm run start
 ```
 
-Once the build is running, you can import the manifest on desktop:
+### Ledger Live Setup
+
+To access the Acre dApp in Ledger Live Desktop you need to open the Ledger Live in
+the _Developer mode_ and import the manifest. Please follow the instructions below.
+
 
 1. [Install Ledger Live Desktop](https://www.ledger.com/ledger-live)
-2. Enable the Developer mode
 
-    Go to the **Settings -> About** section, and click 10 times on the Ledger Live version. A new Developer section appears in the settings menu. Turn on **Enable platform dev** tools to use the developer tools window to inspect your app.
+2. Enable the _Developer mode_
+   
+    Go to the **Settings -> About** section, and click **10 times** on the Ledger
+    Live version.
+    A new Developer section appears in the settings menu.
+    Turn on **Enable platform dev** tools to use the developer tools window to
+    inspect your app.
+
 3. Add your manifest
-
-    Click on Browse next to **Add a local app** and select the manifest file. The app is now visible in the menu.
+    
+    Click on Browse next to **Add a local app** and select the manifest file:
+    - for _development_ environment: [ledger-manifest-development.json](ledger-manifest-development.json)
+    - for _testnet_ environment: [ledger-manifest-testnet.json](ledger-manifest-testnet.json)
+    
+    The app is now visible in the menu.
 
 If you have any problems, take a look [here](https://developers.ledger.com/APIs/wallet-api/examples/use-live-app/import).

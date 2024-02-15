@@ -6,7 +6,7 @@ export function useStakeFlowContext() {
 
   if (!context) {
     throw new Error(
-      "StakeFlowContext used outside of StakeFlowContext component",
+      "StakeFlowContext used outside of StakeFlowProvider component",
     )
   }
 

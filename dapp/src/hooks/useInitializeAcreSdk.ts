@@ -9,12 +9,11 @@ export function useInitializeAcreSdk() {
   const { init } = useAcreContext()
 
   useEffect(() => {
-    if (ethAccount?.address) {
-      const initSDK = async (ethAddress: string) => {
-        await init(ethAddress, ETHEREUM_NETWORK)
-      }
+    if (!ethAccount?.address) return
 
-      asyncWrapper(initSDK(ethAccount.address))
+    const initSDK = async (ethAddress: string) => {
+      await init(ethAddress, ETHEREUM_NETWORK)
     }
+    asyncWrapper(initSDK(ethAccount.address))
   }, [ethAccount?.address, init])
 }

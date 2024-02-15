@@ -1,5 +1,9 @@
 import React, { useCallback, useEffect } from "react"
-import { useModalFlowContext, useSignMessage } from "#/hooks"
+import {
+  useExecuteFunction,
+  useModalFlowContext,
+  useStakeFlowContext,
+} from "#/hooks"
 import { asyncWrapper } from "#/utils"
 import AlertReceiveSTBTC from "#/components/shared/AlertReceiveSTBTC"
 import { PROCESS_STATUSES } from "#/types"
@@ -7,11 +11,12 @@ import StakingStepsModalContent from "./StakingStepsModalContent"
 
 export default function SignMessageModal() {
   const { goNext, setStatus } = useModalFlowContext()
-  const { signMessage } = useSignMessage(goNext)
+  const { signMessage } = useStakeFlowContext()
+  const handleSignMessage = useExecuteFunction(signMessage, goNext)
 
-  const handleSignMessage = useCallback(() => {
-    asyncWrapper(signMessage())
-  }, [signMessage])
+  const handleSignMessageWrapper = useCallback(() => {
+    asyncWrapper(handleSignMessage())
+  }, [handleSignMessage])
 
   useEffect(() => {
     setStatus(PROCESS_STATUSES.PENDING)
@@ -21,7 +26,7 @@ export default function SignMessageModal() {
     <StakingStepsModalContent
       buttonText="Continue"
       activeStep={0}
-      onClick={handleSignMessage}
+      onClick={handleSignMessageWrapper}
     >
       <AlertReceiveSTBTC />
     </StakingStepsModalContent>

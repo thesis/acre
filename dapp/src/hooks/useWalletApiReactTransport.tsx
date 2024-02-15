@@ -6,7 +6,7 @@ export function useWalletApiReactTransport() {
 
   if (!context) {
     throw new Error(
-      "WalletApiReactTransportContext used outside of WalletApiReactTransportContext component",
+      "WalletApiReactTransportContext used outside of WalletApiReactTransportProvider component",
     )
   }
 

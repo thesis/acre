@@ -1,6 +1,6 @@
 import React from "react"
 import { Box, ChakraProvider } from "@chakra-ui/react"
-import { useDetectThemeMode, useInitializeAcreSdk, useSentry } from "./hooks"
+import { useInitializeAcreSdk, useSentry } from "./hooks"
 import theme from "./theme"
 import {
   DocsDrawerContextProvider,
@@ -16,7 +16,8 @@ import GlobalStyles from "./components/GlobalStyles"
 import { AcreSdkProvider } from "./acre-react/contexts"
 
 function DApp() {
-  useDetectThemeMode()
+  // TODO: Let's uncomment when dark mode is ready
+  // useDetectThemeMode()
   useSentry()
   useInitializeAcreSdk()
 

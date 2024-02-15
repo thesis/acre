@@ -1,14 +1,14 @@
 {
-  "id": "acre",
-  "name": "ACRE",
-  "url": "http://localhost:5173/",
-  "homepageUrl": "http://localhost:5173/",
-  "icon": "http://localhost:5173/acre.svg",
-  "platform": "all",
-  "apiVersion": "2.0.0",
-  "manifestVersion": "1",
+  "id": "acre-test",
+  "name": "Acre [test]",
+  "url": "https://dapp.test.acre.fi/",
+  "homepageUrl": "https:/acre.fi/",
+  "icon": "https://dapp.test.acre.fi/acre.svg",
+  "platforms": "desktop",
+  "apiVersion": "^2.0.0",
+  "manifestVersion": "2",
   "branch": "stable",
-  "categories": ["buy"],
+  "categories": ["staking"],
   "currencies": ["bitcoin", "bitcoin_testnet", "ethereum", "ethereum_sepolia"],
   "content": {
     "shortDescription": {
@@ -25,5 +25,6 @@
     "transaction.sign",
     "transaction.signAndBroadcast"
   ],
-  "domains": ["http://*"]
+  "domains": ["http://*"],
+  "type": "walletApp"
 }
