@@ -19,6 +19,7 @@ import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/Token
 import { asyncWrapper } from "#/utils"
 import { REFERRAL } from "#/constants"
 import StakeFormModal from "../ActiveStakingStep/StakeFormModal"
+import UnstakeFormModal from "../ActiveUnstakingStep/UnstakeFormModal"
 
 const TABS = Object.values(ACTION_FLOW_TYPES)
 
@@ -89,8 +90,7 @@ function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
               <StakeFormModal onSubmitForm={handleSubmitFormWrapper} />
             </TabPanel>
             <TabPanel>
-              {/* TODO: Use the correct form for unstaking */}
-              <StakeFormModal onSubmitForm={handleSubmitFormWrapper} />
+              <UnstakeFormModal onSubmitForm={handleSubmitFormWrapper} />
             </TabPanel>
           </TabPanels>
         </Tabs>

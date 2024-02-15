@@ -16,7 +16,6 @@ export function FormSubmitButton({ children, ...props }: ButtonProps) {
       type="submit"
       size="lg"
       width="100%"
-      mt={4}
       isLoading={isSubmitting}
       spinner={<Spinner />}
       {...(isSubmitting && LOADING_STYLE)}
