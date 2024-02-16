@@ -3,7 +3,7 @@ import { BITCOIN_MIN_AMOUNT } from "#/constants"
 import TokenAmountForm from "#/components/shared/TokenAmountForm"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { useWalletContext } from "#/hooks"
-import { FormSubmitButton } from "#/components/shared/Form/FormSubmitButton"
+import { FormSubmitButton } from "#/components/shared/Form"
 import StakeDetails from "./StakeDetails"
 
 function StakeFormModal({
@@ -27,7 +27,7 @@ function StakeFormModal({
         minTokenAmount={BITCOIN_MIN_AMOUNT}
         maxTokenAmount={tokenBalance}
       />
-      <FormSubmitButton>Stake</FormSubmitButton>
+      <FormSubmitButton mt={4}>Stake</FormSubmitButton>
     </TokenAmountForm>
   )
 }
