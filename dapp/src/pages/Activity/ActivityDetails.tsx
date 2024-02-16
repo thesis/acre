@@ -8,14 +8,15 @@ import {
   Image,
   Tag,
   Flex,
+  Text,
 } from "@chakra-ui/react"
 import { capitalize } from "#/utils"
 import ActivityProgress from "#/assets/images/activity-progress.png"
 import { LocationState } from "#/types"
-import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import StatusInfo from "#/components/shared/StatusInfo"
 import { TextMd, TextSm } from "#/components/shared/Typography"
 import Spinner from "#/components/shared/Spinner"
+import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 
 function ActivityDetails() {
   const location = useLocation()
@@ -29,7 +30,7 @@ function ActivityDetails() {
           <CardBody paddingX={10} paddingY={6}>
             <HStack marginBottom={4} justify="space-between">
               <TextMd>
-                <strong>In queue.</strong> Next batch starts in...
+                <Text as="b">In queue.</Text> Next batch starts in...
               </TextMd>
               <Spinner size="md" />
             </HStack>
@@ -48,18 +49,23 @@ function ActivityDetails() {
               <TextMd fontWeight="semibold" color="gold.700">
                 {capitalize(activity.action)}
               </TextMd>
-              <CurrencyBalance
-                variant="greater-balance-xxl"
-                desiredDecimals={4}
-                currency={activity.currency}
-                amount={activity.amount}
-                symbolFontWeight="medium"
+              <CurrencyBalanceWithConversion
+                from={{
+                  currency: activity.currency,
+                  amount: activity.amount,
+                  variant: "greater-balance-xxl",
+                  symbolFontWeight: "medium",
+                }}
+                to={{
+                  wrapInBrackets: true,
+                  currency: "usd",
+                  marginBottom: 7,
+                  fontWeight: "medium",
+                }}
               />
-              {/* TODO: Change the balance when calculation functionality is ready */}
-              <TextSm marginBottom={7}>(62,317.15 USD)</TextSm>
 
               {activity?.status && (
-                <Tag mt={2}>
+                <Tag mt={9}>
                   <StatusInfo
                     status={activity.status}
                     fontWeight="semibold"

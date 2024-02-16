@@ -60,7 +60,6 @@ function ActivityCard({
         </TextSm>
       </CardBody>
       <CardFooter p={0}>
-        {" "}
         {activity.status && (
           <StatusInfo
             status={activity.status}
