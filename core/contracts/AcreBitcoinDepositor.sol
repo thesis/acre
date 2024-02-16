@@ -193,12 +193,12 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     /// @notice Emitted when a maximum single stake amount is updated.
     /// @param maxSingleStakeAmount New value of the maximum single stake
     ///        amount (in tBTC token precision).
-    event MaxSingleStakeAmountUpdated(uint64 maxSingleStakeAmount);
+    event MaxSingleStakeAmountUpdated(uint256 maxSingleStakeAmount);
 
     /// @notice Emitted when a maximum total assets soft limit is updated.
     /// @param maxTotalAssetsSoftLimit New value of the maximum total assets
     ///        soft limit (in tBTC token precision).
-    event MaxTotalAssetsSoftLimitUpdated(uint64 maxTotalAssetsSoftLimit);
+    event MaxTotalAssetsSoftLimitUpdated(uint256 maxTotalAssetsSoftLimit);
 
     /// @notice Emitted when a depositor fee divisor is updated.
     /// @param depositorFeeDivisor New value of the depositor fee divisor.
@@ -491,7 +491,7 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     /// @param newMaxSingleStakeAmount New maximum single stake amount (in tBTC
     ///        precision).
     function updateMaxSingleStakeAmount(
-        uint64 newMaxSingleStakeAmount
+        uint256 newMaxSingleStakeAmount
     ) external onlyOwner {
         maxSingleStakeAmount = newMaxSingleStakeAmount;
 
@@ -502,7 +502,7 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     /// @param newMaxTotalAssetsSoftLimit New maximum total assets soft limit
     ///        (in tBTC precision).
     function updateMaxTotalAssetsSoftLimit(
-        uint64 newMaxTotalAssetsSoftLimit
+        uint256 newMaxTotalAssetsSoftLimit
     ) external onlyOwner {
         maxTotalAssetsSoftLimit = newMaxTotalAssetsSoftLimit;
 

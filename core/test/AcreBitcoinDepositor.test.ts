@@ -1608,7 +1608,7 @@ describe("AcreBitcoinDepositor", () => {
     })
 
     describe("when caller is governance", () => {
-      const testUpdateMaxSingleStakeAmount = (newValue: number) =>
+      const testUpdateMaxSingleStakeAmount = (newValue: bigint) =>
         function () {
           beforeAfterSnapshotWrapper()
 
@@ -1635,10 +1635,15 @@ describe("AcreBitcoinDepositor", () => {
 
       describe(
         "when new value is non-zero",
-        testUpdateMaxSingleStakeAmount(47281),
+        testUpdateMaxSingleStakeAmount(47281n),
       )
 
-      describe("when new value is zero", testUpdateMaxSingleStakeAmount(0))
+      describe("when new value is zero", testUpdateMaxSingleStakeAmount(0n))
+
+      describe(
+        "when new value is max uint256",
+        testUpdateMaxSingleStakeAmount(MaxUint256),
+      )
     })
   })
 
@@ -1661,7 +1666,7 @@ describe("AcreBitcoinDepositor", () => {
     })
 
     describe("when caller is governance", () => {
-      const testUpdateMaxTotalAssetsSoftLimit = (newValue: number) =>
+      const testUpdateMaxTotalAssetsSoftLimit = (newValue: bigint) =>
         function () {
           beforeAfterSnapshotWrapper()
 
@@ -1688,10 +1693,15 @@ describe("AcreBitcoinDepositor", () => {
 
       describe(
         "when new value is non-zero",
-        testUpdateMaxTotalAssetsSoftLimit(47281),
+        testUpdateMaxTotalAssetsSoftLimit(47281n),
       )
 
-      describe("when new value is zero", testUpdateMaxTotalAssetsSoftLimit(0))
+      describe("when new value is zero", testUpdateMaxTotalAssetsSoftLimit(0n))
+
+      describe(
+        "when new value is max uint256",
+        testUpdateMaxTotalAssetsSoftLimit(MaxUint256),
+      )
     })
   })
 
