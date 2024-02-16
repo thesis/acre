@@ -39,28 +39,19 @@ import {stBTC} from "./stBTC.sol";
 contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     using SafeERC20 for IERC20;
 
-    struct StakeRequest {
-        // Timestamp at which the deposit request was initialized is not stored
-        // in this structure, as it is available under `Bridge.DepositRequest.revealedAt`.
+    /// @notice State of the stake request.
+    enum StakeRequestState {
+        Unknown,
+        Initialized,
+        Finalized,
+        Queued,
+        FinalizedFromQueue,
+        RecalledFromQueue
+    }
 
-        // UNIX timestamp at which tBTC bridging was notified to the stake request.
-        // It is used by `finalizeBridging` to ensure it is called only once for
-        // a given stake request, as the `AbstractTBTCDepositor#_finalizeDeposit`
-        // function is not validating that.
-        // For request finalized with `finalizeStakeRequest` function it will match
-        // the finalization timestamp. For request added to the queue it will match
-        // the queueing timestamp.
-        // 0 if bridging finalization has not been called yet.
-        // XXX: Unsigned 32-bit int unix seconds, will break February 7th 2106.
-        uint32 bridgingFinalizedAt;
-        // UNIX timestamp at which the stake request was finalized.
-        // 0 if not yet finalized.
-        // XXX: Unsigned 32-bit int unix seconds, will break February 7th 2106.
-        uint32 finalizedAt;
-        // UNIX timestamp at which the stake request was recalled.
-        // 0 if not yet recalled.
-        // XXX: Unsigned 32-bit int unix seconds, will break February 7th 2106.
-        uint32 recalledAt;
+    struct StakeRequest {
+        // State of the stake request.
+        StakeRequestState state;
         // The address to which the stBTC shares will be minted. Stored only when
         // request is queued.
         address receiver;
@@ -164,6 +155,13 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     /// @dev Receiver address is zero.
     error ReceiverIsZeroAddress();
 
+    /// @dev Attempted to execute function for stake request in unexpected current
+    ///      state.
+    error UnexpectedStakeRequestState(
+        StakeRequestState currentState,
+        StakeRequestState expectedState
+    );
+
     /// @dev Attempted to notify a bridging completion, while it was already
     ///      notified.
     error BridgingCompletionAlreadyNotified();
@@ -246,6 +244,12 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
             encodeExtraData(receiver, referral)
         );
 
+        transitionStakeRequestState(
+            depositKey,
+            StakeRequestState.Unknown,
+            StakeRequestState.Initialized
+        );
+
         emit StakeRequestInitialized(depositKey, msg.sender, receiver);
     }
 
@@ -259,14 +263,17 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     ///      should be called to add the stake request to the staking queue.
     /// @param depositKey Deposit key identifying the deposit.
     function finalizeStakeRequest(uint256 depositKey) external {
+        transitionStakeRequestState(
+            depositKey,
+            StakeRequestState.Initialized,
+            StakeRequestState.Finalized
+        );
+
         (uint256 amountToStake, address receiver) = finalizeBridging(
             depositKey
         );
 
         emit StakeRequestFinalized(depositKey, msg.sender, amountToStake);
-
-        // solhint-disable-next-line not-rely-on-time
-        stakeRequests[depositKey].finalizedAt = uint32(block.timestamp);
 
         // Deposit tBTC in stBTC.
         tbtcToken.safeIncreaseAllowance(address(stbtc), amountToStake);
@@ -286,6 +293,12 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     ///      will withdraw the minted tBTC token and abort staking process.
     /// @param depositKey Deposit key identifying the deposit.
     function queueForStaking(uint256 depositKey) external {
+        transitionStakeRequestState(
+            depositKey,
+            StakeRequestState.Initialized,
+            StakeRequestState.Queued
+        );
+
         StakeRequest storage request = stakeRequests[depositKey];
 
         (request.queuedAmount, request.receiver) = finalizeBridging(depositKey);
@@ -297,15 +310,18 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     ///         request, when stBTC vault is able to accept a deposit.
     /// @param depositKey Deposit key identifying the deposit.
     function stakeFromQueue(uint256 depositKey) external {
+        transitionStakeRequestState(
+            depositKey,
+            StakeRequestState.Queued,
+            StakeRequestState.FinalizedFromQueue
+        );
+
         StakeRequest storage request = stakeRequests[depositKey];
 
         if (request.queuedAmount == 0) revert StakeRequestNotQueued();
 
         uint256 amountToStake = request.queuedAmount;
         delete (request.queuedAmount);
-
-        // solhint-disable-next-line not-rely-on-time
-        request.finalizedAt = uint32(block.timestamp);
 
         emit StakeRequestFinalizedFromQueue(
             depositKey,
@@ -329,6 +345,12 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     ///      call this function.
     /// @param depositKey Deposit key identifying the deposit.
     function recallFromQueue(uint256 depositKey) external {
+        transitionStakeRequestState(
+            depositKey,
+            StakeRequestState.Queued,
+            StakeRequestState.RecalledFromQueue
+        );
+
         StakeRequest storage request = stakeRequests[depositKey];
 
         if (request.queuedAmount == 0) revert StakeRequestNotQueued();
@@ -338,9 +360,6 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
 
         uint256 amount = request.queuedAmount;
         delete (request.queuedAmount);
-
-        // solhint-disable-next-line not-rely-on-time
-        request.recalledAt = uint32(block.timestamp);
 
         emit StakeRequestRecalled(depositKey, request.receiver, amount);
 
@@ -388,6 +407,28 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
         referral = uint16(bytes2(extraData << (8 * 20)));
     }
 
+    /// @notice This function is used for state transitions. It ensures the current
+    ///         stakte matches expected, and updates the stake request to a new
+    ///         state.
+    /// @param depositKey Deposit key identifying the deposit.
+    /// @param expectedState Expected current stake request state.
+    /// @param newState New stake request state.
+    function transitionStakeRequestState(
+        uint256 depositKey,
+        StakeRequestState expectedState,
+        StakeRequestState newState
+    ) internal {
+        // Validate current stake request state.
+        if (stakeRequests[depositKey].state != expectedState)
+            revert UnexpectedStakeRequestState(
+                stakeRequests[depositKey].state,
+                expectedState
+            );
+
+        // Transition to a new state.
+        stakeRequests[depositKey].state = newState;
+    }
+
     /// @notice This function should be called for previously initialized stake
     ///         request, after tBTC minting process completed, meaning tBTC was
     ///         minted to this contract.
@@ -404,14 +445,6 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     function finalizeBridging(
         uint256 depositKey
     ) internal returns (uint256, address) {
-        StakeRequest storage request = stakeRequests[depositKey];
-
-        if (request.bridgingFinalizedAt > 0)
-            revert BridgingFinalizationAlreadyCalled();
-
-        // solhint-disable-next-line not-rely-on-time
-        request.bridgingFinalizedAt = uint32(block.timestamp);
-
         (
             uint256 initialDepositAmount,
             uint256 tbtcAmount,

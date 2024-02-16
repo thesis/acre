@@ -6,6 +6,8 @@ import { expect } from "chai"
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
 import { ContractTransactionResponse, ZeroAddress } from "ethers"
 
+import { StakeRequestState } from "../types"
+
 import type {
   StBTC,
   BridgeStub,
@@ -155,29 +157,26 @@ describe("AcreBitcoinDepositor", () => {
                 )
             })
 
-            it("should not store stake request data", async () => {
-              const storedStakeRequest = await bitcoinDepositor.stakeRequests(
+            it("should update stake request state", async () => {
+              const stakeRequest = await bitcoinDepositor.stakeRequests(
                 tbtcDepositData.depositKey,
               )
 
+              expect(stakeRequest.state).to.be.equal(
+                StakeRequestState.Initialized,
+              )
+            })
+
+            it("should not store stake request data in queue", async () => {
+              const stakeRequest = await bitcoinDepositor.stakeRequests(
+                tbtcDepositData.depositKey,
+              )
+
+              expect(stakeRequest.receiver, "invalid receiver").to.be.equal(
+                ZeroAddress,
+              )
               expect(
-                storedStakeRequest.bridgingFinalizedAt,
-                "invalid bridgingFinalizedAt",
-              ).to.be.equal(0)
-              expect(
-                storedStakeRequest.finalizedAt,
-                "invalid finalizedAt",
-              ).to.be.equal(0)
-              expect(
-                storedStakeRequest.recalledAt,
-                "invalid recalledAt",
-              ).to.be.equal(0)
-              expect(
-                storedStakeRequest.receiver,
-                "invalid receiver",
-              ).to.be.equal(ZeroAddress)
-              expect(
-                storedStakeRequest.queuedAmount,
+                stakeRequest.queuedAmount,
                 "invalid queuedAmount",
               ).to.be.equal(0)
             })
@@ -402,16 +401,6 @@ describe("AcreBitcoinDepositor", () => {
               expect(returnedValue[1]).to.be.equal(tbtcDepositData.receiver)
             })
 
-            it("should set bridgingFinalizedAt timestamp", async () => {
-              expect(
-                (
-                  await bitcoinDepositor.stakeRequests(
-                    tbtcDepositData.depositKey,
-                  )
-                ).bridgingFinalizedAt,
-              ).to.be.equal(await lastBlockTime())
-            })
-
             it("should transfer depositor fee", async () => {
               await expect(tx).to.changeTokenBalances(
                 tbtc,
@@ -461,16 +450,6 @@ describe("AcreBitcoinDepositor", () => {
               expect(returnedValue[1]).to.be.equal(tbtcDepositData.receiver)
             })
 
-            it("should set bridgingFinalizedAt timestamp", async () => {
-              expect(
-                (
-                  await bitcoinDepositor.stakeRequests(
-                    tbtcDepositData.depositKey,
-                  )
-                ).bridgingFinalizedAt,
-              ).to.be.equal(await lastBlockTime())
-            })
-
             it("should not transfer depositor fee", async () => {
               await expect(tx).to.changeTokenBalances(tbtc, [treasury], [0])
             })
@@ -510,15 +489,12 @@ describe("AcreBitcoinDepositor", () => {
               .exposed_finalizeBridging(tbtcDepositData.depositKey)
           })
 
-          it("should revert", async () => {
+          it("should not revert", async () => {
             await expect(
               bitcoinDepositor
                 .connect(thirdParty)
                 .exposed_finalizeBridging(tbtcDepositData.depositKey),
-            ).to.be.revertedWithCustomError(
-              bitcoinDepositor,
-              "BridgingFinalizationAlreadyCalled",
-            )
+            ).to.be.not.reverted
           })
         })
       })
@@ -534,7 +510,12 @@ describe("AcreBitcoinDepositor", () => {
           bitcoinDepositor
             .connect(thirdParty)
             .finalizeStakeRequest(tbtcDepositData.depositKey),
-        ).to.be.revertedWith("Deposit not initialized")
+        )
+          .to.be.revertedWithCustomError(
+            bitcoinDepositor,
+            "UnexpectedStakeRequestState",
+          )
+          .withArgs(StakeRequestState.Unknown, StakeRequestState.Initialized)
       })
     })
 
@@ -597,11 +578,12 @@ describe("AcreBitcoinDepositor", () => {
             )
           })
 
-          it("should set finalizedAt timestamp", async () => {
-            expect(
-              (await bitcoinDepositor.stakeRequests(tbtcDepositData.depositKey))
-                .finalizedAt,
-            ).to.be.equal(await lastBlockTime())
+          it("should update stake request state", async () => {
+            const stakeRequest = await bitcoinDepositor.stakeRequests(
+              tbtcDepositData.depositKey,
+            )
+
+            expect(stakeRequest.state).to.be.equal(StakeRequestState.Finalized)
           })
 
           it("should emit StakeRequestFinalized event", async () => {
@@ -657,10 +639,15 @@ describe("AcreBitcoinDepositor", () => {
                 bitcoinDepositor
                   .connect(thirdParty)
                   .finalizeStakeRequest(tbtcDepositData.depositKey),
-              ).to.be.revertedWithCustomError(
-                bitcoinDepositor,
-                "BridgingFinalizationAlreadyCalled",
               )
+                .to.be.revertedWithCustomError(
+                  bitcoinDepositor,
+                  "UnexpectedStakeRequestState",
+                )
+                .withArgs(
+                  StakeRequestState.Queued,
+                  StakeRequestState.Initialized,
+                )
             })
           })
 
@@ -678,10 +665,15 @@ describe("AcreBitcoinDepositor", () => {
                 bitcoinDepositor
                   .connect(thirdParty)
                   .finalizeStakeRequest(tbtcDepositData.depositKey),
-              ).to.be.revertedWithCustomError(
-                bitcoinDepositor,
-                "BridgingFinalizationAlreadyCalled",
               )
+                .to.be.revertedWithCustomError(
+                  bitcoinDepositor,
+                  "UnexpectedStakeRequestState",
+                )
+                .withArgs(
+                  StakeRequestState.FinalizedFromQueue,
+                  StakeRequestState.Initialized,
+                )
             })
           })
 
@@ -699,10 +691,15 @@ describe("AcreBitcoinDepositor", () => {
                 bitcoinDepositor
                   .connect(thirdParty)
                   .finalizeStakeRequest(tbtcDepositData.depositKey),
-              ).to.be.revertedWithCustomError(
-                bitcoinDepositor,
-                "BridgingFinalizationAlreadyCalled",
               )
+                .to.be.revertedWithCustomError(
+                  bitcoinDepositor,
+                  "UnexpectedStakeRequestState",
+                )
+                .withArgs(
+                  StakeRequestState.RecalledFromQueue,
+                  StakeRequestState.Initialized,
+                )
             })
           })
         })
@@ -722,10 +719,15 @@ describe("AcreBitcoinDepositor", () => {
               bitcoinDepositor
                 .connect(thirdParty)
                 .finalizeStakeRequest(tbtcDepositData.depositKey),
-            ).to.be.revertedWithCustomError(
-              bitcoinDepositor,
-              "BridgingFinalizationAlreadyCalled",
             )
+              .to.be.revertedWithCustomError(
+                bitcoinDepositor,
+                "UnexpectedStakeRequestState",
+              )
+              .withArgs(
+                StakeRequestState.Finalized,
+                StakeRequestState.Initialized,
+              )
           })
         })
       })
@@ -741,7 +743,12 @@ describe("AcreBitcoinDepositor", () => {
           bitcoinDepositor
             .connect(thirdParty)
             .queueForStaking(tbtcDepositData.depositKey),
-        ).to.be.revertedWith("Deposit not initialized")
+        )
+          .to.be.revertedWithCustomError(
+            bitcoinDepositor,
+            "UnexpectedStakeRequestState",
+          )
+          .withArgs(StakeRequestState.Unknown, StakeRequestState.Initialized)
       })
     })
 
@@ -801,11 +808,12 @@ describe("AcreBitcoinDepositor", () => {
             )
           })
 
-          it("should not set finalizedAt timestamp", async () => {
-            expect(
-              (await bitcoinDepositor.stakeRequests(tbtcDepositData.depositKey))
-                .finalizedAt,
-            ).to.be.equal(0)
+          it("should update stake request state", async () => {
+            const stakeRequest = await bitcoinDepositor.stakeRequests(
+              tbtcDepositData.depositKey,
+            )
+
+            expect(stakeRequest.state).to.be.equal(StakeRequestState.Queued)
           })
 
           it("should set receiver", async () => {
@@ -871,10 +879,15 @@ describe("AcreBitcoinDepositor", () => {
                 bitcoinDepositor
                   .connect(thirdParty)
                   .queueForStaking(tbtcDepositData.depositKey),
-              ).to.be.revertedWithCustomError(
-                bitcoinDepositor,
-                "BridgingFinalizationAlreadyCalled",
               )
+                .to.be.revertedWithCustomError(
+                  bitcoinDepositor,
+                  "UnexpectedStakeRequestState",
+                )
+                .withArgs(
+                  StakeRequestState.Queued,
+                  StakeRequestState.Initialized,
+                )
             })
           })
 
@@ -892,10 +905,15 @@ describe("AcreBitcoinDepositor", () => {
                 bitcoinDepositor
                   .connect(thirdParty)
                   .queueForStaking(tbtcDepositData.depositKey),
-              ).to.be.revertedWithCustomError(
-                bitcoinDepositor,
-                "BridgingFinalizationAlreadyCalled",
               )
+                .to.be.revertedWithCustomError(
+                  bitcoinDepositor,
+                  "UnexpectedStakeRequestState",
+                )
+                .withArgs(
+                  StakeRequestState.FinalizedFromQueue,
+                  StakeRequestState.Initialized,
+                )
             })
           })
 
@@ -913,10 +931,15 @@ describe("AcreBitcoinDepositor", () => {
                 bitcoinDepositor
                   .connect(thirdParty)
                   .queueForStaking(tbtcDepositData.depositKey),
-              ).to.be.revertedWithCustomError(
-                bitcoinDepositor,
-                "BridgingFinalizationAlreadyCalled",
               )
+                .to.be.revertedWithCustomError(
+                  bitcoinDepositor,
+                  "UnexpectedStakeRequestState",
+                )
+                .withArgs(
+                  StakeRequestState.RecalledFromQueue,
+                  StakeRequestState.Initialized,
+                )
             })
           })
         })
@@ -936,10 +959,15 @@ describe("AcreBitcoinDepositor", () => {
               bitcoinDepositor
                 .connect(thirdParty)
                 .queueForStaking(tbtcDepositData.depositKey),
-            ).to.be.revertedWithCustomError(
-              bitcoinDepositor,
-              "BridgingFinalizationAlreadyCalled",
             )
+              .to.be.revertedWithCustomError(
+                bitcoinDepositor,
+                "UnexpectedStakeRequestState",
+              )
+              .withArgs(
+                StakeRequestState.Finalized,
+                StakeRequestState.Initialized,
+              )
           })
         })
       })
@@ -953,24 +981,34 @@ describe("AcreBitcoinDepositor", () => {
           bitcoinDepositor
             .connect(receiver)
             .stakeFromQueue(tbtcDepositData.depositKey),
-        ).to.be.revertedWithCustomError(
-          bitcoinDepositor,
-          "StakeRequestNotQueued",
         )
+          .to.be.revertedWithCustomError(
+            bitcoinDepositor,
+            "UnexpectedStakeRequestState",
+          )
+          .withArgs(StakeRequestState.Unknown, StakeRequestState.Queued)
       })
     })
 
     describe("when stake request has been initialized", () => {
+      beforeAfterSnapshotWrapper()
+
+      before(async () => {
+        await initializeStakeRequest()
+      })
+
       describe("when stake request has not been queued", () => {
         it("should revert", async () => {
           await expect(
             bitcoinDepositor
               .connect(thirdParty)
               .stakeFromQueue(tbtcDepositData.depositKey),
-          ).to.be.revertedWithCustomError(
-            bitcoinDepositor,
-            "StakeRequestNotQueued",
           )
+            .to.be.revertedWithCustomError(
+              bitcoinDepositor,
+              "UnexpectedStakeRequestState",
+            )
+            .withArgs(StakeRequestState.Initialized, StakeRequestState.Queued)
         })
       })
 
@@ -978,8 +1016,6 @@ describe("AcreBitcoinDepositor", () => {
         beforeAfterSnapshotWrapper()
 
         before(async () => {
-          await initializeStakeRequest()
-
           await finalizeMinting(tbtcDepositData.depositKey)
 
           await bitcoinDepositor
@@ -1001,11 +1037,14 @@ describe("AcreBitcoinDepositor", () => {
               .stakeFromQueue(tbtcDepositData.depositKey)
           })
 
-          it("should set finalizedAt timestamp", async () => {
-            expect(
-              (await bitcoinDepositor.stakeRequests(tbtcDepositData.depositKey))
-                .finalizedAt,
-            ).to.be.equal(await lastBlockTime())
+          it("should update stake request state", async () => {
+            const stakeRequest = await bitcoinDepositor.stakeRequests(
+              tbtcDepositData.depositKey,
+            )
+
+            expect(stakeRequest.state).to.be.equal(
+              StakeRequestState.FinalizedFromQueue,
+            )
           })
 
           it("should set queuedAmount to zero", async () => {
@@ -1067,10 +1106,15 @@ describe("AcreBitcoinDepositor", () => {
               bitcoinDepositor
                 .connect(thirdParty)
                 .stakeFromQueue(tbtcDepositData.depositKey),
-            ).to.be.revertedWithCustomError(
-              bitcoinDepositor,
-              "StakeRequestNotQueued",
             )
+              .to.be.revertedWithCustomError(
+                bitcoinDepositor,
+                "UnexpectedStakeRequestState",
+              )
+              .withArgs(
+                StakeRequestState.FinalizedFromQueue,
+                StakeRequestState.Queued,
+              )
           })
         })
 
@@ -1088,10 +1132,15 @@ describe("AcreBitcoinDepositor", () => {
               bitcoinDepositor
                 .connect(thirdParty)
                 .stakeFromQueue(tbtcDepositData.depositKey),
-            ).to.be.revertedWithCustomError(
-              bitcoinDepositor,
-              "StakeRequestNotQueued",
             )
+              .to.be.revertedWithCustomError(
+                bitcoinDepositor,
+                "UnexpectedStakeRequestState",
+              )
+              .withArgs(
+                StakeRequestState.RecalledFromQueue,
+                StakeRequestState.Queued,
+              )
           })
         })
       })
@@ -1105,10 +1154,12 @@ describe("AcreBitcoinDepositor", () => {
           bitcoinDepositor
             .connect(receiver)
             .recallFromQueue(tbtcDepositData.depositKey),
-        ).to.be.revertedWithCustomError(
-          bitcoinDepositor,
-          "StakeRequestNotQueued",
         )
+          .to.be.revertedWithCustomError(
+            bitcoinDepositor,
+            "UnexpectedStakeRequestState",
+          )
+          .withArgs(StakeRequestState.Unknown, StakeRequestState.Queued)
       })
     })
 
@@ -1127,10 +1178,12 @@ describe("AcreBitcoinDepositor", () => {
             bitcoinDepositor
               .connect(receiver)
               .recallFromQueue(tbtcDepositData.depositKey),
-          ).to.be.revertedWithCustomError(
-            bitcoinDepositor,
-            "StakeRequestNotQueued",
           )
+            .to.be.revertedWithCustomError(
+              bitcoinDepositor,
+              "UnexpectedStakeRequestState",
+            )
+            .withArgs(StakeRequestState.Initialized, StakeRequestState.Queued)
         })
       })
 
@@ -1170,14 +1223,14 @@ describe("AcreBitcoinDepositor", () => {
                 .recallFromQueue(tbtcDepositData.depositKey)
             })
 
-            it("should set recalledAt timestamp", async () => {
-              expect(
-                (
-                  await bitcoinDepositor.stakeRequests(
-                    tbtcDepositData.depositKey,
-                  )
-                ).recalledAt,
-              ).to.be.equal(await lastBlockTime())
+            it("should update stake request state", async () => {
+              const stakeRequest = await bitcoinDepositor.stakeRequests(
+                tbtcDepositData.depositKey,
+              )
+
+              expect(stakeRequest.state).to.be.equal(
+                StakeRequestState.RecalledFromQueue,
+              )
             })
 
             it("should set queuedAmount to zero", async () => {
@@ -1224,10 +1277,15 @@ describe("AcreBitcoinDepositor", () => {
               bitcoinDepositor
                 .connect(receiver)
                 .recallFromQueue(tbtcDepositData.depositKey),
-            ).to.be.revertedWithCustomError(
-              bitcoinDepositor,
-              "StakeRequestNotQueued",
             )
+              .to.be.revertedWithCustomError(
+                bitcoinDepositor,
+                "UnexpectedStakeRequestState",
+              )
+              .withArgs(
+                StakeRequestState.FinalizedFromQueue,
+                StakeRequestState.Queued,
+              )
           })
         })
 
@@ -1245,10 +1303,15 @@ describe("AcreBitcoinDepositor", () => {
               bitcoinDepositor
                 .connect(receiver)
                 .recallFromQueue(tbtcDepositData.depositKey),
-            ).to.be.revertedWithCustomError(
-              bitcoinDepositor,
-              "StakeRequestNotQueued",
             )
+              .to.be.revertedWithCustomError(
+                bitcoinDepositor,
+                "UnexpectedStakeRequestState",
+              )
+              .withArgs(
+                StakeRequestState.RecalledFromQueue,
+                StakeRequestState.Queued,
+              )
           })
         })
       })
