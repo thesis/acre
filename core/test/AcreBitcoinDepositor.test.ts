@@ -4,7 +4,7 @@ import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 import { ethers, helpers } from "hardhat"
 import { expect } from "chai"
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
-import { ContractTransactionResponse, ZeroAddress } from "ethers"
+import { ContractTransactionResponse, MaxUint256, ZeroAddress } from "ethers"
 
 import type {
   StBTC,
@@ -31,6 +31,7 @@ const { getNamedSigners, getUnnamedSigners } = helpers.signers
 describe("AcreBitcoinDepositor", () => {
   const satoshiMultiplier = 10n ** 10n
 
+  const defaultDepositDustThreshold = 1000000 // 1000000 satoshi = 0.01 BTC
   const defaultDepositTreasuryFeeDivisor = 2000 // 1/2000 = 0.05% = 0.0005
   const defaultDepositTxMaxFee = 1000 // 1000 satoshi = 0.00001 BTC
   const defaultOptimisticFeeDivisor = 500 // 1/500 = 0.002 = 0.2%
@@ -80,6 +81,9 @@ describe("AcreBitcoinDepositor", () => {
 
     tbtcDepositData.reveal.vault = await tbtcVault.getAddress()
 
+    await tbtcBridge
+      .connect(governance)
+      .setDepositDustThreshold(defaultDepositDustThreshold)
     await tbtcBridge
       .connect(governance)
       .setDepositTreasuryFeeDivisor(defaultDepositTreasuryFeeDivisor)
@@ -1496,6 +1500,94 @@ describe("AcreBitcoinDepositor", () => {
           expect(await bitcoinDepositor.maxStakeInSatoshi()).to.be.equal(1)
         })
       })
+    })
+  })
+
+  describe("updateMinStakeAmount", () => {
+    beforeAfterSnapshotWrapper()
+
+    describe("when caller is not governance", () => {
+      beforeAfterSnapshotWrapper()
+
+      it("should revert", async () => {
+        await expect(
+          bitcoinDepositor.connect(thirdParty).updateMinStakeAmount(1234),
+        )
+          .to.be.revertedWithCustomError(
+            bitcoinDepositor,
+            "OwnableUnauthorizedAccount",
+          )
+          .withArgs(thirdParty.address)
+      })
+    })
+
+    describe("when caller is governance", () => {
+      const testUpdateMinStakeAmount = (newValue: bigint) =>
+        function () {
+          beforeAfterSnapshotWrapper()
+
+          let tx: ContractTransactionResponse
+
+          before(async () => {
+            tx = await bitcoinDepositor
+              .connect(governance)
+              .updateMinStakeAmount(newValue)
+          })
+
+          it("should emit MaxSingleStakeAmountUpdated event", async () => {
+            await expect(tx)
+              .to.emit(bitcoinDepositor, "MinStakeAmountUpdated")
+              .withArgs(newValue)
+          })
+
+          it("should update value correctly", async () => {
+            expect(await bitcoinDepositor.minStakeAmount()).to.be.eq(newValue)
+          })
+        }
+
+      beforeAfterSnapshotWrapper()
+
+      // Deposit dust threshold: 1000000 satoshi = 0.01 BTC
+      // tBTC Bridge stores the dust threshold in satoshi precision,
+      // we need to convert it to the tBTC token precision as `updateMinStakeAmount`
+      // function expects this precision.
+      const bridgeDepositDustThreshold = to1ePrecision(
+        defaultDepositDustThreshold,
+        10,
+      )
+
+      describe("when new stake amount is less than bridge deposit dust threshold", () => {
+        beforeAfterSnapshotWrapper()
+        const newMinStakeAmount = bridgeDepositDustThreshold - 1n
+
+        it("should revert", async () => {
+          await expect(
+            bitcoinDepositor
+              .connect(governance)
+              .updateMinStakeAmount(newMinStakeAmount),
+          )
+            .to.be.revertedWithCustomError(
+              bitcoinDepositor,
+              "MinStakeAmountLowerThanBridgeDepositDustThreshold",
+            )
+            .withArgs(newMinStakeAmount, bridgeDepositDustThreshold)
+        })
+      })
+
+      describe(
+        "when new stake amount is equal to bridge deposit dust threshold",
+        testUpdateMinStakeAmount(bridgeDepositDustThreshold),
+      )
+
+      describe(
+        "when new stake amount is greater than bridge deposit dust threshold",
+        testUpdateMinStakeAmount(bridgeDepositDustThreshold + 1n),
+      )
+
+      describe(
+        "when new stake amount is equal max uint256",
+        testUpdateMinStakeAmount(MaxUint256),
+      )
     })
   })
 
