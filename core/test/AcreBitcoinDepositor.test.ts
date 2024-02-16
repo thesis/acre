@@ -1272,7 +1272,7 @@ describe("AcreBitcoinDepositor", () => {
     })
 
     describe("when caller is governance", () => {
-      const testUpdateDepositorFeeDivisor = (newValue: number) =>
+      const testUpdateDepositorFeeDivisor = (newValue: bigint) =>
         function () {
           beforeAfterSnapshotWrapper()
 
@@ -1299,10 +1299,15 @@ describe("AcreBitcoinDepositor", () => {
 
       describe(
         "when new value is non-zero",
-        testUpdateDepositorFeeDivisor(47281),
+        testUpdateDepositorFeeDivisor(47281n),
       )
 
-      describe("when new value is zero", testUpdateDepositorFeeDivisor(0))
+      describe("when new value is zero", testUpdateDepositorFeeDivisor(0n))
+
+      describe(
+        "when new value is max uint64",
+        testUpdateDepositorFeeDivisor(18446744073709551615n),
+      )
     })
   })
 
