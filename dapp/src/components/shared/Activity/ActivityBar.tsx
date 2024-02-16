@@ -1,31 +1,31 @@
 import React, { useCallback, useState } from "react"
 import { Link as ReactRouterLink } from "react-router-dom"
 import { Flex, Link as ChakraLink, FlexboxProps } from "@chakra-ui/react"
-import { mockedTransactions } from "#/pages/Activity/mock-transactions"
 import ActivityCard from "./ActivityCard"
+import { mockedActivities } from "./mock-activities"
 
 function ActivityBar(props: FlexboxProps) {
-  const [transactions, setTransactions] = useState(mockedTransactions)
+  const [activities, setActivities] = useState(mockedActivities)
 
   const onRemove = useCallback(
-    (transactionHash: string) => {
-      const filteredTransactions = transactions.filter(
-        (transaction) => transaction.txHash !== transactionHash,
+    (activityHash: string) => {
+      const filteredActivities = activities.filter(
+        (activity) => activity.txHash !== activityHash,
       )
-      setTransactions(filteredTransactions)
+      setActivities(filteredActivities)
     },
-    [transactions],
+    [activities],
   )
   return (
     <Flex gap={3} {...props}>
-      {transactions.map((transaction) => (
+      {activities.map((activity) => (
         <ChakraLink
           as={ReactRouterLink}
           to="/activity-details"
-          state={{ transaction }}
-          key={transaction.txHash}
+          state={{ activity }}
+          key={activity.txHash}
         >
-          <ActivityCard transaction={transaction} onRemove={onRemove} />
+          <ActivityCard activity={activity} onRemove={onRemove} />
         </ChakraLink>
       ))}
     </Flex>

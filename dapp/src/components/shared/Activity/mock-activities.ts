@@ -1,8 +1,7 @@
-import { TransactionInfo } from "#/types"
+import { ActivityInfo } from "#/types"
 
-export const mockedTransactions: TransactionInfo[] = [
+export const mockedActivities: ActivityInfo[] = [
   {
-    timestamp: Date.now(),
     amount: 324000000,
     action: "stake",
     currency: "bitcoin",
@@ -12,7 +11,6 @@ export const mockedTransactions: TransactionInfo[] = [
     status: "syncing",
   },
   {
-    timestamp: Date.now(),
     amount: 524000000,
     action: "unstake",
     currency: "bitcoin",
@@ -22,7 +20,6 @@ export const mockedTransactions: TransactionInfo[] = [
     status: "pending",
   },
   {
-    timestamp: Date.now(),
     amount: 224000000,
     action: "receive",
     currency: "bitcoin",

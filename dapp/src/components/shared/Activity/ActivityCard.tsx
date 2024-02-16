@@ -11,7 +11,7 @@ import {
   Tooltip,
   CloseButton,
 } from "@chakra-ui/react"
-import { TransactionInfo, LocationState } from "#/types"
+import { ActivityInfo, LocationState } from "#/types"
 import { capitalize } from "#/utils"
 import { ChevronRightIcon } from "#/assets/icons"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
@@ -19,18 +19,16 @@ import StatusInfo from "#/components/shared/StatusInfo"
 import { TextSm } from "#/components/shared/Typography"
 
 type ActivityCardType = CardProps & {
-  transaction: TransactionInfo
-  onRemove: (transactionHash: string) => void
+  activity: ActivityInfo
+  onRemove: (activityHash: string) => void
 }
 
-function ActivityCard({ transaction, onRemove, ...props }: ActivityCardType) {
+function ActivityCard({ activity, onRemove, ...props }: ActivityCardType) {
   let colorScheme
 
   const state = useLocation().state as LocationState | null
-  const isActive = state
-    ? transaction.txHash === state.transaction.txHash
-    : false
-  const isCompleted = transaction.status === "completed"
+  const isActive = state ? activity.txHash === state.activity.txHash : false
+  const isCompleted = activity.status === "completed"
 
   if (isCompleted) {
     colorScheme = "green"
@@ -41,11 +39,11 @@ function ActivityCard({ transaction, onRemove, ...props }: ActivityCardType) {
   const onClose = useCallback(
     (event: React.MouseEvent) => {
       event.preventDefault()
-      if (transaction.txHash) {
-        onRemove(transaction.txHash)
+      if (activity.txHash) {
+        onRemove(activity.txHash)
       }
     },
-    [onRemove, transaction.txHash],
+    [onRemove, activity.txHash],
   )
 
   return (
@@ -72,8 +70,8 @@ function ActivityCard({ transaction, onRemove, ...props }: ActivityCardType) {
       <CardHeader p={0} w="100%">
         <HStack justifyContent="space-between">
           <CurrencyBalance
-            currency={transaction.currency}
-            amount={transaction.amount}
+            currency={activity.currency}
+            amount={activity.amount}
             size="xl"
             balanceFontWeight="black"
             symbolFontWeight="medium"
@@ -94,14 +92,14 @@ function ActivityCard({ transaction, onRemove, ...props }: ActivityCardType) {
       </CardHeader>
       <CardBody p={0}>
         <TextSm fontWeight="semibold" marginBottom={4}>
-          {capitalize(transaction.action)}
+          {capitalize(activity.action)}
         </TextSm>
       </CardBody>
       <CardFooter p={0}>
         {" "}
-        {transaction.status && (
+        {activity.status && (
           <StatusInfo
-            status={transaction.status}
+            status={activity.status}
             withIcon
             withDefaultColor
             fontWeight="normal"

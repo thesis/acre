@@ -1,5 +1,5 @@
-import { TransactionInfo } from "./transaction"
+import { ActivityInfo } from "./activity"
 
 export type LocationState = {
-  transaction: TransactionInfo
+  activity: ActivityInfo
 }

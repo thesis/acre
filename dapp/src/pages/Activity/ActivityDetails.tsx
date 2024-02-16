@@ -20,11 +20,11 @@ import Spinner from "#/components/shared/Spinner"
 function ActivityDetails() {
   const location = useLocation()
 
-  const { transaction } = location.state as LocationState
+  const { activity } = location.state as LocationState
 
   return (
     <Flex flexDirection="column" gap={2}>
-      {transaction?.status === "pending" && (
+      {activity?.status === "pending" && (
         <Card w="100%">
           <CardBody paddingX={10} paddingY={6}>
             <HStack marginBottom={4} justify="space-between">
@@ -46,22 +46,22 @@ function ActivityDetails() {
           <HStack>
             <VStack gap={0} w={72} alignItems="left">
               <TextMd fontWeight="semibold" color="gold.700">
-                {capitalize(transaction.action)}
+                {capitalize(activity.action)}
               </TextMd>
               <CurrencyBalance
                 variant="greater-balance-xxl"
                 desiredDecimals={4}
-                currency={transaction.currency}
-                amount={transaction.amount}
+                currency={activity.currency}
+                amount={activity.amount}
                 symbolFontWeight="medium"
               />
               {/* TODO: Change the balance when calculation functionality is ready */}
               <TextSm marginBottom={7}>(62,317.15 USD)</TextSm>
 
-              {transaction?.status && (
+              {activity?.status && (
                 <Tag mt={2}>
                   <StatusInfo
-                    status={transaction.status}
+                    status={activity.status}
                     fontWeight="semibold"
                     withIcon
                     withDefaultColor
