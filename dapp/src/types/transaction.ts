@@ -21,13 +21,3 @@ export type StakeHistory = {
   callTx: TransactionInfo
   receiptTx: TransactionInfo
 }
-
-export const TRANSACTION_STATUSES = {
-  IDLE: "IDLE",
-  PENDING: "PENDING",
-  FAILED: "FAILED",
-  SUCCEEDED: "SUCCEEDED",
-} as const
-
-export type TransactionStatus =
-  (typeof TRANSACTION_STATUSES)[keyof typeof TRANSACTION_STATUSES]
