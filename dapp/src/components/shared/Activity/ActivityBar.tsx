@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react"
 import { Link as ReactRouterLink } from "react-router-dom"
 import { Flex, Link as ChakraLink, FlexboxProps } from "@chakra-ui/react"
-import ActivityCard from "./ActivityCard"
+import ActivityCardContainer from "./ActivityCardContainer"
 import { mockedActivities } from "./mock-activities"
 
 function ActivityBar(props: FlexboxProps) {
@@ -25,7 +25,7 @@ function ActivityBar(props: FlexboxProps) {
           state={{ activity }}
           key={activity.txHash}
         >
-          <ActivityCard activity={activity} onRemove={onRemove} />
+          <ActivityCardContainer activity={activity} onRemove={onRemove} />
         </ChakraLink>
       ))}
     </Flex>
