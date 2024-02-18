@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useCallback } from "react"
 import {
   CardBody,
   CardFooter,
@@ -9,28 +9,37 @@ import {
   Tooltip,
   CloseButton,
 } from "@chakra-ui/react"
-import { ActivityInfo } from "#/types"
+import { useLocation } from "react-router-dom"
+import { ActivityInfo, LocationState } from "#/types"
 import { capitalize } from "#/utils"
 import { ChevronRightIcon } from "#/assets/icons"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import StatusInfo from "#/components/shared/StatusInfo"
 import { TextSm } from "#/components/shared/Typography"
+import ActivityCardContainer from "./ActivityCardContainer"
 
 type ActivityCardType = CardProps & {
   activity: ActivityInfo
-  isCompleted: boolean
-  isActive: boolean
-  onClose: (event: React.MouseEvent) => void
+  onRemove: (txHash: string) => void
 }
 
-function ActivityCard({
-  activity,
-  isCompleted,
-  isActive,
-  onClose,
-}: ActivityCardType) {
+function ActivityCard({ activity, onRemove }: ActivityCardType) {
+  const state = useLocation().state as LocationState | null
+  const isActive = state ? activity.txHash === state.activity.txHash : false
+  const isCompleted = activity.status === "completed"
+
+  const onClose = useCallback(
+    (event: React.MouseEvent) => {
+      event.preventDefault()
+      if (activity.txHash) {
+        onRemove(activity.txHash)
+      }
+    },
+    [onRemove, activity.txHash],
+  )
+
   return (
-    <>
+    <ActivityCardContainer isCompleted={isCompleted} isActive={isActive}>
       <CardHeader p={0} w="100%">
         <HStack justifyContent="space-between">
           <CurrencyBalance
@@ -42,7 +51,11 @@ function ActivityCard({
           />
           {isCompleted ? (
             <Tooltip label="Remove" placement="top" paddingX={3} paddingY={2}>
-              <CloseButton size="sm" onClick={onClose} />
+              <CloseButton
+                size="sm"
+                onClick={onClose}
+                _hover={{ backgroundColor: undefined }}
+              />
             </Tooltip>
           ) : (
             <Icon
@@ -69,7 +82,7 @@ function ActivityCard({
           />
         )}
       </CardFooter>
-    </>
+    </ActivityCardContainer>
   )
 }
 

@@ -28,7 +28,6 @@ export function CurrencyBalance({
   variant,
   balanceFontWeight = "bold",
   symbolFontWeight = "bold",
-  wrapInBrackets,
   ...textProps
 }: CurrencyBalanceProps) {
   const styles = useMultiStyleConfig("CurrencyBalance", { size, variant })
@@ -50,7 +49,6 @@ export function CurrencyBalance({
 
   return (
     <Box>
-      {wrapInBrackets && "("}
       <Box
         as="span"
         fontWeight={balanceFontWeight}
@@ -67,7 +65,6 @@ export function CurrencyBalance({
       >
         {symbol}
       </Box>
-      {wrapInBrackets && ")"}
     </Box>
   )
 }

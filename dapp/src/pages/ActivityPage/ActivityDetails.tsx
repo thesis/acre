@@ -25,8 +25,8 @@ function ActivityDetails() {
 
   return (
     <Flex flexDirection="column" gap={2}>
-      {activity?.status === "pending" && (
-        <Card w="100%">
+      {activity.status === "pending" && (
+        <Card>
           <CardBody paddingX={10} paddingY={6}>
             <HStack marginBottom={4} justify="space-between">
               <TextMd>
@@ -42,7 +42,7 @@ function ActivityDetails() {
         </Card>
       )}
 
-      <Card w="100%">
+      <Card>
         <CardBody padding={10}>
           <HStack>
             <VStack gap={0} w={72} alignItems="left">
@@ -57,18 +57,16 @@ function ActivityDetails() {
                   symbolFontWeight: "medium",
                 }}
                 to={{
-                  wrapInBrackets: true,
                   currency: "usd",
-                  marginBottom: 7,
                   fontWeight: "medium",
                 }}
               />
 
-              {activity?.status && (
+              {activity.status && (
                 <Tag mt={9}>
                   <StatusInfo
                     status={activity.status}
-                    fontWeight="semibold"
+                    fontWeight="medium"
                     withIcon
                     withDefaultColor
                   />
