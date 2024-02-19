@@ -69,7 +69,7 @@ export const formatTokenAmount = (
     return `<0.${"0".repeat(desiredDecimals - 1)}1`
   }
 
-  return numberToLocaleString(formattedAmount)
+  return numberToLocaleString(formattedAmount, desiredDecimals)
 }
 
 export const formatSatoshiAmount = (
@@ -200,3 +200,9 @@ export function userAmountToBigInt(
 // Generates a random integer in min-max range (inclusively)
 export const randomInteger = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min + 1)) + min
+
+export function getDesiredDecimals(amount: string | number, decimals: number) {
+  const undecimaledAmount = amount.toString()
+  const desiredDecimals = decimals - undecimaledAmount.length + 1
+  return desiredDecimals > 0 ? desiredDecimals : 2
+}

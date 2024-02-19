@@ -13,11 +13,11 @@ defaults:
     working-directory: ./sdk
 
 jobs:
-  core-build:
-    uses: ./.github/workflows/reusable-core-build.yaml
+  sdk-build:
+    uses: ./.github/workflows/reusable-sdk-build.yaml
 
   sdk-format:
-    needs: [core-build]
+    needs: [sdk-build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,6 +27,9 @@ jobs:
 
       - name: Set up Node
         uses: actions/setup-node@v4
+        with:
+          node-version-file: "sdk/.nvmrc"
+          cache: "pnpm"
 
       - name: Download Core Build Artifacts
         uses: actions/download-artifact@v3
@@ -40,8 +43,8 @@ jobs:
       - name: Format
         run: pnpm run format
 
-  sdk-build-and-test:
-    needs: [core-build]
+  sdk-test:
+    needs: [sdk-build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -51,6 +54,9 @@ jobs:
 
       - name: Set up Node
         uses: actions/setup-node@v4
+        with:
+          node-version-file: "sdk/.nvmrc"
+          cache: "pnpm"
 
       - name: Download Core Build Artifacts
         uses: actions/download-artifact@v3
@@ -60,9 +66,6 @@ jobs:
 
       - name: Install Dependencies
         run: pnpm install --prefer-offline --frozen-lockfile
-
-      - name: Build
-        run: pnpm run build
 
       - name: Tests
         run: pnpm run test

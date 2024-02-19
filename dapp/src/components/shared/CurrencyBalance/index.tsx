@@ -20,14 +20,19 @@ export function CurrencyBalance({
   currency,
   amount,
   shouldBeFormatted = true,
-  desiredDecimals = 2,
+  desiredDecimals: customDesiredDecimals,
   size,
   variant,
   ...textProps
 }: CurrencyBalanceProps) {
   const styles = useMultiStyleConfig("CurrencyBalance", { size, variant })
 
-  const { symbol, decimals } = getCurrencyByType(currency)
+  const {
+    symbol,
+    decimals,
+    desiredDecimals: currencyDesiredDecimals,
+  } = getCurrencyByType(currency)
+  const desiredDecimals = customDesiredDecimals ?? currencyDesiredDecimals
 
   const balance = useMemo(() => {
     const value = amount ?? 0
