@@ -51,7 +51,7 @@ export default function MissingAccountModal({
       </ModalBody>
       <ModalFooter mt={4}>
         <Button size="lg" width="100%" onClick={handleClick}>
-          Connect wallet
+          Connect account
         </Button>
       </ModalFooter>
     </>
