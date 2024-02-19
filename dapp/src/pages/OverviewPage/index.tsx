@@ -13,13 +13,13 @@ export default function OverviewPage() {
   const { onOpen } = useDocsDrawer()
 
   return (
-    <Flex direction="column" gap={2} p={6}>
+    <Flex direction="column" gap={3.5} p={6}>
       <HStack>
         {/* TODO: Handle click actions */}
         <Switch size="sm" />
         <TextSm fontWeight="bold">Show values in {USD.symbol}</TextSm>
       </HStack>
-      <Flex marginBottom={2} justifyContent="space-between">
+      <Flex marginBottom={3.5} justifyContent="space-between">
         <ActivityBar />
         <ButtonLink colorScheme="gold" bg="gold.200" onClick={onOpen}>
           Docs

@@ -61,17 +61,14 @@ function ActivityDetails() {
                   fontWeight: "medium",
                 }}
               />
-
-              {activity.status && (
-                <Tag mt={9}>
-                  <StatusInfo
-                    status={activity.status}
-                    fontWeight="medium"
-                    withIcon
-                    withDefaultColor
-                  />
-                </Tag>
-              )}
+              <Tag mt={9}>
+                <StatusInfo
+                  status={activity.status}
+                  fontWeight="medium"
+                  withIcon
+                  withDefaultColor
+                />
+              </Tag>
             </VStack>
             <Image src={ActivityProgress} />
           </HStack>

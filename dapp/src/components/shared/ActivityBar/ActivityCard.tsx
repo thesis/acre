@@ -73,14 +73,12 @@ function ActivityCard({ activity, onRemove }: ActivityCardType) {
         </TextSm>
       </CardBody>
       <CardFooter p={0}>
-        {activity.status && (
-          <StatusInfo
-            status={activity.status}
-            withIcon
-            withDefaultColor
-            fontWeight="normal"
-          />
-        )}
+        <StatusInfo
+          status={activity.status}
+          withIcon
+          withDefaultColor
+          fontWeight="medium"
+        />
       </CardFooter>
     </ActivityCardContainer>
   )

@@ -16,7 +16,6 @@ export type CurrencyBalanceProps = {
   variant?: "greater-balance-xl" | "greater-balance-xxl"
   balanceFontWeight?: string
   symbolFontWeight?: string
-  wrapInBrackets?: boolean
 } & TextProps
 
 export function CurrencyBalance({
