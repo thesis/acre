@@ -12,6 +12,7 @@ import {
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import { TextMd } from "#/components/shared/Typography"
 import { Info } from "#/assets/icons"
+import { useAppSelector } from "#/hooks"
 import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
 import TransactionModal from "../TransactionModal"
 
@@ -28,7 +29,7 @@ export default function PositionDetails(props: CardProps) {
     <Card {...props}>
       <CardBody>
         <HStack justifyContent="space-between">
-          <TextMd fontWeight="bold">Your position</TextMd>
+          <TextMd fontWeight="bold">Your position :</TextMd>
           {/* TODO: Add correct text for tooltip */}
           <Tooltip label="Template" placement="top">
             <Icon as={Info} color="grey.700" />

@@ -1,1 +1,1 @@
-export * from "./todo.slice"
+export { btcReducer } from "./btc.slice"

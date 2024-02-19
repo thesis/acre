@@ -1,8 +1,8 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { Box, ChakraProvider } from "@chakra-ui/react"
 import { Provider as ReduxProvider } from "react-redux"
 import { useSentry } from "./hooks"
-import { reduxStore } from "./redux/store"
+import { store } from "./redux/store"
 import theme from "./theme"
 import {
   DocsDrawerContextProvider,
@@ -15,11 +15,18 @@ import Overview from "./components/Overview"
 import Sidebar from "./components/Sidebar"
 import DocsDrawer from "./components/DocsDrawer"
 import GlobalStyles from "./components/GlobalStyles"
+import { fetchBTCPriceUSD } from "./redux/thunks"
+import { useAppDispatch } from "./hooks"
 
 function DApp() {
+  const dispatch = useAppDispatch()
   // TODO: Let's uncomment when dark mode is ready
   // useDetectThemeMode()
   useSentry()
+
+  useEffect(() => {
+    dispatch(fetchBTCPriceUSD())
+  }, [dispatch])
 
   return (
     <>
@@ -39,7 +46,7 @@ function DAppProviders() {
       <WalletContextProvider>
         <DocsDrawerContextProvider>
           <SidebarContextProvider>
-            <ReduxProvider store={reduxStore}>
+            <ReduxProvider store={store}>
               <ChakraProvider theme={theme}>
                 <GlobalStyles />
                 <DApp />
