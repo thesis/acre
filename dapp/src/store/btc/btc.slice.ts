@@ -1,5 +1,3 @@
-/* eslint no-param-reassign: "error" */
-
 import { createSlice } from "@reduxjs/toolkit"
 import { fetchBTCPriceUSD } from "./btc.thunk"
 

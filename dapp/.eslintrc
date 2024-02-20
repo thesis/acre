@@ -18,6 +18,16 @@
     "react/require-default-props": [0],
     "no-console": ["error", { "allow": ["error"] }],
   },
+  "overrides": [
+    {
+      "files": [
+        "src/store/**/*.slice.ts"
+      ],
+      "rules": {
+        "no-param-reassign": ["error", {"ignorePropertyModificationsFor": ["state"] }]
+      }
+    }
+  ],
   "settings": {
     "import/resolver": {
       "alias": {
