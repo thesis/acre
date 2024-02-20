@@ -1,24 +1,26 @@
 import React from "react"
 import { Flex, Grid, HStack, Switch } from "@chakra-ui/react"
 import { useDocsDrawer } from "#/hooks"
+import { TextSm } from "#/components/shared/Typography"
 import { USD } from "#/constants"
+import ButtonLink from "#/components/shared/ButtonLink"
 import PositionDetails from "./PositionDetails"
 import Statistics from "./Statistics"
 import TransactionHistory from "./TransactionHistory"
-import { TextSm } from "../shared/Typography"
-import ButtonLink from "../shared/ButtonLink"
+import ActivityBar from "../../components/shared/ActivityBar"
 
-export default function Overview() {
+export default function OverviewPage() {
   const { onOpen } = useDocsDrawer()
 
   return (
-    <Flex direction="column" gap={2} p={6}>
-      <Flex justifyContent="space-between" alignItems="center">
-        <HStack>
-          {/* TODO: Handle click actions */}
-          <Switch size="sm" />
-          <TextSm fontWeight="bold">Show values in {USD.symbol}</TextSm>
-        </HStack>
+    <Flex direction="column" gap={3.5} p={6}>
+      <HStack>
+        {/* TODO: Handle click actions */}
+        <Switch size="sm" />
+        <TextSm fontWeight="bold">Show values in {USD.symbol}</TextSm>
+      </HStack>
+      <Flex marginBottom={3.5} justifyContent="space-between">
+        <ActivityBar />
         <ButtonLink colorScheme="gold" bg="gold.200" onClick={onOpen}>
           Docs
         </ButtonLink>

@@ -1,6 +1,6 @@
 import { CurrencyType } from "#/types"
 import { getCurrencyByType } from "./currency"
-import { formatTokenAmount } from "./numbers"
+import { fixedPointNumberToString } from "./numbers"
 
 const ERRORS = {
   REQUIRED: "Required.",
@@ -33,7 +33,9 @@ export function validateTokenAmount(
 
   if (isMaximumValueExceeded) return ERRORS.EXCEEDED_VALUE
   if (!isMinimumValueFulfilled)
-    return ERRORS.INSUFFICIENT_VALUE(formatTokenAmount(minValue, decimals))
+    return ERRORS.INSUFFICIENT_VALUE(
+      fixedPointNumberToString(BigInt(minValue), decimals),
+    )
 
   return undefined
 }

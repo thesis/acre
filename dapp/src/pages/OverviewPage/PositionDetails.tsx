@@ -14,7 +14,7 @@ import { TextMd } from "#/components/shared/Typography"
 import { Info } from "#/assets/icons"
 import { useAppSelector } from "#/hooks"
 import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
-import TransactionModal from "../TransactionModal"
+import TransactionModal from "#/components/TransactionModal"
 
 export default function PositionDetails(props: CardProps) {
   const [actionFlowType, setActionFlowType] = useState<
@@ -39,7 +39,8 @@ export default function PositionDetails(props: CardProps) {
           from={{
             currency: "bitcoin",
             amount: "2398567898",
-            variant: "greater-balance",
+            variant: "greater-balance-xl",
+            symbolFontWeight: "semibold",
           }}
           to={{
             currency: "usd",
