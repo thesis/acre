@@ -12,7 +12,6 @@ import {
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import { TextMd } from "#/components/shared/Typography"
 import { Info } from "#/assets/icons"
-import { useAppSelector } from "#/hooks"
 import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
 import TransactionModal from "#/components/TransactionModal"
 

@@ -1,6 +1,6 @@
 import { combineReducers } from "@reduxjs/toolkit"
-import * as combinedSlices from "./slices"
+import { btcSlice } from "./btc/btc.slice"
 
 export const reducer = combineReducers({
-  ...combinedSlices,
+  btc: btcSlice.reducer,
 })

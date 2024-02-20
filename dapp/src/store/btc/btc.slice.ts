@@ -1,6 +1,12 @@
+/* eslint no-param-reassign: "error" */
+
 import { createSlice } from "@reduxjs/toolkit"
-import { BtcState } from "#/types"
-import { fetchBTCPriceUSD } from "../thunks"
+import { fetchBTCPriceUSD } from "./btc.thunk"
+
+type BtcState = {
+  isLoadingPriceUSD: boolean
+  usdPrice: number
+}
 
 const initialState: BtcState = {
   isLoadingPriceUSD: false,
@@ -8,7 +14,7 @@ const initialState: BtcState = {
 }
 
 // Store Bitcoin data such as balance, balance in usd and other related data to Bitcoin chain.
-const btcSlice = createSlice({
+export const btcSlice = createSlice({
   name: "btc",
   initialState,
   reducers: {},
@@ -24,4 +30,3 @@ const btcSlice = createSlice({
 })
 
 export const btcActions = btcSlice.actions
-export const btcReducer = btcSlice.reducer
