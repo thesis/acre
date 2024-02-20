@@ -1,6 +1,5 @@
 import React from "react"
-import { Button, HStack, Icon } from "@chakra-ui/react"
-import { Account } from "@ledgerhq/wallet-api-client"
+import { HStack } from "@chakra-ui/react"
 import {
   useRequestBitcoinAccount,
   useRequestEthereumAccount,
@@ -9,36 +8,7 @@ import {
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import { TextMd } from "#/components/shared/Typography"
 import { Bitcoin, EthereumIcon } from "#/assets/icons"
-import { truncateAddress, asyncWrapper } from "#/utils"
-
-export type ConnectButtonsProps = {
-  leftIcon: typeof Icon
-  account: Account | undefined
-  requestAccount: () => Promise<void>
-}
-
-function ConnectButton({
-  leftIcon,
-  account,
-  requestAccount,
-}: ConnectButtonsProps) {
-  const colorScheme = !account ? "error" : undefined
-
-  const handleClick = () => {
-    asyncWrapper(requestAccount())
-  }
-
-  return (
-    <Button
-      variant="card"
-      colorScheme={colorScheme}
-      leftIcon={<Icon as={leftIcon} boxSize={6} />}
-      onClick={handleClick}
-    >
-      {account ? truncateAddress(account.address) : "Not connected"}
-    </Button>
-  )
-}
+import { ConnectButton } from "./ConnectButton"
 
 export default function ConnectWallet() {
   const { requestAccount: requestBitcoinAccount } = useRequestBitcoinAccount()
