@@ -13,14 +13,10 @@ export function waitConfirmationsNumber(
   hre: HardhatRuntimeEnvironment,
 ): number {
   switch (hre.network.name) {
-    case "mainnet": {
+    case "mainnet":
+    case "sepolia":
       return 2
-    }
-    case "sepolia": {
-      return 2
-    }
-    default: {
+    default:
       return 1
-    }
   }
 }
