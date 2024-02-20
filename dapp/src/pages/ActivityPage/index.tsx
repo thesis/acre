@@ -16,7 +16,7 @@ export default function ActivityPage() {
   }, [closeSidebar, openSideBar])
 
   return (
-    <Flex direction="column" gap={2} p={6}>
+    <Flex direction="column" gap={4} p={6}>
       <ChakraLink as={ReactRouterLink} to="/">
         <Icon
           as={ArrowLeft}
