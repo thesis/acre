@@ -36,7 +36,7 @@ import {stBTC} from "./stBTC.sol";
 ///         network, the tBTC Bridge and tBTC vault mint the tBTC token to the
 ///         Depositor address. After tBTC is minted to the Depositor, on the stake
 ///         finalization tBTC is staked in stBTC contract and stBTC shares are emitted
-///         to the receiver pointed by the staker.
+///         to the staker.
 contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     using SafeERC20 for IERC20;
 
@@ -55,7 +55,7 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
         StakeRequestState state;
         // The address to which the stBTC shares will be minted. Stored only when
         // request is queued.
-        address receiver;
+        address staker;
         // tBTC token amount to stake after deducting tBTC minting fees and the
         // Depositor fee. Stored only when request is queued.
         uint256 queuedAmount;
@@ -84,11 +84,11 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     ///      event emitted in the same transaction.
     /// @param depositKey Deposit key identifying the deposit.
     /// @param caller Address that initialized the stake request.
-    /// @param receiver The address to which the stBTC shares will be minted.
+    /// @param staker The address to which the stBTC shares will be minted.
     event StakeRequestInitialized(
         uint256 indexed depositKey,
         address indexed caller,
-        address indexed receiver
+        address indexed staker
     );
 
     /// @notice Emitted when bridging completion has been notified.
@@ -141,11 +141,11 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
 
     /// @notice Emitted when a stake request is recalled.
     /// @param depositKey Deposit key identifying the deposit.
-    /// @param receiver Address of the receiver.
+    /// @param staker Address of the staker.
     /// @param amountToStake Amount of recalled tBTC tokens.
     event StakeRequestRecalled(
         uint256 indexed depositKey,
-        address indexed receiver,
+        address indexed staker,
         uint256 amountToStake
     );
 
@@ -159,8 +159,8 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     /// Reverts if the stBTC address is zero.
     error StbtcZeroAddress();
 
-    /// @dev Receiver address is zero.
-    error ReceiverIsZeroAddress();
+    /// @dev Staker address is zero.
+    error StakerIsZeroAddress();
 
     /// @dev Attempted to execute function for stake request in unexpected current
     ///      state.
@@ -191,8 +191,8 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     ///      to the queue, or was already finalized or recalled.
     error StakeRequestNotQueued();
 
-    /// @dev Attempted to call function by an account that is not the receiver.
-    error CallerNotReceiver();
+    /// @dev Attempted to call function by an account that is not the staker.
+    error CallerNotStaker();
 
     /// @notice Acre Bitcoin Depositor contract constructor.
     /// @param bridge tBTC Bridge contract instance.
@@ -228,7 +228,7 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     ///      - The revealed vault address must match the TBTCVault address,
     ///      - All requirements from {Bridge#revealDepositWithExtraData}
     ///        function must be met.
-    ///      - `receiver` must be the receiver address used in the P2(W)SH BTC
+    ///      - `staker` must be the staker address used in the P2(W)SH BTC
     ///        deposit transaction as part of the extra data.
     ///      - `referral` must be the referral info used in the P2(W)SH BTC
     ///        deposit transaction as part of the extra data.
@@ -236,15 +236,15 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     ///        can be revealed only one time.
     /// @param fundingTx Bitcoin funding transaction data, see `IBridgeTypes.BitcoinTxInfo`.
     /// @param reveal Deposit reveal data, see `IBridgeTypes.DepositRevealInfo`.
-    /// @param receiver The address to which the stBTC shares will be minted.
+    /// @param staker The address to which the stBTC shares will be minted.
     /// @param referral Data used for referral program.
     function initializeStakeRequest(
         IBridgeTypes.BitcoinTxInfo calldata fundingTx,
         IBridgeTypes.DepositRevealInfo calldata reveal,
-        address receiver,
+        address staker,
         uint16 referral
     ) external {
-        if (receiver == address(0)) revert ReceiverIsZeroAddress();
+        if (staker == address(0)) revert StakerIsZeroAddress();
 
         // We don't check if the request was already initialized, as this check
         // is enforced in `_initializeDeposit` when calling the
@@ -253,7 +253,7 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
         uint256 depositKey = _initializeDeposit(
             fundingTx,
             reveal,
-            encodeExtraData(receiver, referral)
+            encodeExtraData(staker, referral)
         );
 
         transitionStakeRequestState(
@@ -262,13 +262,13 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
             StakeRequestState.Initialized
         );
 
-        emit StakeRequestInitialized(depositKey, msg.sender, receiver);
+        emit StakeRequestInitialized(depositKey, msg.sender, staker);
     }
 
     /// @notice This function should be called for previously initialized stake
     ///         request, after tBTC bridging process was finalized.
     ///         It stakes the tBTC from the given deposit into stBTC, emitting the
-    ///         stBTC shares to the receiver specified in the deposit extra data
+    ///         stBTC shares to the staker specified in the deposit extra data
     ///         and using the referral provided in the extra data.
     /// @dev In case depositing in stBTC vault fails (e.g. because of the
     ///      maximum deposit limit being reached), the `queueForStaking` function
@@ -281,16 +281,14 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
             StakeRequestState.Finalized
         );
 
-        (uint256 amountToStake, address receiver) = finalizeBridging(
-            depositKey
-        );
+        (uint256 amountToStake, address staker) = finalizeBridging(depositKey);
 
         emit StakeRequestFinalized(depositKey, msg.sender, amountToStake);
 
         // Deposit tBTC in stBTC.
         tbtcToken.safeIncreaseAllowance(address(stbtc), amountToStake);
         // slither-disable-next-line unused-return
-        stbtc.deposit(amountToStake, receiver);
+        stbtc.deposit(amountToStake, staker);
     }
 
     /// @notice This function should be called for previously initialized stake
@@ -313,7 +311,7 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
 
         StakeRequest storage request = stakeRequests[depositKey];
 
-        (request.queuedAmount, request.receiver) = finalizeBridging(depositKey);
+        (request.queuedAmount, request.staker) = finalizeBridging(depositKey);
 
         emit StakeRequestQueued(depositKey, msg.sender, request.queuedAmount);
     }
@@ -344,7 +342,7 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
         // Deposit tBTC in stBTC.
         tbtcToken.safeIncreaseAllowance(address(stbtc), amountToStake);
         // slither-disable-next-line unused-return
-        stbtc.deposit(amountToStake, request.receiver);
+        stbtc.deposit(amountToStake, request.staker);
     }
 
     /// @notice Recall bridged tBTC tokens from the staking queue. This
@@ -353,7 +351,7 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     ///         reached.
     /// @dev This function can be called only after the stake request was added
     ///      to queue.
-    /// @dev Only receiver provided in the extra data of the stake request can
+    /// @dev Only staker provided in the extra data of the stake request can
     ///      call this function.
     /// @param depositKey Deposit key identifying the deposit.
     function recallFromQueue(uint256 depositKey) external {
@@ -367,15 +365,15 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
 
         if (request.queuedAmount == 0) revert StakeRequestNotQueued();
 
-        // Check if caller is the receiver.
-        if (msg.sender != request.receiver) revert CallerNotReceiver();
+        // Check if caller is the staker.
+        if (msg.sender != request.staker) revert CallerNotStaker();
 
         uint256 amount = request.queuedAmount;
         delete (request.queuedAmount);
 
-        emit StakeRequestRecalled(depositKey, request.receiver, amount);
+        emit StakeRequestRecalled(depositKey, request.staker, amount);
 
-        tbtcToken.safeTransfer(request.receiver, amount);
+        tbtcToken.safeTransfer(request.staker, amount);
     }
 
     /// @notice Updates the depositor fee divisor.
@@ -391,30 +389,30 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
 
     // TODO: Handle minimum deposit amount in tBTC Bridge vs stBTC.
 
-    /// @notice Encode receiver address and referral as extra data.
-    /// @dev Packs the data to bytes32: 20 bytes of receiver address and
+    /// @notice Encode staker address and referral as extra data.
+    /// @dev Packs the data to bytes32: 20 bytes of staker address and
     ///      2 bytes of referral, 10 bytes of trailing zeros.
-    /// @param receiver The address to which the stBTC shares will be minted.
+    /// @param staker The address to which the stBTC shares will be minted.
     /// @param referral Data used for referral program.
     /// @return Encoded extra data.
     function encodeExtraData(
-        address receiver,
+        address staker,
         uint16 referral
     ) public pure returns (bytes32) {
-        return bytes32(abi.encodePacked(receiver, referral));
+        return bytes32(abi.encodePacked(staker, referral));
     }
 
-    /// @notice Decodes receiver address and referral from extra data,
-    /// @dev Unpacks the data from bytes32: 20 bytes of receiver address and
+    /// @notice Decodes staker address and referral from extra data,
+    /// @dev Unpacks the data from bytes32: 20 bytes of staker address and
     ///      2 bytes of referral, 10 bytes of trailing zeros.
     /// @param extraData Encoded extra data.
-    /// @return receiver The address to which the stBTC shares will be minted.
+    /// @return staker The address to which the stBTC shares will be minted.
     /// @return referral Data used for referral program.
     function decodeExtraData(
         bytes32 extraData
-    ) public pure returns (address receiver, uint16 referral) {
-        // First 20 bytes of extra data is receiver address.
-        receiver = address(uint160(bytes20(extraData)));
+    ) public pure returns (address staker, uint16 referral) {
+        // First 20 bytes of extra data is staker address.
+        staker = address(uint160(bytes20(extraData)));
         // Next 2 bytes of extra data is referral info.
         referral = uint16(bytes2(extraData << (8 * 20)));
     }
@@ -453,7 +451,7 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     /// @param depositKey Deposit key identifying the deposit.
     /// @return amountToStake tBTC token amount to stake after deducting tBTC bridging
     ///         fees and the depositor fee.
-    /// @return receiver The address to which the stBTC shares will be minted.
+    /// @return staker The address to which the stBTC shares will be minted.
     function finalizeBridging(
         uint256 depositKey
     ) internal returns (uint256, address) {
@@ -463,7 +461,7 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
             bytes32 extraData
         ) = _finalizeDeposit(depositKey);
 
-        (address receiver, uint16 referral) = decodeExtraData(extraData);
+        (address staker, uint16 referral) = decodeExtraData(extraData);
 
         // Compute depositor fee. The fee is calculated based on the initial funding
         // transaction amount, before the tBTC protocol network fees were taken.
@@ -492,6 +490,6 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
             tbtcToken.safeTransfer(stbtc.treasury(), depositorFee);
         }
 
-        return (amountToStake, receiver);
+        return (amountToStake, staker);
     }
 }

@@ -16,7 +16,7 @@ contract AcreBitcoinDepositorHarness is AcreBitcoinDepositor {
 
     function exposed_finalizeBridging(
         uint256 depositKey
-    ) external returns (uint256 amountToStake, address receiver) {
+    ) external returns (uint256 amountToStake, address staker) {
         return finalizeBridging(depositKey);
     }
 }

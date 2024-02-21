@@ -55,7 +55,7 @@ describe("AcreBitcoinDepositor", () => {
   let governance: HardhatEthersSigner
   let treasury: HardhatEthersSigner
   let thirdParty: HardhatEthersSigner
-  let receiver: HardhatEthersSigner
+  let staker: HardhatEthersSigner
 
   before(async () => {
     ;({ bitcoinDepositor, tbtcBridge, tbtcVault, stbtc, tbtc } =
@@ -63,12 +63,9 @@ describe("AcreBitcoinDepositor", () => {
     ;({ governance, treasury } = await getNamedSigners())
     ;[thirdParty] = await getUnnamedSigners()
 
-    receiver = await helpers.account.impersonateAccount(
-      tbtcDepositData.receiver,
-      {
-        from: thirdParty,
-      },
-    )
+    staker = await helpers.account.impersonateAccount(tbtcDepositData.staker, {
+      from: thirdParty,
+    })
 
     await stbtc.connect(governance).updateDepositParameters(
       10000000000000, // 0.00001
@@ -92,7 +89,7 @@ describe("AcreBitcoinDepositor", () => {
   })
 
   describe("initializeStakeRequest", () => {
-    describe("when receiver is zero address", () => {
+    describe("when staker is zero address", () => {
       it("should revert", async () => {
         await expect(
           bitcoinDepositor.initializeStakeRequest(
@@ -101,14 +98,11 @@ describe("AcreBitcoinDepositor", () => {
             ZeroAddress,
             0,
           ),
-        ).to.be.revertedWithCustomError(
-          bitcoinDepositor,
-          "ReceiverIsZeroAddress",
-        )
+        ).to.be.revertedWithCustomError(bitcoinDepositor, "StakerIsZeroAddress")
       })
     })
 
-    describe("when receiver is non zero address", () => {
+    describe("when staker is non zero address", () => {
       describe("when stake request is not in progress", () => {
         describe("when tbtc vault address is incorrect", () => {
           beforeAfterSnapshotWrapper()
@@ -123,7 +117,7 @@ describe("AcreBitcoinDepositor", () => {
                 .initializeStakeRequest(
                   tbtcDepositData.fundingTxInfo,
                   { ...tbtcDepositData.reveal, vault: invalidTbtcVault },
-                  tbtcDepositData.receiver,
+                  tbtcDepositData.staker,
                   tbtcDepositData.referral,
                 ),
             ).to.be.revertedWith("Vault address mismatch")
@@ -142,7 +136,7 @@ describe("AcreBitcoinDepositor", () => {
                 .initializeStakeRequest(
                   tbtcDepositData.fundingTxInfo,
                   tbtcDepositData.reveal,
-                  tbtcDepositData.receiver,
+                  tbtcDepositData.staker,
                   tbtcDepositData.referral,
                 )
             })
@@ -153,7 +147,7 @@ describe("AcreBitcoinDepositor", () => {
                 .withArgs(
                   tbtcDepositData.depositKey,
                   thirdParty.address,
-                  tbtcDepositData.receiver,
+                  tbtcDepositData.staker,
                 )
             })
 
@@ -172,7 +166,7 @@ describe("AcreBitcoinDepositor", () => {
                 tbtcDepositData.depositKey,
               )
 
-              expect(stakeRequest.receiver, "invalid receiver").to.be.equal(
+              expect(stakeRequest.staker, "invalid staker").to.be.equal(
                 ZeroAddress,
               )
               expect(
@@ -208,7 +202,7 @@ describe("AcreBitcoinDepositor", () => {
                   .initializeStakeRequest(
                     tbtcDepositData.fundingTxInfo,
                     tbtcDepositData.reveal,
-                    tbtcDepositData.receiver,
+                    tbtcDepositData.staker,
                     0,
                   ),
               ).to.be.not.reverted
@@ -231,7 +225,7 @@ describe("AcreBitcoinDepositor", () => {
               .initializeStakeRequest(
                 tbtcDepositData.fundingTxInfo,
                 tbtcDepositData.reveal,
-                tbtcDepositData.receiver,
+                tbtcDepositData.staker,
                 tbtcDepositData.referral,
               ),
           ).to.be.revertedWith("Deposit already revealed")
@@ -259,7 +253,7 @@ describe("AcreBitcoinDepositor", () => {
               .initializeStakeRequest(
                 tbtcDepositData.fundingTxInfo,
                 tbtcDepositData.reveal,
-                tbtcDepositData.receiver,
+                tbtcDepositData.staker,
                 tbtcDepositData.referral,
               ),
           ).to.be.revertedWith("Deposit already revealed")
@@ -287,7 +281,7 @@ describe("AcreBitcoinDepositor", () => {
               .initializeStakeRequest(
                 tbtcDepositData.fundingTxInfo,
                 tbtcDepositData.reveal,
-                tbtcDepositData.receiver,
+                tbtcDepositData.staker,
                 tbtcDepositData.referral,
               ),
           ).to.be.revertedWith("Deposit already revealed")
@@ -308,7 +302,7 @@ describe("AcreBitcoinDepositor", () => {
             .queueForStaking(tbtcDepositData.depositKey)
 
           await bitcoinDepositor
-            .connect(receiver)
+            .connect(staker)
             .recallFromQueue(tbtcDepositData.depositKey)
         })
 
@@ -319,7 +313,7 @@ describe("AcreBitcoinDepositor", () => {
               .initializeStakeRequest(
                 tbtcDepositData.fundingTxInfo,
                 tbtcDepositData.reveal,
-                tbtcDepositData.receiver,
+                tbtcDepositData.staker,
                 tbtcDepositData.referral,
               ),
           ).to.be.revertedWith("Deposit already revealed")
@@ -397,8 +391,8 @@ describe("AcreBitcoinDepositor", () => {
               expect(returnedValue[0]).to.be.equal(amountToStake)
             })
 
-            it("should return receiver", () => {
-              expect(returnedValue[1]).to.be.equal(tbtcDepositData.receiver)
+            it("should return staker", () => {
+              expect(returnedValue[1]).to.be.equal(tbtcDepositData.staker)
             })
 
             it("should transfer depositor fee", async () => {
@@ -446,8 +440,8 @@ describe("AcreBitcoinDepositor", () => {
               expect(returnedValue[0]).to.be.equal(bridgedTbtcAmount)
             })
 
-            it("should return receiver", () => {
-              expect(returnedValue[1]).to.be.equal(tbtcDepositData.receiver)
+            it("should return staker", () => {
+              expect(returnedValue[1]).to.be.equal(tbtcDepositData.staker)
             })
 
             it("should not transfer depositor fee", async () => {
@@ -601,7 +595,7 @@ describe("AcreBitcoinDepositor", () => {
               .to.emit(stbtc, "Deposit")
               .withArgs(
                 await bitcoinDepositor.getAddress(),
-                tbtcDepositData.receiver,
+                tbtcDepositData.staker,
                 expectedAssetsAmount,
                 expectedReceivedSharesAmount,
               )
@@ -613,7 +607,7 @@ describe("AcreBitcoinDepositor", () => {
               "invalid minted stBTC amount",
             ).to.changeTokenBalances(
               stbtc,
-              [tbtcDepositData.receiver],
+              [tbtcDepositData.staker],
               [expectedReceivedSharesAmount],
             )
 
@@ -682,7 +676,7 @@ describe("AcreBitcoinDepositor", () => {
 
             before(async () => {
               await bitcoinDepositor
-                .connect(receiver)
+                .connect(staker)
                 .recallFromQueue(tbtcDepositData.depositKey)
             })
 
@@ -816,11 +810,11 @@ describe("AcreBitcoinDepositor", () => {
             expect(stakeRequest.state).to.be.equal(StakeRequestState.Queued)
           })
 
-          it("should set receiver", async () => {
+          it("should set staker", async () => {
             expect(
               (await bitcoinDepositor.stakeRequests(tbtcDepositData.depositKey))
-                .receiver,
-            ).to.be.equal(tbtcDepositData.receiver)
+                .staker,
+            ).to.be.equal(tbtcDepositData.staker)
           })
 
           it("should set queuedAmount", async () => {
@@ -855,7 +849,7 @@ describe("AcreBitcoinDepositor", () => {
             await expect(
               tx,
               "invalid minted stBTC amount",
-            ).to.changeTokenBalances(stbtc, [tbtcDepositData.receiver], [0])
+            ).to.changeTokenBalances(stbtc, [tbtcDepositData.staker], [0])
 
             await expect(
               tx,
@@ -922,7 +916,7 @@ describe("AcreBitcoinDepositor", () => {
 
             before(async () => {
               await bitcoinDepositor
-                .connect(receiver)
+                .connect(staker)
                 .recallFromQueue(tbtcDepositData.depositKey)
             })
 
@@ -979,7 +973,7 @@ describe("AcreBitcoinDepositor", () => {
       it("should revert", async () => {
         await expect(
           bitcoinDepositor
-            .connect(receiver)
+            .connect(staker)
             .stakeFromQueue(tbtcDepositData.depositKey),
         )
           .to.be.revertedWithCustomError(
@@ -1069,7 +1063,7 @@ describe("AcreBitcoinDepositor", () => {
               .to.emit(stbtc, "Deposit")
               .withArgs(
                 await bitcoinDepositor.getAddress(),
-                tbtcDepositData.receiver,
+                tbtcDepositData.staker,
                 expectedAssetsAmount,
                 expectedReceivedSharesAmount,
               )
@@ -1081,7 +1075,7 @@ describe("AcreBitcoinDepositor", () => {
               "invalid minted stBTC amount",
             ).to.changeTokenBalances(
               stbtc,
-              [tbtcDepositData.receiver],
+              [tbtcDepositData.staker],
               [expectedReceivedSharesAmount],
             )
 
@@ -1123,7 +1117,7 @@ describe("AcreBitcoinDepositor", () => {
 
           before(async () => {
             await bitcoinDepositor
-              .connect(receiver)
+              .connect(staker)
               .recallFromQueue(tbtcDepositData.depositKey)
           })
 
@@ -1152,7 +1146,7 @@ describe("AcreBitcoinDepositor", () => {
       it("should revert", async () => {
         await expect(
           bitcoinDepositor
-            .connect(receiver)
+            .connect(staker)
             .recallFromQueue(tbtcDepositData.depositKey),
         )
           .to.be.revertedWithCustomError(
@@ -1176,7 +1170,7 @@ describe("AcreBitcoinDepositor", () => {
         it("should revert", async () => {
           await expect(
             bitcoinDepositor
-              .connect(receiver)
+              .connect(staker)
               .recallFromQueue(tbtcDepositData.depositKey),
           )
             .to.be.revertedWithCustomError(
@@ -1199,7 +1193,7 @@ describe("AcreBitcoinDepositor", () => {
         })
 
         describe("when stake request has not been recalled", () => {
-          describe("when caller is non-receiver", () => {
+          describe("when caller is non-staker", () => {
             it("should revert", async () => {
               await expect(
                 bitcoinDepositor
@@ -1207,19 +1201,19 @@ describe("AcreBitcoinDepositor", () => {
                   .recallFromQueue(tbtcDepositData.depositKey),
               ).to.be.revertedWithCustomError(
                 bitcoinDepositor,
-                "CallerNotReceiver",
+                "CallerNotStaker",
               )
             })
           })
 
-          describe("when caller is receiver", () => {
+          describe("when caller is staker", () => {
             beforeAfterSnapshotWrapper()
 
             let tx: ContractTransactionResponse
 
             before(async () => {
               tx = await bitcoinDepositor
-                .connect(receiver)
+                .connect(staker)
                 .recallFromQueue(tbtcDepositData.depositKey)
             })
 
@@ -1248,15 +1242,15 @@ describe("AcreBitcoinDepositor", () => {
                 .to.emit(bitcoinDepositor, "StakeRequestRecalled")
                 .withArgs(
                   tbtcDepositData.depositKey,
-                  receiver.address,
+                  staker.address,
                   amountToStake,
                 )
             })
 
-            it("should transfer tbtc to receiver", async () => {
+            it("should transfer tbtc to staker", async () => {
               await expect(tx).to.changeTokenBalances(
                 tbtc,
-                [bitcoinDepositor, receiver],
+                [bitcoinDepositor, staker],
                 [-amountToStake, amountToStake],
               )
             })
@@ -1275,7 +1269,7 @@ describe("AcreBitcoinDepositor", () => {
           it("should revert", async () => {
             await expect(
               bitcoinDepositor
-                .connect(receiver)
+                .connect(staker)
                 .recallFromQueue(tbtcDepositData.depositKey),
             )
               .to.be.revertedWithCustomError(
@@ -1294,14 +1288,14 @@ describe("AcreBitcoinDepositor", () => {
 
           before(async () => {
             await bitcoinDepositor
-              .connect(receiver)
+              .connect(staker)
               .recallFromQueue(tbtcDepositData.depositKey)
           })
 
           it("should revert", async () => {
             await expect(
               bitcoinDepositor
-                .connect(receiver)
+                .connect(staker)
                 .recallFromQueue(tbtcDepositData.depositKey),
             )
               .to.be.revertedWithCustomError(
@@ -1377,24 +1371,24 @@ describe("AcreBitcoinDepositor", () => {
   const extraDataValidTestData = new Map<
     string,
     {
-      receiver: string
+      staker: string
       referral: number
       extraData: string
     }
   >([
     [
-      "receiver has leading zeros",
+      "staker has leading zeros",
       {
-        receiver: "0x000055d85E80A49B5930C4a77975d44f012D86C1",
+        staker: "0x000055d85E80A49B5930C4a77975d44f012D86C1",
         referral: 6851, // hex: 0x1ac3
         extraData:
           "0x000055d85e80a49b5930c4a77975d44f012d86c11ac300000000000000000000",
       },
     ],
     [
-      "receiver has trailing zeros",
+      "staker has trailing zeros",
       {
-        receiver: "0x2d2F8BC7923F7F806Dc9bb2e17F950b42CfE0000",
+        staker: "0x2d2F8BC7923F7F806Dc9bb2e17F950b42CfE0000",
         referral: 6851, // hex: 0x1ac3
         extraData:
           "0x2d2f8bc7923f7f806dc9bb2e17f950b42cfe00001ac300000000000000000000",
@@ -1403,7 +1397,7 @@ describe("AcreBitcoinDepositor", () => {
     [
       "referral is zero",
       {
-        receiver: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
+        staker: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
         referral: 0,
         extraData:
           "0xeb098d6cde6a202981316b24b19e64d82721e89e000000000000000000000000",
@@ -1412,7 +1406,7 @@ describe("AcreBitcoinDepositor", () => {
     [
       "referral has leading zeros",
       {
-        receiver: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
+        staker: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
         referral: 31, // hex: 0x001f
         extraData:
           "0xeb098d6cde6a202981316b24b19e64d82721e89e001f00000000000000000000",
@@ -1421,7 +1415,7 @@ describe("AcreBitcoinDepositor", () => {
     [
       "referral has trailing zeros",
       {
-        receiver: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
+        staker: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
         referral: 19712, // hex: 0x4d00
         extraData:
           "0xeb098d6cde6a202981316b24b19e64d82721e89e4d0000000000000000000000",
@@ -1430,7 +1424,7 @@ describe("AcreBitcoinDepositor", () => {
     [
       "referral is maximum value",
       {
-        receiver: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
+        staker: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
         referral: 65535, // max uint16
         extraData:
           "0xeb098d6cde6a202981316b24b19e64d82721e89effff00000000000000000000",
@@ -1441,10 +1435,10 @@ describe("AcreBitcoinDepositor", () => {
   describe("encodeExtraData", () => {
     extraDataValidTestData.forEach(
       // eslint-disable-next-line @typescript-eslint/no-shadow
-      ({ receiver, referral, extraData: expectedExtraData }, testName) => {
+      ({ staker, referral, extraData: expectedExtraData }, testName) => {
         it(testName, async () => {
           expect(
-            await bitcoinDepositor.encodeExtraData(receiver, referral),
+            await bitcoinDepositor.encodeExtraData(staker, referral),
           ).to.be.equal(expectedExtraData)
         })
       },
@@ -1454,16 +1448,14 @@ describe("AcreBitcoinDepositor", () => {
   describe("decodeExtraData", () => {
     extraDataValidTestData.forEach(
       (
-        { receiver: expectedReceiver, referral: expectedReferral, extraData },
+        { staker: expectedStaker, referral: expectedReferral, extraData },
         testName,
       ) => {
         it(testName, async () => {
-          const [actualReceiver, actualReferral] =
+          const [actualStaker, actualReferral] =
             await bitcoinDepositor.decodeExtraData(extraData)
 
-          expect(actualReceiver, "invalid receiver").to.be.equal(
-            expectedReceiver,
-          )
+          expect(actualStaker, "invalid staker").to.be.equal(expectedStaker)
           expect(actualReferral, "invalid referral").to.be.equal(
             expectedReferral,
           )
@@ -1477,13 +1469,13 @@ describe("AcreBitcoinDepositor", () => {
       // value.
       const extraData =
         "0xeb098d6cde6a202981316b24b19e64d82721e89e1ac3105f9919321ea7d75f58"
-      const expectedReceiver = "0xeb098d6cDE6A202981316b24B19e64D82721e89E"
+      const expectedStaker = "0xeb098d6cDE6A202981316b24B19e64D82721e89E"
       const expectedReferral = 6851 // hex: 0x1ac3
 
-      const [actualReceiver, actualReferral] =
+      const [actualStaker, actualReferral] =
         await bitcoinDepositor.decodeExtraData(extraData)
 
-      expect(actualReceiver, "invalid receiver").to.be.equal(expectedReceiver)
+      expect(actualStaker, "invalid staker").to.be.equal(expectedStaker)
       expect(actualReferral, "invalid referral").to.be.equal(expectedReferral)
     })
   })
@@ -1494,7 +1486,7 @@ describe("AcreBitcoinDepositor", () => {
       .initializeStakeRequest(
         tbtcDepositData.fundingTxInfo,
         tbtcDepositData.reveal,
-        tbtcDepositData.receiver,
+        tbtcDepositData.staker,
         tbtcDepositData.referral,
       )
   }
