@@ -388,7 +388,7 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
 
     // TODO: Handle minimum deposit amount in tBTC Bridge vs stBTC.
 
-    /// @notice Encode staker address and referral as extra data.
+    /// @notice Encodes staker address and referral as extra data.
     /// @dev Packs the data to bytes32: 20 bytes of staker address and
     ///      2 bytes of referral, 10 bytes of trailing zeros.
     /// @param staker The address to which the stBTC shares will be minted.
@@ -401,7 +401,7 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
         return bytes32(abi.encodePacked(staker, referral));
     }
 
-    /// @notice Decodes staker address and referral from extra data,
+    /// @notice Decodes staker address and referral from extra data.
     /// @dev Unpacks the data from bytes32: 20 bytes of staker address and
     ///      2 bytes of referral, 10 bytes of trailing zeros.
     /// @param extraData Encoded extra data.
