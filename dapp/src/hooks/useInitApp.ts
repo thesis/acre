@@ -1,7 +1,7 @@
 import { useEffect } from "react"
-import { fetchBTCPriceUSD } from "#/store/btc/btc.thunk"
+import { fetchBTCPriceUSD } from "#/store/btc"
 import { asyncWrapper } from "#/utils"
-import { useAppDispatch } from "./useAppDispatch"
+import { useAppDispatch } from "./store"
 
 export function useInitApp() {
   const dispatch = useAppDispatch()

@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { fetchBTCPriceUSD } from "./btc.thunk"
+import { fetchBTCPriceUSD } from "./btcThunk"
 
 type BtcState = {
   isLoadingPriceUSD: boolean
@@ -26,5 +26,3 @@ export const btcSlice = createSlice({
     })
   },
 })
-
-export const btcActions = btcSlice.actions

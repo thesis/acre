@@ -21,7 +21,7 @@
   "overrides": [
     {
       "files": [
-        "src/store/**/*.slice.ts"
+        "src/store/**/*Slice.ts"
       ],
       "rules": {
         "no-param-reassign": ["error", {"ignorePropertyModificationsFor": ["state"] }]
