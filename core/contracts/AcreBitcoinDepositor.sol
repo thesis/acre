@@ -476,6 +476,8 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
 
         (address staker, uint16 referral) = decodeExtraData(extraData);
 
+        // Emit event for accounting purposes to track partner's referral ID and
+        // depositor fee taken.
         emit BridgingCompleted(
             depositKey,
             msg.sender,
