@@ -86,7 +86,7 @@ class EthereumTBTCDepositor
 
     const { staker, referral } = this.decodeExtraData(extraData)
 
-    const tx = await this.instance.initializeStakeRequest(
+    const tx = await this.instance.initializeStake(
       fundingTx,
       reveal,
       `0x${staker.identifierHex}`,
