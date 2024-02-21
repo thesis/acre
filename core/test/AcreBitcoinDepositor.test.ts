@@ -243,7 +243,7 @@ describe("AcreBitcoinDepositor", () => {
 
           await bitcoinDepositor
             .connect(thirdParty)
-            .finalizeStakeRequest(tbtcDepositData.depositKey)
+            .finalizeStake(tbtcDepositData.depositKey)
         })
 
         it("should revert", async () => {
@@ -495,7 +495,7 @@ describe("AcreBitcoinDepositor", () => {
     })
   })
 
-  describe("finalizeStakeRequest", () => {
+  describe("finalizeStake", () => {
     beforeAfterSnapshotWrapper()
 
     describe("when stake request has not been initialized", () => {
@@ -503,7 +503,7 @@ describe("AcreBitcoinDepositor", () => {
         await expect(
           bitcoinDepositor
             .connect(thirdParty)
-            .finalizeStakeRequest(tbtcDepositData.depositKey),
+            .finalizeStake(tbtcDepositData.depositKey),
         )
           .to.be.revertedWithCustomError(
             bitcoinDepositor,
@@ -525,7 +525,7 @@ describe("AcreBitcoinDepositor", () => {
           await expect(
             bitcoinDepositor
               .connect(thirdParty)
-              .finalizeStakeRequest(tbtcDepositData.depositKey),
+              .finalizeStake(tbtcDepositData.depositKey),
           ).to.be.revertedWith("Deposit not finalized by the bridge")
         })
       })
@@ -549,7 +549,7 @@ describe("AcreBitcoinDepositor", () => {
           before(async () => {
             tx = await bitcoinDepositor
               .connect(thirdParty)
-              .finalizeStakeRequest(tbtcDepositData.depositKey)
+              .finalizeStake(tbtcDepositData.depositKey)
           })
 
           it("should emit BridgingCompleted event", async () => {
@@ -632,7 +632,7 @@ describe("AcreBitcoinDepositor", () => {
               await expect(
                 bitcoinDepositor
                   .connect(thirdParty)
-                  .finalizeStakeRequest(tbtcDepositData.depositKey),
+                  .finalizeStake(tbtcDepositData.depositKey),
               )
                 .to.be.revertedWithCustomError(
                   bitcoinDepositor,
@@ -658,7 +658,7 @@ describe("AcreBitcoinDepositor", () => {
               await expect(
                 bitcoinDepositor
                   .connect(thirdParty)
-                  .finalizeStakeRequest(tbtcDepositData.depositKey),
+                  .finalizeStake(tbtcDepositData.depositKey),
               )
                 .to.be.revertedWithCustomError(
                   bitcoinDepositor,
@@ -684,7 +684,7 @@ describe("AcreBitcoinDepositor", () => {
               await expect(
                 bitcoinDepositor
                   .connect(thirdParty)
-                  .finalizeStakeRequest(tbtcDepositData.depositKey),
+                  .finalizeStake(tbtcDepositData.depositKey),
               )
                 .to.be.revertedWithCustomError(
                   bitcoinDepositor,
@@ -705,14 +705,14 @@ describe("AcreBitcoinDepositor", () => {
             // Finalize stake request.
             await bitcoinDepositor
               .connect(thirdParty)
-              .finalizeStakeRequest(tbtcDepositData.depositKey)
+              .finalizeStake(tbtcDepositData.depositKey)
           })
 
           it("should revert", async () => {
             await expect(
               bitcoinDepositor
                 .connect(thirdParty)
-                .finalizeStakeRequest(tbtcDepositData.depositKey),
+                .finalizeStake(tbtcDepositData.depositKey),
             )
               .to.be.revertedWithCustomError(
                 bitcoinDepositor,
@@ -945,7 +945,7 @@ describe("AcreBitcoinDepositor", () => {
             // Finalize stake request.
             await bitcoinDepositor
               .connect(thirdParty)
-              .finalizeStakeRequest(tbtcDepositData.depositKey)
+              .finalizeStake(tbtcDepositData.depositKey)
           })
 
           it("should revert", async () => {

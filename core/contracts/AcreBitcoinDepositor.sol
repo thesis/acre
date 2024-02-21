@@ -273,7 +273,7 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     ///      maximum deposit limit being reached), the `queueStake` function
     ///      should be called to add the stake request to the staking queue.
     /// @param depositKey Deposit key identifying the deposit.
-    function finalizeStakeRequest(uint256 depositKey) external {
+    function finalizeStake(uint256 depositKey) external {
         transitionStakeRequestState(
             depositKey,
             StakeRequestState.Initialized,
@@ -292,7 +292,7 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
 
     /// @notice This function should be called for previously initialized stake
     ///         request, after tBTC bridging process was finalized, in case the
-    ///         `finalizeStakeRequest` failed due to stBTC vault deposit limit
+    ///         `finalizeStake` failed due to stBTC vault deposit limit
     ///         being reached.
     /// @dev It queues the stake request, until the stBTC vault is ready to
     ///      accept the deposit. The request must be finalized with `stakeFromQueue`
