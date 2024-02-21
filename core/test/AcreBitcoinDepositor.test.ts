@@ -88,11 +88,11 @@ describe("AcreBitcoinDepositor", () => {
       .updateDepositorFeeDivisor(defaultDepositorFeeDivisor)
   })
 
-  describe("initializeStakeRequest", () => {
+  describe("initializeStake", () => {
     describe("when staker is zero address", () => {
       it("should revert", async () => {
         await expect(
-          bitcoinDepositor.initializeStakeRequest(
+          bitcoinDepositor.initializeStake(
             tbtcDepositData.fundingTxInfo,
             tbtcDepositData.reveal,
             ZeroAddress,
@@ -114,7 +114,7 @@ describe("AcreBitcoinDepositor", () => {
             await expect(
               bitcoinDepositor
                 .connect(thirdParty)
-                .initializeStakeRequest(
+                .initializeStake(
                   tbtcDepositData.fundingTxInfo,
                   { ...tbtcDepositData.reveal, vault: invalidTbtcVault },
                   tbtcDepositData.staker,
@@ -133,7 +133,7 @@ describe("AcreBitcoinDepositor", () => {
             before(async () => {
               tx = await bitcoinDepositor
                 .connect(thirdParty)
-                .initializeStakeRequest(
+                .initializeStake(
                   tbtcDepositData.fundingTxInfo,
                   tbtcDepositData.reveal,
                   tbtcDepositData.staker,
@@ -199,7 +199,7 @@ describe("AcreBitcoinDepositor", () => {
               await expect(
                 bitcoinDepositor
                   .connect(thirdParty)
-                  .initializeStakeRequest(
+                  .initializeStake(
                     tbtcDepositData.fundingTxInfo,
                     tbtcDepositData.reveal,
                     tbtcDepositData.staker,
@@ -215,14 +215,14 @@ describe("AcreBitcoinDepositor", () => {
         beforeAfterSnapshotWrapper()
 
         before(async () => {
-          await initializeStakeRequest()
+          await initializeStake()
         })
 
         it("should revert", async () => {
           await expect(
             bitcoinDepositor
               .connect(thirdParty)
-              .initializeStakeRequest(
+              .initializeStake(
                 tbtcDepositData.fundingTxInfo,
                 tbtcDepositData.reveal,
                 tbtcDepositData.staker,
@@ -236,7 +236,7 @@ describe("AcreBitcoinDepositor", () => {
         beforeAfterSnapshotWrapper()
 
         before(async () => {
-          await initializeStakeRequest()
+          await initializeStake()
 
           // Simulate deposit request finalization.
           await finalizeMinting(tbtcDepositData.depositKey)
@@ -250,7 +250,7 @@ describe("AcreBitcoinDepositor", () => {
           await expect(
             bitcoinDepositor
               .connect(thirdParty)
-              .initializeStakeRequest(
+              .initializeStake(
                 tbtcDepositData.fundingTxInfo,
                 tbtcDepositData.reveal,
                 tbtcDepositData.staker,
@@ -264,7 +264,7 @@ describe("AcreBitcoinDepositor", () => {
         beforeAfterSnapshotWrapper()
 
         before(async () => {
-          await initializeStakeRequest()
+          await initializeStake()
 
           // Simulate deposit request finalization.
           await finalizeMinting(tbtcDepositData.depositKey)
@@ -278,7 +278,7 @@ describe("AcreBitcoinDepositor", () => {
           await expect(
             bitcoinDepositor
               .connect(thirdParty)
-              .initializeStakeRequest(
+              .initializeStake(
                 tbtcDepositData.fundingTxInfo,
                 tbtcDepositData.reveal,
                 tbtcDepositData.staker,
@@ -292,7 +292,7 @@ describe("AcreBitcoinDepositor", () => {
         beforeAfterSnapshotWrapper()
 
         before(async () => {
-          await initializeStakeRequest()
+          await initializeStake()
 
           // Simulate deposit request finalization.
           await finalizeMinting(tbtcDepositData.depositKey)
@@ -310,7 +310,7 @@ describe("AcreBitcoinDepositor", () => {
           await expect(
             bitcoinDepositor
               .connect(thirdParty)
-              .initializeStakeRequest(
+              .initializeStake(
                 tbtcDepositData.fundingTxInfo,
                 tbtcDepositData.reveal,
                 tbtcDepositData.staker,
@@ -337,7 +337,7 @@ describe("AcreBitcoinDepositor", () => {
       beforeAfterSnapshotWrapper()
 
       before(async () => {
-        await initializeStakeRequest()
+        await initializeStake()
       })
 
       describe("when deposit was not bridged", () => {
@@ -517,7 +517,7 @@ describe("AcreBitcoinDepositor", () => {
       beforeAfterSnapshotWrapper()
 
       before(async () => {
-        await initializeStakeRequest()
+        await initializeStake()
       })
 
       describe("when deposit was not bridged", () => {
@@ -750,7 +750,7 @@ describe("AcreBitcoinDepositor", () => {
       beforeAfterSnapshotWrapper()
 
       before(async () => {
-        await initializeStakeRequest()
+        await initializeStake()
       })
 
       describe("when deposit was not bridged", () => {
@@ -988,7 +988,7 @@ describe("AcreBitcoinDepositor", () => {
       beforeAfterSnapshotWrapper()
 
       before(async () => {
-        await initializeStakeRequest()
+        await initializeStake()
       })
 
       describe("when stake request has not been queued", () => {
@@ -1161,7 +1161,7 @@ describe("AcreBitcoinDepositor", () => {
       beforeAfterSnapshotWrapper()
 
       before(async () => {
-        await initializeStakeRequest()
+        await initializeStake()
       })
 
       describe("when stake request has not been queued", () => {
@@ -1480,10 +1480,10 @@ describe("AcreBitcoinDepositor", () => {
     })
   })
 
-  async function initializeStakeRequest() {
+  async function initializeStake() {
     await bitcoinDepositor
       .connect(thirdParty)
-      .initializeStakeRequest(
+      .initializeStake(
         tbtcDepositData.fundingTxInfo,
         tbtcDepositData.reveal,
         tbtcDepositData.staker,

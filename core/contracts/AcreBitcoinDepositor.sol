@@ -238,7 +238,7 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     /// @param reveal Deposit reveal data, see `IBridgeTypes.DepositRevealInfo`.
     /// @param staker The address to which the stBTC shares will be minted.
     /// @param referral Data used for referral program.
-    function initializeStakeRequest(
+    function initializeStake(
         IBridgeTypes.BitcoinTxInfo calldata fundingTx,
         IBridgeTypes.DepositRevealInfo calldata reveal,
         address staker,
