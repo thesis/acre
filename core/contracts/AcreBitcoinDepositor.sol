@@ -11,6 +11,7 @@ import {stBTC} from "./stBTC.sol";
 
 // TODO: Add Missfund token protection.
 // TODO: Make Upgradable
+// TODO: Make Pausable
 
 /// @title Acre Bitcoin Depositor contract.
 /// @notice The contract integrates Acre staking with tBTC minting.
