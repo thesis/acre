@@ -270,7 +270,7 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     ///         stBTC shares to the staker specified in the deposit extra data
     ///         and using the referral provided in the extra data.
     /// @dev In case depositing in stBTC vault fails (e.g. because of the
-    ///      maximum deposit limit being reached), the `queueForStaking` function
+    ///      maximum deposit limit being reached), the `queueStake` function
     ///      should be called to add the stake request to the staking queue.
     /// @param depositKey Deposit key identifying the deposit.
     function finalizeStakeRequest(uint256 depositKey) external {
@@ -301,7 +301,7 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     ///      The staker has a possibility to submit `recallFromQueue` that
     ///      will withdraw the minted tBTC token and abort staking process.
     /// @param depositKey Deposit key identifying the deposit.
-    function queueForStaking(uint256 depositKey) external {
+    function queueStake(uint256 depositKey) external {
         transitionStakeRequestState(
             depositKey,
             StakeRequestState.Initialized,
