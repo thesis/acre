@@ -1,6 +1,7 @@
 import React, { useCallback } from "react"
 import {
   useDepositBTCTransaction,
+  useDepositTelemetry,
   useExecuteFunction,
   useModalFlowContext,
   useStakeFlowContext,
@@ -15,7 +16,8 @@ import StakingStepsModalContent from "./StakingStepsModalContent"
 export default function DepositBTCModal() {
   const { tokenAmount } = useTransactionContext()
   const { setStatus } = useModalFlowContext()
-  const { btcAddress, stake } = useStakeFlowContext()
+  const { btcAddress, depositReceipt, stake } = useStakeFlowContext()
+  const depositTelemetry = useDepositTelemetry()
 
   const onStakeBTCSuccess = useCallback(() => {
     setStatus(PROCESS_STATUSES.SUCCEEDED)
@@ -46,10 +48,17 @@ export default function DepositBTCModal() {
     useDepositBTCTransaction(onDepositBTCSuccess)
 
   const handledDepositBTC = useCallback(() => {
-    if (!tokenAmount?.amount || !btcAddress) return
+    if (!tokenAmount?.amount || !btcAddress || !depositReceipt) return
 
+    asyncWrapper(depositTelemetry(depositReceipt, btcAddress))
     asyncWrapper(sendBitcoinTransaction(tokenAmount?.amount, btcAddress))
-  }, [btcAddress, sendBitcoinTransaction, tokenAmount])
+  }, [
+    btcAddress,
+    depositReceipt,
+    depositTelemetry,
+    sendBitcoinTransaction,
+    tokenAmount?.amount,
+  ])
 
   return (
     <StakingStepsModalContent
