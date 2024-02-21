@@ -13,7 +13,9 @@ export type CurrencyBalanceProps = {
   shouldBeFormatted?: boolean
   desiredDecimals?: number
   size?: string
-  variant?: "greater-balance"
+  variant?: "greater-balance-xl" | "greater-balance-xxl"
+  balanceFontWeight?: string
+  symbolFontWeight?: string
 } & TextProps
 
 export function CurrencyBalance({
@@ -23,6 +25,8 @@ export function CurrencyBalance({
   desiredDecimals: customDesiredDecimals,
   size,
   variant,
+  balanceFontWeight = "bold",
+  symbolFontWeight = "bold",
   ...textProps
 }: CurrencyBalanceProps) {
   const styles = useMultiStyleConfig("CurrencyBalance", { size, variant })
@@ -44,10 +48,20 @@ export function CurrencyBalance({
 
   return (
     <Box>
-      <Box as="span" __css={styles.balance} {...textProps}>
+      <Box
+        as="span"
+        fontWeight={balanceFontWeight}
+        __css={styles.balance}
+        {...textProps}
+      >
         {balance}
       </Box>
-      <Box as="span" __css={styles.symbol} {...textProps}>
+      <Box
+        as="span"
+        fontWeight={symbolFontWeight}
+        __css={styles.symbol}
+        {...textProps}
+      >
         {symbol}
       </Box>
     </Box>

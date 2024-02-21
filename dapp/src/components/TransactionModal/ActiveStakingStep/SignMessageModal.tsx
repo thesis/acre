@@ -24,7 +24,7 @@ export default function SignMessageModal() {
 
   return (
     <StakingStepsModalContent
-      buttonText="Continue"
+      buttonText="Sign now"
       activeStep={0}
       onClick={handleSignMessageWrapper}
     >
