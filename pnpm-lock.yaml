@@ -30,6 +30,9 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
     devDependencies:
+      '@keep-network/hardhat-helpers':
+        specifier: ^0.7.1
+        version: 0.7.1(@nomicfoundation/hardhat-ethers@3.0.5)(@nomicfoundation/hardhat-verify@2.0.1)(@openzeppelin/hardhat-upgrades@2.4.1)(ethers@6.8.1)(hardhat-deploy@0.11.43)(hardhat@2.19.1)
       '@nomicfoundation/hardhat-chai-matchers':
         specifier: ^2.0.2
         version: 2.0.2(@nomicfoundation/hardhat-ethers@3.0.5)(chai@4.3.10)(ethers@6.8.1)(hardhat@2.19.1)
@@ -121,7 +124,7 @@ importers:
   dapp:
     dependencies:
       '@acre-btc/sdk':
-        specifier: workspace:sdk@*
+        specifier: workspace:*
         version: link:../sdk
       '@chakra-ui/react':
         specifier: ^2.8.2
@@ -217,12 +220,12 @@ importers:
 
   sdk:
     dependencies:
+      '@acre-btc/core':
+        specifier: workspace:*
+        version: link:../core
       '@keep-network/tbtc-v2.ts':
         specifier: 2.4.0-dev.3
         version: 2.4.0-dev.3(@keep-network/keep-core@1.8.1-dev.0)
-      core:
-        specifier: workspace:*
-        version: link:../core
       ethers:
         specifier: ^6.10.0
         version: 6.10.0
@@ -4357,6 +4360,24 @@ packages:
     transitivePeerDependencies:
       - '@keep-network/keep-core'
     dev: false
+
+  /@keep-network/hardhat-helpers@0.7.1(@nomicfoundation/hardhat-ethers@3.0.5)(@nomicfoundation/hardhat-verify@2.0.1)(@openzeppelin/hardhat-upgrades@2.4.1)(ethers@6.8.1)(hardhat-deploy@0.11.43)(hardhat@2.19.1):
+    resolution: {integrity: sha512-de6Gy45JukZwGgZqVuR+Zq5PSqnmvKLDJn0/KrKT5tFzGspARUf1WzhDgTTB/D7gTK04sxlrL6WJM3XQ/wZEkw==}
+    peerDependencies:
+      '@nomicfoundation/hardhat-ethers': ^3.0.5
+      '@nomicfoundation/hardhat-verify': ^2.0.3
+      '@openzeppelin/hardhat-upgrades': ^3.0.2
+      ethers: ^6.10.0
+      hardhat: ^2.19.4
+      hardhat-deploy: ^0.11.45
+    dependencies:
+      '@nomicfoundation/hardhat-ethers': 3.0.5(ethers@6.8.1)(hardhat@2.19.1)
+      '@nomicfoundation/hardhat-verify': 2.0.1(hardhat@2.19.1)
+      '@openzeppelin/hardhat-upgrades': 2.4.1(@nomicfoundation/hardhat-ethers@3.0.5)(@nomicfoundation/hardhat-verify@2.0.1)(ethers@6.8.1)(hardhat@2.19.1)
+      ethers: 6.8.1
+      hardhat: 2.19.1(ts-node@10.9.1)(typescript@5.3.2)
+      hardhat-deploy: 0.11.43
+    dev: true
 
   /@keep-network/keep-core@1.8.1-dev.0:
     resolution: {integrity: sha512-gFXkgN4PYOYCZ14AskL7fZHEFW5mu3BDd+TJKBuKZc1q9CgRMOK+dxpJnSctxmSH1tV+Ln9v9yqlSkfPCoiBHw==}
