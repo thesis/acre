@@ -103,7 +103,7 @@ describe("AcreBitcoinDepositor", () => {
     })
 
     describe("when staker is non zero address", () => {
-      describe("when stake request is not in progress", () => {
+      describe("when stake is not in progress", () => {
         describe("when tbtc vault address is incorrect", () => {
           beforeAfterSnapshotWrapper()
 
@@ -151,7 +151,7 @@ describe("AcreBitcoinDepositor", () => {
                 )
             })
 
-            it("should update stake request state", async () => {
+            it("should update stake state", async () => {
               const stakeRequest = await bitcoinDepositor.stakeRequests(
                 tbtcDepositData.depositKey,
               )
@@ -161,7 +161,7 @@ describe("AcreBitcoinDepositor", () => {
               )
             })
 
-            it("should not store stake request data in queue", async () => {
+            it("should not store stake data in queue", async () => {
               const stakeRequest = await bitcoinDepositor.stakeRequests(
                 tbtcDepositData.depositKey,
               )
@@ -211,7 +211,7 @@ describe("AcreBitcoinDepositor", () => {
         })
       })
 
-      describe("when stake request is already in progress", () => {
+      describe("when stake is already in progress", () => {
         beforeAfterSnapshotWrapper()
 
         before(async () => {
@@ -232,7 +232,7 @@ describe("AcreBitcoinDepositor", () => {
         })
       })
 
-      describe("when stake request is already finalized", () => {
+      describe("when stake is already finalized", () => {
         beforeAfterSnapshotWrapper()
 
         before(async () => {
@@ -260,7 +260,7 @@ describe("AcreBitcoinDepositor", () => {
         })
       })
 
-      describe("when stake request is already queued", () => {
+      describe("when stake is already queued", () => {
         beforeAfterSnapshotWrapper()
 
         before(async () => {
@@ -288,7 +288,7 @@ describe("AcreBitcoinDepositor", () => {
         })
       })
 
-      describe("when stake request is already recalled", () => {
+      describe("when stake is already recalled", () => {
         beforeAfterSnapshotWrapper()
 
         before(async () => {
@@ -323,7 +323,7 @@ describe("AcreBitcoinDepositor", () => {
   })
 
   describe("finalizeBridging", () => {
-    describe("when stake request has not been initialized", () => {
+    describe("when stake has not been initialized", () => {
       it("should revert", async () => {
         await expect(
           bitcoinDepositor
@@ -333,7 +333,7 @@ describe("AcreBitcoinDepositor", () => {
       })
     })
 
-    describe("when stake request has been initialized", () => {
+    describe("when stake has been initialized", () => {
       beforeAfterSnapshotWrapper()
 
       before(async () => {
@@ -498,7 +498,7 @@ describe("AcreBitcoinDepositor", () => {
   describe("finalizeStake", () => {
     beforeAfterSnapshotWrapper()
 
-    describe("when stake request has not been initialized", () => {
+    describe("when stake has not been initialized", () => {
       it("should revert", async () => {
         await expect(
           bitcoinDepositor
@@ -513,7 +513,7 @@ describe("AcreBitcoinDepositor", () => {
       })
     })
 
-    describe("when stake request has been initialized", () => {
+    describe("when stake has been initialized", () => {
       beforeAfterSnapshotWrapper()
 
       before(async () => {
@@ -538,7 +538,7 @@ describe("AcreBitcoinDepositor", () => {
           await finalizeMinting(tbtcDepositData.depositKey)
         })
 
-        describe("when stake request has not been finalized", () => {
+        describe("when stake has not been finalized", () => {
           beforeAfterSnapshotWrapper()
 
           const expectedAssetsAmount = amountToStake
@@ -572,7 +572,7 @@ describe("AcreBitcoinDepositor", () => {
             )
           })
 
-          it("should update stake request state", async () => {
+          it("should update stake state", async () => {
             const stakeRequest = await bitcoinDepositor.stakeRequests(
               tbtcDepositData.depositKey,
             )
@@ -618,7 +618,7 @@ describe("AcreBitcoinDepositor", () => {
           })
         })
 
-        describe("when stake request has been queued", () => {
+        describe("when stake has been queued", () => {
           beforeAfterSnapshotWrapper()
 
           before(async () => {
@@ -627,7 +627,7 @@ describe("AcreBitcoinDepositor", () => {
               .queueStake(tbtcDepositData.depositKey)
           })
 
-          describe("when stake request is still in the queue", () => {
+          describe("when stake is still in the queue", () => {
             it("should revert", async () => {
               await expect(
                 bitcoinDepositor
@@ -645,7 +645,7 @@ describe("AcreBitcoinDepositor", () => {
             })
           })
 
-          describe("when stake request is finalized from the queue", () => {
+          describe("when stake is finalized from the queue", () => {
             beforeAfterSnapshotWrapper()
 
             before(async () => {
@@ -671,7 +671,7 @@ describe("AcreBitcoinDepositor", () => {
             })
           })
 
-          describe("when stake request has been recalled", () => {
+          describe("when stake has been recalled", () => {
             beforeAfterSnapshotWrapper()
 
             before(async () => {
@@ -698,11 +698,11 @@ describe("AcreBitcoinDepositor", () => {
           })
         })
 
-        describe("when stake request has been finalized", () => {
+        describe("when stake has been finalized", () => {
           beforeAfterSnapshotWrapper()
 
           before(async () => {
-            // Finalize stake request.
+            // Finalize stake.
             await bitcoinDepositor
               .connect(thirdParty)
               .finalizeStake(tbtcDepositData.depositKey)
@@ -731,7 +731,7 @@ describe("AcreBitcoinDepositor", () => {
   describe("queueStake", () => {
     beforeAfterSnapshotWrapper()
 
-    describe("when stake request has not been initialized", () => {
+    describe("when stake has not been initialized", () => {
       it("should revert", async () => {
         await expect(
           bitcoinDepositor
@@ -746,7 +746,7 @@ describe("AcreBitcoinDepositor", () => {
       })
     })
 
-    describe("when stake request has been initialized", () => {
+    describe("when stake has been initialized", () => {
       beforeAfterSnapshotWrapper()
 
       before(async () => {
@@ -771,7 +771,7 @@ describe("AcreBitcoinDepositor", () => {
           await finalizeMinting(tbtcDepositData.depositKey)
         })
 
-        describe("when stake request has not been finalized", () => {
+        describe("when stake has not been finalized", () => {
           beforeAfterSnapshotWrapper()
 
           let tx: ContractTransactionResponse
@@ -802,7 +802,7 @@ describe("AcreBitcoinDepositor", () => {
             )
           })
 
-          it("should update stake request state", async () => {
+          it("should update stake state", async () => {
             const stakeRequest = await bitcoinDepositor.stakeRequests(
               tbtcDepositData.depositKey,
             )
@@ -858,7 +858,7 @@ describe("AcreBitcoinDepositor", () => {
           })
         })
 
-        describe("when stake request has been queued", () => {
+        describe("when stake has been queued", () => {
           beforeAfterSnapshotWrapper()
 
           before(async () => {
@@ -867,7 +867,7 @@ describe("AcreBitcoinDepositor", () => {
               .queueStake(tbtcDepositData.depositKey)
           })
 
-          describe("when stake request is still in the queue", () => {
+          describe("when stake is still in the queue", () => {
             it("should revert", async () => {
               await expect(
                 bitcoinDepositor
@@ -885,7 +885,7 @@ describe("AcreBitcoinDepositor", () => {
             })
           })
 
-          describe("when stake request is finalized from the queue", () => {
+          describe("when stake is finalized from the queue", () => {
             beforeAfterSnapshotWrapper()
 
             before(async () => {
@@ -911,7 +911,7 @@ describe("AcreBitcoinDepositor", () => {
             })
           })
 
-          describe("when stake request has been recalled", () => {
+          describe("when stake has been recalled", () => {
             beforeAfterSnapshotWrapper()
 
             before(async () => {
@@ -938,11 +938,11 @@ describe("AcreBitcoinDepositor", () => {
           })
         })
 
-        describe("when stake request has been finalized", () => {
+        describe("when stake has been finalized", () => {
           beforeAfterSnapshotWrapper()
 
           before(async () => {
-            // Finalize stake request.
+            // Finalize stake.
             await bitcoinDepositor
               .connect(thirdParty)
               .finalizeStake(tbtcDepositData.depositKey)
@@ -969,7 +969,7 @@ describe("AcreBitcoinDepositor", () => {
   })
 
   describe("stakeFromQueue", () => {
-    describe("when stake request has not been initialized", () => {
+    describe("when stake has not been initialized", () => {
       it("should revert", async () => {
         await expect(
           bitcoinDepositor
@@ -984,14 +984,14 @@ describe("AcreBitcoinDepositor", () => {
       })
     })
 
-    describe("when stake request has been initialized", () => {
+    describe("when stake has been initialized", () => {
       beforeAfterSnapshotWrapper()
 
       before(async () => {
         await initializeStake()
       })
 
-      describe("when stake request has not been queued", () => {
+      describe("when stake has not been queued", () => {
         it("should revert", async () => {
           await expect(
             bitcoinDepositor
@@ -1006,7 +1006,7 @@ describe("AcreBitcoinDepositor", () => {
         })
       })
 
-      describe("when stake request has been queued", () => {
+      describe("when stake has been queued", () => {
         beforeAfterSnapshotWrapper()
 
         before(async () => {
@@ -1017,7 +1017,7 @@ describe("AcreBitcoinDepositor", () => {
             .queueStake(tbtcDepositData.depositKey)
         })
 
-        describe("when stake request has not been finalized", () => {
+        describe("when stake has not been finalized", () => {
           beforeAfterSnapshotWrapper()
 
           const expectedAssetsAmount = amountToStake
@@ -1031,7 +1031,7 @@ describe("AcreBitcoinDepositor", () => {
               .stakeFromQueue(tbtcDepositData.depositKey)
           })
 
-          it("should update stake request state", async () => {
+          it("should update stake state", async () => {
             const stakeRequest = await bitcoinDepositor.stakeRequests(
               tbtcDepositData.depositKey,
             )
@@ -1086,7 +1086,7 @@ describe("AcreBitcoinDepositor", () => {
           })
         })
 
-        describe("when stake request has been finalized", () => {
+        describe("when stake has been finalized", () => {
           beforeAfterSnapshotWrapper()
 
           before(async () => {
@@ -1112,7 +1112,7 @@ describe("AcreBitcoinDepositor", () => {
           })
         })
 
-        describe("when stake request has been recalled", () => {
+        describe("when stake has been recalled", () => {
           beforeAfterSnapshotWrapper()
 
           before(async () => {
@@ -1142,7 +1142,7 @@ describe("AcreBitcoinDepositor", () => {
   })
 
   describe("recallFromQueue", () => {
-    describe("when stake request has not been initialized", () => {
+    describe("when stake has not been initialized", () => {
       it("should revert", async () => {
         await expect(
           bitcoinDepositor
@@ -1157,14 +1157,14 @@ describe("AcreBitcoinDepositor", () => {
       })
     })
 
-    describe("when stake request has been initialized", () => {
+    describe("when stake has been initialized", () => {
       beforeAfterSnapshotWrapper()
 
       before(async () => {
         await initializeStake()
       })
 
-      describe("when stake request has not been queued", () => {
+      describe("when stake has not been queued", () => {
         beforeAfterSnapshotWrapper()
 
         it("should revert", async () => {
@@ -1181,7 +1181,7 @@ describe("AcreBitcoinDepositor", () => {
         })
       })
 
-      describe("when stake request has been queued", () => {
+      describe("when stake has been queued", () => {
         beforeAfterSnapshotWrapper()
 
         before(async () => {
@@ -1192,7 +1192,7 @@ describe("AcreBitcoinDepositor", () => {
             .queueStake(tbtcDepositData.depositKey)
         })
 
-        describe("when stake request has not been recalled", () => {
+        describe("when stake has not been recalled", () => {
           describe("when caller is non-staker", () => {
             it("should revert", async () => {
               await expect(
@@ -1217,7 +1217,7 @@ describe("AcreBitcoinDepositor", () => {
                 .recallFromQueue(tbtcDepositData.depositKey)
             })
 
-            it("should update stake request state", async () => {
+            it("should update stake state", async () => {
               const stakeRequest = await bitcoinDepositor.stakeRequests(
                 tbtcDepositData.depositKey,
               )
@@ -1257,7 +1257,7 @@ describe("AcreBitcoinDepositor", () => {
           })
         })
 
-        describe("when stake request has been finalized", () => {
+        describe("when stake has been finalized", () => {
           beforeAfterSnapshotWrapper()
 
           before(async () => {
@@ -1283,7 +1283,7 @@ describe("AcreBitcoinDepositor", () => {
           })
         })
 
-        describe("when stake request has been recalled", () => {
+        describe("when stake has been recalled", () => {
           beforeAfterSnapshotWrapper()
 
           before(async () => {
