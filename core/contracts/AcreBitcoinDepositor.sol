@@ -152,6 +152,12 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     /// @param depositorFeeDivisor New value of the depositor fee divisor.
     event DepositorFeeDivisorUpdated(uint64 depositorFeeDivisor);
 
+    /// Reverts if the tBTC Token address is zero.
+    error TbtcTokenZeroAddress();
+
+    /// Reverts if the stBTC address is zero.
+    error StbtcZeroAddress();
+
     /// @dev Receiver address is zero.
     error ReceiverIsZeroAddress();
 
@@ -201,8 +207,12 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     ) Ownable(msg.sender) {
         __AbstractTBTCDepositor_initialize(bridge, tbtcVault);
 
-        require(_tbtcToken != address(0), "TBTCToken address cannot be zero");
-        require(_stbtc != address(0), "stBTC address cannot be zero");
+        if (address(_tbtcToken) == address(0)) {
+            revert TbtcTokenZeroAddress();
+        }
+        if (address(_stbtc) == address(0)) {
+            revert StbtcZeroAddress();
+        }
 
         tbtcToken = IERC20(_tbtcToken);
         stbtc = stBTC(_stbtc);
