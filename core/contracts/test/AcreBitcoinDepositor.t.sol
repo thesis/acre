@@ -8,11 +8,11 @@ import {AcreBitcoinDepositor} from "../AcreBitcoinDepositor.sol";
 ///      https://book.getfoundry.sh/tutorials/best-practices#internal-functions
 contract AcreBitcoinDepositorHarness is AcreBitcoinDepositor {
     constructor(
-        address _bridge,
-        address _tbtcVault,
-        address _tbtcToken,
-        address _stbtc
-    ) AcreBitcoinDepositor(_bridge, _tbtcVault, _tbtcToken, _stbtc) {}
+        address bridge,
+        address tbtcVault,
+        address tbtcToken,
+        address stbtc
+    ) AcreBitcoinDepositor(bridge, tbtcVault, tbtcToken, stbtc) {}
 
     function exposed_finalizeBridging(
         uint256 depositKey
