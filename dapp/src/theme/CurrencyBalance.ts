@@ -10,7 +10,6 @@ const baseStyleBalance = defineStyle({
 })
 
 const baseStyleSymbol = defineStyle({
-  fontWeight: "bold",
   fontSize: "md",
   lineHeight: "md",
 })
@@ -22,7 +21,7 @@ const baseStyle = multiStyleConfig.definePartsStyle({
   symbol: baseStyleSymbol,
 })
 
-const variantGreaterBalance = multiStyleConfig.definePartsStyle({
+const variantGreaterBalanceXl = multiStyleConfig.definePartsStyle({
   balance: {
     fontSize: "4xl",
     lineHeight: "4xl",
@@ -33,8 +32,20 @@ const variantGreaterBalance = multiStyleConfig.definePartsStyle({
   },
 })
 
+const variantGreaterBalanceXxl = multiStyleConfig.definePartsStyle({
+  balance: {
+    fontSize: "5xl",
+    lineHeight: "5xl",
+  },
+  symbol: {
+    fontSize: "2xl",
+    lineHeight: "2xl",
+  },
+})
+
 const variants = {
-  "greater-balance": variantGreaterBalance,
+  "greater-balance-xl": variantGreaterBalanceXl,
+  "greater-balance-xxl": variantGreaterBalanceXxl,
 }
 
 const sizeXs = multiStyleConfig.definePartsStyle({
@@ -92,12 +103,24 @@ const sizeXl = multiStyleConfig.definePartsStyle({
   },
 })
 
+const size4Xl = multiStyleConfig.definePartsStyle({
+  balance: {
+    fontSize: "4xl",
+    lineHeight: "4xl",
+  },
+  symbol: {
+    fontSize: "4xl",
+    lineHeight: "4xl",
+  },
+})
+
 const sizes = {
   xs: sizeXs,
   sm: sizeSm,
   md: sizeMd,
   lg: sizeLg,
   xl: sizeXl,
+  "4xl": size4Xl,
 }
 
 export const currencyBalanceTheme = multiStyleConfig.defineMultiStyleConfig({
