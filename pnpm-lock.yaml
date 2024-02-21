@@ -141,6 +141,9 @@ importers:
       '@sentry/react':
         specifier: ^7.98.0
         version: 7.98.0(react@18.2.0)
+      '@sentry/types':
+        specifier: ^7.102.0
+        version: 7.102.0
       '@tanstack/react-table':
         specifier: ^8.11.3
         version: 8.11.7(react-dom@18.2.0)(react@18.2.0)
@@ -6164,6 +6167,11 @@ packages:
     resolution: {integrity: sha512-R8xOqlSTZ+htqrfteCWU5Nk0CDN5ApUTvrlvBuiH1DyP6czDZ4ktbZB0hAgBlVcK0U+qpD3ag3Tqqpa5Q67rPw==}
     engines: {node: '>=6'}
     dev: true
+
+  /@sentry/types@7.102.0:
+    resolution: {integrity: sha512-FPfFBP0x3LkPARw1/6cWySLq1djIo8ao3Qo2KNBeE9CHdq8bsS1a8zzjJLuWG4Ww+wieLP8/lY3WTgrCz4jowg==}
+    engines: {node: '>=8'}
+    dev: false
 
   /@sentry/types@7.98.0:
     resolution: {integrity: sha512-pc034ziM0VTETue4bfBcBqTWGy4w0okidtoZJjGVrYAfE95ObZnUGVj/XYIQ3FeCYWIa7NFN2MvdsCS0buwivQ==}
