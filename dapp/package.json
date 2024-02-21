@@ -15,7 +15,7 @@
     "lint:config:fix": "prettier -w '**/*.@(json|yaml|toml)'"
   },
   "dependencies": {
-    "@acre-btc/sdk": "workspace:sdk@*",
+    "@acre-btc/sdk": "workspace:*",
     "@chakra-ui/react": "^2.8.2",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
