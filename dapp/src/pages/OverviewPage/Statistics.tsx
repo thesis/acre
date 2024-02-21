@@ -1,7 +1,7 @@
 import React from "react"
 import { CardBody, Card, CardProps } from "@chakra-ui/react"
 import { TextMd } from "#/components/shared/Typography"
-import { PoolStats } from "../PoolStats"
+import { PoolStats } from "#/components/PoolStats"
 
 export default function Statistics(props: CardProps) {
   return (
