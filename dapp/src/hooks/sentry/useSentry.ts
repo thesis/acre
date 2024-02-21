@@ -1,4 +1,4 @@
-import { initializeSentry } from "#/sdk/sentry"
+import { initializeSentry } from "#/sentry"
 import { useEffect } from "react"
 
 export const useSentry = () => {
