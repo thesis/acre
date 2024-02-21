@@ -31,8 +31,6 @@ class EthereumStBTC
   }
 
   /**
-   * Get a generic chain identifier.
-   * @returns Value of the basis for calculating final BTC balance.
    * @see {StBTCTypechain#balanceOf}
    */
   balanceOf(identifier: ChainIdentifier): Promise<bigint> {
@@ -40,8 +38,6 @@ class EthereumStBTC
   }
 
   /**
-   * Get a generic chain identifier.
-   * @returns Maximum withdraw value.
    * @see {StBTCTypechain#assetsBalanceOf}
    */
   assetsBalanceOf(identifier: ChainIdentifier): Promise<bigint> {
