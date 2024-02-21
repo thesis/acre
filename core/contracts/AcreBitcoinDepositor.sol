@@ -188,17 +188,18 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     error CallerNotReceiver();
 
     /// @notice Acre Bitcoin Depositor contract constructor.
-    /// @param _bridge tBTC Bridge contract instance.
-    /// @param _tbtcVault tBTC Vault contract instance.
+    /// @param bridge tBTC Bridge contract instance.
+    /// @param tbtcVault tBTC Vault contract instance.
+    /// @param _tbtcToken tBTC token contract instance.
     /// @param _stbtc stBTC contract instance.
     // TODO: Move to initializer when making the contract upgradeable.
     constructor(
-        address _bridge,
-        address _tbtcVault,
+        address bridge,
+        address tbtcVault,
         address _tbtcToken,
         address _stbtc
     ) Ownable(msg.sender) {
-        __AbstractTBTCDepositor_initialize(_bridge, _tbtcVault);
+        __AbstractTBTCDepositor_initialize(bridge, tbtcVault);
 
         require(_tbtcToken != address(0), "TBTCToken address cannot be zero");
         require(_stbtc != address(0), "stBTC address cannot be zero");
