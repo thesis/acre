@@ -460,8 +460,6 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
             bytes32 extraData
         ) = _finalizeDeposit(depositKey);
 
-        (address staker, uint16 referral) = decodeExtraData(extraData);
-
         // Compute depositor fee. The fee is calculated based on the initial funding
         // transaction amount, before the tBTC protocol network fees were taken.
         uint256 depositorFee = depositorFeeDivisor > 0
@@ -475,6 +473,8 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
         }
 
         uint256 amountToStake = tbtcAmount - depositorFee;
+
+        (address staker, uint16 referral) = decodeExtraData(extraData);
 
         emit BridgingCompleted(
             depositKey,
