@@ -249,7 +249,6 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
         // We don't check if the request was already initialized, as this check
         // is enforced in `_initializeDeposit` when calling the
         // `Bridge.revealDepositWithExtraData` function.
-
         uint256 depositKey = _initializeDeposit(
             fundingTx,
             reveal,
