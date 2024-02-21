@@ -1,5 +1,5 @@
 import { StBTC as StBTCTypechain } from "core/typechain/contracts/StBTC"
-import SepoliaTbtcDepositor from "core/deployments/sepolia/stBTC.json"
+import stBTC from "./artifacts/sepolia/stBTC.json"
 import {
   EthersContractConfig,
   EthersContractDeployment,
@@ -20,7 +20,7 @@ class EthereumStBTC
 
     switch (network) {
       case "sepolia":
-        artifact = SepoliaTbtcDepositor as EthersContractDeployment
+        artifact = stBTC
         break
       case "mainnet":
       default:
@@ -31,19 +31,21 @@ class EthereumStBTC
   }
 
   /**
-   * Get a generic chain identifier
-   * @returns value of the basis for calculating final BTC balance
+   * Get a generic chain identifier.
+   * @returns Value of the basis for calculating final BTC balance.
+   * @see {StBTCTypechain#balanceOf}
    */
   balanceOf(identifier: ChainIdentifier): Promise<bigint> {
-    return this.instance.balanceOf(identifier.identifierHex)
+    return this.instance.balanceOf(`0x${identifier.identifierHex}`)
   }
 
   /**
-   * Get a generic chain identifier
-   * @returns maximum withdraw value
+   * Get a generic chain identifier.
+   * @returns Maximum withdraw value.
+   * @see {StBTCTypechain#assetsBalanceOf}
    */
   assetsBalanceOf(identifier: ChainIdentifier): Promise<bigint> {
-    return this.instance.assetsBalanceOf(identifier.identifierHex)
+    return this.instance.assetsBalanceOf(`0x${identifier.identifierHex}`)
   }
 }
 

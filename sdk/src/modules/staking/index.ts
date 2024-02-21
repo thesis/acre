@@ -61,11 +61,11 @@ class StakingModule {
     )
   }
 
-  balanceOf(identifier: ChainIdentifier) {
+  sharesBalance(identifier: ChainIdentifier) {
     return this.#contracts.stBTC.balanceOf(identifier)
   }
 
-  assetsBalanceOf(identifier: ChainIdentifier) {
+  estimatedBitcoinBalance(identifier: ChainIdentifier) {
     return this.#contracts.stBTC.assetsBalanceOf(identifier)
   }
 }
