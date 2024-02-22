@@ -3,5 +3,12 @@ import { fetchCryptoCurrencyPriceUSD } from "#/utils"
 
 export const fetchBTCPriceUSD = createAsyncThunk(
   "btc/fetchBTCPriceUSD",
-  async () => fetchCryptoCurrencyPriceUSD("bitcoin"),
+  async (_, { rejectWithValue }) => {
+    try {
+      const priceUSD: number = await fetchCryptoCurrencyPriceUSD("bitcoin")
+      return priceUSD
+    } catch (err) {
+      return rejectWithValue(err)
+    }
+  },
 )

@@ -20,6 +20,9 @@ export const btcSlice = createSlice({
     builder.addCase(fetchBTCPriceUSD.pending, (state) => {
       state.isLoadingPriceUSD = true
     })
+    builder.addCase(fetchBTCPriceUSD.rejected, (state) => {
+      state.isLoadingPriceUSD = false
+    })
     builder.addCase(
       fetchBTCPriceUSD.fulfilled,
       (state, action: PayloadAction<number>) => {

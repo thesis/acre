@@ -1,1 +1,2 @@
-export type CoingeckoSymbolType = "bitcoin"
+export type CoingeckoIdType = "bitcoin"
+export type CoingeckoCurrencyType = "usd"

@@ -1,14 +1,20 @@
-import { CoingeckoSymbolType } from "#/types"
 import axios from "axios"
+import { CoingeckoIdType, CoingeckoCurrencyType } from "#/types"
 
 const coingeckoApiURL = "https://api.coingecko.com/api/v3"
 
+type CoingeckoSimplePriceResponse = {
+  data: {
+    [id in CoingeckoIdType]: Record<CoingeckoCurrencyType, number>
+  }
+}
+
 export const fetchCryptoCurrencyPriceUSD = async (
-  coingeckoSymbol: CoingeckoSymbolType,
+  coingeckoId: CoingeckoIdType,
 ): Promise<number> => {
-  const response = await axios.get(
-    `${coingeckoApiURL}/simple/price?ids=${coingeckoSymbol}&vs_currencies=usd`,
+  const response: CoingeckoSimplePriceResponse = await axios.get(
+    `${coingeckoApiURL}/simple/price?ids=${coingeckoId}&vs_currencies=usd`,
   )
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  return response.data[coingeckoSymbol].usd as number
+
+  return response.data[coingeckoId].usd
 }
