@@ -1,7 +1,5 @@
-import React, { useMemo } from "react"
-import { selectBtcUsdPrice } from "#/store/btc"
-import { bigIntToUserAmount } from "#/utils"
-import { useAppSelector } from "#/hooks"
+import React from "react"
+import { useCurrencyConversion } from "#/hooks"
 import { CurrencyBalance, CurrencyBalanceProps } from "../CurrencyBalance"
 
 export function CurrencyBalanceWithConversion({
@@ -11,15 +9,7 @@ export function CurrencyBalanceWithConversion({
   from: CurrencyBalanceProps
   to: CurrencyBalanceProps
 }) {
-  const usdPrice = useAppSelector(selectBtcUsdPrice)
-  const conversionAmount = useMemo(() => {
-    if (!from.amount || BigInt(from.amount) < 0n) return undefined
-
-    return (
-      bigIntToUserAmount(BigInt(from.amount), 8) *
-      bigIntToUserAmount(BigInt(usdPrice), 2)
-    )
-  }, [from.amount, usdPrice])
+  const conversionAmount = useCurrencyConversion(from, to)
 
   return (
     <>

@@ -28,6 +28,7 @@ export const USD: Currency = {
   symbol: "USD",
   decimals: 10,
   desiredDecimals: 2,
+  fixedPointDecimals: 4,
 }
 
 const CURRENCY_ID_BY_ETHEREUM_NETWORK: Record<EthereumNetwork, string> = {
