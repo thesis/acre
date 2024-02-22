@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit"
+import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 import { fetchBTCPriceUSD } from "./btcThunk"
 
 type BtcState = {
@@ -20,9 +20,12 @@ export const btcSlice = createSlice({
     builder.addCase(fetchBTCPriceUSD.pending, (state) => {
       state.isLoadingPriceUSD = true
     })
-    builder.addCase(fetchBTCPriceUSD.fulfilled, (state, action) => {
-      state.isLoadingPriceUSD = false
-      state.usdPrice = action.payload
-    })
+    builder.addCase(
+      fetchBTCPriceUSD.fulfilled,
+      (state, action: PayloadAction<number>) => {
+        state.isLoadingPriceUSD = false
+        state.usdPrice = action.payload
+      },
+    )
   },
 })
