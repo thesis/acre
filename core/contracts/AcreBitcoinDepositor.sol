@@ -47,7 +47,7 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
         Finalized,
         Queued,
         FinalizedFromQueue,
-        RecalledFromQueue
+        CancelledFromQueue
     }
 
     struct StakeRequest {
@@ -139,11 +139,11 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
         uint256 stakedAmount
     );
 
-    /// @notice Emitted when a stake request is recalled.
+    /// @notice Emitted when a queued stake request is cancelled.
     /// @param depositKey Deposit key identifying the deposit.
     /// @param staker Address of the staker.
-    /// @param amountToStake Amount of recalled tBTC tokens.
-    event StakeRequestRecalled(
+    /// @param amountToStake Amount of queued tBTC tokens that got cancelled.
+    event StakeRequestCancelledFromQueue(
         uint256 indexed depositKey,
         address indexed staker,
         uint256 amountToStake
@@ -187,8 +187,8 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     ///      which the function was already called.
     error BridgingFinalizationAlreadyCalled();
 
-    /// @dev Attempted to finalize or recall a stake request that was not added
-    ///      to the queue, or was already finalized or recalled.
+    /// @dev Attempted to finalize or cancel a stake request that was not added
+    ///      to the queue, or was already finalized or cancelled.
     error StakeRequestNotQueued();
 
     /// @dev Attempted to call function by an account that is not the staker.
@@ -298,7 +298,7 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     ///      accept the deposit. The request must be finalized with `stakeFromQueue`
     ///      after the limit is increased or other user withdraws their funds
     ///      from the stBTC contract to make place for another deposit.
-    ///      The staker has a possibility to submit `recallFromQueue` that
+    ///      The staker has a possibility to submit `cancelQueuedStake` that
     ///      will withdraw the minted tBTC token and abort staking process.
     /// @param depositKey Deposit key identifying the deposit.
     function queueStake(uint256 depositKey) external {
@@ -344,8 +344,8 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
         stbtc.deposit(amountToStake, request.staker);
     }
 
-    /// @notice Recall bridged tBTC tokens from the staking queue. This
-    ///         function can be called by the staker to recover tBTC that cannot
+    /// @notice Cancel queued stake.
+    ///         The function can be called by the staker to recover tBTC that cannot
     ///         be finalized to stake in stBTC contract due to a deposit limit being
     ///         reached.
     /// @dev This function can be called only after the stake request was added
@@ -353,11 +353,11 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     /// @dev Only staker provided in the extra data of the stake request can
     ///      call this function.
     /// @param depositKey Deposit key identifying the deposit.
-    function recallFromQueue(uint256 depositKey) external {
+    function cancelQueuedStake(uint256 depositKey) external {
         transitionStakeRequestState(
             depositKey,
             StakeRequestState.Queued,
-            StakeRequestState.RecalledFromQueue
+            StakeRequestState.CancelledFromQueue
         );
 
         StakeRequest storage request = stakeRequests[depositKey];
@@ -370,7 +370,7 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
         uint256 amount = request.queuedAmount;
         delete (request.queuedAmount);
 
-        emit StakeRequestRecalled(depositKey, request.staker, amount);
+        emit StakeRequestCancelledFromQueue(depositKey, request.staker, amount);
 
         tbtcToken.safeTransfer(request.staker, amount);
     }

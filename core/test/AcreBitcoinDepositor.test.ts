@@ -288,7 +288,7 @@ describe("AcreBitcoinDepositor", () => {
         })
       })
 
-      describe("when stake is already recalled", () => {
+      describe("when stake is already cancelled", () => {
         beforeAfterSnapshotWrapper()
 
         before(async () => {
@@ -303,7 +303,7 @@ describe("AcreBitcoinDepositor", () => {
 
           await bitcoinDepositor
             .connect(staker)
-            .recallFromQueue(tbtcDepositData.depositKey)
+            .cancelQueuedStake(tbtcDepositData.depositKey)
         })
 
         it("should revert", async () => {
@@ -671,13 +671,13 @@ describe("AcreBitcoinDepositor", () => {
             })
           })
 
-          describe("when stake has been recalled", () => {
+          describe("when stake has been cancelled", () => {
             beforeAfterSnapshotWrapper()
 
             before(async () => {
               await bitcoinDepositor
                 .connect(staker)
-                .recallFromQueue(tbtcDepositData.depositKey)
+                .cancelQueuedStake(tbtcDepositData.depositKey)
             })
 
             it("should revert", async () => {
@@ -691,7 +691,7 @@ describe("AcreBitcoinDepositor", () => {
                   "UnexpectedStakeRequestState",
                 )
                 .withArgs(
-                  StakeRequestState.RecalledFromQueue,
+                  StakeRequestState.CancelledFromQueue,
                   StakeRequestState.Initialized,
                 )
             })
@@ -911,13 +911,13 @@ describe("AcreBitcoinDepositor", () => {
             })
           })
 
-          describe("when stake has been recalled", () => {
+          describe("when stake has been cancelled", () => {
             beforeAfterSnapshotWrapper()
 
             before(async () => {
               await bitcoinDepositor
                 .connect(staker)
-                .recallFromQueue(tbtcDepositData.depositKey)
+                .cancelQueuedStake(tbtcDepositData.depositKey)
             })
 
             it("should revert", async () => {
@@ -931,7 +931,7 @@ describe("AcreBitcoinDepositor", () => {
                   "UnexpectedStakeRequestState",
                 )
                 .withArgs(
-                  StakeRequestState.RecalledFromQueue,
+                  StakeRequestState.CancelledFromQueue,
                   StakeRequestState.Initialized,
                 )
             })
@@ -1112,13 +1112,13 @@ describe("AcreBitcoinDepositor", () => {
           })
         })
 
-        describe("when stake has been recalled", () => {
+        describe("when stake has been cancelled", () => {
           beforeAfterSnapshotWrapper()
 
           before(async () => {
             await bitcoinDepositor
               .connect(staker)
-              .recallFromQueue(tbtcDepositData.depositKey)
+              .cancelQueuedStake(tbtcDepositData.depositKey)
           })
 
           it("should revert", async () => {
@@ -1132,7 +1132,7 @@ describe("AcreBitcoinDepositor", () => {
                 "UnexpectedStakeRequestState",
               )
               .withArgs(
-                StakeRequestState.RecalledFromQueue,
+                StakeRequestState.CancelledFromQueue,
                 StakeRequestState.Queued,
               )
           })
@@ -1141,13 +1141,13 @@ describe("AcreBitcoinDepositor", () => {
     })
   })
 
-  describe("recallFromQueue", () => {
+  describe("cancelQueuedStake", () => {
     describe("when stake has not been initialized", () => {
       it("should revert", async () => {
         await expect(
           bitcoinDepositor
             .connect(staker)
-            .recallFromQueue(tbtcDepositData.depositKey),
+            .cancelQueuedStake(tbtcDepositData.depositKey),
         )
           .to.be.revertedWithCustomError(
             bitcoinDepositor,
@@ -1171,7 +1171,7 @@ describe("AcreBitcoinDepositor", () => {
           await expect(
             bitcoinDepositor
               .connect(staker)
-              .recallFromQueue(tbtcDepositData.depositKey),
+              .cancelQueuedStake(tbtcDepositData.depositKey),
           )
             .to.be.revertedWithCustomError(
               bitcoinDepositor,
@@ -1192,13 +1192,13 @@ describe("AcreBitcoinDepositor", () => {
             .queueStake(tbtcDepositData.depositKey)
         })
 
-        describe("when stake has not been recalled", () => {
+        describe("when stake has not been cancelled", () => {
           describe("when caller is non-staker", () => {
             it("should revert", async () => {
               await expect(
                 bitcoinDepositor
                   .connect(thirdParty)
-                  .recallFromQueue(tbtcDepositData.depositKey),
+                  .cancelQueuedStake(tbtcDepositData.depositKey),
               ).to.be.revertedWithCustomError(
                 bitcoinDepositor,
                 "CallerNotStaker",
@@ -1214,7 +1214,7 @@ describe("AcreBitcoinDepositor", () => {
             before(async () => {
               tx = await bitcoinDepositor
                 .connect(staker)
-                .recallFromQueue(tbtcDepositData.depositKey)
+                .cancelQueuedStake(tbtcDepositData.depositKey)
             })
 
             it("should update stake state", async () => {
@@ -1223,7 +1223,7 @@ describe("AcreBitcoinDepositor", () => {
               )
 
               expect(stakeRequest.state).to.be.equal(
-                StakeRequestState.RecalledFromQueue,
+                StakeRequestState.CancelledFromQueue,
               )
             })
 
@@ -1237,9 +1237,9 @@ describe("AcreBitcoinDepositor", () => {
               ).to.be.equal(0)
             })
 
-            it("should emit StakeRequestRecalled event", async () => {
+            it("should emit StakeRequestCancelledFromQueue event", async () => {
               await expect(tx)
-                .to.emit(bitcoinDepositor, "StakeRequestRecalled")
+                .to.emit(bitcoinDepositor, "StakeRequestCancelledFromQueue")
                 .withArgs(
                   tbtcDepositData.depositKey,
                   staker.address,
@@ -1270,7 +1270,7 @@ describe("AcreBitcoinDepositor", () => {
             await expect(
               bitcoinDepositor
                 .connect(staker)
-                .recallFromQueue(tbtcDepositData.depositKey),
+                .cancelQueuedStake(tbtcDepositData.depositKey),
             )
               .to.be.revertedWithCustomError(
                 bitcoinDepositor,
@@ -1283,27 +1283,27 @@ describe("AcreBitcoinDepositor", () => {
           })
         })
 
-        describe("when stake has been recalled", () => {
+        describe("when stake has been cancelled", () => {
           beforeAfterSnapshotWrapper()
 
           before(async () => {
             await bitcoinDepositor
               .connect(staker)
-              .recallFromQueue(tbtcDepositData.depositKey)
+              .cancelQueuedStake(tbtcDepositData.depositKey)
           })
 
           it("should revert", async () => {
             await expect(
               bitcoinDepositor
                 .connect(staker)
-                .recallFromQueue(tbtcDepositData.depositKey),
+                .cancelQueuedStake(tbtcDepositData.depositKey),
             )
               .to.be.revertedWithCustomError(
                 bitcoinDepositor,
                 "UnexpectedStakeRequestState",
               )
               .withArgs(
-                StakeRequestState.RecalledFromQueue,
+                StakeRequestState.CancelledFromQueue,
                 StakeRequestState.Queued,
               )
           })

@@ -5,5 +5,5 @@ export enum StakeRequestState {
   Finalized,
   Queued,
   FinalizedFromQueue,
-  RecalledFromQueue,
+  CancelledFromQueue,
 }
