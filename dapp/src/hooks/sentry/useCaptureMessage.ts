@@ -9,7 +9,9 @@ export const useCaptureMessage = () =>
       params?: { [key: string]: unknown },
       tags?: { [key: string]: Primitive },
     ) => {
-      if (!import.meta.env.VITE_SENTRY_SUPPORT) return
+      const { VITE_SENTRY_SUPPORT } = import.meta.env
+
+      if (VITE_SENTRY_SUPPORT === "false") return
       captureMessage(message, params, tags)
     },
     [],
