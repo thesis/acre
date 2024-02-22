@@ -295,7 +295,7 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     ///         `finalizeStake` failed due to stBTC vault deposit limit
     ///         being reached.
     /// @dev It queues the stake request, until the stBTC vault is ready to
-    ///      accept the deposit. The request must be finalized with `stakeFromQueue`
+    ///      accept the deposit. The request must be finalized with `finalizeQueuedStake`
     ///      after the limit is increased or other user withdraws their funds
     ///      from the stBTC contract to make place for another deposit.
     ///      The staker has a possibility to submit `cancelQueuedStake` that
@@ -318,7 +318,7 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     /// @notice This function should be called for previously queued stake
     ///         request, when stBTC vault is able to accept a deposit.
     /// @param depositKey Deposit key identifying the deposit.
-    function stakeFromQueue(uint256 depositKey) external {
+    function finalizeQueuedStake(uint256 depositKey) external {
         transitionStakeRequestState(
             depositKey,
             StakeRequestState.Queued,

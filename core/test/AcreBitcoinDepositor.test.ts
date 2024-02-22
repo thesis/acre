@@ -651,7 +651,7 @@ describe("AcreBitcoinDepositor", () => {
             before(async () => {
               await bitcoinDepositor
                 .connect(thirdParty)
-                .stakeFromQueue(tbtcDepositData.depositKey)
+                .finalizeQueuedStake(tbtcDepositData.depositKey)
             })
 
             it("should revert", async () => {
@@ -891,7 +891,7 @@ describe("AcreBitcoinDepositor", () => {
             before(async () => {
               await bitcoinDepositor
                 .connect(thirdParty)
-                .stakeFromQueue(tbtcDepositData.depositKey)
+                .finalizeQueuedStake(tbtcDepositData.depositKey)
             })
 
             it("should revert", async () => {
@@ -968,13 +968,13 @@ describe("AcreBitcoinDepositor", () => {
     })
   })
 
-  describe("stakeFromQueue", () => {
+  describe("finalizeQueuedStake", () => {
     describe("when stake has not been initialized", () => {
       it("should revert", async () => {
         await expect(
           bitcoinDepositor
             .connect(staker)
-            .stakeFromQueue(tbtcDepositData.depositKey),
+            .finalizeQueuedStake(tbtcDepositData.depositKey),
         )
           .to.be.revertedWithCustomError(
             bitcoinDepositor,
@@ -996,7 +996,7 @@ describe("AcreBitcoinDepositor", () => {
           await expect(
             bitcoinDepositor
               .connect(thirdParty)
-              .stakeFromQueue(tbtcDepositData.depositKey),
+              .finalizeQueuedStake(tbtcDepositData.depositKey),
           )
             .to.be.revertedWithCustomError(
               bitcoinDepositor,
@@ -1028,7 +1028,7 @@ describe("AcreBitcoinDepositor", () => {
           before(async () => {
             tx = await bitcoinDepositor
               .connect(thirdParty)
-              .stakeFromQueue(tbtcDepositData.depositKey)
+              .finalizeQueuedStake(tbtcDepositData.depositKey)
           })
 
           it("should update stake state", async () => {
@@ -1092,14 +1092,14 @@ describe("AcreBitcoinDepositor", () => {
           before(async () => {
             await bitcoinDepositor
               .connect(thirdParty)
-              .stakeFromQueue(tbtcDepositData.depositKey)
+              .finalizeQueuedStake(tbtcDepositData.depositKey)
           })
 
           it("should revert", async () => {
             await expect(
               bitcoinDepositor
                 .connect(thirdParty)
-                .stakeFromQueue(tbtcDepositData.depositKey),
+                .finalizeQueuedStake(tbtcDepositData.depositKey),
             )
               .to.be.revertedWithCustomError(
                 bitcoinDepositor,
@@ -1125,7 +1125,7 @@ describe("AcreBitcoinDepositor", () => {
             await expect(
               bitcoinDepositor
                 .connect(thirdParty)
-                .stakeFromQueue(tbtcDepositData.depositKey),
+                .finalizeQueuedStake(tbtcDepositData.depositKey),
             )
               .to.be.revertedWithCustomError(
                 bitcoinDepositor,
@@ -1263,7 +1263,7 @@ describe("AcreBitcoinDepositor", () => {
           before(async () => {
             await bitcoinDepositor
               .connect(thirdParty)
-              .stakeFromQueue(tbtcDepositData.depositKey)
+              .finalizeQueuedStake(tbtcDepositData.depositKey)
           })
 
           it("should revert", async () => {
