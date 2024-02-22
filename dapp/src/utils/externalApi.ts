@@ -9,18 +9,27 @@ export async function verifyDepositAddress(
   status: "valid" | "invalid" | "error"
   response: unknown
 }> {
-  // TODO: Use a correct endpoint
   const endpoint =
     "https://us-central1-keep-prd-210b.cloudfunctions.net/verify-deposit-address"
 
-  const { depositor, blindingFactor, refundPublicKeyHash, refundLocktime } =
-    deposit
+  const {
+    depositor,
+    blindingFactor,
+    refundPublicKeyHash,
+    refundLocktime,
+    extraData,
+  } = deposit
 
   try {
+    const jsonType = extraData ? "json-extradata" : "json"
+    const baseUrl = `${endpoint}/${jsonType}/${network}/latest/${
+      depositor.identifierHex
+    }/${blindingFactor.toString()}/${refundPublicKeyHash.toString()}/${refundLocktime.toString()}`
+
+    const url = extraData ? `${baseUrl}/${extraData.toString()}` : baseUrl
+
     const response = await axios.get<{ address: string }>(
-      `${endpoint}/json/${network}/latest/${
-        depositor.identifierHex
-      }/${blindingFactor.toString()}/${refundPublicKeyHash.toString()}/${refundLocktime.toString()}`,
+      url,
       { timeout: 10000 }, // 10s
     )
 
