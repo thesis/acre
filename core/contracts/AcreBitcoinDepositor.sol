@@ -4,12 +4,12 @@ pragma solidity ^0.8.21;
 import "@openzeppelin/contracts/access/Ownable2Step.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 import "@keep-network/tbtc-v2/contracts/integrator/AbstractTBTCDepositor.sol";
 
 import {stBTC} from "./stBTC.sol";
 
-// TODO: Add Missfund token protection.
 // TODO: Make Upgradable
 // TODO: Make Pausable
 
@@ -193,6 +193,9 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
 
     /// @dev Attempted to call function by an account that is not the staker.
     error CallerNotStaker();
+
+    /// @dev Attempted to recover tBTC token.
+    error RecoverTbtcNotAllowed();
 
     /// @notice Acre Bitcoin Depositor contract constructor.
     /// @param bridge tBTC Bridge contract instance.
@@ -384,6 +387,38 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
         depositorFeeDivisor = newDepositorFeeDivisor;
 
         emit DepositorFeeDivisorUpdated(newDepositorFeeDivisor);
+    }
+
+    /// @notice Allows the governance to recover any ERC20 token sent - mistakenly
+    ///         or not - to the contract address.
+    /// @dev It doesn't allow the governance to recover tBTC tokens.
+    /// @param token Address of the recovered ERC20 token contract.
+    /// @param recipient Address the recovered token should be sent to.
+    /// @param amount Recovered amount.
+    function recoverERC20(
+        IERC20 token,
+        address recipient,
+        uint256 amount
+    ) external onlyOwner {
+        if (address(token) == address(tbtcToken))
+            revert RecoverTbtcNotAllowed();
+
+        token.safeTransfer(recipient, amount);
+    }
+
+    /// @notice Allows the governance to recover any ERC721 token sent mistakenly
+    ///         to the contract address.
+    /// @param token Address of the recovered ERC721 token contract.
+    /// @param recipient Address the recovered token should be sent to.
+    /// @param tokenId Identifier of the recovered token.
+    /// @param data Additional data.
+    function recoverERC721(
+        IERC721 token,
+        address recipient,
+        uint256 tokenId,
+        bytes calldata data
+    ) external onlyOwner {
+        token.safeTransferFrom(address(this), recipient, tokenId, data);
     }
 
     // TODO: Handle minimum deposit amount in tBTC Bridge vs stBTC.
