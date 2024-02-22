@@ -227,4 +227,38 @@ describe("Staking", () => {
       })
     })
   })
+
+  describe("sharesBalance", () => {
+    const { staker } = stakingModuleData.initializeStake
+
+    beforeAll(() => {
+      staking.sharesBalance = jest.fn().mockResolvedValue(4294967295)
+    })
+
+    it("should be defined", () => {
+      expect(staking.sharesBalance).toBeDefined()
+    })
+
+    it("should return final BTC balance", async () => {
+      const result = await staking.sharesBalance(staker)
+      expect(result).toEqual(4294967295)
+    })
+  })
+
+  describe("estimatedBitcoinBalance", () => {
+    const { staker } = stakingModuleData.initializeStake
+
+    beforeAll(() => {
+      staking.estimatedBitcoinBalance = jest.fn().mockResolvedValue(4294967295)
+    })
+
+    it("should be defined", () => {
+      expect(staking.estimatedBitcoinBalance).toBeDefined()
+    })
+
+    it("should return maximum withdraw value", async () => {
+      const result = await staking.estimatedBitcoinBalance(staker)
+      expect(result).toEqual(4294967295)
+    })
+  })
 })
