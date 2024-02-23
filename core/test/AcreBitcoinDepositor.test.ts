@@ -14,6 +14,7 @@ import type {
   TBTCVaultStub,
   AcreBitcoinDepositorHarness,
   TestERC20,
+  TestERC721,
 } from "../typechain"
 import { deployment } from "./helpers"
 import { beforeAfterSnapshotWrapper } from "./helpers/snapshot"
