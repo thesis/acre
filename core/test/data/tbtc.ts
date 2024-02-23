@@ -37,7 +37,7 @@ export const tbtcDepositData = {
     vault: "0x594cfd89700040163727828AE20B52099C58F02C",
   },
   // 20-bytes of extraData
-  receiver: "0xa9B38eA6435c8941d6eDa6a46b68E3e211719699",
+  staker: "0xa9B38eA6435c8941d6eDa6a46b68E3e211719699",
   // 2-bytes of extraData
   referral: "0x5bd1",
   extraData:

@@ -1,10 +1,10 @@
 import React from "react"
-import { Button } from "@chakra-ui/react"
 import { BITCOIN_MIN_AMOUNT } from "#/constants"
 import TokenAmountForm from "#/components/shared/TokenAmountForm"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { useWalletContext } from "#/hooks"
-import Details from "./StakeDetails"
+import { FormSubmitButton } from "#/components/shared/Form"
+import StakeDetails from "./StakeDetails"
 
 function StakeFormModal({
   onSubmitForm,
@@ -12,19 +12,22 @@ function StakeFormModal({
   onSubmitForm: (values: TokenAmountFormValues) => void
 }) {
   const { btcAccount } = useWalletContext()
+  const tokenBalance = btcAccount?.balance.toString() ?? "0"
 
   return (
     <TokenAmountForm
       tokenBalanceInputPlaceholder="BTC"
       currency="bitcoin"
-      tokenBalance={btcAccount?.balance.toString() ?? "0"}
+      tokenBalance={tokenBalance}
       minTokenAmount={BITCOIN_MIN_AMOUNT}
       onSubmitForm={onSubmitForm}
     >
-      <Details currency="bitcoin" />
-      <Button type="submit" size="lg" width="100%" mt={4}>
-        Stake
-      </Button>
+      <StakeDetails
+        currency="bitcoin"
+        minTokenAmount={BITCOIN_MIN_AMOUNT}
+        maxTokenAmount={tokenBalance}
+      />
+      <FormSubmitButton mt={4}>Stake</FormSubmitButton>
     </TokenAmountForm>
   )
 }

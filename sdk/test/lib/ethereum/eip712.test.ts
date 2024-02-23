@@ -1,4 +1,4 @@
-import { Network, ethers } from "ethers"
+import { Network, ethers, getAddress } from "ethers"
 import {
   EthereumEIP712Signer,
   EthereumAddress,
@@ -29,14 +29,14 @@ describe("EIP712", () => {
 
   describe("Signer", () => {
     describe("sign", () => {
+      const spyOnEthersSignTypedData: jest.SpyInstance<Promise<string>> =
+        jest.spyOn(ethersSigner, "signTypedData")
+
       describe("when chain id is defined", () => {
         const { domain, types, message } = signMessageData
-        let spyOnEthersSignTypedData: jest.SpyInstance<Promise<string>>
         let result: EthereumSignedMessage
 
         beforeAll(async () => {
-          spyOnEthersSignTypedData = jest.spyOn(ethersSigner, "signTypedData")
-
           // @ts-expect-error Error: `Property '#typedMessage' is missing in type
           // 'ChainSignedMessage' but required in type 'EthereumSignedMessage'`.
           // This is weird because the `typedMessage` is hard private field.
@@ -79,6 +79,32 @@ describe("EIP712", () => {
 
           await expect(signer.sign(domain, types, message)).rejects.toThrow(
             "Chain id not defined",
+          )
+        })
+      })
+
+      describe("when value of type address is passed w/o `0x` prefix", () => {
+        const { domain, types, message } = signMessageData
+
+        const ethereumStakerAddress = EthereumAddress.from(
+          message.ethereumStakerAddress,
+        ).identifierHex
+
+        // Checksummed Ethereum address with `0x` prefix.
+        const expectedEthereumStakerAddress = getAddress(ethereumStakerAddress)
+
+        it("should add the prefix and sign message via ethers", async () => {
+          await signer.sign(domain, types, { ethereumStakerAddress })
+
+          expect(spyOnEthersSignTypedData).toHaveBeenCalledWith(
+            {
+              ...domain,
+              chainId: (await ethersSigner.provider?.getNetwork())?.chainId,
+              verifyingContract: `0x${domain.verifyingContract.identifierHex}`,
+              salt: undefined,
+            },
+            types,
+            { ethereumStakerAddress: expectedEthereumStakerAddress },
           )
         })
       })

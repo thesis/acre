@@ -1,5 +1,5 @@
 {
-  "name": "sdk",
+  "name": "@acre-btc/sdk",
   "version": "0.0.1",
   "main": "dist/src/index.js",
   "license": "GPL-3.0-only",
@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@keep-network/tbtc-v2.ts": "2.4.0-dev.3",
-    "core": "workspace:*",
+    "@acre-btc/core": "workspace:*",
     "ethers": "^6.10.0"
   }
 }

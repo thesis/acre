@@ -23,9 +23,9 @@ export default function StatusInfo({
   })
 
   return (
-    <Box __css={styles.container} {...textProps}>
+    <Box __css={styles.container}>
       {withIcon && <Icon as={data.icon} boxSize={5} />}
-      <Box as="span" __css={styles.label}>
+      <Box as="span" __css={styles.label} {...textProps}>
         {data.label}
       </Box>
     </Box>

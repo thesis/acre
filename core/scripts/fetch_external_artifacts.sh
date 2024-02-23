@@ -46,7 +46,12 @@ fetch_external_artifact() {
 
 # Fetch TBTC contract from @keep-network/tbtc-v2 package.
 fetch_external_artifact "mainnet" "@keep-network/tbtc-v2" "TBTC"
+fetch_external_artifact "mainnet" "@keep-network/tbtc-v2" "Bridge"
+fetch_external_artifact "mainnet" "@keep-network/tbtc-v2" "TBTCVault"
+
 fetch_external_artifact "sepolia" "@keep-network/tbtc-v2" "TBTC"
+fetch_external_artifact "sepolia" "@keep-network/tbtc-v2" "Bridge"
+fetch_external_artifact "sepolia" "@keep-network/tbtc-v2" "TBTCVault"
 
 # Remove downloaded NPM packages.
 rm -rf ${TMP_DIR}

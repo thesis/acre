@@ -21,7 +21,7 @@ describe("TBTCDepositor", () => {
 
   const mockedContractInstance = {
     tbtcVault: jest.fn().mockImplementation(() => vaultAddress.identifierHex),
-    initializeStakeRequest: jest.fn(),
+    initializeStake: jest.fn(),
   }
   let depositor: EthereumTBTCDepositor
   let depositorAddress: EthereumAddress
@@ -103,7 +103,7 @@ describe("TBTCDepositor", () => {
       let result: Hex
 
       beforeAll(async () => {
-        mockedContractInstance.initializeStakeRequest.mockReturnValue({
+        mockedContractInstance.initializeStake.mockReturnValue({
           hash: mockedTx.toPrefixedString(),
         })
 
@@ -154,9 +154,7 @@ describe("TBTCDepositor", () => {
           vault: `0x${vaultAddress.identifierHex}`,
         }
 
-        expect(
-          mockedContractInstance.initializeStakeRequest,
-        ).toHaveBeenCalledWith(
+        expect(mockedContractInstance.initializeStake).toHaveBeenCalledWith(
           btcTxInfo,
           revealInfo,
           `0x${staker.identifierHex}`,
