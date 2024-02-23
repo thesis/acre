@@ -9,4 +9,8 @@ contract TestERC4626 is ERC4626 {
         string memory tokenName,
         string memory tokenSymbol
     ) ERC4626(asset) ERC20(tokenName, tokenSymbol) {}
+
+    function throwERC4626ExceededMaxDeposit(address receiver) external pure {
+        revert ERC4626ExceededMaxDeposit(receiver, 1000, 0);
+    }
 }

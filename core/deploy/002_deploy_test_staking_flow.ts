@@ -3,26 +3,26 @@ import type { DeployFunction } from "hardhat-deploy/types"
 import { waitConfirmationsNumber } from "../helpers/deployment"
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
-  const { getNamedAccounts, deployments, helpers } = hre
-  const { deployer, treasury } = await getNamedAccounts()
+  const { getNamedAccounts, deployments } = hre
+  const { deployer } = await getNamedAccounts()
 
-  const tbtc = await deployments.get("TBTC")
+  const stbtc = await deployments.get("stBTC")
 
-  const stbtc = await deployments.deploy("stBTC", {
+  await deployments.deploy("TestStakingFlow", {
     from: deployer,
-    args: [tbtc.address, treasury],
+    args: [stbtc.address],
     log: true,
     waitConfirmations: waitConfirmationsNumber(hre),
   })
 
-  if (hre.network.tags.etherscan) {
-    await helpers.etherscan.verify(stbtc)
-  }
+  // if (hre.network.tags.etherscan) {
+  //   await helpers.etherscan.verify(stbtc)
+  // }
 
   // TODO: Add Tenderly verification
 }
 
 export default func
 
-func.tags = ["stBTC"]
-func.dependencies = ["TBTC"]
+func.tags = ["StakingTest"]
+func.dependencies = ["stBTC"]
