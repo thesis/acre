@@ -5,18 +5,11 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { getNamedAccounts, deployments } = hre
   const { deployer } = await getNamedAccounts()
 
-  // TODO: extract to a helper function
-  let tBTC
-  if (hre.network.name === "integration") {
-    tBTC = await deployments.getArtifact("TBTC")
-  } else {
-    tBTC = await deployments.getOrNull("TBTC")
-  }
-  const stbtc = await deployments.get("stBTC")
-
-  await deployments.deploy("Dispatcher", {
+  const performanceFeeRatio = 1_000n // 10%
+  const withdrawFeeRatio = 0n // 0%
+  await deployments.deploy("Reserve", {
     from: deployer,
-    args: [stbtc.address, tBTC.address],
+    args: [performanceFeeRatio, withdrawFeeRatio],
     log: true,
     waitConfirmations: 1,
   })
@@ -27,5 +20,5 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
 export default func
 
-func.tags = ["Dispatcher"]
+func.tags = ["Reserve"]
 func.dependencies = ["stBTC"]

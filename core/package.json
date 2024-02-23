@@ -26,7 +26,8 @@
     "lint:sol:fix": "solhint 'contracts/**/*.sol' --fix && prettier --write 'contracts/**/*.sol'",
     "lint:config": "prettier --check '**/*.@(json)'",
     "lint:config:fix": "prettier --write '**/*.@(json)'",
-    "test": "hardhat test"
+    "test": "hardhat test ./test/*.test.ts",
+    "test:integration": "INTEGRATION_TEST=true hardhat test ./test/integration/*.test.ts --network integration"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.2",
@@ -57,7 +58,8 @@
     "solidity-docgen": "0.6.0-beta.36",
     "ts-node": "^10.9.1",
     "typechain": "^8.3.2",
-    "typescript": "^5.3.2"
+    "typescript": "^5.3.2",
+    "@uniswap/v3-periphery": "^1.4.4"
   },
   "dependencies": {
     "@keep-network/bitcoin-spv-sol": "3.4.0-solc-0.8",

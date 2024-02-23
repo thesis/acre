@@ -1,12 +1,18 @@
-const fs = require("fs")
-const path = require("path")
-const { ethers } = require("hardhat")
+import * as fs from "fs"
+import * as path from "path"
+import { ethers } from "hardhat"
+import { ContractArtifact } from "hardhat/types"
 
-const { formatUnits } = ethers
+import { formatUnits } from "ethers"
 
-const IUniswapV3SwapRouter = require("@uniswap/v3-periphery/artifacts/contracts/SwapRouter.sol/SwapRouter.json")
-const IERC20 = require("../artifacts/solmate/src/tokens/ERC20.sol/ERC20.json")
-const IWETH = require("../artifacts/solmate/src/tokens/WETH.sol/WETH.json")
+import SwapRouterArtifact from "@uniswap/v3-periphery/artifacts/contracts/SwapRouter.sol/SwapRouter.json"
+// TODO: replace with OZ artifacts
+import ERC20Artifact from "../artifacts/solmate/src/tokens/ERC20.sol/ERC20.json"
+import WETHArtifact from "../artifacts/solmate/src/tokens/WETH.sol/WETH.json"
+
+const IUniswapV3SwapRouter: ContractArtifact = SwapRouterArtifact
+const IERC20: ContractArtifact = ERC20Artifact
+const IWETH: ContractArtifact = WETHArtifact
 
 async function printBalances(_contracts, _tokens, _opts = {}) {
   console.log(`\n---${_opts.context ? ` ${_opts.context}` : ""} balances ---`)
@@ -64,6 +70,7 @@ async function v3SwapExactInput({
       await tokenIn.decimals(),
     )}`,
   )
+
   const uniV3SwapRouter = await ethers.getContractAt(
     IUniswapV3SwapRouter.abi,
     Addresses.Uniswap.v3SwapRouter,
@@ -87,7 +94,7 @@ async function v3SwapExactOutput({
   fee,
   amountOut,
   owner,
-  Addresses,
+  addresses,
 }) {
   console.log(
     `[v3SwapExactOutput] ${await tokenIn.symbol()} -> ${await tokenOut.symbol()}, feeTier: ${fee}, amountOut: ${formatUnits(
@@ -95,9 +102,10 @@ async function v3SwapExactOutput({
       await tokenOut.decimals(),
     )}`,
   )
+
   const uniV3SwapRouter = await ethers.getContractAt(
     IUniswapV3SwapRouter.abi,
-    Addresses.Uniswap.v3SwapRouter,
+    addresses.Uniswap.v3SwapRouter,
   )
   const amountInMax = await tokenIn.balanceOf(owner.address)
   await tokenIn.connect(owner).approve(uniV3SwapRouter.target, amountInMax)
@@ -128,17 +136,6 @@ async function _fetchBalances(_contract, _tokens, _opts = {}) {
 
 async function _fetchBalance(_contract, _token) {
   return _token.balanceOf(_contract.address || _contract.target)
-}
-
-async function _printBalance(_balance, _name, _tokens) {
-  for (const sym in _balance) {
-    if (sym === "ETH") {
-      console.log(`[${_name}] ${sym}:`, formatUnits(_balance[sym], 18))
-    } else {
-      const decimals = await _tokens[sym].decimals()
-      console.log(`[${_name}] ${sym}:`, formatUnits(_balance[sym], decimals))
-    }
-  }
 }
 
 function getNetwork(networkName) {
@@ -305,9 +302,6 @@ async function getContracts(networkName, provider) {
     record.allocator,
     provider,
   )
-  console.log("[contract] stBTC:", stBTC.target)
-  console.log("[contract] reserve:", reserve.target)
-  console.log("[contract] allocator:", allocator.target)
   return { stBTC, reserve, allocator }
 }
 

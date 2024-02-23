@@ -1,6 +1,5 @@
 import type { HardhatRuntimeEnvironment } from "hardhat/types"
 import type { DeployFunction } from "hardhat-deploy/types"
-import { isNonZeroAddress } from "../helpers/address"
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { getNamedAccounts, deployments } = hre
@@ -15,24 +14,20 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     tBTC = await deployments.getOrNull("TBTC")
   }
 
-  if (tBTC && isNonZeroAddress(tBTC.address)) {
-    log(`using TBTC contract at ${tBTC.address}`)
-  } else if (!hre.network.tags.allowStubs) {
-    throw new Error("deployed TBTC contract not found")
-  } else {
-    log("deploying TBTC contract stub")
+  log("deploying Mock ERC4626 Vault")
 
-    await deployments.deploy("TBTC", {
-      contract: "TestERC20",
-      from: deployer,
-      log: true,
-      waitConfirmations: 1,
-    })
-  }
+  await deployments.deploy("SingleTokenVault", {
+    from: deployer,
+    args: [tBTC.address, "MockSingleTokenVault", "MSTV"],
+    log: true,
+    waitConfirmations: 1,
+  })
 }
 
 export default func
 
-func.tags = ["TBTC"]
+func.tags = ["TestSingleTokenVault"]
+func.dependencies = ["TBTC"]
+
 func.skip = async (hre: HardhatRuntimeEnvironment): Promise<boolean> =>
   Promise.resolve(hre.network.name === "mainnet")

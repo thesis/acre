@@ -5,3 +5,5 @@ export.json
 export/
 gen/
 typechain/
+.env
+artifacts/

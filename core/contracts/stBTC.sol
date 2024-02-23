@@ -5,6 +5,20 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Dispatcher.sol";
+import { xERC4626 } from './lib/xERC4626.sol';
+import "@openzeppelin/contracts/utils/math/SafeCast.sol";
+
+interface IAllocator {
+  function totalAssets() external view returns (uint256);
+
+  function lastTotalAssets() external view returns (uint256);
+
+  function withdraw(uint256 _assets, address _receiver) external;
+
+  function allocate() external;
+
+  function free() external;
+}
 
 /// @title stBTC
 /// @notice This contract implements the ERC-4626 tokenized vault standard. By
@@ -17,11 +31,14 @@ import "./Dispatcher.sol";
 ///      of yield-bearing vaults. This contract facilitates the minting and
 ///      burning of shares (stBTC), which are represented as standard ERC20
 ///      tokens, providing a seamless exchange with tBTC tokens.
-contract stBTC is ERC4626, Ownable {
+contract stBTC is xERC4626, Ownable {
     using SafeERC20 for IERC20;
+    using SafeCast for *;
 
     /// Dispatcher contract that routes tBTC from stBTC to a given vault and back.
     Dispatcher public dispatcher;
+
+    IAllocator public allocator;
 
     /// Address of the treasury wallet, where fees should be transferred to.
     address public treasury;
@@ -61,8 +78,11 @@ contract stBTC is ERC4626, Ownable {
 
     constructor(
         IERC20 _tbtc,
-        address _treasury
-    ) ERC4626(_tbtc) ERC20("Acre Staked Bitcoin", "stBTC") Ownable(msg.sender) {
+        address _treasury,
+        uint32 _rewardsCycleLength
+    ) ERC4626(_tbtc) ERC20("Acre Staked Bitcoin", "stBTC") Ownable(msg.sender)
+         xERC4626(_rewardsCycleLength) // TODO: revisit initialization
+    {
         if (address(_treasury) == address(0)) {
             revert ZeroAddress();
         }
@@ -70,6 +90,16 @@ contract stBTC is ERC4626, Ownable {
         // TODO: Revisit the exact values closer to the launch.
         minimumDepositAmount = 0.001 * 1e18; // 0.001 tBTC
         maximumTotalAssets = 25 * 1e18; // 25 tBTC
+    }
+
+    modifier andSync() {
+    if (block.timestamp >= rewardsCycleEnd) this.syncRewards();
+    _;
+  }
+
+    function setAllocator(IAllocator _allocator) external onlyOwner {
+        require(address(_allocator) != address(0), 'ZERO_ADDRESS');
+        allocator = _allocator;
     }
 
     /// @notice Updates treasury wallet address.
@@ -145,16 +175,73 @@ contract stBTC is ERC4626, Ownable {
     ///      contract.
     /// @param assets Approved amount of tBTC tokens to deposit.
     /// @param receiver The address to which the shares will be minted.
-    /// @return Minted shares.
+    /// @return shares Minted shares.
     function deposit(
         uint256 assets,
         address receiver
-    ) public override returns (uint256) {
+    ) public override andSync returns (uint256 shares) {
         if (assets < minimumDepositAmount) {
             revert LessThanMinDeposit(assets, minimumDepositAmount);
         }
+        require(address(allocator) != address(0), 'NOT_INITIALIZED');
+        // Check for rounding error since we round down in previewDeposit.
+        require((shares = super.previewDeposit(assets)) != 0, 'ZERO_SHARES');
 
-        return super.deposit(assets, receiver);
+        // Need to transfer before minting or ERC777s could reenter.
+        IERC20(asset()).safeTransferFrom(msg.sender, address(allocator), assets);
+
+        _mint(receiver, shares);
+
+        emit Deposit(msg.sender, receiver, assets, shares);
+
+        afterDeposit(assets);
+    }
+
+    function withdraw(
+        uint256 assets,
+        address receiver,
+        address owner
+    ) public override andSync returns (uint256 shares) {
+        shares = previewWithdraw(assets); // No need to check for rounding error, previewWithdraw rounds up.
+
+        if (msg.sender != owner) {
+            uint256 allowed = allowance(owner, msg.sender); // Saves gas for limited approvals.
+
+            if (allowed != type(uint256).max)
+                _approve(owner, msg.sender, allowed - shares);
+        }
+
+        beforeWithdraw(assets);
+
+        _burn(owner, shares);
+
+        emit Withdraw(msg.sender, receiver, owner, assets, shares);
+
+        allocator.withdraw(assets, receiver);
+    }
+
+    function redeem(
+    uint256 shares,
+    address receiver,
+    address owner
+    ) public override andSync returns (uint256 assets) {
+        if (msg.sender != owner) {
+            uint256 allowed = allowance(owner, msg.sender); // Saves gas for limited approvals.
+
+            if (allowed != type(uint256).max)
+                _approve(owner, msg.sender, allowed - shares);
+        }
+
+        // Check for rounding error since we round down in previewRedeem.
+        require((assets = previewRedeem(shares)) != 0, 'ZERO_ASSETS');
+
+        beforeWithdraw(assets);
+
+        _burn(owner, shares);
+
+        emit Withdraw(msg.sender, receiver, owner, assets, shares);
+
+        allocator.withdraw(assets, receiver);
     }
 
     /// @notice Mints shares to receiver by depositing tBTC tokens.
@@ -170,10 +257,21 @@ contract stBTC is ERC4626, Ownable {
     function mint(
         uint256 shares,
         address receiver
-    ) public override returns (uint256 assets) {
+    ) public override andSync returns (uint256 assets) {
         if ((assets = super.mint(shares, receiver)) < minimumDepositAmount) {
             revert LessThanMinDeposit(assets, minimumDepositAmount);
         }
+
+        assets = previewMint(shares); // No need to check for rounding error, previewMint rounds up.
+
+        // Need to transfer before minting or ERC777s could reenter.
+        IERC20(asset()).safeTransferFrom(msg.sender, address(allocator), assets);
+
+        _mint(receiver, shares);
+
+        emit Deposit(msg.sender, receiver, assets, shares);
+
+        afterDeposit(assets);
     }
 
     /// @notice Returns value of assets that would be exchanged for the amount of
@@ -224,5 +322,34 @@ contract stBTC is ERC4626, Ownable {
     /// @return Returns deposit parameters.
     function depositParameters() public view returns (uint256, uint256) {
         return (minimumDepositAmount, maximumTotalAssets);
+    }
+
+    function syncRewards() public override {
+        require(
+            msg.sender == address(allocator) || msg.sender == address(this),
+            'UNAUTHORIZED'
+        );
+
+        uint192 lastRewardAmount_ = lastRewardAmount;
+        uint32 timestamp = block.timestamp.toUint32();
+
+        if (timestamp < rewardsCycleEnd) revert SyncError();
+
+        uint256 storedTotalAssets_ = storedTotalAssets;
+        uint256 nextRewards = allocator.lastTotalAssets() -
+            storedTotalAssets_ -
+            lastRewardAmount_;
+
+        storedTotalAssets = storedTotalAssets_ + lastRewardAmount_; // SSTORE
+
+        uint32 end = ((timestamp + rewardsCycleLength) / rewardsCycleLength) *
+            rewardsCycleLength;
+
+        // Combined single SSTORE
+        lastRewardAmount = nextRewards.toUint192();
+        lastSync = timestamp;
+        rewardsCycleEnd = end;
+
+        emit NewRewardsCycle(end, nextRewards);
     }
 }
