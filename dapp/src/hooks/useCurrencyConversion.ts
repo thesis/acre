@@ -15,18 +15,12 @@ export function useCurrencyConversion(
   switch (from.currency) {
     case "bitcoin":
       if (to.currency === "usd") {
-        const fixedPointDecimals =
-          CURRENCIES_BY_TYPE[to.currency].fixedPointDecimals ||
-          CURRENCIES_BY_TYPE[to.currency].desiredDecimals
         const fromAmount = bigIntToUserAmount(
           BigInt(from.amount),
+          CURRENCIES_BY_TYPE[from.currency].decimals,
           CURRENCIES_BY_TYPE[from.currency].desiredDecimals,
         )
-        const toAmount = bigIntToUserAmount(
-          BigInt(usdPrice),
-          fixedPointDecimals,
-        )
-        const conversionAmount = fromAmount * toAmount
+        const conversionAmount = fromAmount * usdPrice
         return conversionAmount
       }
       return undefined
