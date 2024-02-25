@@ -4,10 +4,11 @@ import { useDocsDrawer } from "#/hooks"
 import { TextSm } from "#/components/shared/Typography"
 import { USD } from "#/constants"
 import ButtonLink from "#/components/shared/ButtonLink"
+import StatisticsCard from "#/pages/OverviewPage/StatisticsCard"
+import ActivityBar from "#/components/shared/ActivityBar"
 import PositionDetails from "./PositionDetails"
-import Statistics from "./Statistics"
+import StatisticsChart from "./StatisticsChart"
 import TransactionHistory from "./TransactionHistory"
-import ActivityBar from "../../components/shared/ActivityBar"
 
 export default function OverviewPage() {
   const { onOpen } = useDocsDrawer()
@@ -26,15 +27,15 @@ export default function OverviewPage() {
         </ButtonLink>
       </Flex>
       <Grid
-        templateAreas={`"position-details statistics"
-                        "transaction-history transaction-history"`}
+        templateAreas={`"position-details statistics-chart statistics-card"
+                        "transaction-history transaction-history transaction-history"`}
         gridTemplateColumns={{ base: "30% 1fr", xl: "20% 1fr" }}
-        gridTemplateRows={{ base: "55% 1fr", xl: "45% 1fr" }}
-        h="80vh"
+        gridTemplateRows={{ base: "55% 1fr", xl: "1fr" }}
         gap={4}
       >
         <PositionDetails gridArea="position-details" />
-        <Statistics gridArea="statistics" />
+        <StatisticsChart gridArea="statistics-chart" />
+        <StatisticsCard gridArea="statistics-card" />
         <TransactionHistory gridArea="transaction-history" />
       </Grid>
     </Flex>

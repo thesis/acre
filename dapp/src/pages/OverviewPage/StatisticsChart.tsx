@@ -3,7 +3,7 @@ import { CardBody, Card, CardProps } from "@chakra-ui/react"
 import { TextMd } from "#/components/shared/Typography"
 import { PoolStats } from "#/components/PoolStats"
 
-export default function Statistics(props: CardProps) {
+export default function StatisticsChart(props: CardProps) {
   return (
     <Card {...props}>
       <CardBody>

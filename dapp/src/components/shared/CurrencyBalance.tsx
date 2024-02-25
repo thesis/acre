@@ -6,10 +6,12 @@ import {
   numberToLocaleString,
 } from "#/utils"
 import { CurrencyType } from "#/types"
+import { calculatePercentage, formatPercentage } from "#/utils/percentage"
 
 export type CurrencyBalanceProps = {
   currency: CurrencyType
   amount?: string | number
+  totalAmount?: string | number
   shouldBeFormatted?: boolean
   desiredDecimals?: number
   size?: string
@@ -21,6 +23,7 @@ export type CurrencyBalanceProps = {
 export function CurrencyBalance({
   currency,
   amount,
+  totalAmount,
   shouldBeFormatted = true,
   desiredDecimals: customDesiredDecimals,
   size,
@@ -40,11 +43,16 @@ export function CurrencyBalance({
 
   const balance = useMemo(() => {
     const value = amount ?? 0
+
+    if (totalAmount) {
+      const percentage = calculatePercentage(value, totalAmount)
+      return formatPercentage(percentage)
+    }
     if (shouldBeFormatted)
       return formatTokenAmount(value, decimals, desiredDecimals)
 
     return numberToLocaleString(value, desiredDecimals)
-  }, [amount, decimals, desiredDecimals, shouldBeFormatted])
+  }, [amount, decimals, desiredDecimals, shouldBeFormatted, totalAmount])
 
   return (
     <Box>
