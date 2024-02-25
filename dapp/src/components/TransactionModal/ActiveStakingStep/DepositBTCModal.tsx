@@ -8,7 +8,7 @@ import {
 } from "#/hooks"
 import Alert from "#/components/shared/Alert"
 import { TextMd } from "#/components/shared/Typography"
-import { asyncWrapper } from "#/utils"
+import { logPromiseFailure } from "#/utils"
 import { PROCESS_STATUSES } from "#/types"
 import StakingStepsModalContent from "./StakingStepsModalContent"
 
@@ -38,7 +38,7 @@ export default function DepositBTCModal() {
     // to make sure for the moment that it doesn't return an error about funds not found
     // TODO: Remove the delay when SDK is updated
     setTimeout(() => {
-      asyncWrapper(handleStake())
+      logPromiseFailure(handleStake())
     }, 10000)
   }, [setStatus, handleStake])
 
@@ -48,7 +48,7 @@ export default function DepositBTCModal() {
   const handledDepositBTC = useCallback(() => {
     if (!tokenAmount?.amount || !btcAddress) return
 
-    asyncWrapper(sendBitcoinTransaction(tokenAmount?.amount, btcAddress))
+    logPromiseFailure(sendBitcoinTransaction(tokenAmount?.amount, btcAddress))
   }, [btcAddress, sendBitcoinTransaction, tokenAmount])
 
   return (

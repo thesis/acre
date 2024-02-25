@@ -1,6 +1,6 @@
 import React from "react"
 import { useField } from "formik"
-import { asyncWrapper } from "#/utils"
+import { logPromiseFailure } from "#/utils"
 import TokenBalanceInput, { TokenBalanceInputProps } from "../TokenBalanceInput"
 
 export type FormTokenBalanceInputProps = {
@@ -13,7 +13,7 @@ export function FormTokenBalanceInput({
   const [field, meta, helpers] = useField(name)
 
   const setAmount = (value?: bigint) => {
-    asyncWrapper(helpers.setValue(value))
+    logPromiseFailure(helpers.setValue(value))
   }
 
   return (

@@ -4,7 +4,7 @@ import {
   useModalFlowContext,
   useStakeFlowContext,
 } from "#/hooks"
-import { asyncWrapper } from "#/utils"
+import { logPromiseFailure } from "#/utils"
 import AlertReceiveSTBTC from "#/components/shared/AlertReceiveSTBTC"
 import { PROCESS_STATUSES } from "#/types"
 import StakingStepsModalContent from "./StakingStepsModalContent"
@@ -15,7 +15,7 @@ export default function SignMessageModal() {
   const handleSignMessage = useExecuteFunction(signMessage, goNext)
 
   const handleSignMessageWrapper = useCallback(() => {
-    asyncWrapper(handleSignMessage())
+    logPromiseFailure(handleSignMessage())
   }, [handleSignMessage])
 
   useEffect(() => {
