@@ -1,6 +1,7 @@
 import {
   ChainIdentifier,
   Deposit as TbtcDeposit,
+  backoffRetrier,
 } from "@keep-network/tbtc-v2.ts"
 import {
   ChainEIP712Signer,
@@ -145,7 +146,23 @@ class StakeInitialization {
       throw new Error("Sign message first")
     }
 
+    await this.#waitForBitcoinFundingTx()
+
     return this.#tbtcDeposit.initiateMinting()
+  }
+
+  async #waitForBitcoinFundingTx(): Promise<void> {
+    const retries = 4
+    const backoffStepMs = 3000 // 3 sec
+
+    await backoffRetrier<void>(
+      retries,
+      backoffStepMs,
+    )(async () => {
+      const utxos = await this.#tbtcDeposit.detectFunding()
+
+      if (utxos.length === 0) throw new Error("Deposit not funded yet")
+    })
   }
 }
 
