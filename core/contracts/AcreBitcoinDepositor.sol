@@ -62,14 +62,14 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
         uint88 queuedAmount;
     }
 
+    /// @notice Mapping of stake requests.
+    /// @dev The key is a deposit key identifying the deposit.
+    mapping(uint256 => StakeRequest) public stakeRequests;
+
     /// @notice tBTC Token contract.
     IERC20 public immutable tbtcToken;
     /// @notice stBTC contract.
     stBTC public immutable stbtc;
-
-    /// @notice Mapping of stake requests.
-    /// @dev The key is a deposit key identifying the deposit.
-    mapping(uint256 => StakeRequest) public stakeRequests;
 
     /// @notice Divisor used to compute the depositor fee taken from each deposit
     ///         and transferred to the treasury upon stake request finalization.
