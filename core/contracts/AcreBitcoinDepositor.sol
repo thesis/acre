@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/access/Ownable2Step.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
 import "@keep-network/tbtc-v2/contracts/integrator/AbstractTBTCDepositor.sol";
 
@@ -58,7 +59,7 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
         address staker;
         // tBTC token amount to stake after deducting tBTC minting fees and the
         // Depositor fee. Stored only when request is queued.
-        uint256 queuedAmount;
+        uint88 queuedAmount;
     }
 
     /// @notice tBTC Token contract.
@@ -313,7 +314,10 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
 
         StakeRequest storage request = stakeRequests[depositKey];
 
-        (request.queuedAmount, request.staker) = finalizeBridging(depositKey);
+        uint256 amountToStake;
+        (amountToStake, request.staker) = finalizeBridging(depositKey);
+
+        request.queuedAmount = SafeCast.toUint88(amountToStake);
 
         emit StakeRequestQueued(depositKey, msg.sender, request.queuedAmount);
     }
