@@ -6,6 +6,7 @@ import {
   useModalFlowContext,
   useStakeFlowContext,
   useTransactionContext,
+  useWalletContext,
 } from "#/hooks"
 import Alert from "#/components/shared/Alert"
 import { TextMd } from "#/components/shared/Typography"
@@ -14,6 +15,7 @@ import { PROCESS_STATUSES } from "#/types"
 import StakingStepsModalContent from "./StakingStepsModalContent"
 
 export default function DepositBTCModal() {
+  const { ethAccount } = useWalletContext()
   const { tokenAmount } = useTransactionContext()
   const { setStatus } = useModalFlowContext()
   const { btcAddress, depositReceipt, stake } = useStakeFlowContext()
@@ -48,14 +50,18 @@ export default function DepositBTCModal() {
     useDepositBTCTransaction(onDepositBTCSuccess)
 
   const handledDepositBTC = useCallback(() => {
-    if (!tokenAmount?.amount || !btcAddress || !depositReceipt) return
+    if (!tokenAmount?.amount || !btcAddress || !depositReceipt || !ethAccount)
+      return
 
-    asyncWrapper(depositTelemetry(depositReceipt, btcAddress))
+    asyncWrapper(
+      depositTelemetry(depositReceipt, btcAddress, ethAccount.address),
+    )
     asyncWrapper(sendBitcoinTransaction(tokenAmount?.amount, btcAddress))
   }, [
     btcAddress,
     depositReceipt,
     depositTelemetry,
+    ethAccount,
     sendBitcoinTransaction,
     tokenAmount?.amount,
   ])
