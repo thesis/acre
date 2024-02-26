@@ -28,6 +28,8 @@ export function useDepositTelemetry() {
         extraData,
       } = deposit
 
+      const verificationStatus = { verificationStatus: status }
+
       captureMessage(
         `Generated deposit [${depositAddress}]`,
         {
@@ -42,9 +44,11 @@ export function useDepositTelemetry() {
         },
         {
           ethAddress,
-          "verification.status": status,
+          ...verificationStatus,
         },
       )
+
+      return verificationStatus
     },
     [captureMessage],
   )

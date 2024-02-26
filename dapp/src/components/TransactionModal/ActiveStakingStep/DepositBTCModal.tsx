@@ -49,13 +49,19 @@ export default function DepositBTCModal() {
   const { sendBitcoinTransaction } =
     useDepositBTCTransaction(onDepositBTCSuccess)
 
-  const handledDepositBTC = useCallback(() => {
+  const handledDepositBTC = useCallback(async () => {
     if (!tokenAmount?.amount || !btcAddress || !depositReceipt || !ethAccount)
       return
 
-    asyncWrapper(
-      depositTelemetry(depositReceipt, btcAddress, ethAccount.address),
+    const response = await depositTelemetry(
+      depositReceipt,
+      btcAddress,
+      ethAccount.address,
     )
+
+    // TODO: Display the correct message for the user
+    if (response.verificationStatus !== "valid") return
+
     asyncWrapper(sendBitcoinTransaction(tokenAmount?.amount, btcAddress))
   }, [
     btcAddress,
@@ -66,11 +72,15 @@ export default function DepositBTCModal() {
     tokenAmount?.amount,
   ])
 
+  const handledDepositBTCWrapper = useCallback(() => {
+    asyncWrapper(handledDepositBTC())
+  }, [handledDepositBTC])
+
   return (
     <StakingStepsModalContent
       buttonText="Deposit BTC"
       activeStep={1}
-      onClick={handledDepositBTC}
+      onClick={handledDepositBTCWrapper}
     >
       <Alert>
         <TextMd>
