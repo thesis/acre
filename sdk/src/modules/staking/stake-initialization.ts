@@ -110,7 +110,11 @@ class StakeInitialization {
       verifyingContract: this.#contracts.tbtcDepositor.getChainIdentifier(),
     }
 
-    // TODO: revisit the message structure before the launch.
+    // TODO: revisit the message structure before the launch. Let's think about
+    // a more generic name instead of `ethereumStakerAddress`. The module should
+    // not know in which network is currently working. The main idea in SDK is
+    // that chain-specific things should be handled under the hood by
+    // implementation of lib components.
     const types: Types = {
       Stake: [
         { name: "ethereumStakerAddress", type: "address" },

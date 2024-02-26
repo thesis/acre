@@ -3,6 +3,7 @@ import {
   StakeInitialization,
   EthereumAddress,
   DepositorProxy,
+  DepositReceipt,
 } from "@acre-btc/sdk"
 import { useAcreContext } from "./useAcreContext"
 
@@ -16,6 +17,7 @@ export type UseStakeFlowReturn = {
   btcAddress?: string
   signMessage: () => Promise<void>
   stake: () => Promise<void>
+  depositReceipt?: DepositReceipt
 }
 
 export function useStakeFlow(): UseStakeFlowReturn {
@@ -25,6 +27,10 @@ export function useStakeFlow(): UseStakeFlowReturn {
     undefined,
   )
   const [btcAddress, setBtcAddress] = useState<string | undefined>(undefined)
+
+  const [depositReceipt, setDepositReceipt] = useState<
+    DepositReceipt | undefined
+  >(undefined)
 
   const initStake = useCallback(
     async (
@@ -43,10 +49,13 @@ export function useStakeFlow(): UseStakeFlowReturn {
       )
 
       const btcDepositAddress = await initializedStakeFlow.getBitcoinAddress()
+      const btcDepositReceipt = initializedStakeFlow.getDepositReceipt()
+
       // TODO: add loading indicators or we can `@tanstack/react-query` lib for
       // handling requests.
       setStakeFlow(initializedStakeFlow)
       setBtcAddress(btcDepositAddress)
+      setDepositReceipt(btcDepositReceipt)
     },
     [isInitialized, acre],
   )
@@ -68,5 +77,6 @@ export function useStakeFlow(): UseStakeFlowReturn {
     btcAddress,
     signMessage,
     stake,
+    depositReceipt,
   }
 }

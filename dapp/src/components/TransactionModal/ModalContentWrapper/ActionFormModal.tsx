@@ -18,6 +18,7 @@ import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { asyncWrapper } from "#/utils"
 import StakeFormModal from "../ActiveStakingStep/StakeFormModal"
+import UnstakeFormModal from "../ActiveUnstakingStep/UnstakeFormModal"
 
 const TABS = Object.values(ACTION_FLOW_TYPES)
 
@@ -44,6 +45,7 @@ function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
 
       try {
         setIsLoading(true)
+        // TODO: Init unstake flow
         if (type === ACTION_FLOW_TYPES.STAKE) await handleInitStake()
 
         setTokenAmount({ amount: values.amount, currency: "bitcoin" })
@@ -88,8 +90,7 @@ function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
               <StakeFormModal onSubmitForm={handleSubmitFormWrapper} />
             </TabPanel>
             <TabPanel>
-              {/* TODO: Use the correct form for unstaking */}
-              <StakeFormModal onSubmitForm={handleSubmitFormWrapper} />
+              <UnstakeFormModal onSubmitForm={handleSubmitFormWrapper} />
             </TabPanel>
           </TabPanels>
         </Tabs>
