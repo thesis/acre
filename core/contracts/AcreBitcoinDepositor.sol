@@ -484,7 +484,7 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     ///      tBTC amount reduced by the depositor fee.
     /// @dev IMPORTANT NOTE: The minted tBTC amount used by this function is an
     ///      approximation. See documentation of the
-    ///      {{TBTCDepositorProxy#_calculateTbtcAmount}} responsible for calculating
+    ///      {{AbstractTBTCDepositor#_calculateTbtcAmount}} responsible for calculating
     ///      this value for more details.
     /// @param depositKey Deposit key identifying the deposit.
     /// @return amountToStake tBTC token amount to stake after deducting tBTC bridging
