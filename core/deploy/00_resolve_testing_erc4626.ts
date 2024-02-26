@@ -1,18 +1,13 @@
 import type { HardhatRuntimeEnvironment } from "hardhat/types"
 import type { DeployFunction } from "hardhat-deploy/types"
+import { fetchDeploymentArtifact } from "../helpers/address"
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { getNamedAccounts, deployments } = hre
   const { log } = deployments
   const { deployer } = await getNamedAccounts()
 
-  // TODO: extract to a helper function
-  let tBTC
-  if (hre.network.name === "integration") {
-    tBTC = await deployments.getArtifact("TBTC")
-  } else {
-    tBTC = await deployments.getOrNull("TBTC")
-  }
+  const tBTC = await fetchDeploymentArtifact(hre, "TBTC")
 
   log("deploying Mock ERC4626 Vault")
   await deployments.deploy("Vault", {

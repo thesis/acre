@@ -1,5 +1,6 @@
 import type { HardhatRuntimeEnvironment } from "hardhat/types"
 import type { DeployFunction } from "hardhat-deploy/types"
+import { fetchDeploymentArtifact } from "../helpers/address"
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { getNamedAccounts, deployments } = hre
@@ -7,13 +8,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { log } = deployments
   const rewardsCycleLength = 7 * 24 * 60 * 60 // 7 days TODO: revisit this value
 
-  // TODO: extract to a helper function
-  let tBTC
-  if (hre.network.name === "integration") {
-    tBTC = await deployments.getArtifact("TBTC")
-  } else {
-    tBTC = await deployments.getOrNull("TBTC")
-  }
+  const tBTC = await fetchDeploymentArtifact(hre, "TBTC")
 
   log(`stBTC using TBTC contract at ${tBTC.address}`)
 

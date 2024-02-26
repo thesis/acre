@@ -1,19 +1,13 @@
 import type { HardhatRuntimeEnvironment } from "hardhat/types"
 import type { DeployFunction } from "hardhat-deploy/types"
-import { isNonZeroAddress } from "../helpers/address"
+import { isNonZeroAddress, fetchDeploymentArtifact } from "../helpers/address"
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { getNamedAccounts, deployments } = hre
   const { log } = deployments
   const { deployer } = await getNamedAccounts()
 
-  // TODO: extract to a helper function
-  let tBTC
-  if (hre.network.name === "integration") {
-    tBTC = await deployments.getArtifact("TBTC")
-  } else {
-    tBTC = await deployments.getOrNull("TBTC")
-  }
+  const tBTC = await fetchDeploymentArtifact(hre, "TBTC")
 
   if (tBTC && isNonZeroAddress(tBTC.address)) {
     log(`using TBTC contract at ${tBTC.address}`)
