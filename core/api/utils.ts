@@ -6,9 +6,8 @@ import { ContractArtifact } from "hardhat/types"
 import { formatUnits } from "ethers"
 
 import SwapRouterArtifact from "@uniswap/v3-periphery/artifacts/contracts/SwapRouter.sol/SwapRouter.json"
-// TODO: replace with OZ artifacts
-import ERC20Artifact from "../artifacts/solmate/src/tokens/ERC20.sol/ERC20.json"
-import WETHArtifact from "../artifacts/solmate/src/tokens/WETH.sol/WETH.json"
+import ERC20Artifact from "../build/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json"
+import WETHArtifact from "../external/integration/WETH.json"
 
 const IUniswapV3SwapRouter: ContractArtifact = SwapRouterArtifact
 const IERC20: ContractArtifact = ERC20Artifact

@@ -54,14 +54,14 @@ const config: HardhatUserConfig = {
       process.env.INTEGRATION_TEST === "true"
         ? [
             {
-              artifacts: "./external/mainnet",
+              artifacts: "./external/integration",
             },
           ]
         : undefined,
     deployments: {
       sepolia: ["./external/sepolia"],
       mainnet: ["./external/mainnet"],
-      integration: ["./external/mainnet"],
+      integration: ["./external/integration"],
     },
   },
 
