@@ -24,8 +24,6 @@ contract TBTCVaultStub is MockTBTCVault {
     function finalizeOptimisticMintingRequest(
         uint256 depositKey
     ) public override {
-        MockTBTCVault.finalizeOptimisticMintingRequest(depositKey);
-
         IBridgeTypes.DepositRequest memory deposit = bridge.deposits(
             depositKey
         );
@@ -45,6 +43,15 @@ contract TBTCVaultStub is MockTBTCVault {
 
         uint256 amountToMint = amountSubTreasury - omFee - txMaxFee;
 
-        tbtc.mint(deposit.depositor, amountToMint);
+        finalizeOptimisticMintingRequestWithAmount(depositKey, amountToMint);
+    }
+
+    function finalizeOptimisticMintingRequestWithAmount(
+        uint256 depositKey,
+        uint256 amountToMint
+    ) public {
+        MockTBTCVault.finalizeOptimisticMintingRequest(depositKey);
+
+        tbtc.mint(bridge.deposits(depositKey).depositor, amountToMint);
     }
 }

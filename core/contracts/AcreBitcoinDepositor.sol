@@ -4,7 +4,6 @@ pragma solidity ^0.8.21;
 import "@openzeppelin/contracts/access/Ownable2Step.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import "@keep-network/tbtc-v2/contracts/integrator/AbstractTBTCDepositor.sol";
@@ -59,17 +58,21 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
         address staker;
         // tBTC token amount to stake after deducting tBTC minting fees and the
         // Depositor fee. Stored only when request is queued.
-        uint256 queuedAmount;
+        uint88 queuedAmount;
     }
-
-    /// @notice tBTC Token contract.
-    IERC20 public immutable tbtcToken;
-    /// @notice stBTC contract.
-    stBTC public immutable stbtc;
 
     /// @notice Mapping of stake requests.
     /// @dev The key is a deposit key identifying the deposit.
     mapping(uint256 => StakeRequest) public stakeRequests;
+
+    /// @notice tBTC Token contract.
+    // TODO: Remove slither disable when introducing upgradeability.
+    // slither-disable-next-line constable-states
+    IERC20 public tbtcToken;
+    // TODO: Remove slither disable when introducing upgradeability.
+    // slither-disable-next-line constable-states
+    /// @notice stBTC contract.
+    stBTC public stbtc;
 
     /// @notice Minimum amount of a single stake request (in tBTC token precision).
     /// @dev This parameter should be set to a value exceeding the minimum deposit
@@ -217,6 +220,15 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     ///      exceeding the maximum limit for a single stake amount.
     error ExceededMaxSingleStake(uint256 amount, uint256 max);
 
+    /// @dev Attempted to finalize bridging with depositor's contract tBTC balance
+    ///      lower than the calculated bridged tBTC amount. This error means
+    ///      that Governance should top-up the tBTC reserve for bridging fees
+    ///      approximation.
+    error InsufficientTbtcBalance(
+        uint256 amountToStake,
+        uint256 currentBalance
+    );
+
     /// @dev Attempted to notify a bridging completion, while it was already
     ///      notified.
     error BridgingCompletionAlreadyNotified();
@@ -241,9 +253,6 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
 
     /// @dev Attempted to call function by an account that is not the staker.
     error CallerNotStaker();
-
-    /// @dev Attempted to recover tBTC token.
-    error RecoverTbtcNotAllowed();
 
     /// @dev Attempted to set minimum stake amount to a value lower than the
     ///      tBTC Bridge deposit dust threshold.
@@ -378,7 +387,10 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
 
         StakeRequest storage request = stakeRequests[depositKey];
 
-        (request.queuedAmount, request.staker) = finalizeBridging(depositKey);
+        uint256 amountToStake;
+        (amountToStake, request.staker) = finalizeBridging(depositKey);
+
+        request.queuedAmount = SafeCast.toUint88(amountToStake);
 
         // Increase pending stakes balance.
         queuedStakesBalance += request.queuedAmount;
@@ -552,38 +564,6 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
         emit DepositorFeeDivisorUpdated(newDepositorFeeDivisor);
     }
 
-    /// @notice Allows the governance to recover any ERC20 token sent - mistakenly
-    ///         or not - to the contract address.
-    /// @dev It doesn't allow the governance to recover tBTC tokens.
-    /// @param token Address of the recovered ERC20 token contract.
-    /// @param recipient Address the recovered token should be sent to.
-    /// @param amount Recovered amount.
-    function recoverERC20(
-        IERC20 token,
-        address recipient,
-        uint256 amount
-    ) external onlyOwner {
-        if (address(token) == address(tbtcToken))
-            revert RecoverTbtcNotAllowed();
-
-        token.safeTransfer(recipient, amount);
-    }
-
-    /// @notice Allows the governance to recover any ERC721 token sent mistakenly
-    ///         to the contract address.
-    /// @param token Address of the recovered ERC721 token contract.
-    /// @param recipient Address the recovered token should be sent to.
-    /// @param tokenId Identifier of the recovered token.
-    /// @param data Additional data.
-    function recoverERC721(
-        IERC721 token,
-        address recipient,
-        uint256 tokenId,
-        bytes calldata data
-    ) external onlyOwner {
-        token.safeTransferFrom(address(this), recipient, tokenId, data);
-    }
-
     // TODO: Handle minimum deposit amount in tBTC Bridge vs stBTC.
 
     /// @notice Encodes staker address and referral as extra data.
@@ -643,8 +623,13 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     ///      tBTC amount reduced by the depositor fee.
     /// @dev IMPORTANT NOTE: The minted tBTC amount used by this function is an
     ///      approximation. See documentation of the
-    ///      {{TBTCDepositorProxy#_calculateTbtcAmount}} responsible for calculating
+    ///      {{AbstractTBTCDepositor#_calculateTbtcAmount}} responsible for calculating
     ///      this value for more details.
+    /// @dev In case balance of tBTC tokens in this contract doesn't meet the
+    ///      calculated tBTC amount, the function reverts with `InsufficientTbtcBalance`
+    ///      error. This case requires Governance's validation, as tBTC Bridge minting
+    ///      fees might changed in the way that reserve mentioned in
+    ///      {{AbstractTBTCDepositor#_calculateTbtcAmount}} needs a top-up.
     /// @param depositKey Deposit key identifying the deposit.
     /// @return amountToStake tBTC token amount to stake after deducting tBTC bridging
     ///         fees and the depositor fee.
@@ -657,6 +642,12 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
             uint256 tbtcAmount,
             bytes32 extraData
         ) = _finalizeDeposit(depositKey);
+
+        // Check if current balance is sufficient to finalize bridging of `tbtcAmount`.
+        uint256 currentBalance = tbtcToken.balanceOf(address(this));
+        if (tbtcAmount > tbtcToken.balanceOf(address(this))) {
+            revert InsufficientTbtcBalance(tbtcAmount, currentBalance);
+        }
 
         // Compute depositor fee. The fee is calculated based on the initial funding
         // transaction amount, before the tBTC protocol network fees were taken.
