@@ -257,7 +257,7 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
 
     /// @dev Attempted to set minimum stake amount to a value lower than the
     ///      tBTC Bridge deposit dust threshold.
-    error MinStakeAmountLowerThanBridgeDepositDustThreshold(
+    error MinStakeAmountLowerThanBridgeMinDeposit(
         uint256 minStakeAmount,
         uint256 bridgeMinDepositAmount
     );
@@ -321,7 +321,7 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
         // We don't check if the request was already initialized, as this check
         // is enforced in `_initializeDeposit` when calling the
         // `Bridge.revealDepositWithExtraData` function.
-        uint256 depositKey = _initializeDeposit(
+        (uint256 depositKey, uint256 initialDepositAmount) = _initializeDeposit(
             fundingTx,
             reveal,
             encodeExtraData(staker, referral)
@@ -333,11 +333,11 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
             StakeRequestState.Initialized
         );
 
-        uint256 depositAmount = bridge.deposits(depositKey).amount *
-            SATOSHI_MULTIPLIER;
-
-        if (depositAmount > maxSingleStakeAmount)
-            revert ExceededMaxSingleStake(depositAmount, maxSingleStakeAmount);
+        if (initialDepositAmount > maxSingleStakeAmount)
+            revert ExceededMaxSingleStake(
+                initialDepositAmount,
+                maxSingleStakeAmount
+            );
 
         emit StakeRequestInitialized(depositKey, msg.sender, staker);
     }
@@ -510,20 +510,13 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     function updateMinStakeAmount(
         uint256 newMinStakeAmount
     ) external onlyOwner {
-        // Read tBTC Bridge Deposit Dust Threshold in satoshi precision.
-        (uint64 bridgeDepositDustThresholdSat, , , ) = bridge
-            .depositParameters();
-
-        // Convert tBTC Bridge Deposit Dust Threshold to tBTC token precision.
-        uint256 bridgeDepositDustThreshold = uint256(
-            bridgeDepositDustThresholdSat
-        ) * SATOSHI_MULTIPLIER;
+        uint256 minBridgeDepositAmount = _minDepositAmount();
 
         // Check if new value is at least equal the tBTC Bridge Deposit Dust Threshold.
-        if (newMinStakeAmount < bridgeDepositDustThreshold)
-            revert MinStakeAmountLowerThanBridgeDepositDustThreshold(
+        if (newMinStakeAmount < minBridgeDepositAmount)
+            revert MinStakeAmountLowerThanBridgeMinDeposit(
                 newMinStakeAmount,
-                bridgeDepositDustThreshold
+                minBridgeDepositAmount
             );
 
         minStakeAmount = newMinStakeAmount;

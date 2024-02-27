@@ -1592,7 +1592,7 @@ describe("AcreBitcoinDepositor", () => {
           )
             .to.be.revertedWithCustomError(
               bitcoinDepositor,
-              "MinStakeAmountLowerThanBridgeDepositDustThreshold",
+              "MinStakeAmountLowerThanBridgeMinDeposit",
             )
             .withArgs(newMinStakeAmount, bridgeDepositDustThreshold)
         })
