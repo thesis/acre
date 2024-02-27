@@ -466,16 +466,16 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
         tbtcToken.safeTransfer(staker, amount);
     }
 
-    /// @notice Minimum stake amount in satoshi precision.
+    /// @notice Minimum stake amount (in tBTC token precision).
     /// @dev This function should be used by dApp to check the minimum amount
     ///      for the stake request.
     /// @dev It is not enforced in the `initializeStakeRequest` function, as
     ///      it is intended to be used in the dApp staking form.
-    function minStakeInSatoshi() external view returns (uint256) {
-        return minStakeAmount / SATOSHI_MULTIPLIER;
+    function minStake() external view returns (uint256) {
+        return minStakeAmount;
     }
 
-    /// @notice Maximum stake amount in satoshi precision.
+    /// @notice Maximum stake amount (in tBTC token precision).
     /// @dev It takes into consideration the maximum total assets soft limit (soft
     ///      cap), that is expected to be set below the stBTC maximum total assets
     ///      limit (hard cap).
@@ -486,7 +486,7 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     ///      submission of Bitcoin funding transaction and stake request
     ///      initialization.
     /// @return Maximum allowed stake amount.
-    function maxStakeInSatoshi() external view returns (uint256) {
+    function maxStake() external view returns (uint256) {
         uint256 currentTotalAssets = stbtc.totalAssets();
 
         if (currentTotalAssets >= maxTotalAssetsSoftLimit) {
@@ -500,9 +500,7 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
         }
         availableLimit -= queuedStakesBalance;
 
-        uint256 result = Math.min(availableLimit, maxSingleStakeAmount);
-
-        return result / SATOSHI_MULTIPLIER;
+        return Math.min(availableLimit, maxSingleStakeAmount);
     }
 
     /// @notice Updates the minimum stake amount.
