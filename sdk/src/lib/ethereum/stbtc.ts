@@ -1,4 +1,4 @@
-import { StBTC as StBTCTypechain } from "core/typechain/contracts/StBTC"
+import { StBTC as StBTCTypechain } from "@acre-btc/core/typechain/contracts/StBTC"
 import stBTC from "./artifacts/sepolia/stBTC.json"
 import {
   EthersContractConfig,
@@ -31,14 +31,14 @@ class EthereumStBTC
   }
 
   /**
-   * @see {StBTCTypechain#balanceOf}
+   * @see {StBTC#balanceOf}
    */
   balanceOf(identifier: ChainIdentifier): Promise<bigint> {
     return this.instance.balanceOf(`0x${identifier.identifierHex}`)
   }
 
   /**
-   * @see {StBTCTypechain#assetsBalanceOf}
+   * @see {StBTC#assetsBalanceOf}
    */
   assetsBalanceOf(identifier: ChainIdentifier): Promise<bigint> {
     return this.instance.assetsBalanceOf(`0x${identifier.identifierHex}`)

@@ -230,35 +230,39 @@ describe("Staking", () => {
 
   describe("sharesBalance", () => {
     const { staker } = stakingModuleData.initializeStake
+    const expectedResult = 4294967295n
 
     beforeAll(() => {
-      staking.sharesBalance = jest.fn().mockResolvedValue(4294967295)
-    })
-
-    it("should be defined", () => {
-      expect(staking.sharesBalance).toBeDefined()
+      contracts.stBTC.balanceOf = jest.fn().mockResolvedValue(expectedResult)
     })
 
     it("should return final BTC balance", async () => {
       const result = await staking.sharesBalance(staker)
-      expect(result).toEqual(4294967295)
+      expect(result).toEqual(expectedResult)
+    })
+
+    it("should be called with proper param", () => {
+      expect(contracts.stBTC.balanceOf).toHaveBeenCalledWith(staker)
     })
   })
 
   describe("estimatedBitcoinBalance", () => {
+    const expectedResult = 4294967295n
     const { staker } = stakingModuleData.initializeStake
 
     beforeAll(() => {
-      staking.estimatedBitcoinBalance = jest.fn().mockResolvedValue(4294967295)
-    })
-
-    it("should be defined", () => {
-      expect(staking.estimatedBitcoinBalance).toBeDefined()
+      contracts.stBTC.assetsBalanceOf = jest
+        .fn()
+        .mockResolvedValue(expectedResult)
     })
 
     it("should return maximum withdraw value", async () => {
       const result = await staking.estimatedBitcoinBalance(staker)
-      expect(result).toEqual(4294967295)
+      expect(result).toEqual(expectedResult)
+    })
+
+    it("should be called with proper param", () => {
+      expect(contracts.stBTC.assetsBalanceOf).toHaveBeenCalledWith(staker)
     })
   })
 })

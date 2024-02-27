@@ -8,55 +8,63 @@ jest.mock("ethers", (): object => ({
 }))
 
 describe("stbtc", () => {
-  let depositor: EthereumStBTC
-  let depositorAddress: EthereumAddress
-  const vaultAddress = EthereumAddress.from(
-    ethers.Wallet.createRandom().address,
-  )
+  let stbtc: EthereumStBTC
+
   const mockedContractInstance = {
-    tbtcVault: jest.fn().mockImplementation(() => vaultAddress.identifierHex),
-    initializeStakeRequest: jest.fn(),
+    balanceOf: jest.fn(),
+    assetsBalanceOf: jest.fn(),
   }
 
-  beforeEach(async () => {
+  beforeAll(() => {
     jest
       .spyOn(ethers, "Contract")
       .mockImplementationOnce(
         () => mockedContractInstance as unknown as Contract,
       )
 
-    depositorAddress = EthereumAddress.from(
-      await ethers.Wallet.createRandom().getAddress(),
-    )
-
-    depositor = new EthereumStBTC(
+    stbtc = new EthereumStBTC(
       {
         signer: {} as EthereumSigner,
-        address: depositorAddress.identifierHex,
       },
       "sepolia",
     )
   })
 
   describe("balanceOf", () => {
+    const expectedResult = 4294967295n
+
+    const depositorAddress = EthereumAddress.from(
+      ethers.Wallet.createRandom().address,
+    )
+
     beforeAll(() => {
-      depositor.balanceOf = jest.fn().mockResolvedValue(4294967295)
+      mockedContractInstance.balanceOf = jest
+        .fn()
+        .mockResolvedValue(expectedResult)
     })
 
     it("should return final BTC balance", async () => {
-      const result = await depositor.balanceOf(vaultAddress)
-      expect(result).toEqual(4294967295)
+      const result = await stbtc.balanceOf(depositorAddress)
+      expect(result).toEqual(expectedResult)
     })
   })
 
   describe("assetsBalanceOf", () => {
+    const expectedResult = 4294967295n
+
+    const depositorAddress = EthereumAddress.from(
+      ethers.Wallet.createRandom().address,
+    )
+
     beforeAll(() => {
-      depositor.assetsBalanceOf = jest.fn().mockResolvedValue(4294967295)
+      mockedContractInstance.assetsBalanceOf = jest
+        .fn()
+        .mockResolvedValue(expectedResult)
     })
 
     it("should return maximum withdraw value", async () => {
-      const result = await depositor.assetsBalanceOf(vaultAddress)
-      expect(result).toEqual(4294967295)
+      const result = await stbtc.assetsBalanceOf(depositorAddress)
+      expect(result).toEqual(expectedResult)
     })
   })
 })
