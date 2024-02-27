@@ -2,6 +2,9 @@ import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import { BitcoinNetwork, DepositReceipt } from "@acre-btc/sdk"
 import axios from "axios"
 
+const endpoint =
+  "https://us-central1-keep-prd-210b.cloudfunctions.net/verify-deposit-address"
+
 export async function verifyDepositAddress(
   deposit: DepositReceipt,
   depositAddress: string,
@@ -10,9 +13,6 @@ export async function verifyDepositAddress(
   status: "valid" | "invalid" | "error"
   response: unknown
 }> {
-  const endpoint =
-    "https://us-central1-keep-prd-210b.cloudfunctions.net/verify-deposit-address"
-
   const {
     depositor,
     blindingFactor,
