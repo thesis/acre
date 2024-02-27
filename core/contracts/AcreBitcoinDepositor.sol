@@ -394,9 +394,9 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
         request.queuedAmount = SafeCast.toUint88(amountToStake);
 
         // Increase pending stakes balance.
-        queuedStakesBalance += request.queuedAmount;
+        queuedStakesBalance += amountToStake;
 
-        emit StakeRequestQueued(depositKey, msg.sender, request.queuedAmount);
+        emit StakeRequestQueued(depositKey, msg.sender, amountToStake);
     }
 
     /// @notice This function should be called for previously queued stake
@@ -449,20 +449,21 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
 
         StakeRequest storage request = stakeRequests[depositKey];
 
-        if (request.queuedAmount == 0) revert StakeRequestNotQueued();
-
-        // Check if caller is the staker.
-        if (msg.sender != request.staker) revert CallerNotStaker();
-
         uint256 amount = request.queuedAmount;
+        if (amount == 0) revert StakeRequestNotQueued();
+
+        address staker = request.staker;
+        // Check if caller is the staker.
+        if (msg.sender != staker) revert CallerNotStaker();
+
         delete (request.queuedAmount);
 
-        emit StakeRequestCancelledFromQueue(depositKey, request.staker, amount);
+        emit StakeRequestCancelledFromQueue(depositKey, staker, amount);
 
         // Decrease pending stakes balance.
         queuedStakesBalance -= amount;
 
-        tbtcToken.safeTransfer(request.staker, amount);
+        tbtcToken.safeTransfer(staker, amount);
     }
 
     /// @notice Minimum stake amount in satoshi precision.
