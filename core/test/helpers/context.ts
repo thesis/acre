@@ -1,4 +1,5 @@
 import { deployments } from "hardhat"
+import { Artifact } from "hardhat/types"
 import { getDeployedContract } from "./contract"
 import { getUnnamedSigner } from "./signer"
 
@@ -9,6 +10,7 @@ import type {
   TestERC4626,
   SingleTokenVault,
   Allocator,
+  Reserve,
 } from "../../typechain"
 
 // eslint-disable-next-line import/prefer-default-export
@@ -19,8 +21,9 @@ export async function deployment() {
 
   let tbtc: TestERC20
   if (isIntegrationTest === "true") {
-    const tbtcArifact = await deployments.getArtifact("TBTC")
+    const tbtcArifact: Artifact = await deployments.getArtifact("TBTC")
     const [defaultSigner] = await getUnnamedSigner()
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     tbtc = new ethers.Contract(
       tbtcArifact.address,
       tbtcArifact.abi,

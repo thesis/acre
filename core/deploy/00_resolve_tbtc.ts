@@ -9,6 +9,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
   const tBTC = await fetchDeploymentArtifact(hre, "TBTC")
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   if (tBTC && isNonZeroAddress(tBTC.address)) {
     log(`using TBTC contract at ${tBTC.address}`)
   } else if (!hre.network.tags.allowStubs) {

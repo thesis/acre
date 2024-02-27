@@ -357,7 +357,7 @@ async function printStrategyPosition(allocator, strategy, opts = {}) {
   console.table(detail)
 }
 
-module.exports = {
+export default {
   printBalances,
   printStrategyPosition,
   initTokens,

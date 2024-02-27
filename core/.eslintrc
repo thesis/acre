@@ -9,7 +9,8 @@
           "hardhat.config.ts",
           "deploy/**",
           "helpers/**",
-          "test/**"
+          "test/**",
+          "api/**",
         ]
       }
     ]

@@ -5,3 +5,4 @@ export.json
 export/
 external/
 typechain/
+api/utils.ts

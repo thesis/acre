@@ -1,18 +1,30 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable no-underscore-dangle */
 import { expect } from "chai"
 import { ethers } from "hardhat"
-import { parseUnits, formatUnits } from "ethers"
+import { parseUnits, formatUnits, Typed } from "ethers"
 import {
   time,
   mine,
   loadFixture,
 } from "@nomicfoundation/hardhat-toolbox/network-helpers"
+import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
 
 // Assuming Addresses.json contains a default export of mainnet addresses
 import Addresses from "../../static/addresses.json"
 
 // Assuming utils.js exports functions or values that need to be typed
-import * as utils from "../../api/utils"
-import type { Allocator, SingleTokenVault } from "../../typechain"
+import utils from "../../api/utils"
+import type {
+  Allocator,
+  SingleTokenVault,
+  StBTC as stBTC,
+  TestERC20,
+  Reserve,
+} from "../../typechain"
 
 import { deployment, getNamedSigner, getUnnamedSigner } from "../helpers"
 
@@ -43,15 +55,15 @@ describe("[stBTC]", () => {
   const performanceFeeRatio = 500n // 5%
   const withdrawFeeRatio = 20n // 0.2%
 
-  let deployer
-  let reserve
+  let deployer: HardhatEthersSigner
   let user: HardhatEthersSigner
   let depositor1: HardhatEthersSigner
   let governance: HardhatEthersSigner
   let tokens
-  let tBTC
-  let stbtc
-  let strategyConfig
+  let reserve: Reserve
+  let tBTC: TestERC20
+  let stbtc: stBTC
+  let strategyConfig: Typed | Allocator.StrategyStruct
   let singleTokenVault: SingleTokenVault
   let allocator: Allocator
 

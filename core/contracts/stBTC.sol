@@ -5,19 +5,19 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Dispatcher.sol";
-import { xERC4626 } from './lib/xERC4626.sol';
+import {xERC4626} from "./lib/xERC4626.sol";
 import "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
 interface IAllocator {
-  function totalAssets() external view returns (uint256);
+    function withdraw(uint256 _assets, address _receiver) external;
 
-  function lastTotalAssets() external view returns (uint256);
+    function allocate() external;
 
-  function withdraw(uint256 _assets, address _receiver) external;
+    function free() external;
 
-  function allocate() external;
+    function totalAssets() external view returns (uint256);
 
-  function free() external;
+    function lastTotalAssets() external view returns (uint256);
 }
 
 /// @title stBTC
@@ -76,12 +76,21 @@ contract stBTC is xERC4626, Ownable {
     /// Reverts if the address is disallowed.
     error DisallowedAddress();
 
+    modifier andSync() {
+        /* solhint-disable not-rely-on-time */
+        if (block.timestamp >= rewardsCycleEnd) this.syncRewards();
+        _;
+    }
+
     constructor(
         IERC20 _tbtc,
         address _treasury,
         uint32 _rewardsCycleLength
-    ) ERC4626(_tbtc) ERC20("Acre Staked Bitcoin", "stBTC") Ownable(msg.sender)
-         xERC4626(_rewardsCycleLength) // TODO: revisit initialization
+    )
+        ERC4626(_tbtc)
+        ERC20("Acre Staked Bitcoin", "stBTC")
+        Ownable(msg.sender)
+        xERC4626(_rewardsCycleLength) // TODO: revisit initialization
     {
         if (address(_treasury) == address(0)) {
             revert ZeroAddress();
@@ -92,13 +101,8 @@ contract stBTC is xERC4626, Ownable {
         maximumTotalAssets = 25 * 1e18; // 25 tBTC
     }
 
-    modifier andSync() {
-    if (block.timestamp >= rewardsCycleEnd) this.syncRewards();
-    _;
-  }
-
     function setAllocator(IAllocator _allocator) external onlyOwner {
-        require(address(_allocator) != address(0), 'ZERO_ADDRESS');
+        require(address(_allocator) != address(0), "ZERO_ADDRESS");
         allocator = _allocator;
     }
 
@@ -183,12 +187,16 @@ contract stBTC is xERC4626, Ownable {
         if (assets < minimumDepositAmount) {
             revert LessThanMinDeposit(assets, minimumDepositAmount);
         }
-        require(address(allocator) != address(0), 'NOT_INITIALIZED');
+        require(address(allocator) != address(0), "NOT_INITIALIZED");
         // Check for rounding error since we round down in previewDeposit.
-        require((shares = super.previewDeposit(assets)) != 0, 'ZERO_SHARES');
+        require((shares = super.previewDeposit(assets)) != 0, "ZERO_SHARES");
 
         // Need to transfer before minting or ERC777s could reenter.
-        IERC20(asset()).safeTransferFrom(msg.sender, address(allocator), assets);
+        IERC20(asset()).safeTransferFrom(
+            msg.sender,
+            address(allocator),
+            assets
+        );
 
         _mint(receiver, shares);
 
@@ -221,9 +229,9 @@ contract stBTC is xERC4626, Ownable {
     }
 
     function redeem(
-    uint256 shares,
-    address receiver,
-    address owner
+        uint256 shares,
+        address receiver,
+        address owner
     ) public override andSync returns (uint256 assets) {
         if (msg.sender != owner) {
             uint256 allowed = allowance(owner, msg.sender); // Saves gas for limited approvals.
@@ -233,7 +241,7 @@ contract stBTC is xERC4626, Ownable {
         }
 
         // Check for rounding error since we round down in previewRedeem.
-        require((assets = previewRedeem(shares)) != 0, 'ZERO_ASSETS');
+        require((assets = previewRedeem(shares)) != 0, "ZERO_ASSETS");
 
         beforeWithdraw(assets);
 
@@ -265,13 +273,47 @@ contract stBTC is xERC4626, Ownable {
         assets = previewMint(shares); // No need to check for rounding error, previewMint rounds up.
 
         // Need to transfer before minting or ERC777s could reenter.
-        IERC20(asset()).safeTransferFrom(msg.sender, address(allocator), assets);
+        IERC20(asset()).safeTransferFrom(
+            msg.sender,
+            address(allocator),
+            assets
+        );
 
         _mint(receiver, shares);
 
         emit Deposit(msg.sender, receiver, assets, shares);
 
         afterDeposit(assets);
+    }
+
+    function syncRewards() public override {
+        require(
+            msg.sender == address(allocator) || msg.sender == address(this),
+            "UNAUTHORIZED"
+        );
+
+        uint192 lastRewardAmount_ = lastRewardAmount;
+        /* solhint-disable not-rely-on-time */
+        uint32 timestamp = block.timestamp.toUint32();
+
+        if (timestamp < rewardsCycleEnd) revert SyncError();
+
+        uint256 storedTotalAssets_ = storedTotalAssets;
+        uint256 nextRewards = allocator.lastTotalAssets() -
+            storedTotalAssets_ -
+            lastRewardAmount_;
+
+        storedTotalAssets = storedTotalAssets_ + lastRewardAmount_; // SSTORE
+
+        uint32 end = ((timestamp + rewardsCycleLength) / rewardsCycleLength) *
+            rewardsCycleLength;
+
+        // Combined single SSTORE
+        lastRewardAmount = nextRewards.toUint192();
+        lastSync = timestamp;
+        rewardsCycleEnd = end;
+
+        emit NewRewardsCycle(end, nextRewards);
     }
 
     /// @notice Returns value of assets that would be exchanged for the amount of
@@ -322,34 +364,5 @@ contract stBTC is xERC4626, Ownable {
     /// @return Returns deposit parameters.
     function depositParameters() public view returns (uint256, uint256) {
         return (minimumDepositAmount, maximumTotalAssets);
-    }
-
-    function syncRewards() public override {
-        require(
-            msg.sender == address(allocator) || msg.sender == address(this),
-            'UNAUTHORIZED'
-        );
-
-        uint192 lastRewardAmount_ = lastRewardAmount;
-        uint32 timestamp = block.timestamp.toUint32();
-
-        if (timestamp < rewardsCycleEnd) revert SyncError();
-
-        uint256 storedTotalAssets_ = storedTotalAssets;
-        uint256 nextRewards = allocator.lastTotalAssets() -
-            storedTotalAssets_ -
-            lastRewardAmount_;
-
-        storedTotalAssets = storedTotalAssets_ + lastRewardAmount_; // SSTORE
-
-        uint32 end = ((timestamp + rewardsCycleLength) / rewardsCycleLength) *
-            rewardsCycleLength;
-
-        // Combined single SSTORE
-        lastRewardAmount = nextRewards.toUint192();
-        lastSync = timestamp;
-        rewardsCycleEnd = end;
-
-        emit NewRewardsCycle(end, nextRewards);
     }
 }
