@@ -1,12 +1,12 @@
-import { CurrencyBalanceProps } from "#/components/shared/CurrencyBalance"
 import { CURRENCIES_BY_TYPE } from "#/constants"
 import { selectBtcUsdPrice } from "#/store/btc"
 import { bigIntToUserAmount } from "#/utils"
+import { CurrencyConversionType } from "#/types"
 import { useAppSelector } from "./store"
 
 export function useCurrencyConversion(
-  from: CurrencyBalanceProps,
-  to: CurrencyBalanceProps,
+  from: CurrencyConversionType,
+  to: CurrencyConversionType,
 ) {
   const usdPrice = useAppSelector(selectBtcUsdPrice)
 

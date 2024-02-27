@@ -1,5 +1,6 @@
 import React from "react"
 import { useCurrencyConversion } from "#/hooks"
+import { CurrencyConversionType } from "#/types"
 import { CurrencyBalance, CurrencyBalanceProps } from "../CurrencyBalance"
 
 export function CurrencyBalanceWithConversion({
@@ -9,7 +10,10 @@ export function CurrencyBalanceWithConversion({
   from: CurrencyBalanceProps
   to: CurrencyBalanceProps
 }) {
-  const conversionAmount = useCurrencyConversion(from, to)
+  const conversionAmount = useCurrencyConversion(
+    from as CurrencyConversionType,
+    to as CurrencyConversionType,
+  )
 
   return (
     <>
