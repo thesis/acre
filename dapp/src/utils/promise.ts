@@ -6,6 +6,7 @@
  */
 export function logPromiseFailure<T>(promise: Promise<T>) {
   promise.catch((error) => {
+    console.error(error)
     throw error
   })
 }

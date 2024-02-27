@@ -1,14 +1,14 @@
-import { useSelector } from "react-redux"
 import { CurrencyBalanceProps } from "#/components/shared/CurrencyBalance"
 import { CURRENCIES_BY_TYPE } from "#/constants"
 import { selectBtcUsdPrice } from "#/store/btc"
 import { bigIntToUserAmount } from "#/utils"
+import { useAppSelector } from "./store"
 
 export function useCurrencyConversion(
   from: CurrencyBalanceProps,
   to: CurrencyBalanceProps,
 ) {
-  const usdPrice = useSelector(selectBtcUsdPrice)
+  const usdPrice = useAppSelector(selectBtcUsdPrice)
 
   if (!from.amount || BigInt(from.amount) < 0n) return undefined
 

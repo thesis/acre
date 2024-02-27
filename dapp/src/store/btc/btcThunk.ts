@@ -1,14 +1,15 @@
 import { createAsyncThunk } from "@reduxjs/toolkit"
-import { fetchCryptoCurrencyPriceUSD } from "#/utils"
+import { fetchCryptoCurrencyPriceUSD } from "#/api"
 
 export const fetchBTCPriceUSD = createAsyncThunk(
   "btc/fetchBTCPriceUSD",
-  async (_, { rejectWithValue }) => {
+  async () => {
     try {
       const priceUSD: number = await fetchCryptoCurrencyPriceUSD("bitcoin")
       return priceUSD
-    } catch (err) {
-      return rejectWithValue(err)
+    } catch (error) {
+      console.error(error)
+      throw error
     }
   },
 )
