@@ -25,7 +25,7 @@ importers:
         version: 3.4.0-solc-0.8
       '@keep-network/tbtc-v2':
         specifier: development
-        version: 1.6.0-dev.21(@keep-network/keep-core@1.8.1-dev.0)
+        version: 1.6.0-dev.23(@keep-network/keep-core@1.8.1-dev.0)
       '@openzeppelin/contracts':
         specifier: ^5.0.0
         version: 5.0.0
@@ -4396,6 +4396,7 @@ packages:
 
   /@keep-network/keep-core@1.8.1-goerli.0:
     resolution: {integrity: sha512-h3La/RqbyEZjBBPg8V+pcRFo3UpWZUF4CxWfXHZnUR4PnkZKnIDrTNFQPhpV2uYFZwrbJxTR9mzOq/DOAiXPwA==}
+    deprecated: Package deprecated due to deprecation of the Goerli testnet.
     dependencies:
       '@openzeppelin/upgrades': 2.8.0
       openzeppelin-solidity: 2.4.0
@@ -4407,6 +4408,7 @@ packages:
 
   /@keep-network/keep-ecdsa@1.9.0-goerli.0:
     resolution: {integrity: sha512-EA/oTcxmia5nznQ35ub9/5xBqBK4T+78oWYxASCc+THdPLalzriSAtQ517R4QnvkHi82NFhJjZH8WBoRXniddA==}
+    deprecated: Package deprecated due to deprecation of the Goerli testnet.
     dependencies:
       '@keep-network/keep-core': 1.8.1-goerli.0
       '@keep-network/sortition-pools': 1.2.0-dev.1
@@ -4498,8 +4500,8 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@keep-network/tbtc-v2@1.6.0-dev.21(@keep-network/keep-core@1.8.1-dev.0):
-    resolution: {integrity: sha512-/p2PCm0lWEnVbILrBhSO9MWjv6PvJ0lThEzUat85h6SkrGiIojqIMiOlI+pCIi8rhPtZ1xY+9jG6AbDs7XrupQ==}
+  /@keep-network/tbtc-v2@1.6.0-dev.23(@keep-network/keep-core@1.8.1-dev.0):
+    resolution: {integrity: sha512-z2wcwhS+GZ9FYqbXV0qfBVyQFfPsmSWZCMg6HswReomJWdTwwedVLeW851/J9hYg/n6yjur/4S29bANOwmj+bw==}
     engines: {node: '>= 14.0.0'}
     dependencies:
       '@keep-network/bitcoin-spv-sol': 3.4.0-solc-0.8
