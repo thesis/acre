@@ -1,11 +1,12 @@
 import React, { useCallback } from "react"
 import {
   useDepositBTCTransaction,
+  useDepositTelemetry,
   useExecuteFunction,
   useModalFlowContext,
-  useSendGeneratedDepositToSentry,
   useStakeFlowContext,
   useTransactionContext,
+  useWalletContext,
 } from "#/hooks"
 import Alert from "#/components/shared/Alert"
 import { TextMd } from "#/components/shared/Typography"
@@ -14,10 +15,11 @@ import { PROCESS_STATUSES } from "#/types"
 import StakingStepsModalContent from "./StakingStepsModalContent"
 
 export default function DepositBTCModal() {
+  const { ethAccount } = useWalletContext()
   const { tokenAmount } = useTransactionContext()
   const { setStatus } = useModalFlowContext()
-  const { btcAddress, stake } = useStakeFlowContext()
-  useSendGeneratedDepositToSentry()
+  const { btcAddress, depositReceipt, stake } = useStakeFlowContext()
+  const depositTelemetry = useDepositTelemetry()
 
   const onStakeBTCSuccess = useCallback(() => {
     setStatus(PROCESS_STATUSES.SUCCEEDED)
@@ -47,17 +49,38 @@ export default function DepositBTCModal() {
   const { sendBitcoinTransaction } =
     useDepositBTCTransaction(onDepositBTCSuccess)
 
-  const handledDepositBTC = useCallback(() => {
-    if (!tokenAmount?.amount || !btcAddress) return
+  const handledDepositBTC = useCallback(async () => {
+    if (!tokenAmount?.amount || !btcAddress || !depositReceipt || !ethAccount)
+      return
+
+    const response = await depositTelemetry(
+      depositReceipt,
+      btcAddress,
+      ethAccount.address,
+    )
+
+    // TODO: Display the correct message for the user
+    if (response.verificationStatus !== "valid") return
 
     asyncWrapper(sendBitcoinTransaction(tokenAmount?.amount, btcAddress))
-  }, [btcAddress, sendBitcoinTransaction, tokenAmount])
+  }, [
+    btcAddress,
+    depositReceipt,
+    depositTelemetry,
+    ethAccount,
+    sendBitcoinTransaction,
+    tokenAmount?.amount,
+  ])
+
+  const handledDepositBTCWrapper = useCallback(() => {
+    asyncWrapper(handledDepositBTC())
+  }, [handledDepositBTC])
 
   return (
     <StakingStepsModalContent
       buttonText="Deposit BTC"
       activeStep={1}
-      onClick={handledDepositBTC}
+      onClick={handledDepositBTCWrapper}
     >
       <Alert>
         <TextMd>
