@@ -354,142 +354,156 @@ describe("AcreBitcoinDepositor", () => {
       describe("when deposit was bridged", () => {
         beforeAfterSnapshotWrapper()
 
-        before(async () => {
-          // Simulate deposit request finalization.
-          await finalizeMinting(tbtcDepositData.depositKey)
-        })
-
-        describe("when bridging finalization has not been called", () => {
-          describe("when depositor fee divisor is not zero", () => {
-            beforeAfterSnapshotWrapper()
-
-            let returnedValue: bigint
-            let tx: ContractTransactionResponse
-
-            before(async () => {
-              returnedValue = await bitcoinDepositor
-                .connect(thirdParty)
-                .exposed_finalizeBridging.staticCall(tbtcDepositData.depositKey)
-
-              tx = await bitcoinDepositor
-                .connect(thirdParty)
-                .exposed_finalizeBridging(tbtcDepositData.depositKey)
-            })
-
-            it("should emit BridgingCompleted event", async () => {
-              await expect(tx)
-                .to.emit(bitcoinDepositor, "BridgingCompleted")
-                .withArgs(
-                  tbtcDepositData.depositKey,
-                  thirdParty.address,
-                  tbtcDepositData.referral,
-                  bridgedTbtcAmount,
-                  depositorFee,
-                )
-            })
-
-            it("should return amount to stake", () => {
-              expect(returnedValue[0]).to.be.equal(amountToStake)
-            })
-
-            it("should return staker", () => {
-              expect(returnedValue[1]).to.be.equal(tbtcDepositData.staker)
-            })
-
-            it("should transfer depositor fee", async () => {
-              await expect(tx).to.changeTokenBalances(
-                tbtc,
-                [treasury],
-                [depositorFee],
-              )
-            })
-          })
-
-          describe("when depositor fee divisor is zero", () => {
-            beforeAfterSnapshotWrapper()
-
-            let returnedValue: bigint
-            let tx: ContractTransactionResponse
-
-            before(async () => {
-              await bitcoinDepositor
-                .connect(governance)
-                .updateDepositorFeeDivisor(0)
-
-              returnedValue = await bitcoinDepositor
-                .connect(thirdParty)
-                .exposed_finalizeBridging.staticCall(tbtcDepositData.depositKey)
-
-              tx = await bitcoinDepositor
-                .connect(thirdParty)
-                .exposed_finalizeBridging(tbtcDepositData.depositKey)
-            })
-
-            it("should emit BridgingCompleted event", async () => {
-              await expect(tx)
-                .to.emit(bitcoinDepositor, "BridgingCompleted")
-                .withArgs(
-                  tbtcDepositData.depositKey,
-                  thirdParty.address,
-                  tbtcDepositData.referral,
-                  bridgedTbtcAmount,
-                  0,
-                )
-            })
-
-            it("should return amount to stake", () => {
-              expect(returnedValue[0]).to.be.equal(bridgedTbtcAmount)
-            })
-
-            it("should return staker", () => {
-              expect(returnedValue[1]).to.be.equal(tbtcDepositData.staker)
-            })
-
-            it("should not transfer depositor fee", async () => {
-              await expect(tx).to.changeTokenBalances(tbtc, [treasury], [0])
-            })
-          })
-
-          describe("when depositor fee exceeds bridged amount", () => {
-            beforeAfterSnapshotWrapper()
-
-            before(async () => {
-              await bitcoinDepositor
-                .connect(governance)
-                .updateDepositorFeeDivisor(1)
-            })
-
-            it("should revert", async () => {
-              await expect(
-                bitcoinDepositor
-                  .connect(thirdParty)
-                  .exposed_finalizeBridging(tbtcDepositData.depositKey),
-              )
-                .to.be.revertedWithCustomError(
-                  bitcoinDepositor,
-                  "DepositorFeeExceedsBridgedAmount",
-                )
-                .withArgs(initialDepositAmount, bridgedTbtcAmount)
-            })
-          })
-        })
-
-        describe("when bridging finalization has been called", () => {
+        describe("when depositor contract balance is lower than bridged amount", () => {
           beforeAfterSnapshotWrapper()
 
+          // The minted value should be less than calculated `bridgedTbtcAmount`.
+          const mintedAmount = to1ePrecision(7455, 10) // 7455 satoshi
+
           before(async () => {
-            // Notify bridging completed.
-            await bitcoinDepositor
-              .connect(thirdParty)
-              .exposed_finalizeBridging(tbtcDepositData.depositKey)
+            // Simulate deposit request finalization.
+            await finalizeMinting(tbtcDepositData.depositKey, mintedAmount)
           })
 
-          it("should not revert", async () => {
+          it("should revert", async () => {
             await expect(
               bitcoinDepositor
                 .connect(thirdParty)
                 .exposed_finalizeBridging(tbtcDepositData.depositKey),
-            ).to.be.not.reverted
+            )
+              .to.be.revertedWithCustomError(
+                bitcoinDepositor,
+                "InsufficientTbtcBalance",
+              )
+              .withArgs(bridgedTbtcAmount, mintedAmount)
+          })
+        })
+
+        describe("when depositor contract balance is higher than bridged amount", () => {
+          beforeAfterSnapshotWrapper()
+
+          before(async () => {
+            // Simulate deposit request finalization.
+            await finalizeMinting(tbtcDepositData.depositKey)
+          })
+
+          describe("when bridging finalization has not been called", () => {
+            describe("when depositor fee divisor is not zero", () => {
+              beforeAfterSnapshotWrapper()
+
+              let returnedValue: bigint
+              let tx: ContractTransactionResponse
+
+              before(async () => {
+                returnedValue = await bitcoinDepositor
+                  .connect(thirdParty)
+                  .exposed_finalizeBridging.staticCall(
+                    tbtcDepositData.depositKey,
+                  )
+
+                tx = await bitcoinDepositor
+                  .connect(thirdParty)
+                  .exposed_finalizeBridging(tbtcDepositData.depositKey)
+              })
+
+              it("should emit BridgingCompleted event", async () => {
+                await expect(tx)
+                  .to.emit(bitcoinDepositor, "BridgingCompleted")
+                  .withArgs(
+                    tbtcDepositData.depositKey,
+                    thirdParty.address,
+                    tbtcDepositData.referral,
+                    bridgedTbtcAmount,
+                    depositorFee,
+                  )
+              })
+
+              it("should return amount to stake", () => {
+                expect(returnedValue[0]).to.be.equal(amountToStake)
+              })
+
+              it("should return staker", () => {
+                expect(returnedValue[1]).to.be.equal(tbtcDepositData.staker)
+              })
+
+              it("should transfer depositor fee", async () => {
+                await expect(tx).to.changeTokenBalances(
+                  tbtc,
+                  [treasury],
+                  [depositorFee],
+                )
+              })
+            })
+
+            describe("when depositor fee divisor is zero", () => {
+              beforeAfterSnapshotWrapper()
+
+              let returnedValue: bigint
+              let tx: ContractTransactionResponse
+
+              before(async () => {
+                await bitcoinDepositor
+                  .connect(governance)
+                  .updateDepositorFeeDivisor(0)
+
+                returnedValue = await bitcoinDepositor
+                  .connect(thirdParty)
+                  .exposed_finalizeBridging.staticCall(
+                    tbtcDepositData.depositKey,
+                  )
+
+                tx = await bitcoinDepositor
+                  .connect(thirdParty)
+                  .exposed_finalizeBridging(tbtcDepositData.depositKey)
+              })
+
+              it("should emit BridgingCompleted event", async () => {
+                await expect(tx)
+                  .to.emit(bitcoinDepositor, "BridgingCompleted")
+                  .withArgs(
+                    tbtcDepositData.depositKey,
+                    thirdParty.address,
+                    tbtcDepositData.referral,
+                    bridgedTbtcAmount,
+                    0,
+                  )
+              })
+
+              it("should return amount to stake", () => {
+                expect(returnedValue[0]).to.be.equal(bridgedTbtcAmount)
+              })
+
+              it("should return staker", () => {
+                expect(returnedValue[1]).to.be.equal(tbtcDepositData.staker)
+              })
+
+              it("should not transfer depositor fee", async () => {
+                await expect(tx).to.changeTokenBalances(tbtc, [treasury], [0])
+              })
+            })
+
+            describe("when depositor fee exceeds bridged amount", () => {
+              beforeAfterSnapshotWrapper()
+
+              before(async () => {
+                await bitcoinDepositor
+                  .connect(governance)
+                  .updateDepositorFeeDivisor(1)
+              })
+
+              it("should revert", async () => {
+                await expect(
+                  bitcoinDepositor
+                    .connect(thirdParty)
+                    .exposed_finalizeBridging(tbtcDepositData.depositKey),
+                )
+                  .to.be.revertedWithCustomError(
+                    bitcoinDepositor,
+                    "DepositorFeeExceedsBridgedAmount",
+                  )
+                  .withArgs(initialDepositAmount, bridgedTbtcAmount)
+              })
+            })
           })
         })
       })
@@ -1635,10 +1649,17 @@ describe("AcreBitcoinDepositor", () => {
       )
   }
 
-  async function finalizeMinting(depositKey: bigint) {
+  async function finalizeMinting(depositKey: bigint, amountToMint?: bigint) {
     await tbtcVault.createOptimisticMintingRequest(depositKey)
 
     // Simulate deposit request finalization via optimistic minting.
-    await tbtcVault.finalizeOptimisticMintingRequest(depositKey)
+    if (amountToMint) {
+      await tbtcVault.finalizeOptimisticMintingRequestWithAmount(
+        depositKey,
+        amountToMint,
+      )
+    } else {
+      await tbtcVault.finalizeOptimisticMintingRequest(depositKey)
+    }
   }
 })
