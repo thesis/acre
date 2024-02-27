@@ -5,14 +5,7 @@ import axios from "axios"
 const endpoint =
   "https://us-central1-keep-prd-210b.cloudfunctions.net/verify-deposit-address"
 
-export async function verifyDepositAddress(
-  deposit: DepositReceipt,
-  depositAddress: string,
-  network: BitcoinNetwork,
-): Promise<{
-  status: "valid" | "invalid" | "error"
-  response: unknown
-}> {
+function createURL(deposit: DepositReceipt, network: BitcoinNetwork): string {
   const {
     depositor,
     blindingFactor,
@@ -21,14 +14,24 @@ export async function verifyDepositAddress(
     extraData,
   } = deposit
 
+  const jsonType = extraData ? "json-extradata" : "json"
+  const baseUrl = `${endpoint}/${jsonType}/${network}/latest/${
+    depositor.identifierHex
+  }/${blindingFactor.toString()}/${refundPublicKeyHash.toString()}/${refundLocktime.toString()}`
+
+  return extraData ? `${baseUrl}/${extraData.toString()}` : baseUrl
+}
+
+export async function verifyDepositAddress(
+  deposit: DepositReceipt,
+  depositAddress: string,
+  network: BitcoinNetwork,
+): Promise<{
+  status: "valid" | "invalid" | "error"
+  response: unknown
+}> {
   try {
-    const jsonType = extraData ? "json-extradata" : "json"
-    const baseUrl = `${endpoint}/${jsonType}/${network}/latest/${
-      depositor.identifierHex
-    }/${blindingFactor.toString()}/${refundPublicKeyHash.toString()}/${refundLocktime.toString()}`
-
-    const url = extraData ? `${baseUrl}/${extraData.toString()}` : baseUrl
-
+    const url = createURL(deposit, network)
     const response = await axios.get<{ address: string }>(url, {
       timeout: ONE_SEC_IN_MILLISECONDS * 10,
     })
