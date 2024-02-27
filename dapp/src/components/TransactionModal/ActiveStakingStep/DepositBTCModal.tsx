@@ -3,6 +3,7 @@ import {
   useDepositBTCTransaction,
   useExecuteFunction,
   useModalFlowContext,
+  useSendGeneratedDepositToSentry,
   useStakeFlowContext,
   useTransactionContext,
 } from "#/hooks"
@@ -16,6 +17,7 @@ export default function DepositBTCModal() {
   const { tokenAmount } = useTransactionContext()
   const { setStatus } = useModalFlowContext()
   const { btcAddress, stake } = useStakeFlowContext()
+  useSendGeneratedDepositToSentry()
 
   const onStakeBTCSuccess = useCallback(() => {
     setStatus(PROCESS_STATUSES.SUCCEEDED)

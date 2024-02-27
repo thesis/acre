@@ -1,7 +1,7 @@
 import React from "react"
 import { Box, ChakraProvider } from "@chakra-ui/react"
 import { RouterProvider } from "react-router-dom"
-import { useSentry, useInitializeAcreSdk } from "./hooks"
+import { useInitializeAcreSdk } from "./hooks"
 import theme from "./theme"
 import {
   DocsDrawerContextProvider,
@@ -15,6 +15,7 @@ import Sidebar from "./components/Sidebar"
 import DocsDrawer from "./components/DocsDrawer"
 import GlobalStyles from "./components/GlobalStyles"
 import { router } from "./router"
+import { useSentry } from "./hooks/sentry"
 
 function DApp() {
   // TODO: Let's uncomment when dark mode is ready
