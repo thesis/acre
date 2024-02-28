@@ -68,11 +68,12 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
 
     /// @notice tBTC Token contract.
     // TODO: Remove slither disable when introducing upgradeability.
-    // slither-disable-next-line constable-states
+    // slither-disable-next-line immutable-states
     IERC20 public tbtcToken;
-    // TODO: Remove slither disable when introducing upgradeability.
-    // slither-disable-next-line constable-states
+
     /// @notice stBTC contract.
+    // TODO: Remove slither disable when introducing upgradeability.
+    // slither-disable-next-line immutable-states
     stBTC public stbtc;
 
     /// @notice Minimum amount of a single stake request (in tBTC token precision).
