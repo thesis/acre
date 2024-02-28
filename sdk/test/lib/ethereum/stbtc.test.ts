@@ -9,6 +9,7 @@ jest.mock("ethers", (): object => ({
 
 describe("stbtc", () => {
   let stbtc: EthereumStBTC
+  const staker = EthereumAddress.from(ethers.Wallet.createRandom().address)
 
   const mockedContractInstance = {
     balanceOf: jest.fn(),
@@ -32,38 +33,40 @@ describe("stbtc", () => {
 
   describe("balanceOf", () => {
     const expectedResult = 4294967295n
+    let result: bigint
 
-    const depositorAddress = EthereumAddress.from(
-      ethers.Wallet.createRandom().address,
-    )
-
-    beforeAll(() => {
-      mockedContractInstance.balanceOf = jest
-        .fn()
-        .mockResolvedValue(expectedResult)
+    beforeAll(async () => {
+      mockedContractInstance.balanceOf.mockResolvedValue(expectedResult)
+      result = await stbtc.balanceOf(staker)
     })
 
-    it("should return final BTC balance", async () => {
-      const result = await stbtc.balanceOf(depositorAddress)
+    it("should call ethers contract instance", () => {
+      expect(mockedContractInstance.balanceOf).toHaveBeenCalledWith(
+        `0x${staker.identifierHex}`,
+      )
+    })
+
+    it("should return balance of stBTC tokens", () => {
       expect(result).toEqual(expectedResult)
     })
   })
 
   describe("assetsBalanceOf", () => {
     const expectedResult = 4294967295n
+    let result: bigint
 
-    const depositorAddress = EthereumAddress.from(
-      ethers.Wallet.createRandom().address,
-    )
-
-    beforeAll(() => {
-      mockedContractInstance.assetsBalanceOf = jest
-        .fn()
-        .mockResolvedValue(expectedResult)
+    beforeAll(async () => {
+      mockedContractInstance.assetsBalanceOf.mockResolvedValue(expectedResult)
+      result = await stbtc.assetsBalanceOf(staker)
     })
 
-    it("should return maximum withdraw value", async () => {
-      const result = await stbtc.assetsBalanceOf(depositorAddress)
+    it("should call ethers contract instance", () => {
+      expect(mockedContractInstance.assetsBalanceOf).toHaveBeenCalledWith(
+        `0x${staker.identifierHex}`,
+      )
+    })
+
+    it("should return value of assets that would be exchanged for the amount of shares owned by the staker ", () => {
       expect(result).toEqual(expectedResult)
     })
   })
