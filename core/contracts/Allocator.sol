@@ -512,6 +512,8 @@ contract Allocator is Ownable {
     function _swap(uint256[][] memory amountsList) internal {
         for (uint256 i = 0; i < amountsList.length; i++) {
             ILP4626 lpStrategy = ILP4626(address(strategyList[i]));
+            // skip minimal strategy
+            if (strategies[lpStrategy].baseRatio == 0) continue;
             uint256 baseAmount = amountsList[i][1];
             if (baseAmount > 0) {
                 uint256 baseLeft = reserve.swap(

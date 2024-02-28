@@ -285,7 +285,7 @@ describe("[stBTC]", () => {
       const stBTCAfter = await stbtc.balanceOf(user.address)
       expect(stBTCAfter).to.be.eq(0n)
 
-      const tBTCAfter = await tbtc.balanceOf(user.address)
+      const tBTCAfter = await tBTC.balanceOf(user.address)
       expect(tBTCAfter).to.be.gt(tBTCBefore)
 
       await utils.printBalances({ user }, { tBTC }, { context: "wallet" })
