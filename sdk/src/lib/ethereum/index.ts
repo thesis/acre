@@ -5,6 +5,7 @@ import { EthereumNetwork } from "./network"
 import { EthereumStBTC } from "./stbtc"
 
 export * from "./eip712-signer"
+export * from "./tbtc-depositor"
 export * from "./address"
 export { EthereumSigner }
 
@@ -18,4 +19,4 @@ function getEthereumContracts(
   return { tbtcDepositor, stBTC }
 }
 
-export { EthereumTBTCDepositor, getEthereumContracts, EthereumNetwork }
+export { getEthereumContracts, EthereumNetwork }

@@ -1,5 +1,5 @@
 import { ChainIdentifier, TBTC } from "@keep-network/tbtc-v2.ts"
-import { AcreContracts } from "../../lib/contracts"
+import { AcreContracts, DepositorProxy } from "../../lib/contracts"
 import { ChainEIP712Signer } from "../../lib/eip712-signer"
 import { StakeInitialization } from "./stake-initialization"
 
@@ -39,16 +39,18 @@ class StakingModule {
    *                               funds.
    * @param staker The address to which the stBTC shares will be minted.
    * @param referral Data used for referral program.
+   * @param depositorProxy Depositor proxy used to initiate the deposit.
    * @returns Object represents the staking process.
    */
   async initializeStake(
     bitcoinRecoveryAddress: string,
     staker: ChainIdentifier,
     referral: number,
+    depositorProxy?: DepositorProxy,
   ) {
     const deposit = await this.#tbtc.deposits.initiateDepositWithProxy(
       bitcoinRecoveryAddress,
-      this.#contracts.tbtcDepositor,
+      depositorProxy ?? this.#contracts.tbtcDepositor,
       this.#contracts.tbtcDepositor.encodeExtraData(staker, referral),
     )
 
