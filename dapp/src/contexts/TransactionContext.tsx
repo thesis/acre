@@ -6,10 +6,9 @@ type TransactionContextValue = {
   setTokenAmount: React.Dispatch<React.SetStateAction<TokenAmount | undefined>>
 }
 
-export const TransactionContext = createContext<TransactionContextValue>({
-  tokenAmount: undefined,
-  setTokenAmount: () => {},
-})
+export const TransactionContext = createContext<
+  TransactionContextValue | undefined
+>(undefined)
 
 export function TransactionContextProvider({
   children,

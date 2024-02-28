@@ -1,38 +1,34 @@
-import React, { useEffect } from "react"
-import { Highlight } from "@chakra-ui/react"
-import { useModalFlowContext, useSignMessage } from "#/hooks"
-import Alert from "#/components/shared/Alert"
-import { TextMd } from "#/components/shared/Typography"
+import React, { useCallback, useEffect } from "react"
+import {
+  useExecuteFunction,
+  useModalFlowContext,
+  useStakeFlowContext,
+} from "#/hooks"
 import { asyncWrapper } from "#/utils"
+import AlertReceiveSTBTC from "#/components/shared/AlertReceiveSTBTC"
+import { PROCESS_STATUSES } from "#/types"
 import StakingStepsModalContent from "./StakingStepsModalContent"
 
 export default function SignMessageModal() {
-  const { goNext, startTransactionProcess } = useModalFlowContext()
-  const { signMessage } = useSignMessage(goNext)
+  const { goNext, setStatus } = useModalFlowContext()
+  const { signMessage } = useStakeFlowContext()
+  const handleSignMessage = useExecuteFunction(signMessage, goNext)
+
+  const handleSignMessageWrapper = useCallback(() => {
+    asyncWrapper(handleSignMessage())
+  }, [handleSignMessage])
 
   useEffect(() => {
-    startTransactionProcess()
-  }, [startTransactionProcess])
-
-  const handleClick = () => {
-    asyncWrapper(signMessage())
-  }
+    setStatus(PROCESS_STATUSES.PENDING)
+  }, [setStatus])
 
   return (
     <StakingStepsModalContent
-      buttonText="Continue"
+      buttonText="Sign now"
       activeStep={0}
-      onClick={handleClick}
+      onClick={handleSignMessageWrapper}
     >
-      {/* TODO: Add the correct action after click */}
-      <Alert withActionIcon onclick={() => {}}>
-        <TextMd>
-          <Highlight query="stBTC" styles={{ textDecorationLine: "underline" }}>
-            You will receive stBTC liquid staking token at this Ethereum address
-            once the staking transaction is completed.
-          </Highlight>
-        </TextMd>
-      </Alert>
+      <AlertReceiveSTBTC />
     </StakingStepsModalContent>
   )
 }
