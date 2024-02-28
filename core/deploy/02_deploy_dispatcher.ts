@@ -1,7 +1,9 @@
 import type { HardhatRuntimeEnvironment } from "hardhat/types"
 import type { DeployFunction } from "hardhat-deploy/types"
-import { fetchDeploymentArtifact } from "../helpers/address"
-import { waitConfirmationsNumber } from "../helpers/deployment"
+import {
+  fetchDeploymentArtifact,
+  waitConfirmationsNumber,
+} from "../helpers/deployment"
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { getNamedAccounts, deployments, helpers } = hre

@@ -20,3 +20,16 @@ export function waitConfirmationsNumber(
       return 1
   }
 }
+
+export async function fetchDeploymentArtifact(
+  hre: HardhatRuntimeEnvironment,
+  name: string,
+) {
+  const { deployments } = hre
+
+  if (hre.network.name === "integration") {
+    const artifact = deployments.getArtifact(name)
+    return artifact
+  }
+  return deployments.getOrNull(name)
+}
