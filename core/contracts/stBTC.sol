@@ -4,9 +4,9 @@ pragma solidity ^0.8.21;
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import "./Dispatcher.sol";
 import {xERC4626} from "./lib/xERC4626.sol";
-import "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
 interface IAllocator {
     function withdraw(uint256 _assets, address _receiver) external;
@@ -102,7 +102,9 @@ contract stBTC is xERC4626, Ownable {
     }
 
     function setAllocator(IAllocator _allocator) external onlyOwner {
-        require(address(_allocator) != address(0), "ZERO_ADDRESS");
+        if (address(_allocator) == address(0)) {
+            revert ZeroAddress();
+        }
         allocator = _allocator;
     }
 
