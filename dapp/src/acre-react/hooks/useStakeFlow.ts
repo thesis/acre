@@ -15,9 +15,9 @@ export type UseStakeFlowReturn = {
     depositor?: DepositorProxy,
   ) => Promise<void>
   btcAddress?: string
+  depositReceipt?: DepositReceipt
   signMessage: () => Promise<void>
   stake: () => Promise<void>
-  depositReceipt?: DepositReceipt
 }
 
 export function useStakeFlow(): UseStakeFlowReturn {
@@ -27,7 +27,6 @@ export function useStakeFlow(): UseStakeFlowReturn {
     undefined,
   )
   const [btcAddress, setBtcAddress] = useState<string | undefined>(undefined)
-
   const [depositReceipt, setDepositReceipt] = useState<
     DepositReceipt | undefined
   >(undefined)
@@ -75,8 +74,8 @@ export function useStakeFlow(): UseStakeFlowReturn {
   return {
     initStake,
     btcAddress,
+    depositReceipt,
     signMessage,
     stake,
-    depositReceipt,
   }
 }
