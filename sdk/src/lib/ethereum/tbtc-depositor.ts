@@ -1,7 +1,4 @@
-import {
-  DepositReceipt,
-  packRevealDepositParameters as tbtcPackRevealDepositParameters,
-} from "@keep-network/tbtc-v2.ts"
+import { packRevealDepositParameters } from "@keep-network/tbtc-v2.ts"
 import { AcreBitcoinDepositor as AcreBitcoinDepositorTypechain } from "@acre-btc/core/typechain/contracts/AcreBitcoinDepositor"
 import {
   ZeroAddress,
@@ -11,7 +8,12 @@ import {
   solidityPacked,
   zeroPadBytes,
 } from "ethers"
-import { ChainIdentifier, DecodedExtraData, TBTCDepositor } from "../contracts"
+import {
+  ChainIdentifier,
+  DecodedExtraData,
+  TBTCDepositor,
+  DepositReceipt,
+} from "../contracts"
 import { BitcoinRawTxVectors } from "../bitcoin"
 import { EthereumAddress } from "./address"
 import {
@@ -75,7 +77,7 @@ class EthereumTBTCDepositor
     depositOutputIndex: number,
     deposit: DepositReceipt,
   ): Promise<Hex> {
-    const { fundingTx, reveal, extraData } = tbtcPackRevealDepositParameters(
+    const { fundingTx, reveal, extraData } = packRevealDepositParameters(
       depositTx,
       depositOutputIndex,
       deposit,
@@ -130,5 +132,4 @@ class EthereumTBTCDepositor
   }
 }
 
-// eslint-disable-next-line import/prefer-default-export
-export { EthereumTBTCDepositor }
+export { EthereumTBTCDepositor, packRevealDepositParameters }
