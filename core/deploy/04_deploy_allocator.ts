@@ -1,23 +1,28 @@
 import type { HardhatRuntimeEnvironment } from "hardhat/types"
 import type { DeployFunction } from "hardhat-deploy/types"
-import { fetchDeploymentArtifact } from "../helpers/deployment"
+import {
+  fetchDeploymentArtifact,
+  waitConfirmationsNumber,
+} from "../helpers/deployment"
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
-  const { getNamedAccounts, deployments } = hre
+  const { getNamedAccounts, deployments, helpers } = hre
   const { deployer } = await getNamedAccounts()
 
   const tBTC = await fetchDeploymentArtifact(hre, "TBTC")
   const stBTC = await deployments.get("stBTC")
   const reserve = await deployments.get("Reserve")
 
-  await deployments.deploy("Allocator", {
+  const allocator = await deployments.deploy("Allocator", {
     from: deployer,
     args: [tBTC.address, stBTC.address, reserve.address],
     log: true,
-    waitConfirmations: 1,
+    waitConfirmations: waitConfirmationsNumber(hre),
   })
 
-  // TODO: Add Etherscan verification
+  if (hre.network.tags.etherscan) {
+    await helpers.etherscan.verify(allocator)
+  }
   // TODO: Add Tenderly verification
 }
 
