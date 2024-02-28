@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/react"
+import { Primitive } from "@sentry/types"
 
 export const initializeSentry = (dsn: string) => {
   Sentry.init({
@@ -13,7 +14,7 @@ export const initializeSentry = (dsn: string) => {
 export const captureMessage = (
   message: string,
   params?: { [key: string]: unknown },
-  tags?: { [key: string]: string },
+  tags?: { [key: string]: Primitive },
 ) => {
   Sentry.withScope((scope) => {
     if (params) {
