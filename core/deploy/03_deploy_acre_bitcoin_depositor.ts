@@ -2,7 +2,7 @@ import type { DeployFunction } from "hardhat-deploy/types"
 import type { HardhatRuntimeEnvironment } from "hardhat/types"
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
-  const { getNamedAccounts, deployments } = hre
+  const { getNamedAccounts, deployments, helpers } = hre
   const { deployer } = await getNamedAccounts()
 
   const bridge = await deployments.get("Bridge")
@@ -10,7 +10,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const tbtc = await deployments.get("TBTC")
   const stbtc = await deployments.get("stBTC")
 
-  await deployments.deploy("AcreBitcoinDepositor", {
+  const depositor = await deployments.deploy("AcreBitcoinDepositor", {
     contract:
       process.env.HARDHAT_TEST === "true"
         ? "AcreBitcoinDepositorHarness"
@@ -21,7 +21,10 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     waitConfirmations: 1,
   })
 
-  // TODO: Add Etherscan verification
+  if (hre.network.tags.etherscan) {
+    await helpers.etherscan.verify(depositor)
+  }
+
   // TODO: Add Tenderly verification
 }
 
