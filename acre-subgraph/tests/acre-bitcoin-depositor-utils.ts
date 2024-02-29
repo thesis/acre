@@ -11,7 +11,7 @@ import {
   StakeRequestFinalized,
   StakeRequestFinalizedFromQueue,
   StakeRequestInitialized,
-  StakeRequestQueued
+  StakeRequestQueued,
 } from "../generated/AcreBitcoinDepositor/AcreBitcoinDepositor"
 
 export function createBridgingCompletedEvent(
@@ -19,38 +19,38 @@ export function createBridgingCompletedEvent(
   caller: Address,
   referral: i32,
   bridgedAmount: BigInt,
-  depositorFee: BigInt
+  depositorFee: BigInt,
 ): BridgingCompleted {
-  let bridgingCompletedEvent = changetype<BridgingCompleted>(newMockEvent())
+  const bridgingCompletedEvent = changetype<BridgingCompleted>(newMockEvent())
 
-  bridgingCompletedEvent.parameters = new Array()
+  bridgingCompletedEvent.parameters = []
 
   bridgingCompletedEvent.parameters.push(
     new ethereum.EventParam(
       "depositKey",
-      ethereum.Value.fromUnsignedBigInt(depositKey)
-    )
+      ethereum.Value.fromUnsignedBigInt(depositKey),
+    ),
   )
   bridgingCompletedEvent.parameters.push(
-    new ethereum.EventParam("caller", ethereum.Value.fromAddress(caller))
+    new ethereum.EventParam("caller", ethereum.Value.fromAddress(caller)),
   )
   bridgingCompletedEvent.parameters.push(
     new ethereum.EventParam(
       "referral",
-      ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(referral))
-    )
+      ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(referral)),
+    ),
   )
   bridgingCompletedEvent.parameters.push(
     new ethereum.EventParam(
       "bridgedAmount",
-      ethereum.Value.fromUnsignedBigInt(bridgedAmount)
-    )
+      ethereum.Value.fromUnsignedBigInt(bridgedAmount),
+    ),
   )
   bridgingCompletedEvent.parameters.push(
     new ethereum.EventParam(
       "depositorFee",
-      ethereum.Value.fromUnsignedBigInt(depositorFee)
-    )
+      ethereum.Value.fromUnsignedBigInt(depositorFee),
+    ),
   )
 
   return bridgingCompletedEvent
@@ -59,29 +59,29 @@ export function createBridgingCompletedEvent(
 export function createDepositFinalizedEvent(
   depositKey: BigInt,
   tbtcAmount: BigInt,
-  finalizedAt: BigInt
+  finalizedAt: BigInt,
 ): DepositFinalized {
-  let depositFinalizedEvent = changetype<DepositFinalized>(newMockEvent())
+  const depositFinalizedEvent = changetype<DepositFinalized>(newMockEvent())
 
-  depositFinalizedEvent.parameters = new Array()
+  depositFinalizedEvent.parameters = []
 
   depositFinalizedEvent.parameters.push(
     new ethereum.EventParam(
       "depositKey",
-      ethereum.Value.fromUnsignedBigInt(depositKey)
-    )
+      ethereum.Value.fromUnsignedBigInt(depositKey),
+    ),
   )
   depositFinalizedEvent.parameters.push(
     new ethereum.EventParam(
       "tbtcAmount",
-      ethereum.Value.fromUnsignedBigInt(tbtcAmount)
-    )
+      ethereum.Value.fromUnsignedBigInt(tbtcAmount),
+    ),
   )
   depositFinalizedEvent.parameters.push(
     new ethereum.EventParam(
       "finalizedAt",
-      ethereum.Value.fromUnsignedBigInt(finalizedAt)
-    )
+      ethereum.Value.fromUnsignedBigInt(finalizedAt),
+    ),
   )
 
   return depositFinalizedEvent
@@ -89,42 +89,41 @@ export function createDepositFinalizedEvent(
 
 export function createDepositInitializedEvent(
   depositKey: BigInt,
-  initializedAt: BigInt
+  initializedAt: BigInt,
 ): DepositInitialized {
-  let depositInitializedEvent = changetype<DepositInitialized>(newMockEvent())
+  const depositInitializedEvent = changetype<DepositInitialized>(newMockEvent())
 
-  depositInitializedEvent.parameters = new Array()
+  depositInitializedEvent.parameters = []
 
   depositInitializedEvent.parameters.push(
     new ethereum.EventParam(
       "depositKey",
-      ethereum.Value.fromUnsignedBigInt(depositKey)
-    )
+      ethereum.Value.fromUnsignedBigInt(depositKey),
+    ),
   )
   depositInitializedEvent.parameters.push(
     new ethereum.EventParam(
       "initializedAt",
-      ethereum.Value.fromUnsignedBigInt(initializedAt)
-    )
+      ethereum.Value.fromUnsignedBigInt(initializedAt),
+    ),
   )
 
   return depositInitializedEvent
 }
 
 export function createDepositorFeeDivisorUpdatedEvent(
-  depositorFeeDivisor: BigInt
+  depositorFeeDivisor: BigInt,
 ): DepositorFeeDivisorUpdated {
-  let depositorFeeDivisorUpdatedEvent = changetype<DepositorFeeDivisorUpdated>(
-    newMockEvent()
-  )
+  const depositorFeeDivisorUpdatedEvent =
+    changetype<DepositorFeeDivisorUpdated>(newMockEvent())
 
-  depositorFeeDivisorUpdatedEvent.parameters = new Array()
+  depositorFeeDivisorUpdatedEvent.parameters = []
 
   depositorFeeDivisorUpdatedEvent.parameters.push(
     new ethereum.EventParam(
       "depositorFeeDivisor",
-      ethereum.Value.fromUnsignedBigInt(depositorFeeDivisor)
-    )
+      ethereum.Value.fromUnsignedBigInt(depositorFeeDivisor),
+    ),
   )
 
   return depositorFeeDivisorUpdatedEvent
@@ -132,22 +131,21 @@ export function createDepositorFeeDivisorUpdatedEvent(
 
 export function createOwnershipTransferStartedEvent(
   previousOwner: Address,
-  newOwner: Address
+  newOwner: Address,
 ): OwnershipTransferStarted {
-  let ownershipTransferStartedEvent = changetype<OwnershipTransferStarted>(
-    newMockEvent()
-  )
+  const ownershipTransferStartedEvent =
+    changetype<OwnershipTransferStarted>(newMockEvent())
 
-  ownershipTransferStartedEvent.parameters = new Array()
+  ownershipTransferStartedEvent.parameters = []
 
   ownershipTransferStartedEvent.parameters.push(
     new ethereum.EventParam(
       "previousOwner",
-      ethereum.Value.fromAddress(previousOwner)
-    )
+      ethereum.Value.fromAddress(previousOwner),
+    ),
   )
   ownershipTransferStartedEvent.parameters.push(
-    new ethereum.EventParam("newOwner", ethereum.Value.fromAddress(newOwner))
+    new ethereum.EventParam("newOwner", ethereum.Value.fromAddress(newOwner)),
   )
 
   return ownershipTransferStartedEvent
@@ -155,22 +153,21 @@ export function createOwnershipTransferStartedEvent(
 
 export function createOwnershipTransferredEvent(
   previousOwner: Address,
-  newOwner: Address
+  newOwner: Address,
 ): OwnershipTransferred {
-  let ownershipTransferredEvent = changetype<OwnershipTransferred>(
-    newMockEvent()
-  )
+  const ownershipTransferredEvent =
+    changetype<OwnershipTransferred>(newMockEvent())
 
-  ownershipTransferredEvent.parameters = new Array()
+  ownershipTransferredEvent.parameters = []
 
   ownershipTransferredEvent.parameters.push(
     new ethereum.EventParam(
       "previousOwner",
-      ethereum.Value.fromAddress(previousOwner)
-    )
+      ethereum.Value.fromAddress(previousOwner),
+    ),
   )
   ownershipTransferredEvent.parameters.push(
-    new ethereum.EventParam("newOwner", ethereum.Value.fromAddress(newOwner))
+    new ethereum.EventParam("newOwner", ethereum.Value.fromAddress(newOwner)),
   )
 
   return ownershipTransferredEvent
@@ -179,27 +176,27 @@ export function createOwnershipTransferredEvent(
 export function createStakeRequestCancelledFromQueueEvent(
   depositKey: BigInt,
   staker: Address,
-  amountToStake: BigInt
+  amountToStake: BigInt,
 ): StakeRequestCancelledFromQueue {
-  let stakeRequestCancelledFromQueueEvent =
+  const stakeRequestCancelledFromQueueEvent =
     changetype<StakeRequestCancelledFromQueue>(newMockEvent())
 
-  stakeRequestCancelledFromQueueEvent.parameters = new Array()
+  stakeRequestCancelledFromQueueEvent.parameters = []
 
   stakeRequestCancelledFromQueueEvent.parameters.push(
     new ethereum.EventParam(
       "depositKey",
-      ethereum.Value.fromUnsignedBigInt(depositKey)
-    )
+      ethereum.Value.fromUnsignedBigInt(depositKey),
+    ),
   )
   stakeRequestCancelledFromQueueEvent.parameters.push(
-    new ethereum.EventParam("staker", ethereum.Value.fromAddress(staker))
+    new ethereum.EventParam("staker", ethereum.Value.fromAddress(staker)),
   )
   stakeRequestCancelledFromQueueEvent.parameters.push(
     new ethereum.EventParam(
       "amountToStake",
-      ethereum.Value.fromUnsignedBigInt(amountToStake)
-    )
+      ethereum.Value.fromUnsignedBigInt(amountToStake),
+    ),
   )
 
   return stakeRequestCancelledFromQueueEvent
@@ -208,28 +205,27 @@ export function createStakeRequestCancelledFromQueueEvent(
 export function createStakeRequestFinalizedEvent(
   depositKey: BigInt,
   caller: Address,
-  stakedAmount: BigInt
+  stakedAmount: BigInt,
 ): StakeRequestFinalized {
-  let stakeRequestFinalizedEvent = changetype<StakeRequestFinalized>(
-    newMockEvent()
-  )
+  const stakeRequestFinalizedEvent =
+    changetype<StakeRequestFinalized>(newMockEvent())
 
-  stakeRequestFinalizedEvent.parameters = new Array()
+  stakeRequestFinalizedEvent.parameters = []
 
   stakeRequestFinalizedEvent.parameters.push(
     new ethereum.EventParam(
       "depositKey",
-      ethereum.Value.fromUnsignedBigInt(depositKey)
-    )
+      ethereum.Value.fromUnsignedBigInt(depositKey),
+    ),
   )
   stakeRequestFinalizedEvent.parameters.push(
-    new ethereum.EventParam("caller", ethereum.Value.fromAddress(caller))
+    new ethereum.EventParam("caller", ethereum.Value.fromAddress(caller)),
   )
   stakeRequestFinalizedEvent.parameters.push(
     new ethereum.EventParam(
       "stakedAmount",
-      ethereum.Value.fromUnsignedBigInt(stakedAmount)
-    )
+      ethereum.Value.fromUnsignedBigInt(stakedAmount),
+    ),
   )
 
   return stakeRequestFinalizedEvent
@@ -238,27 +234,27 @@ export function createStakeRequestFinalizedEvent(
 export function createStakeRequestFinalizedFromQueueEvent(
   depositKey: BigInt,
   caller: Address,
-  stakedAmount: BigInt
+  stakedAmount: BigInt,
 ): StakeRequestFinalizedFromQueue {
-  let stakeRequestFinalizedFromQueueEvent =
+  const stakeRequestFinalizedFromQueueEvent =
     changetype<StakeRequestFinalizedFromQueue>(newMockEvent())
 
-  stakeRequestFinalizedFromQueueEvent.parameters = new Array()
+  stakeRequestFinalizedFromQueueEvent.parameters = []
 
   stakeRequestFinalizedFromQueueEvent.parameters.push(
     new ethereum.EventParam(
       "depositKey",
-      ethereum.Value.fromUnsignedBigInt(depositKey)
-    )
+      ethereum.Value.fromUnsignedBigInt(depositKey),
+    ),
   )
   stakeRequestFinalizedFromQueueEvent.parameters.push(
-    new ethereum.EventParam("caller", ethereum.Value.fromAddress(caller))
+    new ethereum.EventParam("caller", ethereum.Value.fromAddress(caller)),
   )
   stakeRequestFinalizedFromQueueEvent.parameters.push(
     new ethereum.EventParam(
       "stakedAmount",
-      ethereum.Value.fromUnsignedBigInt(stakedAmount)
-    )
+      ethereum.Value.fromUnsignedBigInt(stakedAmount),
+    ),
   )
 
   return stakeRequestFinalizedFromQueueEvent
@@ -267,25 +263,24 @@ export function createStakeRequestFinalizedFromQueueEvent(
 export function createStakeRequestInitializedEvent(
   depositKey: BigInt,
   caller: Address,
-  staker: Address
+  staker: Address,
 ): StakeRequestInitialized {
-  let stakeRequestInitializedEvent = changetype<StakeRequestInitialized>(
-    newMockEvent()
-  )
+  const stakeRequestInitializedEvent =
+    changetype<StakeRequestInitialized>(newMockEvent())
 
-  stakeRequestInitializedEvent.parameters = new Array()
+  stakeRequestInitializedEvent.parameters = []
 
   stakeRequestInitializedEvent.parameters.push(
     new ethereum.EventParam(
       "depositKey",
-      ethereum.Value.fromUnsignedBigInt(depositKey)
-    )
+      ethereum.Value.fromUnsignedBigInt(depositKey),
+    ),
   )
   stakeRequestInitializedEvent.parameters.push(
-    new ethereum.EventParam("caller", ethereum.Value.fromAddress(caller))
+    new ethereum.EventParam("caller", ethereum.Value.fromAddress(caller)),
   )
   stakeRequestInitializedEvent.parameters.push(
-    new ethereum.EventParam("staker", ethereum.Value.fromAddress(staker))
+    new ethereum.EventParam("staker", ethereum.Value.fromAddress(staker)),
   )
 
   return stakeRequestInitializedEvent
@@ -294,26 +289,26 @@ export function createStakeRequestInitializedEvent(
 export function createStakeRequestQueuedEvent(
   depositKey: BigInt,
   caller: Address,
-  queuedAmount: BigInt
+  queuedAmount: BigInt,
 ): StakeRequestQueued {
-  let stakeRequestQueuedEvent = changetype<StakeRequestQueued>(newMockEvent())
+  const stakeRequestQueuedEvent = changetype<StakeRequestQueued>(newMockEvent())
 
-  stakeRequestQueuedEvent.parameters = new Array()
+  stakeRequestQueuedEvent.parameters = []
 
   stakeRequestQueuedEvent.parameters.push(
     new ethereum.EventParam(
       "depositKey",
-      ethereum.Value.fromUnsignedBigInt(depositKey)
-    )
+      ethereum.Value.fromUnsignedBigInt(depositKey),
+    ),
   )
   stakeRequestQueuedEvent.parameters.push(
-    new ethereum.EventParam("caller", ethereum.Value.fromAddress(caller))
+    new ethereum.EventParam("caller", ethereum.Value.fromAddress(caller)),
   )
   stakeRequestQueuedEvent.parameters.push(
     new ethereum.EventParam(
       "queuedAmount",
-      ethereum.Value.fromUnsignedBigInt(queuedAmount)
-    )
+      ethereum.Value.fromUnsignedBigInt(queuedAmount),
+    ),
   )
 
   return stakeRequestQueuedEvent

@@ -9,7 +9,7 @@ import {
   StakeRequestFinalized as StakeRequestFinalizedEvent,
   StakeRequestFinalizedFromQueue as StakeRequestFinalizedFromQueueEvent,
   StakeRequestInitialized as StakeRequestInitializedEvent,
-  StakeRequestQueued as StakeRequestQueuedEvent
+  StakeRequestQueued as StakeRequestQueuedEvent,
 } from "../generated/AcreBitcoinDepositor/AcreBitcoinDepositor"
 import {
   BridgingCompleted,
@@ -22,12 +22,12 @@ import {
   StakeRequestFinalized,
   StakeRequestFinalizedFromQueue,
   StakeRequestInitialized,
-  StakeRequestQueued
+  StakeRequestQueued,
 } from "../generated/schema"
 
 export function handleBridgingCompleted(event: BridgingCompletedEvent): void {
-  let entity = new BridgingCompleted(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+  const entity = new BridgingCompleted(
+    event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.depositKey = event.params.depositKey
   entity.caller = event.params.caller
@@ -43,8 +43,8 @@ export function handleBridgingCompleted(event: BridgingCompletedEvent): void {
 }
 
 export function handleDepositFinalized(event: DepositFinalizedEvent): void {
-  let entity = new DepositFinalized(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+  const entity = new DepositFinalized(
+    event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.depositKey = event.params.depositKey
   entity.tbtcAmount = event.params.tbtcAmount
@@ -58,8 +58,8 @@ export function handleDepositFinalized(event: DepositFinalizedEvent): void {
 }
 
 export function handleDepositInitialized(event: DepositInitializedEvent): void {
-  let entity = new DepositInitialized(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+  const entity = new DepositInitialized(
+    event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.depositKey = event.params.depositKey
   entity.initializedAt = event.params.initializedAt
@@ -72,10 +72,10 @@ export function handleDepositInitialized(event: DepositInitializedEvent): void {
 }
 
 export function handleDepositorFeeDivisorUpdated(
-  event: DepositorFeeDivisorUpdatedEvent
+  event: DepositorFeeDivisorUpdatedEvent,
 ): void {
-  let entity = new DepositorFeeDivisorUpdated(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+  const entity = new DepositorFeeDivisorUpdated(
+    event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.depositorFeeDivisor = event.params.depositorFeeDivisor
 
@@ -87,10 +87,10 @@ export function handleDepositorFeeDivisorUpdated(
 }
 
 export function handleOwnershipTransferStarted(
-  event: OwnershipTransferStartedEvent
+  event: OwnershipTransferStartedEvent,
 ): void {
-  let entity = new OwnershipTransferStarted(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+  const entity = new OwnershipTransferStarted(
+    event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.previousOwner = event.params.previousOwner
   entity.newOwner = event.params.newOwner
@@ -103,10 +103,10 @@ export function handleOwnershipTransferStarted(
 }
 
 export function handleOwnershipTransferred(
-  event: OwnershipTransferredEvent
+  event: OwnershipTransferredEvent,
 ): void {
-  let entity = new OwnershipTransferred(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+  const entity = new OwnershipTransferred(
+    event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.previousOwner = event.params.previousOwner
   entity.newOwner = event.params.newOwner
@@ -119,10 +119,10 @@ export function handleOwnershipTransferred(
 }
 
 export function handleStakeRequestCancelledFromQueue(
-  event: StakeRequestCancelledFromQueueEvent
+  event: StakeRequestCancelledFromQueueEvent,
 ): void {
-  let entity = new StakeRequestCancelledFromQueue(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+  const entity = new StakeRequestCancelledFromQueue(
+    event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.depositKey = event.params.depositKey
   entity.staker = event.params.staker
@@ -136,10 +136,10 @@ export function handleStakeRequestCancelledFromQueue(
 }
 
 export function handleStakeRequestFinalized(
-  event: StakeRequestFinalizedEvent
+  event: StakeRequestFinalizedEvent,
 ): void {
-  let entity = new StakeRequestFinalized(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+  const entity = new StakeRequestFinalized(
+    event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.depositKey = event.params.depositKey
   entity.caller = event.params.caller
@@ -153,10 +153,10 @@ export function handleStakeRequestFinalized(
 }
 
 export function handleStakeRequestFinalizedFromQueue(
-  event: StakeRequestFinalizedFromQueueEvent
+  event: StakeRequestFinalizedFromQueueEvent,
 ): void {
-  let entity = new StakeRequestFinalizedFromQueue(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+  const entity = new StakeRequestFinalizedFromQueue(
+    event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.depositKey = event.params.depositKey
   entity.caller = event.params.caller
@@ -170,10 +170,10 @@ export function handleStakeRequestFinalizedFromQueue(
 }
 
 export function handleStakeRequestInitialized(
-  event: StakeRequestInitializedEvent
+  event: StakeRequestInitializedEvent,
 ): void {
-  let entity = new StakeRequestInitialized(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+  const entity = new StakeRequestInitialized(
+    event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.depositKey = event.params.depositKey
   entity.caller = event.params.caller
@@ -187,8 +187,8 @@ export function handleStakeRequestInitialized(
 }
 
 export function handleStakeRequestQueued(event: StakeRequestQueuedEvent): void {
-  let entity = new StakeRequestQueued(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+  const entity = new StakeRequestQueued(
+    event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.depositKey = event.params.depositKey
   entity.caller = event.params.caller

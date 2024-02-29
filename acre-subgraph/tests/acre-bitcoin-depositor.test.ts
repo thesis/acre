@@ -7,8 +7,6 @@ import {
   afterAll,
 } from "matchstick-as"
 import { BigInt, Address } from "@graphprotocol/graph-ts"
-import { BridgingCompleted } from "../generated/schema"
-import { BridgingCompleted as BridgingCompletedEvent } from "../generated/AcreBitcoinDepositor/AcreBitcoinDepositor"
 import { handleBridgingCompleted } from "../src/acre-bitcoin-depositor"
 import { createBridgingCompletedEvent } from "./acre-bitcoin-depositor-utils"
 
@@ -17,14 +15,14 @@ import { createBridgingCompletedEvent } from "./acre-bitcoin-depositor-utils"
 
 describe("Describe entity assertions", () => {
   beforeAll(() => {
-    let depositKey = BigInt.fromI32(234)
-    let caller = Address.fromString(
+    const depositKey = BigInt.fromI32(234)
+    const caller = Address.fromString(
       "0x0000000000000000000000000000000000000001",
     )
-    let referral = 123
-    let bridgedAmount = BigInt.fromI32(234)
-    let depositorFee = BigInt.fromI32(234)
-    let newBridgingCompletedEvent = createBridgingCompletedEvent(
+    const referral = 123
+    const bridgedAmount = BigInt.fromI32(234)
+    const depositorFee = BigInt.fromI32(234)
+    const newBridgingCompletedEvent = createBridgingCompletedEvent(
       depositKey,
       caller,
       referral,
