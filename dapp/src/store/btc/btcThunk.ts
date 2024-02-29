@@ -9,7 +9,7 @@ export const fetchBTCPriceUSD = createAsyncThunk(
       return priceUSD
     } catch (error) {
       console.error(error)
-      throw error
+      return undefined
     }
   },
 )

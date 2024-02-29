@@ -6,8 +6,3 @@ export type Currency = {
 }
 
 export type CurrencyType = "bitcoin" | "ethereum" | "usd" | "stbtc"
-
-export type CurrencyConversionType = {
-  amount: number
-  currency: CurrencyType
-}
