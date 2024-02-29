@@ -1,5 +1,5 @@
 import { ChainIdentifier, TBTC } from "@keep-network/tbtc-v2.ts"
-import { AcreContracts, DepositorProxy } from "../../lib/contracts"
+import { AcreContracts, DepositorProxy, StakingFees } from "../../lib/contracts"
 import { ChainEIP712Signer } from "../../lib/eip712-signer"
 import { StakeInitialization } from "./stake-initialization"
 
@@ -61,6 +61,10 @@ class StakingModule {
       staker,
       deposit,
     )
+  }
+
+  async estimateStakingFees(amount: bigint): Promise<StakingFees> {
+    return this.#contracts.tbtcDepositor.estimateStakingFees(amount)
   }
 }
 
