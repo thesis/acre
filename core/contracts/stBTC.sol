@@ -200,11 +200,9 @@ contract stBTC is xERC4626, Ownable {
             revert ERC4626ExceededMaxWithdraw(owner, assets, maxAssets);
         }
 
-        uint256 shares = previewWithdraw(assets);
+        shares = previewWithdraw(assets);
         beforeWithdraw(assets);
         _withdraw(_msgSender(), receiver, owner, assets, shares);
-
-        return shares;
     }
 
     /// @notice Burns shares from owner and sends exactly assets of underlying
