@@ -5,11 +5,11 @@ export const fetchBTCPriceUSD = createAsyncThunk(
   "btc/fetchBTCPriceUSD",
   async () => {
     try {
-      const priceUSD: number = await fetchCryptoCurrencyPriceUSD("bitcoin")
+      const priceUSD = await fetchCryptoCurrencyPriceUSD("bitcoin")
       return priceUSD
     } catch (error) {
       console.error(error)
-      return undefined
+      return 0
     }
   },
 )
