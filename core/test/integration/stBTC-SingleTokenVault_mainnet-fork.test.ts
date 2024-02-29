@@ -272,7 +272,6 @@ describe("[stBTC]", () => {
       expect(lossCover).to.be.gt((lossAmount * 99n) / 100n)
     })
 
-    // TODO: fix this test.
     it("3.2 user withdraws all assets", async () => {
       const rewardsCycleEnd = await stbtc.rewardsCycleEnd()
       await time.setNextBlockTimestamp(rewardsCycleEnd + rewardsCycleLength)
