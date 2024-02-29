@@ -11,6 +11,7 @@ export class MockAcreContracts implements AcreContracts {
       decodeExtraData: jest.fn(),
       encodeExtraData: jest.fn(),
       revealDeposit: jest.fn(),
+      estimateStakingFees: jest.fn(),
     } as TBTCDepositor
   }
 }

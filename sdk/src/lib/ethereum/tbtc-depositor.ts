@@ -7,12 +7,14 @@ import {
   isAddress,
   solidityPacked,
   zeroPadBytes,
+  Contract,
 } from "ethers"
 import {
   ChainIdentifier,
   DecodedExtraData,
   TBTCDepositor,
   DepositReceipt,
+  StakingFees,
 } from "../contracts"
 import { BitcoinRawTxVectors } from "../bitcoin"
 import { EthereumAddress } from "./address"
@@ -26,6 +28,11 @@ import { EthereumNetwork } from "./network"
 
 import SepoliaTbtcDepositor from "./artifacts/sepolia/TbtcDepositor.json"
 
+type TbtcDepositParameters = {
+  depositTreasuryFeeDivisor: bigint
+  depositTxMaxFee: bigint
+}
+
 /**
  * Ethereum implementation of the TBTCDepositor.
  */
@@ -36,6 +43,15 @@ class EthereumTBTCDepositor
   extends EthersContractWrapper<TbtcDepositorTypechain>
   implements TBTCDepositor
 {
+  /**
+   * Multiplier to convert satoshi to tBTC token units.
+   */
+  readonly #satoshiMultiplier = 10n ** 10n
+
+  #tbtcBridgeDepositsParameters: TbtcDepositParameters | undefined
+
+  #tbtcOptimisticMintingFeeDivisor: bigint | undefined
+
   constructor(config: EthersContractConfig, network: EthereumNetwork) {
     let artifact: EthersContractDeployment
 
@@ -127,6 +143,80 @@ class EthereumTBTCDepositor
     const referral = Number(dataSlice(extraData, 20, 22))
 
     return { staker, referral }
+  }
+
+  async estimateStakingFees(amountToStake: bigint): Promise<StakingFees> {
+    const { depositTreasuryFeeDivisor, depositTxMaxFee } =
+      await this.#getTbtcDepositParameters()
+
+    const treasuryFee = amountToStake / depositTreasuryFeeDivisor
+
+    // Both deposit amount and treasury fee are in the 1e8 satoshi precision.
+    // We need to convert them to the 1e18 TBTC precision.
+    const amountSubTreasury =
+      (amountToStake - treasuryFee) * this.#satoshiMultiplier
+
+    const optimisticMintingFeeDivisor =
+      await this.#getTbtcOptimisticMintingFeeDivisor()
+    const optimisticMintingFee =
+      optimisticMintingFeeDivisor > 0
+        ? amountSubTreasury / optimisticMintingFeeDivisor
+        : 0n
+
+    const depositorFeeDivisor = await this.instance.depositorFeeDivisor()
+    // Compute depositor fee. The fee is calculated based on the initial funding
+    // transaction amount, before the tBTC protocol network fees were taken.
+    const depositorFee =
+      depositorFeeDivisor > 0n
+        ? (amountToStake * this.#satoshiMultiplier) / depositorFeeDivisor
+        : 0n
+
+    // TODO: Maybe we should group fees by network? Eg.:
+    // `const fess = { tbtc: {...}, acre: {...}}`
+    return {
+      treasuryFee: treasuryFee * this.#satoshiMultiplier,
+      optimisticMintingFee,
+      depositTxMaxFee: depositTxMaxFee * this.#satoshiMultiplier,
+      depositorFee,
+    }
+  }
+
+  async #getTbtcDepositParameters(): Promise<TbtcDepositParameters> {
+    if (this.#tbtcBridgeDepositsParameters) {
+      return this.#tbtcBridgeDepositsParameters
+    }
+
+    const bridgeAddress = await this.instance.bridge()
+
+    const bridge = new Contract(bridgeAddress, [
+      "function depositsParameters()",
+    ])
+
+    const depositsParameters =
+      (await bridge.depositsParameters()) as TbtcDepositParameters
+
+    this.#tbtcBridgeDepositsParameters = depositsParameters
+
+    return depositsParameters
+  }
+
+  async #getTbtcOptimisticMintingFeeDivisor(): Promise<bigint> {
+    if (this.#tbtcOptimisticMintingFeeDivisor) {
+      return this.#tbtcOptimisticMintingFeeDivisor
+    }
+
+    const vaultAddress = await this.getTbtcVaultChainIdentifier()
+
+    const vault = new Contract(`0x${vaultAddress.identifierHex}`, [
+      "function optimisticMintingFeeDivisor()",
+    ])
+
+    const optimisticMintingFeeDivisor =
+      (await vault.optimisticMintingFeeDivisor()) as bigint
+
+    this.#tbtcOptimisticMintingFeeDivisor = optimisticMintingFeeDivisor
+
+    return optimisticMintingFeeDivisor
   }
 }
 

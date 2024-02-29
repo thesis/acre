@@ -9,6 +9,31 @@ export type DecodedExtraData = {
   referral: number
 }
 
+export type StakingFees = {
+  /**
+   * The tBTC treasury fee taken from each deposit and transferred to the
+   * treasury upon sweep proof submission. Is calculated based on the initial
+   * funding transaction amount.
+   */
+  treasuryFee: bigint
+  /**
+   * The tBTC optimistic minting fee, Is calculated AFTER the treasury fee is
+   * cut.
+   */
+  optimisticMintingFee: bigint
+  /**
+   * Maximum amount of BTC transaction fee that can
+   * be incurred by each swept deposit being part of the given sweep
+   * transaction.
+   */
+  depositTxMaxFee: bigint
+  /**
+   * The Acre network depositor fee taken from each deposit and transferred to
+   * the treasury upon stake request finalization.
+   */
+  depositorFee: bigint
+}
+
 /**
  * Interface for communication with the TBTCDepositor on-chain contract.
  */
@@ -35,4 +60,6 @@ export interface TBTCDepositor extends DepositorProxy {
    * @param extraData Encoded extra data.
    */
   decodeExtraData(extraData: string): DecodedExtraData
+
+  estimateStakingFees(amountToStake: bigint): Promise<StakingFees>
 }
