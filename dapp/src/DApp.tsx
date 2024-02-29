@@ -2,7 +2,7 @@ import React from "react"
 import { Box, ChakraProvider } from "@chakra-ui/react"
 import { Provider as ReduxProvider } from "react-redux"
 import { RouterProvider } from "react-router-dom"
-import { useSentry, useInitializeAcreSdk, useInitApp } from "./hooks"
+import { useInitApp } from "./hooks"
 import { store } from "./store"
 import theme from "./theme"
 import {
@@ -19,10 +19,6 @@ import GlobalStyles from "./components/GlobalStyles"
 import { router } from "./router"
 
 function DApp() {
-  // TODO: Let's uncomment when dark mode is ready
-  // useDetectThemeMode()
-  useSentry()
-  useInitializeAcreSdk()
   useInitApp()
 
   return (
