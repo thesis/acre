@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit"
-import { fetchCryptoCurrencyPriceUSD } from "#/api"
+import { fetchCryptoCurrencyPriceUSD } from "#/utils/exchangeApi"
 
 export const fetchBTCPriceUSD = createAsyncThunk(
   "btc/fetchBTCPriceUSD",
