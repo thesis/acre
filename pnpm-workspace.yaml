@@ -3,3 +3,4 @@ packages:
   - dapp/
   - website/
   - sdk/
+  - acre-subgraph/

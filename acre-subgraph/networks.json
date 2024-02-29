@@ -1,0 +1,8 @@
+{
+  "sepolia": {
+    "AcreBitcoinDepositor": {
+      "address": "0x37E34EbC743FFAf96b56b3f62854bb7E733a4B50",
+      "startBlock": 5387080
+    }
+  }
+}
