@@ -4,6 +4,8 @@ pragma solidity ^0.8.21;
 import "@keep-network/tbtc-v2/contracts/integrator/AbstractTBTCDepositor.sol";
 
 contract TbtcDepositor is AbstractTBTCDepositor {
+    uint64 public depositorFeeDivisor;
+
     function initializeStakeRequest(
         IBridgeTypes.BitcoinTxInfo calldata fundingTx,
         IBridgeTypes.DepositRevealInfo calldata reveal,
