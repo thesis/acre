@@ -2,8 +2,8 @@ import { useEffect } from "react"
 import { fetchBTCPriceUSD } from "#/store/btc"
 import { logPromiseFailure } from "#/utils"
 import { useAppDispatch } from "./store"
-import { useSentry } from "./useSentry"
 import { useInitializeAcreSdk } from "./useInitializeAcreSdk"
+import { useSentry } from "./sentry"
 
 export function useInitApp() {
   const dispatch = useAppDispatch()
