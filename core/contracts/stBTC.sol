@@ -185,6 +185,50 @@ contract stBTC is xERC4626, Ownable {
         afterDeposit(assets);
     }
 
+    /// @notice Burns shares from owner and sends exactly assets of underlying
+    ///         tokens to receiver.
+    /// @param assets Amount of underlying tokens to withdraw.
+    /// @param receiver The address to which the assets will be sent.
+    /// @param owner The address from which the shares will be burned.
+    function withdraw(
+        uint256 assets,
+        address receiver,
+        address owner
+    ) public override returns (uint256 shares) {
+        uint256 maxAssets = maxWithdraw(owner);
+        if (assets > maxAssets) {
+            revert ERC4626ExceededMaxWithdraw(owner, assets, maxAssets);
+        }
+
+        uint256 shares = previewWithdraw(assets);
+        beforeWithdraw(assets);
+        _withdraw(_msgSender(), receiver, owner, assets, shares);
+
+        return shares;
+    }
+
+    /// @notice Burns shares from owner and sends exactly assets of underlying
+    ///         tokens to receiver.
+    /// @param shares Amount of shares to redeem.
+    /// @param receiver The address to which the assets will be sent.
+    /// @param owner The address from which the shares will be burned.
+    function redeem(
+        uint256 shares,
+        address receiver,
+        address owner
+    ) public override returns (uint256) {
+        uint256 maxShares = maxRedeem(owner);
+        if (shares > maxShares) {
+            revert ERC4626ExceededMaxRedeem(owner, shares, maxShares);
+        }
+
+        uint256 assets = previewRedeem(shares);
+        beforeWithdraw(assets);
+        _withdraw(_msgSender(), receiver, owner, assets, shares);
+
+        return assets;
+    }
+
     /// @notice Returns value of assets that would be exchanged for the amount of
     ///         shares owned by the `account`.
     /// @param account Owner of shares.

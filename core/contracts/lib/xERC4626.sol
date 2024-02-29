@@ -5,7 +5,7 @@
 // - replaced import from Solmate's ERC4626 with OpenZeppelin ERC4626
 // - replaced import from Solmate's SafeCastLib with OpenZeppelin SafeCast
 // - removed super.beforeWithdraw and super.afterDeposit calls
-// - removed overrides from beforeWithdraw and afterDeposit
+// - removed overrides from beforeWithdraw and afterDeposit. OZ does not use these functions.
 // - replaced `asset.balanceOf(address(this))` with `IERC20(asset()).balanceOf(address(this))`
 // - removed unused `shares` param from `beforeWithdraw` and `afterDeposit`
 // - minor formatting changes and solhint additions
@@ -107,12 +107,10 @@ abstract contract xERC4626 is IxERC4626, ERC4626 {
         return storedTotalAssets_ + unlockedRewards;
     }
 
-    // Commenting out for Slither to pass the "dead-code" warning. Uncomment once
-    // we add withdrawals.
     // Update storedTotalAssets on withdraw/redeem
-    // function beforeWithdraw(uint256 amount) internal virtual {
-    //     storedTotalAssets -= amount;
-    // }
+    function beforeWithdraw(uint256 amount) internal virtual {
+        storedTotalAssets -= amount;
+    }
 
     // Update storedTotalAssets on deposit/mint
     function afterDeposit(uint256 amount) internal virtual {

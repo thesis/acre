@@ -758,6 +758,186 @@ describe("stBTC", () => {
     )
   })
 
+  describe("withdraw", () => {
+    beforeAfterSnapshotWrapper()
+
+    context("when the vault is empty", () => {
+      it("should revert", async () => {
+        await expect(
+          stbtc
+            .connect(depositor1)
+            .withdraw(1, depositor1.address, depositor1.address),
+        )
+          .to.be.revertedWithCustomError(stbtc, "ERC4626ExceededMaxWithdraw")
+          .withArgs(depositor1.address, 1, 0)
+      })
+    })
+
+    context("when the vault is not empty", () => {
+      context("when there is one depositor", () => {
+        beforeAfterSnapshotWrapper()
+
+        const amountToDeposit = to1e18(1)
+        const amountToWithdraw = to1e18(1)
+
+        before(async () => {
+          await tbtc
+            .connect(depositor1)
+            .approve(await stbtc.getAddress(), amountToDeposit)
+
+          await stbtc
+            .connect(depositor1)
+            .deposit(amountToDeposit, depositor1.address)
+        })
+
+        context(
+          "when the amount to withdraw is greater than the balance",
+          () => {
+            it("should revert", async () => {
+              await expect(
+                stbtc
+                  .connect(depositor1)
+                  .withdraw(
+                    amountToWithdraw + 1n,
+                    depositor1.address,
+                    depositor1.address,
+                  ),
+              )
+                .to.be.revertedWithCustomError(
+                  stbtc,
+                  "ERC4626ExceededMaxWithdraw",
+                )
+                .withArgs(
+                  depositor1.address,
+                  amountToWithdraw + 1n,
+                  amountToDeposit,
+                )
+            })
+          },
+        )
+
+        context("when the amount to withdraw is less than the balance", () => {
+          let tx: ContractTransactionResponse
+
+          before(async () => {
+            tx = await stbtc
+              .connect(depositor1)
+              .withdraw(
+                amountToWithdraw,
+                depositor1.address,
+                depositor1.address,
+              )
+          })
+
+          it("should emit Withdraw event", async () => {
+            await expect(tx)
+              .to.emit(stbtc, "Withdraw")
+              .withArgs(
+                depositor1.address,
+                depositor1.address,
+                depositor1.address,
+                amountToWithdraw,
+                amountToWithdraw,
+              )
+          })
+
+          it("should burn stBTC tokens", async () => {
+            await expect(tx).to.changeTokenBalances(
+              stbtc,
+              [depositor1.address],
+              [-amountToWithdraw],
+            )
+          })
+
+          it("should transfer tBTC tokens to the caller", async () => {
+            await expect(tx).to.changeTokenBalances(
+              tbtc,
+              [depositor1.address, stbtc],
+              [amountToWithdraw, -amountToWithdraw],
+            )
+          })
+        })
+      })
+    })
+  })
+
+  describe("redeem", () => {
+    beforeAfterSnapshotWrapper()
+
+    context("when the vault is empty", () => {
+      it("should revert", async () => {
+        await expect(
+          stbtc
+            .connect(depositor1)
+            .redeem(1, depositor1.address, depositor1.address),
+        )
+          .to.be.revertedWithCustomError(stbtc, "ERC4626ExceededMaxRedeem")
+          .withArgs(depositor1.address, 1, 0)
+      })
+    })
+
+    context("when the vault is not empty", () => {
+      context("when there is one depositor", () => {
+        beforeAfterSnapshotWrapper()
+
+        const amountToDeposit = to1e18(1)
+        const amountToRedeem = to1e18(1)
+
+        before(async () => {
+          await tbtc
+            .connect(depositor1)
+            .approve(await stbtc.getAddress(), amountToDeposit)
+
+          await stbtc
+            .connect(depositor1)
+            .deposit(amountToDeposit, depositor1.address)
+        })
+
+        context("when the amount to redeem is greater than the balance", () => {
+          it("should revert", async () => {
+            await expect(
+              stbtc
+                .connect(depositor1)
+                .redeem(
+                  amountToRedeem + 1n,
+                  depositor1.address,
+                  depositor1.address,
+                ),
+            )
+              .to.be.revertedWithCustomError(stbtc, "ERC4626ExceededMaxRedeem")
+              .withArgs(depositor1.address, amountToRedeem + 1n, amountToRedeem)
+          })
+        })
+
+        context("when the amount to redeem is less than the balance", () => {
+          let tx: ContractTransactionResponse
+
+          before(async () => {
+            tx = await stbtc
+              .connect(depositor1)
+              .redeem(amountToRedeem, depositor1.address, depositor1.address)
+          })
+
+          it("should burn stBTC tokens", async () => {
+            await expect(tx).to.changeTokenBalances(
+              stbtc,
+              [depositor1.address],
+              [-amountToRedeem],
+            )
+          })
+
+          it("should transfer tBTC tokens to the caller", async () => {
+            await expect(tx).to.changeTokenBalances(
+              tbtc,
+              [depositor1.address, stbtc],
+              [amountToRedeem, -amountToRedeem],
+            )
+          })
+        })
+      })
+    })
+  })
+
   describe("updateDepositParameters", () => {
     beforeAfterSnapshotWrapper()
 
