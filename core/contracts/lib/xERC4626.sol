@@ -15,8 +15,6 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
 import "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
-import "../interfaces/IxERC4626.sol";
-
 /**
  @title  An xERC4626 Single Staking Contract
  @notice This contract allows users to autocompound rewards denominated in an underlying reward token.
@@ -26,7 +24,7 @@ import "../interfaces/IxERC4626.sol";
 
          Operates on "cycles" which distribute the rewards surplus over the internal balance to users linearly over the remainder of the cycle window.
 */
-abstract contract xERC4626 is IxERC4626, ERC4626 {
+abstract contract xERC4626 is ERC4626 {
     using SafeCast for *;
 
     /// @notice the maximum length of a rewards cycle
@@ -42,6 +40,12 @@ abstract contract xERC4626 is IxERC4626, ERC4626 {
     uint192 public lastRewardAmount;
 
     uint256 internal storedTotalAssets;
+
+    /// @dev emit every time a new rewards cycle starts
+    event NewRewardsCycle(uint32 indexed cycleEnd, uint256 rewardAmount);
+
+    /// @dev thrown when syncing before cycle ends.
+    error SyncError();
 
     constructor(uint32 _rewardsCycleLength) {
         rewardsCycleLength = _rewardsCycleLength;
