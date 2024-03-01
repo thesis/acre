@@ -24,7 +24,7 @@ import {
 import { Hex } from "../utils"
 import { EthereumNetwork } from "./network"
 
-import SepoliaTbtcDepositor from "./artifacts/sepolia/TbtcDepositor.json"
+import SepoliaBitcoinDepositor from "./artifacts/sepolia/AcreBitcoinDepositor.json"
 
 // TODO: Rename TBTCDepositor to AcreBitcoinDepositor
 
@@ -43,7 +43,7 @@ class EthereumTBTCDepositor
 
     switch (network) {
       case "sepolia":
-        artifact = SepoliaTbtcDepositor
+        artifact = SepoliaBitcoinDepositor
         break
       case "mainnet":
       default:
