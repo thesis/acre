@@ -1,6 +1,6 @@
-import { TBTCDepositor } from "./tbtc-depositor"
+import { BitcoinDepositor } from "./bitcoin-depositor"
 
-export * from "./tbtc-depositor"
+export * from "./bitcoin-depositor"
 export * from "./chain-identifier"
 export * from "./depositor-proxy"
 
@@ -8,5 +8,5 @@ export * from "./depositor-proxy"
  * Represents all contracts that allow interaction with the Acre network.
  */
 export type AcreContracts = {
-  tbtcDepositor: TBTCDepositor
+  bitcoinDepositor: BitcoinDepositor
 }

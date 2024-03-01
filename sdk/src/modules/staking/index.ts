@@ -50,8 +50,8 @@ class StakingModule {
   ) {
     const deposit = await this.#tbtc.deposits.initiateDepositWithProxy(
       bitcoinRecoveryAddress,
-      depositorProxy ?? this.#contracts.tbtcDepositor,
-      this.#contracts.tbtcDepositor.encodeExtraData(staker, referral),
+      depositorProxy ?? this.#contracts.bitcoinDepositor,
+      this.#contracts.bitcoinDepositor.encodeExtraData(staker, referral),
     )
 
     return new StakeInitialization(
