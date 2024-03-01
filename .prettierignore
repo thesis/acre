@@ -3,7 +3,7 @@ core/
 dapp/
 website/
 sdk/
-acre-subgraph/
+subgraph/
 
 # Auto-generated files.
 pnpm-lock.yaml
