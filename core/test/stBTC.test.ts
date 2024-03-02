@@ -702,6 +702,58 @@ describe("stBTC", () => {
     })
 
     context(
+      "when the vault earns yield after sync and 1/2 cycle length",
+      () => {
+        beforeAfterSnapshotWrapper()
+
+        const amountToMint = to1e18(10)
+        const earnedYield = to1e18(5)
+        let balanceBefore: bigint
+
+        before(async () => {
+          await tbtc.mint(depositor1.address, amountToMint)
+
+          await tbtc
+            .connect(depositor1)
+            .approve(await stbtc.getAddress(), amountToMint)
+
+          await stbtc.connect(depositor1).mint(amountToMint, depositor1.address)
+
+          await tbtc.mint(await stbtc.getAddress(), earnedYield)
+          balanceBefore = await stbtc.totalAssets()
+          await syncRewards(2n)
+        })
+
+        it("should release half of the rewards to the vault", async () => {
+          // check approximate value +1%
+          expect(await stbtc.totalAssets()).to.be.lt(
+            ((balanceBefore + earnedYield / 2n) * 101n) / 100n,
+          )
+          // check approximate value -1%
+          expect(await stbtc.totalAssets()).to.be.gt(
+            ((balanceBefore + earnedYield / 2n) * 99n) / 100n,
+          )
+        })
+
+        it("should mint and release half of stBTC rewards tokens", async () => {
+          const shares = await stbtc.balanceOf(depositor1.address)
+          const availableAssetsToRedeem = await stbtc.previewRedeem(shares)
+
+          const expectedAssetsToRedeem = amountToMint + earnedYield / 2n
+
+          // +1% due to roundings
+          expect(availableAssetsToRedeem).to.be.lt(
+            (expectedAssetsToRedeem * 101n) / 100n,
+          )
+          // -1% due to roundings
+          expect(availableAssetsToRedeem).to.be.gt(
+            (expectedAssetsToRedeem * 99n) / 100n,
+          )
+        })
+      },
+    )
+
+    context(
       "when depositor wants to mint more shares than max mint limit",
       () => {
         beforeAfterSnapshotWrapper()
