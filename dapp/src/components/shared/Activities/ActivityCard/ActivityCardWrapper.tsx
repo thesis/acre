@@ -1,7 +1,7 @@
 import React from "react"
 import { CardProps, Card } from "@chakra-ui/react"
 
-type ActivityCardContainerProps = CardProps & {
+type ActivityCardWrapperProps = CardProps & {
   isCompleted: boolean
   isActive: boolean
   children: React.ReactNode
@@ -34,12 +34,12 @@ const activeStyles = {
   },
 }
 
-function ActivityCardContainer({
+export function ActivityCardWrapper({
   isActive,
   isCompleted,
   children,
   ...props
-}: ActivityCardContainerProps) {
+}: ActivityCardWrapperProps) {
   return (
     <Card
       {...props}
@@ -60,5 +60,3 @@ function ActivityCardContainer({
     </Card>
   )
 }
-
-export default ActivityCardContainer

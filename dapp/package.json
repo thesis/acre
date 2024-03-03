@@ -24,15 +24,16 @@
     "@sentry/react": "^7.98.0",
     "@sentry/types": "^7.102.0",
     "@tanstack/react-table": "^8.11.3",
+    "@types/react-slick": "^0.23.13",
     "axios": "^1.6.7",
     "ethers": "^6.10.0",
-    "axios": "^1.6.7",
     "formik": "^2.4.5",
     "framer-motion": "^10.16.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-number-format": "^5.3.1",
     "react-router-dom": "^6.22.0",
+    "react-slick": "^0.30.2",
     "recharts": "^2.12.0"
   },
   "devDependencies": {

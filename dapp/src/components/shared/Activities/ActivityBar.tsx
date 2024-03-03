@@ -1,10 +1,10 @@
 import React, { useCallback, useState } from "react"
-import { Link as ReactRouterLink } from "react-router-dom"
-import { Flex, Link as ChakraLink, FlexboxProps } from "@chakra-ui/react"
-import ActivityCard from "./ActivityCard"
+import { Flex } from "@chakra-ui/react"
+import { ActivityCard } from "./ActivityCard"
 import { mockedActivities } from "./mock-activities"
 
-function ActivityBar(props: FlexboxProps) {
+export function ActivityBar() {
+  // TODO: Lines 8-18 should be replaced by redux store when subgraphs are implemented
   const [activities, setActivities] = useState(mockedActivities)
 
   const onRemove = useCallback(
@@ -16,20 +16,16 @@ function ActivityBar(props: FlexboxProps) {
     },
     [activities],
   )
+
   return (
-    <Flex gap={3} {...props}>
+    <Flex gap={3} flexDirection="column">
       {activities.map((activity) => (
-        <ChakraLink
-          as={ReactRouterLink}
-          to="/activity-details"
-          state={{ activity }}
+        <ActivityCard
           key={activity.txHash}
-        >
-          <ActivityCard activity={activity} onRemove={onRemove} />
-        </ChakraLink>
+          activity={activity}
+          onRemove={onRemove}
+        />
       ))}
     </Flex>
   )
 }
-
-export default ActivityBar
