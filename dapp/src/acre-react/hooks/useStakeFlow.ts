@@ -2,6 +2,7 @@ import { useCallback, useState } from "react"
 import {
   StakeInitialization,
   EthereumAddress,
+  DepositorProxy,
   DepositReceipt,
 } from "@acre-btc/sdk"
 import { useAcreContext } from "./useAcreContext"
@@ -11,11 +12,12 @@ export type UseStakeFlowReturn = {
     bitcoinRecoveryAddress: string,
     ethereumAddress: string,
     referral: number,
+    depositor?: DepositorProxy,
   ) => Promise<void>
   btcAddress?: string
+  depositReceipt?: DepositReceipt
   signMessage: () => Promise<void>
   stake: () => Promise<void>
-  depositReceipt?: DepositReceipt
 }
 
 export function useStakeFlow(): UseStakeFlowReturn {
@@ -25,7 +27,6 @@ export function useStakeFlow(): UseStakeFlowReturn {
     undefined,
   )
   const [btcAddress, setBtcAddress] = useState<string | undefined>(undefined)
-
   const [depositReceipt, setDepositReceipt] = useState<
     DepositReceipt | undefined
   >(undefined)
@@ -35,6 +36,7 @@ export function useStakeFlow(): UseStakeFlowReturn {
       bitcoinRecoveryAddress: string,
       ethereumAddress: string,
       referral: number,
+      depositor?: DepositorProxy,
     ) => {
       if (!acre || !isInitialized) throw new Error("Acre SDK not defined")
 
@@ -42,6 +44,7 @@ export function useStakeFlow(): UseStakeFlowReturn {
         bitcoinRecoveryAddress,
         EthereumAddress.from(ethereumAddress),
         referral,
+        depositor,
       )
 
       const btcDepositAddress = await initializedStakeFlow.getBitcoinAddress()
@@ -71,8 +74,8 @@ export function useStakeFlow(): UseStakeFlowReturn {
   return {
     initStake,
     btcAddress,
+    depositReceipt,
     signMessage,
     stake,
-    depositReceipt,
   }
 }
