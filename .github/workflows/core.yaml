@@ -186,4 +186,5 @@ jobs:
         with:
           name: deployed-contracts-${{ github.event.inputs.environment }}
           path: |
-            deployments/${{ github.event.inputs.environment }}
+            core/deployments/${{ github.event.inputs.environment }}
+          if-no-files-found: error
