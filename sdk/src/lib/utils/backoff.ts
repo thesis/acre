@@ -1,2 +1,5 @@
-// eslint-disable-next-line import/prefer-default-export
-export { backoffRetrier } from "@keep-network/tbtc-v2.ts"
+import { backoffRetrier } from "@keep-network/tbtc-v2.ts"
+
+type BackoffRetrierParameters = Parameters<typeof backoffRetrier>
+
+export { backoffRetrier, BackoffRetrierParameters }

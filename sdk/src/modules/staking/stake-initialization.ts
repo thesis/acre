@@ -1,8 +1,4 @@
-import {
-  ChainIdentifier,
-  Deposit as TbtcDeposit,
-  backoffRetrier,
-} from "@keep-network/tbtc-v2.ts"
+import { Deposit as TbtcDeposit } from "@keep-network/tbtc-v2.ts"
 import {
   ChainEIP712Signer,
   ChainSignedMessage,
@@ -10,8 +6,26 @@ import {
   Message,
   Types,
 } from "../../lib/eip712-signer"
-import { AcreContracts, DepositReceipt } from "../../lib/contracts"
-import { Hex } from "../../lib/utils"
+import {
+  AcreContracts,
+  DepositReceipt,
+  ChainIdentifier,
+} from "../../lib/contracts"
+import { Hex, backoffRetrier, BackoffRetrierParameters } from "../../lib/utils"
+
+type StakeOptions = {
+  /**
+   * The number of retries to perform before bubbling the failure out.
+   * @see backoffRetrier for more details.
+   */
+  retires: BackoffRetrierParameters[0]
+  /**
+   * Initial backoff step in milliseconds that will be increased exponentially
+   * for subsequent retry attempts. (default = 1000 ms)
+   * @see backoffRetrier for more details.
+   */
+  backoffStepMs: BackoffRetrierParameters[1]
+}
 
 /**
  * Represents an instance of the staking flow. Staking flow requires a few steps
@@ -139,24 +153,28 @@ class StakeInitialization {
    * does not exist.
    * @dev Use it as the last step of the staking flow. It requires signed
    *      staking message otherwise throws an error.
+   * @param options Optional options parameters to initialize stake.
+   *                @see StakeOptions for more details.
    * @returns Transaction hash of the stake initiation transaction.
    */
-  async stake(): Promise<Hex> {
+  async stake(
+    options: StakeOptions = { retires: 5, backoffStepMs: 5_000 },
+  ): Promise<Hex> {
     if (!this.#signedMessage) {
       throw new Error("Sign message first")
     }
 
-    await this.#waitForBitcoinFundingTx()
+    await this.#waitForBitcoinFundingTx(options)
 
     return this.#tbtcDeposit.initiateMinting()
   }
 
-  async #waitForBitcoinFundingTx(): Promise<void> {
-    const retries = 4
-    const backoffStepMs = 3000 // 3 sec
-
+  async #waitForBitcoinFundingTx({
+    retires,
+    backoffStepMs,
+  }: StakeOptions): Promise<void> {
     await backoffRetrier<void>(
-      retries,
+      retires,
       backoffStepMs,
     )(async () => {
       const utxos = await this.#tbtcDeposit.detectFunding()

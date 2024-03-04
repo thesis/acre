@@ -265,7 +265,7 @@ describe("Staking", () => {
 
               await jest.runAllTimersAsync()
 
-              expect(mockedDeposit.detectFunding).toHaveBeenCalledTimes(5)
+              expect(mockedDeposit.detectFunding).toHaveBeenCalledTimes(6)
             })
           })
 
