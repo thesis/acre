@@ -10,7 +10,7 @@ dataSources:
     source:
       address: "0x37E34EbC743FFAf96b56b3f62854bb7E733a4B50"
       abi: AcreBitcoinDepositor
-      startBlock: 5387080
+      startBlock: 5394071
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
