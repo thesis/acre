@@ -4,7 +4,7 @@ import { PROCESS_STATUSES } from "#/types"
 import { Button, ModalBody, ModalFooter, ModalHeader } from "@chakra-ui/react"
 import { TextMd } from "#/components/shared/Typography"
 import AlertReceiveSTBTC from "#/components/shared/AlertReceiveSTBTC"
-import { asyncWrapper } from "#/utils"
+import { logPromiseFailure } from "#/utils"
 
 export default function SignMessageModal() {
   const { setStatus } = useModalFlowContext()
@@ -34,7 +34,7 @@ export default function SignMessageModal() {
 
     // TODO: Remove when SDK is ready
     setTimeout(() => {
-      asyncWrapper(handleSignMessage())
+      logPromiseFailure(handleSignMessage())
     }, 5000)
   }, [setStatus, handleSignMessage])
 
