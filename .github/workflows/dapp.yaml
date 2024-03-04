@@ -32,7 +32,7 @@ jobs:
           cache: "pnpm"
 
       - name: Download SDK Build Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: sdk-build
           path: sdk/dist
@@ -59,7 +59,7 @@ jobs:
           cache: "pnpm"
 
       - name: Download SDK Build Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: sdk-build
           path: sdk/dist

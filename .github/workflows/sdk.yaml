@@ -32,7 +32,7 @@ jobs:
           cache: "pnpm"
 
       - name: Download Core Build Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: core-build
           path: core/
@@ -59,7 +59,7 @@ jobs:
           cache: "pnpm"
 
       - name: Download Core Build Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: core-build
           path: core/

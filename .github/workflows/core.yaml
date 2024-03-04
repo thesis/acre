@@ -44,7 +44,7 @@ jobs:
         run: pnpm install --prefer-offline --frozen-lockfile
 
       - name: Download Build Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: core-build
           path: core/
@@ -80,7 +80,7 @@ jobs:
         run: pip3 install slither-analyzer==$SLITHER_VERSION
 
       - name: Download Build Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: core-build
           path: core/
@@ -107,7 +107,7 @@ jobs:
         run: pnpm install --prefer-offline --frozen-lockfile
 
       - name: Download Build Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: core-build
           path: core/
@@ -134,7 +134,7 @@ jobs:
         run: pnpm install --prefer-offline --frozen-lockfile
 
       - name: Download Build Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: core-build
           path: core/
