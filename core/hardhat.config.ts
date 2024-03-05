@@ -4,6 +4,7 @@ import "@nomicfoundation/hardhat-toolbox"
 import "hardhat-contract-sizer"
 import "hardhat-deploy"
 import "solidity-docgen"
+import "@keep-network/hardhat-helpers"
 
 const config: HardhatUserConfig = {
   solidity: {

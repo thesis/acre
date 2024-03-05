@@ -3,7 +3,7 @@ import { Button, Icon } from "@chakra-ui/react"
 import { Account } from "@ledgerhq/wallet-api-client"
 import {
   truncateAddress,
-  asyncWrapper,
+  logPromiseFailure,
   isSupportedBTCAddressType,
 } from "#/utils"
 import { CURRENCY_ID_BITCOIN } from "#/constants"
@@ -35,7 +35,7 @@ export function ConnectButton({
   const { colorScheme, text } = getCustomDataByAccount(account)
 
   const handleClick = () => {
-    asyncWrapper(requestAccount())
+    logPromiseFailure(requestAccount())
   }
 
   return (

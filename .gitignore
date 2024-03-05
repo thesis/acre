@@ -13,3 +13,5 @@ tmp/
 
 # Environment configuration files
 .envrc
+.env.*
+!.env.example
