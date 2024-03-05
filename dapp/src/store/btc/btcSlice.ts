@@ -2,11 +2,15 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 import { fetchBTCPriceUSD } from "./btcThunk"
 
 type BtcState = {
+  estimatedBtcBalance: bigint
+  sharesBalance: bigint
   isLoadingPriceUSD: boolean
   usdPrice: number
 }
 
 const initialState: BtcState = {
+  estimatedBtcBalance: 0n,
+  sharesBalance: 0n,
   isLoadingPriceUSD: false,
   usdPrice: 0,
 }
@@ -15,7 +19,14 @@ const initialState: BtcState = {
 export const btcSlice = createSlice({
   name: "btc",
   initialState,
-  reducers: {},
+  reducers: {
+    setSharesBalance(state, action: PayloadAction<bigint>) {
+      state.sharesBalance = action.payload
+    },
+    setEstimatedBtcBalance(state, action: PayloadAction<bigint>) {
+      state.estimatedBtcBalance = action.payload
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(fetchBTCPriceUSD.pending, (state) => {
       state.isLoadingPriceUSD = true

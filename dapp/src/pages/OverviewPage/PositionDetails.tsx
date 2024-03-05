@@ -14,8 +14,11 @@ import { TextMd } from "#/components/shared/Typography"
 import { Info } from "#/assets/icons"
 import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
 import TransactionModal from "#/components/TransactionModal"
+import { useAppSelector } from "#/hooks"
+import { selectEstimatedBtcBalance } from "#/store/btc"
 
 export default function PositionDetails(props: CardProps) {
+  const estimatedBtcBalance = useAppSelector(selectEstimatedBtcBalance)
   const [actionFlowType, setActionFlowType] = useState<
     ActionFlowType | undefined
   >(undefined)
@@ -37,7 +40,7 @@ export default function PositionDetails(props: CardProps) {
         <CurrencyBalanceWithConversion
           from={{
             currency: "bitcoin",
-            amount: "2398567898",
+            amount: estimatedBtcBalance.toString(),
             variant: "greater-balance-xl",
             symbolFontWeight: "semibold",
           }}

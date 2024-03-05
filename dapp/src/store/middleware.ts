@@ -1,1 +1,3 @@
-export const middleware = {}
+export const middleware = {
+  serializableCheck: false,
+}
