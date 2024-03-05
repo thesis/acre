@@ -14,13 +14,17 @@ export const isPublicKeyHashTypeAddress = (
   address: string,
   network: BitcoinNetwork,
 ): boolean => {
-  const outputScript = BitcoinAddressConverter.addressToOutputScript(
-    address,
-    network,
-  )
+  try {
+    const outputScript = BitcoinAddressConverter.addressToOutputScript(
+      address,
+      network,
+    )
 
-  return (
-    BitcoinScriptUtils.isP2PKHScript(outputScript) ||
-    BitcoinScriptUtils.isP2WPKHScript(outputScript)
-  )
+    return (
+      BitcoinScriptUtils.isP2PKHScript(outputScript) ||
+      BitcoinScriptUtils.isP2WPKHScript(outputScript)
+    )
+  } catch (error) {
+    return false
+  }
 }
