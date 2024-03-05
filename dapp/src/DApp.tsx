@@ -1,7 +1,9 @@
 import React from "react"
 import { Box, ChakraProvider } from "@chakra-ui/react"
+import { Provider as ReduxProvider } from "react-redux"
 import { RouterProvider } from "react-router-dom"
-import { useInitializeAcreSdk } from "./hooks"
+import { useInitApp } from "./hooks"
+import { store } from "./store"
 import theme from "./theme"
 import {
   DocsDrawerContextProvider,
@@ -15,13 +17,9 @@ import Sidebar from "./components/Sidebar"
 import DocsDrawer from "./components/DocsDrawer"
 import GlobalStyles from "./components/GlobalStyles"
 import { router } from "./router"
-import { useSentry } from "./hooks/sentry"
 
 function DApp() {
-  // TODO: Let's uncomment when dark mode is ready
-  // useDetectThemeMode()
-  useSentry()
-  useInitializeAcreSdk()
+  useInitApp()
 
   return (
     <>
@@ -42,10 +40,12 @@ function DAppProviders() {
         <AcreSdkProvider>
           <DocsDrawerContextProvider>
             <SidebarContextProvider>
-              <ChakraProvider theme={theme}>
-                <GlobalStyles />
-                <DApp />
-              </ChakraProvider>
+              <ReduxProvider store={store}>
+                <ChakraProvider theme={theme}>
+                  <GlobalStyles />
+                  <DApp />
+                </ChakraProvider>
+              </ReduxProvider>
             </SidebarContextProvider>
           </DocsDrawerContextProvider>
         </AcreSdkProvider>
