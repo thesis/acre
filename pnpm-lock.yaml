@@ -25,7 +25,7 @@ importers:
         version: 3.4.0-solc-0.8
       '@keep-network/tbtc-v2':
         specifier: development
-        version: 1.6.0-dev.21(@keep-network/keep-core@1.8.1-dev.0)
+        version: 1.6.0-dev.18(@keep-network/keep-core@1.8.1-dev.0)
       '@openzeppelin/contracts':
         specifier: ^5.0.0
         version: 5.0.0
@@ -141,6 +141,9 @@ importers:
       '@ledgerhq/wallet-api-client-react':
         specifier: ^1.3.0
         version: 1.3.0(react@18.2.0)
+      '@reduxjs/toolkit':
+        specifier: ^2.2.0
+        version: 2.2.0(react-redux@9.1.0)(react@18.2.0)
       '@sentry/react':
         specifier: ^7.98.0
         version: 7.98.0(react@18.2.0)
@@ -171,12 +174,15 @@ importers:
       react-number-format:
         specifier: ^5.3.1
         version: 5.3.1(react-dom@18.2.0)(react@18.2.0)
+      react-redux:
+        specifier: ^9.1.0
+        version: 9.1.0(@types/react@18.2.38)(react@18.2.0)(redux@5.0.1)
       react-router-dom:
         specifier: ^6.22.0
-        version: 6.22.1(react-dom@18.2.0)(react@18.2.0)
+        version: 6.22.0(react-dom@18.2.0)(react@18.2.0)
       recharts:
         specifier: ^2.12.0
-        version: 2.12.1(react-dom@18.2.0)(react@18.2.0)
+        version: 2.12.0(react-dom@18.2.0)(react@18.2.0)
     devDependencies:
       '@thesis-co/eslint-config':
         specifier: github:thesis/eslint-config#7b9bc8c
@@ -4460,15 +4466,15 @@ packages:
       - '@keep-network/keep-core'
     dev: false
 
-  /@keep-network/ecdsa@2.1.0-dev.19(@keep-network/keep-core@1.8.1-dev.0):
-    resolution: {integrity: sha512-cyqRqK/sOqyaXZWY/O9ij6EINQuJ+bHLMiuufOFyP5YCj4GCuNqOcCytGAZPT+mED/0J/xn0vm+fgiCBq/uJkQ==}
+  /@keep-network/ecdsa@2.1.0-dev.18(@keep-network/keep-core@1.8.1-dev.0):
+    resolution: {integrity: sha512-VjgQL5wROhUHrVnu2glkLi0x6wj3Q0AW4f843cr/PgMhQoJ6LG6WQoE6OANbg4WbNIx5Tcf9/9FZ2m1k+IYQXQ==}
     engines: {node: '>= 14.0.0'}
     dependencies:
-      '@keep-network/random-beacon': 2.1.0-dev.18(@keep-network/keep-core@1.8.1-dev.0)
+      '@keep-network/random-beacon': 2.1.0-dev.17(@keep-network/keep-core@1.8.1-dev.0)
       '@keep-network/sortition-pools': 2.0.0
       '@openzeppelin/contracts': 4.9.5
       '@openzeppelin/contracts-upgradeable': 4.9.5
-      '@threshold-network/solidity-contracts': 1.3.0-dev.12(@keep-network/keep-core@1.8.1-dev.0)
+      '@threshold-network/solidity-contracts': 1.3.0-dev.11(@keep-network/keep-core@1.8.1-dev.0)
     transitivePeerDependencies:
       - '@keep-network/keep-core'
     dev: false
@@ -4606,12 +4612,12 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@keep-network/tbtc-v2@1.6.0-dev.21(@keep-network/keep-core@1.8.1-dev.0):
-    resolution: {integrity: sha512-/p2PCm0lWEnVbILrBhSO9MWjv6PvJ0lThEzUat85h6SkrGiIojqIMiOlI+pCIi8rhPtZ1xY+9jG6AbDs7XrupQ==}
+  /@keep-network/tbtc-v2@1.6.0-dev.18(@keep-network/keep-core@1.8.1-dev.0):
+    resolution: {integrity: sha512-62QBEPAsE3dju5Hk+yqeLhE5ohmVg8ZdFE+x+lmkDPbVz6DrHx0NqF6a1TLC/yH826zhnVCTNpXoPuOv3QUnvA==}
     engines: {node: '>= 14.0.0'}
     dependencies:
       '@keep-network/bitcoin-spv-sol': 3.4.0-solc-0.8
-      '@keep-network/ecdsa': 2.1.0-dev.19(@keep-network/keep-core@1.8.1-dev.0)
+      '@keep-network/ecdsa': 2.1.0-dev.18(@keep-network/keep-core@1.8.1-dev.0)
       '@keep-network/random-beacon': 2.1.0-dev.18(@keep-network/keep-core@1.8.1-dev.0)
       '@keep-network/tbtc': 1.1.2-dev.1
       '@openzeppelin/contracts': 4.9.5
@@ -6145,8 +6151,27 @@ packages:
     resolution: {integrity: sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==}
     dev: false
 
-  /@remix-run/router@1.15.1:
-    resolution: {integrity: sha512-zcU0gM3z+3iqj8UX45AmWY810l3oUmXM7uH4dt5xtzvMhRtYVhKGOmgOd1877dOPPepfCjUv57w+syamWIYe7w==}
+  /@reduxjs/toolkit@2.2.0(react-redux@9.1.0)(react@18.2.0):
+    resolution: {integrity: sha512-ZvPYKfu4kDnAqPhJ1bsis8QFbiQRz3Q2HxW3tw9tVGusPzYKRG7ju1FA+34PGcwCoemjGGv+f/7fEygcRZIwmA==}
+    peerDependencies:
+      react: ^16.9.0 || ^17.0.0 || ^18
+      react-redux: ^7.2.1 || ^8.1.3 || ^9.0.0
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-redux:
+        optional: true
+    dependencies:
+      immer: 10.0.3
+      react: 18.2.0
+      react-redux: 9.1.0(@types/react@18.2.38)(react@18.2.0)(redux@5.0.1)
+      redux: 5.0.1
+      redux-thunk: 3.1.0(redux@5.0.1)
+      reselect: 5.1.0
+    dev: false
+
+  /@remix-run/router@1.15.0:
+    resolution: {integrity: sha512-HOil5aFtme37dVQTB6M34G95kPM3MMuqSmIRVCC52eKV+Y/tGSqw9P3rWhlAx6A+mz+MoX+XxsGsNJbaI5qCgQ==}
     engines: {node: '>=14.0.0'}
     dev: false
 
@@ -6694,17 +6719,6 @@ packages:
       '@thesis/solidity-contracts': github.com/thesis/solidity-contracts/4985bcf
     dev: false
 
-  /@threshold-network/solidity-contracts@1.3.0-dev.12(@keep-network/keep-core@1.8.1-dev.0):
-    resolution: {integrity: sha512-06EF583uEwko3ik7qjnMOg+sJ+Vb7YWkqag4a9xZq8Mmy8rifpmLjnfDKCVGeKbUis3uI++pTGC9U/EfvVOrlQ==}
-    peerDependencies:
-      '@keep-network/keep-core': '>1.8.1-dev <1.8.1-goerli'
-    dependencies:
-      '@keep-network/keep-core': 1.8.1-dev.0
-      '@openzeppelin/contracts': 4.5.0
-      '@openzeppelin/contracts-upgradeable': 4.5.2
-      '@thesis/solidity-contracts': github.com/thesis/solidity-contracts/4985bcf
-    dev: false
-
   /@threshold-network/solidity-contracts@1.3.0-dev.8(@keep-network/keep-core@1.8.1-dev.0):
     resolution: {integrity: sha512-s6SFZyf1xXgOdMK1zYnjsURnVz7Xxzf0z/34vH+hDg8n/G8L0jPR6Iz4laWSSL2y1P3ffFAFTUMvwfJMJitfVw==}
     peerDependencies:
@@ -7196,6 +7210,10 @@ packages:
 
   /@types/tmp@0.0.33:
     resolution: {integrity: sha512-gVC1InwyVrO326wbBZw+AO3u2vRXz/iRWq9jYhpG4W8LXyIgDv3ZmcLQ5Q4Gs+gFMyqx+viFoFT+l3p61QFCmQ==}
+
+  /@types/use-sync-external-store@0.0.3:
+    resolution: {integrity: sha512-EwmlvuaxPNej9+T4v5AuBPJa2x2UOJVdjCtDHgcDqitUeOtjnJKJ+apYjVcAoBEMjKW1VVFGZLUb5+qqa09XFA==}
+    dev: false
 
   /@types/utf8@2.1.6:
     resolution: {integrity: sha512-pRs2gYF5yoKYrgSaira0DJqVg2tFuF+Qjp838xS7K+mJyY2jJzjsrl6y17GbIa4uMRogMbxs+ghNCvKg6XyNrA==}
@@ -8844,8 +8862,8 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
     dependencies:
-      caniuse-lite: 1.0.30001585
-      electron-to-chromium: 1.4.659
+      caniuse-lite: 1.0.30001574
+      electron-to-chromium: 1.4.622
       node-releases: 2.0.14
       update-browserslist-db: 1.0.13(browserslist@4.22.2)
 
@@ -9072,8 +9090,8 @@ packages:
   /caniuse-lite@1.0.30001564:
     resolution: {integrity: sha512-DqAOf+rhof+6GVx1y+xzbFPeOumfQnhYzVnZD6LAXijR77yPtm9mfOcqOnT3mpnJiZVT+kwLAFnRlZcIz+c6bg==}
 
-  /caniuse-lite@1.0.30001585:
-    resolution: {integrity: sha512-yr2BWR1yLXQ8fMpdS/4ZZXpseBgE7o4g41x3a6AJOqZuOi+iE/WdJYAuZ6Y95i4Ohd2Y+9MzIWRR+uGABH4s3Q==}
+  /caniuse-lite@1.0.30001574:
+    resolution: {integrity: sha512-BtYEK4r/iHt/txm81KBudCUcTy7t+s9emrIaHqjYurQ10x71zJ5VQ9x1dYPcz/b+pKSp4y/v1xSI67A+LzpNyg==}
 
   /capital-case@1.0.4:
     resolution: {integrity: sha512-ds37W8CytHgwnhGGTi88pcPyR15qoNkOpYwmMMfnWqqWgESapLqvDx6huFjQ5vqWSn2Z06173XNA7LtMOeUh1A==}
@@ -10666,8 +10684,8 @@ packages:
   /electron-to-chromium@1.4.592:
     resolution: {integrity: sha512-D3NOkROIlF+d5ixnz7pAf3Lu/AuWpd6AYgI9O67GQXMXTcCP1gJQRotOq35eQy5Sb4hez33XH1YdTtILA7Udww==}
 
-  /electron-to-chromium@1.4.659:
-    resolution: {integrity: sha512-sRJ3nV3HowrYpBtPF9bASQV7OW49IgZC01Xiq43WfSE3RTCkK0/JidoCmR73Hyc1mN+l/H4Yqx0eNiomvExFZg==}
+  /electron-to-chromium@1.4.622:
+    resolution: {integrity: sha512-GZ47DEy0Gm2Z8RVG092CkFvX7SdotG57c4YZOe8W8qD4rOmk3plgeNmiLVRHP/Liqj1wRiY3uUUod9vb9hnxZA==}
 
   /elliptic@6.3.3:
     resolution: {integrity: sha512-cIky9SO2H8W2eU1NOLySnhOYJnuEWCq9ZJeHvHd/lXzEL9vyraIMfilZSn57X3aVX+wkfYmqkch2LvmTzkjFpA==}
@@ -13855,6 +13873,10 @@ packages:
   /ignore@5.3.0:
     resolution: {integrity: sha512-g7dmpshy+gD7mh88OC9NwSGTKoc3kyLAZQRU1mt53Aw/vnvfXnbC+F/7F7QoYVKbV+KNvJx8wArewKy1vXMtlg==}
     engines: {node: '>= 4'}
+
+  /immer@10.0.3:
+    resolution: {integrity: sha512-pwupu3eWfouuaowscykeckFmVTpqbzW+rXFCX8rQLkZzM9ftBmU/++Ra+o+L27mz03zJTlyV4UUr+fdKNffo4A==}
+    dev: false
 
   /immer@9.0.21:
     resolution: {integrity: sha512-bc4NBHqOqSfRW7POMkHd51LvClaeMXpm8dx0e8oE2GORbq5aRK7Bxl4FyzVLdGtLmvLKL7BTDBG5ACQm4HWjTA==}
@@ -17862,6 +17884,28 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
+  /react-redux@9.1.0(@types/react@18.2.38)(react@18.2.0)(redux@5.0.1):
+    resolution: {integrity: sha512-6qoDzIO+gbrza8h3hjMA9aq4nwVFCKFtY2iLxCtVT38Swyy2C/dJCGBXHeHLtx6qlg/8qzc2MrhOeduf5K32wQ==}
+    peerDependencies:
+      '@types/react': ^18.2.25
+      react: ^18.0
+      react-native: '>=0.69'
+      redux: ^5.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      react-native:
+        optional: true
+      redux:
+        optional: true
+    dependencies:
+      '@types/react': 18.2.38
+      '@types/use-sync-external-store': 0.0.3
+      react: 18.2.0
+      redux: 5.0.1
+      use-sync-external-store: 1.2.0(react@18.2.0)
+    dev: false
+
   /react-refresh@0.14.0:
     resolution: {integrity: sha512-wViHqhAd8OHeLS/IRMJjTSDHF3U9eWi62F/MledQGPdJGDhodXJ9PBLNGr6WWL7qlH12Mt3TyTpbS+hGXMjCzQ==}
     engines: {node: '>=0.10.0'}
@@ -17901,26 +17945,26 @@ packages:
       use-sidecar: 1.1.2(@types/react@18.2.38)(react@18.2.0)
     dev: false
 
-  /react-router-dom@6.22.1(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-iwMyyyrbL7zkKY7MRjOVRy+TMnS/OPusaFVxM2P11x9dzSzGmLsebkCvYirGq0DWB9K9hOspHYYtDz33gE5Duw==}
+  /react-router-dom@6.22.0(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-z2w+M4tH5wlcLmH3BMMOMdrtrJ9T3oJJNsAlBJbwk+8Syxd5WFJ7J5dxMEW0/GEXD1BBis4uXRrNIz3mORr0ag==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       react: '>=16.8'
       react-dom: '>=16.8'
     dependencies:
-      '@remix-run/router': 1.15.1
+      '@remix-run/router': 1.15.0
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      react-router: 6.22.1(react@18.2.0)
+      react-router: 6.22.0(react@18.2.0)
     dev: false
 
-  /react-router@6.22.1(react@18.2.0):
-    resolution: {integrity: sha512-0pdoRGwLtemnJqn1K0XHUbnKiX0S4X8CgvVVmHGOWmofESj31msHo/1YiqcJWK7Wxfq2a4uvvtS01KAQyWK/CQ==}
+  /react-router@6.22.0(react@18.2.0):
+    resolution: {integrity: sha512-q2yemJeg6gw/YixRlRnVx6IRJWZD6fonnfZhN1JIOhV2iJCPeRNSH3V1ISwHf+JWcESzLC3BOLD1T07tmO5dmg==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       react: '>=16.8'
     dependencies:
-      '@remix-run/router': 1.15.1
+      '@remix-run/router': 1.15.0
       react: 18.2.0
     dev: false
 
@@ -18061,8 +18105,8 @@ packages:
       decimal.js-light: 2.5.1
     dev: false
 
-  /recharts@2.12.1(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-35vUCEBPf+pM+iVgSgVTn86faKya5pc4JO6cYJL63qOK2zDEyzDn20Tdj+CDI/3z+VcpKyQ8ZBQ9OiQ+vuAbjg==}
+  /recharts@2.12.0(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-rVNcdNQ5b7+40Ue7mcEKZJyEv+3SUk2bDEVvOyXPDXXVE7TU3lrvnJUgAvO36hSzhRP2DnAamKXvHLFIFOU0Ww==}
     engines: {node: '>=14'}
     peerDependencies:
       react: ^16.0.0 || ^17.0.0 || ^18.0.0
@@ -18111,10 +18155,22 @@ packages:
     dependencies:
       redux: 4.2.1
 
+  /redux-thunk@3.1.0(redux@5.0.1):
+    resolution: {integrity: sha512-NW2r5T6ksUKXCabzhL9z+h206HQw/NJkcLm1GPImRQ8IzfXwRGqjVhKJGauHirT0DAuyy6hjdnMZaRoAcy0Klw==}
+    peerDependencies:
+      redux: ^5.0.0
+    dependencies:
+      redux: 5.0.1
+    dev: false
+
   /redux@4.2.1:
     resolution: {integrity: sha512-LAUYz4lc+Do8/g7aeRa8JkyDErK6ekstQaqWQrNRW//MY1TvCEpMtpTWvlQ+FPbWCx+Xixu/6SHt5N0HR+SB4w==}
     dependencies:
       '@babel/runtime': 7.23.4
+
+  /redux@5.0.1:
+    resolution: {integrity: sha512-M9/ELqF6fy8FwmkpnF0S3YKOqMyoWJ4+CS5Efg2ct3oY9daQvd/Pc71FpGZsVsbl3Cpb+IIcjBDUnnyBdQbq4w==}
+    dev: false
 
   /reflect.getprototypeof@1.0.4:
     resolution: {integrity: sha512-ECkTw8TmJwW60lOTR+ZkODISW6RQ8+2CL3COqtiJKLd6MmB45hN51HprHFziKLGkAuTGQhBb91V8cy+KHlaCjw==}
@@ -18263,6 +18319,10 @@ packages:
 
   /require-package-name@2.0.1:
     resolution: {integrity: sha512-uuoJ1hU/k6M0779t3VMVIYpb2VMJk05cehCaABFhXaibcbvfgR8wKiozLjVFSzJPmQMRqIcO0HMyTFqfV09V6Q==}
+
+  /reselect@5.1.0:
+    resolution: {integrity: sha512-aw7jcGLDpSgNDyWBQLv2cedml85qd95/iszJjN988zX1t7AVRJi19d9kto5+W7oCfQ94gyo40dVbT6g2k4/kXg==}
+    dev: false
 
   /resolve-alpn@1.2.1:
     resolution: {integrity: sha512-0a1F4l73/ZFZOakJnQ3FvkJ2+gSTQWz/r2KE5OdDY0TxPm5h4GkqkWWfM47T7HsbnOtcJVEF4epCVy6u7Q3K+g==}
@@ -20309,6 +20369,14 @@ packages:
       detect-node-es: 1.1.0
       react: 18.2.0
       tslib: 2.6.2
+    dev: false
+
+  /use-sync-external-store@1.2.0(react@18.2.0):
+    resolution: {integrity: sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.2.0
     dev: false
 
   /utf-8-validate@5.0.10:

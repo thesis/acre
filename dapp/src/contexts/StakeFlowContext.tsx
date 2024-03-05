@@ -27,6 +27,7 @@ export function StakeFlowProvider({ children }: { children: React.ReactNode }) {
     initStake: acreInitStake,
     signMessage,
     btcAddress,
+    depositReceipt,
     stake,
   } = useStakeFlow()
 
@@ -51,9 +52,10 @@ export function StakeFlowProvider({ children }: { children: React.ReactNode }) {
       initStake,
       signMessage,
       btcAddress,
+      depositReceipt,
       stake,
     }),
-    [initStake, signMessage, btcAddress, stake],
+    [initStake, signMessage, btcAddress, depositReceipt, stake],
   )
 
   return (
