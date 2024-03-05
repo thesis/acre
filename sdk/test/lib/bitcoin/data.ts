@@ -37,6 +37,15 @@ export const btcAddresses: {
     ),
   },
   {
+    type: "P2TR",
+    network: BitcoinNetwork.Testnet,
+    address: "tb1pwrq754496svp5dkxht4chuezy4zt6fwf2l8lpv0gexudeggqzuesvd985f",
+    scriptPubKey: Hex.from(
+      "512070c1ea56a5d4181a36c6baeb8bf3222544bd25c957cff0b1e8c9b8dca1001733",
+    ),
+  },
+  // Mainnet addresses.
+  {
     type: "P2PKH",
     network: BitcoinNetwork.Mainnet,
     address: "12higDjoCCNXSA95xZMWUdPvXNmkAduhWv",
@@ -44,7 +53,6 @@ export const btcAddresses: {
       "76a91412ab8dc588ca9d5787dde7eb29569da63c3a238c88ac",
     ),
   },
-  // Mainnet addresses.
   {
     type: "P2WPKH",
     network: BitcoinNetwork.Mainnet,
@@ -63,6 +71,14 @@ export const btcAddresses: {
     address: "bc1qeklep85ntjz4605drds6aww9u0qr46qzrv5xswd35uhjuj8ahfcqgf6hak",
     scriptPubKey: Hex.from(
       "0020cdbf909e935c855d3e8d1b61aeb9c5e3c03ae8021b286839b1a72f2e48fdba70",
+    ),
+  },
+  {
+    type: "P2TR",
+    network: BitcoinNetwork.Mainnet,
+    address: "bc1pxwww0ct9ue7e8tdnlmug5m2tamfn7q06sahstg39ys4c9f3340qqxrdu9k",
+    scriptPubKey: Hex.from(
+      "5120339ce7e165e67d93adb3fef88a6d4beed33f01fa876f05a225242b82a631abc0",
     ),
   },
 ]
