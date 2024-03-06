@@ -12,11 +12,12 @@
           "test/**"
         ]
       }
-    ]
+    ],
+    "@typescript-eslint/no-use-before-define": "off"
   },
   "overrides": [
     {
-      "files": ["deploy/*.ts"],
+      "files": ["deploy/**/*.ts", "test/**/*.ts"],
       "rules": {
         "@typescript-eslint/unbound-method": "off"
       }

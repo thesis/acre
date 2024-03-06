@@ -1,16 +1,18 @@
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 import { expect } from "chai"
 import { MaxUint256 } from "ethers"
+import { helpers } from "hardhat"
 
 import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
 import { deployment } from "./helpers/context"
-import { getNamedSigner } from "./helpers/signer"
 
 import type { StBTC as stBTC, Dispatcher, TestERC20 } from "../typechain"
 
+const { getNamedSigners } = helpers.signers
+
 async function fixture() {
   const { tbtc, stbtc, dispatcher } = await deployment()
-  const { governance, maintainer, treasury } = await getNamedSigner()
+  const { governance, maintainer, treasury } = await getNamedSigners()
 
   return { stbtc, dispatcher, tbtc, governance, maintainer, treasury }
 }
