@@ -4,7 +4,7 @@ import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 import { ethers, helpers } from "hardhat"
 import { expect } from "chai"
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
-import { ContractTransactionResponse, ZeroAddress } from "ethers"
+import { ContractTransactionResponse, MaxUint256, ZeroAddress } from "ethers"
 
 import { StakeRequestState } from "../types"
 
@@ -31,16 +31,20 @@ const { lastBlockTime } = helpers.time
 const { getNamedSigners, getUnnamedSigners } = helpers.signers
 
 describe("AcreBitcoinDepositor", () => {
+  const defaultDepositDustThreshold = 1000000 // 1000000 satoshi = 0.01 BTC
   const defaultDepositTreasuryFeeDivisor = 2000 // 1/2000 = 0.05% = 0.0005
   const defaultDepositTxMaxFee = 1000 // 1000 satoshi = 0.00001 BTC
   const defaultOptimisticFeeDivisor = 500 // 1/500 = 0.002 = 0.2%
   const defaultDepositorFeeDivisor = 1000 // 1/1000 = 0.001 = 0.1%
+
+  const initialQueuedStakesBalance = to1ePrecision(30000, 10) // 30000 satoshi
 
   // Funding transaction amount: 10000 satoshi
   // tBTC Deposit Treasury Fee: 0.05% = 10000 * 0.05% = 5 satoshi
   // tBTC Optimistic Minting Fee: 0.2% = (10000 - 5) * 0.2% = 19,99 satoshi
   // tBTC Deposit Transaction Max Fee: 1000 satoshi
   // Depositor Fee: 1.25% = 10000 satoshi * 0.01% = 10 satoshi
+  // Amounts below are calculated in 1e18 precision:
   const initialDepositAmount = to1ePrecision(10000, 10) // 10000 satoshi
   const bridgedTbtcAmount = to1ePrecision(897501, 8) // 8975,01 satoshi
   const depositorFee = to1ePrecision(10, 10) // 10 satoshi
@@ -76,6 +80,9 @@ describe("AcreBitcoinDepositor", () => {
 
     await tbtcBridge
       .connect(governance)
+      .setDepositDustThreshold(defaultDepositDustThreshold)
+    await tbtcBridge
+      .connect(governance)
       .setDepositTreasuryFeeDivisor(defaultDepositTreasuryFeeDivisor)
     await tbtcBridge
       .connect(governance)
@@ -89,6 +96,14 @@ describe("AcreBitcoinDepositor", () => {
   })
 
   describe("initializeStake", () => {
+    beforeAfterSnapshotWrapper()
+
+    before(async () => {
+      await bitcoinDepositor.exposed_setQueuedStakesBalance(
+        initialQueuedStakesBalance,
+      )
+    })
+
     describe("when staker is zero address", () => {
       it("should revert", async () => {
         await expect(
@@ -173,6 +188,12 @@ describe("AcreBitcoinDepositor", () => {
                 stakeRequest.queuedAmount,
                 "invalid queuedAmount",
               ).to.be.equal(0)
+            })
+
+            it("should not update queuedStakesBalance", async () => {
+              expect(await bitcoinDepositor.queuedStakesBalance()).to.be.equal(
+                initialQueuedStakesBalance,
+              )
             })
 
             it("should reveal the deposit to the bridge contract with extra data", async () => {
@@ -323,6 +344,14 @@ describe("AcreBitcoinDepositor", () => {
   })
 
   describe("finalizeBridging", () => {
+    beforeAfterSnapshotWrapper()
+
+    before(async () => {
+      await bitcoinDepositor.exposed_setQueuedStakesBalance(
+        initialQueuedStakesBalance,
+      )
+    })
+
     describe("when stake has not been initialized", () => {
       it("should revert", async () => {
         await expect(
@@ -512,6 +541,12 @@ describe("AcreBitcoinDepositor", () => {
   describe("finalizeStake", () => {
     beforeAfterSnapshotWrapper()
 
+    before(async () => {
+      await bitcoinDepositor.exposed_setQueuedStakesBalance(
+        initialQueuedStakesBalance,
+      )
+    })
+
     describe("when stake has not been initialized", () => {
       it("should revert", async () => {
         await expect(
@@ -592,6 +627,12 @@ describe("AcreBitcoinDepositor", () => {
             )
 
             expect(stakeRequest.state).to.be.equal(StakeRequestState.Finalized)
+          })
+
+          it("should not update queuedStakesBalance", async () => {
+            expect(await bitcoinDepositor.queuedStakesBalance()).to.be.equal(
+              initialQueuedStakesBalance,
+            )
           })
 
           it("should emit StakeRequestFinalized event", async () => {
@@ -745,6 +786,12 @@ describe("AcreBitcoinDepositor", () => {
   describe("queueStake", () => {
     beforeAfterSnapshotWrapper()
 
+    before(async () => {
+      await bitcoinDepositor.exposed_setQueuedStakesBalance(
+        initialQueuedStakesBalance,
+      )
+    })
+
     describe("when stake has not been initialized", () => {
       it("should revert", async () => {
         await expect(
@@ -836,6 +883,12 @@ describe("AcreBitcoinDepositor", () => {
               (await bitcoinDepositor.stakeRequests(tbtcDepositData.depositKey))
                 .queuedAmount,
             ).to.be.equal(amountToStake)
+          })
+
+          it("should update queuedStakesBalance", async () => {
+            expect(await bitcoinDepositor.queuedStakesBalance()).to.be.equal(
+              initialQueuedStakesBalance + amountToStake,
+            )
           })
 
           it("should not emit StakeRequestQueued event", async () => {
@@ -983,6 +1036,14 @@ describe("AcreBitcoinDepositor", () => {
   })
 
   describe("finalizeQueuedStake", () => {
+    beforeAfterSnapshotWrapper()
+
+    before(async () => {
+      await bitcoinDepositor.exposed_setQueuedStakesBalance(
+        initialQueuedStakesBalance,
+      )
+    })
+
     describe("when stake has not been initialized", () => {
       it("should revert", async () => {
         await expect(
@@ -1060,6 +1121,12 @@ describe("AcreBitcoinDepositor", () => {
               (await bitcoinDepositor.stakeRequests(tbtcDepositData.depositKey))
                 .queuedAmount,
             ).to.be.equal(0)
+          })
+
+          it("should update queuedStakesBalance", async () => {
+            expect(await bitcoinDepositor.queuedStakesBalance()).to.be.equal(
+              initialQueuedStakesBalance,
+            )
           })
 
           it("should emit StakeRequestFinalizedFromQueue event", async () => {
@@ -1156,6 +1223,14 @@ describe("AcreBitcoinDepositor", () => {
   })
 
   describe("cancelQueuedStake", () => {
+    beforeAfterSnapshotWrapper()
+
+    before(async () => {
+      await bitcoinDepositor.exposed_setQueuedStakesBalance(
+        initialQueuedStakesBalance,
+      )
+    })
+
     describe("when stake has not been initialized", () => {
       it("should revert", async () => {
         await expect(
@@ -1251,6 +1326,12 @@ describe("AcreBitcoinDepositor", () => {
               ).to.be.equal(0)
             })
 
+            it("should update queuedStakesBalance", async () => {
+              expect(await bitcoinDepositor.queuedStakesBalance()).to.be.equal(
+                initialQueuedStakesBalance,
+              )
+            })
+
             it("should emit StakeRequestCancelledFromQueue event", async () => {
               await expect(tx)
                 .to.emit(bitcoinDepositor, "StakeRequestCancelledFromQueue")
@@ -1323,6 +1404,328 @@ describe("AcreBitcoinDepositor", () => {
           })
         })
       })
+    })
+  })
+
+  describe("maxStake", () => {
+    beforeAfterSnapshotWrapper()
+
+    const maxTotalAssetsSoftLimit = to1ePrecision(100000000, 10) // 100000000 satoshi = 1 BTC
+
+    before(async () => {
+      await bitcoinDepositor
+        .connect(governance)
+        .updateMaxTotalAssetsSoftLimit(maxTotalAssetsSoftLimit)
+    })
+
+    describe("total assets of stBTC are greater than the soft limit", () => {
+      beforeAfterSnapshotWrapper()
+
+      const currentTotalAssets = maxTotalAssetsSoftLimit
+
+      before(async () => {
+        // Simulate tBTC already deposited in stBTC.
+        await tbtc.mint(await stbtc.getAddress(), currentTotalAssets)
+      })
+
+      it("should return 0", async () => {
+        expect(await bitcoinDepositor.maxStake()).to.be.equal(0)
+      })
+    })
+
+    describe("total assets of stBTC are less than the soft limit", () => {
+      beforeAfterSnapshotWrapper()
+
+      const currentTotalAssets = to1ePrecision(60000000, 10) // 60000000 satoshi = 0.6 BTC
+      const availableSoftLimit = to1ePrecision(40000000, 10) // 40000000 satoshi = 0.4 BTC
+
+      before(async () => {
+        // Simulate tBTC already deposited in stBTC.
+        await tbtc.mint(await stbtc.getAddress(), currentTotalAssets)
+
+        expect(await stbtc.totalAssets()).to.be.equal(currentTotalAssets)
+      })
+
+      describe("stakes queue balance exceeds the available limit", () => {
+        beforeAfterSnapshotWrapper()
+
+        before(async () => {
+          await bitcoinDepositor.exposed_setQueuedStakesBalance(
+            availableSoftLimit,
+          )
+        })
+
+        it("should return 0", async () => {
+          expect(await bitcoinDepositor.maxStake()).to.be.equal(0)
+        })
+      })
+
+      describe("stakes queue balance is less than the available limit", () => {
+        const stakesQueueBalance = to1ePrecision(10000000, 10) // 10000000 satoshi = 0.1 BTC
+        const availableSoftLimitMinusQueue = to1ePrecision(30000000, 10) // 30000000 satoshi = 0.3 BTC
+
+        beforeAfterSnapshotWrapper()
+
+        before(async () => {
+          await bitcoinDepositor.exposed_setQueuedStakesBalance(
+            stakesQueueBalance,
+          )
+        })
+
+        describe("max single stake amount is zero", () => {
+          beforeAfterSnapshotWrapper()
+
+          before(async () => {
+            await bitcoinDepositor
+              .connect(governance)
+              .updateMaxSingleStakeAmount(0)
+          })
+
+          it("should return zero", async () => {
+            expect(await bitcoinDepositor.maxStake()).to.be.equal(0)
+          })
+        })
+
+        describe("max single stake amount is less than the available limit", () => {
+          beforeAfterSnapshotWrapper()
+
+          const maxSingleStakeAmount = to1ePrecision(20000000, 10) // 20000000 satoshi = 0.2 BTC
+          const expectedResult = maxSingleStakeAmount
+
+          before(async () => {
+            await bitcoinDepositor
+              .connect(governance)
+              .updateMaxSingleStakeAmount(maxSingleStakeAmount)
+          })
+
+          it("should return max single stake amount", async () => {
+            expect(await bitcoinDepositor.maxStake()).to.be.equal(
+              expectedResult,
+            )
+          })
+        })
+
+        describe("max single stake amount is greater than the available limit", () => {
+          beforeAfterSnapshotWrapper()
+
+          const maxSingleStakeAmount = to1ePrecision(35000000, 10) // 35000000 satoshi = 0.35 BTC
+          const expectedResult = availableSoftLimitMinusQueue
+
+          before(async () => {
+            await bitcoinDepositor
+              .connect(governance)
+              .updateMaxSingleStakeAmount(maxSingleStakeAmount)
+          })
+
+          it("should return available limit", async () => {
+            expect(await bitcoinDepositor.maxStake()).to.be.equal(
+              expectedResult,
+            )
+          })
+        })
+      })
+    })
+  })
+
+  describe("updateMinStakeAmount", () => {
+    beforeAfterSnapshotWrapper()
+
+    describe("when caller is not governance", () => {
+      beforeAfterSnapshotWrapper()
+
+      it("should revert", async () => {
+        await expect(
+          bitcoinDepositor.connect(thirdParty).updateMinStakeAmount(1234),
+        )
+          .to.be.revertedWithCustomError(
+            bitcoinDepositor,
+            "OwnableUnauthorizedAccount",
+          )
+          .withArgs(thirdParty.address)
+      })
+    })
+
+    describe("when caller is governance", () => {
+      const testUpdateMinStakeAmount = (newValue: bigint) =>
+        function () {
+          beforeAfterSnapshotWrapper()
+
+          let tx: ContractTransactionResponse
+
+          before(async () => {
+            tx = await bitcoinDepositor
+              .connect(governance)
+              .updateMinStakeAmount(newValue)
+          })
+
+          it("should emit MaxSingleStakeAmountUpdated event", async () => {
+            await expect(tx)
+              .to.emit(bitcoinDepositor, "MinStakeAmountUpdated")
+              .withArgs(newValue)
+          })
+
+          it("should update value correctly", async () => {
+            expect(await bitcoinDepositor.minStakeAmount()).to.be.eq(newValue)
+          })
+        }
+
+      beforeAfterSnapshotWrapper()
+
+      // Deposit dust threshold: 1000000 satoshi = 0.01 BTC
+      // tBTC Bridge stores the dust threshold in satoshi precision,
+      // we need to convert it to the tBTC token precision as `updateMinStakeAmount`
+      // function expects this precision.
+      const bridgeDepositDustThreshold = to1ePrecision(
+        defaultDepositDustThreshold,
+        10,
+      )
+
+      describe("when new stake amount is less than bridge deposit dust threshold", () => {
+        beforeAfterSnapshotWrapper()
+        const newMinStakeAmount = bridgeDepositDustThreshold - 1n
+
+        it("should revert", async () => {
+          await expect(
+            bitcoinDepositor
+              .connect(governance)
+              .updateMinStakeAmount(newMinStakeAmount),
+          )
+            .to.be.revertedWithCustomError(
+              bitcoinDepositor,
+              "MinStakeAmountLowerThanBridgeMinDeposit",
+            )
+            .withArgs(newMinStakeAmount, bridgeDepositDustThreshold)
+        })
+      })
+
+      describe(
+        "when new stake amount is equal to bridge deposit dust threshold",
+        testUpdateMinStakeAmount(bridgeDepositDustThreshold),
+      )
+
+      describe(
+        "when new stake amount is greater than bridge deposit dust threshold",
+        testUpdateMinStakeAmount(bridgeDepositDustThreshold + 1n),
+      )
+
+      describe(
+        "when new stake amount is equal max uint256",
+        testUpdateMinStakeAmount(MaxUint256),
+      )
+    })
+  })
+
+  describe("updateMaxSingleStakeAmount", () => {
+    beforeAfterSnapshotWrapper()
+
+    describe("when caller is not governance", () => {
+      it("should revert", async () => {
+        await expect(
+          bitcoinDepositor.connect(thirdParty).updateMaxSingleStakeAmount(1234),
+        )
+          .to.be.revertedWithCustomError(
+            bitcoinDepositor,
+            "OwnableUnauthorizedAccount",
+          )
+          .withArgs(thirdParty.address)
+      })
+    })
+
+    describe("when caller is governance", () => {
+      const testUpdateMaxSingleStakeAmount = (newValue: bigint) =>
+        function () {
+          beforeAfterSnapshotWrapper()
+
+          let tx: ContractTransactionResponse
+
+          before(async () => {
+            tx = await bitcoinDepositor
+              .connect(governance)
+              .updateMaxSingleStakeAmount(newValue)
+          })
+
+          it("should emit MaxSingleStakeAmountUpdated event", async () => {
+            await expect(tx)
+              .to.emit(bitcoinDepositor, "MaxSingleStakeAmountUpdated")
+              .withArgs(newValue)
+          })
+
+          it("should update value correctly", async () => {
+            expect(await bitcoinDepositor.maxSingleStakeAmount()).to.be.eq(
+              newValue,
+            )
+          })
+        }
+
+      describe(
+        "when new value is non-zero",
+        testUpdateMaxSingleStakeAmount(47281n),
+      )
+
+      describe("when new value is zero", testUpdateMaxSingleStakeAmount(0n))
+
+      describe(
+        "when new value is max uint256",
+        testUpdateMaxSingleStakeAmount(MaxUint256),
+      )
+    })
+  })
+
+  describe("updateMaxTotalAssetsSoftLimit", () => {
+    beforeAfterSnapshotWrapper()
+
+    describe("when caller is not governance", () => {
+      it("should revert", async () => {
+        await expect(
+          bitcoinDepositor
+            .connect(thirdParty)
+            .updateMaxTotalAssetsSoftLimit(1234),
+        )
+          .to.be.revertedWithCustomError(
+            bitcoinDepositor,
+            "OwnableUnauthorizedAccount",
+          )
+          .withArgs(thirdParty.address)
+      })
+    })
+
+    describe("when caller is governance", () => {
+      const testUpdateMaxTotalAssetsSoftLimit = (newValue: bigint) =>
+        function () {
+          beforeAfterSnapshotWrapper()
+
+          let tx: ContractTransactionResponse
+
+          before(async () => {
+            tx = await bitcoinDepositor
+              .connect(governance)
+              .updateMaxTotalAssetsSoftLimit(newValue)
+          })
+
+          it("should emit MaxTotalAssetsSoftLimitUpdated event", async () => {
+            await expect(tx)
+              .to.emit(bitcoinDepositor, "MaxTotalAssetsSoftLimitUpdated")
+              .withArgs(newValue)
+          })
+
+          it("should update value correctly", async () => {
+            expect(await bitcoinDepositor.maxTotalAssetsSoftLimit()).to.be.eq(
+              newValue,
+            )
+          })
+        }
+
+      describe(
+        "when new value is non-zero",
+        testUpdateMaxTotalAssetsSoftLimit(47281n),
+      )
+
+      describe("when new value is zero", testUpdateMaxTotalAssetsSoftLimit(0n))
+
+      describe(
+        "when new value is max uint256",
+        testUpdateMaxTotalAssetsSoftLimit(MaxUint256),
+      )
     })
   })
 
