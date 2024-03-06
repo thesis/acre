@@ -27,7 +27,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
       args: ["Test tBTC", "TestTBTC"],
       from: deployer,
       log: true,
-      waitConfirmations: 1,
+      waitConfirmations: waitConfirmationsNumber(hre),
     })
   }
 }

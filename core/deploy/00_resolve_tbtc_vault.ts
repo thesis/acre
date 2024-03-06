@@ -30,7 +30,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
       args: [tbtc.address, bridge.address],
       from: deployer,
       log: true,
-      waitConfirmations: 1,
+      waitConfirmations: waitConfirmationsNumber(hre),
     })
   }
 }
