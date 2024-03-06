@@ -16,7 +16,7 @@ import {
 } from "#/hooks"
 import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
-import { asyncWrapper } from "#/utils"
+import { logPromiseFailure } from "#/utils"
 import StakeFormModal from "../ActiveStakingStep/StakeFormModal"
 import UnstakeFormModal from "../ActiveUnstakingStep/UnstakeFormModal"
 
@@ -59,7 +59,8 @@ function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
   )
 
   const handleSubmitFormWrapper = useCallback(
-    (values: TokenAmountFormValues) => asyncWrapper(handleSubmitForm(values)),
+    (values: TokenAmountFormValues) =>
+      logPromiseFailure(handleSubmitForm(values)),
     [handleSubmitForm],
   )
 
