@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React from "react"
 import {
   Card,
   CardBody,
@@ -7,33 +7,19 @@ import {
   CardProps,
 } from "@chakra-ui/react"
 import { StatisticType } from "#/types"
-import {
-  mockedStakerStatistics,
-  mockedProtocolStatistics,
-} from "#/mocks/mock-statistics"
 import ButtonLink from "#/components/shared/ButtonLink"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import { TextSm } from "#/components/shared/Typography"
+import { useStakingBtcHook } from "#/hooks"
+import { LINKS } from "#/constants"
 
 export default function StatisticsCard(props: CardProps) {
-  const [statistics, setStatistic] = useState<StatisticType[]>()
-  // TODO: change when staking state will be available
-  const isStaking = false
-
-  useEffect(() => {
-    if (isStaking) {
-      setStatistic(mockedStakerStatistics)
-    } else {
-      setStatistic(mockedProtocolStatistics)
-    }
-  }, [isStaking])
-
-  if (!statistics) return null
+  const statistics = useStakingBtcHook()
 
   return (
-    <Card {...props} p={5} pb={2} w={72}>
+    <Card p={5} pb={2} w={72} {...props}>
       <CardBody p={0} mb={2}>
-        {statistics.map(({ name, amount, totalAmount }: StatisticType) => (
+        {statistics?.map(({ name, amount, totalAmount }: StatisticType) => (
           <Card
             variant="elevated"
             colorScheme="gold"
@@ -59,7 +45,7 @@ export default function StatisticsCard(props: CardProps) {
       </CardBody>
       <CardFooter p={0}>
         <ButtonLink
-          href="https://dune.com/threshold/tbtc"
+          href={LINKS.tbtcDuneDashboard}
           isExternal
           variant="ghost"
           pl={0}

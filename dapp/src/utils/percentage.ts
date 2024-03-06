@@ -1,8 +1,8 @@
 import { FixedNumber } from "ethers"
 
 export const calculatePercentage = (
-  amount: string | number,
-  totalAmount: string | number,
+  amount: string | number | bigint,
+  totalAmount: string | number | bigint,
 ): number => {
   if (!amount || !totalAmount) return 0
 
@@ -11,20 +11,32 @@ export const calculatePercentage = (
     .mulUnsafe(FixedNumber.fromString("100"))
     .toUnsafeFloat()
 }
+
 export const formatPercentage = (
   percentage: number,
   desiredDecimals = 2,
-  displayLessThanGreaterThanSigns = false,
-  displaySign = true,
+  shouldDisplayLessThanGreaterThanSigns = false,
+  shouldDisplayPercentageSign = true,
 ): string => {
-  if (percentage < 1 && percentage > 0 && displayLessThanGreaterThanSigns) {
-    return `<1${displaySign ? "%" : ""}`
+  if (
+    percentage < 1 &&
+    percentage > 0 &&
+    shouldDisplayLessThanGreaterThanSigns
+  ) {
+    return `<1${shouldDisplayPercentageSign ? "%" : ""}`
   }
-  if (percentage > 99 && percentage < 100 && displayLessThanGreaterThanSigns) {
-    return `>99${displaySign ? "%" : ""}`
+
+  if (
+    percentage > 99 &&
+    percentage < 100 &&
+    shouldDisplayLessThanGreaterThanSigns
+  ) {
+    return `>99${shouldDisplayPercentageSign ? "%" : ""}`
   }
 
   const roundedPercentage = percentage.toFixed(desiredDecimals)
 
-  return `${roundedPercentage.toString()}${displaySign ? "%" : ""}`
+  return `${roundedPercentage.toString()}${
+    shouldDisplayPercentageSign ? "%" : ""
+  }`
 }
