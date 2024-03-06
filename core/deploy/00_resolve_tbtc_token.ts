@@ -4,6 +4,7 @@ import type {
   HardhatRuntimeEnvironment,
 } from "hardhat/types"
 import { isNonZeroAddress } from "../helpers/address"
+import { waitConfirmationsNumber } from "../helpers/deployment"
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { getNamedAccounts, deployments } = hre
@@ -27,7 +28,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
       args: ["Test tBTC", "TestTBTC"],
       from: deployer,
       log: true,
-      waitConfirmations: 1,
+      waitConfirmations: waitConfirmationsNumber(hre),
     })
   }
 }

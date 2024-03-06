@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
+/* solhint-disable func-name-mixedcase */
 pragma solidity ^0.8.21;
 
 import {AcreBitcoinDepositor} from "../AcreBitcoinDepositor.sol";
