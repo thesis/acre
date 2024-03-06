@@ -147,11 +147,11 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     /// @notice Emitted when a queued stake request is cancelled.
     /// @param depositKey Deposit key identifying the deposit.
     /// @param staker Address of the staker.
-    /// @param amountToStake Amount of queued tBTC tokens that got cancelled.
+    /// @param amountCancelled Amount of queued tBTC tokens that got cancelled.
     event StakeRequestCancelledFromQueue(
         uint256 indexed depositKey,
         address indexed staker,
-        uint256 amountToStake
+        uint256 amountCancelled
     );
 
     /// @notice Emitted when a depositor fee divisor is updated.
@@ -324,10 +324,10 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
 
         StakeRequest storage request = stakeRequests[depositKey];
 
-        uint256 amountToStake;
-        (amountToStake, request.staker) = finalizeBridging(depositKey);
+        uint256 amountToQueue;
+        (amountToQueue, request.staker) = finalizeBridging(depositKey);
 
-        request.queuedAmount = SafeCast.toUint88(amountToStake);
+        request.queuedAmount = SafeCast.toUint88(amountToQueue);
 
         emit StakeRequestQueued(depositKey, msg.sender, request.queuedAmount);
     }
