@@ -1,8 +1,6 @@
 import React, { useCallback, useState } from "react"
 import {
   Button,
-  Tooltip,
-  Icon,
   CardBody,
   Card,
   CardFooter,
@@ -11,9 +9,9 @@ import {
 } from "@chakra-ui/react"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import { TextMd } from "#/components/shared/Typography"
-import { Info } from "#/assets/icons"
 import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
 import TransactionModal from "#/components/TransactionModal"
+import { StakingTokenPopover } from "#/components/StakingTokenPopover"
 
 export default function PositionDetails(props: CardProps) {
   const [actionFlowType, setActionFlowType] = useState<
@@ -29,10 +27,7 @@ export default function PositionDetails(props: CardProps) {
       <CardBody>
         <HStack justifyContent="space-between">
           <TextMd fontWeight="bold">Your position</TextMd>
-          {/* TODO: Add correct text for tooltip */}
-          <Tooltip label="Template" placement="top">
-            <Icon as={Info} color="grey.700" />
-          </Tooltip>
+          <StakingTokenPopover {...props} />
         </HStack>
         <CurrencyBalanceWithConversion
           from={{
