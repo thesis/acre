@@ -1,5 +1,6 @@
 import type { DeployFunction } from "hardhat-deploy/types"
 import type { HardhatRuntimeEnvironment } from "hardhat/types"
+import { waitConfirmationsNumber } from "../helpers/deployment"
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { getNamedAccounts, deployments, helpers } = hre
@@ -18,7 +19,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     from: deployer,
     args: [bridge.address, tbtcVault.address, tbtc.address, stbtc.address],
     log: true,
-    waitConfirmations: 1,
+    waitConfirmations: waitConfirmationsNumber(hre),
   })
 
   if (hre.network.tags.etherscan) {

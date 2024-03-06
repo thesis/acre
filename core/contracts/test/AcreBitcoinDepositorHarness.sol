@@ -1,14 +1,39 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity ^0.8.21;
 
+import {AcreBitcoinDepositor} from "../AcreBitcoinDepositor.sol";
 import {MockBridge, MockTBTCVault} from "@keep-network/tbtc-v2/contracts/test/TestTBTCDepositor.sol";
 import {IBridge} from "@keep-network/tbtc-v2/contracts/integrator/IBridge.sol";
 import {IBridgeTypes} from "@keep-network/tbtc-v2/contracts/integrator/IBridge.sol";
 
 import {TestERC20} from "./TestERC20.sol";
 
+/// @dev A test contract to expose internal function from AcreBitcoinDepositor contract.
+///      This solution follows Foundry recommendation:
+///      https://book.getfoundry.sh/tutorials/best-practices#internal-functions
+contract AcreBitcoinDepositorHarness is AcreBitcoinDepositor {
+    constructor(
+        address bridge,
+        address tbtcVault,
+        address tbtcToken,
+        address stbtc
+    ) AcreBitcoinDepositor(bridge, tbtcVault, tbtcToken, stbtc) {}
+
+    function exposed_finalizeBridging(
+        uint256 depositKey
+    ) external returns (uint256 amountToStake, address staker) {
+        return finalizeBridging(depositKey);
+    }
+
+    function exposed_setQueuedStakesBalance(uint256 amount) external {
+        queuedStakesBalance = amount;
+    }
+}
+
+/// @dev A test contract to stub tBTC Bridge contract.
 contract BridgeStub is MockBridge {}
 
+/// @dev A test contract to stub tBTC Vault contract.
 contract TBTCVaultStub is MockTBTCVault {
     TestERC20 public immutable tbtc;
     IBridge public immutable bridge;

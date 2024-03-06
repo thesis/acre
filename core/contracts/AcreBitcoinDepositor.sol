@@ -36,7 +36,7 @@ import {stBTC} from "./stBTC.sol";
 ///         for sweeping, and when the sweep operation is confirmed on the Bitcoin
 ///         network, the tBTC Bridge and tBTC vault mint the tBTC token to the
 ///         Depositor address. After tBTC is minted to the Depositor, on the stake
-///         finalization tBTC is staked in stBTC contract and stBTC shares are emitted
+///         finalization tBTC is staked in Acre and stBTC shares are emitted
 ///         to the staker.
 contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     using SafeERC20 for IERC20;
@@ -176,11 +176,11 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     /// @notice Emitted when a queued stake request is cancelled.
     /// @param depositKey Deposit key identifying the deposit.
     /// @param staker Address of the staker.
-    /// @param amountToStake Amount of queued tBTC tokens that got cancelled.
+    /// @param amountCancelled Amount of queued tBTC tokens that got cancelled.
     event StakeRequestCancelledFromQueue(
         uint256 indexed depositKey,
         address indexed staker,
-        uint256 amountToStake
+        uint256 amountCancelled
     );
 
     /// @notice Emitted when a minimum single stake amount is updated.
@@ -389,15 +389,15 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
 
         StakeRequest storage request = stakeRequests[depositKey];
 
-        uint256 amountToStake;
-        (amountToStake, request.staker) = finalizeBridging(depositKey);
+        uint256 amountToQueue;
+        (amountToQueue, request.staker) = finalizeBridging(depositKey);
 
-        request.queuedAmount = SafeCast.toUint88(amountToStake);
+        request.queuedAmount = SafeCast.toUint88(amountToQueue);
 
         // Increase pending stakes balance.
-        queuedStakesBalance += amountToStake;
+        queuedStakesBalance += amountToQueue;
 
-        emit StakeRequestQueued(depositKey, msg.sender, amountToStake);
+        emit StakeRequestQueued(depositKey, msg.sender, amountToQueue);
     }
 
     /// @notice This function should be called for previously queued stake
@@ -467,43 +467,6 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
         tbtcToken.safeTransfer(staker, amount);
     }
 
-    /// @notice Minimum stake amount (in tBTC token precision).
-    /// @dev This function should be used by dApp to check the minimum amount
-    ///      for the stake request.
-    /// @dev It is not enforced in the `initializeStakeRequest` function, as
-    ///      it is intended to be used in the dApp staking form.
-    function minStake() external view returns (uint256) {
-        return minStakeAmount;
-    }
-
-    /// @notice Maximum stake amount (in tBTC token precision).
-    /// @dev It takes into consideration the maximum total assets soft limit (soft
-    ///      cap), that is expected to be set below the stBTC maximum total assets
-    ///      limit (hard cap).
-    /// @dev This function should be called before Bitcoin transaction funding
-    ///      is made. The `initializeStakeRequest` function is not enforcing this
-    ///      limit, not to block the reveal deposit operation of the concurrent
-    ///      deposits made in the dApp in the short window between limit check,
-    ///      submission of Bitcoin funding transaction and stake request
-    ///      initialization.
-    /// @return Maximum allowed stake amount.
-    function maxStake() external view returns (uint256) {
-        uint256 currentTotalAssets = stbtc.totalAssets();
-
-        if (currentTotalAssets >= maxTotalAssetsSoftLimit) {
-            return 0;
-        }
-
-        uint256 availableLimit = maxTotalAssetsSoftLimit - currentTotalAssets;
-
-        if (queuedStakesBalance >= availableLimit) {
-            return 0;
-        }
-        availableLimit -= queuedStakesBalance;
-
-        return Math.min(availableLimit, maxSingleStakeAmount);
-    }
-
     /// @notice Updates the minimum stake amount.
     /// @dev It requires that the new value is greater or equal to the tBTC Bridge
     ///      deposit dust threshold, to ensure deposit will be able to be bridged.
@@ -558,6 +521,43 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
         emit DepositorFeeDivisorUpdated(newDepositorFeeDivisor);
     }
 
+    /// @notice Minimum stake amount (in tBTC token precision).
+    /// @dev This function should be used by dApp to check the minimum amount
+    ///      for the stake request.
+    /// @dev It is not enforced in the `initializeStakeRequest` function, as
+    ///      it is intended to be used in the dApp staking form.
+    function minStake() external view returns (uint256) {
+        return minStakeAmount;
+    }
+
+    /// @notice Maximum stake amount (in tBTC token precision).
+    /// @dev It takes into consideration the maximum total assets soft limit (soft
+    ///      cap), that is expected to be set below the stBTC maximum total assets
+    ///      limit (hard cap).
+    /// @dev This function should be called before Bitcoin transaction funding
+    ///      is made. The `initializeStakeRequest` function is not enforcing this
+    ///      limit, not to block the reveal deposit operation of the concurrent
+    ///      deposits made in the dApp in the short window between limit check,
+    ///      submission of Bitcoin funding transaction and stake request
+    ///      initialization.
+    /// @return Maximum allowed stake amount.
+    function maxStake() external view returns (uint256) {
+        uint256 currentTotalAssets = stbtc.totalAssets();
+
+        if (currentTotalAssets >= maxTotalAssetsSoftLimit) {
+            return 0;
+        }
+
+        uint256 availableLimit = maxTotalAssetsSoftLimit - currentTotalAssets;
+
+        if (queuedStakesBalance >= availableLimit) {
+            return 0;
+        }
+        availableLimit -= queuedStakesBalance;
+
+        return Math.min(availableLimit, maxSingleStakeAmount);
+    }
+
     // TODO: Handle minimum deposit amount in tBTC Bridge vs stBTC.
 
     /// @notice Encodes staker address and referral as extra data.
@@ -589,7 +589,7 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     }
 
     /// @notice This function is used for state transitions. It ensures the current
-    ///         stakte matches expected, and updates the stake request to a new
+    ///         state matches expected, and updates the stake request to a new
     ///         state.
     /// @param depositKey Deposit key identifying the deposit.
     /// @param expectedState Expected current stake request state.

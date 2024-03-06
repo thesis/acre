@@ -62,6 +62,22 @@ class StakingModule {
       deposit,
     )
   }
+
+  /**
+   * @param identifier The generic chain identifier.
+   * @returns Value of the basis for calculating final BTC balance.
+   */
+  sharesBalance(identifier: ChainIdentifier) {
+    return this.#contracts.stBTC.balanceOf(identifier)
+  }
+
+  /**
+   * @param identifier The generic chain identifier.
+   * @returns Maximum withdraw value.
+   */
+  estimatedBitcoinBalance(identifier: ChainIdentifier) {
+    return this.#contracts.stBTC.assetsBalanceOf(identifier)
+  }
 }
 
 export { StakingModule, StakeInitialization }

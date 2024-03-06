@@ -1,7 +1,6 @@
-import React, { useMemo } from "react"
+import React from "react"
+import { useCurrencyConversion } from "#/hooks"
 import { CurrencyBalance, CurrencyBalanceProps } from "../CurrencyBalance"
-
-const MOCK_CONVERSION_AMOUNT = 100
 
 export function CurrencyBalanceWithConversion({
   from,
@@ -10,12 +9,7 @@ export function CurrencyBalanceWithConversion({
   from: CurrencyBalanceProps
   to: CurrencyBalanceProps
 }) {
-  // TODO: Make the correct conversion
-  const conversionAmount = useMemo(() => {
-    if (!from.amount || BigInt(from.amount) < 0n) return undefined
-
-    return MOCK_CONVERSION_AMOUNT
-  }, [from.amount])
+  const conversionAmount = useCurrencyConversion({ from, to })
 
   return (
     <>
