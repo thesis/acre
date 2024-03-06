@@ -35,7 +35,7 @@ import {stBTC} from "./stBTC.sol";
 ///         for sweeping, and when the sweep operation is confirmed on the Bitcoin
 ///         network, the tBTC Bridge and tBTC vault mint the tBTC token to the
 ///         Depositor address. After tBTC is minted to the Depositor, on the stake
-///         finalization tBTC is staked in stBTC contract and stBTC shares are emitted
+///         finalization tBTC is staked in Acre and stBTC shares are emitted
 ///         to the staker.
 contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     using SafeERC20 for IERC20;
@@ -434,7 +434,7 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
     }
 
     /// @notice This function is used for state transitions. It ensures the current
-    ///         stakte matches expected, and updates the stake request to a new
+    ///         state matches expected, and updates the stake request to a new
     ///         state.
     /// @param depositKey Deposit key identifying the deposit.
     /// @param expectedState Expected current stake request state.
