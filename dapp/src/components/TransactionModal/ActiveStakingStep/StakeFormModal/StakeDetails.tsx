@@ -11,12 +11,12 @@ function StakeDetails({
   maxTokenAmount,
 }: {
   currency: CurrencyType
-  minTokenAmount: string
+  minTokenAmount: bigint
   maxTokenAmount: string
 }) {
   const value = useTokenAmountFormValue() ?? 0n
   const isMaximumValueExceeded = value > BigInt(maxTokenAmount)
-  const isMinimumValueFulfilled = value >= BigInt(minTokenAmount)
+  const isMinimumValueFulfilled = value >= minTokenAmount
   // Let's not calculate the details of the transaction when the value is not valid.
   const amount = !isMaximumValueExceeded && isMinimumValueFulfilled ? value : 0n
   const details = useTransactionDetails(amount)

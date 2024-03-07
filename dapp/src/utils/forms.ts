@@ -18,7 +18,7 @@ export function getErrorsObj<T>(errors: { [key in keyof T]: string }) {
 export function validateTokenAmount(
   value: bigint | undefined,
   maxValue: string,
-  minValue: string,
+  minValue: bigint,
   currency: CurrencyType,
 ): string | undefined {
   if (value === undefined) return ERRORS.REQUIRED
@@ -26,15 +26,14 @@ export function validateTokenAmount(
   const { decimals } = getCurrencyByType(currency)
 
   const maxValueInBI = BigInt(maxValue)
-  const minValueInBI = BigInt(minValue)
 
   const isMaximumValueExceeded = value > maxValueInBI
-  const isMinimumValueFulfilled = value >= minValueInBI
+  const isMinimumValueFulfilled = value >= minValue
 
   if (isMaximumValueExceeded) return ERRORS.EXCEEDED_VALUE
   if (!isMinimumValueFulfilled)
     return ERRORS.INSUFFICIENT_VALUE(
-      fixedPointNumberToString(BigInt(minValue), decimals),
+      fixedPointNumberToString(minValue, decimals),
     )
 
   return undefined

@@ -1,9 +1,9 @@
 import React from "react"
-import { BITCOIN_MIN_AMOUNT } from "#/constants"
 import TokenAmountForm from "#/components/shared/TokenAmountForm"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
-import { useWalletContext } from "#/hooks"
+import { useAppSelector, useWalletContext } from "#/hooks"
 import { FormSubmitButton } from "#/components/shared/Form"
+import { selectMinDepositAmount } from "#/store/btc"
 import StakeDetails from "./StakeDetails"
 
 function StakeFormModal({
@@ -11,6 +11,7 @@ function StakeFormModal({
 }: {
   onSubmitForm: (values: TokenAmountFormValues) => void
 }) {
+  const minDepositAmount = useAppSelector(selectMinDepositAmount)
   const { btcAccount } = useWalletContext()
   const tokenBalance = btcAccount?.balance.toString() ?? "0"
 
@@ -19,12 +20,12 @@ function StakeFormModal({
       tokenBalanceInputPlaceholder="BTC"
       currency="bitcoin"
       tokenBalance={tokenBalance}
-      minTokenAmount={BITCOIN_MIN_AMOUNT}
+      minTokenAmount={minDepositAmount}
       onSubmitForm={onSubmitForm}
     >
       <StakeDetails
         currency="bitcoin"
-        minTokenAmount={BITCOIN_MIN_AMOUNT}
+        minTokenAmount={minDepositAmount}
         maxTokenAmount={tokenBalance}
       />
       <FormSubmitButton mt={4}>Stake</FormSubmitButton>
