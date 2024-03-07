@@ -29,6 +29,9 @@ importers:
       '@openzeppelin/contracts':
         specifier: ^5.0.0
         version: 5.0.0
+      '@openzeppelin/contracts-upgradeable':
+        specifier: ^5.0.2
+        version: 5.0.2(@openzeppelin/contracts@5.0.0)
     devDependencies:
       '@keep-network/hardhat-helpers':
         specifier: ^0.7.1
@@ -5227,6 +5230,14 @@ packages:
 
   /@openzeppelin/contracts-upgradeable@4.9.5:
     resolution: {integrity: sha512-f7L1//4sLlflAN7fVzJLoRedrf5Na3Oal5PZfIq55NFcVZ90EpV1q5xOvL4lFvg3MNICSDr2hH0JUBxwlxcoPg==}
+    dev: false
+
+  /@openzeppelin/contracts-upgradeable@5.0.2(@openzeppelin/contracts@5.0.0):
+    resolution: {integrity: sha512-0MmkHSHiW2NRFiT9/r5Lu4eJq5UJ4/tzlOgYXNAIj/ONkQTVnz22pLxDvp4C4uZ9he7ZFvGn3Driptn1/iU7tQ==}
+    peerDependencies:
+      '@openzeppelin/contracts': 5.0.2
+    dependencies:
+      '@openzeppelin/contracts': 5.0.0
     dev: false
 
   /@openzeppelin/contracts@2.5.1:

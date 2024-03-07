@@ -5,6 +5,7 @@ import "hardhat-contract-sizer"
 import "hardhat-deploy"
 import "solidity-docgen"
 import "@keep-network/hardhat-helpers"
+import "@openzeppelin/hardhat-upgrades"
 
 const config: HardhatUserConfig = {
   solidity: {
