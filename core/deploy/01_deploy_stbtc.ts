@@ -8,7 +8,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
   const tbtc = await deployments.get("TBTC")
 
-  const [stbtc, proxyDeployment] = await helpers.upgrades.deployProxy("stBTC", {
+  const [, proxyDeployment] = await helpers.upgrades.deployProxy("stBTC", {
     contractName: "stBTC",
     initializerArgs: [tbtc.address, treasury],
     factoryOpts: {
@@ -18,8 +18,6 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
       kind: "transparent",
     },
   })
-
-  await stbtc.waitForDeployment()
 
   if (hre.network.tags.etherscan) {
     await helpers.etherscan.verify(proxyDeployment)

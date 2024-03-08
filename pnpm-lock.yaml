@@ -32,6 +32,12 @@ importers:
       '@openzeppelin/contracts-upgradeable':
         specifier: ^5.0.2
         version: 5.0.2(@openzeppelin/contracts@5.0.0)
+      '@types/chai-as-promised':
+        specifier: ^7.1.8
+        version: 7.1.8
+      chai-as-promised:
+        specifier: ^7.1.1
+        version: 7.1.1(chai@4.3.10)
     devDependencies:
       '@keep-network/hardhat-helpers':
         specifier: ^0.7.1
@@ -6588,11 +6594,9 @@ packages:
     resolution: {integrity: sha512-ThlRVIJhr69FLlh6IctTXFkmhtP3NpMZ2QGq69StYLyKZFp/HOp1VdKZj7RvfNWYYcJ1xlbLGLLWj1UvP5u/Gw==}
     dependencies:
       '@types/chai': 4.3.11
-    dev: true
 
   /@types/chai@4.3.11:
     resolution: {integrity: sha512-qQR1dr2rGIHYlJulmr8Ioq3De0Le9E4MJ5AiaeAETJJpndT1uUNHsGFK3L/UIu+rbkQSdj8J/w2bCsBZc/Y5fQ==}
-    dev: true
 
   /@types/common-tags@1.8.4:
     resolution: {integrity: sha512-S+1hLDJPjWNDhcGxsxEbepzaxWqURP/o+3cP4aa2w7yBXgdcmKGQtZzP8JbyfOd0m+33nh+8+kvxYE2UJtBDkg==}
@@ -8727,7 +8731,6 @@ packages:
     dependencies:
       chai: 4.3.10
       check-error: 1.0.3
-    dev: true
 
   /chai@4.3.10:
     resolution: {integrity: sha512-0UXG04VuVbruMUYbJ6JctvH0YnC/4q3/AkT18q4NaITo91CUm0liMS9VqzT9vZhVQ/1eqPanMWjBM+Juhfb/9g==}
