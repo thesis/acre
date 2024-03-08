@@ -4,26 +4,23 @@ import {
 } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 import { expect } from "chai"
 import { ContractTransactionResponse, MaxUint256, ZeroAddress } from "ethers"
-import { ethers } from "hardhat"
+import { ethers, helpers } from "hardhat"
 
 import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
 import type { SnapshotRestorer } from "@nomicfoundation/hardhat-toolbox/network-helpers"
-import {
-  beforeAfterSnapshotWrapper,
-  deployment,
-  getNamedSigner,
-  getUnnamedSigner,
-} from "./helpers"
+import { beforeAfterSnapshotWrapper, deployment } from "./helpers"
 
 import { to1e18 } from "./utils"
 
 import type { StBTC as stBTC, TestERC20, Dispatcher } from "../typechain"
 
+const { getNamedSigners, getUnnamedSigners } = helpers.signers
+
 async function fixture() {
   const { tbtc, stbtc, dispatcher } = await deployment()
-  const { governance, treasury } = await getNamedSigner()
+  const { governance, treasury } = await getNamedSigners()
 
-  const [depositor1, depositor2, thirdParty] = await getUnnamedSigner()
+  const [depositor1, depositor2, thirdParty] = await getUnnamedSigners()
 
   const amountToMint = to1e18(100000)
   await tbtc.mint(depositor1, amountToMint)

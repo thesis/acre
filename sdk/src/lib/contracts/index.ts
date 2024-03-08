@@ -1,7 +1,9 @@
 import { TBTCDepositor } from "./tbtc-depositor"
+import { StBTC } from "./stbtc"
 
 export * from "./tbtc-depositor"
 export * from "./chain-identifier"
+export * from "./stbtc"
 export * from "./depositor-proxy"
 
 /**
@@ -9,4 +11,5 @@ export * from "./depositor-proxy"
  */
 export type AcreContracts = {
   tbtcDepositor: TBTCDepositor
+  stBTC: StBTC
 }
