@@ -25,6 +25,7 @@ import { currencyIconTheme } from "./CurrencyIcon"
 import { statusInfoTheme } from "./StatusInfo"
 import { linkTheme } from "./Link"
 import { skeletonTheme } from "./Skeleton"
+import { closeButtonTheme } from "./CloseButton"
 
 const defaultTheme = {
   // TODO: Remove when dark mode is ready
@@ -70,6 +71,7 @@ const defaultTheme = {
     CurrencyIcon: currencyIconTheme,
     StatusInfo: statusInfoTheme,
     Skeleton: skeletonTheme,
+    CloseButton: closeButtonTheme,
   },
 }
 
