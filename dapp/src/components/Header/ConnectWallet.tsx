@@ -34,8 +34,8 @@ export default function ConnectWallet() {
   const { requestAccount: requestEthereumAccount } = useRequestEthereumAccount()
   const { btcAccount, ethAccount } = useWalletContext()
 
-  const dataBtcAccount = getCustomDataByAccount(btcAccount)
-  const dataEthAccount = getCustomDataByAccount(ethAccount)
+  const customDataBtcAccount = getCustomDataByAccount(btcAccount)
+  const customDataEthAccount = getCustomDataByAccount(ethAccount)
 
   const handleConnectBitcoinAccount = () => {
     logPromiseFailure(requestBitcoinAccount())
@@ -63,20 +63,20 @@ export default function ConnectWallet() {
       >
         <Button
           variant="card"
-          colorScheme={dataBtcAccount.colorScheme}
+          colorScheme={customDataBtcAccount.colorScheme}
           leftIcon={<Icon as={Bitcoin} boxSize={6} />}
           onClick={handleConnectBitcoinAccount}
         >
-          {dataBtcAccount.text}
+          {customDataBtcAccount.text}
         </Button>
       </Tooltip>
       <Button
         variant="card"
-        colorScheme={dataEthAccount.colorScheme}
+        colorScheme={customDataEthAccount.colorScheme}
         leftIcon={<Icon as={EthereumIcon} boxSize={6} />}
         onClick={handleConnectEthereumAccount}
       >
-        {dataEthAccount.text}
+        {customDataEthAccount.text}
       </Button>
     </HStack>
   )
