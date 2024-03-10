@@ -41,6 +41,12 @@ contract stBTC is ERC4626, Ownable2Step, ERC20Permit {
     /// Maximum total amount of tBTC token held by Acre protocol.
     uint256 public maximumTotalAssets;
 
+    /// @dev Hash of the type for redeeming stBTC to Bitcoin with permit.
+    bytes32 private constant REDEEM_TO_BITCOIN_TYPEHASH =
+        keccak256(
+            "RedeemToBitcoin(address owner,uint256 shares,bytes bitcoinOutputScript,uint256 nonce,uint256 deadline)"
+        );
+
     /// Emitted when the treasury wallet address is updated.
     /// @param treasury New treasury wallet address.
     event TreasuryUpdated(address treasury);
@@ -214,6 +220,66 @@ contract stBTC is ERC4626, Ownable2Step, ERC20Permit {
         if ((assets = super.mint(shares, receiver)) < minimumDepositAmount) {
             revert LessThanMinDeposit(assets, minimumDepositAmount);
         }
+    }
+
+    /// @notice Redeems stBTC to Bitcoin with permit.
+    /// @dev After checking the signature the function approves BitcoinRedeemer
+    ///      contract to redeem stBTC shares. The BitcoinRedeemer contract
+    ///      redeems stBTC to receive tBTC and requests redemption of tBTC in
+    ///      the tBTC Bridge.
+    /// @param owner The owner of the stBTC tokens.
+    /// @param shares The number of stBTC tokens to redeem.
+    /// @param tbtcRedemptionData Additional data required for the tBTC redemption
+    ///        by the tBTC Bridge.
+    /// @param deadline The deadline by which the redemption must occur.
+    /// @param v The recovery id of the signature.
+    /// @param r The R value of the signature.
+    /// @param s The S value of the signature.
+    function redeemToBitcoinWithPermit(
+        address owner,
+        uint256 shares,
+        bytes calldata tbtcRedemptionData,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) public {
+        /* solhint-disable-next-line not-rely-on-time */
+        if (block.timestamp > deadline) {
+            revert ERC2612ExpiredSignature(deadline);
+        }
+
+        bytes32 redeemerOutputScriptHash = TbtcRedemption
+            .extractBitcoinOutputScriptHash(tbtcRedemptionData);
+
+        // Use hashing function from Open Zeppelin's ERC20Permit contract.
+        bytes32 hash = _hashTypedDataV4(
+            keccak256(
+                abi.encode(
+                    REDEEM_TO_BITCOIN_TYPEHASH,
+                    owner,
+                    shares,
+                    redeemerOutputScriptHash,
+                    _useNonce(owner),
+                    deadline
+                )
+            )
+        );
+
+        address signer = ECDSA.recover(hash, v, r, s);
+
+        if (signer != owner) {
+            revert ERC2612InvalidSigner(signer, owner);
+        }
+
+        _approve(owner, address(bitcoinRedeemer), shares);
+
+        return
+            bitcoinRedeemer.requestRedemption(
+                owner,
+                shares,
+                tbtcRedemptionData
+            );
     }
 
     /// @notice Returns value of assets that would be exchanged for the amount of
