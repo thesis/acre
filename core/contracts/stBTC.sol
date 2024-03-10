@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable2Step.sol";
 import "./Dispatcher.sol";
+import "./BitcoinRedeemer.sol";
 
 /// @title stBTC
 /// @notice This contract implements the ERC-4626 tokenized vault standard. By
@@ -23,6 +24,9 @@ contract stBTC is ERC4626, Ownable2Step, ERC20Permit {
 
     /// Dispatcher contract that routes tBTC from stBTC to a given vault and back.
     Dispatcher public dispatcher;
+
+    /// BitcoinRedeemer contract.
+    BitcoinRedeemer public bitcoinRedeemer;
 
     /// Address of the treasury wallet, where fees should be transferred to.
     address public treasury;
@@ -53,6 +57,14 @@ contract stBTC is ERC4626, Ownable2Step, ERC20Permit {
     /// @param oldDispatcher Address of the old dispatcher contract.
     /// @param newDispatcher Address of the new dispatcher contract.
     event DispatcherUpdated(address oldDispatcher, address newDispatcher);
+
+    /// Emitted when the BitcoinRedeemer contract is updated.
+    /// @param oldBitcoinRedeemer Address of the old BitcoinRedeemer contract.
+    /// @param newBitcoinRedeemer Address of the new BitcoinRedeemer contract.
+    event BitcoinRedeemerUpdated(
+        address oldBitcoinRedeemer,
+        address newBitcoinRedeemer
+    );
 
     /// Reverts if the amount is less than the minimum deposit amount.
     /// @param amount Amount to check.
@@ -146,6 +158,23 @@ contract stBTC is ERC4626, Ownable2Step, ERC20Permit {
 
         // Setting allowance to max for the new dispatcher
         IERC20(asset()).forceApprove(address(dispatcher), type(uint256).max);
+    }
+
+    /// @notice Updates the BitcoinRedeemer contract.
+    /// @param newBitcoinRedeemer Address of the new BitcoinRedeemer contract.
+    function updateBitcoinRedeemer(
+        address newBitcoinRedeemer
+    ) external onlyOwner {
+        if (newBitcoinRedeemer == address(0)) {
+            revert ZeroAddress();
+        }
+
+        emit BitcoinRedeemerUpdated(
+            address(bitcoinRedeemer),
+            newBitcoinRedeemer
+        );
+
+        bitcoinRedeemer = BitcoinRedeemer(newBitcoinRedeemer);
     }
 
     /// @notice Mints shares to receiver by depositing exactly amount of
