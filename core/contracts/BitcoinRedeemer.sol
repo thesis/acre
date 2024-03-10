@@ -74,6 +74,7 @@ contract BitcoinRedeemer is Initializable {
     ) public {
         uint256 tbtcAmount = stbtc.redeem(shares, address(this), owner);
 
+        // slither-disable-next-line reentrancy-events
         emit RedemptionRequested(owner, shares, tbtcAmount);
 
         if (
