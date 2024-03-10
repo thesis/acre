@@ -5,6 +5,27 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "./stBTC.sol";
 import "./bridge/ITBTCToken.sol";
 
+/// @title tBTC Redemption Library
+/// @notice This library contains functions for handling tBTC redemption data.
+library TbtcRedemption {
+    /// @notice Extracts the Bitcoin output script hash from the provided redemption
+    ///         data.
+    /// @dev This function decodes redemption data and returns the keccak256 hash
+    ///      of the redeemer output script.
+    /// @param redemptionData Redemption data.
+    /// @return The keccak256 hash of the redeemer output script.
+    function extractBitcoinOutputScriptHash(
+        bytes calldata redemptionData
+    ) internal pure returns (bytes32) {
+        (, , , , , bytes memory redeemerOutputScript) = abi.decode(
+            redemptionData,
+            (address, bytes20, bytes32, uint32, uint64, bytes)
+        );
+
+        return keccak256(redeemerOutputScript);
+    }
+}
+
 /// @title Bitcoin Redeemer
 /// @notice This contract facilitates redemption of stBTC tokens to Bitcoin through
 ///         tBTC redemption process.

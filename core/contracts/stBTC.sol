@@ -2,6 +2,7 @@
 pragma solidity ^0.8.21;
 
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable2Step.sol";
 import "./Dispatcher.sol";
@@ -17,7 +18,7 @@ import "./Dispatcher.sol";
 ///      of yield-bearing vaults. This contract facilitates the minting and
 ///      burning of shares (stBTC), which are represented as standard ERC20
 ///      tokens, providing a seamless exchange with tBTC tokens.
-contract stBTC is ERC4626, Ownable2Step {
+contract stBTC is ERC4626, Ownable2Step, ERC20Permit {
     using SafeERC20 for IERC20;
 
     /// Dispatcher contract that routes tBTC from stBTC to a given vault and back.
@@ -67,7 +68,12 @@ contract stBTC is ERC4626, Ownable2Step {
     constructor(
         IERC20 _tbtc,
         address _treasury
-    ) ERC4626(_tbtc) ERC20("Acre Staked Bitcoin", "stBTC") Ownable(msg.sender) {
+    )
+        ERC4626(_tbtc)
+        ERC20("Acre Staked Bitcoin", "stBTC")
+        ERC20Permit("Acre Staked Bitcoin")
+        Ownable(msg.sender)
+    {
         if (address(_treasury) == address(0)) {
             revert ZeroAddress();
         }
@@ -229,5 +235,10 @@ contract stBTC is ERC4626, Ownable2Step {
     /// @return Returns deposit parameters.
     function depositParameters() public view returns (uint256, uint256) {
         return (minimumDepositAmount, maximumTotalAssets);
+    }
+
+    /// @dev Overrides ERC20 and ERC4626 virtual functions.
+    function decimals() public pure override(ERC20, ERC4626) returns (uint8) {
+        return 18;
     }
 }
