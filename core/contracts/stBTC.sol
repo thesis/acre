@@ -4,6 +4,7 @@ pragma solidity ^0.8.21;
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 
+import "./BitcoinRedeemer.sol";
 import "./Dispatcher.sol";
 import "./lib/ERC4626Fees.sol";
 
@@ -23,6 +24,9 @@ contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
 
     /// Dispatcher contract that routes tBTC from stBTC to a given vault and back.
     Dispatcher public dispatcher;
+
+    /// BitcoinRedeemer contract.
+    BitcoinRedeemer public bitcoinRedeemer;
 
     /// Address of the treasury wallet, where fees should be transferred to.
     address public treasury;
@@ -53,6 +57,14 @@ contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
     event DepositParametersUpdated(
         uint256 minimumDepositAmount,
         uint256 maximumTotalAssets
+    );
+
+    /// Emitted when the BitcoinRedeemer contract is updated.
+    /// @param oldBitcoinRedeemer Address of the old BitcoinRedeemer contract.
+    /// @param newBitcoinRedeemer Address of the new BitcoinRedeemer contract.
+    event BitcoinRedeemerUpdated(
+        address oldBitcoinRedeemer,
+        address newBitcoinRedeemer
     );
 
     /// Emitted when the dispatcher contract is updated.
@@ -137,6 +149,23 @@ contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
             _minimumDepositAmount,
             _maximumTotalAssets
         );
+    }
+
+    /// @notice Updates the BitcoinRedeemer contract.
+    /// @param newBitcoinRedeemer Address of the new BitcoinRedeemer contract.
+    function updateBitcoinRedeemer(
+        address newBitcoinRedeemer
+    ) external onlyOwner {
+        if (newBitcoinRedeemer == address(0)) {
+            revert ZeroAddress();
+        }
+
+        emit BitcoinRedeemerUpdated(
+            address(bitcoinRedeemer),
+            newBitcoinRedeemer
+        );
+
+        bitcoinRedeemer = BitcoinRedeemer(newBitcoinRedeemer);
     }
 
     // TODO: Implement a governed upgrade process that initiates an update and
