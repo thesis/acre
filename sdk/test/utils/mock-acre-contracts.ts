@@ -1,8 +1,10 @@
-import { AcreContracts, BitcoinDepositor } from "../../src/lib/contracts"
+import { AcreContracts, BitcoinDepositor, StBTC } from "../../src/lib/contracts"
 
 // eslint-disable-next-line import/prefer-default-export
 export class MockAcreContracts implements AcreContracts {
   public readonly bitcoinDepositor: BitcoinDepositor
+
+  public readonly stBTC: StBTC
 
   constructor() {
     this.bitcoinDepositor = {
@@ -12,5 +14,10 @@ export class MockAcreContracts implements AcreContracts {
       encodeExtraData: jest.fn(),
       revealDeposit: jest.fn(),
     } as BitcoinDepositor
+
+    this.stBTC = {
+      balanceOf: jest.fn(),
+      assetsBalanceOf: jest.fn(),
+    } as StBTC
   }
 }
