@@ -79,11 +79,11 @@ describe("Staking", () => {
       let result: StakeInitialization
 
       beforeEach(async () => {
-        contracts.tbtcDepositor.decodeExtraData = jest
+        contracts.bitcoinDepositor.decodeExtraData = jest
           .fn()
           .mockReturnValue({ staker, referral })
 
-        contracts.tbtcDepositor.encodeExtraData = jest
+        contracts.bitcoinDepositor.encodeExtraData = jest
           .fn()
           .mockReturnValue(extraData)
 
@@ -101,13 +101,13 @@ describe("Staking", () => {
       })
 
       it("should encode extra data", () => {
-        expect(contracts.tbtcDepositor.encodeExtraData(staker, referral))
+        expect(contracts.bitcoinDepositor.encodeExtraData(staker, referral))
       })
 
       it("should initiate tBTC deposit", () => {
         expect(tbtc.deposits.initiateDepositWithProxy).toHaveBeenCalledWith(
           bitcoinRecoveryAddress,
-          contracts.tbtcDepositor,
+          contracts.bitcoinDepositor,
           extraData,
         )
       })
@@ -148,7 +148,7 @@ describe("Staking", () => {
 
             beforeEach(async () => {
               mockedSignedMessage.verify.mockReturnValue(staker)
-              contracts.tbtcDepositor.getChainIdentifier = jest
+              contracts.bitcoinDepositor.getChainIdentifier = jest
                 .fn()
                 .mockReturnValue(EthereumAddress.from(depositorAddress))
 
@@ -158,10 +158,10 @@ describe("Staking", () => {
             it("should sign message", () => {
               expect(messageSigner.sign).toHaveBeenCalledWith(
                 {
-                  name: "TbtcDepositor",
+                  name: "AcreBitcoinDepositor",
                   version: "1",
                   verifyingContract:
-                    contracts.tbtcDepositor.getChainIdentifier(),
+                    contracts.bitcoinDepositor.getChainIdentifier(),
                 },
                 {
                   Stake: [
@@ -244,7 +244,7 @@ describe("Staking", () => {
       let result: StakeInitialization
 
       beforeEach(async () => {
-        contracts.tbtcDepositor.encodeExtraData = jest
+        contracts.bitcoinDepositor.encodeExtraData = jest
           .fn()
           .mockReturnValue(extraData)
 
@@ -274,6 +274,45 @@ describe("Staking", () => {
         expect(result.stake).toBeDefined()
         expect(result.signMessage).toBeDefined()
       })
+    })
+  })
+
+  describe("sharesBalance", () => {
+    const { staker } = stakingModuleData.initializeStake
+    const expectedResult = 4294967295n
+    let result: bigint
+
+    beforeAll(async () => {
+      contracts.stBTC.balanceOf = jest.fn().mockResolvedValue(expectedResult)
+      result = await staking.sharesBalance(staker)
+    })
+
+    it("should get balance of stBTC", () => {
+      expect(contracts.stBTC.balanceOf).toHaveBeenCalledWith(staker)
+    })
+
+    it("should return value of the basis for calculating final BTC balance", () => {
+      expect(result).toEqual(expectedResult)
+    })
+  })
+
+  describe("estimatedBitcoinBalance", () => {
+    const expectedResult = 4294967295n
+    const { staker } = stakingModuleData.initializeStake
+    let result: bigint
+    beforeAll(async () => {
+      contracts.stBTC.assetsBalanceOf = jest
+        .fn()
+        .mockResolvedValue(expectedResult)
+      result = await staking.estimatedBitcoinBalance(staker)
+    })
+
+    it("should get staker's balance of tBTC tokens in vault ", () => {
+      expect(contracts.stBTC.assetsBalanceOf).toHaveBeenCalledWith(staker)
+    })
+
+    it("should return maximum withdraw value", () => {
+      expect(result).toEqual(expectedResult)
     })
   })
 })

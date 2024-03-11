@@ -1,4 +1,4 @@
-import { ethers } from "hardhat"
+import { ethers, helpers } from "hardhat"
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
 import { expect } from "chai"
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers"
@@ -8,8 +8,6 @@ import {
   beforeAfterEachSnapshotWrapper,
   beforeAfterSnapshotWrapper,
   deployment,
-  getNamedSigner,
-  getUnnamedSigner,
 } from "./helpers"
 
 import {
@@ -21,10 +19,12 @@ import {
 
 import { to1e18 } from "./utils"
 
+const { getNamedSigners, getUnnamedSigners } = helpers.signers
+
 async function fixture() {
   const { tbtc, stbtc, dispatcher, vault } = await deployment()
-  const { governance, maintainer } = await getNamedSigner()
-  const [thirdParty] = await getUnnamedSigner()
+  const { governance, maintainer } = await getNamedSigners()
+  const [thirdParty] = await getUnnamedSigners()
 
   return { dispatcher, governance, thirdParty, maintainer, vault, tbtc, stbtc }
 }

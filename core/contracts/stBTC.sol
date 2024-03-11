@@ -2,7 +2,7 @@
 pragma solidity ^0.8.21;
 
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable2Step.sol";
 import "./Dispatcher.sol";
 import "./lib/xERC4626.sol";
 
@@ -17,7 +17,7 @@ import "./lib/xERC4626.sol";
 ///      of yield-bearing vaults. This contract facilitates the minting and
 ///      burning of shares (stBTC), which are represented as standard ERC20
 ///      tokens, providing a seamless exchange with tBTC tokens.
-contract stBTC is xERC4626, Ownable {
+contract stBTC is xERC4626, Ownable2Step {
     using SafeERC20 for IERC20;
 
     /// Dispatcher contract that routes tBTC from stBTC to a given vault and back.
@@ -26,8 +26,13 @@ contract stBTC is xERC4626, Ownable {
     /// Address of the treasury wallet, where fees should be transferred to.
     address public treasury;
 
-    /// Minimum amount for a single deposit operation.
+    /// Minimum amount for a single deposit operation. The value should be set
+    /// low enough so the deposits routed through Bitcoin Depositor contract won't
+    /// be rejected. It means that minimumDepositAmount should be lower than
+    /// tBTC protocol's depositDustThreshold reduced by all the minting fees taken
+    /// before depositing in the Acre contract.
     uint256 public minimumDepositAmount;
+
     /// Maximum total amount of tBTC token held by Acre protocol.
     uint256 public maximumTotalAssets;
 
