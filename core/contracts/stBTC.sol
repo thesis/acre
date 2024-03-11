@@ -2,6 +2,7 @@
 pragma solidity ^0.8.21;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC4626Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 
@@ -18,7 +19,11 @@ import "./Dispatcher.sol";
 ///      of yield-bearing vaults. This contract facilitates the minting and
 ///      burning of shares (stBTC), which are represented as standard ERC20
 ///      tokens, providing a seamless exchange with tBTC tokens.
-contract stBTC is ERC4626Upgradeable, Ownable2StepUpgradeable {
+contract stBTC is
+    ERC4626Upgradeable,
+    Ownable2StepUpgradeable,
+    PausableUpgradeable
+{
     using SafeERC20 for IERC20;
 
     /// Dispatcher contract that routes tBTC from stBTC to a given vault and back.
@@ -75,6 +80,7 @@ contract stBTC is ERC4626Upgradeable, Ownable2StepUpgradeable {
         __ERC20_init("Acre Staked Bitcoin", "stBTC");
         __Ownable2Step_init();
         __Ownable_init(msg.sender);
+        __Pausable_init();
 
         if (address(_treasury) == address(0)) {
             revert ZeroAddress();
@@ -84,6 +90,22 @@ contract stBTC is ERC4626Upgradeable, Ownable2StepUpgradeable {
         // TODO: Revisit the exact values closer to the launch.
         minimumDepositAmount = 0.001 * 1e18; // 0.001 tBTC
         maximumTotalAssets = 25 * 1e18; // 25 tBTC
+    }
+
+    /// @notice Allows the contract owner to pause deposits and withdrawals.
+    /// @dev Requirements:
+    ///      - The caller must be an contract owner.
+    ///      - The contract must not be already paused.
+    function pause() external onlyOwner {
+        _pause();
+    }
+
+    /// @notice Allows the contract owner to unpause deposits and withdrawals.
+    /// @dev Requirements:
+    ///      - The caller must be the contract owner.
+    ///      - The contract must be paused.
+    function unpause() external onlyOwner {
+        _unpause();
     }
 
     /// @notice Updates treasury wallet address.
@@ -163,7 +185,7 @@ contract stBTC is ERC4626Upgradeable, Ownable2StepUpgradeable {
     function deposit(
         uint256 assets,
         address receiver
-    ) public override returns (uint256) {
+    ) public override whenNotPaused returns (uint256) {
         if (assets < minimumDepositAmount) {
             revert LessThanMinDeposit(assets, minimumDepositAmount);
         }
@@ -184,10 +206,26 @@ contract stBTC is ERC4626Upgradeable, Ownable2StepUpgradeable {
     function mint(
         uint256 shares,
         address receiver
-    ) public override returns (uint256 assets) {
+    ) public override whenNotPaused returns (uint256 assets) {
         if ((assets = super.mint(shares, receiver)) < minimumDepositAmount) {
             revert LessThanMinDeposit(assets, minimumDepositAmount);
         }
+    }
+
+    function withdraw(
+        uint256 assets,
+        address receiver,
+        address owner
+    ) public override whenNotPaused returns (uint256) {
+        return super.withdraw(assets, receiver, owner);
+    }
+
+    function redeem(
+        uint256 shares,
+        address receiver,
+        address owner
+    ) public override whenNotPaused returns (uint256) {
+        return super.redeem(shares, receiver, owner);
     }
 
     /// @notice Returns value of assets that would be exchanged for the amount of
