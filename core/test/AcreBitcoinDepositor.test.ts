@@ -1,5 +1,9 @@
 /* eslint-disable func-names */
-import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers"
+import {
+  loadFixture,
+  time,
+  mine,
+} from "@nomicfoundation/hardhat-toolbox/network-helpers"
 
 import { ethers, helpers } from "hardhat"
 import { expect } from "chai"
@@ -1426,6 +1430,7 @@ describe("AcreBitcoinDepositor", () => {
       before(async () => {
         // Simulate tBTC already deposited in stBTC.
         await tbtc.mint(await stbtc.getAddress(), currentTotalAssets)
+        await syncRewards(1n)
       })
 
       it("should return 0", async () => {
@@ -1442,6 +1447,7 @@ describe("AcreBitcoinDepositor", () => {
       before(async () => {
         // Simulate tBTC already deposited in stBTC.
         await tbtc.mint(await stbtc.getAddress(), currentTotalAssets)
+        await syncRewards(1n)
 
         expect(await stbtc.totalAssets()).to.be.equal(currentTotalAssets)
       })
@@ -1920,5 +1926,16 @@ describe("AcreBitcoinDepositor", () => {
     } else {
       await tbtcVault.finalizeOptimisticMintingRequest(depositKey)
     }
+  }
+
+  async function syncRewards(intervalDivisor: bigint) {
+    // sync rewards
+    await stbtc.syncRewards()
+    const blockTimestamp = BigInt(await time.latest())
+    const rewardsCycleEnd = await stbtc.rewardsCycleEnd()
+    await time.setNextBlockTimestamp(
+      blockTimestamp + (rewardsCycleEnd - blockTimestamp) / intervalDivisor,
+    )
+    await mine(1)
   }
 })
