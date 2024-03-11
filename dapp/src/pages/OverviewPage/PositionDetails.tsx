@@ -48,7 +48,12 @@ export default function PositionDetails(props: CardProps) {
       <CardBody>
         <HStack justifyContent="space-between">
           <TextMd fontWeight="bold">Your position</TextMd>
-          <Icon as={Info} color="grey.700" onClick={onToggle} />
+          <Icon
+            as={Info}
+            cursor="pointer"
+            color="grey.700"
+            onClick={onToggle}
+          />
           <StakingTokenPopover
             isOpen={isOpen}
             onClose={onClose}
