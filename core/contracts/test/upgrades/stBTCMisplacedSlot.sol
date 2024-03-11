@@ -14,7 +14,7 @@ import "../../Dispatcher.sol";
 contract stBTCMisplacedSlot is ERC4626Upgradeable, Ownable2StepUpgradeable {
     using SafeERC20 for IERC20;
 
-    /// TEST: New state variable - misplaced slot to test upgradeability.
+    // TEST: New state variable - misplaced slot to test upgradeability.
     uint256 public newVariable;
 
     /// Dispatcher contract that routes tBTC from stBTC to a given vault and back.

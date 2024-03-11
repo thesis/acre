@@ -30,7 +30,7 @@ contract stBTCV2 is ERC4626Upgradeable, Ownable2StepUpgradeable {
     /// Maximum total amount of tBTC token held by Acre protocol.
     uint256 public maximumTotalAssets;
 
-    /// TEST: New variable;
+    // TEST: New variable.
     uint256 public newVariable;
 
     /// Emitted when the treasury wallet address is updated.
@@ -50,7 +50,7 @@ contract stBTCV2 is ERC4626Upgradeable, Ownable2StepUpgradeable {
     /// @param newDispatcher Address of the new dispatcher contract.
     event DispatcherUpdated(address oldDispatcher, address newDispatcher);
 
-    /// TEST: New variable;
+    // TEST: New event.
     event NewEvent();
 
     /// Reverts if the amount is less than the minimum deposit amount.
@@ -70,9 +70,9 @@ contract stBTCV2 is ERC4626Upgradeable, Ownable2StepUpgradeable {
     }
 
     function initialize(IERC20 asset, address _treasury) public initializer {
-        // TEST: Removed content of initialize function.
-        // Initialize shouldn't be called again during the upgrade because of
-        // the `initializer` modifier.
+        // TEST: Removed content of initialize function. Initialize shouldn't be
+        //       called again during the upgrade because of the `initializer`
+        //       modifier.
     }
 
     function initializeV2(uint256 _newVariable) public reinitializer(2) {
@@ -144,7 +144,7 @@ contract stBTCV2 is ERC4626Upgradeable, Ownable2StepUpgradeable {
         IERC20(asset()).forceApprove(address(dispatcher), type(uint256).max);
     }
 
-    // TEST: Modified function
+    // TEST: Modified function.
     function deposit(
         uint256 assets,
         address receiver
@@ -152,7 +152,7 @@ contract stBTCV2 is ERC4626Upgradeable, Ownable2StepUpgradeable {
         if (assets < minimumDepositAmount) {
             revert LessThanMinDeposit(assets, minimumDepositAmount);
         }
-        // TEST: Emit new event
+        // TEST: Emit new event.
         emit NewEvent();
 
         return super.deposit(assets, receiver);

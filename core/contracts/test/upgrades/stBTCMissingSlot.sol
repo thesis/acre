@@ -17,7 +17,7 @@ contract stBTCMissingSlot is ERC4626Upgradeable, Ownable2StepUpgradeable {
     /// Dispatcher contract that routes tBTC from stBTC to a given vault and back.
     Dispatcher public dispatcher;
 
-    /// TEST: Remove variable -  missing slot to test upgradeability
+    // TEST: Remove variable -  missing slot to test upgradeability
     /// Address of the treasury wallet, where fees should be transferred to.
     // address public treasury;
 
@@ -70,8 +70,8 @@ contract stBTCMissingSlot is ERC4626Upgradeable, Ownable2StepUpgradeable {
         __Ownable2Step_init();
         __Ownable_init(msg.sender);
 
-        /// TEST: Removed `treasury` variable -  missing slot to test
-        ///       upgradeability
+        // TEST: Removed `treasury` variable -  missing slot to test
+        //       upgradeability.
         // if (address(_treasury) == address(0)) {
         //     revert ZeroAddress();
         // }
@@ -92,8 +92,8 @@ contract stBTCMissingSlot is ERC4626Upgradeable, Ownable2StepUpgradeable {
         if (newTreasury == address(this)) {
             revert DisallowedAddress();
         }
-        /// TEST: Removed `treasury` variable -  missing slot to test
-        ///       upgradeability
+        // TEST: Removed `treasury` variable -  missing slot to test
+        //       upgradeability.
         // treasury = newTreasury;
 
         emit TreasuryUpdated(newTreasury);

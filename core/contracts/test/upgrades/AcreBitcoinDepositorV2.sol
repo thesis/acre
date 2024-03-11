@@ -93,7 +93,7 @@ contract AcreBitcoinDepositorV2 is
     ///       `1/50 = 0.02 = 2%`.
     uint64 public depositorFeeDivisor;
 
-    /// TEST: New variable;
+    // TEST: New variable;
     uint256 public newVariable;
 
     /// @notice Emitted when a stake request is initialized.
@@ -185,7 +185,7 @@ contract AcreBitcoinDepositorV2 is
     /// @param depositorFeeDivisor New value of the depositor fee divisor.
     event DepositorFeeDivisorUpdated(uint64 depositorFeeDivisor);
 
-    /// TEST: New event;
+    // TEST: New event;
     event NewEvent();
 
     /// Reverts if the tBTC Token address is zero.
@@ -255,9 +255,9 @@ contract AcreBitcoinDepositorV2 is
     }
 
     function initialize(IERC20 asset, address _treasury) public initializer {
-        // TEST: Removed content of initialize function.
-        //       Initialize shouldn't be called again during the upgrade because
-        //       of the `initializer` modifier.
+        // TEST: Removed content of initialize function. Initialize shouldn't be
+        //       called again during the upgrade because of the `initializer`
+        //       modifier.
     }
 
     function initializeV2(uint256 _newVariable) public reinitializer(2) {
@@ -466,7 +466,7 @@ contract AcreBitcoinDepositorV2 is
     ) external onlyOwner {
         maxSingleStakeAmount = newMaxSingleStakeAmount;
 
-        /// TEST: Emit newly added event.
+        // TEST: Emit newly added event.
         emit NewEvent();
         emit MaxSingleStakeAmountUpdated(newMaxSingleStakeAmount);
     }

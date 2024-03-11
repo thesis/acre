@@ -42,7 +42,7 @@ contract AcreBitcoinDepositorMisplacedSlot is
         uint88 queuedAmount;
     }
 
-    /// TEST: New state variable - misplaced slot to test upgradeability.
+    // TEST: New state variable - misplaced slot to test upgradeability.
     string public newVariable;
 
     /// @notice Mapping of stake requests.

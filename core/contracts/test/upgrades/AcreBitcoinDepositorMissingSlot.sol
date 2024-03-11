@@ -77,7 +77,7 @@ contract AcreBitcoinDepositorMissingSlot is
     ///      Bitcoin deposits only up to the soft cap limit.
     uint256 public maxTotalAssetsSoftLimit;
 
-    /// TEST: Remove variable - missing slot to test upgradeability.
+    // TEST: Remove variable - missing slot to test upgradeability.
     /// @notice Total balance of pending stake requests (in tBTC token precision).
     /// @dev stBTC contract introduces limits for total deposits amount. Due to
     ///      asynchronous manner of the staking flow, this contract needs to track
@@ -381,8 +381,8 @@ contract AcreBitcoinDepositorMissingSlot is
 
         request.queuedAmount = SafeCast.toUint88(amountToQueue);
 
-        /// TEST: Removed `queuedStakesBalance` variable - missing slot to test
-        ///       upgradeability.
+        // TEST: Removed `queuedStakesBalance` variable - missing slot to test
+        //       upgradeability.
         // Increase pending stakes balance.
         // queuedStakesBalance += amountToQueue;
 
@@ -407,8 +407,8 @@ contract AcreBitcoinDepositorMissingSlot is
         delete (request.queuedAmount);
 
         // Decrease pending stakes balance.
-        /// TEST: Removed `queuedStakesBalance` variable - missing slot to test
-        ///       upgradeability.
+        // TEST: Removed `queuedStakesBalance` variable - missing slot to test
+        //       upgradeability.
         // queuedStakesBalance -= amountToStake;
 
         emit StakeRequestFinalizedFromQueue(
@@ -453,8 +453,8 @@ contract AcreBitcoinDepositorMissingSlot is
         emit StakeRequestCancelledFromQueue(depositKey, staker, amount);
 
         // Decrease pending stakes balance.
-        /// TEST: Removed `queuedStakesBalance` variable - missing slot to test
-        ///       upgradeability.
+        // TEST: Removed `queuedStakesBalance` variable - missing slot to test
+        //       upgradeability.
         // queuedStakesBalance -= amount;
 
         tbtcToken.safeTransfer(staker, amount);
@@ -543,8 +543,8 @@ contract AcreBitcoinDepositorMissingSlot is
 
         uint256 availableLimit = maxTotalAssetsSoftLimit - currentTotalAssets;
 
-        /// TEST: Removed `queuedStakesBalance` variable - missing slot to test
-        ///       upgradeability.
+        // TEST: Removed `queuedStakesBalance` variable - missing slot to test
+        //       upgradeability.
         // if (queuedStakesBalance >= availableLimit) {
         //     return 0;
         // }
