@@ -11,7 +11,6 @@ import "@keep-network/tbtc-v2/contracts/integrator/AbstractTBTCDepositor.sol";
 
 import {stBTC} from "./stBTC.sol";
 
-// TODO: Make Upgradable
 // TODO: Make Pausable
 
 /// @title Acre Bitcoin Depositor contract.
