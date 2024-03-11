@@ -1141,15 +1141,7 @@ describe("stBTC", () => {
   })
 
   describe("updateDispatcher", () => {
-    let snapshot: SnapshotRestorer
-
-    before(async () => {
-      snapshot = await takeSnapshot()
-    })
-
-    after(async () => {
-      await snapshot.restore()
-    })
+    beforeAfterSnapshotWrapper()
 
     context("when caller is not governance", () => {
       it("should revert", async () => {
