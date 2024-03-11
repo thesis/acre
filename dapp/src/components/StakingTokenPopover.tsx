@@ -14,13 +14,14 @@ import {
   Box,
   PopoverProps,
 } from "@chakra-ui/react"
+import { CardSizeType } from "#/types"
 import { CurrencyBalanceWithConversion } from "./shared/CurrencyBalanceWithConversion"
 import { TextMd, TextSm } from "./shared/Typography"
 
-type StakingTokenPopoverProps = PopoverProps & { width: number }
+type StakingTokenPopoverProps = PopoverProps & { cardSize: CardSizeType }
 
 export function StakingTokenPopover({
-  width,
+  cardSize,
   ...props
 }: StakingTokenPopoverProps) {
   return (
@@ -34,7 +35,8 @@ export function StakingTokenPopover({
         borderWidth={0.5}
         borderColor="white"
         p={5}
-        width={width + 15}
+        width={cardSize.width + 15}
+        height={cardSize.height}
       >
         <PopoverCloseButton
           top={6}

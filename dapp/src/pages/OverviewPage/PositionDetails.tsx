@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import { TextMd } from "#/components/shared/Typography"
-import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
+import { ACTION_FLOW_TYPES, ActionFlowType, CardSizeType } from "#/types"
 import TransactionModal from "#/components/TransactionModal"
 import { StakingTokenPopover } from "#/components/StakingTokenPopover"
 import { Info } from "#/assets/icons"
@@ -19,11 +19,17 @@ import { Info } from "#/assets/icons"
 export default function PositionDetails(props: CardProps) {
   const { isOpen, onToggle, onClose } = useDisclosure()
   const cardRef = useRef<HTMLDivElement>()
-  const [cardWidth, setCardWidth] = useState<number>(0)
+  const [cardSize, setCardSize] = useState<CardSizeType>({
+    width: 0,
+    height: 0,
+  })
 
   const onResize = () => {
     if (cardRef?.current?.clientWidth) {
-      setCardWidth(cardRef.current.clientWidth)
+      setCardSize({
+        width: cardRef.current.clientWidth,
+        height: cardRef.current.clientHeight,
+      })
     }
   }
 
@@ -59,7 +65,7 @@ export default function PositionDetails(props: CardProps) {
             onClose={onClose}
             closeOnBlur={false}
             placement="left-start"
-            width={cardWidth}
+            cardSize={cardSize}
           />
         </HStack>
         <CurrencyBalanceWithConversion
