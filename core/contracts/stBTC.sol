@@ -48,8 +48,9 @@ contract stBTC is ERC4626, Ownable2Step, ERC20Permit {
         );
 
     /// Emitted when the treasury wallet address is updated.
-    /// @param treasury New treasury wallet address.
-    event TreasuryUpdated(address treasury);
+    /// @param oldTreasury Address of the old treasury wallet.
+    /// @param newTreasury Address of the new treasury wallet.
+    event TreasuryUpdated(address oldTreasury, address newTreasury);
 
     /// Emitted when deposit parameters are updated.
     /// @param minimumDepositAmount New value of the minimum deposit amount.
@@ -111,9 +112,10 @@ contract stBTC is ERC4626, Ownable2Step, ERC20Permit {
         if (newTreasury == address(this)) {
             revert DisallowedAddress();
         }
-        treasury = newTreasury;
 
-        emit TreasuryUpdated(newTreasury);
+        emit TreasuryUpdated(treasury, newTreasury);
+
+        treasury = newTreasury;
     }
 
     /// @notice Updates deposit parameters.
