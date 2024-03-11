@@ -1,9 +1,15 @@
 import {
   takeSnapshot,
   loadFixture,
+  time,
 } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 import { expect } from "chai"
-import { ContractTransactionResponse, MaxUint256, ZeroAddress } from "ethers"
+import {
+  ContractTransactionResponse,
+  MaxUint256,
+  ZeroAddress,
+  Signature,
+} from "ethers"
 import { ethers, helpers } from "hardhat"
 
 import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
@@ -12,12 +18,18 @@ import { beforeAfterSnapshotWrapper, deployment } from "./helpers"
 
 import { to1e18 } from "./utils"
 
-import type { StBTC as stBTC, TestERC20, Dispatcher } from "../typechain"
+import type {
+  StBTC as stBTC,
+  Dispatcher,
+  BitcoinRedeemer,
+  TestTBTC,
+} from "../typechain"
+import { tbtcRedemptionData } from "./data/tbtc"
 
 const { getNamedSigners, getUnnamedSigners } = helpers.signers
 
 async function fixture() {
-  const { tbtc, stbtc, dispatcher } = await deployment()
+  const { tbtc, stbtc, dispatcher, bitcoinRedeemer } = await deployment()
   const { governance, treasury } = await getNamedSigners()
 
   const [depositor1, depositor2, thirdParty] = await getUnnamedSigners()
@@ -29,6 +41,7 @@ async function fixture() {
   return {
     stbtc,
     tbtc,
+    bitcoinRedeemer,
     depositor1,
     depositor2,
     dispatcher,
@@ -40,8 +53,9 @@ async function fixture() {
 
 describe("stBTC", () => {
   let stbtc: stBTC
-  let tbtc: TestERC20
+  let tbtc: TestTBTC
   let dispatcher: Dispatcher
+  let bitcoinRedeemer: BitcoinRedeemer
 
   let governance: HardhatEthersSigner
   let depositor1: HardhatEthersSigner
@@ -52,6 +66,7 @@ describe("stBTC", () => {
     ;({
       stbtc,
       tbtc,
+      bitcoinRedeemer,
       depositor1,
       depositor2,
       dispatcher,
@@ -654,6 +669,291 @@ describe("stBTC", () => {
         })
       },
     )
+  })
+
+  describe("redeemToBitcoin", () => {
+    beforeAfterSnapshotWrapper()
+
+    context("when redeemer has no deposit", () => {
+      it("should revert", async () => {
+        const redeemedSharesAmount = to1e18(1)
+
+        const { signature, deadline } = await signRedeemToBitcoinTypedData(
+          depositor1,
+          depositor1.address,
+          redeemedSharesAmount,
+          tbtcRedemptionData.redeemerOutputScript,
+        )
+
+        await expect(
+          stbtc
+            .connect(thirdParty)
+            .redeemToBitcoinWithPermit(
+              depositor1,
+              redeemedSharesAmount,
+              tbtcRedemptionData.redemptionData,
+              deadline,
+              signature.v,
+              signature.r,
+              signature.s,
+            ),
+        )
+          .to.be.revertedWithCustomError(stbtc, "ERC4626ExceededMaxRedeem")
+          .withArgs(depositor1.address, redeemedSharesAmount, 0)
+      })
+    })
+
+    context("when redeemer has a deposit", () => {
+      beforeAfterSnapshotWrapper()
+
+      const depositAmount = to1e18(3)
+      const yieldAmount = to1e18(6)
+
+      const redeemedSharesAmount = to1e18(1)
+
+      // Values are floor rounded as per the `convertToAssets` function.
+      const expectedRedeemedAssets = 2999999999999999999n // (1 + (1/3 * 6))
+
+      before(async () => {
+        // Depositor deposits 3 tBTC.
+        await tbtc
+          .connect(depositor1)
+          .approve(await stbtc.getAddress(), depositAmount)
+        await stbtc
+          .connect(depositor1)
+          .deposit(depositAmount, depositor1.address)
+
+        // Vault earns 6 tBTC.
+        await tbtc.mint(await stbtc.getAddress(), yieldAmount)
+      })
+
+      context("when signature expired", () => {
+        it("should revert", async () => {
+          const deadline = BigInt(await time.latest())
+
+          const { signature } = await signRedeemToBitcoinTypedData(
+            depositor1,
+            depositor1.address,
+            redeemedSharesAmount,
+            tbtcRedemptionData.redeemerOutputScript,
+            deadline,
+          )
+
+          await expect(
+            stbtc
+              .connect(thirdParty)
+              .redeemToBitcoinWithPermit(
+                depositor1,
+                redeemedSharesAmount,
+                tbtcRedemptionData.redemptionData,
+                deadline,
+                signature.v,
+                signature.r,
+                signature.s,
+              ),
+          )
+            .to.be.revertedWithCustomError(stbtc, "ERC2612ExpiredSignature")
+            .withArgs(deadline)
+        })
+      })
+
+      context("when signer is not the depositor", () => {
+        it("should revert", async () => {
+          const { signature, deadline } = await signRedeemToBitcoinTypedData(
+            thirdParty,
+            depositor1.address,
+            redeemedSharesAmount,
+            tbtcRedemptionData.redeemerOutputScript,
+          )
+
+          await expect(
+            stbtc
+              .connect(thirdParty)
+              .redeemToBitcoinWithPermit(
+                depositor1,
+                redeemedSharesAmount,
+                tbtcRedemptionData.redemptionData,
+                deadline,
+                signature.v,
+                signature.r,
+                signature.s,
+              ),
+          )
+            .to.be.revertedWithCustomError(stbtc, "ERC2612InvalidSigner")
+            .withArgs(
+              await thirdParty.getAddress(),
+              await depositor1.getAddress(),
+            )
+        })
+      })
+
+      context("when signer is the depositor", () => {
+        context("when tBTC approveAndCall succeeds", () => {
+          let tx: ContractTransactionResponse
+
+          before(async () => {
+            const { signature, deadline } = await signRedeemToBitcoinTypedData(
+              depositor1,
+              depositor1.address,
+              redeemedSharesAmount,
+              tbtcRedemptionData.redeemerOutputScript,
+            )
+
+            tx = await stbtc
+              .connect(thirdParty)
+              .redeemToBitcoinWithPermit(
+                depositor1,
+                redeemedSharesAmount,
+                tbtcRedemptionData.redemptionData,
+                deadline,
+                signature.v,
+                signature.r,
+                signature.s,
+              )
+          })
+
+          it("should allow BitcoinRedeemer as shares spender", async () => {
+            await expect(tx)
+              .to.emit(stbtc, "Approval")
+              .withArgs(
+                depositor1.address,
+                await bitcoinRedeemer.getAddress(),
+                redeemedSharesAmount,
+              )
+          })
+
+          it("should use BitcoinRedeemer allowance for shares", async () => {
+            expect(
+              await stbtc.allowance(
+                await depositor1.getAddress(),
+                await bitcoinRedeemer.getAddress(),
+              ),
+            ).to.be.equal(0)
+          })
+
+          it("should burn shares", async () => {
+            await expect(tx).to.changeTokenBalances(
+              stbtc,
+              [depositor1],
+              [-redeemedSharesAmount],
+            )
+          })
+
+          it("should transfer tBTC to BitcoinRedeemer", async () => {
+            await expect(tx).to.changeTokenBalances(
+              tbtc,
+              [stbtc, bitcoinRedeemer],
+              [-expectedRedeemedAssets, expectedRedeemedAssets],
+            )
+          })
+
+          it("should call tBTC approveAndCall function", async () => {
+            await expect(tx)
+              .to.emit(tbtc, "ApproveAndCallCalled")
+              .withArgs(
+                await tbtc.owner(),
+                expectedRedeemedAssets,
+                tbtcRedemptionData.redemptionData,
+              )
+          })
+
+          it("should emit RedemptionRequested event", async () => {
+            await expect(tx)
+              .to.emit(bitcoinRedeemer, "RedemptionRequested")
+              .withArgs(
+                await depositor1.getAddress(),
+                redeemedSharesAmount,
+                expectedRedeemedAssets,
+              )
+          })
+        })
+
+        context("when tBTC approveAndCall fails", () => {
+          before(async () => {
+            await tbtc.setApproveAndCallResult(false)
+          })
+
+          it("should revert", async () => {
+            const { signature, deadline } = await signRedeemToBitcoinTypedData(
+              depositor1,
+              depositor1.address,
+              redeemedSharesAmount,
+              tbtcRedemptionData.redeemerOutputScript,
+            )
+
+            await expect(
+              stbtc
+                .connect(thirdParty)
+                .redeemToBitcoinWithPermit(
+                  depositor1,
+                  redeemedSharesAmount,
+                  tbtcRedemptionData.redemptionData,
+                  deadline,
+                  signature.v,
+                  signature.r,
+                  signature.s,
+                ),
+            ).to.be.revertedWithCustomError(
+              bitcoinRedeemer,
+              "ApproveAndCallFailed",
+            )
+          })
+        })
+      })
+    })
+
+    async function signRedeemToBitcoinTypedData(
+      signer: HardhatEthersSigner,
+      owner: string,
+      shares: bigint,
+      redeemerOutputScript: string,
+      deadline?: bigint,
+      nonce?: bigint,
+    ): Promise<{
+      signature: Signature
+      deadline: bigint
+      nonce: bigint
+    }> {
+      if (!nonce) {
+        // eslint-disable-next-line no-param-reassign
+        nonce = await stbtc.nonces(owner)
+      }
+      if (!deadline) {
+        // eslint-disable-next-line no-param-reassign
+        deadline = BigInt(await time.latest()) + 1000n
+      }
+
+      const { chainId } = await signer.provider.getNetwork()
+
+      const domain = {
+        name: "Acre Staked Bitcoin",
+        version: "1",
+        chainId,
+        verifyingContract: await stbtc.getAddress(),
+      }
+
+      const types = {
+        RedeemToBitcoin: [
+          { name: "owner", type: "address" },
+          { name: "shares", type: "uint256" },
+          { name: "bitcoinOutputScript", type: "bytes" },
+          { name: "nonce", type: "uint256" },
+          { name: "deadline", type: "uint256" },
+        ],
+      }
+
+      const value = {
+        owner,
+        shares,
+        bitcoinOutputScript: redeemerOutputScript,
+        nonce,
+        deadline,
+      }
+
+      const sig = await signer.signTypedData(domain, types, value)
+
+      return { signature: ethers.Signature.from(sig), deadline, nonce }
+    }
   })
 
   describe("updateDepositParameters", () => {

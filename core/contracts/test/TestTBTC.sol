@@ -19,6 +19,10 @@ contract TestTBTC is ITBTCToken, ERC20 {
         _mint(account, value);
     }
 
+    function setApproveAndCallResult(bool result) external {
+        approveAndCallResult = result;
+    }
+
     function approveAndCall(
         address spender,
         uint256 amount,
@@ -30,6 +34,6 @@ contract TestTBTC is ITBTCToken, ERC20 {
     }
 
     function owner() external pure returns (address) {
-        return address(1);
+        return 0xABcDefD75a220Ba350DDf6B1A5ec2a1b77BA8AF5;
     }
 }

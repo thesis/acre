@@ -9,6 +9,7 @@ import type {
   TestERC4626,
   TBTCVaultStub,
   AcreBitcoinDepositorHarness,
+  BitcoinRedeemer,
 } from "../../typechain"
 
 // eslint-disable-next-line import/prefer-default-export
@@ -18,6 +19,8 @@ export async function deployment() {
   const stbtc: stBTC = await getDeployedContract("stBTC")
   const bitcoinDepositor: AcreBitcoinDepositorHarness =
     await getDeployedContract("AcreBitcoinDepositor")
+  const bitcoinRedeemer: BitcoinRedeemer =
+    await getDeployedContract("BitcoinRedeemer")
 
   const tbtc: TestERC20 = await getDeployedContract("TBTC")
   const tbtcBridge: BridgeStub = await getDeployedContract("Bridge")
@@ -31,6 +34,7 @@ export async function deployment() {
     tbtc,
     stbtc,
     bitcoinDepositor,
+    bitcoinRedeemer,
     tbtcBridge,
     tbtcVault,
     dispatcher,
