@@ -15,6 +15,7 @@ import {
   PopoverProps,
 } from "@chakra-ui/react"
 import { CardSizeType } from "#/types"
+import { useDocsDrawer } from "#/hooks"
 import { CurrencyBalanceWithConversion } from "./shared/CurrencyBalanceWithConversion"
 import { TextMd, TextSm } from "./shared/Typography"
 
@@ -24,6 +25,8 @@ export function StakingTokenPopover({
   cardSize,
   ...props
 }: StakingTokenPopoverProps) {
+  const { onOpen: openDocsDrawer } = useDocsDrawer()
+
   return (
     <Popover {...props}>
       <PopoverTrigger>
@@ -69,7 +72,14 @@ export function StakingTokenPopover({
                   Your tokens are this Ethereum address once the staking
                   transaction is co...
                 </TextSm>
-                <Icon as={ArrowUpRight} boxSize={4} color="brand.400" m={5} />
+                <Icon
+                  cursor="pointer"
+                  as={ArrowUpRight}
+                  boxSize={4}
+                  color="brand.400"
+                  m={5}
+                  onClick={openDocsDrawer}
+                />
               </HStack>
             </CardBody>
           </Card>
