@@ -2,6 +2,7 @@
 pragma solidity ^0.8.21;
 
 import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
@@ -10,8 +11,6 @@ import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import "@keep-network/tbtc-v2/contracts/integrator/AbstractTBTCDepositor.sol";
 
 import {stBTC} from "./stBTC.sol";
-
-// TODO: Make Pausable
 
 /// @title Acre Bitcoin Depositor contract.
 /// @notice The contract integrates Acre staking with tBTC minting.
@@ -39,7 +38,8 @@ import {stBTC} from "./stBTC.sol";
 ///         to the staker.
 contract AcreBitcoinDepositor is
     AbstractTBTCDepositor,
-    Ownable2StepUpgradeable
+    Ownable2StepUpgradeable,
+    PausableUpgradeable
 {
     using SafeERC20 for IERC20;
 
@@ -284,6 +284,7 @@ contract AcreBitcoinDepositor is
         __AbstractTBTCDepositor_initialize(bridge, tbtcVault);
         __Ownable2Step_init();
         __Ownable_init(msg.sender);
+        __Pausable_init();
 
         if (address(_tbtcToken) == address(0)) {
             revert TbtcTokenZeroAddress();
@@ -300,6 +301,22 @@ contract AcreBitcoinDepositor is
         maxSingleStakeAmount = 0.5 * 1e18; // 0.5 BTC
         maxTotalAssetsSoftLimit = 7 * 1e18; // 7 BTC
         depositorFeeDivisor = 1000; // 1/1000 == 10bps == 0.1% == 0.001
+    }
+
+    /// @notice Allows the contract owner to pause staking and unstaking.
+    /// @dev Requirements:
+    ///      - The caller must be an contract owner.
+    ///      - The contract must not be already paused.
+    function pause() external onlyOwner {
+        _pause();
+    }
+
+    /// @notice Allows the contract owner to unpause staking and unstaking.
+    /// @dev Requirements:
+    ///      - The caller must be the contract owner.
+    ///      - The contract must be paused.
+    function unpause() external onlyOwner {
+        _unpause();
     }
 
     /// @notice This function allows staking process initialization for a Bitcoin
@@ -360,7 +377,7 @@ contract AcreBitcoinDepositor is
     ///      maximum deposit limit being reached), the `queueStake` function
     ///      should be called to add the stake request to the staking queue.
     /// @param depositKey Deposit key identifying the deposit.
-    function finalizeStake(uint256 depositKey) external {
+    function finalizeStake(uint256 depositKey) external whenNotPaused {
         transitionStakeRequestState(
             depositKey,
             StakeRequestState.Initialized,
@@ -411,7 +428,7 @@ contract AcreBitcoinDepositor is
     /// @notice This function should be called for previously queued stake
     ///         request, when stBTC vault is able to accept a deposit.
     /// @param depositKey Deposit key identifying the deposit.
-    function finalizeQueuedStake(uint256 depositKey) external {
+    function finalizeQueuedStake(uint256 depositKey) external whenNotPaused {
         transitionStakeRequestState(
             depositKey,
             StakeRequestState.Queued,
