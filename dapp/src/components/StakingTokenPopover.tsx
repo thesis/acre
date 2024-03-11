@@ -70,7 +70,7 @@ export function StakingTokenPopover({
               >
                 <TextSm my={4} mx={5}>
                   Your tokens are this Ethereum address once the staking
-                  transaction is co...
+                  transaction is finalized.
                 </TextSm>
                 <Icon
                   cursor="pointer"
