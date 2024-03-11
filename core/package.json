@@ -36,7 +36,7 @@
     "@nomicfoundation/hardhat-toolbox": "^4.0.0",
     "@nomicfoundation/hardhat-verify": "^2.0.1",
     "@nomiclabs/hardhat-etherscan": "^3.1.7",
-    "@openzeppelin/hardhat-upgrades": "^2.4.1",
+    "@openzeppelin/hardhat-upgrades": "^3.0.5",
     "@thesis-co/eslint-config": "github:thesis/eslint-config#7b9bc8c",
     "@typechain/ethers-v6": "^0.5.1",
     "@typechain/hardhat": "^9.1.0",
