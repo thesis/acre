@@ -1362,6 +1362,53 @@ describe("stBTC", () => {
     })
   })
 
+  describe("updateBitcoinRedeemer", () => {
+    beforeAfterSnapshotWrapper()
+
+    context("when caller is not governance", () => {
+      it("should revert", async () => {
+        await expect(
+          stbtc.connect(thirdParty).updateBitcoinRedeemer(ZeroAddress),
+        )
+          .to.be.revertedWithCustomError(stbtc, "OwnableUnauthorizedAccount")
+          .withArgs(thirdParty.address)
+      })
+    })
+
+    context("when caller is governance", () => {
+      context("when a new BitcoinRedeemer is zero address", () => {
+        it("should revert", async () => {
+          await expect(
+            stbtc.connect(governance).updateBitcoinRedeemer(ZeroAddress),
+          ).to.be.revertedWithCustomError(stbtc, "ZeroAddress")
+        })
+      })
+
+      context("when a new BitcoinRedeemer is an allowed address", () => {
+        let newBitcoinRedeemer: string
+        let tx: ContractTransactionResponse
+
+        before(async () => {
+          newBitcoinRedeemer = await ethers.Wallet.createRandom().getAddress()
+
+          tx = await stbtc
+            .connect(governance)
+            .updateBitcoinRedeemer(newBitcoinRedeemer)
+        })
+
+        it("should update the treasury", async () => {
+          expect(await stbtc.bitcoinRedeemer()).to.be.equal(newBitcoinRedeemer)
+        })
+
+        it("should emit BitcoinRedeemerUpdated event", async () => {
+          await expect(tx)
+            .to.emit(stbtc, "BitcoinRedeemerUpdated")
+            .withArgs(await bitcoinRedeemer.getAddress(), newBitcoinRedeemer)
+        })
+      })
+    })
+  })
+
   describe("updateTreasury", () => {
     beforeAfterSnapshotWrapper()
 
