@@ -105,9 +105,9 @@ class StakeInitialization {
    */
   #getStakeMessageTypedData() {
     const domain: Domain = {
-      name: "TbtcDepositor",
+      name: "AcreBitcoinDepositor",
       version: "1",
-      verifyingContract: this.#contracts.tbtcDepositor.getChainIdentifier(),
+      verifyingContract: this.#contracts.bitcoinDepositor.getChainIdentifier(),
     }
 
     // TODO: revisit the message structure before the launch. Let's think about
@@ -131,7 +131,7 @@ class StakeInitialization {
   }
 
   /**
-   * Stakes BTC based on the Bitcoin funding transaction via TBTCDepositor
+   * Stakes BTC based on the Bitcoin funding transaction via BitcoinDepositor
    * contract. It requires signed staking message, which means `stake` should be
    * called after message signing. By default, it detects and uses the outpoint
    * of the recent Bitcoin funding transaction and throws if such a transaction
