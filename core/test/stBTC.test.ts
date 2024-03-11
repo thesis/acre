@@ -43,6 +43,10 @@ async function fixture() {
   }
 }
 
+// TODO: Add "syncRewards" tests once the `syncRewards` function is modified to
+//       be used with Allocator contract.
+//       Add "totalAssets" tests once the `totalAssets` function is modified to
+//       be used with Allocator contract.
 describe("stBTC", () => {
   let stbtc: stBTC
   let tbtc: TestERC20
@@ -810,6 +814,8 @@ describe("stBTC", () => {
     )
   })
 
+  // TODO: Add more unit tests. Look at the OpenZeppelin tests for the `withdraw`
+  //       function.
   describe("withdraw", () => {
     beforeAfterSnapshotWrapper()
 
@@ -913,6 +919,8 @@ describe("stBTC", () => {
     })
   })
 
+  // TODO: Add more unit tests. Look at the OpenZeppelin tests for the `redeem`
+  //       function.
   describe("redeem", () => {
     beforeAfterSnapshotWrapper()
 
