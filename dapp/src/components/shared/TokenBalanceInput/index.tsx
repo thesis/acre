@@ -22,7 +22,7 @@ import { CurrencyType } from "#/types"
 import NumberFormatInput, {
   NumberFormatInputValues,
 } from "../NumberFormatInput"
-import { CurrencyBalance } from "../CurrencyBalance"
+import { CurrencyBalance } from "../Balance/CurrencyBalance"
 
 const VARIANT = "balance"
 

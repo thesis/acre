@@ -6,7 +6,7 @@ import {
   useRequestEthereumAccount,
   useWalletContext,
 } from "#/hooks"
-import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
+import { CurrencyBalance } from "#/components/shared/Balance/CurrencyBalance"
 import { TextMd } from "#/components/shared/Typography"
 import { Bitcoin, EthereumIcon } from "#/assets/icons"
 import { truncateAddress, logPromiseFailure } from "#/utils"

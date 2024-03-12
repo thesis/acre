@@ -4,11 +4,11 @@ import { useDocsDrawer } from "#/hooks"
 import { TextSm } from "#/components/shared/Typography"
 import { USD } from "#/constants"
 import ButtonLink from "#/components/shared/ButtonLink"
-import StatisticsCard from "#/pages/OverviewPage/StatisticsCard"
 import ActivityBar from "#/components/shared/ActivityBar"
 import PositionDetails from "./PositionDetails"
 import StatisticsChart from "./StatisticsChart"
 import TransactionHistory from "./TransactionHistory"
+import { StatisticsCard } from "./StatisticsCard"
 
 export default function OverviewPage() {
   const { onOpen } = useDocsDrawer()

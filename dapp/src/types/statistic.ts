@@ -1,9 +1,9 @@
-import { CurrencyType } from "./currency"
-
 // TODO: Update type when subgraph's ready
-export type StatisticType = {
-  name: string
-  currency: CurrencyType
-  amount: number
-  totalAmount?: number
+export type ProtocolStatistics = {
+  tvl: number
+  apy: {
+    yearly: number
+    weekly: number
+    quarterly: number
+  }
 }

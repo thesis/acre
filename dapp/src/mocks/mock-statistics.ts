@@ -1,39 +1,19 @@
-import { StatisticType } from "#/types"
+import { ProtocolStatistics } from "#/types"
 
-export const mockedProtocolStatistics: StatisticType[] = [
-  {
-    name: "Total Value Locked",
-    amount: 224000000,
-    currency: "bitcoin",
+export const mockedProtocolStatistics: ProtocolStatistics = {
+  tvl: 224000000,
+  apy: {
+    yearly: 5.47,
+    weekly: 3.62,
+    quarterly: 4.21,
   },
-  {
-    name: "7-day avg APY",
-    amount: 224000000,
-    totalAmount: 824000000,
-    currency: "bitcoin",
-  },
-  {
-    name: "90-day avg APY",
-    amount: 24000000,
-    totalAmount: 824000000,
-    currency: "bitcoin",
-  },
-]
+}
 
-export const mockedStakerStatistics: StatisticType[] = [
-  {
-    name: "Total Earned Yield",
-    amount: 224000000,
-    currency: "bitcoin",
+export const mockedStakerStatistics: ProtocolStatistics = {
+  tvl: 224000000,
+  apy: {
+    yearly: 124400,
+    weekly: 134,
+    quarterly: 144000,
   },
-  {
-    name: "7-day yield",
-    amount: 224000000,
-    currency: "bitcoin",
-  },
-  {
-    name: "30-day yield",
-    amount: 224000000,
-    currency: "bitcoin",
-  },
-]
+}

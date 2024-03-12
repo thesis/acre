@@ -1,6 +1,6 @@
 import React from "react"
 import { TransactionInfo } from "#/types"
-import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
+import { CurrencyBalance } from "#/components/shared/Balance/CurrencyBalance"
 import CurrencyIcon from "#/components/shared/CurrencyIcon"
 import { displayBlockTimestamp } from "#/utils"
 import BlockExplorer from "../components/BlockExplorer"
