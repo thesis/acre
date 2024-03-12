@@ -40,6 +40,7 @@ const defaultTheme = {
   styles: {
     global: (props: StyleFunctionProps) => ({
       body: {
+        "--toast-z-index": 1410,
         // TODO: Update when the dark theme is ready
         backgroundColor: mode("gold.300", "gold.300")(props),
         color: mode("grey.700", "grey.700")(props),

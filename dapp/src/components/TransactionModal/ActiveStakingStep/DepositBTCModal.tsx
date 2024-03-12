@@ -5,14 +5,18 @@ import {
   useExecuteFunction,
   useModalFlowContext,
   useStakeFlowContext,
+  useToast,
   useTransactionContext,
   useWalletContext,
 } from "#/hooks"
-import { TextMd } from "#/components/shared/Typography"
-import { logPromiseFailure } from "#/utils"
+import { TextMd, TextSm } from "#/components/shared/Typography"
+import { ERRORS, logPromiseFailure } from "#/utils"
 import { PROCESS_STATUSES } from "#/types"
 import CardAlert from "#/components/shared/CardAlert"
+import Toast from "#/components/shared/Toast"
 import StakingStepsModalContent from "./StakingStepsModalContent"
+
+const ID_TOAST = "deposit-btc-error-toast"
 
 export default function DepositBTCModal() {
   const { ethAccount } = useWalletContext()
@@ -20,6 +24,18 @@ export default function DepositBTCModal() {
   const { setStatus } = useModalFlowContext()
   const { btcAddress, depositReceipt, stake } = useStakeFlowContext()
   const depositTelemetry = useDepositTelemetry()
+
+  const toast = useToast({
+    render: ({ onClose }) => (
+      <Toast
+        status="error"
+        title={ERRORS.DEPOSIT_TRANSACTION}
+        onClose={onClose}
+      >
+        <TextSm>Please try again.</TextSm>
+      </Toast>
+    ),
+  })
 
   const onStakeBTCSuccess = useCallback(() => {
     setStatus(PROCESS_STATUSES.SUCCEEDED)
@@ -46,8 +62,18 @@ export default function DepositBTCModal() {
     }, 10000)
   }, [setStatus, handleStake])
 
-  const { sendBitcoinTransaction } =
-    useDepositBTCTransaction(onDepositBTCSuccess)
+  const onDepositBTCError = useCallback(() => {
+    if (!toast.isActive(ID_TOAST)) {
+      toast({
+        id: ID_TOAST,
+      })
+    }
+  }, [toast])
+
+  const { sendBitcoinTransaction } = useDepositBTCTransaction(
+    onDepositBTCSuccess,
+    onDepositBTCError,
+  )
 
   const handledDepositBTC = useCallback(async () => {
     if (!tokenAmount?.amount || !btcAddress || !depositReceipt || !ethAccount)

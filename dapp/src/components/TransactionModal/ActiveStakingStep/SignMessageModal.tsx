@@ -3,16 +3,38 @@ import {
   useExecuteFunction,
   useModalFlowContext,
   useStakeFlowContext,
+  useToast,
 } from "#/hooks"
-import { logPromiseFailure } from "#/utils"
+import { ERRORS, logPromiseFailure } from "#/utils"
 import { PROCESS_STATUSES } from "#/types"
 import ReceiveSTBTCAlert from "#/components/shared/ReceiveSTBTCAlert"
+import Toast from "#/components/shared/Toast"
+import { TextSm } from "#/components/shared/Typography"
 import StakingStepsModalContent from "./StakingStepsModalContent"
+
+const ID_TOAST = "sign-message-error-toast"
 
 export default function SignMessageModal() {
   const { goNext, setStatus } = useModalFlowContext()
   const { signMessage } = useStakeFlowContext()
-  const handleSignMessage = useExecuteFunction(signMessage, goNext)
+
+  const toast = useToast({
+    render: ({ onClose }) => (
+      <Toast status="error" title={ERRORS.SIGNING} onClose={onClose}>
+        <TextSm>Please try again.</TextSm>
+      </Toast>
+    ),
+  })
+
+  const onError = useCallback(() => {
+    if (!toast.isActive(ID_TOAST)) {
+      toast({
+        id: ID_TOAST,
+      })
+    }
+  }, [toast])
+
+  const handleSignMessage = useExecuteFunction(signMessage, goNext, onError)
 
   const handleSignMessageWrapper = useCallback(() => {
     logPromiseFailure(handleSignMessage())
@@ -21,6 +43,8 @@ export default function SignMessageModal() {
   useEffect(() => {
     setStatus(PROCESS_STATUSES.PENDING)
   }, [setStatus])
+
+  useEffect(() => () => toast.close(ID_TOAST), [toast])
 
   return (
     <StakingStepsModalContent
