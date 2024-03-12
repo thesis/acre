@@ -3,8 +3,8 @@ import { useExecuteFunction, useModalFlowContext } from "#/hooks"
 import { PROCESS_STATUSES } from "#/types"
 import { Button, ModalBody, ModalFooter, ModalHeader } from "@chakra-ui/react"
 import { TextMd } from "#/components/shared/Typography"
-import AlertReceiveSTBTC from "#/components/shared/AlertReceiveSTBTC"
 import { logPromiseFailure } from "#/utils"
+import ReceiveSTBTCAlert from "#/components/shared/ReceiveSTBTCAlert"
 
 export default function SignMessageModal() {
   const { setStatus } = useModalFlowContext()
@@ -46,7 +46,7 @@ export default function SignMessageModal() {
           You will sign a gas-free Ethereum message to indicate the address
           where you&apos;d like to get your stBTC liquid staking token.
         </TextMd>
-        <AlertReceiveSTBTC />
+        <ReceiveSTBTCAlert />
       </ModalBody>
       <ModalFooter pt={10}>
         <Button size="lg" width="100%" onClick={handleSignMessageWrapper}>

@@ -1,18 +1,18 @@
 import React from "react"
 import { Highlight } from "@chakra-ui/react"
 import { TextMd } from "#/components/shared/Typography"
-import Alert, { AlertProps } from "#/components/shared/Alert"
+import CardAlert, { CardAlertProps } from "./CardAlert"
 
-export default function AlertReceiveSTBTC({ ...restProps }: AlertProps) {
+export default function ReceiveSTBTCAlert({ ...restProps }: CardAlertProps) {
   return (
     // TODO: Add the correct action after click
-    <Alert status="info" withActionIcon onclick={() => {}} {...restProps}>
+    <CardAlert status="error" withLink onclick={() => {}} {...restProps}>
       <TextMd>
         <Highlight query="stBTC" styles={{ textDecorationLine: "underline" }}>
           You will receive stBTC liquid staking token at this Ethereum address
           once the staking transaction is completed.
         </Highlight>
       </TextMd>
-    </Alert>
+    </CardAlert>
   )
 }

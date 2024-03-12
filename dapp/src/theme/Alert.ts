@@ -6,50 +6,41 @@ import {
   defineStyle,
 } from "@chakra-ui/react"
 
-const KEYS = [...parts.keys, "rightIconContainer"] as const
-
 const baseStyleDialog = defineStyle({
-  py: 5,
-  pl: 5,
-  pr: 10,
-  border: "2px",
-  borderColor: "white",
+  p: 5,
   borderRadius: "xl",
   textAlign: "left",
-  color: "grey.700",
+  color: "white",
+  width: "lg",
+  boxShadow: "0px 8px 12px 0px var(--chakra-colors-opacity-black-15)",
 })
 
 const baseStyleIcon = defineStyle({
-  mr: 4,
+  mr: 2,
 })
 
-const baseStyleRightIconContainer = defineStyle({
-  position: "absolute",
-  right: 0,
-  top: 0,
-  p: 5,
-  h: "100%",
-  borderLeft: "2px solid white",
-  color: "brand.400",
-  display: "flex",
-  alignItems: "center",
-  w: 14,
-})
-
-const multiStyleConfig = createMultiStyleConfigHelpers(KEYS)
+const multiStyleConfig = createMultiStyleConfigHelpers(parts.keys)
 
 const baseStyle = multiStyleConfig.definePartsStyle({
   container: baseStyleDialog,
   icon: baseStyleIcon,
-  rightIconContainer: baseStyleRightIconContainer,
 })
 
 const statusInfo = multiStyleConfig.definePartsStyle({
   container: {
-    bg: "gold.200",
+    bg: "blue.500",
   },
   icon: {
-    color: "grey.700",
+    color: "white",
+  },
+})
+
+const statusError = multiStyleConfig.definePartsStyle({
+  container: {
+    bg: "red.400",
+  },
+  icon: {
+    color: "white",
   },
 })
 
@@ -60,6 +51,7 @@ const statusStyles = (props: StyleFunctionProps) => {
     [status: string]: Record<string, SystemStyleInterpolation>
   } = {
     info: statusInfo,
+    error: statusError,
   }
 
   return styleMap[status as string] || {}

@@ -9,9 +9,9 @@ import {
   ModalHeader,
 } from "@chakra-ui/react"
 import { TextMd } from "#/components/shared/Typography"
-import Alert from "#/components/shared/Alert"
 import { logPromiseFailure, getCurrencyByType } from "#/utils"
 import { CurrencyType, RequestAccountParams } from "#/types"
+import CardAlert from "#/components/shared/CardAlert"
 
 type MissingAccountModalProps = {
   currency: CurrencyType
@@ -40,14 +40,14 @@ export default function MissingAccountModal({
           {name} account is required to make transactions for depositing and
           staking your {symbol}.
         </TextMd>
-        <Alert>
+        <CardAlert>
           <TextMd>
             <Highlight query="Accounts" styles={{ fontWeight: "bold" }}>
               You will be sent to the Ledger Accounts section to perform this
               action.
             </Highlight>
           </TextMd>
-        </Alert>
+        </CardAlert>
       </ModalBody>
       <ModalFooter mt={4}>
         <Button size="lg" width="100%" onClick={handleClick}>

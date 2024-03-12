@@ -8,10 +8,10 @@ import {
   useTransactionContext,
   useWalletContext,
 } from "#/hooks"
-import Alert from "#/components/shared/Alert"
 import { TextMd } from "#/components/shared/Typography"
 import { logPromiseFailure } from "#/utils"
 import { PROCESS_STATUSES } from "#/types"
+import CardAlert from "#/components/shared/CardAlert"
 import StakingStepsModalContent from "./StakingStepsModalContent"
 
 export default function DepositBTCModal() {
@@ -82,11 +82,11 @@ export default function DepositBTCModal() {
       activeStep={1}
       onClick={handledDepositBTCWrapper}
     >
-      <Alert>
+      <CardAlert status="error">
         <TextMd>
           Make a Bitcoin transaction to deposit and stake your BTC.
         </TextMd>
-      </Alert>
+      </CardAlert>
     </StakingStepsModalContent>
   )
 }

@@ -5,8 +5,8 @@ import {
   useStakeFlowContext,
 } from "#/hooks"
 import { logPromiseFailure } from "#/utils"
-import AlertReceiveSTBTC from "#/components/shared/AlertReceiveSTBTC"
 import { PROCESS_STATUSES } from "#/types"
+import ReceiveSTBTCAlert from "#/components/shared/ReceiveSTBTCAlert"
 import StakingStepsModalContent from "./StakingStepsModalContent"
 
 export default function SignMessageModal() {
@@ -28,7 +28,7 @@ export default function SignMessageModal() {
       activeStep={0}
       onClick={handleSignMessageWrapper}
     >
-      <AlertReceiveSTBTC />
+      <ReceiveSTBTCAlert />
     </StakingStepsModalContent>
   )
 }
