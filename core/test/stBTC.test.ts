@@ -149,7 +149,7 @@ describe("stBTC", () => {
 
           before(async () => {
             await tbtc.mint(await stbtc.getAddress(), earnedYield)
-            await syncRewards(1n)
+            await syncAndReleaseRewards(100)
           })
 
           it("should return the correct amount of assets", async () => {
@@ -371,7 +371,7 @@ describe("stBTC", () => {
               // more tokens than deposited which causes the exchange rate to
               // change.
               await tbtc.mint(await stbtc.getAddress(), earnedYield)
-              await syncRewards(2n)
+              await syncAndReleaseRewards(50)
             })
 
             after(async () => {
@@ -383,20 +383,9 @@ describe("stBTC", () => {
               const actualDepositAmount2 = depositor2AmountToDeposit
 
               // check approximate value +1%
-              expect(await stbtc.totalAssets()).to.be.lt(
-                ((actualDepositAmount1 +
-                  actualDepositAmount2 +
-                  earnedYield / 2n) *
-                  101n) /
-                  100n,
-              )
-              // check approximate value -1%
-              expect(await stbtc.totalAssets()).to.be.gt(
-                ((actualDepositAmount1 +
-                  actualDepositAmount2 +
-                  earnedYield / 2n) *
-                  99n) /
-                  100n,
+              expectCloseTo(
+                await stbtc.totalAssets(),
+                actualDepositAmount1 + actualDepositAmount2 + earnedYield / 2n,
               )
             })
 
@@ -416,14 +405,8 @@ describe("stBTC", () => {
               // 7 * 12.5 / 10 = 8.75
               const expectedAssetsToRedeem = 8750000000000000000n
 
-              // +1% due to roundings
-              expect(availableAssetsToRedeem).to.be.lt(
-                (expectedAssetsToRedeem * 101n) / 100n,
-              )
-              // -1% due to roundings
-              expect(availableAssetsToRedeem).to.be.gt(
-                (expectedAssetsToRedeem * 99n) / 100n,
-              )
+              // check approximate value +1%
+              expectCloseTo(availableAssetsToRedeem, expectedAssetsToRedeem)
             })
 
             it("the depositor 2 should be able to redeem more tokens than before", async () => {
@@ -434,14 +417,8 @@ describe("stBTC", () => {
               // Due to Solidity's mulDiv functions the result is floor rounded.
               const expectedAssetsToRedeem = 3750000000000000000n
 
-              // +1% due to roundings
-              expect(availableAssetsToRedeem).to.be.lt(
-                (expectedAssetsToRedeem * 101n) / 100n,
-              )
-              // -1% due to roundings
-              expect(availableAssetsToRedeem).to.be.gt(
-                (expectedAssetsToRedeem * 99n) / 100n,
-              )
+              // check approximate value +1%
+              expectCloseTo(availableAssetsToRedeem, expectedAssetsToRedeem)
             })
           },
         )
@@ -464,7 +441,7 @@ describe("stBTC", () => {
             // more tokens than deposited which causes the exchange rate to
             // change.
             await tbtc.mint(await stbtc.getAddress(), earnedYield)
-            await syncRewards(1n)
+            await syncAndReleaseRewards(100)
           })
 
           after(async () => {
@@ -722,17 +699,14 @@ describe("stBTC", () => {
 
           await tbtc.mint(await stbtc.getAddress(), earnedYield)
           balanceBefore = await stbtc.totalAssets()
-          await syncRewards(2n)
+          await syncAndReleaseRewards(50)
         })
 
         it("should release half of the rewards to the vault", async () => {
           // check approximate value +1%
-          expect(await stbtc.totalAssets()).to.be.lt(
-            ((balanceBefore + earnedYield / 2n) * 101n) / 100n,
-          )
-          // check approximate value -1%
-          expect(await stbtc.totalAssets()).to.be.gt(
-            ((balanceBefore + earnedYield / 2n) * 99n) / 100n,
+          expectCloseTo(
+            await stbtc.totalAssets(),
+            balanceBefore + earnedYield / 2n,
           )
         })
 
@@ -742,14 +716,8 @@ describe("stBTC", () => {
 
           const expectedAssetsToRedeem = amountToMint + earnedYield / 2n
 
-          // +1% due to roundings
-          expect(availableAssetsToRedeem).to.be.lt(
-            (expectedAssetsToRedeem * 101n) / 100n,
-          )
-          // -1% due to roundings
-          expect(availableAssetsToRedeem).to.be.gt(
-            (expectedAssetsToRedeem * 99n) / 100n,
-          )
+          // check approximate value +1%
+          expectCloseTo(availableAssetsToRedeem, expectedAssetsToRedeem)
         })
       },
     )
@@ -1117,7 +1085,7 @@ describe("stBTC", () => {
             await stbtc.getAddress(),
             BigInt(maximumTotalAssets) + 1n,
           )
-          await syncRewards(1n)
+          await syncAndReleaseRewards(100)
           expect(await stbtc.maxDeposit(depositor1.address)).to.be.eq(0)
         })
       },
@@ -1326,7 +1294,7 @@ describe("stBTC", () => {
           const toMint = maximumTotalAssets + 1n
 
           await tbtc.mint(await stbtc.getAddress(), toMint)
-          await syncRewards(1n)
+          await syncAndReleaseRewards(100)
 
           expect(await stbtc.maxMint(depositor1.address)).to.be.eq(0)
         })
@@ -1352,7 +1320,7 @@ describe("stBTC", () => {
 
         // Vault earns 4 tBTC.
         await tbtc.mint(await stbtc.getAddress(), toMint)
-        await syncRewards(1n)
+        await syncAndReleaseRewards(100)
 
         // The current state is:
         // Total assets: 4 + 2 = 6
@@ -1408,14 +1376,14 @@ describe("stBTC", () => {
     })
   })
 
-  // Interval divisor split the rewards cycle into smaller parts after the sync
+  // Cycle progress split the rewards cycle into smaller parts after the sync
   // was called.
   // E.g. 1 (cycle 7 days)
   //
   // ---|----------------------------|----------|---------|---> time
   //  Day 1                        Day 4      (now)     Day 7
-  //                             syncRewards()
-  // intervalDivisor = 2 split the interval between Day 4 - Day 7 into 2 parts because
+  //                       syncAndReleaseRewards()
+  // nextCycleProgress = 50 split the interval between Day 4 - Day 7 into 2 parts because
   // the last sync was called on Day 4. If the rewards for last week was 0.1tBTC, then
   // at timestamp "now" 0.05tBTC would be unlocked. Other half would be unlocked
   // on Day 7.
@@ -1424,20 +1392,36 @@ describe("stBTC", () => {
   //
   // ---|-------------------------|------------------------|---> time
   //  Day 1                      now                     Day 7
-  // syncRewards()
+  // syncAndReleaseRewards()
   //
-  // intervalDivisor = 2 split the interval between Day 1 - Day 7 into 2 parts because
+  // nextCycleProgress = 50 split the interval between Day 1 - Day 7 into 2 parts because
   // the last sync was called on Day 1. If the rewards for last week was 0.1tBTC, then
   // at timestamp "now" 0.05 tBTC would be unlocked. Other half would be unlocked
   // on Day 7.
-  async function syncRewards(intervalDivisor: bigint) {
+  async function syncAndReleaseRewards(nextCycleProgress: number) {
     // sync rewards
     await stbtc.syncRewards()
-    const blockTimestamp = BigInt(await time.latest())
-    const rewardsCycleEnd = await stbtc.rewardsCycleEnd()
-    await time.setNextBlockTimestamp(
-      blockTimestamp + (rewardsCycleEnd - blockTimestamp) / intervalDivisor,
+    // progress the next cycle to release rewards
+    if (nextCycleProgress > 0) {
+      const blockTimestamp = BigInt(await time.latest())
+      const rewardsCycleEnd = await stbtc.rewardsCycleEnd()
+      await time.setNextBlockTimestamp(
+        blockTimestamp +
+          ((rewardsCycleEnd - blockTimestamp) * BigInt(nextCycleProgress)) /
+            100n,
+      )
+      await mine(1)
+    }
+  }
+
+  function expectCloseTo(
+    actual: bigint,
+    expected: bigint,
+    deltaPercentage = 1,
+  ) {
+    return expect(actual).to.be.closeTo(
+      actual,
+      (expected * BigInt(deltaPercentage)) / 100n,
     )
-    await mine(1)
   }
 })
