@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity ^0.8.21;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable2Step.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/interfaces/IERC4626.sol";
 import "./Router.sol";
@@ -11,7 +11,7 @@ import "./stBTC.sol";
 /// @notice Dispatcher is a contract that routes tBTC from stBTC to
 ///         yield vaults and back. Vaults supply yield strategies with tBTC that
 ///         generate yield for Bitcoin holders.
-contract Dispatcher is Router, Ownable {
+contract Dispatcher is Router, Ownable2Step {
     using SafeERC20 for IERC20;
 
     /// Struct holds information about a vault.

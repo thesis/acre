@@ -1,6 +1,6 @@
 import ethers, { Contract, ZeroAddress } from "ethers"
 import {
-  EthereumTBTCDepositor,
+  EthereumBitcoinDepositor,
   EthereumAddress,
   Hex,
   EthereumSigner,
@@ -12,7 +12,7 @@ jest.mock("ethers", (): object => ({
   ...jest.requireActual("ethers"),
 }))
 
-describe("TBTCDepositor", () => {
+describe("BitcoinDepositor", () => {
   const spyOnEthersDataSlice = jest.spyOn(ethers, "dataSlice")
 
   const vaultAddress = EthereumAddress.from(
@@ -21,9 +21,9 @@ describe("TBTCDepositor", () => {
 
   const mockedContractInstance = {
     tbtcVault: jest.fn().mockImplementation(() => vaultAddress.identifierHex),
-    initializeStakeRequest: jest.fn(),
+    initializeStake: jest.fn(),
   }
-  let depositor: EthereumTBTCDepositor
+  let depositor: EthereumBitcoinDepositor
   let depositorAddress: EthereumAddress
 
   beforeEach(async () => {
@@ -38,7 +38,7 @@ describe("TBTCDepositor", () => {
       await ethers.Wallet.createRandom().getAddress(),
     )
 
-    depositor = new EthereumTBTCDepositor(
+    depositor = new EthereumBitcoinDepositor(
       {
         signer: {} as EthereumSigner,
         address: depositorAddress.identifierHex,
@@ -103,7 +103,7 @@ describe("TBTCDepositor", () => {
       let result: Hex
 
       beforeAll(async () => {
-        mockedContractInstance.initializeStakeRequest.mockReturnValue({
+        mockedContractInstance.initializeStake.mockReturnValue({
           hash: mockedTx.toPrefixedString(),
         })
 
@@ -154,9 +154,7 @@ describe("TBTCDepositor", () => {
           vault: `0x${vaultAddress.identifierHex}`,
         }
 
-        expect(
-          mockedContractInstance.initializeStakeRequest,
-        ).toHaveBeenCalledWith(
+        expect(mockedContractInstance.initializeStake).toHaveBeenCalledWith(
           btcTxInfo,
           revealInfo,
           `0x${staker.identifierHex}`,

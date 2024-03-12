@@ -1,12 +1,12 @@
 import {
   BitcoinRawTxVectors,
   DepositorProxy,
-  EthereumTBTCDepositor,
+  EthereumBitcoinDepositor,
   ChainIdentifier,
   DepositReceipt,
   Hex,
   packRevealDepositParameters,
-  TBTCDepositor,
+  BitcoinDepositor,
 } from "@acre-btc/sdk"
 import axios from "axios"
 
@@ -18,11 +18,13 @@ const DEFENDER_WEBHOOK_URL = import.meta.env.VITE_DEFENDER_RELAYER_WEBHOOK_URL
  * Sends the HTTP POST request to the webhook at the provided URL with the data
  * necessary to initialize stake.
  */
-class RelayerDepositorProxy<T extends TBTCDepositor> implements DepositorProxy {
+class RelayerDepositorProxy<T extends BitcoinDepositor>
+  implements DepositorProxy
+{
   /**
-   * Chain-specific handle to @see TBTCDepositor contract.
+   * Chain-specific handle to @see BitcoinDepositor contract.
    */
-  #tbtcDepositor: T
+  #bitcoinDepositor: T
 
   /**
    * Defines the Open Zeppelin Defender webhook URL.
@@ -31,17 +33,17 @@ class RelayerDepositorProxy<T extends TBTCDepositor> implements DepositorProxy {
 
   /**
    * Creates the instance of the relayer depositor proxy for Ethereum chain.
-   * @param tbtcDepositor Ethereum handle to @see TBTCDepositor contract.
+   * @param bitcoinDepositor Ethereum handle to @see BitcoinDepositor contract.
    * @returns Instance of @see RelayerDepositorProxy.
    */
-  static fromEthereumTbtcDepositor(
-    tbtcDepositor: EthereumTBTCDepositor,
-  ): RelayerDepositorProxy<EthereumTBTCDepositor> {
-    return new RelayerDepositorProxy(tbtcDepositor, DEFENDER_WEBHOOK_URL)
+  static fromEthereumBitcoinDepositor(
+    bitcoinDepositor: EthereumBitcoinDepositor,
+  ): RelayerDepositorProxy<EthereumBitcoinDepositor> {
+    return new RelayerDepositorProxy(bitcoinDepositor, DEFENDER_WEBHOOK_URL)
   }
 
-  private constructor(_tbtcDepositor: T, _defenderWebhookUr: string) {
-    this.#tbtcDepositor = _tbtcDepositor
+  private constructor(_bitcoinDepositor: T, _defenderWebhookUr: string) {
+    this.#bitcoinDepositor = _bitcoinDepositor
     this.#defenderWebhookUrl = _defenderWebhookUr
   }
 
@@ -49,7 +51,7 @@ class RelayerDepositorProxy<T extends TBTCDepositor> implements DepositorProxy {
    * @see {DepositorProxy#getChainIdentifier}
    */
   getChainIdentifier(): ChainIdentifier {
-    return this.#tbtcDepositor.getChainIdentifier()
+    return this.#bitcoinDepositor.getChainIdentifier()
   }
 
   /**
@@ -65,12 +67,13 @@ class RelayerDepositorProxy<T extends TBTCDepositor> implements DepositorProxy {
       depositTx,
       depositOutputIndex,
       deposit,
-      await this.#tbtcDepositor.getTbtcVaultChainIdentifier(),
+      await this.#bitcoinDepositor.getTbtcVaultChainIdentifier(),
     )
 
     if (!extraData) throw new Error("Invalid extra data")
 
-    const { staker, referral } = this.#tbtcDepositor.decodeExtraData(extraData)
+    const { staker, referral } =
+      this.#bitcoinDepositor.decodeExtraData(extraData)
 
     // TODO: Catch and handle errors + sentry.
     const response = await axios.post<{ result: string }>(
