@@ -10,11 +10,11 @@ import { StatisticType } from "#/types"
 import ButtonLink from "#/components/shared/ButtonLink"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import { TextSm } from "#/components/shared/Typography"
-import { useStakingBtcHook } from "#/hooks"
+import { useStakingStats } from "#/hooks"
 import { LINKS } from "#/constants"
 
 export default function StatisticsCard(props: CardProps) {
-  const statistics = useStakingBtcHook()
+  const statistics = useStakingStats()
 
   return (
     <Card p={5} pb={2} w={72} {...props}>

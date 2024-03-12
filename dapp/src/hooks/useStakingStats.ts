@@ -5,7 +5,7 @@ import {
 } from "#/mocks/mock-statistics"
 import { StatisticType } from "#/types"
 
-export function useStakingBtcHook() {
+export function useStakingStats() {
   // TODO: change when real data will be available
   const [statistics, setStatistic] = useState<StatisticType[]>()
   const isStakingBtc = false
