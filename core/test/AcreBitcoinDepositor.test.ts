@@ -1,9 +1,5 @@
 /* eslint-disable func-names */
-import {
-  loadFixture,
-  time,
-  mine,
-} from "@nomicfoundation/hardhat-toolbox/network-helpers"
+import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 
 import { ethers, helpers } from "hardhat"
 import { expect } from "chai"
@@ -1428,9 +1424,7 @@ describe("AcreBitcoinDepositor", () => {
       const currentTotalAssets = maxTotalAssetsSoftLimit
 
       before(async () => {
-        // Simulate tBTC already deposited in stBTC.
-        await tbtc.mint(await stbtc.getAddress(), currentTotalAssets)
-        await syncRewards(1n)
+        await simulateDeposit(currentTotalAssets)
       })
 
       it("should return 0", async () => {
@@ -1445,9 +1439,7 @@ describe("AcreBitcoinDepositor", () => {
       const availableSoftLimit = to1ePrecision(40000000, 10) // 40000000 satoshi = 0.4 BTC
 
       before(async () => {
-        // Simulate tBTC already deposited in stBTC.
-        await tbtc.mint(await stbtc.getAddress(), currentTotalAssets)
-        await syncRewards(1n)
+        await simulateDeposit(currentTotalAssets)
 
         expect(await stbtc.totalAssets()).to.be.equal(currentTotalAssets)
       })
@@ -1928,14 +1920,13 @@ describe("AcreBitcoinDepositor", () => {
     }
   }
 
-  async function syncRewards(intervalDivisor: bigint) {
-    // sync rewards
-    await stbtc.syncRewards()
-    const blockTimestamp = BigInt(await time.latest())
-    const rewardsCycleEnd = await stbtc.rewardsCycleEnd()
-    await time.setNextBlockTimestamp(
-      blockTimestamp + (rewardsCycleEnd - blockTimestamp) / intervalDivisor,
-    )
-    await mine(1)
+  async function simulateDeposit(amountToDeposit: bigint) {
+    await tbtc.mint(await thirdParty.getAddress(), amountToDeposit)
+    await tbtc
+      .connect(thirdParty)
+      .approve(await stbtc.getAddress(), amountToDeposit)
+    await stbtc
+      .connect(thirdParty)
+      .deposit(amountToDeposit, await thirdParty.getAddress())
   }
 })
