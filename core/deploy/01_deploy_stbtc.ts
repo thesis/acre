@@ -1,5 +1,6 @@
 import type { HardhatRuntimeEnvironment } from "hardhat/types"
 import type { DeployFunction } from "hardhat-deploy/types"
+import { waitForTransaction } from "../helpers/deployment"
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { getNamedAccounts, deployments, helpers } = hre
@@ -19,7 +20,8 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     },
   })
 
-  if (hre.network.tags.etherscan) {
+  if (stbtcDeployment.transactionHash && hre.network.tags.etherscan) {
+    await waitForTransaction(hre, stbtcDeployment.transactionHash)
     await helpers.etherscan.verify(stbtcDeployment)
   }
 
