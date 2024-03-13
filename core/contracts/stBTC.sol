@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 
 import "./Dispatcher.sol";
+import {ZeroAddress} from "./utils/Errors.sol";
 
 /// @title stBTC
 /// @notice This contract implements the ERC-4626 tokenized vault standard. By
@@ -63,9 +64,6 @@ contract stBTC is
     /// @param amount Amount to check.
     /// @param min Minimum amount to check 'amount' against.
     error LessThanMinDeposit(uint256 amount, uint256 min);
-
-    /// Reverts if the address is zero.
-    error ZeroAddress();
 
     /// Reverts if the address is disallowed.
     error DisallowedAddress();

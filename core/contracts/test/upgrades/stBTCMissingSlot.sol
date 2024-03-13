@@ -8,6 +8,7 @@ import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 
 import "../../Dispatcher.sol";
+import {ZeroAddress} from "../../utils/Errors.sol";
 
 /// @title stBTCMissingSlot
 /// @dev  This is a contract used to test stBTC upgradeability. It is a copy of
@@ -57,9 +58,6 @@ contract stBTCMissingSlot is
     /// @param amount Amount to check.
     /// @param min Minimum amount to check 'amount' against.
     error LessThanMinDeposit(uint256 amount, uint256 min);
-
-    /// Reverts if the address is zero.
-    error ZeroAddress();
 
     /// Reverts if the address is disallowed.
     error DisallowedAddress();
