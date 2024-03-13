@@ -18,7 +18,7 @@ const { getNamedSigners, getUnnamedSigners } = helpers.signers
 
 async function fixture() {
   const { tbtc, stbtc, dispatcher } = await deployment()
-  const { governance, treasury } = await getNamedSigners()
+  const { governance, treasury, emergencyStopAccount } = await getNamedSigners()
 
   const [depositor1, depositor2, thirdParty] = await getUnnamedSigners()
 
@@ -35,6 +35,7 @@ async function fixture() {
     governance,
     thirdParty,
     treasury,
+    emergencyStopAccount,
   }
 }
 
@@ -47,6 +48,7 @@ describe("stBTC", () => {
   let depositor1: HardhatEthersSigner
   let depositor2: HardhatEthersSigner
   let thirdParty: HardhatEthersSigner
+  let emergencyStopAccount: HardhatEthersSigner
 
   before(async () => {
     ;({
@@ -57,6 +59,7 @@ describe("stBTC", () => {
       dispatcher,
       governance,
       thirdParty,
+      emergencyStopAccount,
     } = await loadFixture(fixture))
   })
 
@@ -1074,7 +1077,7 @@ describe("stBTC", () => {
         beforeAfterSnapshotWrapper()
 
         before(async () => {
-          tx = await stbtc.connect(governance).pause()
+          tx = await stbtc.connect(emergencyStopAccount).pause()
         })
 
         it("should change the pause state", async () => {
@@ -1082,7 +1085,9 @@ describe("stBTC", () => {
         })
 
         it("should emit `Paused` event", async () => {
-          await expect(tx).to.emit(stbtc, "Paused").withArgs(governance.address)
+          await expect(tx)
+            .to.emit(stbtc, "Paused")
+            .withArgs(emergencyStopAccount.address)
         })
       })
 
@@ -1091,7 +1096,7 @@ describe("stBTC", () => {
 
         it("should revert", async () => {
           await expect(stbtc.connect(thirdParty).pause())
-            .to.be.revertedWithCustomError(stbtc, "OwnableUnauthorizedAccount")
+            .to.be.revertedWithCustomError(stbtc, "NotEmergencyStopAccount")
             .withArgs(thirdParty.address)
         })
       })
@@ -1100,12 +1105,12 @@ describe("stBTC", () => {
         beforeAfterSnapshotWrapper()
 
         before(async () => {
-          await stbtc.connect(governance).pause()
+          await stbtc.connect(emergencyStopAccount).pause()
         })
 
         it("should revert", async () => {
           await expect(
-            stbtc.connect(governance).pause(),
+            stbtc.connect(emergencyStopAccount).pause(),
           ).to.be.revertedWithCustomError(stbtc, "EnforcedPause")
         })
       })
@@ -1118,9 +1123,9 @@ describe("stBTC", () => {
         beforeAfterSnapshotWrapper()
 
         before(async () => {
-          await stbtc.connect(governance).pause()
+          await stbtc.connect(emergencyStopAccount).pause()
 
-          tx = await stbtc.connect(governance).unpause()
+          tx = await stbtc.connect(emergencyStopAccount).unpause()
         })
 
         it("should change the pause state", async () => {
@@ -1130,7 +1135,7 @@ describe("stBTC", () => {
         it("should emit `Unpaused` event", async () => {
           await expect(tx)
             .to.emit(stbtc, "Unpaused")
-            .withArgs(governance.address)
+            .withArgs(emergencyStopAccount.address)
         })
       })
 
@@ -1139,7 +1144,7 @@ describe("stBTC", () => {
 
         it("should revert", async () => {
           await expect(stbtc.connect(thirdParty).unpause())
-            .to.be.revertedWithCustomError(stbtc, "OwnableUnauthorizedAccount")
+            .to.be.revertedWithCustomError(stbtc, "NotEmergencyStopAccount")
             .withArgs(thirdParty.address)
         })
       })
@@ -1149,7 +1154,7 @@ describe("stBTC", () => {
 
         it("should revert", async () => {
           await expect(
-            stbtc.connect(governance).unpause(),
+            stbtc.connect(emergencyStopAccount).unpause(),
           ).to.be.revertedWithCustomError(stbtc, "ExpectedPause")
         })
       })
@@ -1160,7 +1165,7 @@ describe("stBTC", () => {
       beforeAfterSnapshotWrapper()
 
       before(async () => {
-        await stbtc.connect(governance).pause()
+        await stbtc.connect(emergencyStopAccount).pause()
       })
 
       it("should pause deposits", async () => {

@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 
 import "./Dispatcher.sol";
+import "./AbstractPausable.sol";
 import {ZeroAddress} from "./utils/Errors.sol";
 
 /// @title stBTC
@@ -21,9 +22,9 @@ import {ZeroAddress} from "./utils/Errors.sol";
 ///      burning of shares (stBTC), which are represented as standard ERC20
 ///      tokens, providing a seamless exchange with tBTC tokens.
 contract stBTC is
+    AbstractPausable,
     ERC4626Upgradeable,
-    Ownable2StepUpgradeable,
-    PausableUpgradeable
+    Ownable2StepUpgradeable
 {
     using SafeERC20 for IERC20;
 
@@ -78,7 +79,7 @@ contract stBTC is
         __ERC20_init("Acre Staked Bitcoin", "stBTC");
         __Ownable2Step_init();
         __Ownable_init(msg.sender);
-        __Pausable_init();
+        __AbstractPausable_init(msg.sender);
 
         if (address(_treasury) == address(0)) {
             revert ZeroAddress();
@@ -88,22 +89,6 @@ contract stBTC is
         // TODO: Revisit the exact values closer to the launch.
         minimumDepositAmount = 0.001 * 1e18; // 0.001 tBTC
         maximumTotalAssets = 25 * 1e18; // 25 tBTC
-    }
-
-    /// @notice Allows the contract owner to pause deposits and withdrawals.
-    /// @dev Requirements:
-    ///      - The caller must be an contract owner.
-    ///      - The contract must not be already paused.
-    function pause() external onlyOwner {
-        _pause();
-    }
-
-    /// @notice Allows the contract owner to unpause deposits and withdrawals.
-    /// @dev Requirements:
-    ///      - The caller must be the contract owner.
-    ///      - The contract must be paused.
-    function unpause() external onlyOwner {
-        _unpause();
     }
 
     /// @notice Updates treasury wallet address.
@@ -274,5 +259,13 @@ contract stBTC is
     /// @return Returns deposit parameters.
     function depositParameters() public view returns (uint256, uint256) {
         return (minimumDepositAmount, maximumTotalAssets);
+    }
+
+    function _checkOwner()
+        internal
+        view
+        override(AbstractPausable, OwnableUpgradeable)
+    {
+        super._checkOwner();
     }
 }

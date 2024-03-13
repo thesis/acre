@@ -8,15 +8,16 @@ import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 
 import "../../Dispatcher.sol";
+import "../../AbstractPausable.sol";
 import {ZeroAddress} from "../../utils/Errors.sol";
 
 /// @title stBTCMissingSlot
 /// @dev  This is a contract used to test stBTC upgradeability. It is a copy of
 ///       stBTC contract with some differences marked with `TEST:` comments.
 contract stBTCMissingSlot is
+    AbstractPausable,
     ERC4626Upgradeable,
-    Ownable2StepUpgradeable,
-    PausableUpgradeable
+    Ownable2StepUpgradeable
 {
     using SafeERC20 for IERC20;
 
@@ -239,5 +240,13 @@ contract stBTCMissingSlot is
     /// @return Returns deposit parameters.
     function depositParameters() public view returns (uint256, uint256) {
         return (minimumDepositAmount, maximumTotalAssets);
+    }
+
+    function _checkOwner()
+        internal
+        view
+        override(AbstractPausable, OwnableUpgradeable)
+    {
+        super._checkOwner();
     }
 }
