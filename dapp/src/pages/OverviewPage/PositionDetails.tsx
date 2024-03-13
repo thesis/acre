@@ -14,11 +14,10 @@ import { TextMd } from "#/components/shared/Typography"
 import { Info } from "#/assets/icons"
 import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
 import TransactionModal from "#/components/TransactionModal"
-import { useAppSelector } from "#/hooks"
-import { selectEstimatedBtcBalance } from "#/store/btc"
+import { useEstimatedBtcBalance } from "#/hooks/store"
 
 export default function PositionDetails(props: CardProps) {
-  const estimatedBtcBalance = useAppSelector(selectEstimatedBtcBalance)
+  const estimatedBtcBalance = useEstimatedBtcBalance()
   const [actionFlowType, setActionFlowType] = useState<
     ActionFlowType | undefined
   >(undefined)
