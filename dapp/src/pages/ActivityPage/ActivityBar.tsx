@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react"
 import { VStack } from "@chakra-ui/react"
-import { ActivityCard } from "./ActivityCard"
-import { mockedActivities } from "./mock-activities"
+import { ActivityCard } from "../../components/shared/ActivityCard"
+import { mockedActivities } from "../../components/shared/ActivityCard/mock-activities"
 
 export function ActivityBar() {
   // TODO: Lines 8-18 should be replaced by redux store when subgraphs are implemented

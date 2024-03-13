@@ -1,9 +1,9 @@
 import React, { useCallback, useRef, useState } from "react"
 import Slider from "react-slick"
 import { Box, HStack, BoxProps } from "@chakra-ui/react"
-import { ActivityCard } from "../ActivityCard"
+import { ActivityCard } from "../../../components/shared/ActivityCard"
 import { activityCarouselSettings } from "./utils"
-import { mockedActivities } from "../mock-activities"
+import { mockedActivities } from "../../../components/shared/ActivityCard/mock-activities"
 
 export function ActivityCarousel({ ...props }: BoxProps) {
   const sliderRef = useRef<HTMLDivElement & Slider>(null)

@@ -2,11 +2,11 @@ import React from "react"
 import { Flex, Grid, HStack, SimpleGrid, Switch } from "@chakra-ui/react"
 import { TextSm } from "#/components/shared/Typography"
 import { USD } from "#/constants"
-import { ActivityCarousel } from "#/components/shared/Activities/"
 import PositionDetails from "./PositionDetails"
 import Statistics from "./Statistics"
 import TransactionHistory from "./TransactionHistory"
 import { DocsCard } from "./DocsCard"
+import { ActivityCarousel } from "./ActivityCarousel"
 
 export default function OverviewPage() {
   return (
@@ -19,10 +19,10 @@ export default function OverviewPage() {
 
       <SimpleGrid
         templateAreas={'"activity-carousel activity-carousel button-docs"'}
-        gridTemplateColumns={{ base: "30% 1fr", xl: "20% 1fr" }}
+        gridTemplateColumns={{ base: "1fr" }}
       >
         <ActivityCarousel gridArea="activity-carousel" />
-        <DocsCard />
+        <DocsCard gridArea="button-docs" />
       </SimpleGrid>
       <Grid
         templateAreas={`"position-details statistics"
