@@ -1,0 +1,71 @@
+name: Subgraph
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "subgraph/**"
+  pull_request:
+
+defaults:
+  run:
+    working-directory: ./subgraph
+
+jobs:
+  subgraph-codegen:
+    uses: ./.github/workflows/reusable-subgraph-codegen.yaml
+
+  subgraph-format:
+    needs: [subgraph-codegen]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: "subgraph/.nvmrc"
+          cache: "pnpm"
+
+      - name: Download Codegen Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: subgraph-codegen
+          path: subgraph/generated
+
+      - name: Install Dependencies
+        run: pnpm install --prefer-offline --frozen-lockfile
+
+      - name: Format
+        run: pnpm run format
+
+  subgraph-build:
+    needs: [subgraph-codegen]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: "subgraph/.nvmrc"
+          cache: "pnpm"
+
+      - name: Download Codegen Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: subgraph-codegen
+          path: subgraph/generated
+
+      - name: Install Dependencies
+        run: pnpm install --prefer-offline --frozen-lockfile
+
+      - name: Build
+        run: pnpm run build
