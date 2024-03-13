@@ -11,7 +11,7 @@ import {
 import { TextMd } from "#/components/shared/Typography"
 import { logPromiseFailure, getCurrencyByType } from "#/utils"
 import { CurrencyType, RequestAccountParams } from "#/types"
-import CardAlert from "#/components/shared/CardAlert"
+import { CardAlert } from "#/components/shared/alerts"
 
 type MissingAccountModalProps = {
   currency: CurrencyType

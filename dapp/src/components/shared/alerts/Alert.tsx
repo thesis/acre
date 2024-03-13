@@ -25,7 +25,7 @@ export type AlertProps = ChakraAlertProps & {
   onClose?: () => void
 }
 
-export default function Alert({
+export function Alert({
   status = "info",
   alertIconColor,
   withAlertIcon,

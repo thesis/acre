@@ -1,14 +1,14 @@
 import React from "react"
 import { HStack, Flex } from "@chakra-ui/react"
 import { ArrowUpRight } from "#/assets/icons"
-import Alert, { AlertProps } from "./Alert"
+import { Alert, AlertProps } from "./Alert"
 
 export type CardAlertProps = {
   withLink?: boolean
   onclick?: () => void
 } & Omit<AlertProps, "withCloseButton" | "onClose">
 
-export default function CardAlert({
+export function CardAlert({
   withLink = false,
   children,
   onclick,

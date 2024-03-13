@@ -1,7 +1,7 @@
 import React from "react"
 import { HStack } from "@chakra-ui/react"
-import { TextSm } from "./Typography"
-import Alert, { AlertProps } from "./Alert"
+import { Alert, AlertProps } from "./Alert"
+import { TextSm } from "../Typography"
 
 type ToastProps = {
   title: string
@@ -9,12 +9,7 @@ type ToastProps = {
     onClose: () => void
   }
 
-export default function Toast({
-  title,
-  children,
-  onClose,
-  ...props
-}: ToastProps) {
+export function Toast({ title, children, onClose, ...props }: ToastProps) {
   return (
     <Alert withAlertIcon withCloseButton onClose={onClose} {...props}>
       <HStack w="100%">

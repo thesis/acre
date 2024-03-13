@@ -1,9 +1,9 @@
 import React from "react"
 import { Highlight } from "@chakra-ui/react"
-import { TextMd } from "#/components/shared/Typography"
-import CardAlert, { CardAlertProps } from "./CardAlert"
+import { CardAlert, CardAlertProps } from "./CardAlert"
+import { TextMd } from "../Typography"
 
-export default function ReceiveSTBTCAlert({ ...restProps }: CardAlertProps) {
+export function ReceiveSTBTCAlert({ ...restProps }: CardAlertProps) {
   return (
     // TODO: Add the correct action after click
     <CardAlert status="error" withLink onclick={() => {}} {...restProps}>

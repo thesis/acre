@@ -11,7 +11,7 @@ import { LoadingSpinnerSuccessIcon } from "#/assets/icons"
 import { useModalFlowContext } from "#/hooks"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import { ACTION_FLOW_TYPES, ActionFlowType, TokenAmount } from "#/types"
-import ReceiveSTBTCAlert from "#/components/shared/ReceiveSTBTCAlert"
+import { ReceiveSTBTCAlert } from "#/components/shared/alerts"
 
 const HEADER = {
   [ACTION_FLOW_TYPES.STAKE]: "Staking successful!",

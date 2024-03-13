@@ -4,7 +4,7 @@ import { PROCESS_STATUSES } from "#/types"
 import { Button, ModalBody, ModalFooter, ModalHeader } from "@chakra-ui/react"
 import { TextMd } from "#/components/shared/Typography"
 import { logPromiseFailure } from "#/utils"
-import ReceiveSTBTCAlert from "#/components/shared/ReceiveSTBTCAlert"
+import { ReceiveSTBTCAlert } from "#/components/shared/alerts"
 
 export default function SignMessageModal() {
   const { setStatus } = useModalFlowContext()

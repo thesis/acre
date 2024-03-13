@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react"
 import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
-import Toast from "#/components/shared/Toast"
 import { ERRORS, capitalize, logPromiseFailure } from "#/utils"
 import { Button, Flex } from "@chakra-ui/react"
+import { Toast } from "#/components/shared/alerts"
 import { useToast } from "./useToast"
 import { useWallet } from "./useWallet"
 

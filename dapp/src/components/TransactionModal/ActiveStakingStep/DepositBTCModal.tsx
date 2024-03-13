@@ -12,8 +12,7 @@ import {
 import { TextMd, TextSm } from "#/components/shared/Typography"
 import { ERRORS, logPromiseFailure } from "#/utils"
 import { PROCESS_STATUSES } from "#/types"
-import CardAlert from "#/components/shared/CardAlert"
-import Toast from "#/components/shared/Toast"
+import { CardAlert, Toast } from "#/components/shared/alerts"
 import StakingStepsModalContent from "./StakingStepsModalContent"
 
 const ID_TOAST = "deposit-btc-error-toast"
