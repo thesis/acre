@@ -1,37 +1,21 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity ^0.8.21;
 
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC4626Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20PermitUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 
-import "./Dispatcher.sol";
-import "./BitcoinRedeemer.sol";
+import "../../Dispatcher.sol";
 
-/// @title stBTC
-/// @notice This contract implements the ERC-4626 tokenized vault standard. By
-///         staking tBTC, users acquire a liquid staking token called stBTC,
-///         commonly referred to as "shares". The staked tBTC is securely
-///         deposited into Acre's vaults, where it generates yield over time.
-///         Users have the flexibility to redeem stBTC, enabling them to
-///         withdraw their staked tBTC along with the accrued yield.
-/// @dev ERC-4626 is a standard to optimize and unify the technical parameters
-///      of yield-bearing vaults. This contract facilitates the minting and
-///      burning of shares (stBTC), which are represented as standard ERC20
-///      tokens, providing a seamless exchange with tBTC tokens.
-contract stBTC is
-    ERC4626Upgradeable,
-    Ownable2StepUpgradeable,
-    ERC20PermitUpgradeable
-{
+/// @title stBTCV2
+/// @dev  This is a contract used to test stBTC upgradeability. It is a copy of
+///       stBTC contract with some differences marked with `TEST:` comments.
+contract stBTCV2 is ERC4626Upgradeable, Ownable2StepUpgradeable {
     using SafeERC20 for IERC20;
 
     /// Dispatcher contract that routes tBTC from stBTC to a given vault and back.
     Dispatcher public dispatcher;
-
-    /// BitcoinRedeemer contract.
-    BitcoinRedeemer public bitcoinRedeemer;
 
     /// Address of the treasury wallet, where fees should be transferred to.
     address public treasury;
@@ -46,22 +30,12 @@ contract stBTC is
     /// Maximum total amount of tBTC token held by Acre protocol.
     uint256 public maximumTotalAssets;
 
-    /// @dev Hash of the type for withdrawing tBTC to Bitcoin with permit.
-    bytes32 private constant WITHDRAW_TO_BITCOIN_TYPEHASH =
-        keccak256(
-            "WithdrawToBitcoin(address owner,uint256 assets,bytes bitcoinOutputScript,uint256 nonce,uint256 deadline)"
-        );
-
-    /// @dev Hash of the type for redeeming stBTC to Bitcoin with permit.
-    bytes32 private constant REDEEM_TO_BITCOIN_TYPEHASH =
-        keccak256(
-            "RedeemToBitcoin(address owner,uint256 shares,bytes bitcoinOutputScript,uint256 nonce,uint256 deadline)"
-        );
+    // TEST: New variable.
+    uint256 public newVariable;
 
     /// Emitted when the treasury wallet address is updated.
-    /// @param oldTreasury Address of the old treasury wallet.
-    /// @param newTreasury Address of the new treasury wallet.
-    event TreasuryUpdated(address oldTreasury, address newTreasury);
+    /// @param treasury New treasury wallet address.
+    event TreasuryUpdated(address treasury);
 
     /// Emitted when deposit parameters are updated.
     /// @param minimumDepositAmount New value of the minimum deposit amount.
@@ -76,13 +50,8 @@ contract stBTC is
     /// @param newDispatcher Address of the new dispatcher contract.
     event DispatcherUpdated(address oldDispatcher, address newDispatcher);
 
-    /// Emitted when the BitcoinRedeemer contract is updated.
-    /// @param oldBitcoinRedeemer Address of the old BitcoinRedeemer contract.
-    /// @param newBitcoinRedeemer Address of the new BitcoinRedeemer contract.
-    event BitcoinRedeemerUpdated(
-        address oldBitcoinRedeemer,
-        address newBitcoinRedeemer
-    );
+    // TEST: New event.
+    event NewEvent();
 
     /// Reverts if the amount is less than the minimum deposit amount.
     /// @param amount Amount to check.
@@ -101,20 +70,13 @@ contract stBTC is
     }
 
     function initialize(IERC20 asset, address _treasury) public initializer {
-        __ERC4626_init(asset);
-        __ERC20_init("Acre Staked Bitcoin", "stBTC");
-        __Ownable2Step_init();
-        __Ownable_init(msg.sender);
-        __ERC20Permit_init("Acre Staked Bitcoin");
+        // TEST: Removed content of initialize function. Initialize shouldn't be
+        //       called again during the upgrade because of the `initializer`
+        //       modifier.
+    }
 
-        if (address(_treasury) == address(0)) {
-            revert ZeroAddress();
-        }
-        treasury = _treasury;
-
-        // TODO: Revisit the exact values closer to the launch.
-        minimumDepositAmount = 0.001 * 1e18; // 0.001 tBTC
-        maximumTotalAssets = 25 * 1e18; // 25 tBTC
+    function initializeV2(uint256 _newVariable) public reinitializer(2) {
+        newVariable = _newVariable;
     }
 
     /// @notice Updates treasury wallet address.
@@ -127,10 +89,9 @@ contract stBTC is
         if (newTreasury == address(this)) {
             revert DisallowedAddress();
         }
-
-        emit TreasuryUpdated(treasury, newTreasury);
-
         treasury = newTreasury;
+
+        emit TreasuryUpdated(newTreasury);
     }
 
     /// @notice Updates deposit parameters.
@@ -183,32 +144,7 @@ contract stBTC is
         IERC20(asset()).forceApprove(address(dispatcher), type(uint256).max);
     }
 
-    /// @notice Updates the BitcoinRedeemer contract.
-    /// @param newBitcoinRedeemer Address of the new BitcoinRedeemer contract.
-    function updateBitcoinRedeemer(
-        address newBitcoinRedeemer
-    ) external onlyOwner {
-        if (newBitcoinRedeemer == address(0)) {
-            revert ZeroAddress();
-        }
-
-        emit BitcoinRedeemerUpdated(
-            address(bitcoinRedeemer),
-            newBitcoinRedeemer
-        );
-
-        bitcoinRedeemer = BitcoinRedeemer(newBitcoinRedeemer);
-    }
-
-    /// @notice Mints shares to receiver by depositing exactly amount of
-    ///         tBTC tokens.
-    /// @dev Takes into account a deposit parameter, minimum deposit amount,
-    ///      which determines the minimum amount for a single deposit operation.
-    ///      The amount of the assets has to be pre-approved in the tBTC
-    ///      contract.
-    /// @param assets Approved amount of tBTC tokens to deposit.
-    /// @param receiver The address to which the shares will be minted.
-    /// @return Minted shares.
+    // TEST: Modified function.
     function deposit(
         uint256 assets,
         address receiver
@@ -216,6 +152,8 @@ contract stBTC is
         if (assets < minimumDepositAmount) {
             revert LessThanMinDeposit(assets, minimumDepositAmount);
         }
+        // TEST: Emit new event.
+        emit NewEvent();
 
         return super.deposit(assets, receiver);
     }
@@ -237,125 +175,6 @@ contract stBTC is
         if ((assets = super.mint(shares, receiver)) < minimumDepositAmount) {
             revert LessThanMinDeposit(assets, minimumDepositAmount);
         }
-    }
-
-    /// @notice Redeems stBTC to Bitcoin with permit.
-    /// @dev After checking the signature the function approves BitcoinRedeemer
-    ///      contract to withdraw tBTC tokens. The BitcoinRedeemer contract
-    ///      withdraws tBTC and requests redemption of tBTC in the tBTC Bridge.
-    /// @param owner The owner of the stBTC tokens.
-    /// @param assets The number of tBTC tokens to withdraw.
-    /// @param tbtcRedemptionData Additional data required for the tBTC redemption
-    ///        by the tBTC Bridge.
-    /// @param deadline The deadline by which the redemption must occur.
-    /// @param v The recovery id of the signature.
-    /// @param r The R value of the signature.
-    /// @param s The S value of the signature.
-    function withdrawToBitcoinWithPermit(
-        address owner,
-        uint256 assets,
-        bytes calldata tbtcRedemptionData,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) public {
-        /* solhint-disable-next-line not-rely-on-time */
-        if (block.timestamp > deadline) {
-            revert ERC2612ExpiredSignature(deadline);
-        }
-
-        bytes32 redeemerOutputScriptHash = TbtcRedemption
-            .extractBitcoinOutputScriptHash(tbtcRedemptionData);
-
-        // Use hashing function from Open Zeppelin's ERC20Permit contract.
-        bytes32 hash = _hashTypedDataV4(
-            keccak256(
-                abi.encode(
-                    WITHDRAW_TO_BITCOIN_TYPEHASH,
-                    owner,
-                    assets,
-                    redeemerOutputScriptHash,
-                    _useNonce(owner),
-                    deadline
-                )
-            )
-        );
-
-        address signer = ECDSA.recover(hash, v, r, s);
-
-        if (signer != owner) {
-            revert ERC2612InvalidSigner(signer, owner);
-        }
-
-        _approve(owner, address(bitcoinRedeemer), previewWithdraw(assets));
-
-        return
-            bitcoinRedeemer.withdrawAssetsAndUnmint(
-                owner,
-                assets,
-                tbtcRedemptionData
-            );
-    }
-
-    /// @notice Redeems stBTC to Bitcoin with permit.
-    /// @dev After checking the signature the function approves BitcoinRedeemer
-    ///      contract to redeem stBTC shares. The BitcoinRedeemer contract
-    ///      redeems stBTC to receive tBTC and requests redemption of tBTC in
-    ///      the tBTC Bridge.
-    /// @param owner The owner of the stBTC tokens.
-    /// @param shares The number of stBTC tokens to redeem.
-    /// @param tbtcRedemptionData Additional data required for the tBTC redemption
-    ///        by the tBTC Bridge.
-    /// @param deadline The deadline by which the redemption must occur.
-    /// @param v The recovery id of the signature.
-    /// @param r The R value of the signature.
-    /// @param s The S value of the signature.
-    function redeemToBitcoinWithPermit(
-        address owner,
-        uint256 shares,
-        bytes calldata tbtcRedemptionData,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) public {
-        /* solhint-disable-next-line not-rely-on-time */
-        if (block.timestamp > deadline) {
-            revert ERC2612ExpiredSignature(deadline);
-        }
-
-        bytes32 redeemerOutputScriptHash = TbtcRedemption
-            .extractBitcoinOutputScriptHash(tbtcRedemptionData);
-
-        // Use hashing function from Open Zeppelin's ERC20Permit contract.
-        bytes32 hash = _hashTypedDataV4(
-            keccak256(
-                abi.encode(
-                    REDEEM_TO_BITCOIN_TYPEHASH,
-                    owner,
-                    shares,
-                    redeemerOutputScriptHash,
-                    _useNonce(owner),
-                    deadline
-                )
-            )
-        );
-
-        address signer = ECDSA.recover(hash, v, r, s);
-
-        if (signer != owner) {
-            revert ERC2612InvalidSigner(signer, owner);
-        }
-
-        _approve(owner, address(bitcoinRedeemer), shares);
-
-        return
-            bitcoinRedeemer.redeemSharesAndUnmint(
-                owner,
-                shares,
-                tbtcRedemptionData
-            );
     }
 
     /// @notice Returns value of assets that would be exchanged for the amount of
@@ -406,10 +225,5 @@ contract stBTC is
     /// @return Returns deposit parameters.
     function depositParameters() public view returns (uint256, uint256) {
         return (minimumDepositAmount, maximumTotalAssets);
-    }
-
-    /// @dev Overrides ERC20 and ERC4626 virtual functions.
-    function decimals() public pure override(ERC20, ERC4626) returns (uint8) {
-        return 18;
     }
 }

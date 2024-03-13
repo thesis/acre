@@ -21,7 +21,7 @@ export function waitConfirmationsNumber(
   }
 }
 
-export default async function waitForTransaction(
+export async function waitForTransaction(
   hre: HardhatRuntimeEnvironment,
   txHash: string,
 ) {

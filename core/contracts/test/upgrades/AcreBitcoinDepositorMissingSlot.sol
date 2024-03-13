@@ -9,35 +9,13 @@ import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
 import "@keep-network/tbtc-v2/contracts/integrator/AbstractTBTCDepositor.sol";
 
-import {stBTC} from "./stBTC.sol";
+import {stBTC} from "../../stBTC.sol";
 
-// TODO: Make Pausable
-
-/// @title Acre Bitcoin Depositor contract.
-/// @notice The contract integrates Acre staking with tBTC minting.
-///         User who wants to stake BTC in Acre should submit a Bitcoin transaction
-///         to the most recently created off-chain ECDSA wallets of the tBTC Bridge
-///         using pay-to-script-hash (P2SH) or pay-to-witness-script-hash (P2WSH)
-///         containing hashed information about this Depositor contract address,
-///         and staker's Ethereum address.
-///         Then, the staker initiates tBTC minting by revealing their Ethereum
-///         address along with their deposit blinding factor, refund public key
-///         hash and refund locktime on the tBTC Bridge through this Depositor
-///         contract.
-///         The off-chain ECDSA wallet and Optimistic Minting bots listen for these
-///         sorts of messages and when they get one, they check the Bitcoin network
-///         to make sure the deposit lines up. Majority of tBTC minting is finalized
-///         by the Optimistic Minting process, where Minter bot initializes
-///         minting process and if there is no veto from the Guardians, the
-///         process is finalized and tBTC minted to the Depositor address. If
-///         the revealed deposit is not handled by the Optimistic Minting process
-///         the off-chain ECDSA wallet may decide to pick the deposit transaction
-///         for sweeping, and when the sweep operation is confirmed on the Bitcoin
-///         network, the tBTC Bridge and tBTC vault mint the tBTC token to the
-///         Depositor address. After tBTC is minted to the Depositor, on the stake
-///         finalization tBTC is staked in Acre and stBTC shares are emitted
-///         to the staker.
-contract AcreBitcoinDepositor is
+/// @title AcreBitcoinDepositorMissingSlot
+/// @dev This is a contract used to test Acre Bitcoin Depositor upgradeability.
+///      It is a copy of AcreBitcoinDepositor contract with some differences
+///      marked with `TEST:` comments.
+contract AcreBitcoinDepositorMissingSlot is
     AbstractTBTCDepositor,
     Ownable2StepUpgradeable
 {
@@ -99,12 +77,13 @@ contract AcreBitcoinDepositor is
     ///      Bitcoin deposits only up to the soft cap limit.
     uint256 public maxTotalAssetsSoftLimit;
 
+    // TEST: Remove variable - missing slot to test upgradeability.
     /// @notice Total balance of pending stake requests (in tBTC token precision).
     /// @dev stBTC contract introduces limits for total deposits amount. Due to
     ///      asynchronous manner of the staking flow, this contract needs to track
     ///      balance of pending stake requests to ensure new stake request are
     ///      not initialized if they won't be able to finalize.
-    uint256 public queuedStakesBalance;
+    // uint256 public queuedStakesBalance;
 
     /// @notice Divisor used to compute the depositor fee taken from each deposit
     ///         and transferred to the treasury upon stake request finalization.
@@ -402,8 +381,10 @@ contract AcreBitcoinDepositor is
 
         request.queuedAmount = SafeCast.toUint88(amountToQueue);
 
+        // TEST: Removed `queuedStakesBalance` variable - missing slot to test
+        //       upgradeability.
         // Increase pending stakes balance.
-        queuedStakesBalance += amountToQueue;
+        // queuedStakesBalance += amountToQueue;
 
         emit StakeRequestQueued(depositKey, msg.sender, amountToQueue);
     }
@@ -426,7 +407,9 @@ contract AcreBitcoinDepositor is
         delete (request.queuedAmount);
 
         // Decrease pending stakes balance.
-        queuedStakesBalance -= amountToStake;
+        // TEST: Removed `queuedStakesBalance` variable - missing slot to test
+        //       upgradeability.
+        // queuedStakesBalance -= amountToStake;
 
         emit StakeRequestFinalizedFromQueue(
             depositKey,
@@ -470,7 +453,9 @@ contract AcreBitcoinDepositor is
         emit StakeRequestCancelledFromQueue(depositKey, staker, amount);
 
         // Decrease pending stakes balance.
-        queuedStakesBalance -= amount;
+        // TEST: Removed `queuedStakesBalance` variable - missing slot to test
+        //       upgradeability.
+        // queuedStakesBalance -= amount;
 
         tbtcToken.safeTransfer(staker, amount);
     }
@@ -558,10 +543,12 @@ contract AcreBitcoinDepositor is
 
         uint256 availableLimit = maxTotalAssetsSoftLimit - currentTotalAssets;
 
-        if (queuedStakesBalance >= availableLimit) {
-            return 0;
-        }
-        availableLimit -= queuedStakesBalance;
+        // TEST: Removed `queuedStakesBalance` variable - missing slot to test
+        //       upgradeability.
+        // if (queuedStakesBalance >= availableLimit) {
+        //     return 0;
+        // }
+        // availableLimit -= queuedStakesBalance;
 
         return Math.min(availableLimit, maxSingleStakeAmount);
     }
