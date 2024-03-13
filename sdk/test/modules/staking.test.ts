@@ -1,4 +1,4 @@
-import { EthereumAddress } from "@keep-network/tbtc-v2.ts"
+import { BitcoinTxHash } from "@keep-network/tbtc-v2.ts"
 import { ethers } from "ethers"
 import {
   AcreContracts,
@@ -7,6 +7,7 @@ import {
   StakeInitialization,
   DepositorProxy,
   DepositReceipt,
+  EthereumAddress,
 } from "../../src"
 import { MockAcreContracts } from "../utils/mock-acre-contracts"
 import { MockMessageSigner } from "../utils/mock-message-signer"
@@ -36,6 +37,11 @@ const stakingModuleData: {
 const stakingInitializationData: {
   depositReceipt: Omit<DepositReceipt, "depositor">
   mockedInitializeTxHash: Hex
+  fundingUtxo: {
+    transactionHash: BitcoinTxHash
+    outputIndex: number
+    value: bigint
+  }
 } = {
   depositReceipt: {
     blindingFactor: Hex.from("555555"),
@@ -45,6 +51,13 @@ const stakingInitializationData: {
     extraData: stakingModuleData.initializeStake.extraData,
   },
   mockedInitializeTxHash: Hex.from("999999"),
+  fundingUtxo: {
+    transactionHash: BitcoinTxHash.from(
+      "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    ),
+    outputIndex: 1,
+    value: 2222n,
+  },
 }
 
 describe("Staking", () => {
@@ -79,11 +92,11 @@ describe("Staking", () => {
       let result: StakeInitialization
 
       beforeEach(async () => {
-        contracts.tbtcDepositor.decodeExtraData = jest
+        contracts.bitcoinDepositor.decodeExtraData = jest
           .fn()
           .mockReturnValue({ staker, referral })
 
-        contracts.tbtcDepositor.encodeExtraData = jest
+        contracts.bitcoinDepositor.encodeExtraData = jest
           .fn()
           .mockReturnValue(extraData)
 
@@ -101,13 +114,13 @@ describe("Staking", () => {
       })
 
       it("should encode extra data", () => {
-        expect(contracts.tbtcDepositor.encodeExtraData(staker, referral))
+        expect(contracts.bitcoinDepositor.encodeExtraData(staker, referral))
       })
 
       it("should initiate tBTC deposit", () => {
         expect(tbtc.deposits.initiateDepositWithProxy).toHaveBeenCalledWith(
           bitcoinRecoveryAddress,
-          contracts.tbtcDepositor,
+          contracts.bitcoinDepositor,
           extraData,
         )
       })
@@ -148,7 +161,7 @@ describe("Staking", () => {
 
             beforeEach(async () => {
               mockedSignedMessage.verify.mockReturnValue(staker)
-              contracts.tbtcDepositor.getChainIdentifier = jest
+              contracts.bitcoinDepositor.getChainIdentifier = jest
                 .fn()
                 .mockReturnValue(EthereumAddress.from(depositorAddress))
 
@@ -158,10 +171,10 @@ describe("Staking", () => {
             it("should sign message", () => {
               expect(messageSigner.sign).toHaveBeenCalledWith(
                 {
-                  name: "TbtcDepositor",
+                  name: "AcreBitcoinDepositor",
                   version: "1",
                   verifyingContract:
-                    contracts.tbtcDepositor.getChainIdentifier(),
+                    contracts.bitcoinDepositor.getChainIdentifier(),
                 },
                 {
                   Stake: [
@@ -213,11 +226,12 @@ describe("Staking", () => {
 
           describe("when message has already been signed", () => {
             let tx: Hex
-            const { mockedInitializeTxHash: mockedTxHash } =
+            const { mockedInitializeTxHash: mockedTxHash, fundingUtxo } =
               stakingInitializationData
 
             beforeAll(async () => {
               mockedDeposit.initiateMinting.mockResolvedValue(mockedTxHash)
+              mockedDeposit.detectFunding.mockResolvedValue([fundingUtxo])
               await result.signMessage()
 
               tx = await result.stake()
@@ -229,6 +243,72 @@ describe("Staking", () => {
 
             it("should return transaction hash", () => {
               expect(tx).toBe(mockedTxHash)
+            })
+          })
+
+          describe("when waiting for bitcoin deposit tx", () => {
+            const { mockedInitializeTxHash: mockedTxHash } =
+              stakingInitializationData
+
+            describe("when can't find transaction after max number of retries", () => {
+              beforeEach(async () => {
+                jest.useFakeTimers()
+
+                mockedDeposit.initiateMinting.mockResolvedValue(mockedTxHash)
+                mockedDeposit.detectFunding.mockClear()
+                mockedDeposit.detectFunding.mockResolvedValue([])
+
+                await result.signMessage()
+              })
+
+              it("should throw an error", async () => {
+                // eslint-disable-next-line no-void
+                void expect(result.stake()).rejects.toThrow(
+                  "Deposit not funded yet",
+                )
+
+                await jest.runAllTimersAsync()
+
+                expect(mockedDeposit.detectFunding).toHaveBeenCalledTimes(6)
+              })
+            })
+
+            describe("when the funding tx is available", () => {
+              const { fundingUtxo } = stakingInitializationData
+              let txPromise: Promise<Hex>
+
+              beforeAll(async () => {
+                jest.useFakeTimers()
+
+                mockedDeposit.initiateMinting.mockResolvedValue(mockedTxHash)
+
+                mockedDeposit.detectFunding.mockClear()
+                mockedDeposit.detectFunding
+                  // First attempt. Deposit not funded yet.
+                  .mockResolvedValueOnce([])
+                  // Second attempt. Deposit funded.
+                  .mockResolvedValueOnce([fundingUtxo])
+
+                await result.signMessage()
+
+                txPromise = result.stake()
+
+                await jest.runAllTimersAsync()
+              })
+
+              it("should wait for deposit transaction", () => {
+                expect(mockedDeposit.detectFunding).toHaveBeenCalledTimes(2)
+              })
+
+              it("should stake tokens via tbtc depositor proxy", () => {
+                expect(mockedDeposit.initiateMinting).toHaveBeenCalled()
+              })
+
+              it("should return transaction hash", async () => {
+                const txHash = await txPromise
+
+                expect(txHash).toBe(mockedTxHash)
+              })
             })
           })
         })
@@ -244,7 +324,7 @@ describe("Staking", () => {
       let result: StakeInitialization
 
       beforeEach(async () => {
-        contracts.tbtcDepositor.encodeExtraData = jest
+        contracts.bitcoinDepositor.encodeExtraData = jest
           .fn()
           .mockReturnValue(extraData)
 

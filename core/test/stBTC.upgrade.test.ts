@@ -21,11 +21,13 @@ describe("stBTC contract upgrade", () => {
   let stbtc: StBTC
   let treasury: HardhatEthersSigner
   let deployer: HardhatEthersSigner
+  let governance: HardhatEthersSigner
 
   before(async () => {
     ;({ tbtc, stbtc } = await loadFixture(fixture))
     tbtcAddress = await tbtc.getAddress()
-    ;({ deployer, treasury } = await helpers.signers.getNamedSigners())
+    ;({ deployer, treasury, governance } =
+      await helpers.signers.getNamedSigners())
   })
 
   context("when upgrading to an invalid contract", () => {
@@ -72,7 +74,7 @@ describe("stBTC contract upgrade", () => {
         "stBTC",
         "stBTCV2",
         {
-          factoryOpts: { signer: deployer },
+          factoryOpts: { signer: governance },
           proxyOpts: {
             call: {
               fn: "initializeV2",
