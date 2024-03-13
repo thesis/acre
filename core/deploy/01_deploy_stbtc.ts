@@ -4,7 +4,7 @@ import { waitForTransaction } from "../helpers/deployment"
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { getNamedAccounts, deployments, helpers } = hre
-  const { treasury } = await getNamedAccounts()
+  const { treasury, governance } = await getNamedAccounts()
   const { deployer: deployerSigner } = await helpers.signers.getNamedSigners()
 
   const tbtc = await deployments.get("TBTC")
@@ -17,6 +17,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     },
     proxyOpts: {
       kind: "transparent",
+      initialOwner: governance,
     },
   })
 

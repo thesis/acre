@@ -30,13 +30,12 @@ describe("AcreBitcoinDepositor contract upgrade", () => {
   let tbtcVault: TBTCVaultStub
   let stbtc: StBTC
   let bitcoinDepositor: AcreBitcoinDepositor
-  let deployer: HardhatEthersSigner
   let governance: HardhatEthersSigner
 
   before(async () => {
     ;({ tbtc, stbtc, bitcoinDepositor, tbtcBridge, tbtcVault } =
       await loadFixture(fixture))
-    ;({ deployer, governance } = await helpers.signers.getNamedSigners())
+    ;({ governance } = await helpers.signers.getNamedSigners())
   })
 
   context("when upgrading to an invalid contract", () => {
@@ -55,7 +54,7 @@ describe("AcreBitcoinDepositor contract upgrade", () => {
                 await tbtc.getAddress(),
                 await stbtc.getAddress(),
               ],
-              factoryOpts: { signer: deployer },
+              factoryOpts: { signer: governance },
             },
           ),
         ).to.rejectedWith(Error, "Inserted `newVariable`")
@@ -77,7 +76,7 @@ describe("AcreBitcoinDepositor contract upgrade", () => {
                 await tbtc.getAddress(),
                 await stbtc.getAddress(),
               ],
-              factoryOpts: { signer: deployer },
+              factoryOpts: { signer: governance },
             },
           ),
         ).to.be.rejectedWith(Error, "Deleted `queuedStakesBalance`")
@@ -115,7 +114,7 @@ describe("AcreBitcoinDepositor contract upgrade", () => {
         "AcreBitcoinDepositor",
         "AcreBitcoinDepositorV2",
         {
-          factoryOpts: { signer: deployer },
+          factoryOpts: { signer: governance },
           proxyOpts: {
             call: {
               fn: "initializeV2",
