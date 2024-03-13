@@ -4,7 +4,12 @@ import {
   time,
 } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 import { expect } from "chai"
-import { ContractTransactionResponse, MaxUint256, ZeroAddress } from "ethers"
+import {
+  ContractTransactionResponse,
+  MaxUint256,
+  ZeroAddress,
+  Signature,
+} from "ethers"
 import { ethers, helpers } from "hardhat"
 
 import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
@@ -20,16 +25,13 @@ import type {
   TestTBTC,
 } from "../typechain"
 import { tbtcRedemptionData } from "./data/tbtc"
-import { StbtcEIP712Helper } from "./helpers/eip712"
 
 const { getNamedSigners, getUnnamedSigners } = helpers.signers
 
 async function fixture() {
   const { tbtc, stbtc, dispatcher, bitcoinRedeemer } = await deployment()
-
-  const stbcEIP712Helper = new StbtcEIP712Helper(stbtc)
-
   const { governance, treasury } = await getNamedSigners()
+
   const [depositor1, depositor2, thirdParty] = await getUnnamedSigners()
 
   const amountToMint = to1e18(100000)
@@ -40,7 +42,6 @@ async function fixture() {
     stbtc,
     tbtc,
     bitcoinRedeemer,
-    stbcEIP712Helper,
     depositor1,
     depositor2,
     dispatcher,
@@ -56,8 +57,6 @@ describe("stBTC", () => {
   let dispatcher: Dispatcher
   let bitcoinRedeemer: BitcoinRedeemer
 
-  let stbcEIP712Helper: StbtcEIP712Helper
-
   let governance: HardhatEthersSigner
   let depositor1: HardhatEthersSigner
   let depositor2: HardhatEthersSigner
@@ -68,7 +67,6 @@ describe("stBTC", () => {
       stbtc,
       tbtc,
       bitcoinRedeemer,
-      stbcEIP712Helper,
       depositor1,
       depositor2,
       dispatcher,
@@ -673,268 +671,19 @@ describe("stBTC", () => {
     )
   })
 
-  describe("withdrawToBitcoin", () => {
-    beforeAfterSnapshotWrapper()
-
-    context("when staker has no deposit", () => {
-      beforeAfterSnapshotWrapper()
-
-      it("should revert", async () => {
-        const withdrawAssetsAmount = to1e18(1)
-
-        const { signature, message } =
-          await stbcEIP712Helper.signWithdrawToBitcoin(
-            depositor1,
-            depositor1.address,
-            withdrawAssetsAmount,
-            tbtcRedemptionData.redeemerOutputScript,
-          )
-
-        await expect(
-          stbtc
-            .connect(thirdParty)
-            .withdrawToBitcoinWithPermit(
-              depositor1,
-              withdrawAssetsAmount,
-              tbtcRedemptionData.redemptionData,
-              message.deadline,
-              signature.v,
-              signature.r,
-              signature.s,
-            ),
-        )
-          .to.be.revertedWithCustomError(stbtc, "ERC4626ExceededMaxWithdraw")
-          .withArgs(depositor1.address, withdrawAssetsAmount, 0)
-      })
-    })
-
-    context("when staker has a deposit", () => {
-      beforeAfterSnapshotWrapper()
-
-      const depositAmount = to1e18(3)
-      const yieldAmount = to1e18(6)
-
-      const withdrawAssetsAmount = to1e18(6)
-
-      // Values are ceil rounded as per the `convertToShares` function.
-      const expectedRedeemedShares = 2000000000000000001n // (6 * 3 / 9))
-
-      before(async () => {
-        // Depositor deposits 3 tBTC.
-        await tbtc
-          .connect(depositor1)
-          .approve(await stbtc.getAddress(), depositAmount)
-        await stbtc
-          .connect(depositor1)
-          .deposit(depositAmount, depositor1.address)
-
-        // Vault earns 6 tBTC.
-        await tbtc.mint(await stbtc.getAddress(), yieldAmount)
-      })
-
-      context("when signature expired", () => {
-        beforeAfterSnapshotWrapper()
-
-        it("should revert", async () => {
-          const deadline = BigInt(await time.latest())
-
-          const { signature } = await stbcEIP712Helper.signWithdrawToBitcoin(
-            depositor1,
-            depositor1.address,
-            withdrawAssetsAmount,
-            tbtcRedemptionData.redeemerOutputScript,
-            deadline,
-          )
-
-          await expect(
-            stbtc
-              .connect(thirdParty)
-              .withdrawToBitcoinWithPermit(
-                depositor1,
-                withdrawAssetsAmount,
-                tbtcRedemptionData.redemptionData,
-                deadline,
-                signature.v,
-                signature.r,
-                signature.s,
-              ),
-          )
-            .to.be.revertedWithCustomError(stbtc, "ERC2612ExpiredSignature")
-            .withArgs(deadline)
-        })
-      })
-
-      context("when signer is not the depositor", () => {
-        beforeAfterSnapshotWrapper()
-
-        it("should revert", async () => {
-          const { signature, message } =
-            await stbcEIP712Helper.signWithdrawToBitcoin(
-              thirdParty,
-              depositor1.address,
-              withdrawAssetsAmount,
-              tbtcRedemptionData.redeemerOutputScript,
-            )
-
-          await expect(
-            stbtc
-              .connect(thirdParty)
-              .withdrawToBitcoinWithPermit(
-                depositor1,
-                withdrawAssetsAmount,
-                tbtcRedemptionData.redemptionData,
-                message.deadline,
-                signature.v,
-                signature.r,
-                signature.s,
-              ),
-          )
-            .to.be.revertedWithCustomError(stbtc, "ERC2612InvalidSigner")
-            .withArgs(
-              await thirdParty.getAddress(),
-              await depositor1.getAddress(),
-            )
-        })
-      })
-
-      context("when signer is the depositor", () => {
-        context("when tBTC approveAndCall succeeds", () => {
-          beforeAfterSnapshotWrapper()
-
-          let tx: ContractTransactionResponse
-
-          before(async () => {
-            const { signature, message } =
-              await stbcEIP712Helper.signWithdrawToBitcoin(
-                depositor1,
-                depositor1.address,
-                withdrawAssetsAmount,
-                tbtcRedemptionData.redeemerOutputScript,
-              )
-
-            tx = await stbtc
-              .connect(thirdParty)
-              .withdrawToBitcoinWithPermit(
-                depositor1,
-                withdrawAssetsAmount,
-                tbtcRedemptionData.redemptionData,
-                message.deadline,
-                signature.v,
-                signature.r,
-                signature.s,
-              )
-          })
-
-          it("should allow BitcoinRedeemer as shares spender", async () => {
-            await expect(tx)
-              .to.emit(stbtc, "Approval")
-              .withArgs(
-                depositor1.address,
-                await bitcoinRedeemer.getAddress(),
-                expectedRedeemedShares,
-              )
-          })
-
-          it("should use BitcoinRedeemer allowance for shares", async () => {
-            expect(
-              await stbtc.allowance(
-                await depositor1.getAddress(),
-                await bitcoinRedeemer.getAddress(),
-              ),
-            ).to.be.equal(0)
-          })
-
-          it("should burn shares", async () => {
-            await expect(tx).to.changeTokenBalances(
-              stbtc,
-              [depositor1],
-              [-expectedRedeemedShares],
-            )
-          })
-
-          it("should transfer tBTC to BitcoinRedeemer", async () => {
-            await expect(tx).to.changeTokenBalances(
-              tbtc,
-              [stbtc, bitcoinRedeemer],
-              [-withdrawAssetsAmount, withdrawAssetsAmount],
-            )
-          })
-
-          it("should call tBTC approveAndCall function", async () => {
-            await expect(tx)
-              .to.emit(tbtc, "ApproveAndCallCalled")
-              .withArgs(
-                await tbtc.owner(),
-                withdrawAssetsAmount,
-                tbtcRedemptionData.redemptionData,
-              )
-          })
-
-          it("should emit RedemptionRequested event", async () => {
-            await expect(tx)
-              .to.emit(bitcoinRedeemer, "RedemptionRequested")
-              .withArgs(
-                await depositor1.getAddress(),
-                expectedRedeemedShares,
-                withdrawAssetsAmount,
-              )
-          })
-        })
-
-        context("when tBTC approveAndCall fails", () => {
-          beforeAfterSnapshotWrapper()
-
-          before(async () => {
-            await tbtc.setApproveAndCallResult(false)
-          })
-
-          it("should revert", async () => {
-            const { signature, message } =
-              await stbcEIP712Helper.signWithdrawToBitcoin(
-                depositor1,
-                depositor1.address,
-                withdrawAssetsAmount,
-                tbtcRedemptionData.redeemerOutputScript,
-              )
-
-            await expect(
-              stbtc
-                .connect(thirdParty)
-                .withdrawToBitcoinWithPermit(
-                  depositor1,
-                  withdrawAssetsAmount,
-                  tbtcRedemptionData.redemptionData,
-                  message.deadline,
-                  signature.v,
-                  signature.r,
-                  signature.s,
-                ),
-            ).to.be.revertedWithCustomError(
-              bitcoinRedeemer,
-              "ApproveAndCallFailed",
-            )
-          })
-        })
-      })
-    })
-  })
-
   describe("redeemToBitcoin", () => {
     beforeAfterSnapshotWrapper()
 
-    context("when staker has no deposit", () => {
-      beforeAfterSnapshotWrapper()
-
+    context("when redeemer has no deposit", () => {
       it("should revert", async () => {
         const redeemedSharesAmount = to1e18(1)
 
-        const { signature, message } =
-          await stbcEIP712Helper.signRedeemToBitcoin(
-            depositor1,
-            depositor1.address,
-            redeemedSharesAmount,
-            tbtcRedemptionData.redeemerOutputScript,
-          )
+        const { signature, deadline } = await signRedeemToBitcoinTypedData(
+          depositor1,
+          depositor1.address,
+          redeemedSharesAmount,
+          tbtcRedemptionData.redeemerOutputScript,
+        )
 
         await expect(
           stbtc
@@ -943,7 +692,7 @@ describe("stBTC", () => {
               depositor1,
               redeemedSharesAmount,
               tbtcRedemptionData.redemptionData,
-              message.deadline,
+              deadline,
               signature.v,
               signature.r,
               signature.s,
@@ -954,7 +703,7 @@ describe("stBTC", () => {
       })
     })
 
-    context("when staker has a deposit", () => {
+    context("when redeemer has a deposit", () => {
       beforeAfterSnapshotWrapper()
 
       const depositAmount = to1e18(3)
@@ -979,12 +728,10 @@ describe("stBTC", () => {
       })
 
       context("when signature expired", () => {
-        beforeAfterSnapshotWrapper()
-
         it("should revert", async () => {
           const deadline = BigInt(await time.latest())
 
-          const { signature } = await stbcEIP712Helper.signRedeemToBitcoin(
+          const { signature } = await signRedeemToBitcoinTypedData(
             depositor1,
             depositor1.address,
             redeemedSharesAmount,
@@ -1011,16 +758,13 @@ describe("stBTC", () => {
       })
 
       context("when signer is not the depositor", () => {
-        beforeAfterSnapshotWrapper()
-
         it("should revert", async () => {
-          const { signature, message } =
-            await stbcEIP712Helper.signRedeemToBitcoin(
-              thirdParty,
-              depositor1.address,
-              redeemedSharesAmount,
-              tbtcRedemptionData.redeemerOutputScript,
-            )
+          const { signature, deadline } = await signRedeemToBitcoinTypedData(
+            thirdParty,
+            depositor1.address,
+            redeemedSharesAmount,
+            tbtcRedemptionData.redeemerOutputScript,
+          )
 
           await expect(
             stbtc
@@ -1029,7 +773,7 @@ describe("stBTC", () => {
                 depositor1,
                 redeemedSharesAmount,
                 tbtcRedemptionData.redemptionData,
-                message.deadline,
+                deadline,
                 signature.v,
                 signature.r,
                 signature.s,
@@ -1045,18 +789,15 @@ describe("stBTC", () => {
 
       context("when signer is the depositor", () => {
         context("when tBTC approveAndCall succeeds", () => {
-          beforeAfterSnapshotWrapper()
-
           let tx: ContractTransactionResponse
 
           before(async () => {
-            const { signature, message } =
-              await stbcEIP712Helper.signRedeemToBitcoin(
-                depositor1,
-                depositor1.address,
-                redeemedSharesAmount,
-                tbtcRedemptionData.redeemerOutputScript,
-              )
+            const { signature, deadline } = await signRedeemToBitcoinTypedData(
+              depositor1,
+              depositor1.address,
+              redeemedSharesAmount,
+              tbtcRedemptionData.redeemerOutputScript,
+            )
 
             tx = await stbtc
               .connect(thirdParty)
@@ -1064,7 +805,7 @@ describe("stBTC", () => {
                 depositor1,
                 redeemedSharesAmount,
                 tbtcRedemptionData.redemptionData,
-                message.deadline,
+                deadline,
                 signature.v,
                 signature.r,
                 signature.s,
@@ -1128,20 +869,17 @@ describe("stBTC", () => {
         })
 
         context("when tBTC approveAndCall fails", () => {
-          beforeAfterSnapshotWrapper()
-
           before(async () => {
             await tbtc.setApproveAndCallResult(false)
           })
 
           it("should revert", async () => {
-            const { signature, message } =
-              await stbcEIP712Helper.signRedeemToBitcoin(
-                depositor1,
-                depositor1.address,
-                redeemedSharesAmount,
-                tbtcRedemptionData.redeemerOutputScript,
-              )
+            const { signature, deadline } = await signRedeemToBitcoinTypedData(
+              depositor1,
+              depositor1.address,
+              redeemedSharesAmount,
+              tbtcRedemptionData.redeemerOutputScript,
+            )
 
             await expect(
               stbtc
@@ -1150,7 +888,7 @@ describe("stBTC", () => {
                   depositor1,
                   redeemedSharesAmount,
                   tbtcRedemptionData.redemptionData,
-                  message.deadline,
+                  deadline,
                   signature.v,
                   signature.r,
                   signature.s,
@@ -1163,6 +901,59 @@ describe("stBTC", () => {
         })
       })
     })
+
+    async function signRedeemToBitcoinTypedData(
+      signer: HardhatEthersSigner,
+      owner: string,
+      shares: bigint,
+      redeemerOutputScript: string,
+      deadline?: bigint,
+      nonce?: bigint,
+    ): Promise<{
+      signature: Signature
+      deadline: bigint
+      nonce: bigint
+    }> {
+      if (!nonce) {
+        // eslint-disable-next-line no-param-reassign
+        nonce = await stbtc.nonces(owner)
+      }
+      if (!deadline) {
+        // eslint-disable-next-line no-param-reassign
+        deadline = BigInt(await time.latest()) + 1000n
+      }
+
+      const { chainId } = await signer.provider.getNetwork()
+
+      const domain = {
+        name: "Acre Staked Bitcoin",
+        version: "1",
+        chainId,
+        verifyingContract: await stbtc.getAddress(),
+      }
+
+      const types = {
+        RedeemToBitcoin: [
+          { name: "owner", type: "address" },
+          { name: "shares", type: "uint256" },
+          { name: "bitcoinOutputScript", type: "bytes" },
+          { name: "nonce", type: "uint256" },
+          { name: "deadline", type: "uint256" },
+        ],
+      }
+
+      const value = {
+        owner,
+        shares,
+        bitcoinOutputScript: redeemerOutputScript,
+        nonce,
+        deadline,
+      }
+
+      const sig = await signer.signTypedData(domain, types, value)
+
+      return { signature: ethers.Signature.from(sig), deadline, nonce }
+    }
   })
 
   describe("updateDepositParameters", () => {
