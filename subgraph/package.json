@@ -1,6 +1,7 @@
 {
-  "name": "acre-subgraph",
-  "license": "UNLICENSED",
+  "name": "@acre-btc/subgraph",
+  "version": "0.0.1",
+  "license": "GPL-3.0-only",
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
@@ -9,12 +10,12 @@
     "remove-local": "graph remove --node http://localhost:8020/ acre-subgraph",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 acre-subgraph",
     "test": "graph test",
-    "lint:eslint": "eslint .",
-    "lint:eslint:fix": "eslint . --fix",
+    "format": "npm run lint:js && npm run lint:config",
+    "format:fix": "npm run lint:js:fix && npm run lint:config:fix",
+    "lint:js": "eslint .",
+    "lint:js:fix": "eslint . --fix",
     "lint:config": "prettier -c '**/*.@(json|yaml|toml)'",
-    "lint:config:fix": "prettier -w '**/*.@(json|yaml|toml)'",
-    "format": "pnpm lint:eslint && pnpm lint:config",
-    "format:fix": "pnpm lint:eslint:fix && pnpm lint:config:fix"
+    "lint:config:fix": "prettier -w '**/*.@(json|yaml|toml)'"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.68.3",
