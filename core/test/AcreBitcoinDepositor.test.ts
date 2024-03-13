@@ -60,11 +60,12 @@ describe("AcreBitcoinDepositor", () => {
   let treasury: HardhatEthersSigner
   let thirdParty: HardhatEthersSigner
   let staker: HardhatEthersSigner
+  let emergencyStopAccount: HardhatEthersSigner
 
   before(async () => {
     ;({ bitcoinDepositor, tbtcBridge, tbtcVault, stbtc, tbtc } =
       await loadFixture(fixture))
-    ;({ governance, treasury } = await getNamedSigners())
+    ;({ governance, treasury, emergencyStopAccount } = await getNamedSigners())
     ;[thirdParty] = await getUnnamedSigners()
 
     staker = await helpers.account.impersonateAccount(tbtcDepositData.staker, {
@@ -1930,7 +1931,7 @@ describe("AcreBitcoinDepositor", () => {
         beforeAfterSnapshotWrapper()
 
         before(async () => {
-          tx = await bitcoinDepositor.connect(governance).pause()
+          tx = await bitcoinDepositor.connect(emergencyStopAccount).pause()
         })
 
         it("should change the pause state", async () => {
@@ -1940,7 +1941,7 @@ describe("AcreBitcoinDepositor", () => {
         it("should emit `Paused` event", async () => {
           await expect(tx)
             .to.emit(bitcoinDepositor, "Paused")
-            .withArgs(governance.address)
+            .withArgs(emergencyStopAccount.address)
         })
       })
 
@@ -1951,7 +1952,7 @@ describe("AcreBitcoinDepositor", () => {
           await expect(bitcoinDepositor.connect(thirdParty).pause())
             .to.be.revertedWithCustomError(
               bitcoinDepositor,
-              "OwnableUnauthorizedAccount",
+              "NotEmergencyStopAccount",
             )
             .withArgs(thirdParty.address)
         })
@@ -1961,12 +1962,12 @@ describe("AcreBitcoinDepositor", () => {
         beforeAfterSnapshotWrapper()
 
         before(async () => {
-          await bitcoinDepositor.connect(governance).pause()
+          await bitcoinDepositor.connect(emergencyStopAccount).pause()
         })
 
         it("should revert", async () => {
           await expect(
-            bitcoinDepositor.connect(governance).pause(),
+            bitcoinDepositor.connect(emergencyStopAccount).pause(),
           ).to.be.revertedWithCustomError(stbtc, "EnforcedPause")
         })
       })
@@ -1979,9 +1980,9 @@ describe("AcreBitcoinDepositor", () => {
         beforeAfterSnapshotWrapper()
 
         before(async () => {
-          await bitcoinDepositor.connect(governance).pause()
+          await bitcoinDepositor.connect(emergencyStopAccount).pause()
 
-          tx = await bitcoinDepositor.connect(governance).unpause()
+          tx = await bitcoinDepositor.connect(emergencyStopAccount).unpause()
         })
 
         it("should change the pause state", async () => {
@@ -1991,7 +1992,7 @@ describe("AcreBitcoinDepositor", () => {
         it("should emit `Unpaused` event", async () => {
           await expect(tx)
             .to.emit(bitcoinDepositor, "Unpaused")
-            .withArgs(governance.address)
+            .withArgs(emergencyStopAccount.address)
         })
       })
 
@@ -2002,7 +2003,7 @@ describe("AcreBitcoinDepositor", () => {
           await expect(bitcoinDepositor.connect(thirdParty).unpause())
             .to.be.revertedWithCustomError(
               bitcoinDepositor,
-              "OwnableUnauthorizedAccount",
+              "NotEmergencyStopAccount",
             )
             .withArgs(thirdParty.address)
         })
@@ -2013,7 +2014,7 @@ describe("AcreBitcoinDepositor", () => {
 
         it("should revert", async () => {
           await expect(
-            bitcoinDepositor.connect(governance).unpause(),
+            bitcoinDepositor.connect(emergencyStopAccount).unpause(),
           ).to.be.revertedWithCustomError(bitcoinDepositor, "ExpectedPause")
         })
       })
@@ -2023,7 +2024,7 @@ describe("AcreBitcoinDepositor", () => {
       context("stake finalization", () => {
         beforeAfterSnapshotWrapper()
         before(async () => {
-          await bitcoinDepositor.connect(governance).pause()
+          await bitcoinDepositor.connect(emergencyStopAccount).pause()
 
           await initializeStake()
           await finalizeMinting(tbtcDepositData.depositKey)
@@ -2041,7 +2042,7 @@ describe("AcreBitcoinDepositor", () => {
       context("stake finalization from the queue", () => {
         beforeAfterSnapshotWrapper()
         before(async () => {
-          await bitcoinDepositor.connect(governance).pause()
+          await bitcoinDepositor.connect(emergencyStopAccount).pause()
 
           await initializeStake()
           await finalizeMinting(tbtcDepositData.depositKey)

@@ -82,6 +82,11 @@ const config: HardhatUserConfig = {
       sepolia: 0, // TODO: updated to the actual address once available
       mainnet: "", // TODO: updated to the actual address once available
     },
+    emergencyStopAccount: {
+      default: 5,
+      sepolia: 0, // TODO: updated to the actual address once available
+      mainnet: "", // TODO: updated to the actual address once available
+    },
   },
 
   contractSizer: {
