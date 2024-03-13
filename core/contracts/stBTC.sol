@@ -277,7 +277,7 @@ contract stBTC is ERC4626, Ownable2Step, ERC20Permit {
         _approve(owner, address(bitcoinRedeemer), shares);
 
         return
-            bitcoinRedeemer.requestRedemption(
+            bitcoinRedeemer.redeemSharesAndUnmint(
                 owner,
                 shares,
                 tbtcRedemptionData
