@@ -11,7 +11,6 @@ import {
 } from "@chakra-ui/react"
 import { useLocation } from "react-router-dom"
 import { ActivityInfo, LocationState } from "#/types"
-import { capitalize } from "#/utils"
 import { ChevronRightIcon } from "#/assets/icons"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import StatusInfo from "#/components/shared/StatusInfo"
@@ -73,9 +72,9 @@ export function ActivityCard({
             )}
           </HStack>
         </CardHeader>
-        <CardBody p={0}>
-          <TextSm fontWeight="semibold" marginBottom={4}>
-            {capitalize(activity.action)}
+        <CardBody p={0} pb={4}>
+          <TextSm fontWeight="semibold" textTransform="capitalize">
+            {activity.action}
           </TextSm>
         </CardBody>
         <CardFooter p={0}>

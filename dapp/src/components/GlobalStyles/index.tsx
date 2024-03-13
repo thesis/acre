@@ -41,11 +41,13 @@ export default function GlobalStyles() {
           font-weight: 900;
           font-style: normal;
         }
-        // React-slick package: Chakra-ui with react-slick package doesn't generate flex style for auto-generated slick-track wrapper.
+        // React-slick package: Chakra-ui with react-slick package doesn't 
+        // generate flex style for auto-generated slick-track wrapper.
         .slick-track {
           display: flex;
         }
-        // React-slick package: Hiding arrows instead of disabling them in case when carousel is not fully completed by slides.
+        // React-slick package: Hiding arrows instead of disabling them in case 
+        // when carousel is not fully completed by slides.
         [data-id="slick-arrow-prev"]:disabled:has(~ [data-id="slick-arrow-next"]:disabled),
         [data-id="slick-arrow-prev"]:disabled ~ [data-id="slick-arrow-next"]:disabled{
           display: none;

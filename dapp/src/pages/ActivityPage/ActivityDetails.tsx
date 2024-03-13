@@ -10,7 +10,6 @@ import {
   Flex,
   Text,
 } from "@chakra-ui/react"
-import { capitalize } from "#/utils"
 import ActivityProgress from "#/assets/images/activity-progress.png"
 import { LocationState } from "#/types"
 import StatusInfo from "#/components/shared/StatusInfo"
@@ -46,8 +45,12 @@ function ActivityDetails() {
         <CardBody padding={10}>
           <HStack>
             <VStack gap={0} w={72} alignItems="left">
-              <TextMd fontWeight="semibold" color="gold.700">
-                {capitalize(activity.action)}
+              <TextMd
+                color="gold.700"
+                fontWeight="semibold"
+                textTransform="capitalize"
+              >
+                {activity.action}
               </TextMd>
               <CurrencyBalanceWithConversion
                 from={{

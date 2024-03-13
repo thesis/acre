@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react"
-import { Flex } from "@chakra-ui/react"
+import { VStack } from "@chakra-ui/react"
 import { ActivityCard } from "./ActivityCard"
 import { mockedActivities } from "./mock-activities"
 
@@ -18,7 +18,7 @@ export function ActivityBar() {
   )
 
   return (
-    <Flex gap={3} flexDirection="column">
+    <VStack gap={3}>
       {activities.map((activity) => (
         <ActivityCard
           key={activity.txHash}
@@ -26,6 +26,6 @@ export function ActivityBar() {
           onRemove={onRemove}
         />
       ))}
-    </Flex>
+    </VStack>
   )
 }
