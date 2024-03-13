@@ -53,6 +53,18 @@ export const buttonTheme: ComponentSingleStyleConfig = {
           },
         }
       }
+
+      if (colorScheme === "white") {
+        return {
+          ...defaultStyles,
+          color: "white",
+          borderColor: "white",
+
+          _hover: {
+            bg: "opacity.black.05",
+          },
+        }
+      }
       return defaultStyles
     },
     ghost: {

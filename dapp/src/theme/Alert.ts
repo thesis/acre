@@ -7,7 +7,7 @@ import {
 } from "@chakra-ui/react"
 
 const baseStyleDialog = defineStyle({
-  p: 5,
+  px: 5,
   borderRadius: "xl",
   textAlign: "left",
   color: "white",

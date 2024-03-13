@@ -41,6 +41,9 @@ const defaultTheme = {
     global: (props: StyleFunctionProps) => ({
       body: {
         "--toast-z-index": 1410,
+        "#chakra-toast-manager-top": {
+          marginTop: "toast_container_shift !important",
+        },
         // TODO: Update when the dark theme is ready
         backgroundColor: mode("gold.300", "gold.300")(props),
         color: mode("grey.700", "grey.700")(props),

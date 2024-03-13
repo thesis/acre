@@ -5,6 +5,7 @@ export function useToast(props: UseToastOptions) {
     position: "top",
     duration: null,
     isClosable: true,
+    containerStyle: { my: 1 },
     ...props,
   })
 }

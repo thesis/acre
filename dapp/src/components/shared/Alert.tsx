@@ -5,6 +5,7 @@ import {
   AlertProps as ChakraAlertProps,
   Icon,
   CloseButton,
+  HStack,
 } from "@chakra-ui/react"
 import { AlertError, AlertInfo } from "#/assets/icons"
 
@@ -38,15 +39,10 @@ export default function Alert({
       {withAlertIcon && status && (
         <AlertIcon boxSize={6} as={ICONS[status]} color={alertIconColor} />
       )}
-      {children}
-      {withCloseButton && (
-        <CloseButton
-          right={5}
-          position="absolute"
-          justifyContent="end"
-          onClick={onClose}
-        />
-      )}
+      <HStack w="100%" justifyContent="space-between">
+        {children}
+        {withCloseButton && <CloseButton onClick={onClose} />}
+      </HStack>
     </ChakraAlert>
   )
 }

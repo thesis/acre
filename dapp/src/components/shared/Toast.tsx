@@ -16,8 +16,8 @@ export default function Toast({
   ...props
 }: ToastProps) {
   return (
-    <Alert mt={16} withAlertIcon withCloseButton onClose={onClose} {...props}>
-      <HStack>
+    <Alert withAlertIcon withCloseButton onClose={onClose} {...props}>
+      <HStack w="100%">
         <TextSm fontWeight="bold">{title}</TextSm>
         {children}
       </HStack>

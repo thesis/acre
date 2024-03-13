@@ -1,11 +1,7 @@
 import React from "react"
 import { Button, HStack, Icon } from "@chakra-ui/react"
 import { Account } from "@ledgerhq/wallet-api-client"
-import {
-  useRequestBitcoinAccount,
-  useRequestEthereumAccount,
-  useWalletContext,
-} from "#/hooks"
+import { useWalletToast, useWallet } from "#/hooks"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import { TextMd } from "#/components/shared/Typography"
 import { Bitcoin, EthereumIcon } from "#/assets/icons"
@@ -41,9 +37,13 @@ function ConnectButton({
 }
 
 export default function ConnectWallet() {
-  const { requestAccount: requestBitcoinAccount } = useRequestBitcoinAccount()
-  const { requestAccount: requestEthereumAccount } = useRequestEthereumAccount()
-  const { btcAccount, ethAccount } = useWalletContext()
+  const {
+    bitcoin: { account: btcAccount, requestAccount: requestBitcoinAccount },
+    ethereum: { account: ethAccount, requestAccount: requestEthereumAccount },
+  } = useWallet()
+
+  useWalletToast("ethereum")
+  useWalletToast("bitcoin")
 
   return (
     <HStack spacing={4}>
