@@ -46,12 +46,6 @@ contract stBTC is
     /// Maximum total amount of tBTC token held by Acre protocol.
     uint256 public maximumTotalAssets;
 
-    /// @dev Hash of the type for withdrawing tBTC to Bitcoin with permit.
-    bytes32 private constant WITHDRAW_TO_BITCOIN_TYPEHASH =
-        keccak256(
-            "WithdrawToBitcoin(address owner,uint256 assets,bytes bitcoinOutputScript,uint256 nonce,uint256 deadline)"
-        );
-
     /// @dev Hash of the type for redeeming stBTC to Bitcoin with permit.
     bytes32 private constant REDEEM_TO_BITCOIN_TYPEHASH =
         keccak256(
@@ -237,65 +231,6 @@ contract stBTC is
         if ((assets = super.mint(shares, receiver)) < minimumDepositAmount) {
             revert LessThanMinDeposit(assets, minimumDepositAmount);
         }
-    }
-
-    /// @notice Redeems stBTC to Bitcoin with permit.
-    /// @dev After checking the signature the function approves BitcoinRedeemer
-    ///      contract to withdraw tBTC tokens. The BitcoinRedeemer contract
-    ///      withdraws tBTC and requests redemption of tBTC in the tBTC Bridge.
-    /// @param owner The owner of the stBTC tokens.
-    /// @param assets The number of tBTC tokens to withdraw.
-    /// @param tbtcRedemptionData Additional data required for the tBTC redemption
-    ///        by the tBTC Bridge.
-    /// @param deadline The deadline by which the redemption must occur.
-    /// @param v The recovery id of the signature.
-    /// @param r The R value of the signature.
-    /// @param s The S value of the signature.
-    function withdrawToBitcoinWithPermit(
-        address owner,
-        uint256 assets,
-        bytes calldata tbtcRedemptionData,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) public {
-        /* solhint-disable-next-line not-rely-on-time */
-        if (block.timestamp > deadline) {
-            revert ERC2612ExpiredSignature(deadline);
-        }
-
-        bytes32 redeemerOutputScriptHash = TbtcRedemption
-            .extractBitcoinOutputScriptHash(tbtcRedemptionData);
-
-        // Use hashing function from Open Zeppelin's ERC20Permit contract.
-        bytes32 hash = _hashTypedDataV4(
-            keccak256(
-                abi.encode(
-                    WITHDRAW_TO_BITCOIN_TYPEHASH,
-                    owner,
-                    assets,
-                    redeemerOutputScriptHash,
-                    _useNonce(owner),
-                    deadline
-                )
-            )
-        );
-
-        address signer = ECDSA.recover(hash, v, r, s);
-
-        if (signer != owner) {
-            revert ERC2612InvalidSigner(signer, owner);
-        }
-
-        _approve(owner, address(bitcoinRedeemer), previewWithdraw(assets));
-
-        return
-            bitcoinRedeemer.withdrawAssetsAndUnmint(
-                owner,
-                assets,
-                tbtcRedemptionData
-            );
     }
 
     /// @notice Redeems stBTC to Bitcoin with permit.

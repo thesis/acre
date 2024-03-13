@@ -77,44 +77,6 @@ contract BitcoinRedeemer is Initializable {
 
     /// @notice Initiates the redemption process by exchanging stBTC tokens for
     ///         tBTC tokens and requesting bridging to Bitcoin.
-    /// @dev Withdraws tBTC assets and requests redemption of tBTC  to Bitcoin via
-    ///      tBTC Bridge.
-    ///      Redemption data in a format expected from `redemptionData` parameter
-    ///      of Bridge's `receiveBalanceApproval`.
-    ///      It uses tBTC token owner which is the TBTCVault contract as spender
-    ///      of tBTC requested for redemption.
-    /// @dev tBTC Bridge redemption process has a path where request can timeout.
-    ///      It is a scenario that is unlikely to happen with the current Bridge
-    ///      setup. This contract remains upgradable to have flexibility to handle
-    ///      adjustments to tBTC Bridge changes.
-    /// @param owner The owner of the stBTC tokens.
-    /// @param tbtcAmount The number of tBTC tokens to withdraw.
-    /// @param tbtcRedemptionData Additional data required for the tBTC redemption.
-    ///        See `redemptionData` parameter description of `Bridge.requestRedemption`
-    ///        function.
-    function withdrawAssetsAndUnmint(
-        address owner,
-        uint256 tbtcAmount,
-        bytes calldata tbtcRedemptionData
-    ) public {
-        uint256 shares = stbtc.withdraw(tbtcAmount, address(this), owner);
-
-        // slither-disable-next-line reentrancy-events
-        emit RedemptionRequested(owner, shares, tbtcAmount);
-
-        if (
-            !tbtcToken.approveAndCall(
-                tbtcToken.owner(),
-                tbtcAmount,
-                tbtcRedemptionData
-            )
-        ) {
-            revert ApproveAndCallFailed();
-        }
-    }
-
-    /// @notice Initiates the redemption process by exchanging stBTC tokens for
-    ///         tBTC tokens and requesting bridging to Bitcoin.
     /// @dev Redeems stBTC shares to receive tBTC and requests redemption of tBTC
     ///      to Bitcoin via tBTC Bridge.
     ///      Redemption data in a format expected from `redemptionData` parameter
