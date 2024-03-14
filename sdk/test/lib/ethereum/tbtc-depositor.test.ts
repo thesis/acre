@@ -276,25 +276,29 @@ describe("BitcoinDepositor", () => {
     const amountToStake = 10_000_000n // 0.1 BTC
 
     const expectedResult = {
-      // The fee is calculated based on the initial funding
-      // transaction amount. `amountToStake / depositTreasuryFeeDivisor`
-      // 0.00005 tBTC in 1e18 precision.
-      treasuryFee: 50000000000000n,
-      // Maximum amount of BTC transaction fee that can
-      // be incurred by each swept deposit being part of the given sweep
-      // transaction.
-      // 0.001 tBTC in 1e18 precision.
-      depositTxMaxFee: 1000000000000000n,
-      // Divisor used to compute the depositor fee taken from each deposit
-      // and transferred to the treasury upon stake request finalization.
-      // `depositorFee = depositedAmount / depositorFeeDivisor`
-      // 0.0001 tBTC in 1e18 precision.
-      depositorFee: 100000000000000n,
-      // The optimistic fee is a percentage AFTER
-      // the treasury fee is cut:
-      // `fee = (depositAmount - treasuryFee) / optimisticMintingFeeDivisor`
-      // 0.0001999 tBTC in 1e18 precision.
-      optimisticMintingFee: 199900000000000n,
+      tbtc: {
+        // The fee is calculated based on the initial funding
+        // transaction amount. `amountToStake / depositTreasuryFeeDivisor`
+        // 0.00005 tBTC in 1e18 precision.
+        treasuryFee: 50000000000000n,
+        // Maximum amount of BTC transaction fee that can
+        // be incurred by each swept deposit being part of the given sweep
+        // transaction.
+        // 0.001 tBTC in 1e18 precision.
+        depositTxMaxFee: 1000000000000000n,
+        // The optimistic fee is a percentage AFTER
+        // the treasury fee is cut:
+        // `fee = (depositAmount - treasuryFee) / optimisticMintingFeeDivisor`
+        // 0.0001999 tBTC in 1e18 precision.
+        optimisticMintingFee: 199900000000000n,
+      },
+      acre: {
+        // Divisor used to compute the depositor fee taken from each deposit
+        // and transferred to the treasury upon stake request finalization.
+        // `depositorFee = depositedAmount / depositorFeeDivisor`
+        // 0.0001 tBTC in 1e18 precision.
+        depositorFee: 100000000000000n,
+      },
     }
 
     beforeAll(() => {

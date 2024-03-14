@@ -9,7 +9,10 @@ export type DecodedExtraData = {
   referral: number
 }
 
-export type StakingFees = {
+/**
+ * Represents the tBTC network minting fees.
+ */
+type TBTCMintingFees = {
   /**
    * The tBTC treasury fee taken from each deposit and transferred to the
    * treasury upon sweep proof submission. Is calculated based on the initial
@@ -27,11 +30,22 @@ export type StakingFees = {
    * transaction.
    */
   depositTxMaxFee: bigint
+}
+
+/**
+ * Represents the Acre network staking fees.
+ */
+type AcreStakingFees = {
   /**
    * The Acre network depositor fee taken from each deposit and transferred to
    * the treasury upon stake request finalization.
    */
   depositorFee: bigint
+}
+
+export type StakingFees = {
+  tbtc: TBTCMintingFees
+  acre: AcreStakingFees
 }
 
 /**
@@ -61,5 +75,11 @@ export interface BitcoinDepositor extends DepositorProxy {
    */
   decodeExtraData(extraData: string): DecodedExtraData
 
+  /**
+   * Estimates the staking fees based on the provided amount.
+   * @param amountToStake Amount to stake in 1e8 satoshi precision.
+   * @returns Staking fees grouped by tBTC and Acre networks in 1e18 tBTC token
+   *          precision.
+   */
   estimateStakingFees(amountToStake: bigint): Promise<StakingFees>
 }

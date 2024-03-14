@@ -145,6 +145,9 @@ class EthereumBitcoinDepositor
     return { staker, referral }
   }
 
+  /**
+   * @see {BitcoinDepositor#estimateStakingFees}
+   */
   async estimateStakingFees(amountToStake: bigint): Promise<StakingFees> {
     const { depositTreasuryFeeDivisor, depositTxMaxFee } =
       await this.#getTbtcDepositParameters()
@@ -171,13 +174,15 @@ class EthereumBitcoinDepositor
         ? (amountToStake * this.#satoshiMultiplier) / depositorFeeDivisor
         : 0n
 
-    // TODO: Maybe we should group fees by network? Eg.:
-    // `const fess = { tbtc: {...}, acre: {...}}`
     return {
-      treasuryFee: treasuryFee * this.#satoshiMultiplier,
-      optimisticMintingFee,
-      depositTxMaxFee: depositTxMaxFee * this.#satoshiMultiplier,
-      depositorFee,
+      tbtc: {
+        treasuryFee: treasuryFee * this.#satoshiMultiplier,
+        optimisticMintingFee,
+        depositTxMaxFee: depositTxMaxFee * this.#satoshiMultiplier,
+      },
+      acre: {
+        depositorFee,
+      },
     }
   }
 
