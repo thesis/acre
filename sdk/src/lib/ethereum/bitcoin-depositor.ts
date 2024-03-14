@@ -149,8 +149,11 @@ class EthereumBitcoinDepositor
    * @see {BitcoinDepositor#estimateStakingFees}
    */
   async estimateStakingFees(amountToStake: bigint): Promise<StakingFees> {
-    const { depositTreasuryFeeDivisor, depositTxMaxFee } =
-      await this.#getTbtcDepositParameters()
+    const {
+      depositTreasuryFeeDivisor,
+      depositTxMaxFee,
+      optimisticMintingFeeDivisor,
+    } = await this.#getTbtcMintingFeesParameters()
 
     const treasuryFee =
       depositTreasuryFeeDivisor > 0
@@ -162,8 +165,6 @@ class EthereumBitcoinDepositor
     const amountSubTreasury =
       (amountToStake - treasuryFee) * this.#satoshiMultiplier
 
-    const optimisticMintingFeeDivisor =
-      await this.#getTbtcOptimisticMintingFeeDivisor()
     const optimisticMintingFee =
       optimisticMintingFeeDivisor > 0
         ? amountSubTreasury / optimisticMintingFeeDivisor
@@ -186,6 +187,19 @@ class EthereumBitcoinDepositor
       acre: {
         depositorFee,
       },
+    }
+  }
+
+  async #getTbtcMintingFeesParameters(): Promise<
+    TbtcDepositParameters & { optimisticMintingFeeDivisor: bigint }
+  > {
+    const depositParameters = await this.#getTbtcDepositParameters()
+    const optimisticMintingFeeDivisor =
+      await this.#getTbtcOptimisticMintingFeeDivisor()
+
+    return {
+      ...depositParameters,
+      optimisticMintingFeeDivisor,
     }
   }
 
