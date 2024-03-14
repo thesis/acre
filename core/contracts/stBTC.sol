@@ -40,6 +40,9 @@ contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
     /// Entry fee basis points applied to entry fee calculation.
     uint256 public entryFeeBasisPoints;
 
+    /// Exit fee basis points applied to exit fee calculation.
+    uint256 public exitFeeBasisPoints;
+
     /// Emitted when the treasury wallet address is updated.
     /// @param treasury New treasury wallet address.
     event TreasuryUpdated(address treasury);
@@ -60,6 +63,10 @@ contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
     /// Emitted when the entry fee basis points are updated.
     /// @param entryFeeBasisPoints New value of the fee basis points.
     event EntryFeeBasisPointsUpdated(uint256 entryFeeBasisPoints);
+
+    /// Emitted when the exit fee basis points are updated.
+    /// @param exitFeeBasisPoints New value of the fee basis points.
+    event ExitFeeBasisPointsUpdated(uint256 exitFeeBasisPoints);
 
     /// Reverts if the amount is less than the minimum deposit amount.
     /// @param amount Amount to check.
@@ -92,6 +99,7 @@ contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
         minimumDepositAmount = 0.001 * 1e18; // 0.001 tBTC
         maximumTotalAssets = 25 * 1e18; // 25 tBTC
         entryFeeBasisPoints = 0; // TODO: tbd
+        exitFeeBasisPoints = 0; // TODO: tbd
     }
 
     /// @notice Updates treasury wallet address.
@@ -169,6 +177,18 @@ contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
         entryFeeBasisPoints = newEntryFeeBasisPoints;
 
         emit EntryFeeBasisPointsUpdated(newEntryFeeBasisPoints);
+    }
+
+    // TODO: Implement a governed upgrade process that initiates an update and
+    //       then finalizes it after a delay.
+    /// @notice Update the exit fee basis points.
+    /// @param newExitFeeBasisPoints New value of the fee basis points.
+    function updateExitFeeBasisPoints(
+        uint256 newExitFeeBasisPoints
+    ) external onlyOwner {
+        exitFeeBasisPoints = newExitFeeBasisPoints;
+
+        emit ExitFeeBasisPointsUpdated(newExitFeeBasisPoints);
     }
 
     /// @notice Mints shares to receiver by depositing exactly amount of
@@ -268,9 +288,14 @@ contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
         return (minimumDepositAmount, maximumTotalAssets);
     }
 
-    /// @notice Redeems shares for tBTC tokens.
+    /// @return Returns entry fee basis point used in deposits.
     function _entryFeeBasisPoints() internal view override returns (uint256) {
         return entryFeeBasisPoints;
+    }
+
+    /// @return Returns exit fee basis point used in withdrawals.
+    function _exitFeeBasisPoints() internal view override returns (uint256) {
+        return exitFeeBasisPoints;
     }
 
     /// @notice Returns the address of the treasury wallet, where fees should be
