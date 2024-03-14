@@ -21,7 +21,8 @@ export function useWalletToast(
     [requestAccount],
   )
 
-  const toast = useToast({
+  const { closeToast, showToast } = useToast({
+    id: `${type}-account-toast`,
     render: ({ onClose }) => (
       <Toast
         status="error"
@@ -46,12 +47,6 @@ export function useWalletToast(
     ),
   })
 
-  const showToast = useCallback(() => {
-    if (!toast.isActive(type)) {
-      toast({ id: type })
-    }
-  }, [toast, type])
-
   useEffect(() => {
     if (isToastClosed) return
 
@@ -64,7 +59,7 @@ export function useWalletToast(
   useEffect(() => {
     if (!account || isToastClosed) return
 
-    toast.close(type)
+    closeToast()
     setIsToastClosed(true)
-  }, [account, isToastClosed, toast, type])
+  }, [account, closeToast, isToastClosed, type])
 }

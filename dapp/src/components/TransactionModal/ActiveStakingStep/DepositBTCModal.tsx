@@ -1,4 +1,4 @@
-import React, { useCallback } from "react"
+import React, { useCallback, useEffect } from "react"
 import {
   useDepositBTCTransaction,
   useDepositTelemetry,
@@ -15,8 +15,6 @@ import { PROCESS_STATUSES } from "#/types"
 import { CardAlert, Toast } from "#/components/shared/alerts"
 import StakingStepsModalContent from "./StakingStepsModalContent"
 
-const ID_TOAST = "deposit-btc-error-toast"
-
 export default function DepositBTCModal() {
   const { ethAccount } = useWalletContext()
   const { tokenAmount } = useTransactionContext()
@@ -24,7 +22,8 @@ export default function DepositBTCModal() {
   const { btcAddress, depositReceipt, stake } = useStakeFlowContext()
   const depositTelemetry = useDepositTelemetry()
 
-  const toast = useToast({
+  const { closeToast, showToast } = useToast({
+    id: "deposit-btc-error-toast",
     render: ({ onClose }) => (
       <Toast
         status="error"
@@ -35,6 +34,8 @@ export default function DepositBTCModal() {
       </Toast>
     ),
   })
+
+  useEffect(() => () => closeToast(), [closeToast])
 
   const onStakeBTCSuccess = useCallback(() => {
     setStatus(PROCESS_STATUSES.SUCCEEDED)
@@ -61,13 +62,7 @@ export default function DepositBTCModal() {
     }, 10000)
   }, [setStatus, handleStake])
 
-  const onDepositBTCError = useCallback(() => {
-    if (!toast.isActive(ID_TOAST)) {
-      toast({
-        id: ID_TOAST,
-      })
-    }
-  }, [toast])
+  const onDepositBTCError = useCallback(showToast, [showToast])
 
   const { sendBitcoinTransaction } = useDepositBTCTransaction(
     onDepositBTCSuccess,
