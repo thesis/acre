@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity ^0.8.21;
 
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC4626Upgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
+
 import "./Dispatcher.sol";
 
 /// @title stBTC
@@ -17,7 +18,7 @@ import "./Dispatcher.sol";
 ///      of yield-bearing vaults. This contract facilitates the minting and
 ///      burning of shares (stBTC), which are represented as standard ERC20
 ///      tokens, providing a seamless exchange with tBTC tokens.
-contract stBTC is ERC4626, Ownable {
+contract stBTC is ERC4626Upgradeable, Ownable2StepUpgradeable {
     using SafeERC20 for IERC20;
 
     /// Dispatcher contract that routes tBTC from stBTC to a given vault and back.
@@ -26,8 +27,13 @@ contract stBTC is ERC4626, Ownable {
     /// Address of the treasury wallet, where fees should be transferred to.
     address public treasury;
 
-    /// Minimum amount for a single deposit operation.
+    /// Minimum amount for a single deposit operation. The value should be set
+    /// low enough so the deposits routed through Bitcoin Depositor contract won't
+    /// be rejected. It means that minimumDepositAmount should be lower than
+    /// tBTC protocol's depositDustThreshold reduced by all the minting fees taken
+    /// before depositing in the Acre contract.
     uint256 public minimumDepositAmount;
+
     /// Maximum total amount of tBTC token held by Acre protocol.
     uint256 public maximumTotalAssets;
 
@@ -59,14 +65,22 @@ contract stBTC is ERC4626, Ownable {
     /// Reverts if the address is disallowed.
     error DisallowedAddress();
 
-    constructor(
-        IERC20 _tbtc,
-        address _treasury
-    ) ERC4626(_tbtc) ERC20("Acre Staked Bitcoin", "stBTC") Ownable(msg.sender) {
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
+    function initialize(IERC20 asset, address _treasury) public initializer {
+        __ERC4626_init(asset);
+        __ERC20_init("Acre Staked Bitcoin", "stBTC");
+        __Ownable2Step_init();
+        __Ownable_init(msg.sender);
+
         if (address(_treasury) == address(0)) {
             revert ZeroAddress();
         }
         treasury = _treasury;
+
         // TODO: Revisit the exact values closer to the launch.
         minimumDepositAmount = 0.001 * 1e18; // 0.001 tBTC
         maximumTotalAssets = 25 * 1e18; // 25 tBTC

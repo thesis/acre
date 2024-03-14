@@ -14,6 +14,14 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     "transferOwnership",
     governance,
   )
+
+  if (hre.network.name !== "mainnet") {
+    await deployments.execute(
+      "Dispatcher",
+      { from: governance, log: true, waitConfirmations: 1 },
+      "acceptOwnership",
+    )
+  }
 }
 
 export default func

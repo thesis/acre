@@ -1,39 +1,28 @@
 import React from "react"
-import { Button, HStack, Icon } from "@chakra-ui/react"
+import { Button, HStack, Icon, Tooltip } from "@chakra-ui/react"
 import { Account } from "@ledgerhq/wallet-api-client"
 import { useWalletToast, useWallet } from "#/hooks"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import { TextMd } from "#/components/shared/Typography"
 import { Bitcoin, EthereumIcon } from "#/assets/icons"
-import { truncateAddress, logPromiseFailure } from "#/utils"
+import { CURRENCY_ID_BITCOIN } from "#/constants"
+import {
+  isSupportedBTCAddressType,
+  logPromiseFailure,
+  truncateAddress,
+} from "#/utils"
 
-export type ConnectButtonsProps = {
-  leftIcon: typeof Icon
-  account: Account | undefined
-  requestAccount: () => Promise<void>
-}
+const getCustomDataByAccount = (
+  account?: Account,
+): { text: string; colorScheme?: string } => {
+  if (!account) return { text: "Not connected", colorScheme: "error" }
 
-function ConnectButton({
-  leftIcon,
-  account,
-  requestAccount,
-}: ConnectButtonsProps) {
-  const colorScheme = !account ? "error" : undefined
+  const { address, currency } = account
 
-  const handleClick = () => {
-    logPromiseFailure(requestAccount())
-  }
+  if (currency === CURRENCY_ID_BITCOIN && !isSupportedBTCAddressType(address))
+    return { text: "Not supported", colorScheme: "error" }
 
-  return (
-    <Button
-      variant="card"
-      colorScheme={colorScheme}
-      leftIcon={<Icon as={leftIcon} boxSize={6} />}
-      onClick={handleClick}
-    >
-      {account ? truncateAddress(account.address) : "Not connected"}
-    </Button>
-  )
+  return { text: truncateAddress(address) }
 }
 
 export default function ConnectWallet() {
@@ -45,6 +34,17 @@ export default function ConnectWallet() {
   useWalletToast("ethereum")
   useWalletToast("bitcoin")
 
+  const customDataBtcAccount = getCustomDataByAccount(btcAccount)
+  const customDataEthAccount = getCustomDataByAccount(ethAccount)
+
+  const handleConnectBitcoinAccount = () => {
+    logPromiseFailure(requestBitcoinAccount())
+  }
+
+  const handleConnectEthereumAccount = () => {
+    logPromiseFailure(requestEthereumAccount())
+  }
+
   return (
     <HStack spacing={4}>
       <HStack display={{ base: "none", md: "flex" }}>
@@ -54,20 +54,30 @@ export default function ConnectWallet() {
           amount={btcAccount?.balance.toString()}
         />
       </HStack>
-      <ConnectButton
-        leftIcon={Bitcoin}
-        account={btcAccount}
-        requestAccount={async () => {
-          await requestBitcoinAccount()
-        }}
-      />
-      <ConnectButton
-        leftIcon={EthereumIcon}
-        account={ethAccount}
-        requestAccount={async () => {
-          await requestEthereumAccount()
-        }}
-      />
+      <Tooltip
+        label="Currently, we support only Legacy or Native SegWit addresses. Please try connecting another address."
+        placement="top"
+        isDisabled={
+          !(btcAccount && !isSupportedBTCAddressType(btcAccount.address))
+        }
+      >
+        <Button
+          variant="card"
+          colorScheme={customDataBtcAccount.colorScheme}
+          leftIcon={<Icon as={Bitcoin} boxSize={6} />}
+          onClick={handleConnectBitcoinAccount}
+        >
+          {customDataBtcAccount.text}
+        </Button>
+      </Tooltip>
+      <Button
+        variant="card"
+        colorScheme={customDataEthAccount.colorScheme}
+        leftIcon={<Icon as={EthereumIcon} boxSize={6} />}
+        onClick={handleConnectEthereumAccount}
+      >
+        {customDataEthAccount.text}
+      </Button>
     </HStack>
   )
 }

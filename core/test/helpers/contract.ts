@@ -1,7 +1,8 @@
-import { deployments, ethers } from "hardhat"
+import { deployments, ethers, helpers } from "hardhat"
 
 import type { BaseContract } from "ethers"
-import { getUnnamedSigner } from "./signer"
+
+const { getUnnamedSigners } = helpers.signers
 
 /**
  * Get instance of a contract from Hardhat Deployments.
@@ -15,7 +16,7 @@ export async function getDeployedContract<T extends BaseContract>(
   const { address, abi } = await deployments.get(deploymentName)
 
   // Use default unnamed signer from index 0 to initialize the contract runner.
-  const [defaultSigner] = await getUnnamedSigner()
+  const [defaultSigner] = await getUnnamedSigners()
 
   return new ethers.BaseContract(address, abi, defaultSigner) as T
 }
