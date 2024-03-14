@@ -8,7 +8,9 @@ import {
   DepositorProxy,
   DepositReceipt,
   EthereumAddress,
+  StakingFees,
 } from "../../src"
+import * as satoshiConverter from "../../src/lib/utils/satoshi-converter"
 import { MockAcreContracts } from "../utils/mock-acre-contracts"
 import { MockMessageSigner } from "../utils/mock-message-signer"
 import { MockTBTC } from "../utils/mock-tbtc"
@@ -21,6 +23,11 @@ const stakingModuleData: {
     bitcoinRecoveryAddress: string
     mockedDepositBTCAddress: string
   }
+  estimateStakingFees: {
+    amount: bigint
+    mockedStakingFees: StakingFees
+    expectedStakingFeesInSatoshi: StakingFees
+  }
 } = {
   initializeStake: {
     staker: EthereumAddress.from(ethers.Wallet.createRandom().address),
@@ -31,6 +38,37 @@ const stakingModuleData: {
     bitcoinRecoveryAddress: "mjc2zGWypwpNyDi4ZxGbBNnUA84bfgiwYc",
     mockedDepositBTCAddress:
       "tb1qma629cu92skg0t86lftyaf9uflzwhp7jk63h6mpmv3ezh6puvdhs6w2r05",
+  },
+  estimateStakingFees: {
+    amount: 10_000_000n, // 0.1 BTC
+    mockedStakingFees: {
+      tbtc: {
+        // 0.00005 tBTC in 1e18 precision.
+        treasuryFee: 50000000000000n,
+        // 0.001 tBTC in 1e18 precision.
+        depositTxMaxFee: 1000000000000000n,
+        // 0.0001999 tBTC in 1e18 precision.
+        optimisticMintingFee: 199900000000000n,
+      },
+      acre: {
+        // 0.0001 tBTC in 1e18 precision.
+        depositorFee: 100000000000000n,
+      },
+    },
+    expectedStakingFeesInSatoshi: {
+      tbtc: {
+        // 0.00005 BTC in 1e8 satoshi precision.
+        treasuryFee: 5000n,
+        // 0.001 BTC in 1e8 satoshi precision.
+        depositTxMaxFee: 100000n,
+        // 0.0001999 BTC in 1e8 satoshi precision.
+        optimisticMintingFee: 19990n,
+      },
+      acre: {
+        // 0.0001 BTC in 1e8 satoshi precision.
+        depositorFee: 10000n,
+      },
+    },
   },
 }
 
@@ -393,6 +431,58 @@ describe("Staking", () => {
 
     it("should return maximum withdraw value", () => {
       expect(result).toEqual(expectedResult)
+    })
+  })
+
+  describe("estimateStakingFees", () => {
+    const {
+      estimateStakingFees: {
+        amount,
+        mockedStakingFees,
+        expectedStakingFeesInSatoshi,
+      },
+    } = stakingModuleData
+
+    let result: StakingFees
+    const spyOnToSatoshi = jest.spyOn(satoshiConverter, "toSatoshi")
+
+    beforeAll(async () => {
+      contracts.bitcoinDepositor.estimateStakingFees = jest
+        .fn()
+        .mockResolvedValue(mockedStakingFees)
+      result = await staking.estimateStakingFees(amount)
+    })
+
+    it("should get the staking fees from Acre Bitcoin Depositor contract handle", () => {
+      expect(
+        contracts.bitcoinDepositor.estimateStakingFees,
+      ).toHaveBeenCalledWith(amount)
+    })
+
+    it("should convert tBTC network fees to satoshi", () => {
+      expect(spyOnToSatoshi).toHaveBeenNthCalledWith(
+        1,
+        mockedStakingFees.tbtc.treasuryFee,
+      )
+      expect(spyOnToSatoshi).toHaveBeenNthCalledWith(
+        2,
+        mockedStakingFees.tbtc.depositTxMaxFee,
+      )
+      expect(spyOnToSatoshi).toHaveBeenNthCalledWith(
+        3,
+        mockedStakingFees.tbtc.optimisticMintingFee,
+      )
+    })
+
+    it("should convert Acre network fees to satoshi", () => {
+      expect(spyOnToSatoshi).toHaveBeenNthCalledWith(
+        4,
+        mockedStakingFees.acre.depositorFee,
+      )
+    })
+
+    it("should return the staking fees in satoshi precision", () => {
+      expect(result).toMatchObject(expectedStakingFeesInSatoshi)
     })
   })
 })
