@@ -13,13 +13,6 @@ import {TestERC20} from "./TestERC20.sol";
 ///      This solution follows Foundry recommendation:
 ///      https://book.getfoundry.sh/tutorials/best-practices#internal-functions
 contract AcreBitcoinDepositorHarness is AcreBitcoinDepositor {
-    constructor(
-        address bridge,
-        address tbtcVault,
-        address tbtcToken,
-        address stbtc
-    ) AcreBitcoinDepositor(bridge, tbtcVault, tbtcToken, stbtc) {}
-
     function exposed_finalizeBridging(
         uint256 depositKey
     ) external returns (uint256 amountToStake, address staker) {

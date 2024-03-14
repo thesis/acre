@@ -1,31 +1,25 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity ^0.8.21;
 
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC4626Upgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 
-import "./Dispatcher.sol";
+import "../../Dispatcher.sol";
 
-/// @title stBTC
-/// @notice This contract implements the ERC-4626 tokenized vault standard. By
-///         staking tBTC, users acquire a liquid staking token called stBTC,
-///         commonly referred to as "shares". The staked tBTC is securely
-///         deposited into Acre's vaults, where it generates yield over time.
-///         Users have the flexibility to redeem stBTC, enabling them to
-///         withdraw their staked tBTC along with the accrued yield.
-/// @dev ERC-4626 is a standard to optimize and unify the technical parameters
-///      of yield-bearing vaults. This contract facilitates the minting and
-///      burning of shares (stBTC), which are represented as standard ERC20
-///      tokens, providing a seamless exchange with tBTC tokens.
-contract stBTC is ERC4626Upgradeable, Ownable2StepUpgradeable {
+/// @title stBTCMissingSlot
+/// @dev  This is a contract used to test stBTC upgradeability. It is a copy of
+///       stBTC contract with some differences marked with `TEST:` comments.
+contract stBTCMissingSlot is ERC4626Upgradeable, Ownable2StepUpgradeable {
     using SafeERC20 for IERC20;
 
     /// Dispatcher contract that routes tBTC from stBTC to a given vault and back.
     Dispatcher public dispatcher;
 
+    // TEST: Remove variable -  missing slot to test upgradeability
     /// Address of the treasury wallet, where fees should be transferred to.
-    address public treasury;
+    // address public treasury;
 
     /// Minimum amount for a single deposit operation. The value should be set
     /// low enough so the deposits routed through Bitcoin Depositor contract won't
@@ -70,16 +64,18 @@ contract stBTC is ERC4626Upgradeable, Ownable2StepUpgradeable {
         _disableInitializers();
     }
 
-    function initialize(IERC20 asset, address _treasury) public initializer {
+    function initialize(IERC20 asset, address) public initializer {
         __ERC4626_init(asset);
         __ERC20_init("Acre Staked Bitcoin", "stBTC");
         __Ownable2Step_init();
         __Ownable_init(msg.sender);
 
-        if (address(_treasury) == address(0)) {
-            revert ZeroAddress();
-        }
-        treasury = _treasury;
+        // TEST: Removed `treasury` variable -  missing slot to test
+        //       upgradeability.
+        // if (address(_treasury) == address(0)) {
+        //     revert ZeroAddress();
+        // }
+        // treasury = _treasury;
 
         // TODO: Revisit the exact values closer to the launch.
         minimumDepositAmount = 0.001 * 1e18; // 0.001 tBTC
@@ -96,7 +92,9 @@ contract stBTC is ERC4626Upgradeable, Ownable2StepUpgradeable {
         if (newTreasury == address(this)) {
             revert DisallowedAddress();
         }
-        treasury = newTreasury;
+        // TEST: Removed `treasury` variable -  missing slot to test
+        //       upgradeability.
+        // treasury = newTreasury;
 
         emit TreasuryUpdated(newTreasury);
     }

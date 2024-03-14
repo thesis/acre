@@ -32,5 +32,6 @@ jobs:
           name: core-build
           path: |
             core/build/
+            core/cache/
             core/typechain/
           if-no-files-found: error

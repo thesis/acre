@@ -1,24 +1,17 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity ^0.8.21;
 
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC4626Upgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 
-import "./Dispatcher.sol";
+import "../../Dispatcher.sol";
 
-/// @title stBTC
-/// @notice This contract implements the ERC-4626 tokenized vault standard. By
-///         staking tBTC, users acquire a liquid staking token called stBTC,
-///         commonly referred to as "shares". The staked tBTC is securely
-///         deposited into Acre's vaults, where it generates yield over time.
-///         Users have the flexibility to redeem stBTC, enabling them to
-///         withdraw their staked tBTC along with the accrued yield.
-/// @dev ERC-4626 is a standard to optimize and unify the technical parameters
-///      of yield-bearing vaults. This contract facilitates the minting and
-///      burning of shares (stBTC), which are represented as standard ERC20
-///      tokens, providing a seamless exchange with tBTC tokens.
-contract stBTC is ERC4626Upgradeable, Ownable2StepUpgradeable {
+/// @title stBTCV2
+/// @dev  This is a contract used to test stBTC upgradeability. It is a copy of
+///       stBTC contract with some differences marked with `TEST:` comments.
+contract stBTCV2 is ERC4626Upgradeable, Ownable2StepUpgradeable {
     using SafeERC20 for IERC20;
 
     /// Dispatcher contract that routes tBTC from stBTC to a given vault and back.
@@ -37,6 +30,9 @@ contract stBTC is ERC4626Upgradeable, Ownable2StepUpgradeable {
     /// Maximum total amount of tBTC token held by Acre protocol.
     uint256 public maximumTotalAssets;
 
+    // TEST: New variable.
+    uint256 public newVariable;
+
     /// Emitted when the treasury wallet address is updated.
     /// @param treasury New treasury wallet address.
     event TreasuryUpdated(address treasury);
@@ -53,6 +49,9 @@ contract stBTC is ERC4626Upgradeable, Ownable2StepUpgradeable {
     /// @param oldDispatcher Address of the old dispatcher contract.
     /// @param newDispatcher Address of the new dispatcher contract.
     event DispatcherUpdated(address oldDispatcher, address newDispatcher);
+
+    // TEST: New event.
+    event NewEvent();
 
     /// Reverts if the amount is less than the minimum deposit amount.
     /// @param amount Amount to check.
@@ -71,19 +70,13 @@ contract stBTC is ERC4626Upgradeable, Ownable2StepUpgradeable {
     }
 
     function initialize(IERC20 asset, address _treasury) public initializer {
-        __ERC4626_init(asset);
-        __ERC20_init("Acre Staked Bitcoin", "stBTC");
-        __Ownable2Step_init();
-        __Ownable_init(msg.sender);
+        // TEST: Removed content of initialize function. Initialize shouldn't be
+        //       called again during the upgrade because of the `initializer`
+        //       modifier.
+    }
 
-        if (address(_treasury) == address(0)) {
-            revert ZeroAddress();
-        }
-        treasury = _treasury;
-
-        // TODO: Revisit the exact values closer to the launch.
-        minimumDepositAmount = 0.001 * 1e18; // 0.001 tBTC
-        maximumTotalAssets = 25 * 1e18; // 25 tBTC
+    function initializeV2(uint256 _newVariable) public reinitializer(2) {
+        newVariable = _newVariable;
     }
 
     /// @notice Updates treasury wallet address.
@@ -151,15 +144,7 @@ contract stBTC is ERC4626Upgradeable, Ownable2StepUpgradeable {
         IERC20(asset()).forceApprove(address(dispatcher), type(uint256).max);
     }
 
-    /// @notice Mints shares to receiver by depositing exactly amount of
-    ///         tBTC tokens.
-    /// @dev Takes into account a deposit parameter, minimum deposit amount,
-    ///      which determines the minimum amount for a single deposit operation.
-    ///      The amount of the assets has to be pre-approved in the tBTC
-    ///      contract.
-    /// @param assets Approved amount of tBTC tokens to deposit.
-    /// @param receiver The address to which the shares will be minted.
-    /// @return Minted shares.
+    // TEST: Modified function.
     function deposit(
         uint256 assets,
         address receiver
@@ -167,6 +152,8 @@ contract stBTC is ERC4626Upgradeable, Ownable2StepUpgradeable {
         if (assets < minimumDepositAmount) {
             revert LessThanMinDeposit(assets, minimumDepositAmount);
         }
+        // TEST: Emit new event.
+        emit NewEvent();
 
         return super.deposit(assets, receiver);
     }
