@@ -5,7 +5,7 @@ repos:
       - id: root-lint
         name: "lint root"
         entry: /usr/bin/env bash -c "npm run format"
-        exclude: (^core/|^dapp/|^website/)
+        exclude: (^core/|^dapp/|^website/|^subgraph/)
         language: script
         description: "Checks code according to the package's linter configuration"
       # Core
@@ -72,6 +72,21 @@ repos:
         name: "lint sdk json/yaml"
         entry: /usr/bin/env bash -c "npm --prefix ./sdk/ run lint:config"
         files: ^sdk/
+        types_or: [json, yaml]
+        language: script
+        description: "Checks JSON/YAML code according to the package's linter configuration"
+      # Subgraph
+      - id: subgraph-lint-js
+        name: "lint subgraph ts/js"
+        entry: /usr/bin/env bash -c "npm --prefix ./subgraph/ run lint:js"
+        files: ^subgraph/
+        types_or: [ts, tsx, javascript, jsx]
+        language: script
+        description: "Checks TS/JS code according to the package's linter configuration"
+      - id: subgraph-lint-config
+        name: "lint subgraph json/yaml"
+        entry: /usr/bin/env bash -c "npm --prefix ./subgraph/ run lint:config"
+        files: ^subgraph/
         types_or: [json, yaml]
         language: script
         description: "Checks JSON/YAML code according to the package's linter configuration"
