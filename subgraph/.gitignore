@@ -1,3 +1,5 @@
 generated/
 build/
 data/
+# Matchstick binaries
+**/tests/.*
