@@ -39,6 +39,10 @@ async function fixture() {
 }
 
 describe("stBTC", () => {
+  const entryFeeBasisPoints = 5n // Used only for the tests.
+  // const exitFeeBasisPoints = 10n
+  const basisPointScale = 10000n // Matches the contract.
+
   let stbtc: stBTC
   let tbtc: TestERC20
   let dispatcher: Dispatcher
@@ -58,6 +62,10 @@ describe("stBTC", () => {
       governance,
       thirdParty,
     } = await loadFixture(fixture))
+
+    await stbtc
+      .connect(governance)
+      .updateEntryFeeBasisPoints(entryFeeBasisPoints)
   })
 
   describe("assetsBalanceOf", () => {
@@ -86,8 +94,10 @@ describe("stBTC", () => {
         })
 
         it("should return the correct amount of assets", async () => {
+          const depositFee = feeOnTotal(amountToDeposit)
+
           expect(await stbtc.assetsBalanceOf(depositor1.address)).to.be.equal(
-            amountToDeposit,
+            amountToDeposit - depositFee,
           )
         })
       })
@@ -120,15 +130,18 @@ describe("stBTC", () => {
           beforeAfterSnapshotWrapper()
 
           it("should return the correct amount of assets", async () => {
+            const deposit1Fee = feeOnTotal(depositor1AmountToDeposit)
+            const deposit2Fee = feeOnTotal(depositor2AmountToDeposit)
+
             expect(
               await stbtc.assetsBalanceOf(depositor1.address),
               "invalid assets balance of depositor 1",
-            ).to.be.equal(depositor1AmountToDeposit)
+            ).to.be.equal(depositor1AmountToDeposit - deposit1Fee)
 
             expect(
               await stbtc.assetsBalanceOf(depositor2.address),
               "invalid assets balance of depositor 2",
-            ).to.be.equal(depositor2AmountToDeposit)
+            ).to.be.equal(depositor2AmountToDeposit - deposit2Fee)
           })
         })
 
@@ -138,23 +151,31 @@ describe("stBTC", () => {
           const earnedYield = to1e18(6)
 
           // Values are floor rounded as per the `convertToAssets` function.
-          const expectedAssets1 = 2999999999999999999n // 1 + (1/3 * 6)
-          const expectedAssets2 = 5999999999999999998n // 2 + (2/3 * 6)
+          // 1 - fee + (1/3 * 6) = ~3
+          const expectedAssets1 =
+            depositor1AmountToDeposit -
+            feeOnTotal(depositor1AmountToDeposit) +
+            to1e18(2)
+          // 2 - fee + (2/3 * 6) = ~6
+          const expectedAssets2 =
+            depositor2AmountToDeposit -
+            feeOnTotal(depositor2AmountToDeposit) +
+            to1e18(4)
 
           before(async () => {
             await tbtc.mint(await stbtc.getAddress(), earnedYield)
           })
 
           it("should return the correct amount of assets", async () => {
-            expect(
+            expectCloseTo(
               await stbtc.assetsBalanceOf(depositor1.address),
-              "invalid assets balance of depositor 1",
-            ).to.be.equal(expectedAssets1)
+              expectedAssets1,
+            )
 
-            expect(
+            expectCloseTo(
               await stbtc.assetsBalanceOf(depositor2.address),
-              "invalid assets balance of depositor 2",
-            ).to.be.equal(expectedAssets2)
+              expectedAssets2,
+            )
           })
         })
       })
@@ -206,7 +227,7 @@ describe("stBTC", () => {
           const minimumDepositAmount = await stbtc.minimumDepositAmount()
           amountToDeposit = minimumDepositAmount
 
-          expectedReceivedShares = amountToDeposit
+          expectedReceivedShares = amountToDeposit - feeOnTotal(amountToDeposit)
 
           await tbtc.approve(await stbtc.getAddress(), amountToDeposit)
           tx = await stbtc
@@ -236,7 +257,8 @@ describe("stBTC", () => {
         })
 
         it("should transfer tBTC tokens to Acre", async () => {
-          const actualDepositdAmount = amountToDeposit
+          const actualDepositdAmount =
+            amountToDeposit - feeOnTotal(amountToDeposit)
 
           await expect(tx).to.changeTokenBalances(
             tbtc,
@@ -333,8 +355,10 @@ describe("stBTC", () => {
           })
 
           it("the total assets amount should be equal to all deposited tokens", async () => {
-            const actualDepositAmount1 = depositor1AmountToDeposit
-            const actualDepositAmount2 = depositor2AmountToDeposit
+            const actualDepositAmount1 =
+              depositor1AmountToDeposit - feeOnTotal(depositor1AmountToDeposit)
+            const actualDepositAmount2 =
+              depositor2AmountToDeposit - feeOnTotal(depositor2AmountToDeposit)
 
             expect(await stbtc.totalAssets()).to.eq(
               actualDepositAmount1 + actualDepositAmount2,
@@ -369,8 +393,10 @@ describe("stBTC", () => {
           })
 
           it("the vault should hold more assets minus fees", async () => {
-            const actualDepositAmount1 = depositor1AmountToDeposit
-            const actualDepositAmount2 = depositor2AmountToDeposit
+            const actualDepositAmount1 =
+              depositor1AmountToDeposit - feeOnTotal(depositor1AmountToDeposit)
+            const actualDepositAmount2 =
+              depositor2AmountToDeposit - feeOnTotal(depositor2AmountToDeposit)
 
             expect(await stbtc.totalAssets()).to.be.eq(
               actualDepositAmount1 + actualDepositAmount2 + earnedYield,
@@ -390,9 +416,9 @@ describe("stBTC", () => {
             const shares = await stbtc.balanceOf(depositor1.address)
             const availableAssetsToRedeem = await stbtc.previewRedeem(shares)
 
-            // 7 * 15 / 10 = 10.5
+            // (7 - fee) * 15 / 10 = 10.5
             // Due to Solidity's mulDiv functions the result is floor rounded.
-            const expectedAssetsToRedeem = 10499999999999999999n
+            const expectedAssetsToRedeem = 10496501749125437280n
 
             expect(availableAssetsToRedeem).to.be.eq(expectedAssetsToRedeem)
           })
@@ -401,9 +427,9 @@ describe("stBTC", () => {
             const shares = await stbtc.balanceOf(depositor2.address)
             const availableAssetsToRedeem = await stbtc.previewRedeem(shares)
 
-            // 3 * 15 / 10 = 4.5
+            // (3 - fee) * 15 / 10 = 4.5
             // Due to Solidity's mulDiv functions the result is floor rounded.
-            const expectedAssetsToRedeem = 4499999999999999999n
+            const expectedAssetsToRedeem = 4498500749625187405n
 
             expect(availableAssetsToRedeem).to.be.eq(expectedAssetsToRedeem)
           })
@@ -454,15 +480,21 @@ describe("stBTC", () => {
 
                 // Expected amount to redeem by depositor 1:
                 // (7 + ~1.3) * 17 / ~11.3 = ~12.49
-                const expectedTotalAssetsAvailableToRedeem =
-                  12499999999999999999n
+                const amount1 =
+                  depositor1AmountToDeposit -
+                  feeOnTotal(depositor1AmountToDeposit)
+                const amount2 = await stbtc.previewDeposit(newAmountToDeposit)
+                const totalAssets = await tbtc.balanceOf(
+                  await stbtc.getAddress(),
+                )
+                const totalShares = await stbtc.totalSupply()
+                const expectedAssetsToRedeem =
+                  ((amount1 + amount2) * totalAssets) / totalShares
 
                 expect(availableToRedeem).to.be.greaterThan(
                   availableToRedeemBefore,
                 )
-                expect(availableToRedeem).to.be.eq(
-                  expectedTotalAssetsAvailableToRedeem,
-                )
+                expect(availableToRedeem).to.be.eq(expectedAssetsToRedeem)
               })
             },
           )
@@ -532,7 +564,11 @@ describe("stBTC", () => {
                     stbtc,
                     "ERC4626ExceededMaxDeposit",
                   )
-                  .withArgs(depositor1.address, amountToDeposit, 0n)
+                  .withArgs(
+                    depositor1.address,
+                    amountToDeposit,
+                    feeOnTotal(amountToDeposit),
+                  )
               })
             },
           )
@@ -1065,4 +1101,86 @@ describe("stBTC", () => {
       })
     })
   })
+
+  describe("feeOnTotal - internal test helper", () => {
+    context("when the fee's modulo remainder is greater than 0", () => {
+      it("should add 1 to the result", () => {
+        // feeOnTotal - test's internal function simulating the OZ mulDiv
+        // function.
+        const fee = feeOnTotal(to1e18(1))
+        // fee = (1e18 * 5) / (10000 + 5) = 499750124937531 + 1
+        const expectedFee = 499750124937532
+        expect(fee).to.be.eq(expectedFee)
+      })
+    })
+
+    context("when the fee's modulo remainder is equal to 0", () => {
+      it("should return the actual result", () => {
+        // feeOnTotal - test's internal function simulating the OZ mulDiv
+        // function.
+        const fee = feeOnTotal(2001n)
+        // fee = (2001 * 5) / (10000 + 5) = 1
+        const expectedFee = 1n
+        expect(fee).to.be.eq(expectedFee)
+      })
+    })
+  })
+
+  describe("feeOnRaw - internal test helper", () => {
+    context("when the fee's modulo remainder is greater than 0", () => {
+      it("should return the correct amount of fees", () => {
+        // feeOnRaw - this is a test internal function
+        const fee = feeOnRaw(to1e18(1))
+        // fee = (1e18 * 5) / (10000) = 500000000000000
+        const expectedFee = 500000000000000
+        expect(fee).to.be.eq(expectedFee)
+      })
+    })
+
+    context("when the fee's modulo remainder is equal to 0", () => {
+      it("should return the actual result", () => {
+        // feeOnTotal - test's internal function simulating the OZ mulDiv
+        // function.
+        const fee = feeOnTotal(2000n)
+        // fee = (2000 * 5) / 10000 = 1
+        const expectedFee = 1n
+        expect(fee).to.be.eq(expectedFee)
+      })
+    })
+  })
+
+  // Calculates the fee when it's included in the amount.
+  // One is added to the result if there is a remainder to match the Solidity
+  // mulDiv() math which rounds up towards infinity (Ceil) when fees are
+  // calculated.
+  function feeOnTotal(amount: bigint) {
+    const result =
+      (amount * entryFeeBasisPoints) / (entryFeeBasisPoints + basisPointScale)
+    if (
+      (amount * entryFeeBasisPoints) % (entryFeeBasisPoints + basisPointScale) >
+      0
+    ) {
+      return result + 1n
+    }
+    return result
+  }
+
+  // Calculates the fee when it's not included in the amount.
+  // One is added to the result if there is a remainder to match the Solidity
+  // mulDiv() math which rounds up towards infinity (Ceil) when fees are
+  // calculated.
+  function feeOnRaw(amount: bigint) {
+    const result = (amount * entryFeeBasisPoints) / basisPointScale
+    if ((amount * entryFeeBasisPoints) % basisPointScale > 0) {
+      return result + 1n
+    }
+    return result
+  }
+
+  // 2n is added or subtracted to the expected value to match the Solidity
+  // math which rounds up or down depending on the remainder. It is a very small
+  // number.
+  function expectCloseTo(actual: bigint, expected: bigint) {
+    return expect(actual, "invalid asset balance").to.be.closeTo(expected, 2n)
+  }
 })
