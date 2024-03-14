@@ -275,6 +275,9 @@ importers:
       '@graphprotocol/graph-ts':
         specifier: 0.32.0
         version: 0.32.0
+      assemblyscript:
+        specifier: 0.19.23
+        version: 0.19.23
     devDependencies:
       '@thesis-co/eslint-config':
         specifier: github:thesis/eslint-config#7b9bc8c

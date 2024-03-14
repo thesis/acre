@@ -19,7 +19,8 @@
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.68.3",
-    "@graphprotocol/graph-ts": "0.32.0"
+    "@graphprotocol/graph-ts": "0.32.0",
+    "assemblyscript": "0.19.23"
   },
   "devDependencies": {
     "@thesis-co/eslint-config": "github:thesis/eslint-config#7b9bc8c",
