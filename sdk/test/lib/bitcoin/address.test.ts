@@ -1,4 +1,7 @@
-import { BitcoinAddressConverter } from "@keep-network/tbtc-v2.ts"
+import {
+  BitcoinAddressConverter,
+  BitcoinScriptUtils,
+} from "@keep-network/tbtc-v2.ts"
 import { isPublicKeyHashTypeAddress } from "../../../src"
 import { btcAddresses } from "./data"
 
@@ -12,42 +15,78 @@ describe("isPublicKeyHashTypeAddress", () => {
   const btcAddressesWithExpectedResult = btcAddresses.map((address) => ({
     ...address,
     expectedResult: address.type === "P2PKH" || address.type === "P2WPKH",
-    // Should not convert addresses that are not supported by tBTC v2
-    shouldConvertAddress: isSupportedByTBTC(address.type),
   }))
 
-  describe.each(btcAddressesWithExpectedResult)(
-    "when it is $type $network address",
-    ({
-      expectedResult,
-      network,
-      address,
-      scriptPubKey,
-      shouldConvertAddress,
-    }) => {
-      const spyOnAddressToOutputScript = jest.spyOn(
-        BitcoinAddressConverter,
-        "addressToOutputScript",
-      )
-      let result: boolean
+  describe("when an address is supported by tBTC network", () => {
+    const supportedAddresses = btcAddressesWithExpectedResult.filter(
+      ({ type }) => isSupportedByTBTC(type),
+    )
 
-      beforeAll(() => {
-        result = isPublicKeyHashTypeAddress(address, network)
-      })
+    describe.each(supportedAddresses)(
+      "when it is $type $network address",
+      ({ expectedResult, network, address, scriptPubKey }) => {
+        const spyOnAddressToOutputScript = jest.spyOn(
+          BitcoinAddressConverter,
+          "addressToOutputScript",
+        )
+        let result: boolean
 
-      if (shouldConvertAddress) {
+        beforeAll(() => {
+          result = isPublicKeyHashTypeAddress(address, network)
+        })
+
         it("should convert address to output script", () => {
           expect(spyOnAddressToOutputScript).toHaveBeenCalledWith(
             address,
             network,
           )
+
           expect(spyOnAddressToOutputScript).toHaveReturnedWith(scriptPubKey)
         })
-      }
 
-      it(`should return ${expectedResult}`, () => {
-        expect(result).toBe(expectedResult)
-      })
-    },
-  )
+        it(`should return ${expectedResult}`, () => {
+          expect(result).toBe(expectedResult)
+        })
+      },
+    )
+  })
+
+  describe("when an address is not supported by tBTC network", () => {
+    const notSupportedAddresses = btcAddressesWithExpectedResult.filter(
+      ({ type }) => !isSupportedByTBTC(type),
+    )
+
+    describe.each(notSupportedAddresses)(
+      "when it is $type $network address",
+      ({ network, address }) => {
+        const spyOnAddressToOutputScript = jest.spyOn(
+          BitcoinAddressConverter,
+          "addressToOutputScript",
+        )
+        let spyOnIsP2PKHScript: jest.SpyInstance<boolean>
+        let spyOnIsP2WPKHScript: jest.SpyInstance<boolean>
+        let result: boolean
+
+        beforeAll(() => {
+          spyOnIsP2PKHScript = jest.spyOn(BitcoinScriptUtils, "isP2PKHScript")
+          spyOnIsP2WPKHScript = jest.spyOn(BitcoinScriptUtils, "isP2WPKHScript")
+
+          result = isPublicKeyHashTypeAddress(address, network)
+        })
+
+        it("should not be able to convert address to output script", () => {
+          expect(spyOnAddressToOutputScript).toThrow()
+        })
+
+        it("should not check if an address is P2PKH or P2WPKH", () => {
+          expect(spyOnIsP2PKHScript).not.toHaveBeenCalled()
+          expect(spyOnIsP2WPKHScript).not.toHaveBeenCalled()
+        })
+
+        it("should return false", () => {
+          expect(result).toBeFalsy()
+        })
+      },
+    )
+  })
 })
