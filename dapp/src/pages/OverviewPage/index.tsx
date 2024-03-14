@@ -1,5 +1,5 @@
 import React from "react"
-import { Flex, Grid, HStack, SimpleGrid, Switch } from "@chakra-ui/react"
+import { Flex, Grid, HStack, Switch } from "@chakra-ui/react"
 import { TextSm } from "#/components/shared/Typography"
 import { USD } from "#/constants"
 import PositionDetails from "./PositionDetails"
@@ -17,13 +17,13 @@ export default function OverviewPage() {
         <TextSm fontWeight="bold">Show values in {USD.symbol}</TextSm>
       </HStack>
 
-      <SimpleGrid
+      <Grid
         templateAreas={'"activity-carousel activity-carousel button-docs"'}
-        gridTemplateColumns={{ base: "1fr" }}
+        gridTemplateColumns="1fr 1fr auto"
       >
         <ActivityCarousel gridArea="activity-carousel" />
         <DocsCard gridArea="button-docs" />
-      </SimpleGrid>
+      </Grid>
       <Grid
         templateAreas={`"position-details statistics"
                         "transaction-history transaction-history"`}

@@ -42,10 +42,11 @@ export function ActivityCardWrapper({
 }: ActivityCardWrapperProps) {
   return (
     <Card
-      {...props}
-      width={64}
-      paddingX={5}
-      padding={3}
+      w={64}
+      mr={3}
+      px={5}
+      p={3}
+      cursor="pointer"
       borderWidth={1}
       borderColor="gold.100"
       _hover={{
@@ -55,6 +56,7 @@ export function ActivityCardWrapper({
       }}
       {...(isActive && activeStyles)}
       {...(isCompleted && completedStyles)}
+      {...props}
     >
       {children}
     </Card>
