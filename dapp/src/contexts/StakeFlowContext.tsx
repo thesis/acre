@@ -6,7 +6,7 @@ import {
 } from "#/acre-react/hooks"
 import { REFERRAL } from "#/constants"
 import { RelayerDepositorProxy } from "#/web3"
-import { EthereumTBTCDepositor } from "@acre-btc/sdk"
+import { EthereumBitcoinDepositor } from "@acre-btc/sdk"
 
 type StakeFlowContextValue = Omit<UseStakeFlowReturn, "initStake"> & {
   initStake: (
@@ -39,8 +39,8 @@ export function StakeFlowProvider({ children }: { children: React.ReactNode }) {
         bitcoinRecoveryAddress,
         ethereumAddress,
         REFERRAL,
-        RelayerDepositorProxy.fromEthereumTbtcDepositor(
-          acre.contracts.tbtcDepositor as EthereumTBTCDepositor,
+        RelayerDepositorProxy.fromEthereumBitcoinDepositor(
+          acre.contracts.bitcoinDepositor as EthereumBitcoinDepositor,
         ),
       )
     },

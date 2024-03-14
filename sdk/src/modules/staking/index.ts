@@ -50,8 +50,8 @@ class StakingModule {
   ) {
     const deposit = await this.#tbtc.deposits.initiateDepositWithProxy(
       bitcoinRecoveryAddress,
-      depositorProxy ?? this.#contracts.tbtcDepositor,
-      this.#contracts.tbtcDepositor.encodeExtraData(staker, referral),
+      depositorProxy ?? this.#contracts.bitcoinDepositor,
+      this.#contracts.bitcoinDepositor.encodeExtraData(staker, referral),
     )
 
     return new StakeInitialization(
@@ -61,6 +61,22 @@ class StakingModule {
       staker,
       deposit,
     )
+  }
+
+  /**
+   * @param identifier The generic chain identifier.
+   * @returns Value of the basis for calculating final BTC balance.
+   */
+  sharesBalance(identifier: ChainIdentifier) {
+    return this.#contracts.stBTC.balanceOf(identifier)
+  }
+
+  /**
+   * @param identifier The generic chain identifier.
+   * @returns Maximum withdraw value.
+   */
+  estimatedBitcoinBalance(identifier: ChainIdentifier) {
+    return this.#contracts.stBTC.assetsBalanceOf(identifier)
   }
 }
 
