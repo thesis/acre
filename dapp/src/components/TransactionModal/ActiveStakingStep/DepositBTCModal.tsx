@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import {
   useDepositBTCTransaction,
   useDepositTelemetry,
@@ -21,6 +21,8 @@ export default function DepositBTCModal() {
   const { setStatus } = useModalFlowContext()
   const { btcAddress, depositReceipt, stake } = useStakeFlowContext()
   const depositTelemetry = useDepositTelemetry()
+
+  const [isLoading, setIsLoading] = useState(false)
 
   const { closeToast, showToast } = useToast({
     id: "deposit-btc-error-toast",
@@ -73,12 +75,13 @@ export default function DepositBTCModal() {
     if (!tokenAmount?.amount || !btcAddress || !depositReceipt || !ethAccount)
       return
 
+    setIsLoading(true)
     const response = await depositTelemetry(
       depositReceipt,
       btcAddress,
       ethAccount.address,
     )
-
+    setIsLoading(false)
     // TODO: Display the correct message for the user
     if (response.verificationStatus !== "valid") return
 
@@ -100,6 +103,7 @@ export default function DepositBTCModal() {
     <StakingStepsModalContent
       buttonText="Deposit BTC"
       activeStep={1}
+      isLoading={isLoading}
       onClick={handledDepositBTCWrapper}
     >
       <CardAlert status="error">
