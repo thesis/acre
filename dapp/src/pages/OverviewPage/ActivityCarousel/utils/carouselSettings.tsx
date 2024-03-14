@@ -8,13 +8,6 @@ import { NextArrowCarousel, PrevArrowCarousel } from "./carouselArrows"
  * and it depends on the width of the viewport.
  * */
 export const activityCarouselSettings = {
-  dots: false,
-  infinite: false,
-  draggable: false,
-  variableWidth: true,
-  speed: 500,
-  slidesToShow: 12,
-  slidesToScroll: 1,
   nextArrow: <NextArrowCarousel />,
   prevArrow: <PrevArrowCarousel />,
   responsive: [

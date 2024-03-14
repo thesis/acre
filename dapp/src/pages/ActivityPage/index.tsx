@@ -4,7 +4,7 @@ import { Flex, Link as ChakraLink, Icon } from "@chakra-ui/react"
 import { Link as ReactRouterLink, useParams } from "react-router-dom"
 import { useSidebar } from "#/hooks"
 import { ArrowLeft } from "#/assets/icons"
-import { mockedActivities } from "#/components/shared/ActivityCard/mock-activities"
+import { mockedActivities } from "#/mock/mock-activities"
 import ActivityDetails from "./ActivityDetails"
 import { ActivityBar } from "./ActivityBar"
 

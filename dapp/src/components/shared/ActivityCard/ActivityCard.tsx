@@ -32,13 +32,13 @@ export function ActivityCard({
   const navigate = useNavigate()
   const isCompleted = activity.status === "completed"
 
-  const onClick = () => {
+  const onClick = useCallback(() => {
     navigate(`${routerPath.activity}/${activity.txHash}`)
-  }
+  }, [activity.txHash, navigate])
 
   const onClose = useCallback(
     (event: React.MouseEvent) => {
-      event.preventDefault()
+      event.stopPropagation()
       if (activity.txHash) {
         onRemove(activity.txHash)
       }

@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react"
 import { VStack } from "@chakra-ui/react"
-import { mockedActivities } from "#/components/shared/ActivityCard/mock-activities"
+import { mockedActivities } from "#/mock/mock-activities"
 import { ActivityCard } from "#/components/shared/ActivityCard"
 import { ActivityInfo } from "#/types"
 
