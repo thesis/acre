@@ -1,5 +1,4 @@
 import React from "react"
-import { useLocation } from "react-router-dom"
 import {
   Card,
   CardBody,
@@ -11,17 +10,13 @@ import {
   Text,
 } from "@chakra-ui/react"
 import ActivityProgress from "#/assets/images/activity-progress.png"
-import { LocationState } from "#/types"
 import StatusInfo from "#/components/shared/StatusInfo"
 import { TextMd, TextSm } from "#/components/shared/Typography"
 import Spinner from "#/components/shared/Spinner"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
+import { ActivityInfo } from "#/types"
 
-function ActivityDetails() {
-  const location = useLocation()
-
-  const { activity } = location.state as LocationState
-
+function ActivityDetails({ activity }: { activity: ActivityInfo }) {
   return (
     <Flex flexDirection="column" gap={2}>
       {activity.status === "pending" && (

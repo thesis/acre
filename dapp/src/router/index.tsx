@@ -9,7 +9,7 @@ export const router = createBrowserRouter([
     element: <OverviewPage />,
   },
   {
-    path: "activity-details",
+    path: "activity-details/:activityId",
     element: <ActivityPage />,
   },
 ])

@@ -9,8 +9,7 @@ import {
   Tooltip,
   CloseButton,
 } from "@chakra-ui/react"
-import { useLocation } from "react-router-dom"
-import { ActivityInfo, LocationState } from "#/types"
+import { ActivityInfo } from "#/types"
 import { ChevronRightIcon } from "#/assets/icons"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import StatusInfo from "#/components/shared/StatusInfo"
@@ -21,15 +20,15 @@ import { ActivityCardLinkWrapper } from "./ActivityCardLinkWrapper"
 type ActivityCardType = CardProps & {
   activity: ActivityInfo
   onRemove: (txHash: string) => void
+  isActive?: boolean
 }
 
 export function ActivityCard({
   activity,
   onRemove,
+  isActive,
   ...props
 }: ActivityCardType) {
-  const state = useLocation().state as LocationState | null
-  const isActive = state ? activity.txHash === state.activity.txHash : false
   const isCompleted = activity.status === "completed"
 
   const onClose = useCallback(
@@ -43,7 +42,7 @@ export function ActivityCard({
   )
 
   return (
-    <ActivityCardLinkWrapper activity={activity} {...props}>
+    <ActivityCardLinkWrapper activityId={activity.txHash} {...props}>
       <ActivityCardWrapper isCompleted={isCompleted} isActive={isActive}>
         <CardHeader p={0} w="100%">
           <HStack justifyContent="space-between">

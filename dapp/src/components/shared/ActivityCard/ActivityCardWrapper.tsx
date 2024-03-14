@@ -3,8 +3,8 @@ import { CardProps, Card } from "@chakra-ui/react"
 
 type ActivityCardWrapperProps = CardProps & {
   isCompleted: boolean
-  isActive: boolean
   children: React.ReactNode
+  isActive?: boolean
 }
 
 const completedStyles = {
