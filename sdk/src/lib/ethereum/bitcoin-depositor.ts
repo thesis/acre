@@ -152,7 +152,10 @@ class EthereumBitcoinDepositor
     const { depositTreasuryFeeDivisor, depositTxMaxFee } =
       await this.#getTbtcDepositParameters()
 
-    const treasuryFee = amountToStake / depositTreasuryFeeDivisor
+    const treasuryFee =
+      depositTreasuryFeeDivisor > 0
+        ? amountToStake / depositTreasuryFeeDivisor
+        : 0n
 
     // Both deposit amount and treasury fee are in the 1e8 satoshi precision.
     // We need to convert them to the 1e18 TBTC precision.
