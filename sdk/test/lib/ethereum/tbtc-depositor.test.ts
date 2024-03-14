@@ -1,6 +1,6 @@
 import ethers, { Contract, ZeroAddress, getAddress } from "ethers"
 import {
-  EthereumTBTCDepositor,
+  EthereumBitcoinDepositor,
   EthereumAddress,
   Hex,
   EthereumSigner,
@@ -22,7 +22,7 @@ const testData = {
   optimisticMintingFeeDivisor: 500n, // 1/500 = 0.002 = 0.2%0
 }
 
-describe("TBTCDepositor", () => {
+describe("BitcoinDepositor", () => {
   const spyOnEthersDataSlice = jest.spyOn(ethers, "dataSlice")
   const spyOnEthersContract = jest.spyOn(ethers, "Contract")
 
@@ -37,14 +37,13 @@ describe("TBTCDepositor", () => {
     tbtcVault: jest
       .fn()
       .mockImplementation(() => `0x${vaultAddress.identifierHex}`),
-    initializeStakeRequest: jest.fn(),
+    initializeStake: jest.fn(),
     bridge: jest.fn().mockResolvedValue(`0x${bridgeAddress.identifierHex}`),
     depositorFeeDivisor: jest
       .fn()
       .mockResolvedValue(testData.depositorFeeDivisor),
   }
-
-  let depositor: EthereumTBTCDepositor
+  let depositor: EthereumBitcoinDepositor
   let depositorAddress: EthereumAddress
 
   beforeAll(async () => {
@@ -57,7 +56,7 @@ describe("TBTCDepositor", () => {
       await ethers.Wallet.createRandom().getAddress(),
     )
 
-    depositor = new EthereumTBTCDepositor(
+    depositor = new EthereumBitcoinDepositor(
       {
         signer: {} as EthereumSigner,
         address: depositorAddress.identifierHex,
@@ -122,7 +121,7 @@ describe("TBTCDepositor", () => {
       let result: Hex
 
       beforeAll(async () => {
-        mockedContractInstance.initializeStakeRequest.mockReturnValue({
+        mockedContractInstance.initializeStake.mockReturnValue({
           hash: mockedTx.toPrefixedString(),
         })
 
@@ -173,9 +172,7 @@ describe("TBTCDepositor", () => {
           vault: `0x${vaultAddress.identifierHex}`,
         }
 
-        expect(
-          mockedContractInstance.initializeStakeRequest,
-        ).toHaveBeenCalledWith(
+        expect(mockedContractInstance.initializeStake).toHaveBeenCalledWith(
           btcTxInfo,
           revealInfo,
           `0x${staker.identifierHex}`,

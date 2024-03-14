@@ -9,7 +9,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const tbtc = await deployments.get("TBTC")
   const stbtc = await deployments.get("stBTC")
 
-  await deployments.deploy("Dispatcher", {
+  const dispatcher = await deployments.deploy("Dispatcher", {
     from: deployer,
     args: [stbtc.address, tbtc.address],
     log: true,
@@ -17,7 +17,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   })
 
   if (hre.network.tags.etherscan) {
-    await helpers.etherscan.verify(stbtc)
+    await helpers.etherscan.verify(dispatcher)
   }
 
   // TODO: Add Tenderly verification

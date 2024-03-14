@@ -10,7 +10,7 @@ import {
 } from "#/hooks"
 import Alert from "#/components/shared/Alert"
 import { TextMd } from "#/components/shared/Typography"
-import { asyncWrapper } from "#/utils"
+import { logPromiseFailure } from "#/utils"
 import { PROCESS_STATUSES } from "#/types"
 import StakingStepsModalContent from "./StakingStepsModalContent"
 
@@ -38,12 +38,8 @@ export default function DepositBTCModal() {
 
   const onDepositBTCSuccess = useCallback(() => {
     setStatus(PROCESS_STATUSES.LOADING)
-    // Let's call the stake function with a delay,
-    // to make sure for the moment that it doesn't return an error about funds not found
-    // TODO: Remove the delay when SDK is updated
-    setTimeout(() => {
-      asyncWrapper(handleStake())
-    }, 10000)
+
+    logPromiseFailure(handleStake())
   }, [setStatus, handleStake])
 
   const { sendBitcoinTransaction } =
@@ -62,7 +58,7 @@ export default function DepositBTCModal() {
     // TODO: Display the correct message for the user
     if (response.verificationStatus !== "valid") return
 
-    asyncWrapper(sendBitcoinTransaction(tokenAmount?.amount, btcAddress))
+    logPromiseFailure(sendBitcoinTransaction(tokenAmount?.amount, btcAddress))
   }, [
     btcAddress,
     depositReceipt,
@@ -73,7 +69,7 @@ export default function DepositBTCModal() {
   ])
 
   const handledDepositBTCWrapper = useCallback(() => {
-    asyncWrapper(handledDepositBTC())
+    logPromiseFailure(handledDepositBTC())
   }, [handledDepositBTC])
 
   return (
