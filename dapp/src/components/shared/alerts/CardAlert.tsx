@@ -22,8 +22,8 @@ export function CardAlert({
       boxShadow="none"
       status="info"
       color="grey.700"
-      alertIconColor="grey.700"
-      withAlertIcon
+      colorIcon="grey.700"
+      withIcon
       {...props}
     >
       <HStack ml={2} mr={withLink ? 16 : 0}>

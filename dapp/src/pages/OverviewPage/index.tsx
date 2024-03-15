@@ -15,32 +15,26 @@ export default function OverviewPage() {
 
   return (
     <Flex direction="column" gap={isConnected ? 3.5 : 2} p={6}>
-      {!isConnected && (
-        <Flex justifyContent="space-between">
-          <HStack>
-            <Switch size="sm" />
-            <TextSm fontWeight="bold">Show values in {USD.symbol}</TextSm>
-          </HStack>
+      <Flex justifyContent="space-between">
+        <HStack>
+          {/* TODO: Handle click actions */}
+          <Switch size="sm" />
+          <TextSm fontWeight="bold">Show values in {USD.symbol}</TextSm>
+        </HStack>
+        {!isConnected && (
+          <ButtonLink colorScheme="gold" bg="gold.200" onClick={onOpen}>
+            Docs
+          </ButtonLink>
+        )}
+      </Flex>
+      {/* TODO: Add animation to show activity bar */}
+      {isConnected && (
+        <Flex marginBottom={3.5} justifyContent="space-between">
+          <ActivityBar />
           <ButtonLink colorScheme="gold" bg="gold.200" onClick={onOpen}>
             Docs
           </ButtonLink>
         </Flex>
-      )}
-      {/* TODO: Add animation to show activity bar */}
-      {isConnected && (
-        <>
-          <HStack>
-            {/* TODO: Handle click actions */}
-            <Switch size="sm" />
-            <TextSm fontWeight="bold">Show values in {USD.symbol}</TextSm>
-          </HStack>
-          <Flex marginBottom={3.5} justifyContent="space-between">
-            <ActivityBar />
-            <ButtonLink colorScheme="gold" bg="gold.200" onClick={onOpen}>
-              Docs
-            </ButtonLink>
-          </Flex>
-        </>
       )}
       <Grid
         templateAreas={`"position-details statistics"

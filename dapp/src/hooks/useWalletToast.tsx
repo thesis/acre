@@ -25,7 +25,6 @@ export function useWalletToast(
     id: `${type}-account-toast`,
     render: ({ onClose }) => (
       <Toast
-        status="error"
         width="xl"
         title={ERRORS.WALLET_NOT_CONNECTED(capitalize(type))}
         onClose={() => {

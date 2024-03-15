@@ -14,12 +14,12 @@ const ICONS = {
   error: AlertError,
 }
 
-export type AlertStatus = keyof typeof ICONS
+type AlertStatus = keyof typeof ICONS
 
 export type AlertProps = ChakraAlertProps & {
   status?: AlertStatus
-  alertIconColor?: string
-  withAlertIcon?: boolean
+  colorIcon?: string
+  withIcon?: boolean
   withCloseButton?: boolean
   icon?: typeof Icon
   onClose?: () => void
@@ -27,8 +27,8 @@ export type AlertProps = ChakraAlertProps & {
 
 export function Alert({
   status = "info",
-  alertIconColor,
-  withAlertIcon,
+  colorIcon,
+  withIcon,
   children,
   withCloseButton,
   onClose,
@@ -36,8 +36,8 @@ export function Alert({
 }: AlertProps) {
   return (
     <ChakraAlert status={status} {...props}>
-      {withAlertIcon && status && (
-        <AlertIcon boxSize={6} as={ICONS[status]} color={alertIconColor} />
+      {withIcon && status && (
+        <AlertIcon boxSize={6} as={ICONS[status]} color={colorIcon} />
       )}
       <HStack w="100%" justifyContent="space-between">
         {children}

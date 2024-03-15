@@ -1,4 +1,3 @@
-/* eslint-disable arrow-body-style */
 import React, { useCallback, useEffect, useState } from "react"
 import {
   useExecuteFunction,
@@ -24,7 +23,7 @@ export default function SignMessageModal() {
   const { closeToast, showToast } = useToast({
     id: "sign-message-error-toast",
     render: ({ onClose }) => (
-      <Toast status="error" title={ERRORS.SIGNING} onClose={onClose}>
+      <Toast title={ERRORS.SIGNING} onClose={onClose}>
         <TextSm>Please try again.</TextSm>
       </Toast>
     ),

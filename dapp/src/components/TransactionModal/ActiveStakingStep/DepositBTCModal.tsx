@@ -28,11 +28,7 @@ export default function DepositBTCModal() {
   const { closeToast, showToast } = useToast({
     id: "deposit-btc-error-toast",
     render: ({ onClose }) => (
-      <Toast
-        status="error"
-        title={ERRORS.DEPOSIT_TRANSACTION}
-        onClose={onClose}
-      >
+      <Toast title={ERRORS.DEPOSIT_TRANSACTION} onClose={onClose}>
         <TextSm>Please try again.</TextSm>
       </Toast>
     ),
