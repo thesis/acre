@@ -19,13 +19,21 @@ export function useToast({
 
   const showToast = useCallback(() => {
     if (!toast.isActive(id)) {
-      toast({
-        id,
-      })
+      setTimeout(
+        () =>
+          toast({
+            id,
+          }),
+        100,
+      )
     }
   }, [id, toast])
 
-  const closeToast = useCallback(() => toast.close(id), [id, toast])
+  const closeToast = useCallback(() => {
+    if (toast.isActive(id)) {
+      toast.close(id)
+    }
+  }, [id, toast])
 
   return { toast, showToast, closeToast }
 }

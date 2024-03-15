@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect } from "react"
+/* eslint-disable arrow-body-style */
+import React, { useCallback, useEffect, useState } from "react"
 import {
   useExecuteFunction,
   useModalFlowContext,
@@ -14,6 +15,11 @@ import StakingStepsModalContent from "./StakingStepsModalContent"
 export default function SignMessageModal() {
   const { goNext, setStatus } = useModalFlowContext()
   const { signMessage } = useStakeFlowContext()
+  const [buttonText, setButtonText] = useState("Sign now")
+
+  useEffect(() => {
+    setStatus(PROCESS_STATUSES.PENDING)
+  }, [setStatus])
 
   const { closeToast, showToast } = useToast({
     id: "sign-message-error-toast",
@@ -24,21 +30,29 @@ export default function SignMessageModal() {
     ),
   })
 
-  const handleSignMessage = useExecuteFunction(signMessage, goNext, showToast)
+  const onSignMessageSuccess = useCallback(() => {
+    closeToast()
+    goNext()
+  }, [closeToast, goNext])
+
+  const onSignMessageError = useCallback(() => {
+    showToast()
+    setButtonText("Try again")
+  }, [showToast])
+
+  const handleSignMessage = useExecuteFunction(
+    signMessage,
+    onSignMessageSuccess,
+    onSignMessageError,
+  )
 
   const handleSignMessageWrapper = useCallback(() => {
     logPromiseFailure(handleSignMessage())
   }, [handleSignMessage])
 
-  useEffect(() => {
-    setStatus(PROCESS_STATUSES.PENDING)
-  }, [setStatus])
-
-  useEffect(() => () => closeToast(), [closeToast])
-
   return (
     <StakingStepsModalContent
-      buttonText="Sign now"
+      buttonText={buttonText}
       activeStep={0}
       onClick={handleSignMessageWrapper}
     >

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react"
+import React, { useCallback, useState } from "react"
 import {
   useDepositBTCTransaction,
   useDepositTelemetry,
@@ -23,6 +23,7 @@ export default function DepositBTCModal() {
   const depositTelemetry = useDepositTelemetry()
 
   const [isLoading, setIsLoading] = useState(false)
+  const [buttonText, setButtonText] = useState("Deposit BTC")
 
   const { closeToast, showToast } = useToast({
     id: "deposit-btc-error-toast",
@@ -36,8 +37,6 @@ export default function DepositBTCModal() {
       </Toast>
     ),
   })
-
-  useEffect(() => () => closeToast(), [closeToast])
 
   const onStakeBTCSuccess = useCallback(
     () => setStatus(PROCESS_STATUSES.SUCCEEDED),
@@ -56,15 +55,18 @@ export default function DepositBTCModal() {
   )
 
   const onDepositBTCSuccess = useCallback(() => {
+    closeToast()
     setStatus(PROCESS_STATUSES.LOADING)
 
     logPromiseFailure(handleStake())
-  }, [setStatus, handleStake])
+  }, [closeToast, setStatus, handleStake])
 
-  const onDepositBTCError = useCallback(
-    () => setTimeout(showToast, 100),
-    [showToast],
-  )
+  const showError = useCallback(() => {
+    showToast()
+    setButtonText("Try again")
+  }, [showToast])
+
+  const onDepositBTCError = useCallback(() => showError(), [showError])
 
   const { sendBitcoinTransaction } = useDepositBTCTransaction(
     onDepositBTCSuccess,
@@ -86,7 +88,7 @@ export default function DepositBTCModal() {
     if (response.verificationStatus === "valid") {
       logPromiseFailure(sendBitcoinTransaction(tokenAmount?.amount, btcAddress))
     } else {
-      setTimeout(showToast, 100)
+      showError()
     }
   }, [
     btcAddress,
@@ -94,7 +96,7 @@ export default function DepositBTCModal() {
     depositTelemetry,
     ethAccount,
     sendBitcoinTransaction,
-    showToast,
+    showError,
     tokenAmount?.amount,
   ])
 
@@ -104,7 +106,7 @@ export default function DepositBTCModal() {
 
   return (
     <StakingStepsModalContent
-      buttonText="Deposit BTC"
+      buttonText={buttonText}
       activeStep={1}
       isLoading={isLoading}
       onClick={handledDepositBTCWrapper}
