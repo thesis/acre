@@ -51,6 +51,7 @@ describe("stBTC", () => {
   let depositor1: HardhatEthersSigner
   let depositor2: HardhatEthersSigner
   let thirdParty: HardhatEthersSigner
+  let treasury: HardhatEthersSigner
 
   before(async () => {
     ;({
@@ -61,6 +62,7 @@ describe("stBTC", () => {
       dispatcher,
       governance,
       thirdParty,
+      treasury,
     } = await loadFixture(fixture))
 
     await stbtc
@@ -592,17 +594,21 @@ describe("stBTC", () => {
       const sharesToMint = to1e18(1)
       let tx: ContractTransactionResponse
       let amountToDeposit: bigint
+      let amountToSpend: bigint
 
       before(async () => {
         amountToDeposit = sharesToMint
+        amountToSpend = amountToDeposit + feeOnRaw(amountToDeposit)
 
         await tbtc
           .connect(depositor1)
-          .approve(await stbtc.getAddress(), amountToDeposit)
+          .approve(await stbtc.getAddress(), amountToSpend)
 
         tx = await stbtc
           .connect(depositor1)
           .mint(sharesToMint, receiver.address)
+        const balanceOfTreasury = await tbtc.balanceOf(treasury.address)
+        console.log("balanceOfTreasury", balanceOfTreasury.toString())
       })
 
       it("should emit Deposit event", async () => {
@@ -611,8 +617,8 @@ describe("stBTC", () => {
           depositor1.address,
           // Receiver.
           receiver.address,
-          // Depositd tokens.
-          amountToDeposit,
+          // Depositd tokens including deposit fees.
+          amountToSpend,
           // Received shares.
           sharesToMint,
         )
@@ -630,7 +636,15 @@ describe("stBTC", () => {
         await expect(tx).to.changeTokenBalances(
           tbtc,
           [depositor1.address, stbtc],
-          [-amountToDeposit, amountToDeposit],
+          [-amountToSpend, amountToDeposit],
+        )
+      })
+
+      it("should transfer tBTC tokens to Treasury", async () => {
+        await expect(tx).to.changeTokenBalances(
+          tbtc,
+          [treasury.address],
+          [feeOnRaw(amountToDeposit)],
         )
       })
     })
@@ -829,7 +843,7 @@ describe("stBTC", () => {
         await tbtc.connect(depositor1).approve(await stbtc.getAddress(), toMint)
         await stbtc.connect(depositor1).deposit(toMint, depositor1.address)
 
-        expectedValue = maximumTotalAssets - toMint
+        expectedValue = maximumTotalAssets - toMint + feeOnTotal(toMint)
       })
 
       it("should return correct value", async () => {
@@ -1031,7 +1045,7 @@ describe("stBTC", () => {
     context("when the maximum total amount has not yet been reached", () => {
       beforeAfterSnapshotWrapper()
 
-      let expectedValue: bigint
+      let expectedSharesToReceive: bigint
 
       before(async () => {
         const toMint = to1e18(4)
@@ -1049,17 +1063,20 @@ describe("stBTC", () => {
         await tbtc.mint(await stbtc.getAddress(), toMint)
 
         // The current state is:
-        // Total assets: 4 + 2 = 6
-        // Total supply: 2
+        // Fee on deposit: 0.000999500249875063
+        // Total assets: 1.999000499750124937 + 4 = 5.999000499750124937
+        // Total supply of stBTC shares: 1.999000499750124937
         // Maximum total assets: 25
-        // Current max deposit: 25 - 6 = 19
-        // Max stBTC shares: (mulDiv added 1 to totalSupply and totalAssets to help with floor rounding)
-        //  19 * 6 / 2 = 22
-        expectedValue = 6333333333333333335n
+        // Current max deposit: 25 - 5.999000499750124937 = 19.000999500249875063
+        // Expected shares: 19.000999500249875063 * 1.999000499750124937 / 5.999000499750124937 = 6.331555981422817414
+        expectedSharesToReceive = 6331555981422817414n
       })
 
       it("should return correct value", async () => {
-        expect(await stbtc.maxMint(depositor1.address)).to.be.eq(expectedValue)
+        expectCloseTo(
+          await stbtc.maxMint(depositor1.address),
+          expectedSharesToReceive,
+        )
       })
     })
 
@@ -1177,9 +1194,9 @@ describe("stBTC", () => {
     return result
   }
 
-  // 2n is added or subtracted to the expected value to match the Solidity
-  // math which rounds up or down depending on the remainder. It is a very small
-  // number.
+  // 2n is added or subtracted to/from the expected value to match the Solidity
+  // math which rounds up or down depending on the modulo remainder. It is a very
+  // small number.
   function expectCloseTo(actual: bigint, expected: bigint) {
     return expect(actual, "invalid asset balance").to.be.closeTo(expected, 2n)
   }
