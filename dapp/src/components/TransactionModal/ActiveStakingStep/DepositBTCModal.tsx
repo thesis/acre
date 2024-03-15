@@ -39,9 +39,10 @@ export default function DepositBTCModal() {
 
   useEffect(() => () => closeToast(), [closeToast])
 
-  const onStakeBTCSuccess = useCallback(() => {
-    setStatus(PROCESS_STATUSES.SUCCEEDED)
-  }, [setStatus])
+  const onStakeBTCSuccess = useCallback(
+    () => setStatus(PROCESS_STATUSES.SUCCEEDED),
+    [setStatus],
+  )
 
   // TODO: After a failed attempt, we should display the message
   const onStakeBTCError = useCallback(() => {
@@ -60,7 +61,10 @@ export default function DepositBTCModal() {
     logPromiseFailure(handleStake())
   }, [setStatus, handleStake])
 
-  const onDepositBTCError = useCallback(showToast, [showToast])
+  const onDepositBTCError = useCallback(
+    () => setTimeout(showToast, 100),
+    [showToast],
+  )
 
   const { sendBitcoinTransaction } = useDepositBTCTransaction(
     onDepositBTCSuccess,
@@ -78,16 +82,19 @@ export default function DepositBTCModal() {
       ethAccount.address,
     )
     setIsLoading(false)
-    // TODO: Display the correct message for the user
-    if (response.verificationStatus !== "valid") return
 
-    logPromiseFailure(sendBitcoinTransaction(tokenAmount?.amount, btcAddress))
+    if (response.verificationStatus === "valid") {
+      logPromiseFailure(sendBitcoinTransaction(tokenAmount?.amount, btcAddress))
+    } else {
+      setTimeout(showToast, 100)
+    }
   }, [
     btcAddress,
     depositReceipt,
     depositTelemetry,
     ethAccount,
     sendBitcoinTransaction,
+    showToast,
     tokenAmount?.amount,
   ])
 
