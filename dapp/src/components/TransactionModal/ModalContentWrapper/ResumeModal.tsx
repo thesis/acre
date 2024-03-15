@@ -5,12 +5,12 @@ import {
   ModalFooter,
   Button,
   HStack,
-  useToast,
 } from "@chakra-ui/react"
 
 import Spinner from "#/components/shared/Spinner"
 import { PauseIcon } from "#/assets/icons"
 import { TextMd } from "#/components/shared/Typography"
+import { useToast } from "#/hooks"
 
 export default function ResumeModal({
   onResume,
@@ -19,12 +19,12 @@ export default function ResumeModal({
   onResume: () => void
   onClose: () => void
 }) {
-  const toast = useToast()
+  const { closeAll } = useToast()
 
   useEffect(() => {
     // All notifications should be closed when the user is in the resume modal.
-    toast.closeAll()
-  }, [toast])
+    closeAll()
+  }, [closeAll])
 
   return (
     <>

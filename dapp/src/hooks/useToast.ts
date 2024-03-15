@@ -1,39 +1,40 @@
-import {
-  ToastId,
-  UseToastOptions,
-  useToast as useChakraToast,
-} from "@chakra-ui/react"
-import { useCallback } from "react"
+import { UseToastOptions, useToast as useChakraToast } from "@chakra-ui/react"
+import { useCallback, useMemo } from "react"
 
-export function useToast({
-  id,
-  ...props
-}: Omit<UseToastOptions, "id"> & { id: ToastId }) {
-  const toast = useChakraToast({
-    position: "top",
-    duration: null,
-    isClosable: true,
-    containerStyle: { my: 1 },
-    ...props,
-  })
+export function useToast() {
+  const toast = useChakraToast()
 
-  const showToast = useCallback(() => {
-    if (!toast.isActive(id)) {
-      setTimeout(
-        () =>
-          toast({
-            id,
-          }),
-        100,
-      )
-    }
-  }, [id, toast])
+  const returnFunction = useCallback(
+    (options: UseToastOptions) =>
+      toast({
+        position: "top",
+        duration: null,
+        isClosable: true,
+        containerStyle: { my: 1 },
+        ...options,
+      }),
+    [toast],
+  )
 
-  const closeToast = useCallback(() => {
-    if (toast.isActive(id)) {
-      toast.close(id)
-    }
-  }, [id, toast])
+  const open = useCallback(
+    ({ id, ...options }: UseToastOptions) => {
+      if (!id) {
+        returnFunction(options)
+      } else if (!toast.isActive(id)) {
+        returnFunction({
+          id,
+          ...options,
+        })
+      }
+    },
+    [returnFunction, toast],
+  )
 
-  return { toast, showToast, closeToast }
+  return useMemo(
+    () => ({
+      ...Object.assign(returnFunction, toast),
+      open,
+    }),
+    [returnFunction, toast, open],
+  )
 }

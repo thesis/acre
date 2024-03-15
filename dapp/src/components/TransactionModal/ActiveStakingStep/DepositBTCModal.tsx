@@ -9,11 +9,13 @@ import {
   useTransactionContext,
   useWalletContext,
 } from "#/hooks"
-import { TextMd, TextSm } from "#/components/shared/Typography"
-import { ERRORS, logPromiseFailure } from "#/utils"
-import { PROCESS_STATUSES } from "#/types"
-import { CardAlert, Toast } from "#/components/shared/alerts"
+import { TextMd } from "#/components/shared/Typography"
+import { logPromiseFailure } from "#/utils"
+import { PROCESS_STATUSES, TOAST_TYPES } from "#/types"
+import { CardAlert, TOASTS } from "#/components/shared/alerts"
 import StakingStepsModalContent from "./StakingStepsModalContent"
+
+const TOAST_ID = TOAST_TYPES.DEPOSIT_TRANSACTION_ERROR
 
 export default function DepositBTCModal() {
   const { ethAccount } = useWalletContext()
@@ -21,18 +23,10 @@ export default function DepositBTCModal() {
   const { setStatus } = useModalFlowContext()
   const { btcAddress, depositReceipt, stake } = useStakeFlowContext()
   const depositTelemetry = useDepositTelemetry()
+  const { close: closeToast, open: openToast } = useToast()
 
   const [isLoading, setIsLoading] = useState(false)
   const [buttonText, setButtonText] = useState("Deposit BTC")
-
-  const { closeToast, showToast } = useToast({
-    id: "deposit-btc-error-toast",
-    render: ({ onClose }) => (
-      <Toast title={ERRORS.DEPOSIT_TRANSACTION} onClose={onClose}>
-        <TextSm>Please try again.</TextSm>
-      </Toast>
-    ),
-  })
 
   const onStakeBTCSuccess = useCallback(
     () => setStatus(PROCESS_STATUSES.SUCCEEDED),
@@ -51,16 +45,16 @@ export default function DepositBTCModal() {
   )
 
   const onDepositBTCSuccess = useCallback(() => {
-    closeToast()
+    closeToast(TOAST_ID)
     setStatus(PROCESS_STATUSES.LOADING)
 
     logPromiseFailure(handleStake())
   }, [closeToast, setStatus, handleStake])
 
   const showError = useCallback(() => {
-    showToast()
+    openToast(TOASTS[TOAST_ID]())
     setButtonText("Try again")
-  }, [showToast])
+  }, [openToast])
 
   const onDepositBTCError = useCallback(() => showError(), [showError])
 
