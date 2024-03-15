@@ -2,13 +2,16 @@
 pragma solidity ^0.8.21;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+
+import "@thesis/solidity-contracts/contracts/token/IReceiveApproval.sol";
+
 import "./stBTC.sol";
 import "./bridge/ITBTCToken.sol";
 
 /// @title Bitcoin Redeemer
 /// @notice This contract facilitates redemption of stBTC tokens to Bitcoin through
 ///         tBTC redemption process.
-contract BitcoinRedeemer is Initializable {
+contract BitcoinRedeemer is Initializable, IReceiveApproval {
     /// Interface for tBTC token contract.
     ITBTCToken public tbtcToken;
 
@@ -30,6 +33,15 @@ contract BitcoinRedeemer is Initializable {
 
     /// Reverts if the stBTC address is zero.
     error StbtcZeroAddress();
+
+    /// Attempted to call receiveApproval for not supported token.
+    error UnsupportedToken(address token);
+
+    /// Attempted to call receiveApproval by supported token.
+    error CallerNotAllowed(address caller);
+
+    /// Attempted to call receiveApproval with empty data.
+    error EmptyExtraData();
 
     /// Reverts when approveAndCall to tBTC contract fails.
     error ApproveAndCallFailed();
@@ -54,6 +66,26 @@ contract BitcoinRedeemer is Initializable {
         stbtc = stBTC(_stbtc);
     }
 
+    /// @notice Redeems shares for tBTC and requests bridging to Bitcoin.
+    /// @param from Shares token holder executing redemption.
+    /// @param amount Amount of shares to redeem.
+    /// @param token stBTC token address.
+    /// @param extraData Redemption data in a format expected from
+    ///        `redemptionData` parameter of Bridge's `receiveBalanceApproval`
+    ///        function.
+    function receiveApproval(
+        address from,
+        uint256 amount,
+        address token,
+        bytes calldata extraData
+    ) external {
+        if (token != address(stbtc)) revert UnsupportedToken(token);
+        if (msg.sender != token) revert CallerNotAllowed(msg.sender);
+        if (extraData.length == 0) revert EmptyExtraData();
+
+        redeemSharesAndUnmint(from, amount, extraData);
+    }
+
     /// @notice Initiates the redemption process by exchanging stBTC tokens for
     ///         tBTC tokens and requesting bridging to Bitcoin.
     /// @dev Redeems stBTC shares to receive tBTC and requests redemption of tBTC
@@ -75,7 +107,7 @@ contract BitcoinRedeemer is Initializable {
         address owner,
         uint256 shares,
         bytes calldata tbtcRedemptionData
-    ) public {
+    ) internal {
         uint256 tbtcAmount = stbtc.redeem(shares, address(this), owner);
 
         // slither-disable-next-line reentrancy-events
