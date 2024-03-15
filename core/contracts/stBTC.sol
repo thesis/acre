@@ -6,6 +6,9 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20PermitUp
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 
+import "@thesis/solidity-contracts/contracts/token/IApproveAndCall.sol";
+import "@thesis/solidity-contracts/contracts/token/IReceiveApproval.sol";
+
 import "./Dispatcher.sol";
 import "./BitcoinRedeemer.sol";
 
@@ -192,6 +195,32 @@ contract stBTC is
         );
 
         bitcoinRedeemer = BitcoinRedeemer(newBitcoinRedeemer);
+    }
+
+    /// @notice Calls `receiveApproval` function on spender previously approving
+    ///         the spender to withdraw from the caller multiple times, up to
+    ///         the `amount` amount. If this function is called again, it
+    ///         overwrites the current allowance with `amount`. Reverts if the
+    ///         approval reverted or if `receiveApproval` call on the spender
+    ///         reverted.
+    /// @return True if both approval and `receiveApproval` calls succeeded.
+    /// @dev If the `amount` is set to `type(uint256).max` then
+    ///      `transferFrom` and `burnFrom` will not reduce an allowance.
+    function approveAndCall(
+        address spender,
+        uint256 value,
+        bytes memory extraData
+    ) external override returns (bool) {
+        if (approve(spender, value)) {
+            IReceiveApproval(spender).receiveApproval(
+                _msgSender(),
+                value,
+                address(this),
+                extraData
+            );
+            return true;
+        }
+        return false;
     }
 
     /// @notice Mints shares to receiver by depositing exactly amount of
