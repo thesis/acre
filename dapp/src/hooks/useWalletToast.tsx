@@ -11,7 +11,7 @@ export function useWalletToast(
   delay = ONE_SEC_IN_MILLISECONDS,
 ) {
   //   // The toast should be visible only once.
-  const [isToastClosed, setIsToastClosed] = useState(false)
+  const [isToastAlreadyClosed, setIsToastAlreadyClosed] = useState(false)
   const {
     [type]: { account, requestAccount },
   } = useWallet()
@@ -29,7 +29,7 @@ export function useWalletToast(
         title={ERRORS.WALLET_NOT_CONNECTED(capitalize(type))}
         onClose={() => {
           onClose()
-          setIsToastClosed(true)
+          setIsToastAlreadyClosed(true)
         }}
       >
         <Flex flexGrow={1} justifyContent="end">
@@ -47,18 +47,18 @@ export function useWalletToast(
   })
 
   useEffect(() => {
-    if (isToastClosed) return
+    if (isToastAlreadyClosed) return
 
     const timeout = setTimeout(showToast, delay)
 
     // eslint-disable-next-line consistent-return
     return () => clearTimeout(timeout)
-  }, [delay, isToastClosed, showToast])
+  }, [delay, isToastAlreadyClosed, showToast])
 
   useEffect(() => {
-    if (!account || isToastClosed) return
+    if (!account || isToastAlreadyClosed) return
 
     closeToast()
-    setIsToastClosed(true)
-  }, [account, closeToast, isToastClosed, type])
+    setIsToastAlreadyClosed(true)
+  }, [account, closeToast, isToastAlreadyClosed, type])
 }
