@@ -41,6 +41,9 @@ export default function GlobalStyles() {
           font-weight: 900;
           font-style: normal;
         }
+        .chakra-popover__content:focus-visible {
+          box-shadow: none !important;
+        }
       `}
     />
   )

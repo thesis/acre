@@ -2,6 +2,7 @@ import React from "react"
 import { List } from "@chakra-ui/react"
 import TransactionDetailsAmountItem from "#/components/shared/TransactionDetails/AmountItem"
 import { useTokenAmountFormValue } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
+import { FeesPopover } from "#/components/TransactionModal/FeesPopover"
 import { useTransactionDetails } from "#/hooks"
 import { CurrencyType } from "#/types"
 
@@ -34,7 +35,9 @@ function StakeDetails({
         }}
       />
       <TransactionDetailsAmountItem
-        label="Protocol fee (0.01%)"
+        label="Fees"
+        sublabel="How are fees calculated?"
+        popover={<FeesPopover />}
         from={{
           currency,
           amount: details?.protocolFee,

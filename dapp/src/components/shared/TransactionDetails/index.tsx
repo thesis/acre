@@ -1,15 +1,19 @@
 import React from "react"
-import { ListItem, ListItemProps } from "@chakra-ui/react"
-import { TextMd } from "../Typography"
+import { ListItem, ListItemProps, VStack } from "@chakra-ui/react"
+import { TextMd, TextSm } from "../Typography"
 
 export type TransactionDetailsItemProps = {
   label: string
+  sublabel?: string
   value?: string
+  popover?: React.ReactElement
   children?: React.ReactNode
 } & ListItemProps
 
 function TransactionDetailsItem({
   label,
+  sublabel,
+  popover,
   value,
   children,
   ...listItemProps
@@ -21,9 +25,13 @@ function TransactionDetailsItem({
       alignItems="center"
       {...listItemProps}
     >
-      <TextMd fontWeight="semibold" color="grey.700">
-        {label}
-      </TextMd>
+      <VStack alignItems="start" gap={0}>
+        <TextMd fontWeight="semibold" color="grey.700">
+          {label}
+          {popover}
+        </TextMd>
+        {sublabel && <TextSm color="grey.400">{sublabel}</TextSm>}
+      </VStack>
       {value ? <TextMd color="grey.700">{value}</TextMd> : children}
     </ListItem>
   )
