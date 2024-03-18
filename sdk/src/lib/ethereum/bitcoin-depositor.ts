@@ -33,6 +33,10 @@ type TbtcDepositParameters = {
   depositTxMaxFee: bigint
 }
 
+type TbtcBridgeMintingParameters = TbtcDepositParameters & {
+  optimisticMintingFeeDivisor: bigint
+}
+
 /**
  * Ethereum implementation of the BitcoinDepositor.
  */
@@ -48,9 +52,7 @@ class EthereumBitcoinDepositor
    */
   readonly #satoshiMultiplier = 10n ** 10n
 
-  #tbtcBridgeDepositsParameters: TbtcDepositParameters | undefined
-
-  #tbtcOptimisticMintingFeeDivisor: bigint | undefined
+  #tbtcBridgeMintingParameters: TbtcBridgeMintingParameters | undefined
 
   constructor(config: EthersContractConfig, network: EthereumNetwork) {
     let artifact: EthersContractDeployment
@@ -153,7 +155,7 @@ class EthereumBitcoinDepositor
       depositTreasuryFeeDivisor,
       depositTxMaxFee,
       optimisticMintingFeeDivisor,
-    } = await this.#getTbtcMintingFeesParameters()
+    } = await this.#getTbtcBridgeMintingParameters()
 
     const treasuryFee =
       depositTreasuryFeeDivisor > 0
@@ -190,55 +192,30 @@ class EthereumBitcoinDepositor
     }
   }
 
-  async #getTbtcMintingFeesParameters(): Promise<
-    TbtcDepositParameters & { optimisticMintingFeeDivisor: bigint }
-  > {
-    const depositParameters = await this.#getTbtcDepositParameters()
-    const optimisticMintingFeeDivisor =
-      await this.#getTbtcOptimisticMintingFeeDivisor()
-
-    return {
-      ...depositParameters,
-      optimisticMintingFeeDivisor,
-    }
-  }
-
-  async #getTbtcDepositParameters(): Promise<TbtcDepositParameters> {
-    if (this.#tbtcBridgeDepositsParameters) {
-      return this.#tbtcBridgeDepositsParameters
+  async #getTbtcBridgeMintingParameters(): Promise<TbtcBridgeMintingParameters> {
+    if (this.#tbtcBridgeMintingParameters) {
+      return this.#tbtcBridgeMintingParameters
     }
 
     const bridgeAddress = await this.instance.bridge()
-
     const bridge = new Contract(bridgeAddress, [
       "function depositsParameters()",
     ])
-
     const depositsParameters =
       (await bridge.depositsParameters()) as TbtcDepositParameters
 
-    this.#tbtcBridgeDepositsParameters = depositsParameters
-
-    return depositsParameters
-  }
-
-  async #getTbtcOptimisticMintingFeeDivisor(): Promise<bigint> {
-    if (this.#tbtcOptimisticMintingFeeDivisor) {
-      return this.#tbtcOptimisticMintingFeeDivisor
-    }
-
     const vaultAddress = await this.getTbtcVaultChainIdentifier()
-
     const vault = new Contract(`0x${vaultAddress.identifierHex}`, [
       "function optimisticMintingFeeDivisor()",
     ])
-
     const optimisticMintingFeeDivisor =
       (await vault.optimisticMintingFeeDivisor()) as bigint
 
-    this.#tbtcOptimisticMintingFeeDivisor = optimisticMintingFeeDivisor
-
-    return optimisticMintingFeeDivisor
+    this.#tbtcBridgeMintingParameters = {
+      ...depositsParameters,
+      optimisticMintingFeeDivisor,
+    }
+    return this.#tbtcBridgeMintingParameters
   }
 }
 
