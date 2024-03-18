@@ -18,7 +18,7 @@ const { getNamedSigners, getUnnamedSigners } = helpers.signers
 
 async function fixture() {
   const { tbtc, stbtc, dispatcher } = await deployment()
-  const { governance, treasury, emergencyStopAccount } = await getNamedSigners()
+  const { governance, treasury, pauseAdmin } = await getNamedSigners()
 
   const [depositor1, depositor2, thirdParty] = await getUnnamedSigners()
 
@@ -35,7 +35,7 @@ async function fixture() {
     governance,
     thirdParty,
     treasury,
-    emergencyStopAccount,
+    pauseAdmin,
   }
 }
 
@@ -48,7 +48,7 @@ describe("stBTC", () => {
   let depositor1: HardhatEthersSigner
   let depositor2: HardhatEthersSigner
   let thirdParty: HardhatEthersSigner
-  let emergencyStopAccount: HardhatEthersSigner
+  let pauseAdmin: HardhatEthersSigner
 
   before(async () => {
     ;({
@@ -59,7 +59,7 @@ describe("stBTC", () => {
       dispatcher,
       governance,
       thirdParty,
-      emergencyStopAccount,
+      pauseAdmin,
     } = await loadFixture(fixture))
   })
 
@@ -1077,7 +1077,7 @@ describe("stBTC", () => {
         beforeAfterSnapshotWrapper()
 
         before(async () => {
-          tx = await stbtc.connect(emergencyStopAccount).pause()
+          tx = await stbtc.connect(pauseAdmin).pause()
         })
 
         it("should change the pause state", async () => {
@@ -1085,9 +1085,7 @@ describe("stBTC", () => {
         })
 
         it("should emit `Paused` event", async () => {
-          await expect(tx)
-            .to.emit(stbtc, "Paused")
-            .withArgs(emergencyStopAccount.address)
+          await expect(tx).to.emit(stbtc, "Paused").withArgs(pauseAdmin.address)
         })
       })
 
@@ -1096,7 +1094,7 @@ describe("stBTC", () => {
 
         it("should revert", async () => {
           await expect(stbtc.connect(thirdParty).pause())
-            .to.be.revertedWithCustomError(stbtc, "NotEmergencyStopAccount")
+            .to.be.revertedWithCustomError(stbtc, "NotPauseAdmin")
             .withArgs(thirdParty.address)
         })
       })
@@ -1105,12 +1103,12 @@ describe("stBTC", () => {
         beforeAfterSnapshotWrapper()
 
         before(async () => {
-          await stbtc.connect(emergencyStopAccount).pause()
+          await stbtc.connect(pauseAdmin).pause()
         })
 
         it("should revert", async () => {
           await expect(
-            stbtc.connect(emergencyStopAccount).pause(),
+            stbtc.connect(pauseAdmin).pause(),
           ).to.be.revertedWithCustomError(stbtc, "EnforcedPause")
         })
       })
@@ -1123,9 +1121,9 @@ describe("stBTC", () => {
         beforeAfterSnapshotWrapper()
 
         before(async () => {
-          await stbtc.connect(emergencyStopAccount).pause()
+          await stbtc.connect(pauseAdmin).pause()
 
-          tx = await stbtc.connect(emergencyStopAccount).unpause()
+          tx = await stbtc.connect(pauseAdmin).unpause()
         })
 
         it("should change the pause state", async () => {
@@ -1135,7 +1133,7 @@ describe("stBTC", () => {
         it("should emit `Unpaused` event", async () => {
           await expect(tx)
             .to.emit(stbtc, "Unpaused")
-            .withArgs(emergencyStopAccount.address)
+            .withArgs(pauseAdmin.address)
         })
       })
 
@@ -1144,7 +1142,7 @@ describe("stBTC", () => {
 
         it("should revert", async () => {
           await expect(stbtc.connect(thirdParty).unpause())
-            .to.be.revertedWithCustomError(stbtc, "NotEmergencyStopAccount")
+            .to.be.revertedWithCustomError(stbtc, "NotPauseAdmin")
             .withArgs(thirdParty.address)
         })
       })
@@ -1154,7 +1152,7 @@ describe("stBTC", () => {
 
         it("should revert", async () => {
           await expect(
-            stbtc.connect(emergencyStopAccount).unpause(),
+            stbtc.connect(pauseAdmin).unpause(),
           ).to.be.revertedWithCustomError(stbtc, "ExpectedPause")
         })
       })
@@ -1165,7 +1163,7 @@ describe("stBTC", () => {
       beforeAfterSnapshotWrapper()
 
       before(async () => {
-        await stbtc.connect(emergencyStopAccount).pause()
+        await stbtc.connect(pauseAdmin).pause()
       })
 
       it("should pause deposits", async () => {

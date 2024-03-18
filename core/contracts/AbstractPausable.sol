@@ -13,22 +13,22 @@ import {ZeroAddress} from "./utils/Errors.sol";
 /// @dev The child contract must override the `_checkOwner` internal function.
 abstract contract AbstractPausable is PausableUpgradeable {
     /// @notice An authorized account that can trigger emergency stop mechanism.
-    address private _emergencyStopAccount;
+    address private _pauseAdmin;
 
     /// @notice Emitted when a emergency account is updated.
     /// @param newAccount New emergency stop wallet address.
     /// @param oldAccount Old emergency stop wallet address.
-    event EmergencyStopAccountUpdated(address newAccount, address oldAccount);
+    event PauseAdminUpdated(address newAccount, address oldAccount);
 
     /// @notice Reverts when an unauthorized account triggers the emergency stop
     ///         mechanism.
-    error NotEmergencyStopAccount(address account);
+    error NotPauseAdmin(address account);
 
-    /// @notice Reverts if called by any account other than the emergency stop
+    /// @notice Reverts if called by any account other than the pause admin
     ///         account.
-    modifier onlyEmergencyStopAccount() {
-        if (_msgSender() != _emergencyStopAccount) {
-            revert NotEmergencyStopAccount(_msgSender());
+    modifier onlyPauseAdmin() {
+        if (_msgSender() != _pauseAdmin) {
+            revert NotPauseAdmin(_msgSender());
         }
         _;
     }
@@ -37,7 +37,7 @@ abstract contract AbstractPausable is PausableUpgradeable {
     /// @dev Requirements:
     ///      - The caller must be an authorized account to trigger pause.
     ///      - The contract must not be already paused.
-    function pause() external onlyEmergencyStopAccount {
+    function pause() external onlyPauseAdmin {
         _pause();
     }
 
@@ -45,49 +45,44 @@ abstract contract AbstractPausable is PausableUpgradeable {
     /// @dev Requirements:
     ///      - The caller must be an authorized account to trigger unpause.
     ///      - The contract must be paused.
-    function unpause() external onlyEmergencyStopAccount {
+    function unpause() external onlyPauseAdmin {
         _unpause();
     }
 
     /// @notice Updates an authorized account that can trigger emergency stop
     ///         mechanism.
     /// @dev Throws if called by any account other than the owner.
-    /// @param newEmergencyStopAccount New account that can trigger emergency
+    /// @param newpauseAdmin New account that can trigger emergency
     ///        stop mechanism.
-    function updateEmergencyStopAccount(
-        address newEmergencyStopAccount
-    ) external {
+    function updatePauseAdmin(address newpauseAdmin) external {
         _checkOwner();
         // TODO: Introduce a parameters update process.
-        if (newEmergencyStopAccount == address(0)) {
+        if (newpauseAdmin == address(0)) {
             revert ZeroAddress();
         }
 
-        emit EmergencyStopAccountUpdated(
-            newEmergencyStopAccount,
-            _emergencyStopAccount
-        );
+        emit PauseAdminUpdated(newpauseAdmin, _pauseAdmin);
 
-        _emergencyStopAccount = newEmergencyStopAccount;
+        _pauseAdmin = newpauseAdmin;
     }
 
     /// @notice Initializes the contract. MUST BE CALLED from the child
     ///         contract initializer.
-    /// @param initialEmergencyStopAccount Initial emergency stop account that
+    /// @param initialpauseAdmin Initial emergency stop account that
     ///        can trigger the emergency stop mechanism.
     // solhint-disable-next-line func-name-mixedcase
     function __AbstractPausable_init(
-        address initialEmergencyStopAccount
+        address initialpauseAdmin
     ) internal onlyInitializing {
         __Pausable_init();
-        __AbstractPausable_init_unchained(initialEmergencyStopAccount);
+        __AbstractPausable_init_unchained(initialpauseAdmin);
     }
 
     // solhint-disable-next-line func-name-mixedcase
     function __AbstractPausable_init_unchained(
-        address initialEmergencyStopAccount
+        address initialpauseAdmin
     ) internal onlyInitializing {
-        _emergencyStopAccount = initialEmergencyStopAccount;
+        _pauseAdmin = initialpauseAdmin;
     }
 
     /// @notice Checks if the caller is an owner of contract.

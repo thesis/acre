@@ -3,22 +3,20 @@ import type { DeployFunction } from "hardhat-deploy/types"
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { getNamedAccounts, deployments } = hre
-  const { governance, emergencyStopAccount } = await getNamedAccounts()
+  const { governance, pauseAdmin } = await getNamedAccounts()
   const { log } = deployments
 
-  log(
-    `updating emergency stop account of stBTC contract to ${emergencyStopAccount}`,
-  )
+  log(`updating pause admin account of stBTC contract to ${pauseAdmin}`)
 
   await deployments.execute(
     "stBTC",
     { from: governance, log: true, waitConfirmations: 1 },
-    "updateEmergencyStopAccount",
-    emergencyStopAccount,
+    "updatePauseAdmin",
+    pauseAdmin,
   )
 }
 
 export default func
 
-func.tags = ["UpdateEmergencyStopAccountStBTC"]
+func.tags = ["UpdatePauseAdminStBTC"]
 func.dependencies = ["stBTC"]
