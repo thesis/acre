@@ -27,16 +27,10 @@ abstract contract AbstractPausable is PausableUpgradeable {
     /// @notice Reverts if called by any account other than the pause admin
     ///         or the contract owner.
     modifier onlyPauseAdminOrOwner() {
-        if (pauseAdmin != _msgSender() && !isOwner()) {
-            revert PausableUnauthorizedAccount(_msgSender());
-        }
-        _;
-    }
+        address msgSender = _msgSender();
 
-    /// @notice Reverts if called by any account other than the owner account.
-    modifier _onlyOwner() {
-        if (!isOwner()) {
-            revert PausableUnauthorizedAccount(_msgSender());
+        if (pauseAdmin != msgSender && owner() != msgSender) {
+            revert PausableUnauthorizedAccount(msgSender);
         }
         _;
     }
@@ -62,7 +56,12 @@ abstract contract AbstractPausable is PausableUpgradeable {
     /// @dev Throws if called by any account other than the owner.
     /// @param newPauseAdmin New account that can trigger emergency
     ///        stop mechanism.
-    function updatePauseAdmin(address newPauseAdmin) external _onlyOwner {
+    function updatePauseAdmin(address newPauseAdmin) external {
+        address msgSender = _msgSender();
+        if (owner() != msgSender) {
+            revert PausableUnauthorizedAccount(msgSender);
+        }
+
         // TODO: Introduce a parameters update process.
         if (newPauseAdmin == address(0)) {
             revert ZeroAddress();
@@ -94,10 +93,5 @@ abstract contract AbstractPausable is PausableUpgradeable {
         address initialPauseAdmin
     ) internal onlyInitializing {
         pauseAdmin = initialPauseAdmin;
-    }
-
-    /// @notice Checks if the caller is an owner of contract.
-    function isOwner() internal view returns (bool) {
-        return owner() == _msgSender();
     }
 }
