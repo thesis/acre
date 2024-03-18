@@ -6,12 +6,10 @@ import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
-import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 
 import "@keep-network/tbtc-v2/contracts/integrator/AbstractTBTCDepositor.sol";
 
 import {stBTC} from "../../stBTC.sol";
-import "../../AbstractPausable.sol";
 
 /// @title AcreBitcoinDepositorV2
 /// @dev This is a contract used to test Acre Bitcoin Depositor upgradeability.
@@ -19,7 +17,6 @@ import "../../AbstractPausable.sol";
 ///      marked with `TEST:` comments.
 contract AcreBitcoinDepositorV2 is
     AbstractTBTCDepositor,
-    AbstractPausable,
     Ownable2StepUpgradeable
 {
     using SafeERC20 for IERC20;
@@ -650,13 +647,5 @@ contract AcreBitcoinDepositorV2 is
         }
 
         return (amountToStake, staker);
-    }
-
-    function _checkOwner()
-        internal
-        view
-        override(AbstractPausable, OwnableUpgradeable)
-    {
-        super._checkOwner();
     }
 }

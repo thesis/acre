@@ -10,7 +10,6 @@ import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import "@keep-network/tbtc-v2/contracts/integrator/AbstractTBTCDepositor.sol";
 
 import {stBTC} from "./stBTC.sol";
-import "./AbstractPausable.sol";
 
 /// @title Acre Bitcoin Depositor contract.
 /// @notice The contract integrates Acre staking with tBTC minting.
@@ -38,7 +37,6 @@ import "./AbstractPausable.sol";
 ///         to the staker.
 contract AcreBitcoinDepositor is
     AbstractTBTCDepositor,
-    AbstractPausable,
     Ownable2StepUpgradeable
 {
     using SafeERC20 for IERC20;
@@ -284,7 +282,6 @@ contract AcreBitcoinDepositor is
         __AbstractTBTCDepositor_initialize(bridge, tbtcVault);
         __Ownable2Step_init();
         __Ownable_init(msg.sender);
-        __AbstractPausable_init(msg.sender);
 
         if (address(_tbtcToken) == address(0)) {
             revert TbtcTokenZeroAddress();
@@ -361,7 +358,7 @@ contract AcreBitcoinDepositor is
     ///      maximum deposit limit being reached), the `queueStake` function
     ///      should be called to add the stake request to the staking queue.
     /// @param depositKey Deposit key identifying the deposit.
-    function finalizeStake(uint256 depositKey) external whenNotPaused {
+    function finalizeStake(uint256 depositKey) external {
         transitionStakeRequestState(
             depositKey,
             StakeRequestState.Initialized,
@@ -412,7 +409,7 @@ contract AcreBitcoinDepositor is
     /// @notice This function should be called for previously queued stake
     ///         request, when stBTC vault is able to accept a deposit.
     /// @param depositKey Deposit key identifying the deposit.
-    function finalizeQueuedStake(uint256 depositKey) external whenNotPaused {
+    function finalizeQueuedStake(uint256 depositKey) external {
         transitionStakeRequestState(
             depositKey,
             StakeRequestState.Queued,
@@ -684,13 +681,5 @@ contract AcreBitcoinDepositor is
         }
 
         return (amountToStake, staker);
-    }
-
-    function _checkOwner()
-        internal
-        view
-        override(AbstractPausable, OwnableUpgradeable)
-    {
-        super._checkOwner();
     }
 }

@@ -60,12 +60,11 @@ describe("AcreBitcoinDepositor", () => {
   let treasury: HardhatEthersSigner
   let thirdParty: HardhatEthersSigner
   let staker: HardhatEthersSigner
-  let emergencyStopAccount: HardhatEthersSigner
 
   before(async () => {
     ;({ bitcoinDepositor, tbtcBridge, tbtcVault, stbtc, tbtc } =
       await loadFixture(fixture))
-    ;({ governance, treasury, emergencyStopAccount } = await getNamedSigners())
+    ;({ governance, treasury } = await getNamedSigners())
     ;[thirdParty] = await getUnnamedSigners()
 
     staker = await helpers.account.impersonateAccount(tbtcDepositData.staker, {
@@ -1922,144 +1921,4 @@ describe("AcreBitcoinDepositor", () => {
       await tbtcVault.finalizeOptimisticMintingRequest(depositKey)
     }
   }
-
-  describe("pausable", () => {
-    describe("pause", () => {
-      context("when the authorized account wants to pause contract", () => {
-        let tx: ContractTransactionResponse
-
-        beforeAfterSnapshotWrapper()
-
-        before(async () => {
-          tx = await bitcoinDepositor.connect(emergencyStopAccount).pause()
-        })
-
-        it("should change the pause state", async () => {
-          expect(await bitcoinDepositor.paused()).to.be.true
-        })
-
-        it("should emit `Paused` event", async () => {
-          await expect(tx)
-            .to.emit(bitcoinDepositor, "Paused")
-            .withArgs(emergencyStopAccount.address)
-        })
-      })
-
-      context("when the unauthorized account tries to pause contract", () => {
-        beforeAfterSnapshotWrapper()
-
-        it("should revert", async () => {
-          await expect(bitcoinDepositor.connect(thirdParty).pause())
-            .to.be.revertedWithCustomError(
-              bitcoinDepositor,
-              "NotEmergencyStopAccount",
-            )
-            .withArgs(thirdParty.address)
-        })
-      })
-
-      context("when contract is already paused", () => {
-        beforeAfterSnapshotWrapper()
-
-        before(async () => {
-          await bitcoinDepositor.connect(emergencyStopAccount).pause()
-        })
-
-        it("should revert", async () => {
-          await expect(
-            bitcoinDepositor.connect(emergencyStopAccount).pause(),
-          ).to.be.revertedWithCustomError(stbtc, "EnforcedPause")
-        })
-      })
-    })
-
-    describe("unpause", () => {
-      context("when the authorized account wants to unpause contract", () => {
-        let tx: ContractTransactionResponse
-
-        beforeAfterSnapshotWrapper()
-
-        before(async () => {
-          await bitcoinDepositor.connect(emergencyStopAccount).pause()
-
-          tx = await bitcoinDepositor.connect(emergencyStopAccount).unpause()
-        })
-
-        it("should change the pause state", async () => {
-          expect(await bitcoinDepositor.paused()).to.be.false
-        })
-
-        it("should emit `Unpaused` event", async () => {
-          await expect(tx)
-            .to.emit(bitcoinDepositor, "Unpaused")
-            .withArgs(emergencyStopAccount.address)
-        })
-      })
-
-      context("when the unauthorized account tries to unpause contract", () => {
-        beforeAfterSnapshotWrapper()
-
-        it("should revert", async () => {
-          await expect(bitcoinDepositor.connect(thirdParty).unpause())
-            .to.be.revertedWithCustomError(
-              bitcoinDepositor,
-              "NotEmergencyStopAccount",
-            )
-            .withArgs(thirdParty.address)
-        })
-      })
-
-      context("when contract is already unpaused", () => {
-        beforeAfterSnapshotWrapper()
-
-        it("should revert", async () => {
-          await expect(
-            bitcoinDepositor.connect(emergencyStopAccount).unpause(),
-          ).to.be.revertedWithCustomError(bitcoinDepositor, "ExpectedPause")
-        })
-      })
-    })
-
-    describe("contract functions", () => {
-      context("stake finalization", () => {
-        beforeAfterSnapshotWrapper()
-        before(async () => {
-          await bitcoinDepositor.connect(emergencyStopAccount).pause()
-
-          await initializeStake()
-          await finalizeMinting(tbtcDepositData.depositKey)
-        })
-
-        it("stake finalization should be paused", async () => {
-          await expect(
-            bitcoinDepositor
-              .connect(thirdParty)
-              .finalizeStake(tbtcDepositData.depositKey),
-          ).to.be.revertedWithCustomError(bitcoinDepositor, "EnforcedPause")
-        })
-      })
-
-      context("stake finalization from the queue", () => {
-        beforeAfterSnapshotWrapper()
-        before(async () => {
-          await bitcoinDepositor.connect(emergencyStopAccount).pause()
-
-          await initializeStake()
-          await finalizeMinting(tbtcDepositData.depositKey)
-
-          await bitcoinDepositor
-            .connect(thirdParty)
-            .queueStake(tbtcDepositData.depositKey)
-        })
-
-        it("stake finalization from the queue should be paused", async () => {
-          await expect(
-            bitcoinDepositor
-              .connect(thirdParty)
-              .finalizeQueuedStake(tbtcDepositData.depositKey),
-          ).to.be.revertedWithCustomError(bitcoinDepositor, "EnforcedPause")
-        })
-      })
-    })
-  })
 })
