@@ -186,6 +186,7 @@ class EthereumBitcoinDepositor
     }
   }
 
+  // TODO: Consider exposing it from tBTC SDK.
   async #getTbtcBridgeMintingParameters(): Promise<TbtcBridgeMintingParameters> {
     if (this.#tbtcBridgeMintingParameters) {
       return this.#tbtcBridgeMintingParameters
