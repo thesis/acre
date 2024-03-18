@@ -372,6 +372,7 @@ describe("BitcoinDepositor", () => {
       beforeAll(async () => {
         mockedContractInstance.bridge.mockClear()
         mockedContractInstance.tbtcVault.mockClear()
+        mockedContractInstance.depositorFeeDivisor.mockClear()
         mockedBridgeContractInstance.depositsParameters.mockClear()
         mockedVaultContractInstance.optimisticMintingFeeDivisor.mockClear()
 
@@ -389,6 +390,12 @@ describe("BitcoinDepositor", () => {
         expect(mockedContractInstance.tbtcVault).toHaveBeenCalledTimes(0)
         expect(
           mockedVaultContractInstance.optimisticMintingFeeDivisor,
+        ).toHaveBeenCalledTimes(0)
+      })
+
+      it("should get the bitcoin depositor fee divisor from cache", () => {
+        expect(
+          mockedContractInstance.depositorFeeDivisor,
         ).toHaveBeenCalledTimes(0)
       })
 

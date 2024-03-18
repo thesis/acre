@@ -37,6 +37,11 @@ type TbtcBridgeMintingParameters = TbtcDepositParameters & {
   optimisticMintingFeeDivisor: bigint
 }
 
+type BitcoinDepositorCache = {
+  tbtcBridgeMintingParameters: TbtcBridgeMintingParameters | undefined
+  depositorFeeDivisor: bigint | undefined
+}
+
 /**
  * Ethereum implementation of the BitcoinDepositor.
  */
@@ -47,7 +52,7 @@ class EthereumBitcoinDepositor
   extends EthersContractWrapper<AcreBitcoinDepositorTypechain>
   implements BitcoinDepositor
 {
-  #tbtcBridgeMintingParameters: TbtcBridgeMintingParameters | undefined
+  #cache: BitcoinDepositorCache
 
   constructor(config: EthersContractConfig, network: EthereumNetwork) {
     let artifact: EthersContractDeployment
@@ -62,6 +67,10 @@ class EthereumBitcoinDepositor
     }
 
     super(config, artifact)
+    this.#cache = {
+      tbtcBridgeMintingParameters: undefined,
+      depositorFeeDivisor: undefined,
+    }
   }
 
   /**
@@ -166,7 +175,7 @@ class EthereumBitcoinDepositor
         ? amountSubTreasury / optimisticMintingFeeDivisor
         : 0n
 
-    const depositorFeeDivisor = await this.instance.depositorFeeDivisor()
+    const depositorFeeDivisor = await this.#depositorFeeDivisor()
     // Compute depositor fee. The fee is calculated based on the initial funding
     // transaction amount, before the tBTC protocol network fees were taken.
     const depositorFee =
@@ -188,8 +197,8 @@ class EthereumBitcoinDepositor
 
   // TODO: Consider exposing it from tBTC SDK.
   async #getTbtcBridgeMintingParameters(): Promise<TbtcBridgeMintingParameters> {
-    if (this.#tbtcBridgeMintingParameters) {
-      return this.#tbtcBridgeMintingParameters
+    if (this.#cache.tbtcBridgeMintingParameters) {
+      return this.#cache.tbtcBridgeMintingParameters
     }
 
     const bridgeAddress = await this.instance.bridge()
@@ -206,11 +215,23 @@ class EthereumBitcoinDepositor
     const optimisticMintingFeeDivisor =
       (await vault.optimisticMintingFeeDivisor()) as bigint
 
-    this.#tbtcBridgeMintingParameters = {
+    this.#cache.tbtcBridgeMintingParameters = {
       ...depositsParameters,
       optimisticMintingFeeDivisor,
     }
-    return this.#tbtcBridgeMintingParameters
+    return this.#cache.tbtcBridgeMintingParameters
+  }
+
+  async #depositorFeeDivisor(): Promise<bigint> {
+    if (this.#cache.depositorFeeDivisor) {
+      return this.#cache.depositorFeeDivisor
+    }
+
+    const depositorFeeDivisor = await this.instance.depositorFeeDivisor()
+
+    this.#cache.depositorFeeDivisor = depositorFeeDivisor
+
+    return this.#cache.depositorFeeDivisor
   }
 }
 
