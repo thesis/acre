@@ -37,10 +37,10 @@ type TBTCMintingFees = {
  */
 type AcreStakingFees = {
   /**
-   * The Acre network depositor fee taken from each deposit and transferred to
-   * the treasury upon stake request finalization.
+   * The Acre network depositor fee taken from each Bitcoin deposit and
+   * transferred to the treasury upon stake request finalization.
    */
-  depositorFee: bigint
+  bitcoinDepositorFee: bigint
 }
 
 export type StakingFees = {

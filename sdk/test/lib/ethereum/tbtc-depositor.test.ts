@@ -297,7 +297,7 @@ describe("BitcoinDepositor", () => {
         // and transferred to the treasury upon stake request finalization.
         // `depositorFee = depositedAmount / depositorFeeDivisor`
         // 0.0001 tBTC in 1e18 precision.
-        depositorFee: 100000000000000n,
+        bitcoinDepositorFee: 100000000000000n,
       },
     }
 

@@ -53,7 +53,7 @@ const stakingModuleData: {
       },
       acre: {
         // 0.0001 tBTC in 1e18 precision.
-        depositorFee: 100000000000000n,
+        bitcoinDepositorFee: 100000000000000n,
       },
     },
     expectedStakingFeesInSatoshi: {
@@ -463,9 +463,9 @@ describe("Staking", () => {
 
     it("should convert Acre network fees to satoshi", () => {
       const {
-        acre: { depositorFee },
+        acre: { bitcoinDepositorFee },
       } = mockedStakingFees
-      const totalAcreFees = depositorFee
+      const totalAcreFees = bitcoinDepositorFee
 
       expect(spyOnToSatoshi).toHaveBeenNthCalledWith(2, totalAcreFees)
     })

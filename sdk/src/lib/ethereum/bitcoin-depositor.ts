@@ -185,7 +185,7 @@ class EthereumBitcoinDepositor
         depositTxMaxFee: depositTxMaxFee * this.#satoshiMultiplier,
       },
       acre: {
-        depositorFee,
+        bitcoinDepositorFee: depositorFee,
       },
     }
   }
