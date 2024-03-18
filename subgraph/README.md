@@ -1,6 +1,8 @@
 # Acre staking subgraph
 
-This repository contains Acre staking subgraphs. Subgraphs are open APIs to query data from networks like Ethereum and IPFS. The data is indexed by [The Graph](https://thegraph.com/) decentralized protocol.
+This repository contains Acre staking subgraphs. Subgraphs are open APIs to
+query data from networks like Ethereum and IPFS. The data is indexed by [The
+Graph](https://thegraph.com/) decentralized protocol.
 
 By the moment, there one subgraph have been developed:
 
@@ -16,8 +18,8 @@ By the moment, there one subgraph have been developed:
    yarn global add @graphprotocol/graph-cli
    ```
 
-2. Once graph-cli is installed in your system, install dependencies, linting and formatting
-   tools:
+2. Once graph-cli is installed in your system, install dependencies, linting and
+   formatting tools:
 
    ```
    pnpm install
@@ -31,7 +33,10 @@ By the moment, there one subgraph have been developed:
 
 ### Deploy the subgraph locally
 
-In order to index a network, Graph Node needs access to a network client via an EVM-compatible JSON-RPC API. You can use Thesis private RPC from Alchemy or create a private one [here](https://www.alchemy.com/overviews/private-rpc-endpoint).
+In order to index a network, Graph Node needs access to a network client via an
+EVM-compatible JSON-RPC API. You can use Thesis private RPC from Alchemy or
+create a private one
+[here](https://www.alchemy.com/overviews/private-rpc-endpoint).
 
 1. Set the API key in the `docker-compose.yaml` file.
 
