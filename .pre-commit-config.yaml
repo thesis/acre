@@ -80,7 +80,7 @@ repos:
         name: "lint subgraph ts/js"
         entry: /usr/bin/env bash -c "npm --prefix ./subgraph/ run lint:js"
         files: ^subgraph/
-        types_or: [ts, tsx, javascript, jsx]
+        types_or: [ts, javascript]
         language: script
         description: "Checks TS/JS code according to the package's linter configuration"
       - id: subgraph-lint-config
