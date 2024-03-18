@@ -16,8 +16,8 @@ abstract contract AbstractPausable is PausableUpgradeable {
     address public pauseAdmin;
 
     /// @notice Emitted when a emergency account is updated.
-    /// @param newAccount New emergency stop wallet address.
-    /// @param oldAccount Old emergency stop wallet address.
+    /// @param newAccount New pause admin address.
+    /// @param oldAccount Old pause admin address.
     event PauseAdminUpdated(address newAccount, address oldAccount);
 
     /// @notice Reverts when an unauthorized account triggers the emergency stop
@@ -25,7 +25,7 @@ abstract contract AbstractPausable is PausableUpgradeable {
     error NotAuthorizedAccount(address account);
 
     /// @notice Reverts if called by any account other than the pause admin
-    ///         account.
+    ///         or the contract owner.
     modifier onlyPauseAdminOrOwner() {
         if (pauseAdmin != _msgSender() && !isOwner()) {
             revert NotAuthorizedAccount(_msgSender());
