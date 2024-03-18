@@ -13,7 +13,7 @@ import {ZeroAddress} from "./utils/Errors.sol";
 /// @dev The child contract must override the `owner` function.
 abstract contract AbstractPausable is PausableUpgradeable {
     /// @notice An authorized account that can trigger emergency stop mechanism.
-    address private _pauseAdmin;
+    address public pauseAdmin;
 
     /// @notice Emitted when a emergency account is updated.
     /// @param newAccount New emergency stop wallet address.
@@ -27,7 +27,7 @@ abstract contract AbstractPausable is PausableUpgradeable {
     /// @notice Reverts if called by any account other than the pause admin
     ///         account.
     modifier onlyPauseAdminOrOwner() {
-        if (_pauseAdmin != _msgSender() && !isOwner()) {
+        if (pauseAdmin != _msgSender() && !isOwner()) {
             revert NotAuthorizedAccount(_msgSender());
         }
         _;
@@ -68,9 +68,9 @@ abstract contract AbstractPausable is PausableUpgradeable {
             revert ZeroAddress();
         }
 
-        emit PauseAdminUpdated(newpauseAdmin, _pauseAdmin);
+        emit PauseAdminUpdated(newpauseAdmin, pauseAdmin);
 
-        _pauseAdmin = newpauseAdmin;
+        pauseAdmin = newpauseAdmin;
     }
 
     /// @notice Returns the address of the current owner.
@@ -93,7 +93,7 @@ abstract contract AbstractPausable is PausableUpgradeable {
     function __AbstractPausable_init_unchained(
         address initialpauseAdmin
     ) internal onlyInitializing {
-        _pauseAdmin = initialpauseAdmin;
+        pauseAdmin = initialpauseAdmin;
     }
 
     /// @notice Checks if the caller is an owner of contract.
