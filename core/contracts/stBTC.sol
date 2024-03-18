@@ -260,11 +260,12 @@ contract stBTC is
         return (minimumDepositAmount, maximumTotalAssets);
     }
 
-    function _checkOwner()
-        internal
+    function owner()
+        public
         view
         override(AbstractPausable, OwnableUpgradeable)
+        returns (address)
     {
-        super._checkOwner();
+        return super.owner();
     }
 }

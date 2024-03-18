@@ -1072,20 +1072,44 @@ describe("stBTC", () => {
   describe("pausable", () => {
     describe("pause", () => {
       context("when the authorized account wants to pause contract", () => {
-        let tx: ContractTransactionResponse
+        context("when caller is the owner", () => {
+          let tx: ContractTransactionResponse
 
-        beforeAfterSnapshotWrapper()
+          beforeAfterSnapshotWrapper()
 
-        before(async () => {
-          tx = await stbtc.connect(pauseAdmin).pause()
+          before(async () => {
+            tx = await stbtc.connect(governance).pause()
+          })
+
+          it("should change the pause state", async () => {
+            expect(await stbtc.paused()).to.be.true
+          })
+
+          it("should emit `Paused` event", async () => {
+            await expect(tx)
+              .to.emit(stbtc, "Paused")
+              .withArgs(governance.address)
+          })
         })
 
-        it("should change the pause state", async () => {
-          expect(await stbtc.paused()).to.be.true
-        })
+        context("when caller is the pause admin", () => {
+          let tx: ContractTransactionResponse
 
-        it("should emit `Paused` event", async () => {
-          await expect(tx).to.emit(stbtc, "Paused").withArgs(pauseAdmin.address)
+          beforeAfterSnapshotWrapper()
+
+          before(async () => {
+            tx = await stbtc.connect(pauseAdmin).pause()
+          })
+
+          it("should change the pause state", async () => {
+            expect(await stbtc.paused()).to.be.true
+          })
+
+          it("should emit `Paused` event", async () => {
+            await expect(tx)
+              .to.emit(stbtc, "Paused")
+              .withArgs(pauseAdmin.address)
+          })
         })
       })
 
@@ -1094,7 +1118,7 @@ describe("stBTC", () => {
 
         it("should revert", async () => {
           await expect(stbtc.connect(thirdParty).pause())
-            .to.be.revertedWithCustomError(stbtc, "NotPauseAdmin")
+            .to.be.revertedWithCustomError(stbtc, "NotAuthorizedAccount")
             .withArgs(thirdParty.address)
         })
       })
@@ -1116,24 +1140,48 @@ describe("stBTC", () => {
 
     describe("unpause", () => {
       context("when the authorized account wants to unpause contract", () => {
-        let tx: ContractTransactionResponse
+        context("when caller is the owner", () => {
+          let tx: ContractTransactionResponse
 
-        beforeAfterSnapshotWrapper()
+          beforeAfterSnapshotWrapper()
 
-        before(async () => {
-          await stbtc.connect(pauseAdmin).pause()
+          before(async () => {
+            await stbtc.connect(pauseAdmin).pause()
 
-          tx = await stbtc.connect(pauseAdmin).unpause()
+            tx = await stbtc.connect(pauseAdmin).unpause()
+          })
+
+          it("should change the pause state", async () => {
+            expect(await stbtc.paused()).to.be.false
+          })
+
+          it("should emit `Unpaused` event", async () => {
+            await expect(tx)
+              .to.emit(stbtc, "Unpaused")
+              .withArgs(pauseAdmin.address)
+          })
         })
 
-        it("should change the pause state", async () => {
-          expect(await stbtc.paused()).to.be.false
-        })
+        context("when caller is the pause admin", () => {
+          let tx: ContractTransactionResponse
 
-        it("should emit `Unpaused` event", async () => {
-          await expect(tx)
-            .to.emit(stbtc, "Unpaused")
-            .withArgs(pauseAdmin.address)
+          beforeAfterSnapshotWrapper()
+
+          before(async () => {
+            await stbtc.connect(pauseAdmin).pause()
+
+            tx = await stbtc.connect(pauseAdmin).unpause()
+          })
+
+          it("should change the pause state", async () => {
+            expect(await stbtc.paused()).to.be.false
+          })
+
+          it("should emit `Unpaused` event", async () => {
+            await expect(tx)
+              .to.emit(stbtc, "Unpaused")
+              .withArgs(pauseAdmin.address)
+          })
         })
       })
 
@@ -1142,7 +1190,7 @@ describe("stBTC", () => {
 
         it("should revert", async () => {
           await expect(stbtc.connect(thirdParty).unpause())
-            .to.be.revertedWithCustomError(stbtc, "NotPauseAdmin")
+            .to.be.revertedWithCustomError(stbtc, "NotAuthorizedAccount")
             .withArgs(thirdParty.address)
         })
       })

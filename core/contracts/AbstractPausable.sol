@@ -10,7 +10,7 @@ import {ZeroAddress} from "./utils/Errors.sol";
 ///         mechanism. The emergency stop mechanism can be triggered by an
 ///         authorized account. Only owner of the contract can update the
 ///         emergency stop account.
-/// @dev The child contract must override the `_checkOwner` internal function.
+/// @dev The child contract must override the `owner` function.
 abstract contract AbstractPausable is PausableUpgradeable {
     /// @notice An authorized account that can trigger emergency stop mechanism.
     address private _pauseAdmin;
@@ -22,13 +22,21 @@ abstract contract AbstractPausable is PausableUpgradeable {
 
     /// @notice Reverts when an unauthorized account triggers the emergency stop
     ///         mechanism.
-    error NotPauseAdmin(address account);
+    error NotAuthorizedAccount(address account);
 
     /// @notice Reverts if called by any account other than the pause admin
     ///         account.
-    modifier onlyPauseAdmin() {
-        if (_msgSender() != _pauseAdmin) {
-            revert NotPauseAdmin(_msgSender());
+    modifier onlyPauseAdminOrOwner() {
+        if (_pauseAdmin != _msgSender() && !isOwner()) {
+            revert NotAuthorizedAccount(_msgSender());
+        }
+        _;
+    }
+
+    /// @notice Reverts if called by any account other than the owner account.
+    modifier _onlyOwner() {
+        if (!isOwner()) {
+            revert NotAuthorizedAccount(_msgSender());
         }
         _;
     }
@@ -37,7 +45,7 @@ abstract contract AbstractPausable is PausableUpgradeable {
     /// @dev Requirements:
     ///      - The caller must be an authorized account to trigger pause.
     ///      - The contract must not be already paused.
-    function pause() external onlyPauseAdmin {
+    function pause() external onlyPauseAdminOrOwner {
         _pause();
     }
 
@@ -45,7 +53,7 @@ abstract contract AbstractPausable is PausableUpgradeable {
     /// @dev Requirements:
     ///      - The caller must be an authorized account to trigger unpause.
     ///      - The contract must be paused.
-    function unpause() external onlyPauseAdmin {
+    function unpause() external onlyPauseAdminOrOwner {
         _unpause();
     }
 
@@ -54,8 +62,7 @@ abstract contract AbstractPausable is PausableUpgradeable {
     /// @dev Throws if called by any account other than the owner.
     /// @param newpauseAdmin New account that can trigger emergency
     ///        stop mechanism.
-    function updatePauseAdmin(address newpauseAdmin) external {
-        _checkOwner();
+    function updatePauseAdmin(address newpauseAdmin) external _onlyOwner {
         // TODO: Introduce a parameters update process.
         if (newpauseAdmin == address(0)) {
             revert ZeroAddress();
@@ -65,6 +72,10 @@ abstract contract AbstractPausable is PausableUpgradeable {
 
         _pauseAdmin = newpauseAdmin;
     }
+
+    /// @notice Returns the address of the current owner.
+    /// @dev Must be overridden by a child contract.
+    function owner() public view virtual returns (address);
 
     /// @notice Initializes the contract. MUST BE CALLED from the child
     ///         contract initializer.
@@ -86,7 +97,7 @@ abstract contract AbstractPausable is PausableUpgradeable {
     }
 
     /// @notice Checks if the caller is an owner of contract.
-    /// @dev Must be overridden by a child contract and throws an error if the
-    ///      sender is not the owner.
-    function _checkOwner() internal view virtual {}
+    function isOwner() internal view returns (bool) {
+        return owner() == _msgSender();
+    }
 }
