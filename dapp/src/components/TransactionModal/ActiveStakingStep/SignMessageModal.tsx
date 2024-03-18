@@ -23,7 +23,7 @@ export default function SignMessageModal() {
   }, [setStatus])
 
   const onSignMessageSuccess = useCallback(() => {
-    closeToast(TOAST_TYPES.SIGNING_ERROR)
+    closeToast(TOAST_ID)
     goNext()
   }, [closeToast, goNext])
 
