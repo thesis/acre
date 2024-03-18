@@ -1118,7 +1118,7 @@ describe("stBTC", () => {
 
         it("should revert", async () => {
           await expect(stbtc.connect(thirdParty).pause())
-            .to.be.revertedWithCustomError(stbtc, "NotAuthorizedAccount")
+            .to.be.revertedWithCustomError(stbtc, "PausableUnauthorizedAccount")
             .withArgs(thirdParty.address)
         })
       })
@@ -1190,7 +1190,7 @@ describe("stBTC", () => {
 
         it("should revert", async () => {
           await expect(stbtc.connect(thirdParty).unpause())
-            .to.be.revertedWithCustomError(stbtc, "NotAuthorizedAccount")
+            .to.be.revertedWithCustomError(stbtc, "PausableUnauthorizedAccount")
             .withArgs(thirdParty.address)
         })
       })

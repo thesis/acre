@@ -22,13 +22,13 @@ abstract contract AbstractPausable is PausableUpgradeable {
 
     /// @notice Reverts when an unauthorized account triggers the emergency stop
     ///         mechanism.
-    error NotAuthorizedAccount(address account);
+    error PausableUnauthorizedAccount(address account);
 
     /// @notice Reverts if called by any account other than the pause admin
     ///         or the contract owner.
     modifier onlyPauseAdminOrOwner() {
         if (pauseAdmin != _msgSender() && !isOwner()) {
-            revert NotAuthorizedAccount(_msgSender());
+            revert PausableUnauthorizedAccount(_msgSender());
         }
         _;
     }
@@ -36,7 +36,7 @@ abstract contract AbstractPausable is PausableUpgradeable {
     /// @notice Reverts if called by any account other than the owner account.
     modifier _onlyOwner() {
         if (!isOwner()) {
-            revert NotAuthorizedAccount(_msgSender());
+            revert PausableUnauthorizedAccount(_msgSender());
         }
         _;
     }
