@@ -60,17 +60,17 @@ abstract contract AbstractPausable is PausableUpgradeable {
     /// @notice Updates an authorized account that can trigger emergency stop
     ///         mechanism.
     /// @dev Throws if called by any account other than the owner.
-    /// @param newpauseAdmin New account that can trigger emergency
+    /// @param newPauseAdmin New account that can trigger emergency
     ///        stop mechanism.
-    function updatePauseAdmin(address newpauseAdmin) external _onlyOwner {
+    function updatePauseAdmin(address newPauseAdmin) external _onlyOwner {
         // TODO: Introduce a parameters update process.
-        if (newpauseAdmin == address(0)) {
+        if (newPauseAdmin == address(0)) {
             revert ZeroAddress();
         }
 
-        emit PauseAdminUpdated(newpauseAdmin, pauseAdmin);
+        emit PauseAdminUpdated(newPauseAdmin, pauseAdmin);
 
-        pauseAdmin = newpauseAdmin;
+        pauseAdmin = newPauseAdmin;
     }
 
     /// @notice Returns the address of the current owner.
@@ -79,21 +79,21 @@ abstract contract AbstractPausable is PausableUpgradeable {
 
     /// @notice Initializes the contract. MUST BE CALLED from the child
     ///         contract initializer.
-    /// @param initialpauseAdmin Initial emergency stop account that
+    /// @param initialPauseAdmin Initial emergency stop account that
     ///        can trigger the emergency stop mechanism.
     // solhint-disable-next-line func-name-mixedcase
     function __AbstractPausable_init(
-        address initialpauseAdmin
+        address initialPauseAdmin
     ) internal onlyInitializing {
         __Pausable_init();
-        __AbstractPausable_init_unchained(initialpauseAdmin);
+        __AbstractPausable_init_unchained(initialPauseAdmin);
     }
 
     // solhint-disable-next-line func-name-mixedcase
     function __AbstractPausable_init_unchained(
-        address initialpauseAdmin
+        address initialPauseAdmin
     ) internal onlyInitializing {
-        pauseAdmin = initialpauseAdmin;
+        pauseAdmin = initialPauseAdmin;
     }
 
     /// @notice Checks if the caller is an owner of contract.
