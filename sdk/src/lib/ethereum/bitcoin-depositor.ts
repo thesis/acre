@@ -23,7 +23,7 @@ import {
   EthersContractDeployment,
   EthersContractWrapper,
 } from "./contract"
-import { Hex } from "../utils"
+import { Hex, fromSatoshi } from "../utils"
 import { EthereumNetwork } from "./network"
 
 import SepoliaBitcoinDepositor from "./artifacts/sepolia/AcreBitcoinDepositor.json"
@@ -47,11 +47,6 @@ class EthereumBitcoinDepositor
   extends EthersContractWrapper<AcreBitcoinDepositorTypechain>
   implements BitcoinDepositor
 {
-  /**
-   * Multiplier to convert satoshi to tBTC token units.
-   */
-  readonly #satoshiMultiplier = 10n ** 10n
-
   #tbtcBridgeMintingParameters: TbtcBridgeMintingParameters | undefined
 
   constructor(config: EthersContractConfig, network: EthereumNetwork) {
@@ -164,8 +159,7 @@ class EthereumBitcoinDepositor
 
     // Both deposit amount and treasury fee are in the 1e8 satoshi precision.
     // We need to convert them to the 1e18 TBTC precision.
-    const amountSubTreasury =
-      (amountToStake - treasuryFee) * this.#satoshiMultiplier
+    const amountSubTreasury = fromSatoshi(amountToStake - treasuryFee)
 
     const optimisticMintingFee =
       optimisticMintingFeeDivisor > 0
@@ -177,14 +171,14 @@ class EthereumBitcoinDepositor
     // transaction amount, before the tBTC protocol network fees were taken.
     const depositorFee =
       depositorFeeDivisor > 0n
-        ? (amountToStake * this.#satoshiMultiplier) / depositorFeeDivisor
+        ? fromSatoshi(amountToStake) / depositorFeeDivisor
         : 0n
 
     return {
       tbtc: {
-        treasuryFee: treasuryFee * this.#satoshiMultiplier,
+        treasuryFee: fromSatoshi(treasuryFee),
         optimisticMintingFee,
-        depositTxMaxFee: depositTxMaxFee * this.#satoshiMultiplier,
+        depositTxMaxFee: fromSatoshi(depositTxMaxFee),
       },
       acre: {
         bitcoinDepositorFee: depositorFee,

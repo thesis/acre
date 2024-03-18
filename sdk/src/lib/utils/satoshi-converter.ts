@@ -1,11 +1,15 @@
-const BTC_DECIMALS = 8n
+/**
+ * Multiplier to convert satoshi to 1e18 precision.
+ */
+const SATOSHI_MULTIPLIER = 10n ** 10n
 
-// eslint-disable-next-line import/prefer-default-export
-export function toSatoshi(amount: bigint, fromPrecision: bigint = 18n) {
-  const SATOSHI_MULTIPLIER = 10n ** (fromPrecision - BTC_DECIMALS)
-
+export function toSatoshi(amount: bigint) {
   const remainder = amount % SATOSHI_MULTIPLIER
   const satoshis = (amount - remainder) / SATOSHI_MULTIPLIER
 
   return satoshis
+}
+
+export function fromSatoshi(amount: bigint) {
+  return amount * SATOSHI_MULTIPLIER
 }
