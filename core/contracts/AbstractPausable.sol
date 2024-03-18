@@ -35,10 +35,30 @@ abstract contract AbstractPausable is PausableUpgradeable {
         _;
     }
 
+    /// @notice Initializes the contract. MUST BE CALLED from the child
+    ///         contract initializer.
+    /// @param initialPauseAdmin Initial emergency stop account that
+    ///        can trigger the emergency stop mechanism.
+    // solhint-disable-next-line func-name-mixedcase
+    function __AbstractPausable_init(
+        address initialPauseAdmin
+    ) internal onlyInitializing {
+        __Pausable_init();
+        __AbstractPausable_init_unchained(initialPauseAdmin);
+    }
+
+    // solhint-disable-next-line func-name-mixedcase
+    function __AbstractPausable_init_unchained(
+        address initialPauseAdmin
+    ) internal onlyInitializing {
+        pauseAdmin = initialPauseAdmin;
+    }
+
     /// @notice Enables an emergency stop mechanism.
     /// @dev Requirements:
     ///      - The caller must be an authorized account to trigger pause.
     ///      - The contract must not be already paused.
+    // solhint-disable-next-line ordering
     function pause() external onlyPauseAdminOrOwner {
         _pause();
     }
@@ -75,23 +95,4 @@ abstract contract AbstractPausable is PausableUpgradeable {
     /// @notice Returns the address of the current owner.
     /// @dev Must be overridden by a child contract.
     function owner() public view virtual returns (address);
-
-    /// @notice Initializes the contract. MUST BE CALLED from the child
-    ///         contract initializer.
-    /// @param initialPauseAdmin Initial emergency stop account that
-    ///        can trigger the emergency stop mechanism.
-    // solhint-disable-next-line func-name-mixedcase
-    function __AbstractPausable_init(
-        address initialPauseAdmin
-    ) internal onlyInitializing {
-        __Pausable_init();
-        __AbstractPausable_init_unchained(initialPauseAdmin);
-    }
-
-    // solhint-disable-next-line func-name-mixedcase
-    function __AbstractPausable_init_unchained(
-        address initialPauseAdmin
-    ) internal onlyInitializing {
-        pauseAdmin = initialPauseAdmin;
-    }
 }
