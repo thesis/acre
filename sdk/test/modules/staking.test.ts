@@ -9,6 +9,7 @@ import {
   DepositReceipt,
   EthereumAddress,
   StakingFees,
+  TotalStakingFees,
 } from "../../src"
 import * as satoshiConverter from "../../src/lib/utils/satoshi-converter"
 import { MockAcreContracts } from "../utils/mock-acre-contracts"
@@ -26,7 +27,7 @@ const stakingModuleData: {
   estimateStakingFees: {
     amount: bigint
     mockedStakingFees: StakingFees
-    expectedStakingFeesInSatoshi: StakingFees
+    expectedStakingFeesInSatoshi: TotalStakingFees
   }
 } = {
   initializeStake: {
@@ -56,18 +57,9 @@ const stakingModuleData: {
       },
     },
     expectedStakingFeesInSatoshi: {
-      tbtc: {
-        // 0.00005 BTC in 1e8 satoshi precision.
-        treasuryFee: 5000n,
-        // 0.001 BTC in 1e8 satoshi precision.
-        depositTxMaxFee: 100000n,
-        // 0.0001999 BTC in 1e8 satoshi precision.
-        optimisticMintingFee: 19990n,
-      },
-      acre: {
-        // 0.0001 BTC in 1e8 satoshi precision.
-        depositorFee: 10000n,
-      },
+      tbtc: 124990n,
+      acre: 10000n,
+      total: 134990n,
     },
   },
 }
@@ -443,13 +435,14 @@ describe("Staking", () => {
       },
     } = stakingModuleData
 
-    let result: StakingFees
+    let result: TotalStakingFees
     const spyOnToSatoshi = jest.spyOn(satoshiConverter, "toSatoshi")
 
     beforeAll(async () => {
       contracts.bitcoinDepositor.estimateStakingFees = jest
         .fn()
         .mockResolvedValue(mockedStakingFees)
+
       result = await staking.estimateStakingFees(amount)
     })
 
@@ -460,25 +453,21 @@ describe("Staking", () => {
     })
 
     it("should convert tBTC network fees to satoshi", () => {
-      expect(spyOnToSatoshi).toHaveBeenNthCalledWith(
-        1,
-        mockedStakingFees.tbtc.treasuryFee,
-      )
-      expect(spyOnToSatoshi).toHaveBeenNthCalledWith(
-        2,
-        mockedStakingFees.tbtc.depositTxMaxFee,
-      )
-      expect(spyOnToSatoshi).toHaveBeenNthCalledWith(
-        3,
-        mockedStakingFees.tbtc.optimisticMintingFee,
-      )
+      const {
+        tbtc: { depositTxMaxFee, treasuryFee, optimisticMintingFee },
+      } = mockedStakingFees
+      const totalTbtcFees = depositTxMaxFee + treasuryFee + optimisticMintingFee
+
+      expect(spyOnToSatoshi).toHaveBeenNthCalledWith(1, totalTbtcFees)
     })
 
     it("should convert Acre network fees to satoshi", () => {
-      expect(spyOnToSatoshi).toHaveBeenNthCalledWith(
-        4,
-        mockedStakingFees.acre.depositorFee,
-      )
+      const {
+        acre: { depositorFee },
+      } = mockedStakingFees
+      const totalAcreFees = depositorFee
+
+      expect(spyOnToSatoshi).toHaveBeenNthCalledWith(2, totalAcreFees)
     })
 
     it("should return the staking fees in satoshi precision", () => {
