@@ -1,22 +1,29 @@
 import type { HardhatRuntimeEnvironment } from "hardhat/types"
 import type { DeployFunction } from "hardhat-deploy/types"
-import { waitConfirmationsNumber } from "../helpers/deployment"
+import { waitForTransaction } from "../helpers/deployment"
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { getNamedAccounts, deployments, helpers } = hre
-  const { deployer, treasury } = await getNamedAccounts()
+  const { treasury, governance } = await getNamedAccounts()
+  const { deployer: deployerSigner } = await helpers.signers.getNamedSigners()
 
   const tbtc = await deployments.get("TBTC")
 
-  const stbtc = await deployments.deploy("stBTC", {
-    from: deployer,
-    args: [tbtc.address, treasury],
-    log: true,
-    waitConfirmations: waitConfirmationsNumber(hre),
+  const [, stbtcDeployment] = await helpers.upgrades.deployProxy("stBTC", {
+    contractName: "stBTC",
+    initializerArgs: [tbtc.address, treasury],
+    factoryOpts: {
+      signer: deployerSigner,
+    },
+    proxyOpts: {
+      kind: "transparent",
+      initialOwner: governance,
+    },
   })
 
-  if (hre.network.tags.etherscan) {
-    await helpers.etherscan.verify(stbtc)
+  if (stbtcDeployment.transactionHash && hre.network.tags.etherscan) {
+    await waitForTransaction(hre, stbtcDeployment.transactionHash)
+    await helpers.etherscan.verify(stbtcDeployment)
   }
 
   // TODO: Add Tenderly verification
