@@ -3,10 +3,9 @@ pragma solidity ^0.8.21;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC4626Upgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 
 import "./Dispatcher.sol";
-import "./AbstractPausable.sol";
+import "./PausableOwnable.sol";
 import {ZeroAddress} from "./utils/Errors.sol";
 
 /// @title stBTC
@@ -20,11 +19,7 @@ import {ZeroAddress} from "./utils/Errors.sol";
 ///      of yield-bearing vaults. This contract facilitates the minting and
 ///      burning of shares (stBTC), which are represented as standard ERC20
 ///      tokens, providing a seamless exchange with tBTC tokens.
-contract stBTC is
-    AbstractPausable,
-    ERC4626Upgradeable,
-    Ownable2StepUpgradeable
-{
+contract stBTC is PausableOwnable, ERC4626Upgradeable {
     using SafeERC20 for IERC20;
 
     /// Dispatcher contract that routes tBTC from stBTC to a given vault and back.
@@ -76,9 +71,7 @@ contract stBTC is
     function initialize(IERC20 asset, address _treasury) public initializer {
         __ERC4626_init(asset);
         __ERC20_init("Acre Staked Bitcoin", "stBTC");
-        __Ownable2Step_init();
-        __Ownable_init(msg.sender);
-        __AbstractPausable_init(msg.sender);
+        __PausableOwnable_init(msg.sender, msg.sender);
 
         if (address(_treasury) == address(0)) {
             revert ZeroAddress();
@@ -258,14 +251,5 @@ contract stBTC is
     /// @return Returns deposit parameters.
     function depositParameters() public view returns (uint256, uint256) {
         return (minimumDepositAmount, maximumTotalAssets);
-    }
-
-    function owner()
-        public
-        view
-        override(AbstractPausable, OwnableUpgradeable)
-        returns (address)
-    {
-        return super.owner();
     }
 }

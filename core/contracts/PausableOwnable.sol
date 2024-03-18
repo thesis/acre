@@ -2,20 +2,23 @@
 pragma solidity ^0.8.21;
 
 import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 
 import {ZeroAddress} from "./utils/Errors.sol";
 
-/// @title AbstractPausable
+/// @title PausableOwnable
 /// @notice This abstract contract extracts a common part of the emergency stop
 ///         mechanism. The emergency stop mechanism can be triggered by an
-///         authorized account. Only owner of the contract can update the
-///         emergency stop account.
-/// @dev The child contract must override the `owner` function.
-abstract contract AbstractPausable is PausableUpgradeable {
+///         authorized account. Only owner of the contract can update pause
+///         admin address.
+abstract contract PausableOwnable is
+    PausableUpgradeable,
+    Ownable2StepUpgradeable
+{
     /// @notice An authorized account that can trigger emergency stop mechanism.
     address public pauseAdmin;
 
-    /// @notice Emitted when a emergency account is updated.
+    /// @notice Emitted when a pause admin address is updated.
     /// @param newAccount New pause admin address.
     /// @param oldAccount Old pause admin address.
     event PauseAdminUpdated(address newAccount, address oldAccount);
@@ -37,18 +40,22 @@ abstract contract AbstractPausable is PausableUpgradeable {
 
     /// @notice Initializes the contract. MUST BE CALLED from the child
     ///         contract initializer.
-    /// @param initialPauseAdmin Initial emergency stop account that
-    ///        can trigger the emergency stop mechanism.
+    /// @param initialOwner Initial owner of the contract.
+    /// @param initialPauseAdmin Initial emergency stop account that can trigger
+    ///        the emergency stop mechanism.
     // solhint-disable-next-line func-name-mixedcase
-    function __AbstractPausable_init(
+    function __PausableOwnable_init(
+        address initialOwner,
         address initialPauseAdmin
     ) internal onlyInitializing {
         __Pausable_init();
-        __AbstractPausable_init_unchained(initialPauseAdmin);
+        __Ownable2Step_init();
+        __Ownable_init(initialOwner);
+        __PausableOwnable_init_unchained(initialPauseAdmin);
     }
 
     // solhint-disable-next-line func-name-mixedcase
-    function __AbstractPausable_init_unchained(
+    function __PausableOwnable_init_unchained(
         address initialPauseAdmin
     ) internal onlyInitializing {
         pauseAdmin = initialPauseAdmin;
@@ -76,12 +83,7 @@ abstract contract AbstractPausable is PausableUpgradeable {
     /// @dev Throws if called by any account other than the owner.
     /// @param newPauseAdmin New account that can trigger emergency
     ///        stop mechanism.
-    function updatePauseAdmin(address newPauseAdmin) external {
-        address msgSender = _msgSender();
-        if (owner() != msgSender) {
-            revert PausableUnauthorizedAccount(msgSender);
-        }
-
+    function updatePauseAdmin(address newPauseAdmin) external onlyOwner {
         // TODO: Introduce a parameters update process.
         if (newPauseAdmin == address(0)) {
             revert ZeroAddress();
@@ -91,8 +93,4 @@ abstract contract AbstractPausable is PausableUpgradeable {
 
         pauseAdmin = newPauseAdmin;
     }
-
-    /// @notice Returns the address of the current owner.
-    /// @dev Must be overridden by a child contract.
-    function owner() public view virtual returns (address);
 }

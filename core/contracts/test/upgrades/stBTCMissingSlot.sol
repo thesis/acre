@@ -1,24 +1,17 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity ^0.8.21;
 
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC4626Upgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 
 import "../../Dispatcher.sol";
-import "../../AbstractPausable.sol";
+import "../../PausableOwnable.sol";
 import {ZeroAddress} from "../../utils/Errors.sol";
 
 /// @title stBTCMissingSlot
 /// @dev  This is a contract used to test stBTC upgradeability. It is a copy of
 ///       stBTC contract with some differences marked with `TEST:` comments.
-contract stBTCMissingSlot is
-    AbstractPausable,
-    ERC4626Upgradeable,
-    Ownable2StepUpgradeable
-{
+contract stBTCMissingSlot is PausableOwnable, ERC4626Upgradeable {
     using SafeERC20 for IERC20;
 
     /// Dispatcher contract that routes tBTC from stBTC to a given vault and back.
@@ -240,14 +233,5 @@ contract stBTCMissingSlot is
     /// @return Returns deposit parameters.
     function depositParameters() public view returns (uint256, uint256) {
         return (minimumDepositAmount, maximumTotalAssets);
-    }
-
-    function owner()
-        public
-        view
-        override(AbstractPausable, OwnableUpgradeable)
-        returns (address)
-    {
-        return super.owner();
     }
 }
