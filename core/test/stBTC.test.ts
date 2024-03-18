@@ -1146,9 +1146,9 @@ describe("stBTC", () => {
           beforeAfterSnapshotWrapper()
 
           before(async () => {
-            await stbtc.connect(pauseAdmin).pause()
+            await stbtc.connect(governance).pause()
 
-            tx = await stbtc.connect(pauseAdmin).unpause()
+            tx = await stbtc.connect(governance).unpause()
           })
 
           it("should change the pause state", async () => {
@@ -1158,7 +1158,7 @@ describe("stBTC", () => {
           it("should emit `Unpaused` event", async () => {
             await expect(tx)
               .to.emit(stbtc, "Unpaused")
-              .withArgs(pauseAdmin.address)
+              .withArgs(governance.address)
           })
         })
 
