@@ -1,0 +1,56 @@
+specVersion: 0.0.5
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: AcreBitcoinDepositor
+    network: sepolia
+    source:
+      address: "0x37E34EbC743FFAf96b56b3f62854bb7E733a4B50"
+      abi: AcreBitcoinDepositor
+      startBlock: 5394071
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - BridgingCompleted
+        - DepositFinalized
+        - DepositInitialized
+        - DepositorFeeDivisorUpdated
+        - OwnershipTransferStarted
+        - OwnershipTransferred
+        - StakeRequestCancelledFromQueue
+        - StakeRequestFinalized
+        - StakeRequestFinalizedFromQueue
+        - StakeRequestInitialized
+        - StakeRequestQueued
+      abis:
+        - name: AcreBitcoinDepositor
+          file: ./abis/AcreBitcoinDepositor.json
+      eventHandlers:
+        - event: BridgingCompleted(indexed uint256,indexed address,indexed uint16,uint256,uint256)
+          handler: handleBridgingCompleted
+        - event: DepositFinalized(indexed uint256,uint256,uint32)
+          handler: handleDepositFinalized
+        - event: DepositInitialized(indexed uint256,uint32)
+          handler: handleDepositInitialized
+        - event: DepositorFeeDivisorUpdated(uint64)
+          handler: handleDepositorFeeDivisorUpdated
+        - event: OwnershipTransferStarted(indexed address,indexed address)
+          handler: handleOwnershipTransferStarted
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: StakeRequestCancelledFromQueue(indexed uint256,indexed address,uint256)
+          handler: handleStakeRequestCancelledFromQueue
+        - event: StakeRequestFinalized(indexed uint256,indexed address,uint256)
+          handler: handleStakeRequestFinalized
+        - event: StakeRequestFinalizedFromQueue(indexed uint256,indexed address,uint256)
+          handler: handleStakeRequestFinalizedFromQueue
+        - event: StakeRequestInitialized(indexed uint256,indexed address,indexed address)
+          handler: handleStakeRequestInitialized
+        - event: StakeRequestQueued(indexed uint256,indexed address,uint256)
+          handler: handleStakeRequestQueued
+      file: ./src/acre-bitcoin-depositor.ts

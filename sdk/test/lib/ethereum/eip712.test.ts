@@ -7,7 +7,7 @@ import {
 
 const signMessageData = {
   domain: {
-    name: "TBTCDepositor",
+    name: "AcreBitcoinDepositor",
     version: "1",
     verifyingContract: EthereumAddress.from(
       ethers.Wallet.createRandom().address,

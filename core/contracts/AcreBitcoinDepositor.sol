@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity ^0.8.21;
 
-import "@openzeppelin/contracts/access/Ownable2Step.sol";
+import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
@@ -11,7 +11,6 @@ import "@keep-network/tbtc-v2/contracts/integrator/AbstractTBTCDepositor.sol";
 
 import {stBTC} from "./stBTC.sol";
 
-// TODO: Make Upgradable
 // TODO: Make Pausable
 
 /// @title Acre Bitcoin Depositor contract.
@@ -38,7 +37,10 @@ import {stBTC} from "./stBTC.sol";
 ///         Depositor address. After tBTC is minted to the Depositor, on the stake
 ///         finalization tBTC is staked in Acre and stBTC shares are emitted
 ///         to the staker.
-contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
+contract AcreBitcoinDepositor is
+    AbstractTBTCDepositor,
+    Ownable2StepUpgradeable
+{
     using SafeERC20 for IERC20;
 
     /// @notice State of the stake request.
@@ -263,19 +265,25 @@ contract AcreBitcoinDepositor is AbstractTBTCDepositor, Ownable2Step {
         uint256 bridgeMinDepositAmount
     );
 
-    /// @notice Acre Bitcoin Depositor contract constructor.
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
+    /// @notice Acre Bitcoin Depositor contract initializer.
     /// @param bridge tBTC Bridge contract instance.
     /// @param tbtcVault tBTC Vault contract instance.
     /// @param _tbtcToken tBTC token contract instance.
     /// @param _stbtc stBTC contract instance.
-    // TODO: Move to initializer when making the contract upgradeable.
-    constructor(
+    function initialize(
         address bridge,
         address tbtcVault,
         address _tbtcToken,
         address _stbtc
-    ) Ownable(msg.sender) {
+    ) public initializer {
         __AbstractTBTCDepositor_initialize(bridge, tbtcVault);
+        __Ownable2Step_init();
+        __Ownable_init(msg.sender);
 
         if (address(_tbtcToken) == address(0)) {
             revert TbtcTokenZeroAddress();

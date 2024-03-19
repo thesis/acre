@@ -1,0 +1,124 @@
+name: Subgraph
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "subgraph/**"
+  pull_request:
+
+defaults:
+  run:
+    working-directory: ./subgraph
+
+jobs:
+  subgraph-codegen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: "subgraph/.nvmrc"
+          cache: "pnpm"
+
+      - name: Install Dependencies
+        run: pnpm install --prefer-offline --frozen-lockfile
+
+      - name: Codegen
+        run: pnpm run codegen
+
+      - name: Upload Codegen Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: subgraph-codegen
+          path: |
+            subgraph/generated
+          if-no-files-found: error
+
+  subgraph-format:
+    needs: [subgraph-codegen]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: "subgraph/.nvmrc"
+          cache: "pnpm"
+
+      - name: Download Codegen Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: subgraph-codegen
+          path: subgraph/generated
+
+      - name: Install Dependencies
+        run: pnpm install --prefer-offline --frozen-lockfile
+
+      - name: Format
+        run: pnpm run format
+
+  subgraph-build:
+    needs: [subgraph-codegen]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: "subgraph/.nvmrc"
+          cache: "pnpm"
+
+      - name: Download Codegen Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: subgraph-codegen
+          path: subgraph/generated
+
+      - name: Install Dependencies
+        run: pnpm install --prefer-offline --frozen-lockfile
+
+      - name: Build
+        run: pnpm run build
+
+  subgraph-test:
+    needs: [subgraph-codegen]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: "subgraph/.nvmrc"
+          cache: "pnpm"
+
+      - name: Download Codegen Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: subgraph-codegen
+          path: subgraph/generated
+
+      - name: Install Dependencies
+        run: pnpm install --prefer-offline --frozen-lockfile
+
+      - name: Tests
+        run: pnpm run test
+
