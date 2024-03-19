@@ -1,5 +1,5 @@
 import React from "react"
-import { ArrowUpRight } from "#/assets/icons"
+import { ArrowUpRight, Info } from "#/assets/icons"
 import {
   Popover,
   PopoverTrigger,
@@ -11,11 +11,10 @@ import {
   CardBody,
   HStack,
   StackDivider,
-  Box,
   PopoverProps,
 } from "@chakra-ui/react"
 import { CardSizeType } from "#/types"
-import { useDocsDrawer } from "#/hooks"
+import { useDocsDrawer, useWalletContext } from "#/hooks"
 import { CurrencyBalanceWithConversion } from "./shared/CurrencyBalanceWithConversion"
 import { TextMd, TextSm } from "./shared/Typography"
 
@@ -25,27 +24,29 @@ export function StakingTokenPopover({
   cardSize,
   ...props
 }: StakingTokenPopoverProps) {
+  const { isConnected } = useWalletContext()
   const { onOpen: openDocsDrawer } = useDocsDrawer()
 
   return (
-    <Popover {...props}>
+    <Popover
+      trigger="click"
+      isOpen={isConnected ? undefined : false}
+      {...props}
+    >
       <PopoverTrigger>
-        <Box position="absolute" w={0} top={-2} right={-4} />
+        <Icon
+          as={Info}
+          cursor={isConnected ? "pointer" : "default"}
+          color={isConnected ? "grey.700" : "grey.400"}
+        />
       </PopoverTrigger>
       <PopoverContent
-        borderRadius="xl"
-        bg="gold.100"
-        borderWidth={0.5}
-        borderColor="white"
-        p={5}
-        width={cardSize.width + 15}
+        width={cardSize.width + 16}
         height={cardSize.height}
+        top={-2}
+        left={-2}
       >
-        <PopoverCloseButton
-          top={6}
-          right={6}
-          _hover={{ backgroundColor: undefined }}
-        />
+        <PopoverCloseButton top={6} right={6} />
         <PopoverBody p={0}>
           <TextMd fontWeight="bold">Liquid staking token</TextMd>
           <CurrencyBalanceWithConversion
@@ -55,7 +56,7 @@ export function StakingTokenPopover({
               currency: "stbtc",
               size: "4xl",
             }}
-            to={{ currency: "usd", color: "#675E60" }}
+            to={{ currency: "usd", color: "grey.500" }}
           />
           <Card borderColor="white" borderWidth={0.5} mt={5}>
             <CardBody p={0}>

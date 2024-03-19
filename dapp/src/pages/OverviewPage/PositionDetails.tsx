@@ -6,34 +6,30 @@ import {
   CardFooter,
   HStack,
   CardProps,
-  useDisclosure,
-  Icon,
 } from "@chakra-ui/react"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import { TextMd } from "#/components/shared/Typography"
 import { ACTION_FLOW_TYPES, ActionFlowType, CardSizeType } from "#/types"
 import TransactionModal from "#/components/TransactionModal"
 import { StakingTokenPopover } from "#/components/StakingTokenPopover"
-import { Info } from "#/assets/icons"
 
 export default function PositionDetails(props: CardProps) {
-  const { isOpen, onToggle, onClose } = useDisclosure()
   const cardRef = useRef<HTMLDivElement>()
   const [cardSize, setCardSize] = useState<CardSizeType>({
     width: 0,
     height: 0,
   })
 
-  const onResize = () => {
-    if (cardRef?.current?.clientWidth) {
+  useEffect(() => {
+    const onResize = () => {
+      if (!cardRef?.current) return
+
       setCardSize({
         width: cardRef.current.clientWidth,
         height: cardRef.current.clientHeight,
       })
     }
-  }
 
-  useEffect(() => {
     onResize()
     window.addEventListener("resize", onResize)
     return () => {
@@ -54,19 +50,7 @@ export default function PositionDetails(props: CardProps) {
       <CardBody>
         <HStack justifyContent="space-between">
           <TextMd fontWeight="bold">Your position</TextMd>
-          <Icon
-            as={Info}
-            cursor="pointer"
-            color="grey.700"
-            onClick={onToggle}
-          />
-          <StakingTokenPopover
-            isOpen={isOpen}
-            onClose={onClose}
-            closeOnBlur={false}
-            placement="left-start"
-            cardSize={cardSize}
-          />
+          <StakingTokenPopover placement="left-start" cardSize={cardSize} />
         </HStack>
         <CurrencyBalanceWithConversion
           from={{
