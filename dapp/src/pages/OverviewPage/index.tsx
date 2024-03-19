@@ -18,11 +18,11 @@ export default function OverviewPage() {
       </HStack>
 
       <Grid
-        templateAreas={'"activity-carousel activity-carousel button-docs"'}
+        templateAreas={'"activity-carousel activity-carousel docs-card"'}
         gridTemplateColumns="1fr 1fr auto"
       >
         <ActivityCarousel gridArea="activity-carousel" />
-        <DocsCard gridArea="button-docs" />
+        <DocsCard gridArea="docs-card" />
       </Grid>
       <Grid
         templateAreas={`"position-details statistics"

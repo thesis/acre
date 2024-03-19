@@ -1,34 +1,20 @@
-import React, { useCallback, useRef, useState } from "react"
+import React, { useRef } from "react"
 import Slider from "react-slick"
 import { Box, BoxProps } from "@chakra-ui/react"
-import { Carousel } from "#/components/shared/Carousel/Carousel"
-import { mockedActivities } from "#/mock"
+import { Carousel } from "#/components/shared/Carousel"
 import { ActivityCard } from "#/components/shared/ActivityCard"
-import { activityCarouselSettings } from "./utils"
+import { useActivities } from "#/hooks"
+import { activityCarouselSettings } from "./ActivityCarouselSettings"
 
 export function ActivityCarousel({ ...props }: BoxProps) {
   const carouselRef = useRef<HTMLInputElement & Slider>(null)
+  const { activities, onRemove } = useActivities()
 
-  // TODO: Lines 12-30 should be replaced by redux store when subgraphs are implemented
-  const [activities, setActivities] = useState(mockedActivities)
-
-  const onRemove = useCallback(
-    (activityHash: string) => {
-      const removedIndex = activities.findIndex(
-        (activity) => activity.txHash === activityHash,
-      )
-      const filteredActivities = activities.filter(
-        (activity) => activity.txHash !== activityHash,
-      )
-      const isLastCard = removedIndex === activities.length - 1
-      if (isLastCard) {
-        carouselRef.current?.slickPrev()
-      }
-      carouselRef.current?.forceUpdate()
-      setActivities(filteredActivities)
-    },
-    [activities],
-  )
+  const handleRemove = (txHash: string) => {
+    carouselRef.current?.slickPrev()
+    carouselRef.current?.forceUpdate()
+    onRemove(txHash)
+  }
 
   return (
     <Box pos="relative" {...props}>
@@ -53,7 +39,7 @@ export function ActivityCarousel({ ...props }: BoxProps) {
           <ActivityCard
             key={activity.txHash}
             activity={activity}
-            onRemove={onRemove}
+            onRemove={handleRemove}
             mr={3}
           />
         ))}

@@ -1,5 +1,5 @@
 import React from "react"
-import { NextArrowCarousel, PrevArrowCarousel } from "./carouselArrows"
+import { NextArrowCarousel, PrevArrowCarousel } from "./ActivityCarouselArrows"
 
 /* *
  * Settings for react-slick carousel.

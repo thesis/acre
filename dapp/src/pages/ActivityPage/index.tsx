@@ -2,19 +2,16 @@ import React, { useEffect } from "react"
 import { Flex, Link as ChakraLink, Icon } from "@chakra-ui/react"
 
 import { Link as ReactRouterLink, useParams } from "react-router-dom"
-import { useSidebar } from "#/hooks"
+import { useActivities, useSidebar } from "#/hooks"
 import { ArrowLeft } from "#/assets/icons"
-import { mockedActivities } from "#/mock/mock-activities"
 import ActivityDetails from "./ActivityDetails"
 import { ActivityBar } from "./ActivityBar"
 
 export default function ActivityPage() {
   const { onOpen: openSideBar, onClose: closeSidebar } = useSidebar()
+  const { getActivity } = useActivities()
   const params = useParams()
-
-  const selectedActivity = mockedActivities.find(
-    (_activity) => _activity.txHash === params.activityId,
-  )
+  const activity = getActivity(params.activityId)
 
   useEffect(() => {
     openSideBar()
@@ -34,11 +31,10 @@ export default function ActivityPage() {
           _hover={{ color: "white", bg: "brand.400" }}
         />
       </ChakraLink>
-      {selectedActivity && (
+      {activity && (
         <Flex gap={10}>
-          {}
-          <ActivityBar activity={selectedActivity} />
-          <ActivityDetails activity={selectedActivity} />
+          <ActivityBar activity={activity} />
+          <ActivityDetails activity={activity} />
         </Flex>
       )}
     </Flex>

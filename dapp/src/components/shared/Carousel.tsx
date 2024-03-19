@@ -1,8 +1,8 @@
 import React, { forwardRef } from "react"
-import { BoxProps, Flex } from "@chakra-ui/react"
-import Slider from "react-slick"
+import { FlexProps, Flex } from "@chakra-ui/react"
+import Slider, { Settings as SliderProps } from "react-slick"
 
-const carouselSettings = {
+const carouselSettings: SliderProps = {
   dots: false,
   infinite: false,
   draggable: false,
@@ -12,9 +12,10 @@ const carouselSettings = {
   slidesToScroll: 1,
 }
 
-type CarouselProps = BoxProps & {
-  children: React.ReactNode
-}
+type CarouselProps = FlexProps &
+  SliderProps & {
+    children: React.ReactNode
+  }
 
 export const Carousel = forwardRef<HTMLInputElement, CarouselProps>(
   (props, ref) => (
