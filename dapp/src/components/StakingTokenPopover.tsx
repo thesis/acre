@@ -1,5 +1,5 @@
 import React from "react"
-import { ArrowUpRight, Info } from "#/assets/icons"
+import { Info } from "#/assets/icons"
 import {
   Popover,
   PopoverTrigger,
@@ -7,16 +7,13 @@ import {
   PopoverCloseButton,
   PopoverBody,
   Icon,
-  Card,
-  CardBody,
-  HStack,
-  StackDivider,
   PopoverProps,
 } from "@chakra-ui/react"
 import { CardSizeType } from "#/types"
 import { useDocsDrawer, useWalletContext } from "#/hooks"
 import { CurrencyBalanceWithConversion } from "./shared/CurrencyBalanceWithConversion"
 import { TextMd, TextSm } from "./shared/Typography"
+import Alert from "./shared/Alert"
 
 type StakingTokenPopoverProps = PopoverProps & { cardSize: CardSizeType }
 
@@ -58,32 +55,18 @@ export function StakingTokenPopover({
             }}
             to={{ currency: "usd", color: "grey.500" }}
           />
-          <Card borderColor="white" borderWidth={0.5} mt={5}>
-            <CardBody p={0}>
-              <HStack
-                divider={
-                  <StackDivider
-                    marginInlineStart="0 !important"
-                    marginInlineEnd="0 !important"
-                    borderColor="white"
-                  />
-                }
-              >
-                <TextSm my={4} mx={5}>
-                  Your tokens are this Ethereum address once the staking
-                  transaction is finalized.
-                </TextSm>
-                <Icon
-                  cursor="pointer"
-                  as={ArrowUpRight}
-                  boxSize={4}
-                  color="brand.400"
-                  m={5}
-                  onClick={openDocsDrawer}
-                />
-              </HStack>
-            </CardBody>
-          </Card>
+          <Alert
+            mt={5}
+            status="info"
+            withAlertIcon={false}
+            withActionIcon
+            onclick={openDocsDrawer}
+          >
+            <TextSm>
+              Your tokens are this Ethereum address once the staking transaction
+              is finalized.
+            </TextSm>
+          </Alert>
         </PopoverBody>
       </PopoverContent>
     </Popover>
