@@ -19,5 +19,7 @@ export const tooltipTheme: ComponentSingleStyleConfig = {
     borderRadius: "md",
     bg: "grey.700",
     [$arrowBg.variable]: "colors.grey.700",
+    py: 2,
+    px: 3,
   },
 }
