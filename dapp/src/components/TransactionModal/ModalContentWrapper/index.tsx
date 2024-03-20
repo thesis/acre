@@ -13,6 +13,7 @@ import MissingAccountModal from "./MissingAccountModal"
 import ResumeModal from "./ResumeModal"
 import SuccessModal from "./SuccessModal"
 import LoadingModal from "./LoadingModal"
+import ErrorModal from "./ErrorModal"
 
 export default function ModalContentWrapper({
   defaultType,
@@ -54,6 +55,8 @@ export default function ModalContentWrapper({
 
   if (status === PROCESS_STATUSES.SUCCEEDED)
     return <SuccessModal type={type} tokenAmount={tokenAmount} />
+
+  if (status === PROCESS_STATUSES.FAILED) return <ErrorModal type={type} />
 
   return children
 }

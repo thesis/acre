@@ -25,7 +25,6 @@ export default function DepositBTCModal() {
     setStatus(PROCESS_STATUSES.SUCCEEDED)
   }, [setStatus])
 
-  // TODO: After a failed attempt, we should display the message
   const onStakeBTCError = useCallback(() => {
     setStatus(PROCESS_STATUSES.FAILED)
   }, [setStatus])
