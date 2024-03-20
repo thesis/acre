@@ -3,8 +3,9 @@ import { createMultiStyleConfigHelpers, defineStyle } from "@chakra-ui/react"
 
 const multiStyleConfig = createMultiStyleConfigHelpers(parts.keys)
 
-const baseStylePopper = defineStyle({
-  transform: "none !important",
+const baseStyleCloseButton = defineStyle({
+  top: 5,
+  right: 5,
 })
 
 const baseStyleContent = defineStyle({
@@ -19,11 +20,22 @@ const baseStyleContent = defineStyle({
   },
 })
 
+const variantNoTransform = multiStyleConfig.definePartsStyle({
+  popper: {
+    transform: "none !important",
+  },
+})
+
+const variants = {
+  "no-transform": variantNoTransform,
+}
+
 const baseStyle = multiStyleConfig.definePartsStyle({
-  popper: baseStylePopper,
   content: baseStyleContent,
+  closeButton: baseStyleCloseButton,
 })
 
 export const popoverTheme = multiStyleConfig.defineMultiStyleConfig({
   baseStyle,
+  variants,
 })

@@ -6,35 +6,38 @@ import {
   PopoverContent,
   PopoverCloseButton,
   PopoverBody,
-  Icon,
   PopoverProps,
+  IconButton,
 } from "@chakra-ui/react"
-import { CardSizeType } from "#/types"
+import { SizeType } from "#/types"
 import { useDocsDrawer, useWalletContext } from "#/hooks"
-import { CurrencyBalanceWithConversion } from "./shared/CurrencyBalanceWithConversion"
 import { TextMd, TextSm } from "./shared/Typography"
 import Alert from "./shared/Alert"
+import { CurrencyBalance } from "./shared/CurrencyBalance"
 
-type StakingTokenPopoverProps = PopoverProps & { cardSize: CardSizeType }
+type LiquidStakingTokenPopoverProps = PopoverProps & { cardSize: SizeType }
 
-export function StakingTokenPopover({
+export function LiquidStakingTokenPopover({
   cardSize,
   ...props
-}: StakingTokenPopoverProps) {
+}: LiquidStakingTokenPopoverProps) {
   const { isConnected } = useWalletContext()
   const { onOpen: openDocsDrawer } = useDocsDrawer()
 
   return (
-    <Popover
-      trigger="click"
-      isOpen={isConnected ? undefined : false}
-      {...props}
-    >
+    <Popover variant="no-transform" {...props}>
       <PopoverTrigger>
-        <Icon
-          as={Info}
-          cursor={isConnected ? "pointer" : "default"}
-          color={isConnected ? "grey.700" : "grey.400"}
+        <IconButton
+          variant="ghost"
+          justifyContent="end"
+          icon={
+            <Info boxSize={5} color={isConnected ? "grey.700" : "grey.400"} />
+          }
+          _disabled={{
+            cursor: "default",
+          }}
+          isDisabled={!isConnected}
+          aria-label="Liquid staking details"
         />
       </PopoverTrigger>
       <PopoverContent
@@ -43,17 +46,14 @@ export function StakingTokenPopover({
         top={-2}
         left={-2}
       >
-        <PopoverCloseButton top={6} right={6} />
+        <PopoverCloseButton />
         <PopoverBody p={0}>
           <TextMd fontWeight="bold">Liquid staking token</TextMd>
-          <CurrencyBalanceWithConversion
-            from={{
-              amount: "912312331",
-              variant: "greater-balance-xl",
-              currency: "stbtc",
-              size: "4xl",
-            }}
-            to={{ currency: "usd", color: "grey.500" }}
+          <CurrencyBalance
+            amount="912312331"
+            variant="greater-balance-xl"
+            currency="stbtc"
+            size="4xl"
           />
           <Alert
             mt={5}

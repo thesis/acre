@@ -1,4 +1,4 @@
-export type CardSizeType = {
+export type SizeType = {
   width: number
   height: number
 }

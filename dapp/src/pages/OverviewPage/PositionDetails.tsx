@@ -9,13 +9,13 @@ import {
 } from "@chakra-ui/react"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import { TextMd } from "#/components/shared/Typography"
-import { ACTION_FLOW_TYPES, ActionFlowType, CardSizeType } from "#/types"
+import { ACTION_FLOW_TYPES, ActionFlowType, SizeType } from "#/types"
 import TransactionModal from "#/components/TransactionModal"
-import { StakingTokenPopover } from "#/components/StakingTokenPopover"
+import { LiquidStakingTokenPopover } from "#/components/LiquidStakingTokenPopover"
 
 export default function PositionDetails(props: CardProps) {
   const cardRef = useRef<HTMLDivElement>()
-  const [cardSize, setCardSize] = useState<CardSizeType>({
+  const [cardSize, setCardSize] = useState<SizeType>({
     width: 0,
     height: 0,
   })
@@ -46,11 +46,11 @@ export default function PositionDetails(props: CardProps) {
   }, [])
 
   return (
-    <Card ref={cardRef} position="relative" {...props}>
+    <Card ref={cardRef} {...props}>
       <CardBody>
         <HStack justifyContent="space-between">
           <TextMd fontWeight="bold">Your position</TextMd>
-          <StakingTokenPopover placement="left-start" cardSize={cardSize} />
+          <LiquidStakingTokenPopover cardSize={cardSize} />
         </HStack>
         <CurrencyBalanceWithConversion
           from={{
