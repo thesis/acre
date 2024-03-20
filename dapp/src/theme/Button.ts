@@ -27,6 +27,12 @@ export const buttonTheme: ComponentSingleStyleConfig = {
       _active: {
         bg: "brand.400",
       },
+      _loading: {
+        _disabled: {
+          background: "gold.300",
+          opacity: 1,
+        },
+      },
     },
     outline: ({ colorScheme }: StyleFunctionProps) => {
       const defaultStyles = {
