@@ -38,7 +38,6 @@ export function useWalletToast(
       delay,
     )
 
-    // eslint-disable-next-line consistent-return
     return () => clearTimeout(timeout)
   }, [delay, handleConnect, open, toastId, type])
 
