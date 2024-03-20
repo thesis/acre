@@ -6,7 +6,7 @@ import {
   useTransactionContext,
   useWalletContext,
 } from "#/hooks"
-import { ConnectBTCAccount, ConnectETHAccount } from "#/assets/icons"
+import { BitcoinIcon, EthereumIcon } from "#/assets/icons"
 import { ActionFlowType, PROCESS_STATUSES } from "#/types"
 import ActionFormModal from "./ActionFormModal"
 import MissingAccountModal from "./MissingAccountModal"
@@ -31,7 +31,7 @@ export default function ModalContentWrapper({
     return (
       <MissingAccountModal
         currency="bitcoin"
-        icon={ConnectBTCAccount}
+        icon={BitcoinIcon}
         requestAccount={requestBitcoinAccount}
       />
     )
@@ -40,7 +40,7 @@ export default function ModalContentWrapper({
     return (
       <MissingAccountModal
         currency="ethereum"
-        icon={ConnectETHAccount}
+        icon={EthereumIcon}
         requestAccount={requestEthereumAccount}
       />
     )
