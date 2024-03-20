@@ -6,7 +6,7 @@ import { TextMd } from "../Typography"
 export function ReceiveSTBTCAlert({ ...restProps }: CardAlertProps) {
   return (
     // TODO: Add the correct action after click
-    <CardAlert status="error" withLink onclick={() => {}} {...restProps}>
+    <CardAlert status="error" withLink onClick={() => {}} {...restProps}>
       <TextMd>
         <Highlight query="stBTC" styles={{ textDecorationLine: "underline" }}>
           You will receive stBTC liquid staking token at this Ethereum address

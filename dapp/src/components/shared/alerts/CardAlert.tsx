@@ -5,13 +5,13 @@ import { Alert, AlertProps } from "./Alert"
 
 export type CardAlertProps = {
   withLink?: boolean
-  onclick?: () => void
+  onClick?: () => void
 } & Omit<AlertProps, "withCloseButton" | "onClose">
 
 export function CardAlert({
   withLink = false,
   children,
-  onclick,
+  onClick,
   ...props
 }: CardAlertProps) {
   return (
@@ -42,7 +42,7 @@ export function CardAlert({
             boxSize={4}
             cursor="pointer"
             color="brand.400"
-            onClick={onclick}
+            onClick={onClick}
           />
         </Flex>
       )}
