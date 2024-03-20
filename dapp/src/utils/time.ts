@@ -7,9 +7,28 @@ import {
   ONE_WEEK_IN_SECONDS,
   ONE_YEAR_IN_SECONDS,
 } from "#/constants"
+import { TimeUnits } from "#/types"
 
 export const dateToUnixTimestamp = (date: Date = new Date()) =>
   Math.floor(date.getTime() / ONE_SEC_IN_MILLISECONDS)
+
+export const unixTimestampToTimeUnits = (targetUnix: number): TimeUnits => {
+  const days = Math.floor(targetUnix / ONE_DAY_IN_SECONDS)
+  const hours = Math.floor(
+    (targetUnix % ONE_DAY_IN_SECONDS) / ONE_HOUR_IN_SECONDS,
+  )
+  const minutes = Math.floor(
+    (targetUnix % ONE_HOUR_IN_SECONDS) / ONE_MINUTE_IN_SECONDS,
+  )
+  const seconds = Math.floor(targetUnix % ONE_MINUTE_IN_SECONDS)
+
+  return {
+    days: days.toString(),
+    hours: hours.toString(),
+    minutes: minutes.toString(),
+    seconds: seconds.toString(),
+  }
+}
 
 // unit, max diff, divisor
 const unitsToDivisor: [Intl.RelativeTimeFormatUnit, number, number][] = [

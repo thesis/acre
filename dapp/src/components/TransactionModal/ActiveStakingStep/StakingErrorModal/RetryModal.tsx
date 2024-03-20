@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useMemo } from "react"
 import {
   Button,
   CloseButton,
@@ -10,8 +10,23 @@ import {
 import { SecurityCheckIcon } from "#/assets/icons"
 import { TextMd, TextSm } from "#/components/shared/Typography"
 import IconWrapper from "#/components/shared/IconWrapper"
+import { dateToUnixTimestamp } from "#/utils"
+import { useCountdown } from "#/hooks"
+import { ONE_MINUTE_IN_SECONDS, ONE_SEC_IN_MILLISECONDS } from "#/constants"
+
+export const getRetryTimestamp = () => {
+  const today = new Date()
+  const retryDate = new Date(
+    today.getTime() + ONE_MINUTE_IN_SECONDS * ONE_SEC_IN_MILLISECONDS,
+  )
+
+  return dateToUnixTimestamp(retryDate)
+}
 
 export default function RetryModal({ retry }: { retry: () => void }) {
+  const retryTimestamp = useMemo(() => getRetryTimestamp(), [])
+  const data = useCountdown(retryTimestamp, true, retry)
+
   return (
     <>
       <ModalHeader color="red.400">Oops! There was an error.</ModalHeader>
@@ -24,7 +39,7 @@ export default function RetryModal({ retry }: { retry: () => void }) {
           safe.
         </TextMd>
         <TextMd>
-          Auto-retry in <Text as="b">0:59</Text>
+          Auto-retry in <Text as="b">{`0:${data.seconds}`}</Text>
         </TextMd>
       </ModalBody>
       <ModalFooter mt={4}>
