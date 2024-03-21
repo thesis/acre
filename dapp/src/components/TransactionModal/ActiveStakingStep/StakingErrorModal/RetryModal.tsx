@@ -1,7 +1,9 @@
 import React, { useMemo } from "react"
 import {
+  Box,
   Button,
   CloseButton,
+  HStack,
   ModalBody,
   ModalFooter,
   ModalHeader,
@@ -25,7 +27,9 @@ export const getRetryTimestamp = () => {
 
 export default function RetryModal({ retry }: { retry: () => void }) {
   const retryTimestamp = useMemo(() => getRetryTimestamp(), [])
-  const data = useCountdown(retryTimestamp, true, retry)
+  const data = useCountdown(retryTimestamp, true)
+
+  const progressPercent = ((60 - parseInt(data.seconds, 10)) * 100) / 60
 
   return (
     <>
@@ -38,9 +42,20 @@ export default function RetryModal({ retry }: { retry: () => void }) {
           Your deposit didn&apos;t go through but no worries, your funds are
           safe.
         </TextMd>
-        <TextMd>
-          Auto-retry in <Text as="b">{`0:${data.seconds}`}</Text>
-        </TextMd>
+        <HStack>
+          <TextMd>
+            Auto-retry in <Text as="b">{`0:${data.seconds}`}</Text>
+          </TextMd>
+          <Box
+            w={3}
+            h={3}
+            aspectRatio={1}
+            borderRadius="50%"
+            background={`conic-gradient(transparent ${progressPercent}%, var(--chakra-colors-brand-400) 0)`}
+            transition="background"
+          />
+          <Box />
+        </HStack>
       </ModalBody>
       <ModalFooter mt={4}>
         <Button size="lg" width="100%" onClick={retry}>
