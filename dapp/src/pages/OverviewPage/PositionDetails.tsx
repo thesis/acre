@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react"
+import React, { useCallback, useState } from "react"
 import {
   Button,
   CardBody,
@@ -9,33 +9,13 @@ import {
 } from "@chakra-ui/react"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import { TextMd } from "#/components/shared/Typography"
-import { ACTION_FLOW_TYPES, ActionFlowType, SizeType } from "#/types"
+import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
 import TransactionModal from "#/components/TransactionModal"
 import { LiquidStakingTokenPopover } from "#/components/LiquidStakingTokenPopover"
+import { useSize } from "#/hooks"
 
 export default function PositionDetails(props: CardProps) {
-  const cardRef = useRef<HTMLDivElement>()
-  const [cardSize, setCardSize] = useState<SizeType>({
-    width: 0,
-    height: 0,
-  })
-
-  useEffect(() => {
-    const onResize = () => {
-      if (!cardRef?.current) return
-
-      setCardSize({
-        width: cardRef.current.clientWidth,
-        height: cardRef.current.clientHeight,
-      })
-    }
-
-    onResize()
-    window.addEventListener("resize", onResize)
-    return () => {
-      window.removeEventListener("resize", onResize)
-    }
-  }, [])
+  const { ref, size } = useSize()
 
   const [actionFlowType, setActionFlowType] = useState<
     ActionFlowType | undefined
@@ -46,11 +26,11 @@ export default function PositionDetails(props: CardProps) {
   }, [])
 
   return (
-    <Card ref={cardRef} {...props}>
+    <Card ref={ref} {...props}>
       <CardBody>
         <HStack justifyContent="space-between">
           <TextMd fontWeight="bold">Your position</TextMd>
-          <LiquidStakingTokenPopover cardSize={cardSize} />
+          <LiquidStakingTokenPopover popoverSize={size} />
         </HStack>
         <CurrencyBalanceWithConversion
           from={{

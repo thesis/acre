@@ -15,10 +15,10 @@ import { TextMd, TextSm } from "./shared/Typography"
 import Alert from "./shared/Alert"
 import { CurrencyBalance } from "./shared/CurrencyBalance"
 
-type LiquidStakingTokenPopoverProps = PopoverProps & { cardSize: SizeType }
+type LiquidStakingTokenPopoverProps = PopoverProps & { popoverSize: SizeType }
 
 export function LiquidStakingTokenPopover({
-  cardSize,
+  popoverSize,
   ...props
 }: LiquidStakingTokenPopoverProps) {
   const { isConnected } = useWalletContext()
@@ -41,8 +41,8 @@ export function LiquidStakingTokenPopover({
         />
       </PopoverTrigger>
       <PopoverContent
-        width={cardSize.width + 16}
-        height={cardSize.height}
+        width={popoverSize.width + 16}
+        height={popoverSize.height}
         top={-2}
         left={-2}
       >
