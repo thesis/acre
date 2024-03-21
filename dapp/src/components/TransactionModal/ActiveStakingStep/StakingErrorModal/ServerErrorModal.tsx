@@ -21,6 +21,7 @@ import {
 import { TextMd } from "#/components/shared/Typography"
 import { EXTERNAL_HREF } from "#/constants"
 import IconWrapper from "#/components/shared/IconWrapper"
+import { MODAL_BASE_SIZE } from "#/components/shared/ModalBase"
 
 export default function ServerErrorModal({
   isLoading,
@@ -63,6 +64,13 @@ export default function ServerErrorModal({
         justifyContent="space-between"
         bgColor="gold.200"
         borderRadius="xl"
+        // The dialog container style has padding set by default.
+        // However, the modal footer should be positioned outside this padding.
+        // To avoid changing it, let's set the position to relative and calculate the correct width.
+        position="relative"
+        bottom={-4}
+        left={-4}
+        w={`calc(var(--chakra-sizes-${MODAL_BASE_SIZE}) - 0.25rem)`}
       >
         <Flex flexDirection="column">
           <HStack>
