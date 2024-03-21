@@ -22,7 +22,13 @@ import { TextMd } from "#/components/shared/Typography"
 import { EXTERNAL_HREF } from "#/constants"
 import IconWrapper from "#/components/shared/IconWrapper"
 
-export default function ServerErrorModal({ retry }: { retry: () => void }) {
+export default function ServerErrorModal({
+  isLoading,
+  retry,
+}: {
+  isLoading: boolean
+  retry: () => void
+}) {
   return (
     <>
       <ModalCloseButton />
@@ -69,6 +75,8 @@ export default function ServerErrorModal({ retry }: { retry: () => void }) {
           <TextMd color="red.400">Partial Outage</TextMd>
         </Flex>
         <Button
+          // TODO: Use a loading button
+          isLoading={isLoading}
           leftIcon={<ReloadIcon boxSize={5} color="brand.400" />}
           variant="outline"
           onClick={retry}

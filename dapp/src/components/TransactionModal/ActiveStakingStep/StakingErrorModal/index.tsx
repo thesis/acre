@@ -41,9 +41,10 @@ export default function StakingErrorModal() {
     [handleRetry],
   )
 
-  if (isLoading) return <LoadingModal />
+  if (isServerError)
+    return <ServerErrorModal retry={handleRetryWrapper} isLoading={isLoading} />
 
-  if (isServerError) return <ServerErrorModal retry={handleRetryWrapper} />
+  if (isLoading) return <LoadingModal />
 
   return <RetryModal retry={handleRetryWrapper} />
 }
