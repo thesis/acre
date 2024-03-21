@@ -7,6 +7,14 @@ import {
   unixTimestampToTimeUnits,
 } from "../utils"
 
+/**
+ * It was decided to use an already implemented hook used by Threshold Network.
+ * Hook allows us to count down the time until the specified date and.
+ * After time has passed we can call the specified action.
+ *
+ * Source:
+ * https://github.com/threshold-network/components/blob/main/src/hooks/useCountdown.ts
+ */
 export const useCountdown = (
   targetDateInUnix: number,
   addLeadingZeroes?: boolean,
