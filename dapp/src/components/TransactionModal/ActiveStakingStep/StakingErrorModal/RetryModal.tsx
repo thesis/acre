@@ -7,7 +7,6 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
-  Text,
 } from "@chakra-ui/react"
 import { CableWithPlugIcon, SecurityCheckIcon } from "#/assets/icons"
 import { TextMd, TextSm } from "#/components/shared/Typography"
@@ -42,16 +41,20 @@ export default function RetryModal({ retry }: { retry: () => void }) {
           Your deposit didn&apos;t go through but no worries, your funds are
           safe.
         </TextMd>
-        <HStack>
-          <TextMd>
-            Auto-retry in <Text as="b">{`0:${data.seconds}`}</Text>
-          </TextMd>
+        <HStack gap={1}>
+          <TextMd>Auto-retry in</TextMd>
+          <TextMd
+            fontWeight="bold"
+            textAlign="left"
+            minW={9}
+          >{`0:${data.seconds}`}</TextMd>
           <Box
             w={3}
             h={3}
             aspectRatio={1}
             borderRadius="50%"
             background={`conic-gradient(transparent ${progressPercent}%, var(--chakra-colors-brand-400) 0)`}
+            transform="scaleX(-1)"
             transition="background"
           />
           <Box />
