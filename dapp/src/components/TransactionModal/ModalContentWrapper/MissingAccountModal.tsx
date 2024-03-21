@@ -13,6 +13,7 @@ import Alert from "#/components/shared/Alert"
 import { logPromiseFailure, getCurrencyByType } from "#/utils"
 import { CurrencyType, RequestAccountParams } from "#/types"
 import IconWrapper from "#/components/shared/IconWrapper"
+import { CableWithPlugIcon } from "#/assets/icons"
 
 type MissingAccountModalProps = {
   currency: CurrencyType
@@ -36,7 +37,7 @@ export default function MissingAccountModal({
       <ModalCloseButton />
       <ModalHeader>{name} account not installed</ModalHeader>
       <ModalBody pt={4}>
-        <IconWrapper boxSize={32} color="brand.400">
+        <IconWrapper icon={CableWithPlugIcon} boxSize={32} color="brand.400">
           <Icon as={icon} boxSize={14} />
         </IconWrapper>
         <TextMd>

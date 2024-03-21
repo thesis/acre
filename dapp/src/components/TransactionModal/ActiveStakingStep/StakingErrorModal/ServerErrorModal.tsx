@@ -11,7 +11,12 @@ import {
   ModalHeader,
   Tooltip,
 } from "@chakra-ui/react"
-import { DiscordIcon, Info, ServerIcon } from "#/assets/icons"
+import {
+  CableWithPlugIcon,
+  DiscordIcon,
+  Info,
+  ServerIcon,
+} from "#/assets/icons"
 import { TextMd } from "#/components/shared/Typography"
 import { EXTERNAL_HREF } from "#/constants"
 import IconWrapper from "#/components/shared/IconWrapper"
@@ -24,7 +29,7 @@ export default function ServerErrorModal({ retry }: { retry: () => void }) {
         We&apos;re currently facing system issues.
       </ModalHeader>
       <ModalBody gap={10} pt={4}>
-        <IconWrapper boxSize={32} color="red.400">
+        <IconWrapper icon={CableWithPlugIcon} boxSize={32} color="red.400">
           <ServerIcon boxSize={14} />
         </IconWrapper>
         <TextMd>

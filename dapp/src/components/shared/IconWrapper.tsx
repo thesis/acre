@@ -1,14 +1,13 @@
 import React from "react"
 import { Box, HStack, Icon, IconProps } from "@chakra-ui/react"
-import { CableWithPlugIcon } from "#/assets/icons"
 
 type IconWrapperProps = {
-  icon?: typeof Icon
+  icon: typeof Icon
   children: React.ReactNode
 } & IconProps
 
 export default function IconWrapper({
-  icon = CableWithPlugIcon,
+  icon,
   children,
   ...props
 }: IconWrapperProps) {

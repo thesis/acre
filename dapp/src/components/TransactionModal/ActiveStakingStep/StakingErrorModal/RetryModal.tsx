@@ -7,7 +7,7 @@ import {
   ModalHeader,
   Text,
 } from "@chakra-ui/react"
-import { SecurityCheckIcon } from "#/assets/icons"
+import { CableWithPlugIcon, SecurityCheckIcon } from "#/assets/icons"
 import { TextMd, TextSm } from "#/components/shared/Typography"
 import IconWrapper from "#/components/shared/IconWrapper"
 import { dateToUnixTimestamp } from "#/utils"
@@ -31,7 +31,7 @@ export default function RetryModal({ retry }: { retry: () => void }) {
     <>
       <ModalHeader color="red.400">Oops! There was an error.</ModalHeader>
       <ModalBody gap={10} pt={4}>
-        <IconWrapper boxSize={32} color="red.400">
+        <IconWrapper icon={CableWithPlugIcon} boxSize={32} color="red.400">
           <CloseButton color="red.400" fontSize="2xl" />
         </IconWrapper>
         <TextMd>
