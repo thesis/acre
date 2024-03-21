@@ -50,7 +50,7 @@ function ActivityCard({ activity, onRemove }: ActivityCardType) {
             symbolFontWeight="medium"
           />
           {isCompleted ? (
-            <Tooltip label="Remove" placement="top" paddingX={3} paddingY={2}>
+            <Tooltip label="Remove" placement="top">
               <CloseButton
                 size="sm"
                 onClick={onClose}
