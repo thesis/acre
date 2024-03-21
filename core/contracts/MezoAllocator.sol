@@ -74,6 +74,7 @@ contract MezoAllocator is Ownable2Step {
     function deposit(uint96 amount) external onlyMaintainerAndOwner {
         // slither-disable-next-line arbitrary-send-erc20
         IERC20(tbtc).safeTransferFrom(tbtcStorage, address(this), amount);
+        IERC20(tbtc).forceApprove(mezoPortal, amount);
         // 0 denotes no lock period for this deposit.
         IMezoPortal(mezoPortal).deposit(address(tbtc), amount, 0);
         // MezoPortal doesn't return depositId, so we have to read depositCounter
@@ -110,6 +111,11 @@ contract MezoAllocator is Ownable2Step {
         maintainer = _maintainer;
 
         emit MaintainerUpdated(_maintainer);
+    }
+
+    /// @notice Returns the deposit IDs.
+    function getDeposits() external view returns (uint256[] memory) {
+        return deposits;
     }
 
     // TODO: add updatable withdrawer and onlyWithdrawer modifier (stBTC or AcreDispatcher).

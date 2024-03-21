@@ -21,7 +21,8 @@ import "./lib/ERC4626Fees.sol";
 contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
     using SafeERC20 for IERC20;
 
-    /// Dispatcher contract that routes tBTC from stBTC to a given vault and back.
+    /// Dispatcher contract that routes tBTC from stBTC to a given destination
+    /// and back.
     Dispatcher public dispatcher;
 
     /// Address of the treasury wallet, where fees should be transferred to.
