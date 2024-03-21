@@ -9,6 +9,8 @@ import type {
   TestERC4626,
   TBTCVaultStub,
   AcreBitcoinDepositorHarness,
+  MezoAllocator,
+  MezoPortalStub,
 } from "../../typechain"
 
 // eslint-disable-next-line import/prefer-default-export
@@ -26,6 +28,9 @@ export async function deployment() {
   const dispatcher: Dispatcher = await getDeployedContract("Dispatcher")
 
   const vault: TestERC4626 = await getDeployedContract("Vault")
+  const mezoAllocator: MezoAllocator =
+    await getDeployedContract("MezoAllocator")
+  const mezoPortal: MezoPortalStub = await getDeployedContract("MezoPortal")
 
   return {
     tbtc,
@@ -35,5 +40,7 @@ export async function deployment() {
     tbtcVault,
     dispatcher,
     vault,
+    mezoAllocator,
+    mezoPortal,
   }
 }

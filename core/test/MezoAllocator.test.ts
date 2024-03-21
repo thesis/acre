@@ -1,0 +1,139 @@
+import { helpers } from "hardhat"
+import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
+import { expect } from "chai"
+import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers"
+
+import { ContractTransactionResponse } from "ethers"
+import { beforeAfterSnapshotWrapper, deployment } from "./helpers"
+
+import {
+  StBTC as stBTC,
+  TestERC20,
+  MezoAllocator,
+  IMezoPortal,
+} from "../typechain"
+
+import { to1e18 } from "./utils"
+
+const { getNamedSigners, getUnnamedSigners } = helpers.signers
+
+async function fixture() {
+  const { tbtc, stbtc, dispatcher, mezoAllocator, mezoPortal } =
+    await deployment()
+  const { governance, maintainer } = await getNamedSigners()
+  const [thirdParty] = await getUnnamedSigners()
+
+  return {
+    dispatcher,
+    governance,
+    thirdParty,
+    maintainer,
+    tbtc,
+    stbtc,
+    mezoAllocator,
+    mezoPortal,
+  }
+}
+
+describe("MezoAllocator", () => {
+  let tbtc: TestERC20
+  let stbtc: stBTC
+  let mezoAllocator: MezoAllocator
+  let mezoPortal: IMezoPortal
+
+  let governance: HardhatEthersSigner
+  let thirdParty: HardhatEthersSigner
+  let maintainer: HardhatEthersSigner
+
+  before(async () => {
+    ;({
+      governance,
+      thirdParty,
+      maintainer,
+      tbtc,
+      stbtc,
+      mezoAllocator,
+      mezoPortal,
+    } = await loadFixture(fixture))
+  })
+
+  describe("deposit", () => {
+    beforeAfterSnapshotWrapper()
+
+    before(async () => {})
+
+    context("when the caller is not an owner", () => {
+      it("should revert", async () => {
+        await expect(
+          mezoAllocator.connect(thirdParty).deposit(to1e18(1)),
+        ).to.be.revertedWithCustomError(mezoAllocator, "NotAuthorized")
+      })
+    })
+
+    context("when the caller is an owner", () => {
+      it("should not revert", async () => {
+        await expect(
+          mezoAllocator.connect(governance).deposit(to1e18(1)),
+        ).to.not.be.revertedWithCustomError(mezoAllocator, "NotAuthorized")
+      })
+    })
+
+    context("when the caller is maintainer", () => {
+      context("when first deposit is made", () => {
+        let tx: ContractTransactionResponse
+
+        before(async () => {
+          await tbtc.mint(await stbtc.getAddress(), to1e18(1))
+          await mezoAllocator
+            .connect(governance)
+            .updateMaintainer(maintainer.address)
+
+          tx = await mezoAllocator.connect(maintainer).deposit(to1e18(1))
+        })
+
+        it("should deposit and transfer tBTC to Mezo Portal", async () => {
+          expect(
+            await tbtc.balanceOf(await mezoAllocator.getAddress()),
+          ).to.equal(0)
+          expect(await tbtc.balanceOf(await mezoPortal.getAddress())).to.equal(
+            to1e18(1),
+          )
+        })
+
+        it("should populate deposits array", async () => {
+          expect(await mezoAllocator.deposits(0)).to.equal(1)
+        })
+
+        it("should populate deposits mapping", async () => {
+          expect(await mezoAllocator.depositsById(1)).to.equal(to1e18(1))
+        })
+
+        it("should emit Deposit event", async () => {
+          const latestDepositId = await mezoAllocator.deposits(0)
+          await expect(tx)
+            .to.emit(mezoAllocator, "DepositAllocated")
+            .withArgs(latestDepositId, to1e18(1))
+        })
+      })
+
+      context("when second deposit is made", () => {
+        before(async () => {
+          await tbtc.mint(await stbtc.getAddress(), to1e18(5))
+          await mezoAllocator
+            .connect(governance)
+            .updateMaintainer(maintainer.address)
+
+          await mezoAllocator.connect(maintainer).deposit(to1e18(5))
+        })
+
+        it("should increment the deposits array", async () => {
+          expect(await mezoAllocator.deposits(1)).to.equal(2)
+        })
+
+        it("should populate deposits mapping", async () => {
+          expect(await mezoAllocator.depositsById(2)).to.equal(to1e18(5))
+        })
+      })
+    })
+  })
+})

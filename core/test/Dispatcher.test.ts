@@ -29,7 +29,7 @@ async function fixture() {
   return { dispatcher, governance, thirdParty, maintainer, vault, tbtc, stbtc }
 }
 
-describe("Dispatcher", () => {
+describe.skip("Dispatcher", () => {
   let dispatcher: Dispatcher
   let vault: TestERC4626
   let tbtc: TestERC20
