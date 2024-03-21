@@ -15,6 +15,7 @@ import {
   CableWithPlugIcon,
   DiscordIcon,
   Info,
+  ReloadIcon,
   ServerIcon,
 } from "#/assets/icons"
 import { TextMd } from "#/components/shared/Typography"
@@ -67,7 +68,11 @@ export default function ServerErrorModal({ retry }: { retry: () => void }) {
           </HStack>
           <TextMd color="red.400">Partial Outage</TextMd>
         </Flex>
-        <Button variant="outline" onClick={retry}>
+        <Button
+          leftIcon={<ReloadIcon boxSize={5} color="brand.400" />}
+          variant="outline"
+          onClick={retry}
+        >
           Refresh
         </Button>
       </ModalFooter>
