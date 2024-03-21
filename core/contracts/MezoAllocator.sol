@@ -13,41 +13,77 @@ interface IMezoPortal {
     function depositCount() external view returns (uint256);
 }
 
-/// @notice MezoAllocator is a contract that routes tBTC to/from MezoPortal.
+/// @notice MezoAllocator routes tBTC to/from MezoPortal.
 contract MezoAllocator is Ownable2Step {
     using SafeERC20 for IERC20;
 
-    address public mezoPortal;
+    /// Address of the MezoPortal contract.
+    address public immutable mezoPortal;
     /// tBTC token contract.
     IERC20 public immutable tbtc;
     /// Contract holding tBTC deposited by stakers.
     address public tbtcStorage;
+
+    /// @notice Maintainer address which can trigger deposit flow.
+    address public maintainer;
 
     // Deposit ID -> Deposit Amount
     mapping(uint256 => uint256) public depositsById;
     // Deposit IDs
     uint256[] public deposits;
 
+    /// Emitted when tBTC is deposited to MezoPortal.
     event DepositAllocated(uint256 depositId, uint256 amount);
 
+    /// @notice Emitted when the tBTC storage address is updated.
+    event TbtcStorageUpdated(address indexed tbtcStorage);
+
+    /// @notice Emitted when the maintainer address is updated.
+    event MaintainerUpdated(address indexed maintainer);
+
+    /// @notice Reverts if the caller is not an authorized account.
+    error NotAuthorized();
+
+    /// @notice Reverts if the address is 0.
+    error ZeroAddress();
+
+    modifier onlyMaintainerAndOwner() {
+        if (msg.sender != maintainer && owner() != msg.sender) {
+            revert NotAuthorized();
+        }
+        _;
+    }
+
+    /// @notice Initializes the MezoAllocator contract.
+    /// @param _mezoPortal Address of the MezoPortal contract.
+    /// @param _tbtc Address of the tBTC token contract.
     constructor(address _mezoPortal, IERC20 _tbtc) Ownable(msg.sender) {
+        if (_mezoPortal == address(0)) {
+            revert ZeroAddress();
+        }
+        if (address(_tbtc) == address(0)) {
+            revert ZeroAddress();
+        }
         mezoPortal = _mezoPortal;
         tbtc = _tbtc;
     }
 
-    // TODO: replace onlyOwner with onlyMaintaier or onlyOwnerAndMaintainer.
     /// @notice Deposits tBTC to MezoPortal.
-    /// @dev This function will be called by the bot at some interval.
-    function deposit(uint96 amount) external onlyOwner {
+    /// @dev This function can be invoked periodically by a bot.
+    /// @param amount Amount of tBTC to deposit to Mezo Portal.
+    function deposit(uint96 amount) external onlyMaintainerAndOwner {
+        // slither-disable-next-line arbitrary-send-erc20
         IERC20(tbtc).safeTransferFrom(tbtcStorage, address(this), amount);
-        // 0 means no lock.
+        // 0 denotes no lock period for this deposit.
         IMezoPortal(mezoPortal).deposit(address(tbtc), amount, 0);
         // MezoPortal doesn't return depositId, so we have to read depositCounter
         // which assignes depositId to the current deposit.
         uint256 depositId = IMezoPortal(mezoPortal).depositCount();
+        // slither-disable-next-line reentrancy-benign
         depositsById[depositId] = amount;
         deposits.push(depositId);
 
+        // slither-disable-next-line reentrancy-events
         emit DepositAllocated(depositId, amount);
     }
 
@@ -57,7 +93,23 @@ contract MezoAllocator is Ownable2Step {
     ///      the new storage contract like AcreDispatcher.
     /// @param _tbtcStorage Address of the new tBTC storage.
     function updateTbtcStorage(address _tbtcStorage) external onlyOwner {
+        if (_tbtcStorage == address(0)) {
+            revert ZeroAddress();
+        }
         tbtcStorage = _tbtcStorage;
+
+        emit TbtcStorageUpdated(_tbtcStorage);
+    }
+
+    /// @notice Updates the maintainer address.
+    /// @param _maintainer Address of the new maintainer.
+    function updateMaintainer(address _maintainer) external onlyOwner {
+        if (_maintainer == address(0)) {
+            revert ZeroAddress();
+        }
+        maintainer = _maintainer;
+
+        emit MaintainerUpdated(_maintainer);
     }
 
     // TODO: add updatable withdrawer and onlyWithdrawer modifier (stBTC or AcreDispatcher).
