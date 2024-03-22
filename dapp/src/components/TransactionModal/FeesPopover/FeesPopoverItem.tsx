@@ -12,7 +12,7 @@ export type FeesItemType = CurrencyBalanceProps & {
 
 export function FeesPopoverItem({ label, amount, ...props }: FeesItemType) {
   return (
-    <HStack w="100%" justifyContent="space-between">
+    <HStack w={60} justifyContent="space-between">
       <TextSm color="white">{label}</TextSm>
       <CurrencyBalance
         size="sm"
