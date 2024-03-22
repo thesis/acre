@@ -12,12 +12,12 @@ import { beforeAfterSnapshotWrapper, deployment } from "./helpers"
 
 import { to1e18 } from "./utils"
 
-import type { StBTC as stBTC, TestERC20, Dispatcher } from "../typechain"
+import type { StBTC as stBTC, TestERC20, MezoAllocator } from "../typechain"
 
 const { getNamedSigners, getUnnamedSigners } = helpers.signers
 
 async function fixture() {
-  const { tbtc, stbtc, dispatcher } = await deployment()
+  const { tbtc, stbtc, mezoAllocator } = await deployment()
   const { governance, treasury } = await getNamedSigners()
 
   const [depositor1, depositor2, thirdParty] = await getUnnamedSigners()
@@ -31,10 +31,10 @@ async function fixture() {
     tbtc,
     depositor1,
     depositor2,
-    dispatcher,
     governance,
     thirdParty,
     treasury,
+    mezoAllocator,
   }
 }
 
@@ -45,7 +45,7 @@ describe("stBTC", () => {
 
   let stbtc: stBTC
   let tbtc: TestERC20
-  let dispatcher: Dispatcher
+  let mezoAllocator: MezoAllocator
 
   let governance: HardhatEthersSigner
   let depositor1: HardhatEthersSigner
@@ -59,10 +59,10 @@ describe("stBTC", () => {
       tbtc,
       depositor1,
       depositor2,
-      dispatcher,
       governance,
       thirdParty,
       treasury,
+      mezoAllocator,
     } = await loadFixture(fixture))
 
     await stbtc
@@ -1327,7 +1327,7 @@ describe("stBTC", () => {
         before(async () => {
           // Dispatcher is set by the deployment scripts. See deployment tests
           // where initial parameters are checked.
-          dispatcherAddress = await dispatcher.getAddress()
+          dispatcherAddress = await mezoAllocator.getAddress()
           newDispatcher = await ethers.Wallet.createRandom().getAddress()
           stbtcAddress = await stbtc.getAddress()
 

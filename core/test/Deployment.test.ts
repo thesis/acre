@@ -6,26 +6,26 @@ import { helpers } from "hardhat"
 import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
 import { deployment } from "./helpers/context"
 
-import type { StBTC as stBTC, Dispatcher, TestERC20 } from "../typechain"
+import type { StBTC as stBTC, TestERC20, MezoAllocator } from "../typechain"
 
 const { getNamedSigners } = helpers.signers
 
 async function fixture() {
-  const { tbtc, stbtc, dispatcher } = await deployment()
+  const { tbtc, stbtc, mezoAllocator } = await deployment()
   const { governance, maintainer, treasury } = await getNamedSigners()
 
-  return { stbtc, dispatcher, tbtc, governance, maintainer, treasury }
+  return { stbtc, mezoAllocator, tbtc, governance, maintainer, treasury }
 }
 
 describe("Deployment", () => {
   let stbtc: stBTC
-  let dispatcher: Dispatcher
+  let mezoAllocator: MezoAllocator
   let tbtc: TestERC20
   let maintainer: HardhatEthersSigner
   let treasury: HardhatEthersSigner
 
   before(async () => {
-    ;({ stbtc, dispatcher, tbtc, maintainer, treasury } =
+    ;({ stbtc, mezoAllocator, tbtc, maintainer, treasury } =
       await loadFixture(fixture))
   })
 
@@ -45,7 +45,7 @@ describe("Deployment", () => {
         it("should be set to a dispatcher address by the deployment script", async () => {
           const actualDispatcher = await stbtc.dispatcher()
 
-          expect(actualDispatcher).to.be.equal(await dispatcher.getAddress())
+          expect(actualDispatcher).to.be.equal(await mezoAllocator.getAddress())
         })
 
         it("should approve max amount for the dispatcher", async () => {
@@ -61,13 +61,23 @@ describe("Deployment", () => {
     })
   })
 
-  describe("Dispatcher", () => {
+  describe("MezoAllocator", () => {
     describe("updateMaintainer", () => {
       context("when a new maintainer has been set", () => {
         it("should be set to a new maintainer address", async () => {
-          const actualMaintainer = await dispatcher.maintainer()
+          const actualMaintainer = await mezoAllocator.maintainer()
 
           expect(actualMaintainer).to.be.equal(await maintainer.getAddress())
+        })
+      })
+    })
+
+    describe("updateTbtcStorage", () => {
+      context("when a new stBTC address has been set", () => {
+        it("should be set to a new stBTC address by the deployment script", async () => {
+          const actualTbtcStorage = await mezoAllocator.tbtcStorage()
+
+          expect(actualTbtcStorage).to.be.equal(await stbtc.getAddress())
         })
       })
     })

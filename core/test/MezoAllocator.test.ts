@@ -136,4 +136,54 @@ describe("MezoAllocator", () => {
       })
     })
   })
+
+  describe("updateTbtcStorage", () => {
+    context("when the caller is not an owner", () => {
+      it("should revert", async () => {
+        await expect(
+          mezoAllocator
+            .connect(thirdParty)
+            .updateTbtcStorage(thirdParty.address),
+        ).to.be.revertedWithCustomError(
+          mezoAllocator,
+          "OwnableUnauthorizedAccount",
+        )
+      })
+    })
+
+    context("when the caller is an owner", () => {
+      it("should not revert", async () => {
+        await mezoAllocator
+          .connect(governance)
+          .updateTbtcStorage(thirdParty.address)
+        const tbtcStorageAddress = await mezoAllocator.tbtcStorage()
+        expect(tbtcStorageAddress).to.equal(thirdParty.address)
+      })
+    })
+  })
+
+  describe("updateMaintainer", () => {
+    context("when the caller is not an owner", () => {
+      it("should revert", async () => {
+        await expect(
+          mezoAllocator
+            .connect(thirdParty)
+            .updateMaintainer(thirdParty.address),
+        ).to.be.revertedWithCustomError(
+          mezoAllocator,
+          "OwnableUnauthorizedAccount",
+        )
+      })
+    })
+
+    context("when the caller is an owner", () => {
+      it("should not revert", async () => {
+        await mezoAllocator
+          .connect(governance)
+          .updateMaintainer(thirdParty.address)
+        const maintainerAddress = await mezoAllocator.maintainer()
+        expect(maintainerAddress).to.equal(thirdParty.address)
+      })
+    })
+  })
 })
