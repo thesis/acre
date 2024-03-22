@@ -33,7 +33,7 @@ export function ActivityCarousel({ ...props }: BoxProps) {
           content: '""',
           pos: "absolute",
           right: 0,
-          w: 20,
+          w: 8,
           height: 40,
           bgGradient: "linear(to-r, transparent, gold.300)",
         }}
