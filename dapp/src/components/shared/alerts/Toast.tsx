@@ -32,7 +32,7 @@ export const TOASTS: Record<
         status="error"
         width="xl"
         title="Bitcoin wallet is not connected."
-        onClose={() => onClose()}
+        onClose={onClose}
       >
         <Flex flexGrow={1} justifyContent="end">
           <Button
@@ -54,7 +54,7 @@ export const TOASTS: Record<
         status="error"
         width="xl"
         title="Ethereum wallet is not connected."
-        onClose={() => onClose()}
+        onClose={onClose}
       >
         <Flex flexGrow={1} justifyContent="end">
           <Button
