@@ -43,3 +43,5 @@ export const btcSlice = createSlice({
     )
   },
 })
+
+export const { setSharesBalance, setEstimatedBtcBalance } = btcSlice.actions

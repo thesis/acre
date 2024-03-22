@@ -2,7 +2,7 @@ import { useEffect } from "react"
 import { EthereumAddress } from "@acre-btc/sdk"
 import { useAcreContext } from "#/acre-react/hooks"
 import { logPromiseFailure } from "#/utils"
-import { btcSlice } from "#/store/btc"
+import { setEstimatedBtcBalance, setSharesBalance } from "#/store/btc"
 import { useWalletContext } from "./useWalletContext"
 import { useAppDispatch } from "./store"
 
@@ -20,8 +20,8 @@ export function useFetchBtcBalance() {
       const estimatedBitcoinBalance =
         await acre.staking.estimatedBitcoinBalance(chainIdentifier)
 
-      dispatch(btcSlice.actions.setSharesBalance(sharesBalance))
-      dispatch(btcSlice.actions.setEstimatedBtcBalance(estimatedBitcoinBalance))
+      dispatch(setSharesBalance(sharesBalance))
+      dispatch(setEstimatedBtcBalance(estimatedBitcoinBalance))
     }
     logPromiseFailure(getBtcBalance())
   }, [acre, isInitialized, ethAccount, dispatch])
