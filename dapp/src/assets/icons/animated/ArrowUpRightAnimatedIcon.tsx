@@ -46,24 +46,21 @@ export function ArrowUpRightAnimatedIcon({
   const boxSizePx = chakraUnitToPx(boxSize)
   return (
     <Box pos="relative" boxSize={boxSize} overflow="hidden">
-      <Box
-        pos="absolute"
-        as={motion.div}
-        boxSize={boxSize}
-        custom={boxSizePx}
-        variants={arrowUpVariants}
-      >
-        <Icon as={ArrowUpRight} boxSize={boxSize} color={color} />
-      </Box>
-      <Box
-        pos="absolute"
-        as={motion.div}
-        boxSize={boxSize}
-        custom={boxSizePx}
-        variants={arrowBottomVariants}
-      >
-        <Icon as={ArrowUpRight} boxSize={boxSize} color={color} />
-      </Box>
+      {[
+        { id: "arrow-up", variants: arrowUpVariants },
+        { id: "arrow-bottom", variants: arrowBottomVariants },
+      ].map(({ id, variants }) => (
+        <Box
+          key={id}
+          pos="absolute"
+          as={motion.div}
+          boxSize={boxSize}
+          custom={boxSizePx}
+          variants={variants}
+        >
+          <Icon as={ArrowUpRight} boxSize={boxSize} color={color} />
+        </Box>
+      ))}
     </Box>
   )
 }
