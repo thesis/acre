@@ -12,7 +12,8 @@ import {
 import { TextMd } from "#/components/shared/Typography"
 import { logPromiseFailure } from "#/utils"
 import { PROCESS_STATUSES, TOAST_TYPES } from "#/types"
-import { CardAlert, TOASTS } from "#/components/shared/alerts"
+import { CardAlert } from "#/components/shared/alerts"
+import { TOASTS } from "#/components/shared/toasts"
 import StakingStepsModalContent from "./StakingStepsModalContent"
 
 const TOAST_ID = TOAST_TYPES.DEPOSIT_TRANSACTION_ERROR

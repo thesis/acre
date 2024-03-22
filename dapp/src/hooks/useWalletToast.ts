@@ -1,8 +1,8 @@
 import { useCallback, useEffect } from "react"
 import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import { logPromiseFailure } from "#/utils"
-import { TOASTS } from "#/components/shared/alerts"
 import { TOAST_TYPES } from "#/types"
+import { TOASTS } from "#/components/shared/toasts"
 import { useToast } from "./useToast"
 import { useWallet } from "./useWallet"
 

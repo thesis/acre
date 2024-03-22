@@ -7,7 +7,8 @@ import {
 } from "#/hooks"
 import { logPromiseFailure } from "#/utils"
 import { PROCESS_STATUSES, TOAST_TYPES } from "#/types"
-import { ReceiveSTBTCAlert, TOASTS } from "#/components/shared/alerts"
+import { ReceiveSTBTCAlert } from "#/components/shared/alerts"
+import { TOASTS } from "#/components/shared/toasts"
 import StakingStepsModalContent from "./StakingStepsModalContent"
 
 const TOAST_ID = TOAST_TYPES.SIGNING_ERROR
