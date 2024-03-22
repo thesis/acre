@@ -1,20 +1,24 @@
-import React, { useRef } from "react"
+import React, { useRef, useCallback } from "react"
 import Slider from "react-slick"
 import { Box, BoxProps } from "@chakra-ui/react"
 import { Carousel } from "#/components/shared/Carousel"
 import { ActivityCard } from "#/components/shared/ActivityCard"
 import { useActivities } from "#/hooks"
+import { ActivityInfo } from "#/types"
 import { activityCarouselSettings } from "./ActivityCarouselSettings"
 
 export function ActivityCarousel({ ...props }: BoxProps) {
   const carouselRef = useRef<HTMLInputElement & Slider>(null)
-  const { activities, onRemove } = useActivities()
+  const { activities, removeActivity } = useActivities()
 
-  const handleRemove = (txHash: string) => {
-    carouselRef.current?.slickPrev()
-    carouselRef.current?.forceUpdate()
-    onRemove(txHash)
-  }
+  const handleRemove = useCallback(
+    (activity: ActivityInfo) => {
+      carouselRef.current?.slickPrev()
+      carouselRef.current?.forceUpdate()
+      removeActivity(activity)
+    },
+    [removeActivity],
+  )
 
   return (
     <Box pos="relative" {...props}>

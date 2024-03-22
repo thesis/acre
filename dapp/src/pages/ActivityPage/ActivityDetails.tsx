@@ -14,12 +14,16 @@ import StatusInfo from "#/components/shared/StatusInfo"
 import { TextMd, TextSm } from "#/components/shared/Typography"
 import Spinner from "#/components/shared/Spinner"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
-import { ActivityInfo } from "#/types"
+import { useActivities } from "#/hooks"
 
-function ActivityDetails({ activity }: { activity: ActivityInfo }) {
+function ActivityDetails() {
+  const { selectedActivity } = useActivities()
+
+  if (!selectedActivity) return null
+
   return (
     <Flex flexDirection="column" gap={2}>
-      {activity.status === "pending" && (
+      {selectedActivity.status === "pending" && (
         <Card>
           <CardBody paddingX={10} paddingY={6}>
             <HStack marginBottom={4} justify="space-between">
@@ -45,12 +49,12 @@ function ActivityDetails({ activity }: { activity: ActivityInfo }) {
                 fontWeight="semibold"
                 textTransform="capitalize"
               >
-                {activity.action}
+                {selectedActivity.action}
               </TextMd>
               <CurrencyBalanceWithConversion
                 from={{
-                  currency: activity.currency,
-                  amount: activity.amount,
+                  currency: selectedActivity.currency,
+                  amount: selectedActivity.amount,
                   variant: "greater-balance-xxl",
                   symbolFontWeight: "medium",
                 }}
@@ -61,7 +65,7 @@ function ActivityDetails({ activity }: { activity: ActivityInfo }) {
               />
               <Tag mt={9}>
                 <StatusInfo
-                  status={activity.status}
+                  status={selectedActivity.status}
                   fontWeight="medium"
                   withIcon
                   withDefaultColor

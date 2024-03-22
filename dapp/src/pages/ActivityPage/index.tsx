@@ -1,17 +1,14 @@
 import React, { useEffect } from "react"
 import { Flex, Link as ChakraLink, Icon } from "@chakra-ui/react"
 
-import { Link as ReactRouterLink, useParams } from "react-router-dom"
-import { useActivities, useSidebar } from "#/hooks"
+import { Link as ReactRouterLink } from "react-router-dom"
+import { useSidebar } from "#/hooks"
 import { ArrowLeft } from "#/assets/icons"
 import ActivityDetails from "./ActivityDetails"
 import { ActivityBar } from "./ActivityBar"
 
 export default function ActivityPage() {
   const { onOpen: openSideBar, onClose: closeSidebar } = useSidebar()
-  const { getActivity } = useActivities()
-  const params = useParams()
-  const activity = getActivity(params.activityId)
 
   useEffect(() => {
     openSideBar()
@@ -31,12 +28,10 @@ export default function ActivityPage() {
           _hover={{ color: "white", bg: "brand.400" }}
         />
       </ChakraLink>
-      {activity && (
-        <Flex gap={10}>
-          <ActivityBar activity={activity} />
-          <ActivityDetails activity={activity} />
-        </Flex>
-      )}
+      <Flex gap={10}>
+        <ActivityBar />
+        <ActivityDetails />
+      </Flex>
     </Flex>
   )
 }

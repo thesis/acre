@@ -2,8 +2,8 @@ import React from "react"
 import { CardProps, Card } from "@chakra-ui/react"
 
 type ActivityCardWrapperProps = CardProps & {
-  isCompleted: boolean
   children: React.ReactNode
+  isCompleted: boolean
   isActive?: boolean
 }
 

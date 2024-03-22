@@ -16,21 +16,20 @@ import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import StatusInfo from "#/components/shared/StatusInfo"
 import { TextSm } from "#/components/shared/Typography"
 import { routerPath } from "#/router/path"
+import { useActivities } from "#/hooks"
 import { ActivityCardWrapper } from "./ActivityCardWrapper"
 
 type ActivityCardType = CardProps & {
   activity: ActivityInfo
-  onRemove: (txHash: string) => void
-  isActive?: boolean
+  onRemove: (activity: ActivityInfo) => void
 }
 
-export function ActivityCard({
-  activity,
-  onRemove,
-  isActive,
-}: ActivityCardType) {
+export function ActivityCard({ activity, onRemove }: ActivityCardType) {
   const navigate = useNavigate()
-  const isCompleted = activity.status === "completed"
+  const { isCompleted, isSelected } = useActivities()
+
+  const isActivitySelected = isSelected(activity)
+  const isActivityCompleted = isCompleted(activity)
 
   const onClick = useCallback(() => {
     navigate(`${routerPath.activity}/${activity.txHash}`)
@@ -39,17 +38,17 @@ export function ActivityCard({
   const onClose = useCallback(
     (event: React.MouseEvent) => {
       event.stopPropagation()
-      if (activity.txHash) {
-        onRemove(activity.txHash)
+      if (activity) {
+        onRemove(activity)
       }
     },
-    [onRemove, activity.txHash],
+    [activity, onRemove],
   )
 
   return (
     <ActivityCardWrapper
-      isCompleted={isCompleted}
-      isActive={isActive}
+      isCompleted={isActivityCompleted}
+      isActive={isActivitySelected}
       onClick={onClick}
     >
       <CardHeader p={0} w="100%">
@@ -61,7 +60,7 @@ export function ActivityCard({
             balanceFontWeight="black"
             symbolFontWeight="medium"
           />
-          {isCompleted ? (
+          {isActivityCompleted ? (
             <Tooltip label="Remove" placement="top">
               <CloseButton
                 size="sm"
@@ -73,8 +72,8 @@ export function ActivityCard({
             <Icon
               as={ChevronRightIcon}
               boxSize={5}
-              color={isActive ? "gold.700" : "grey.400"}
-              _hover={isActive ? { color: "gold.700" } : undefined}
+              color={isActivityCompleted ? "gold.700" : "grey.400"}
+              _hover={isActivityCompleted ? { color: "gold.700" } : undefined}
             />
           )}
         </HStack>
