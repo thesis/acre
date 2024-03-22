@@ -121,10 +121,10 @@ contract MezoAllocator is Ownable2Step {
     // TODO: add updatable withdrawer and onlyWithdrawer modifier (stBTC or AcreDispatcher).
     /// @notice Withdraws tBTC from MezoPortal and transfers it to stBTC.
     function withdraw(uint96 amount) external {
-        // TODO: Take the latest deposit and pull funds from it.
+        // TODO: Take the last deposit and pull the funds from it (FIFO).
         //       If not enough funds, take everything from that deposit and
         //       take the rest from the next deposit id until the amount is
-        //       reached.
+        //       reached. Delete deposit ids that are empty.
         // IMezoPortal(mezoPortal).withdraw(address(tbtc), depositId, amount);
         // TODO: update depositsById and deposits data structures.
         // IERC20(tbtc).safeTransfer(address(tbtcStorage), amount);
