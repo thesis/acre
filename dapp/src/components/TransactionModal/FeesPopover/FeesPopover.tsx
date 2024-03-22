@@ -37,7 +37,14 @@ export function FeesPopover() {
         </VStack>
       }
     >
-      <Icon as={Info} ml={2} boxSize={5} cursor="pointer" color="grey.400" />
+      <Icon
+        as={Info}
+        ml={2}
+        pb={0.5}
+        boxSize={5}
+        cursor="pointer"
+        color="grey.400"
+      />
     </Tooltip>
   )
 }
