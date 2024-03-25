@@ -15,7 +15,10 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
   if (mezoPortal && isNonZeroAddress(mezoPortal.address)) {
     log(`using MezoPortal contract at ${mezoPortal.address}`)
-  } else if ((hre.network.config as HardhatNetworkConfig)?.forking?.enabled) {
+  } else if (
+    (hre.network.config as HardhatNetworkConfig)?.forking?.enabled &&
+    hre.network.name !== "hardhat"
+  ) {
     throw new Error("deployed MezoPortal contract not found")
   } else {
     log("deploying Mezo Portal contract stub")
