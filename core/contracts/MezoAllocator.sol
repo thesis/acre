@@ -39,6 +39,9 @@ contract MezoAllocator is Ownable2Step {
     mapping(uint256 => DepositInfo) public depositsById;
     // Deposit IDs
     uint256[] public deposits;
+    
+    /// @notice Address that can withdraw tBTC from MezoPortal.
+    address public withdrawer;
 
     /// Emitted when tBTC is deposited to MezoPortal.
     event DepositAllocated(uint256 depositId, uint256 amount);
@@ -55,8 +58,18 @@ contract MezoAllocator is Ownable2Step {
     /// @notice Reverts if the address is 0.
     error ZeroAddress();
 
+    /// @notice Reverts if there are no deposits upon withdrawal.
+    error NoDeposits();
+
     modifier onlyMaintainerAndOwner() {
         if (msg.sender != maintainer && owner() != msg.sender) {
+            revert NotAuthorized();
+        }
+        _;
+    }
+
+    modifier onlyWithdrawer() {
+        if (msg.sender != withdrawer) {
             revert NotAuthorized();
         }
         _;
@@ -128,16 +141,59 @@ contract MezoAllocator is Ownable2Step {
         emit MaintainerUpdated(_maintainer);
     }
 
-    // TODO: add updatable withdrawer and onlyWithdrawer modifier (stBTC or AcreDispatcher).
+    /// @notice Updates the withdrawer address.
+    /// @param _withdrawer Address of the new withdrawer.
+    function updateWithdrawer(address _withdrawer) external onlyOwner {
+        if (_withdrawer == address(0)) {
+            revert ZeroAddress();
+        }
+        withdrawer = _withdrawer;
+    }
+
     /// @notice Withdraws tBTC from MezoPortal and transfers it to stBTC.
-    function withdraw(uint96 amount) external {
-        // TODO: Take the last deposit and pull the funds from it (FIFO).
-        //       If not enough funds, take everything from that deposit and
-        //       take the rest from the next deposit id until the amount is
-        //       reached. Delete deposit ids that are empty.
-        // IMezoPortal(mezoPortal).withdraw(address(tbtc), depositId, amount);
-        // TODO: update depositsById and deposits data structures.
-        // IERC20(tbtc).safeTransfer(address(tbtcStorage), amount);
+    /// @dev This function can be called by the withdrawer only. It can be stBTC
+    ///      contract, an allocators dispatcher or any other contract that
+    ///      is approved as a withdrawer by the owner.
+    /// @param _amount Amount of tBTC to withdraw from Mezo Portal.
+    function withdraw(uint256 _amount) external onlyWithdrawer {
+        uint96 amount = uint96(_amount);
+        if (deposits.length == 0) {
+            revert NoDeposits();
+        }
+        uint256 depositId = deposits[deposits.length-1]; // latest deposit
+        if (amount <= depositsById[depositId]) {
+            IMezoPortal(mezoPortal).withdraw(address(tbtc), depositId, amount);
+            depositsById[depositId] -= amount;
+            if (depositsById[depositId] == 0) {
+                delete depositsById[depositId];
+                delete deposits[deposits.length-1];
+            }
+        } else {
+            // It might happen that an amount from a single deposit is not enough
+            // to cover the withdrawal amount. In that case, we need to withdraw
+            // from multiple deposits.
+            // Start iterating from the latest deposit untill the amount is
+            // reached (LIFO). FIFO would require shuffling the array, which is
+            // not gas efficient.
+            for (uint256 i = deposits.length - 1; i >= 0; i--) {
+                uint96 depositAvailableAmount = depositsById[deposits[i]];
+                if (amount <= depositAvailableAmount) {
+                    IMezoPortal(mezoPortal).withdraw(address(tbtc), deposits[i], amount);
+                    depositsById[deposits[i]] -= amount;
+                    if (depositsById[deposits[i]] == 0) {
+                        delete depositsById[deposits[i]];
+                        deposits.pop();
+                    }
+                    break;
+                } else {
+                    IMezoPortal(mezoPortal).withdraw(address(tbtc), deposits[i], depositAvailableAmount);
+                    amount -= depositAvailableAmount;
+                    delete depositsById[deposits[i]];
+                    deposits.pop();
+                }
+            }
+        }
+        IERC20(tbtc).safeTransfer(address(tbtcStorage), amount);
     }
 
     /// @notice Returns the deposit IDs.

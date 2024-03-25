@@ -4,8 +4,11 @@ pragma solidity ^0.8.21;
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 
-import "./Dispatcher.sol";
 import "./lib/ERC4626Fees.sol";
+
+interface IDispatcher {
+    function withdraw(uint256 amount) external;
+}
 
 /// @title stBTC
 /// @notice This contract implements the ERC-4626 tokenized vault standard. By
@@ -21,9 +24,9 @@ import "./lib/ERC4626Fees.sol";
 contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
     using SafeERC20 for IERC20;
 
-    /// Dispatcher contract that routes tBTC from stBTC to a given destination
-    /// and back.
-    Dispatcher public dispatcher;
+    /// Dispatcher contract that routes tBTC from stBTC to a given allocation
+    /// contract and back.
+    IDispatcher public dispatcher;
 
     /// Address of the treasury wallet, where fees should be transferred to.
     address public treasury;
@@ -145,7 +148,7 @@ contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
     /// @notice Updates the dispatcher contract and gives it an unlimited
     ///         allowance to transfer staked tBTC.
     /// @param newDispatcher Address of the new dispatcher contract.
-    function updateDispatcher(Dispatcher newDispatcher) external onlyOwner {
+    function updateDispatcher(IDispatcher newDispatcher) external onlyOwner {
         if (address(newDispatcher) == address(0)) {
             revert ZeroAddress();
         }
@@ -212,6 +215,21 @@ contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
 
         return super.deposit(assets, receiver);
     }
+
+    /// @notice Withdraws assets from the vault and transfers them to the
+    ///         receiver.
+    /// @dev Takes into account the dispatcher contract that withdraws tBTC from
+    ///      a given allocation contract.
+    /// @param assets Amount of assets to withdraw.
+    /// @param receiver The address to which the assets will be transferred.
+    /// @param owner The address of the owner of the shares.
+    function withdraw(uint256 assets, address receiver, address owner) public override returns (uint256) {
+        dispatcher.withdraw(assets);
+
+        return super.withdraw(assets, receiver, owner);
+    }
+
+    // TODO: Override redeem function
 
     /// @notice Mints shares to receiver by depositing tBTC tokens.
     /// @dev Takes into account a deposit parameter, minimum deposit amount,
