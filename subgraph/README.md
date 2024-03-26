@@ -38,19 +38,24 @@ EVM-compatible JSON-RPC API. You can use Thesis private RPC from Alchemy or
 create a private one
 [here](https://www.alchemy.com/overviews/private-rpc-endpoint).
 
-1. Set the API key in the `docker-compose.yaml` file.
+1. Install Docker on your local machine: 
+   - Mac: https://docs.docker.com/desktop/install/mac-install/
+   - Windows: https://docs.docker.com/desktop/install/windows-install/
+   - Linux: https://docs.docker.com/desktop/install/linux-install/
+
+2. Set the API key in the `docker-compose.yaml` file.
 
    ```
    ethereum: "sepolia:https://eth-sepolia.g.alchemy.com/v2/<API key>"
    ```
 
-2. Run a local Graph Node:
+3. Run a local Graph Node:
 
    ```
    docker-compose up
    ```
 
-3. Allocate the subgraph name in the local Graph Node:
+4. Allocate the subgraph name in the local Graph Node:
 
    ```
    pnpm create-local
@@ -58,8 +63,14 @@ create a private one
 
 Note: use it only if your subgraph is not created in the local Graph node.
 
-4. Deploy the subgraph to your local Graph Node:
+5. Deploy the subgraph to your local Graph Node:
 
    ```
    pnpm deploy-local
+   ```
+
+6. Create Subgraph queries and preview of the entities:
+
+   ```
+   http://localhost:8000/subgraphs/name/acre-subgraph
    ```
