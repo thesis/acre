@@ -17,6 +17,14 @@ interface IMezoPortal {
 contract MezoAllocator is Ownable2Step {
     using SafeERC20 for IERC20;
 
+    /// @notice DepositInfo keeps track of the deposit balance, creation time,
+    ///         and unlock time.
+    struct DepositInfo {
+        uint96 balance;
+        uint32 createdAt;
+        uint32 unlockAt;
+    }
+
     /// Address of the MezoPortal contract.
     address public immutable mezoPortal;
     /// tBTC token contract.
@@ -27,8 +35,8 @@ contract MezoAllocator is Ownable2Step {
     /// @notice Maintainer address which can trigger deposit flow.
     address public maintainer;
 
-    // Deposit ID -> Deposit Amount
-    mapping(uint256 => uint256) public depositsById;
+    // Deposit ID -> Deposit Info
+    mapping(uint256 => DepositInfo) public depositsById;
     // Deposit IDs
     uint256[] public deposits;
 
@@ -75,13 +83,18 @@ contract MezoAllocator is Ownable2Step {
         // slither-disable-next-line arbitrary-send-erc20
         IERC20(tbtc).safeTransferFrom(tbtcStorage, address(this), amount);
         IERC20(tbtc).forceApprove(mezoPortal, amount);
-        // 0 denotes no lock period for this deposit.
+        // 0 denotes no lock period for this deposit. The zero lock time is
+        // hardcoded as of biz decision. 
         IMezoPortal(mezoPortal).deposit(address(tbtc), amount, 0);
         // MezoPortal doesn't return depositId, so we have to read depositCounter
         // which assignes depositId to the current deposit.
         uint256 depositId = IMezoPortal(mezoPortal).depositCount();
         // slither-disable-next-line reentrancy-benign
-        depositsById[depositId] = amount;
+        depositsById[depositId] = DepositInfo({
+            balance: amount,
+            createdAt: uint32(block.timestamp),
+            unlockAt: uint32(block.timestamp)
+        });
         deposits.push(depositId);
 
         // slither-disable-next-line reentrancy-events
