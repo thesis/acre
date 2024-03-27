@@ -60,8 +60,6 @@ describe("MezoAllocator", () => {
   describe("deposit", () => {
     beforeAfterSnapshotWrapper()
 
-    before(async () => {})
-
     context("when the caller is not an owner", () => {
       it("should revert", async () => {
         await expect(
@@ -104,8 +102,31 @@ describe("MezoAllocator", () => {
           expect(await mezoAllocator.deposits(0)).to.equal(1)
         })
 
-        it("should populate deposits mapping", async () => {
-          expect(await mezoAllocator.depositsById(1)).to.equal(to1e18(1))
+        it("should set deposit balance", async () => {
+          const deposit = await mezoAllocator.depositsById(1)
+          expect(deposit.balance).to.equal(to1e18(1))
+        })
+
+        it("should set creation timestamp", async () => {
+          const deposit = await mezoAllocator.depositsById(1)
+          const dateTime = new Date()
+          // Check if the block timestamp is within 60 seconds of the current
+          // test time
+          expect(deposit.createdAt).to.be.closeTo(
+            String(dateTime.valueOf()).slice(0, -3),
+            60,
+          )
+        })
+
+        it("should set unlocking timestamp", async () => {
+          const deposit = await mezoAllocator.depositsById(1)
+          const dateTime = new Date()
+          // Check if the block timestamp is within 60 seconds of the current
+          // test time
+          expect(deposit.unlockAt).to.be.closeTo(
+            String(dateTime.valueOf()).slice(0, -3),
+            60,
+          )
         })
 
         it("should emit Deposit event", async () => {
@@ -131,7 +152,8 @@ describe("MezoAllocator", () => {
         })
 
         it("should populate deposits mapping", async () => {
-          expect(await mezoAllocator.depositsById(2)).to.equal(to1e18(5))
+          const deposit = await mezoAllocator.depositsById(2)
+          expect(deposit.balance).to.equal(to1e18(5))
         })
       })
     })
