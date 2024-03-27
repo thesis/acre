@@ -84,7 +84,7 @@ contract MezoAllocator is Ownable2Step {
         IERC20(tbtc).safeTransferFrom(tbtcStorage, address(this), amount);
         IERC20(tbtc).forceApprove(mezoPortal, amount);
         // 0 denotes no lock period for this deposit. The zero lock time is
-        // hardcoded as of biz decision. 
+        // hardcoded as of biz decision.
         IMezoPortal(mezoPortal).deposit(address(tbtc), amount, 0);
         // MezoPortal doesn't return depositId, so we have to read depositCounter
         // which assignes depositId to the current deposit.
@@ -92,7 +92,9 @@ contract MezoAllocator is Ownable2Step {
         // slither-disable-next-line reentrancy-benign
         depositsById[depositId] = DepositInfo({
             balance: amount,
+            // solhint-disable-next-line not-rely-on-time
             createdAt: uint32(block.timestamp),
+            // solhint-disable-next-line not-rely-on-time
             unlockAt: uint32(block.timestamp)
         });
         deposits.push(depositId);
@@ -126,11 +128,6 @@ contract MezoAllocator is Ownable2Step {
         emit MaintainerUpdated(_maintainer);
     }
 
-    /// @notice Returns the deposit IDs.
-    function getDeposits() external view returns (uint256[] memory) {
-        return deposits;
-    }
-
     // TODO: add updatable withdrawer and onlyWithdrawer modifier (stBTC or AcreDispatcher).
     /// @notice Withdraws tBTC from MezoPortal and transfers it to stBTC.
     function withdraw(uint96 amount) external {
@@ -141,5 +138,10 @@ contract MezoAllocator is Ownable2Step {
         // IMezoPortal(mezoPortal).withdraw(address(tbtc), depositId, amount);
         // TODO: update depositsById and deposits data structures.
         // IERC20(tbtc).safeTransfer(address(tbtcStorage), amount);
+    }
+
+    /// @notice Returns the deposit IDs.
+    function getDeposits() external view returns (uint256[] memory) {
+        return deposits;
     }
 }
