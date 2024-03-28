@@ -218,13 +218,20 @@ contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
 
     /// @notice Withdraws assets from the vault and transfers them to the
     ///         receiver.
-    /// @dev Takes into account the dispatcher contract that withdraws tBTC from
-    ///      a given allocation contract.
+    /// @dev Withdraw unallocated assets first and and if not enough, then pull
+    ///      the assets from the dispatcher.
     /// @param assets Amount of assets to withdraw.
     /// @param receiver The address to which the assets will be transferred.
     /// @param owner The address of the owner of the shares.
-    function withdraw(uint256 assets, address receiver, address owner) public override returns (uint256) {
-        dispatcher.withdraw(assets);
+    function withdraw(
+        uint256 assets,
+        address receiver,
+        address owner
+    ) public override returns (uint256) {
+        if (assets > totalAssets()) {
+            uint256 missingAmount = assets - totalAssets();
+            dispatcher.withdraw(missingAmount);
+        }
 
         return super.withdraw(assets, receiver, owner);
     }

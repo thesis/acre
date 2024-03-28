@@ -39,18 +39,24 @@ contract MezoAllocator is Ownable2Step {
     mapping(uint256 => DepositInfo) public depositsById;
     // Deposit IDs
     uint256[] public deposits;
-    
+
     /// @notice Address that can withdraw tBTC from MezoPortal.
     address public withdrawer;
 
     /// Emitted when tBTC is deposited to MezoPortal.
-    event DepositAllocated(uint256 depositId, uint256 amount);
+    event DepositAllocated(uint256 indexed depositId, uint256 amount);
 
     /// @notice Emitted when the tBTC storage address is updated.
     event TbtcStorageUpdated(address indexed tbtcStorage);
 
     /// @notice Emitted when the maintainer address is updated.
     event MaintainerUpdated(address indexed maintainer);
+
+    /// @notice Emitted when the withdrawer address is updated.
+    event WithdrawerUpdated(address indexed withdrawer);
+
+    /// @notice Emitted when entire deposit is withdrawn from MezoPortal.
+    event DepositWithdrawn(uint256 indexed depositId, uint256 amount);
 
     /// @notice Reverts if the caller is not an authorized account.
     error NotAuthorized();
@@ -148,11 +154,13 @@ contract MezoAllocator is Ownable2Step {
             revert ZeroAddress();
         }
         withdrawer = _withdrawer;
+
+        emit WithdrawerUpdated(_withdrawer);
     }
 
     /// @notice Withdraws tBTC from MezoPortal and transfers it to stBTC.
     /// @dev This function can be called by the withdrawer only. It can be stBTC
-    ///      contract, an allocators dispatcher or any other contract that
+    ///      contract, an allocator's dispatcher or any other contract that
     ///      is approved as a withdrawer by the owner.
     /// @param _amount Amount of tBTC to withdraw from Mezo Portal.
     function withdraw(uint256 _amount) external onlyWithdrawer {
@@ -160,37 +168,40 @@ contract MezoAllocator is Ownable2Step {
         if (deposits.length == 0) {
             revert NoDeposits();
         }
-        uint256 depositId = deposits[deposits.length-1]; // latest deposit
-        if (amount <= depositsById[depositId]) {
-            IMezoPortal(mezoPortal).withdraw(address(tbtc), depositId, amount);
-            depositsById[depositId] -= amount;
-            if (depositsById[depositId] == 0) {
-                delete depositsById[depositId];
-                delete deposits[deposits.length-1];
-            }
-        } else {
-            // It might happen that an amount from a single deposit is not enough
-            // to cover the withdrawal amount. In that case, we need to withdraw
-            // from multiple deposits.
-            // Start iterating from the latest deposit untill the amount is
-            // reached (LIFO). FIFO would require shuffling the array, which is
-            // not gas efficient.
-            for (uint256 i = deposits.length - 1; i >= 0; i--) {
-                uint96 depositAvailableAmount = depositsById[deposits[i]];
-                if (amount <= depositAvailableAmount) {
-                    IMezoPortal(mezoPortal).withdraw(address(tbtc), deposits[i], amount);
-                    depositsById[deposits[i]] -= amount;
-                    if (depositsById[deposits[i]] == 0) {
-                        delete depositsById[deposits[i]];
-                        deposits.pop();
-                    }
-                    break;
-                } else {
-                    IMezoPortal(mezoPortal).withdraw(address(tbtc), deposits[i], depositAvailableAmount);
-                    amount -= depositAvailableAmount;
-                    delete depositsById[deposits[i]];
+        // It might happen that an amount from a single deposit is not enough
+        // to cover the withdrawal amount. In that case, we need to withdraw
+        // from multiple deposits.
+        // Start iterating from the latest deposit until the amount is
+        // reached (LIFO).
+        for (uint256 i = deposits.length; i > 0; i--) {
+            uint256 depositId = deposits[i-1];
+            uint96 depositAvailableAmount = depositsById[depositId].balance;
+            if (amount <= depositAvailableAmount) {
+                depositsById[depositId].balance -= amount;
+                // slither-disable-next-line incorrect-equality
+                if (depositsById[depositId].balance == 0) {
+                    emit DepositWithdrawn(depositId, amount);
+                    delete depositsById[depositId].balance;
                     deposits.pop();
                 }
+                // slither-disable-next-line calls-loop
+                IMezoPortal(mezoPortal).withdraw(
+                    address(tbtc),
+                    depositId,
+                    amount
+                );
+                break;
+            } else {
+                emit DepositWithdrawn(depositId, depositAvailableAmount);
+                delete depositsById[depositId];
+                deposits.pop();
+                amount -= depositAvailableAmount;
+                // slither-disable-next-line calls-loop
+                IMezoPortal(mezoPortal).withdraw(
+                    address(tbtc),
+                    depositId,
+                    depositAvailableAmount
+                );
             }
         }
         IERC20(tbtc).safeTransfer(address(tbtcStorage), amount);
