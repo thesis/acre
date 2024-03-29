@@ -6,6 +6,7 @@ import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 
 import "./lib/ERC4626Fees.sol";
 
+// slither-disable-next-line missing-inheritance
 interface IDispatcher {
     function withdraw(uint256 amount) external;
 }

@@ -163,6 +163,7 @@ contract MezoAllocator is Ownable2Step {
     ///      contract, an allocator's dispatcher or any other contract that
     ///      is approved as a withdrawer by the owner.
     /// @param _amount Amount of tBTC to withdraw from Mezo Portal.
+    // slither-disable-next-line reentrancy-no-eth
     function withdraw(uint256 _amount) external onlyWithdrawer {
         uint96 amount = uint96(_amount);
         if (deposits.length == 0) {
@@ -174,14 +175,17 @@ contract MezoAllocator is Ownable2Step {
         // Start iterating from the latest deposit until the amount is
         // reached (LIFO).
         for (uint256 i = deposits.length; i > 0; i--) {
-            uint256 depositId = deposits[i-1];
+            uint256 depositId = deposits[i - 1];
             uint96 depositAvailableAmount = depositsById[depositId].balance;
             if (amount <= depositAvailableAmount) {
                 depositsById[depositId].balance -= amount;
                 // slither-disable-next-line incorrect-equality
                 if (depositsById[depositId].balance == 0) {
+                    // slither-disable-next-line reentrancy-events
                     emit DepositWithdrawn(depositId, amount);
-                    delete depositsById[depositId].balance;
+                    // slither-disable-next-line costly-loop
+                    delete depositsById[depositId];
+                    // slither-disable-next-line costly-loop
                     deposits.pop();
                 }
                 // slither-disable-next-line calls-loop
@@ -192,8 +196,11 @@ contract MezoAllocator is Ownable2Step {
                 );
                 break;
             } else {
+                // slither-disable-next-line reentrancy-events
                 emit DepositWithdrawn(depositId, depositAvailableAmount);
+                // slither-disable-next-line costly-loop
                 delete depositsById[depositId];
+                // slither-disable-next-line costly-loop
                 deposits.pop();
                 amount -= depositAvailableAmount;
                 // slither-disable-next-line calls-loop
