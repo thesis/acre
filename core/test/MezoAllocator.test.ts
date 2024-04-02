@@ -153,6 +153,11 @@ describe("MezoAllocator", () => {
           await mezoAllocator.connect(maintainer).deposit(to1e18(5))
         })
 
+        it("should create two deposits", async () => {
+          const depositsArrayLen = await mezoAllocator.getDeposits()
+          expect(depositsArrayLen.length).to.equal(2)
+        })
+
         it("should increment the deposits array", async () => {
           expect(await mezoAllocator.deposits(1)).to.equal(2)
         })
@@ -185,120 +190,184 @@ describe("MezoAllocator", () => {
         })
       })
 
-      context("when there was a single deposit made to Mezo", () => {
+      context(
+        "when there are no assets in stBTC available for withdrawal",
+        () => {
+          context("when there was a single deposit made to Mezo", () => {
+            beforeAfterSnapshotWrapper()
+
+            before(async () => {
+              await tbtc.mint(depositor, to1e18(2))
+              await tbtc.approve(await stbtc.getAddress(), to1e18(2))
+              await stbtc
+                .connect(depositor)
+                .deposit(to1e18(1), depositor.address)
+              await mezoAllocator
+                .connect(governance)
+                .updateMaintainer(maintainer.address)
+              await mezoAllocator.connect(maintainer).deposit(to1e18(1))
+
+              await stbtc
+                .connect(depositor)
+                .withdraw(to1e18(1), depositor, depositor)
+            })
+
+            it("should withdraw from MezoAllocator", async () => {
+              expect(
+                await tbtc.balanceOf(await mezoAllocator.getAddress()),
+              ).to.equal(0)
+            })
+
+            it("should withdraw from Mezo Portal", async () => {
+              // await stbtc.connect(depositor).withdraw(to1e18(1), depositor, depositor)
+              expect(await tbtc.balanceOf(await mezoPortal.getAddress()))
+                .to.equal(0)
+                .to.equal(0)
+            })
+
+            it("should withdraw and transfer tBTC back to a depositor", async () => {
+              expect(await tbtc.balanceOf(depositor)).to.equal(to1e18(2))
+            })
+
+            it("should decrement the deposits array", async () => {
+              const depositsArrayLen = await mezoAllocator.getDeposits()
+              expect(depositsArrayLen.length).to.equal(0)
+            })
+
+            it("should reset the deposits mapping", async () => {
+              const deposit = await mezoAllocator.depositsById(1)
+              expect(deposit.balance).to.equal(0n)
+              expect(deposit.createdAt).to.equal(0n)
+              expect(deposit.unlockAt).to.equal(0n)
+            })
+          })
+
+          context("when there were multiple deposits made to Mezo", () => {
+            beforeAfterSnapshotWrapper()
+            let tx: ContractTransactionResponse
+
+            before(async () => {
+              await tbtc.mint(depositor, to1e18(2))
+              await tbtc.mint(depositor2, to1e18(5))
+              await tbtc
+                .connect(depositor)
+                .approve(await stbtc.getAddress(), to1e18(2))
+              await tbtc
+                .connect(depositor2)
+                .approve(await stbtc.getAddress(), to1e18(5))
+              await mezoAllocator
+                .connect(governance)
+                .updateMaintainer(maintainer.address)
+
+              await stbtc
+                .connect(depositor)
+                .deposit(to1e18(2), depositor.address)
+              await stbtc
+                .connect(depositor2)
+                .deposit(to1e18(5), depositor2.address)
+              await mezoAllocator.connect(maintainer).deposit(to1e18(2))
+              await mezoAllocator.connect(maintainer).deposit(to1e18(3))
+              await mezoAllocator.connect(maintainer).deposit(to1e18(2))
+
+              // Simulating obtaining stBTC not through Acre direct deposit
+              await stbtc.connect(depositor2).transfer(depositor, to1e18(5))
+
+              tx = await stbtc
+                .connect(depositor)
+                .withdraw(to1e18(6), depositor, depositor)
+            })
+
+            it("should withdraw six tBTC from MezoPortal", async () => {
+              const tbtcInMezoPortal = await tbtc.balanceOf(
+                await mezoPortal.getAddress(),
+              )
+              expect(tbtcInMezoPortal).to.equal(to1e18(1))
+            })
+
+            it("should transfer six tBTC back to the depositor", async () => {
+              expect(await tbtc.balanceOf(depositor)).to.equal(to1e18(6))
+            })
+
+            it("should decrement the deposits array", async () => {
+              const depositsArrayLen = await mezoAllocator.getDeposits()
+              expect(depositsArrayLen.length).to.equal(1)
+            })
+
+            it("should leave 1 tBTC in deposits mapping", async () => {
+              const remainingDeposit = await mezoAllocator.depositsById(1)
+              expect(remainingDeposit.balance).to.equal(to1e18(1))
+            })
+
+            it("should leave 1 tBTC in mezo portal", async () => {
+              const mezoPortalBalance = await tbtc.balanceOf(
+                await mezoPortal.getAddress(),
+              )
+              expect(mezoPortalBalance).to.equal(to1e18(1))
+            })
+
+            it("should zero all other deposits", async () => {
+              const deposit2 = await mezoAllocator.depositsById(2)
+              const deposit3 = await mezoAllocator.depositsById(3)
+              expect(deposit2.balance).to.equal(0n)
+              expect(deposit3.balance).to.equal(0n)
+            })
+
+            it("should emit DepositWithdrawn event with a second deposit", async () => {
+              await expect(tx)
+                .to.emit(mezoAllocator, "DepositWithdrawn")
+                .withArgs(2, to1e18(3))
+            })
+
+            it("should emit DepositWithdrawn event with a third deposit", async () => {
+              await expect(tx)
+                .to.emit(mezoAllocator, "DepositWithdrawn")
+                .withArgs(3, to1e18(2))
+            })
+          })
+        },
+      )
+
+      context("when there are assets in stBTC available for withdrawal", () => {
         beforeAfterSnapshotWrapper()
 
         before(async () => {
-          await tbtc.mint(depositor, to1e18(2))
-          await tbtc.approve(await stbtc.getAddress(), to1e18(2))
-          await stbtc.connect(depositor).deposit(to1e18(1), depositor.address)
+          await tbtc.mint(depositor, to1e18(3))
+          await tbtc.approve(await stbtc.getAddress(), to1e18(3))
+          await stbtc.connect(depositor).deposit(to1e18(3), depositor.address)
           await mezoAllocator
             .connect(governance)
             .updateMaintainer(maintainer.address)
-          await mezoAllocator.connect(maintainer).deposit(to1e18(1))
+          await mezoAllocator.connect(maintainer).deposit(to1e18(2))
 
           await stbtc
             .connect(depositor)
-            .withdraw(to1e18(1), depositor, depositor)
+            .withdraw(to1e18(2), depositor, depositor)
         })
 
-        it("should withdraw from MezoAllocator", async () => {
-          expect(
-            await tbtc.balanceOf(await mezoAllocator.getAddress()),
-          ).to.equal(0)
-        })
-
-        it("should withdraw from Mezo Portal", async () => {
-          // await stbtc.connect(depositor).withdraw(to1e18(1), depositor, depositor)
-          expect(await tbtc.balanceOf(await mezoPortal.getAddress()))
-            .to.equal(0)
-            .to.equal(0)
-        })
-
-        it("should withdraw and transfer tBTC back to a depositor", async () => {
-          expect(await tbtc.balanceOf(depositor)).to.equal(to1e18(2))
-        })
-
-        it("should decrement the deposits array", async () => {
-          const depositsArrayLen = await mezoAllocator.getDeposits()
-          expect(depositsArrayLen.length).to.equal(0)
-        })
-
-        it("should reset the deposits mapping", async () => {
-          const deposit = await mezoAllocator.depositsById(1)
-          expect(deposit.balance).to.equal(0n)
-          expect(deposit.createdAt).to.equal(0n)
-          expect(deposit.unlockAt).to.equal(0n)
-        })
-      })
-
-      context("when there were multiple deposits made to Mezo", () => {
-        beforeAfterSnapshotWrapper()
-
-        before(async () => {
-          await tbtc.mint(depositor, to1e18(2))
-          await tbtc.mint(depositor2, to1e18(5))
-          await tbtc
-            .connect(depositor)
-            .approve(await stbtc.getAddress(), to1e18(2))
-          await tbtc
-            .connect(depositor2)
-            .approve(await stbtc.getAddress(), to1e18(5))
-          await mezoAllocator
-            .connect(governance)
-            .updateMaintainer(maintainer.address)
-
-          await stbtc.connect(depositor).deposit(to1e18(2), depositor.address)
-          await stbtc.connect(depositor2).deposit(to1e18(5), depositor2.address)
-          await mezoAllocator.connect(maintainer).deposit(to1e18(2))
-          await mezoAllocator.connect(maintainer).deposit(to1e18(3))
-          await mezoAllocator.connect(maintainer).deposit(to1e18(2))
-
-          // Simulating obtaining stBTC not through Acre direct deposit
-          await stbtc.connect(depositor2).transfer(depositor, to1e18(5))
-        })
-
-        it("should create three deposits", async () => {
-          const depositsArrayLen = await mezoAllocator.getDeposits()
-          expect(depositsArrayLen.length).to.equal(3)
-        })
-
-        it("should withdraw six tBTC from MezoPortal", async () => {
-          await stbtc
-            .connect(depositor)
-            .withdraw(to1e18(6), depositor, depositor)
-          const tbtcInMezoPortal = await tbtc.balanceOf(
-            await mezoPortal.getAddress(),
+        it("should withdraw 1 tBTC from stBTC", async () => {
+          expect(await tbtc.balanceOf(await stbtc.getAddress())).to.equal(
+            to1e18(0),
           )
-          expect(tbtcInMezoPortal).to.equal(to1e18(1))
         })
 
-        it("should transfer six tBTC back to the depositor", async () => {
-          expect(await tbtc.balanceOf(depositor)).to.equal(to1e18(6))
+        it("should withdraw 1 tBTC from Mezo Portal", async () => {
+          expect(await tbtc.balanceOf(await mezoPortal.getAddress())).to.equal(
+            to1e18(1),
+          )
         })
 
-        it("should decrement the deposits array", async () => {
+        it("should update the deposit balance", async () => {
+          const deposit = await mezoAllocator.depositsById(1)
+          expect(deposit.balance).to.equal(to1e18(1))
+        })
+
+        it("should remain the deposits array length", async () => {
           const depositsArrayLen = await mezoAllocator.getDeposits()
           expect(depositsArrayLen.length).to.equal(1)
         })
 
-        it("should leave 1 tBTC in deposits mapping", async () => {
-          const remainingDeposit = await mezoAllocator.depositsById(1)
-          expect(remainingDeposit.balance).to.equal(to1e18(1))
-        })
-
-        it("should leave 1 tBTC in mezo portal", async () => {
-          const mezoPortalBalance = await tbtc.balanceOf(
-            await mezoPortal.getAddress(),
-          )
-          expect(mezoPortalBalance).to.equal(to1e18(1))
-        })
-
-        it("should zero all other deposits", async () => {
-          const deposit2 = await mezoAllocator.depositsById(2)
-          const deposit3 = await mezoAllocator.depositsById(3)
-          expect(deposit2.balance).to.equal(0n)
-          expect(deposit3.balance).to.equal(0n)
+        it("should transfer 2 tBTC back to the depositor", async () => {
+          expect(await tbtc.balanceOf(depositor)).to.equal(to1e18(2))
         })
       })
     })
