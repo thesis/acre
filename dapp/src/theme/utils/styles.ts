@@ -9,7 +9,7 @@ const bodyStyle = defineStyle((props: StyleFunctionProps) => ({
   color: mode("grey.700", "grey.700")(props),
 }))
 
-const toastManagerStyle = defineStyle({
+const toastManagerTopStyle = defineStyle({
   marginTop: `${semanticTokens.space.toast_container_shift} !important`,
   // To set the correct z-index value for the toast component,
   // we need to override it in the global styles
@@ -19,7 +19,7 @@ const toastManagerStyle = defineStyle({
 })
 
 const globalStyle = (props: StyleFunctionProps) => ({
-  "#chakra-toast-manager-top": toastManagerStyle,
+  "#chakra-toast-manager-top": toastManagerTopStyle,
   body: bodyStyle(props),
 })
 
