@@ -2,7 +2,6 @@ import React, { useMemo } from "react"
 import {
   Box,
   Button,
-  CloseButton,
   HStack,
   Icon,
   ModalBody,
