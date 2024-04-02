@@ -4,7 +4,7 @@ import { useCallback, useMemo } from "react"
 export function useToast() {
   const toast = useChakraToast()
 
-  const overriddenToastFunction = useCallback(
+  const overriddenToast = useCallback(
     (options: UseToastOptions) =>
       toast({
         position: "top",
@@ -19,22 +19,22 @@ export function useToast() {
   const open = useCallback(
     ({ id, ...options }: UseToastOptions) => {
       if (!id) {
-        overriddenToastFunction(options)
+        overriddenToast(options)
       } else if (!toast.isActive(id)) {
-        overriddenToastFunction({
+        overriddenToast({
           id,
           ...options,
         })
       }
     },
-    [overriddenToastFunction, toast],
+    [overriddenToast, toast],
   )
 
   return useMemo(
     () => ({
-      ...Object.assign(overriddenToastFunction, toast),
+      ...Object.assign(overriddenToast, toast),
       open,
     }),
-    [overriddenToastFunction, toast, open],
+    [overriddenToast, toast, open],
   )
 }
