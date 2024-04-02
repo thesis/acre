@@ -32,7 +32,7 @@ const getProgressPercent = (seconds: string) =>
 
 export default function RetryModal({ retry }: { retry: () => void }) {
   const retryTimestamp = useMemo(() => getRetryTimestamp(), [])
-  const data = useCountdown(retryTimestamp, true)
+  const data = useCountdown(retryTimestamp, true, retry)
 
   return (
     <>
