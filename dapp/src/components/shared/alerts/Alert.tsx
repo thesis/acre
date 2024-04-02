@@ -1,17 +1,16 @@
 import React from "react"
 import {
   Alert as ChakraAlert,
-  AlertIcon,
   AlertProps as ChakraAlertProps,
   Icon,
   CloseButton,
   HStack,
 } from "@chakra-ui/react"
-import { AlertError, AlertInfo } from "#/assets/icons"
+import { IconInfoCircle, IconExclamationCircle } from "@tabler/icons-react"
 
 const ICONS = {
-  info: AlertInfo,
-  error: AlertError,
+  info: IconInfoCircle,
+  error: IconExclamationCircle,
 }
 
 type AlertStatus = keyof typeof ICONS
@@ -37,7 +36,7 @@ export function Alert({
   return (
     <ChakraAlert status={status} {...props}>
       {withIcon && status && (
-        <AlertIcon boxSize={6} as={ICONS[status]} color={colorIcon} />
+        <Icon mr={2} boxSize={6} as={ICONS[status]} color={colorIcon} />
       )}
       <HStack w="100%" justifyContent="space-between">
         {children}
