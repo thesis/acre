@@ -1,24 +1,27 @@
 import React from "react"
 import { HStack } from "@chakra-ui/react"
-import { Alert, AlertProps } from "./Alert"
-import { TextSm } from "../Typography"
+import { Alert, AlertProps } from "./alerts"
+import { TextSm } from "./Typography"
 
-type ToastBaseProps = {
+type ToastProps = {
   title: string
+  subtitle?: string
 } & Omit<AlertProps, "withIcon" | "withCloseButton" | "onClose"> & {
     onClose: () => void
   }
 
-export function ToastBase({
+export default function Toast({
   title,
+  subtitle,
   children,
   onClose,
   ...props
-}: ToastBaseProps) {
+}: ToastProps) {
   return (
     <Alert onClose={onClose} withIcon withCloseButton {...props}>
       <HStack w="100%">
         <TextSm fontWeight="bold">{title}</TextSm>
+        {subtitle && <TextSm>{subtitle}</TextSm>}
         {children}
       </HStack>
     </Alert>

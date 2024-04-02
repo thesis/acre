@@ -13,10 +13,10 @@ import { TextMd } from "#/components/shared/Typography"
 import { logPromiseFailure } from "#/utils"
 import { PROCESS_STATUSES } from "#/types"
 import { CardAlert } from "#/components/shared/alerts"
-import { DepositTransactionErrorToast } from "#/components/shared/toasts"
 import StakingStepsModalContent from "./StakingStepsModalContent"
-
-const TOAST_ID = "deposit-transaction-error"
+import DepositTransactionErrorToast, {
+  TOAST_ID,
+} from "./DepositTransactionErrorToast"
 
 export default function DepositBTCModal() {
   const { ethAccount } = useWalletContext()

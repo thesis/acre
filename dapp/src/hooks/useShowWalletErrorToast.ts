@@ -1,15 +1,12 @@
 import { useCallback, useEffect } from "react"
 import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import { capitalizeFirstLetter, logPromiseFailure } from "#/utils"
-import { WalletErrorToast } from "#/components/shared/toasts"
+import WalletErrorToast, {
+  WALLET_ERROR_TOAST_ID,
+} from "#/components/WalletErrorToast"
 import { useToast } from "./useToast"
 import { useWallet } from "./useWallet"
 import { useTimeout } from "./useTimeout"
-
-const WALLET_ERROR_TOAST_ID = {
-  bitcoin: "bitcoin-wallet-error",
-  ethereum: "ethereum-wallet-error",
-}
 
 export function useShowWalletErrorToast(
   type: "bitcoin" | "ethereum",

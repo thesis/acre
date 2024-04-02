@@ -1,8 +1,13 @@
 import React from "react"
 import { Flex, Button } from "@chakra-ui/react"
-import { ToastBase } from "../alerts"
+import Toast from "./shared/Toast"
 
-export function WalletErrorToast({
+export const WALLET_ERROR_TOAST_ID = {
+  bitcoin: "bitcoin-wallet-error",
+  ethereum: "ethereum-wallet-error",
+}
+
+export default function WalletErrorToast({
   title,
   onClick,
   onClose,
@@ -12,12 +17,12 @@ export function WalletErrorToast({
   onClose: () => void
 }) {
   return (
-    <ToastBase status="error" width="xl" title={title} onClose={onClose}>
+    <Toast status="error" width="xl" title={title} onClose={onClose}>
       <Flex flexGrow={1} justifyContent="end">
         <Button ml={4} variant="outline" colorScheme="white" onClick={onClick}>
           Connect now
         </Button>
       </Flex>
-    </ToastBase>
+    </Toast>
   )
 }
