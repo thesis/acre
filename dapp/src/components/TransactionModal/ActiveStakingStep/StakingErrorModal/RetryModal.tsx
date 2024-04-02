@@ -15,7 +15,7 @@ import { dateToUnixTimestamp } from "#/utils"
 import { useCountdown } from "#/hooks"
 import { ONE_MINUTE_IN_SECONDS, ONE_SEC_IN_MILLISECONDS } from "#/constants"
 
-export const getRetryTimestamp = () => {
+const getRetryTimestamp = () => {
   const today = new Date()
   const retryDate = new Date(
     today.getTime() + ONE_MINUTE_IN_SECONDS * ONE_SEC_IN_MILLISECONDS,
@@ -24,11 +24,13 @@ export const getRetryTimestamp = () => {
   return dateToUnixTimestamp(retryDate)
 }
 
+const getProgressPercent = (seconds: string) =>
+  ((ONE_MINUTE_IN_SECONDS - parseInt(seconds, 10)) * 100) /
+  ONE_MINUTE_IN_SECONDS
+
 export default function RetryModal({ retry }: { retry: () => void }) {
   const retryTimestamp = useMemo(() => getRetryTimestamp(), [])
   const data = useCountdown(retryTimestamp, true)
-
-  const progressPercent = ((60 - parseInt(data.seconds, 10)) * 100) / 60
 
   return (
     <>
@@ -53,7 +55,9 @@ export default function RetryModal({ retry }: { retry: () => void }) {
             h={3}
             aspectRatio={1}
             borderRadius="50%"
-            background={`conic-gradient(transparent ${progressPercent}%, var(--chakra-colors-brand-400) 0)`}
+            background={`conic-gradient(transparent ${getProgressPercent(
+              data.seconds,
+            )}%, var(--chakra-colors-brand-400) 0)`}
             transform="scaleX(-1)"
             transition="background"
           />
