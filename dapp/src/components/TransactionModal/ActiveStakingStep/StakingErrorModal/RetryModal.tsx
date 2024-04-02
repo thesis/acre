@@ -4,16 +4,18 @@ import {
   Button,
   CloseButton,
   HStack,
+  Icon,
   ModalBody,
   ModalFooter,
   ModalHeader,
 } from "@chakra-ui/react"
-import { CableWithPlugIcon, SecurityCheckIcon } from "#/assets/icons"
+import { CableWithPlugIcon } from "#/assets/icons"
 import { TextMd, TextSm } from "#/components/shared/Typography"
 import IconWrapper from "#/components/shared/IconWrapper"
 import { dateToUnixTimestamp } from "#/utils"
 import { useCountdown } from "#/hooks"
 import { ONE_MINUTE_IN_SECONDS, ONE_SEC_IN_MILLISECONDS } from "#/constants"
+import { IconShieldCheckFilled, IconX } from "@tabler/icons-react"
 
 const getRetryTimestamp = () => {
   const today = new Date()
@@ -37,7 +39,7 @@ export default function RetryModal({ retry }: { retry: () => void }) {
       <ModalHeader color="red.400">Oops! There was an error.</ModalHeader>
       <ModalBody gap={10} pt={4}>
         <IconWrapper icon={CableWithPlugIcon} boxSize={32} color="red.400">
-          <CloseButton color="red.400" fontSize="2xl" />
+          <Icon as={IconX} color="red.400" boxSize={14} strokeWidth={1} />
         </IconWrapper>
         <TextMd>
           Your deposit didn&apos;t go through but no worries, your funds are
@@ -68,10 +70,10 @@ export default function RetryModal({ retry }: { retry: () => void }) {
         <Button size="lg" width="100%" onClick={retry}>
           Retry
         </Button>
-        <TextSm color="grey.700">
-          <SecurityCheckIcon boxSize={5} color="gold.700" mr={2} />
-          Your funds are secure.
-        </TextSm>
+        <HStack>
+          <Icon as={IconShieldCheckFilled} boxSize={5} color="gold.700" />
+          <TextSm color="grey.700">Your funds are secure.</TextSm>
+        </HStack>
       </ModalFooter>
     </>
   )

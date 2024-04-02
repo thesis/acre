@@ -11,17 +11,16 @@ import {
   ModalHeader,
   Tooltip,
 } from "@chakra-ui/react"
-import {
-  CableWithPlugIcon,
-  DiscordIcon,
-  Info,
-  ReloadIcon,
-  ServerIcon,
-} from "#/assets/icons"
+import { CableWithPlugIcon, Info } from "#/assets/icons"
 import { TextMd } from "#/components/shared/Typography"
 import { EXTERNAL_HREF } from "#/constants"
 import IconWrapper from "#/components/shared/IconWrapper"
 import { MODAL_BASE_SIZE } from "#/components/shared/ModalBase"
+import {
+  IconBrandDiscordFilled,
+  IconReload,
+  IconServerBolt,
+} from "@tabler/icons-react"
 
 export default function ServerErrorModal({
   isLoading,
@@ -38,7 +37,7 @@ export default function ServerErrorModal({
       </ModalHeader>
       <ModalBody gap={10} pt={4}>
         <IconWrapper icon={CableWithPlugIcon} boxSize={32} color="red.400">
-          <ServerIcon boxSize={14} />
+          <Icon as={IconServerBolt} boxSize={14} strokeWidth={1} />
         </IconWrapper>
         <TextMd>
           Your deposit didn&apos;t go through but no worries, your funds are
@@ -49,7 +48,7 @@ export default function ServerErrorModal({
           size="lg"
           width="100%"
           variant="outline"
-          rightIcon={<DiscordIcon />}
+          rightIcon={<Icon as={IconBrandDiscordFilled} boxSize={5} />}
           href={EXTERNAL_HREF.DISCORD}
           isExternal
         >
@@ -85,7 +84,7 @@ export default function ServerErrorModal({
         <Button
           // TODO: Use a loading button
           isLoading={isLoading}
-          leftIcon={<ReloadIcon boxSize={5} color="brand.400" />}
+          leftIcon={<Icon as={IconReload} boxSize={5} color="brand.400" />}
           variant="outline"
           onClick={retry}
         >
