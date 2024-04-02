@@ -211,7 +211,7 @@ contract MezoAllocator is Ownable2Step {
                 );
             }
         }
-        IERC20(tbtc).safeTransfer(address(tbtcStorage), amount);
+        IERC20(tbtc).safeTransfer(address(tbtcStorage), _amount);
     }
 
     /// @notice Returns the deposit IDs.
