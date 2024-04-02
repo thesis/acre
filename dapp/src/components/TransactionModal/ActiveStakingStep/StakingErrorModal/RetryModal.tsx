@@ -32,7 +32,10 @@ const getProgressPercent = (seconds: string) =>
 
 export default function RetryModal({ retry }: { retry: () => void }) {
   const retryTimestamp = useMemo(() => getRetryTimestamp(), [])
-  const data = useCountdown(retryTimestamp, true, retry)
+  const { minutes, seconds } = useCountdown(retryTimestamp, true, retry)
+
+  const isLessThanMinute = parseInt(minutes, 10) <= 0
+  const counterLabel = `${isLessThanMinute ? "0" : "1"}:${seconds}`
 
   return (
     <>
@@ -47,19 +50,17 @@ export default function RetryModal({ retry }: { retry: () => void }) {
         </TextMd>
         <HStack gap={1}>
           <TextMd>Auto-retry in</TextMd>
-          <TextMd
-            fontWeight="bold"
-            textAlign="left"
-            minW={9}
-          >{`0:${data.seconds}`}</TextMd>
+          <TextMd fontWeight="bold" textAlign="left" minW={10}>
+            {counterLabel}
+          </TextMd>
           <Box
             w={3}
             h={3}
             aspectRatio={1}
             borderRadius="50%"
-            background={`conic-gradient(transparent ${getProgressPercent(
-              data.seconds,
-            )}%, var(--chakra-colors-brand-400) 0)`}
+            background={`conic-gradient(transparent ${
+              isLessThanMinute ? getProgressPercent(seconds) : 0
+            }%, var(--chakra-colors-brand-400) 0)`}
             transform="scaleX(-1)"
             transition="background"
           />
