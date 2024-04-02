@@ -5,6 +5,7 @@ import { TOAST_TYPES } from "#/types"
 import { TOASTS } from "#/components/shared/toasts"
 import { useToast } from "./useToast"
 import { useWallet } from "./useWallet"
+import { useTimeout } from "./useTimeout"
 
 const WALLET_ERROR_TOAST_ID = {
   bitcoin: TOAST_TYPES.BITCOIN_WALLET_NOT_CONNECTED_ERROR,
@@ -27,19 +28,17 @@ export function useWalletToast(
     [requestAccount],
   )
 
-  useEffect(() => {
-    const timeout = setTimeout(
-      () =>
-        open(
-          TOASTS[toastId]({
-            onClick: handleConnect,
-          }),
-        ),
-      delay,
-    )
+  const handleOpen = useCallback(
+    () =>
+      open(
+        TOASTS[toastId]({
+          onClick: handleConnect,
+        }),
+      ),
+    [handleConnect, open, toastId],
+  )
 
-    return () => clearTimeout(timeout)
-  }, [delay, handleConnect, open, toastId, type])
+  useTimeout(handleOpen, delay)
 
   useEffect(() => {
     if (!account) return
