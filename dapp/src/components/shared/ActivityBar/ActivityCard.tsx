@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react"
 import { useLocation } from "react-router-dom"
 import { ActivityInfo, LocationState } from "#/types"
-import { capitalize } from "#/utils"
+import { capitalizeFirstLetter } from "#/utils"
 import { ChevronRightIcon } from "#/assets/icons"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import StatusInfo from "#/components/shared/StatusInfo"
@@ -65,7 +65,7 @@ function ActivityCard({ activity, onRemove }: ActivityCardType) {
       </CardHeader>
       <CardBody p={0}>
         <TextSm fontWeight="semibold" marginBottom={4}>
-          {capitalize(activity.action)}
+          {capitalizeFirstLetter(activity.action)}
         </TextSm>
       </CardBody>
       <CardFooter p={0}>
