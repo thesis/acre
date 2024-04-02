@@ -11,7 +11,7 @@ const WALLET_ERROR_TOAST_ID = {
   ethereum: "ethereum-wallet-error",
 }
 
-export function useWalletToast(
+export function useShowWalletErrorToast(
   type: "bitcoin" | "ethereum",
   delay = ONE_SEC_IN_MILLISECONDS,
 ) {
