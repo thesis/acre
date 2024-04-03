@@ -238,10 +238,19 @@ contract AcreBitcoinDepositor is
     }
 
     /// @notice This function should be called for previously initialized stake
-    ///         request, after tBTC bridging process was finalized.
-    ///         It stakes the tBTC from the given deposit into stBTC, emitting the
-    ///         stBTC shares to the staker specified in the deposit extra data
-    ///         and using the referral provided in the extra data.
+    ///         request, after tBTC minting process completed, meaning tBTC was
+    ///         minted to this contract.
+    /// @dev It calculates the amount to stake based on the approximate minted
+    ///      tBTC amount reduced by the depositor fee.
+    /// @dev IMPORTANT NOTE: The minted tBTC amount used by this function is an
+    ///      approximation. See documentation of the
+    ///      {{AbstractTBTCDepositor#_calculateTbtcAmount}} responsible for calculating
+    ///      this value for more details.
+    /// @dev In case balance of tBTC tokens in this contract doesn't meet the
+    ///      calculated tBTC amount, the function reverts with `InsufficientTbtcBalance`
+    ///      error. This case requires Governance's validation, as tBTC Bridge minting
+    ///      fees might changed in the way that reserve mentioned in
+    ///      {{AbstractTBTCDepositor#_calculateTbtcAmount}} needs a top-up.
     /// @param depositKey Deposit key identifying the deposit.
     function finalizeStake(uint256 depositKey) external {
         transitionStakeRequestState(
@@ -250,7 +259,48 @@ contract AcreBitcoinDepositor is
             StakeRequestState.Finalized
         );
 
-        (uint256 amountToStake, address staker) = finalizeBridging(depositKey);
+        (
+            uint256 initialDepositAmount,
+            uint256 tbtcAmount,
+            bytes32 extraData
+        ) = _finalizeDeposit(depositKey);
+
+        // Check if current balance is sufficient to finalize bridging of `tbtcAmount`.
+        uint256 currentBalance = tbtcToken.balanceOf(address(this));
+        if (tbtcAmount > tbtcToken.balanceOf(address(this))) {
+            revert InsufficientTbtcBalance(tbtcAmount, currentBalance);
+        }
+
+        // Compute depositor fee. The fee is calculated based on the initial funding
+        // transaction amount, before the tBTC protocol network fees were taken.
+        uint256 depositorFee = depositorFeeDivisor > 0
+            ? (initialDepositAmount / depositorFeeDivisor)
+            : 0;
+
+        // Ensure the depositor fee does not exceed the approximate minted tBTC
+        // amount.
+        if (depositorFee >= tbtcAmount) {
+            revert DepositorFeeExceedsBridgedAmount(depositorFee, tbtcAmount);
+        }
+
+        uint256 amountToStake = tbtcAmount - depositorFee;
+
+        (address staker, uint16 referral) = decodeExtraData(extraData);
+
+        // Emit event for accounting purposes to track partner's referral ID and
+        // depositor fee taken.
+        emit BridgingCompleted(
+            depositKey,
+            msg.sender,
+            referral,
+            tbtcAmount,
+            depositorFee
+        );
+
+        // Transfer depositor fee to the treasury wallet.
+        if (depositorFee > 0) {
+            tbtcToken.safeTransfer(stbtc.treasury(), depositorFee);
+        }
 
         emit StakeRequestFinalized(depositKey, msg.sender, amountToStake);
 
@@ -349,72 +399,5 @@ contract AcreBitcoinDepositor is
 
         // Transition to a new state.
         stakeRequests[depositKey] = newState;
-    }
-
-    /// @notice This function should be called for previously initialized stake
-    ///         request, after tBTC minting process completed, meaning tBTC was
-    ///         minted to this contract.
-    /// @dev It calculates the amount to stake based on the approximate minted
-    ///      tBTC amount reduced by the depositor fee.
-    /// @dev IMPORTANT NOTE: The minted tBTC amount used by this function is an
-    ///      approximation. See documentation of the
-    ///      {{AbstractTBTCDepositor#_calculateTbtcAmount}} responsible for calculating
-    ///      this value for more details.
-    /// @dev In case balance of tBTC tokens in this contract doesn't meet the
-    ///      calculated tBTC amount, the function reverts with `InsufficientTbtcBalance`
-    ///      error. This case requires Governance's validation, as tBTC Bridge minting
-    ///      fees might changed in the way that reserve mentioned in
-    ///      {{AbstractTBTCDepositor#_calculateTbtcAmount}} needs a top-up.
-    /// @param depositKey Deposit key identifying the deposit.
-    /// @return amountToStake tBTC token amount to stake after deducting tBTC bridging
-    ///         fees and the depositor fee.
-    /// @return staker The address to which the stBTC shares will be minted.
-    function finalizeBridging(
-        uint256 depositKey
-    ) internal returns (uint256, address) {
-        (
-            uint256 initialDepositAmount,
-            uint256 tbtcAmount,
-            bytes32 extraData
-        ) = _finalizeDeposit(depositKey);
-
-        // Check if current balance is sufficient to finalize bridging of `tbtcAmount`.
-        uint256 currentBalance = tbtcToken.balanceOf(address(this));
-        if (tbtcAmount > tbtcToken.balanceOf(address(this))) {
-            revert InsufficientTbtcBalance(tbtcAmount, currentBalance);
-        }
-
-        // Compute depositor fee. The fee is calculated based on the initial funding
-        // transaction amount, before the tBTC protocol network fees were taken.
-        uint256 depositorFee = depositorFeeDivisor > 0
-            ? (initialDepositAmount / depositorFeeDivisor)
-            : 0;
-
-        // Ensure the depositor fee does not exceed the approximate minted tBTC
-        // amount.
-        if (depositorFee >= tbtcAmount) {
-            revert DepositorFeeExceedsBridgedAmount(depositorFee, tbtcAmount);
-        }
-
-        uint256 amountToStake = tbtcAmount - depositorFee;
-
-        (address staker, uint16 referral) = decodeExtraData(extraData);
-
-        // Emit event for accounting purposes to track partner's referral ID and
-        // depositor fee taken.
-        emit BridgingCompleted(
-            depositKey,
-            msg.sender,
-            referral,
-            tbtcAmount,
-            depositorFee
-        );
-
-        // Transfer depositor fee to the treasury wallet.
-        if (depositorFee > 0) {
-            tbtcToken.safeTransfer(stbtc.treasury(), depositorFee);
-        }
-
-        return (amountToStake, staker);
     }
 }
