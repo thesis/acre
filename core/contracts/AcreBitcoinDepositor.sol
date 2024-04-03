@@ -47,21 +47,12 @@ contract AcreBitcoinDepositor is
     enum StakeRequestState {
         Unknown,
         Initialized,
-        Finalized,
-        Queued,
-        FinalizedFromQueue,
-        CancelledFromQueue
+        Finalized
     }
 
     struct StakeRequest {
         // State of the stake request.
         StakeRequestState state;
-        // The address to which the stBTC shares will be minted. Stored only when
-        // request is queued.
-        address staker;
-        // tBTC token amount to stake after deducting tBTC minting fees and the
-        // Depositor fee. Stored only when request is queued.
-        uint88 queuedAmount;
     }
 
     /// @notice Mapping of stake requests.
@@ -78,13 +69,6 @@ contract AcreBitcoinDepositor is
     /// @dev This parameter should be set to a value exceeding the minimum deposit
     ///      amount supported by tBTC Bridge.
     uint256 public minStakeAmount;
-
-    /// @notice Total balance of pending stake requests (in tBTC token precision).
-    /// @dev stBTC contract introduces limits for total deposits amount. Due to
-    ///      asynchronous manner of the staking flow, this contract needs to track
-    ///      balance of pending stake requests to ensure new stake request are
-    ///      not initialized if they won't be able to finalize.
-    uint256 public queuedStakesBalance;
 
     /// @notice Divisor used to compute the depositor fee taken from each deposit
     ///         and transferred to the treasury upon stake request finalization.
@@ -131,38 +115,6 @@ contract AcreBitcoinDepositor is
         uint256 indexed depositKey,
         address indexed caller,
         uint256 stakedAmount
-    );
-
-    /// @notice Emitted when a stake request is queued.
-    /// @param depositKey Deposit key identifying the deposit.
-    /// @param caller Address that finalized the stake request.
-    /// @param queuedAmount Amount of queued tBTC tokens.
-    event StakeRequestQueued(
-        uint256 indexed depositKey,
-        address indexed caller,
-        uint256 queuedAmount
-    );
-
-    /// @notice Emitted when a stake request is finalized from the queue.
-    /// @dev Deposit details can be fetched from {{ ERC4626.Deposit }}
-    ///      event emitted in the same transaction.
-    /// @param depositKey Deposit key identifying the deposit.
-    /// @param caller Address that finalized the stake request.
-    /// @param stakedAmount Amount of staked tBTC tokens.
-    event StakeRequestFinalizedFromQueue(
-        uint256 indexed depositKey,
-        address indexed caller,
-        uint256 stakedAmount
-    );
-
-    /// @notice Emitted when a queued stake request is cancelled.
-    /// @param depositKey Deposit key identifying the deposit.
-    /// @param staker Address of the staker.
-    /// @param amountCancelled Amount of queued tBTC tokens that got cancelled.
-    event StakeRequestCancelledFromQueue(
-        uint256 indexed depositKey,
-        address indexed staker,
-        uint256 amountCancelled
     );
 
     /// @notice Emitted when a minimum single stake amount is updated.
@@ -212,17 +164,6 @@ contract AcreBitcoinDepositor is
         uint256 depositorFee,
         uint256 bridgedAmount
     );
-
-    /// @dev Attempted to call bridging finalization for a stake request for
-    ///      which the function was already called.
-    error BridgingFinalizationAlreadyCalled();
-
-    /// @dev Attempted to finalize or cancel a stake request that was not added
-    ///      to the queue, or was already finalized or cancelled.
-    error StakeRequestNotQueued();
-
-    /// @dev Attempted to call function by an account that is not the staker.
-    error CallerNotStaker();
 
     /// @dev Attempted to set minimum stake amount to a value lower than the
     ///      tBTC Bridge deposit dust threshold.
@@ -314,9 +255,6 @@ contract AcreBitcoinDepositor is
     ///         It stakes the tBTC from the given deposit into stBTC, emitting the
     ///         stBTC shares to the staker specified in the deposit extra data
     ///         and using the referral provided in the extra data.
-    /// @dev In case depositing in stBTC vault fails (e.g. because of the
-    ///      maximum deposit limit being reached), the `queueStake` function
-    ///      should be called to add the stake request to the staking queue.
     /// @param depositKey Deposit key identifying the deposit.
     function finalizeStake(uint256 depositKey) external {
         transitionStakeRequestState(
@@ -333,105 +271,6 @@ contract AcreBitcoinDepositor is
         tbtcToken.safeIncreaseAllowance(address(stbtc), amountToStake);
         // slither-disable-next-line unused-return
         stbtc.deposit(amountToStake, staker);
-    }
-
-    // TODO: Remove stake queueing as there is no max limit
-    /// @notice This function should be called for previously initialized stake
-    ///         request, after tBTC bridging process was finalized, in case the
-    ///         `finalizeStake` failed due to stBTC vault deposit limit
-    ///         being reached.
-    /// @dev It queues the stake request, until the stBTC vault is ready to
-    ///      accept the deposit. The request must be finalized with `finalizeQueuedStake`
-    ///      after the limit is increased or other user withdraws their funds
-    ///      from the stBTC contract to make place for another deposit.
-    ///      The staker has a possibility to submit `cancelQueuedStake` that
-    ///      will withdraw the minted tBTC token and abort staking process.
-    /// @param depositKey Deposit key identifying the deposit.
-    function queueStake(uint256 depositKey) external {
-        transitionStakeRequestState(
-            depositKey,
-            StakeRequestState.Initialized,
-            StakeRequestState.Queued
-        );
-
-        StakeRequest storage request = stakeRequests[depositKey];
-
-        uint256 amountToQueue;
-        (amountToQueue, request.staker) = finalizeBridging(depositKey);
-
-        request.queuedAmount = SafeCast.toUint88(amountToQueue);
-
-        // Increase pending stakes balance.
-        queuedStakesBalance += amountToQueue;
-
-        emit StakeRequestQueued(depositKey, msg.sender, amountToQueue);
-    }
-
-    /// @notice This function should be called for previously queued stake
-    ///         request, when stBTC vault is able to accept a deposit.
-    /// @param depositKey Deposit key identifying the deposit.
-    function finalizeQueuedStake(uint256 depositKey) external {
-        transitionStakeRequestState(
-            depositKey,
-            StakeRequestState.Queued,
-            StakeRequestState.FinalizedFromQueue
-        );
-
-        StakeRequest storage request = stakeRequests[depositKey];
-
-        if (request.queuedAmount == 0) revert StakeRequestNotQueued();
-
-        uint256 amountToStake = request.queuedAmount;
-        delete (request.queuedAmount);
-
-        // Decrease pending stakes balance.
-        queuedStakesBalance -= amountToStake;
-
-        emit StakeRequestFinalizedFromQueue(
-            depositKey,
-            msg.sender,
-            amountToStake
-        );
-
-        // Deposit tBTC in stBTC.
-        tbtcToken.safeIncreaseAllowance(address(stbtc), amountToStake);
-        // slither-disable-next-line unused-return
-        stbtc.deposit(amountToStake, request.staker);
-    }
-
-    /// @notice Cancel queued stake.
-    ///         The function can be called by the staker to recover tBTC that cannot
-    ///         be finalized to stake in stBTC contract due to a deposit limit being
-    ///         reached.
-    /// @dev This function can be called only after the stake request was added
-    ///      to queue.
-    /// @dev Only staker provided in the extra data of the stake request can
-    ///      call this function.
-    /// @param depositKey Deposit key identifying the deposit.
-    function cancelQueuedStake(uint256 depositKey) external {
-        transitionStakeRequestState(
-            depositKey,
-            StakeRequestState.Queued,
-            StakeRequestState.CancelledFromQueue
-        );
-
-        StakeRequest storage request = stakeRequests[depositKey];
-
-        uint256 amount = request.queuedAmount;
-        if (amount == 0) revert StakeRequestNotQueued();
-
-        address staker = request.staker;
-        // Check if caller is the staker.
-        if (msg.sender != staker) revert CallerNotStaker();
-
-        delete (request.queuedAmount);
-
-        emit StakeRequestCancelledFromQueue(depositKey, staker, amount);
-
-        // Decrease pending stakes balance.
-        queuedStakesBalance -= amount;
-
-        tbtcToken.safeTransfer(staker, amount);
     }
 
     /// @notice Updates the minimum stake amount.
