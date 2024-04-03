@@ -30,6 +30,12 @@ contract stBTCV2 is ERC4626Upgradeable, Ownable2StepUpgradeable {
     /// Maximum total amount of tBTC token held by Acre protocol.
     uint256 public maximumTotalAssets;
 
+    /// Entry fee basis points applied to entry fee calculation.
+    uint256 public entryFeeBasisPoints;
+
+    /// Exit fee basis points applied to exit fee calculation.
+    uint256 public exitFeeBasisPoints;
+
     // TEST: New variable.
     uint256 public newVariable;
 
