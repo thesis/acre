@@ -1,7 +1,7 @@
 import React from "react"
 import { Info } from "#/assets/icons"
-import { Icon, VStack, Tooltip } from "@chakra-ui/react"
-import { FeesItemType, FeesPopoverItem } from "./FeesPopoverItem"
+import { Icon, Tooltip, List } from "@chakra-ui/react"
+import { FeesItemType, FeesPopoverItem } from "./FeesTooltipItem"
 
 const fees: Array<FeesItemType> = [
   {
@@ -21,12 +21,12 @@ const fees: Array<FeesItemType> = [
   },
 ]
 
-export function FeesPopover() {
+export function FeesTooltip() {
   return (
     <Tooltip
       placement="right"
       label={
-        <VStack gap={0.5}>
+        <List spacing={0.5} minW={60}>
           {fees.map((fee) => (
             <FeesPopoverItem
               label={fee.label}
@@ -34,17 +34,10 @@ export function FeesPopover() {
               currency={fee.currency}
             />
           ))}
-        </VStack>
+        </List>
       }
     >
-      <Icon
-        as={Info}
-        ml={2}
-        pb={0.5}
-        boxSize={5}
-        cursor="pointer"
-        color="grey.400"
-      />
+      <Icon as={Info} ml={2} boxSize={4} cursor="pointer" color="grey.400" />
     </Tooltip>
   )
 }
