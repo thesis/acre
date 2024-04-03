@@ -149,6 +149,7 @@ describe("AcreBitcoinDepositor", () => {
                   tbtcDepositData.depositKey,
                   thirdParty.address,
                   tbtcDepositData.staker,
+                  initialDepositAmount,
                 )
             })
 
@@ -365,6 +366,7 @@ describe("AcreBitcoinDepositor", () => {
                   .withArgs(
                     tbtcDepositData.depositKey,
                     thirdParty.address,
+                    initialDepositAmount,
                     expectedAssetsAmount,
                   )
               })
@@ -445,6 +447,7 @@ describe("AcreBitcoinDepositor", () => {
                   .withArgs(
                     tbtcDepositData.depositKey,
                     thirdParty.address,
+                    initialDepositAmount,
                     expectedAssetsAmount,
                   )
               })

@@ -80,10 +80,12 @@ contract AcreBitcoinDepositor is
     /// @param depositKey Deposit key identifying the deposit.
     /// @param caller Address that initialized the stake request.
     /// @param staker The address to which the stBTC shares will be minted.
+    /// @param initialAmount Amount of funding transaction.
     event StakeRequestInitialized(
         uint256 indexed depositKey,
         address indexed caller,
-        address indexed staker
+        address indexed staker,
+        uint256 initialAmount
     );
 
     /// @notice Emitted when bridging completion has been notified.
@@ -105,10 +107,12 @@ contract AcreBitcoinDepositor is
     ///      event emitted in the same transaction.
     /// @param depositKey Deposit key identifying the deposit.
     /// @param caller Address that finalized the stake request.
+    /// @param initialAmount Amount of funding transaction.
     /// @param stakedAmount Amount of staked tBTC tokens.
     event StakeRequestFinalized(
         uint256 indexed depositKey,
         address indexed caller,
+        uint256 initialAmount,
         uint256 stakedAmount
     );
 
@@ -222,7 +226,7 @@ contract AcreBitcoinDepositor is
         // We don't check if the request was already initialized, as this check
         // is enforced in `_initializeDeposit` when calling the
         // `Bridge.revealDepositWithExtraData` function.
-        (uint256 depositKey, ) = _initializeDeposit(
+        (uint256 depositKey, uint256 initialAmount) = _initializeDeposit(
             fundingTx,
             reveal,
             encodeExtraData(staker, referral)
@@ -238,7 +242,12 @@ contract AcreBitcoinDepositor is
         // Transition to a new state.
         stakeRequests[depositKey] = StakeRequestState.Initialized;
 
-        emit StakeRequestInitialized(depositKey, msg.sender, staker);
+        emit StakeRequestInitialized(
+            depositKey,
+            msg.sender,
+            staker,
+            initialAmount
+        );
     }
 
     /// @notice This function should be called for previously initialized stake
@@ -268,7 +277,7 @@ contract AcreBitcoinDepositor is
         stakeRequests[depositKey] = StakeRequestState.Finalized;
 
         (
-            uint256 initialDepositAmount,
+            uint256 initialAmount,
             uint256 tbtcAmount,
             bytes32 extraData
         ) = _finalizeDeposit(depositKey);
@@ -282,7 +291,7 @@ contract AcreBitcoinDepositor is
         // Compute depositor fee. The fee is calculated based on the initial funding
         // transaction amount, before the tBTC protocol network fees were taken.
         uint256 depositorFee = depositorFeeDivisor > 0
-            ? (initialDepositAmount / depositorFeeDivisor)
+            ? (initialAmount / depositorFeeDivisor)
             : 0;
 
         // Ensure the depositor fee does not exceed the approximate minted tBTC
@@ -310,7 +319,12 @@ contract AcreBitcoinDepositor is
             tbtcToken.safeTransfer(stbtc.treasury(), depositorFee);
         }
 
-        emit StakeRequestFinalized(depositKey, msg.sender, amountToStake);
+        emit StakeRequestFinalized(
+            depositKey,
+            msg.sender,
+            initialAmount,
+            amountToStake
+        );
 
         // Deposit tBTC in stBTC.
         tbtcToken.safeIncreaseAllowance(address(stbtc), amountToStake);
