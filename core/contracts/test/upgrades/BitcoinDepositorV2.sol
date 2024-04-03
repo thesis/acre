@@ -11,14 +11,11 @@ import "@keep-network/tbtc-v2/contracts/integrator/AbstractTBTCDepositor.sol";
 
 import {stBTC} from "../../stBTC.sol";
 
-/// @title AcreBitcoinDepositorV2
-/// @dev This is a contract used to test Acre Bitcoin Depositor upgradeability.
-///      It is a copy of AcreBitcoinDepositor contract with some differences
+/// @title BitcoinDepositorV2
+/// @dev This is a contract used to test Bitcoin Depositor upgradeability.
+///      It is a copy of BitcoinDepositor contract with some differences
 ///      marked with `TEST:` comments.
-contract AcreBitcoinDepositorV2 is
-    AbstractTBTCDepositor,
-    Ownable2StepUpgradeable
-{
+contract BitcoinDepositorV2 is AbstractTBTCDepositor, Ownable2StepUpgradeable {
     using SafeERC20 for IERC20;
 
     /// @notice State of the stake request.

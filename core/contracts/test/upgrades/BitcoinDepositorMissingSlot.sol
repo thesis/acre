@@ -11,11 +11,11 @@ import "@keep-network/tbtc-v2/contracts/integrator/AbstractTBTCDepositor.sol";
 
 import {stBTC} from "../../stBTC.sol";
 
-/// @title AcreBitcoinDepositorMissingSlot
-/// @dev This is a contract used to test Acre Bitcoin Depositor upgradeability.
-///      It is a copy of AcreBitcoinDepositor contract with some differences
+/// @title BitcoinDepositorMissingSlot
+/// @dev This is a contract used to test Bitcoin Depositor upgradeability.
+///      It is a copy of BitcoinDepositor contract with some differences
 ///      marked with `TEST:` comments.
-contract AcreBitcoinDepositorMissingSlot is
+contract BitcoinDepositorMissingSlot is
     AbstractTBTCDepositor,
     Ownable2StepUpgradeable
 {
@@ -249,7 +249,7 @@ contract AcreBitcoinDepositorMissingSlot is
         _disableInitializers();
     }
 
-    /// @notice Acre Bitcoin Depositor contract initializer.
+    /// @notice Bitcoin Depositor contract initializer.
     /// @param bridge tBTC Bridge contract instance.
     /// @param tbtcVault tBTC Vault contract instance.
     /// @param _tbtcToken tBTC token contract instance.

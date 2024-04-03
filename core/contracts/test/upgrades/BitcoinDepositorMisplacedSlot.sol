@@ -9,35 +9,13 @@ import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
 import "@keep-network/tbtc-v2/contracts/integrator/AbstractTBTCDepositor.sol";
 
-import {stBTC} from "./stBTC.sol";
+import {stBTC} from "../../stBTC.sol";
 
-// TODO: Make Pausable
-
-/// @title Acre Bitcoin Depositor contract.
-/// @notice The contract integrates Acre staking with tBTC minting.
-///         User who wants to stake BTC in Acre should submit a Bitcoin transaction
-///         to the most recently created off-chain ECDSA wallets of the tBTC Bridge
-///         using pay-to-script-hash (P2SH) or pay-to-witness-script-hash (P2WSH)
-///         containing hashed information about this Depositor contract address,
-///         and staker's Ethereum address.
-///         Then, the staker initiates tBTC minting by revealing their Ethereum
-///         address along with their deposit blinding factor, refund public key
-///         hash and refund locktime on the tBTC Bridge through this Depositor
-///         contract.
-///         The off-chain ECDSA wallet and Optimistic Minting bots listen for these
-///         sorts of messages and when they get one, they check the Bitcoin network
-///         to make sure the deposit lines up. Majority of tBTC minting is finalized
-///         by the Optimistic Minting process, where Minter bot initializes
-///         minting process and if there is no veto from the Guardians, the
-///         process is finalized and tBTC minted to the Depositor address. If
-///         the revealed deposit is not handled by the Optimistic Minting process
-///         the off-chain ECDSA wallet may decide to pick the deposit transaction
-///         for sweeping, and when the sweep operation is confirmed on the Bitcoin
-///         network, the tBTC Bridge and tBTC vault mint the tBTC token to the
-///         Depositor address. After tBTC is minted to the Depositor, on the stake
-///         finalization tBTC is staked in Acre and stBTC shares are emitted
-///         to the staker.
-contract AcreBitcoinDepositor is
+/// @title BitcoinDepositorMisplacedSlot
+/// @dev This is a contract used to test Bitcoin Depositor upgradeability.
+///      It is a copy of BitcoinDepositor contract with some differences
+///      marked with `TEST:` comments.
+contract BitcoinDepositorMisplacedSlot is
     AbstractTBTCDepositor,
     Ownable2StepUpgradeable
 {
@@ -63,6 +41,9 @@ contract AcreBitcoinDepositor is
         // Depositor fee. Stored only when request is queued.
         uint88 queuedAmount;
     }
+
+    // TEST: New state variable - misplaced slot to test upgradeability.
+    string public newVariable;
 
     /// @notice Mapping of stake requests.
     /// @dev The key is a deposit key identifying the deposit.
@@ -270,7 +251,7 @@ contract AcreBitcoinDepositor is
         _disableInitializers();
     }
 
-    /// @notice Acre Bitcoin Depositor contract initializer.
+    /// @notice Bitcoin Depositor contract initializer.
     /// @param bridge tBTC Bridge contract instance.
     /// @param tbtcVault tBTC Vault contract instance.
     /// @param _tbtcToken tBTC token contract instance.
