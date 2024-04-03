@@ -1,19 +1,25 @@
 import { useRef, useState, useEffect } from "react"
 import { SizeType } from "#/types"
 
+const initialSize = {
+  width: 0,
+  height: 0,
+}
+
 export function useSize() {
   const ref = useRef<HTMLDivElement>()
-  const [size, setSize] = useState<SizeType>({
-    width: 0,
-    height: 0,
-  })
+  const [size, setSize] = useState<SizeType>(initialSize)
 
   useEffect(() => {
     const onResize = () => {
-      setSize({
-        width: ref.current ? ref.current.clientWidth : 0,
-        height: ref.current ? ref.current.clientHeight : 0,
-      })
+      const newSize = ref.current
+        ? {
+            width: ref.current.clientWidth,
+            height: ref.current.clientHeight,
+          }
+        : initialSize
+
+      setSize(newSize)
     }
 
     onResize()

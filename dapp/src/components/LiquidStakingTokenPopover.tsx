@@ -53,7 +53,6 @@ export function LiquidStakingTokenPopover({
             amount="912312331"
             variant="greater-balance-xl"
             currency="stbtc"
-            size="4xl"
           />
           <Alert
             mt={5}
