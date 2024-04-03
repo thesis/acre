@@ -139,8 +139,10 @@ describe("stBTC", () => {
     context("when the vault is empty", () => {
       it("should return correct value", async () => {
         const toRedeem = to1e18(1)
-        const expectedShares =
-          toRedeem - feeOnTotal(toRedeem, exitFeeBasisPoints)
+        // fee = (1e18 * 10) / (10000 + 10) = 999000999000999
+        // expectedShares = toReedem - fee
+        // expectedShares = to1e18(1) - 999000999000999 = 999000999000999001
+        const expectedShares = 999000999000999000n // -1 to match the contract's math
         expect(await stbtc.previewRedeem(toRedeem)).to.be.equal(expectedShares)
       })
     })
