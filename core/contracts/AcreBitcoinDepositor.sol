@@ -130,15 +130,6 @@ contract AcreBitcoinDepositor is
         StakeRequestState expectedState
     );
 
-    /// @dev Attempted to finalize bridging with depositor's contract tBTC balance
-    ///      lower than the calculated bridged tBTC amount. This error means
-    ///      that Governance should top-up the tBTC reserve for bridging fees
-    ///      approximation.
-    error InsufficientTbtcBalance(
-        uint256 amountToStake,
-        uint256 currentBalance
-    );
-
     /// @dev Calculated depositor fee exceeds the amount of minted tBTC tokens.
     error DepositorFeeExceedsBridgedAmount(
         uint256 depositorFee,
@@ -270,12 +261,6 @@ contract AcreBitcoinDepositor is
             uint256 tbtcAmount,
             bytes32 extraData
         ) = _finalizeDeposit(depositKey);
-
-        // Check if current balance is sufficient to finalize bridging of `tbtcAmount`.
-        uint256 currentBalance = tbtcToken.balanceOf(address(this));
-        if (tbtcAmount > tbtcToken.balanceOf(address(this))) {
-            revert InsufficientTbtcBalance(tbtcAmount, currentBalance);
-        }
 
         // Compute depositor fee. The fee is calculated based on the initial funding
         // transaction amount, before the tBTC protocol network fees were taken.

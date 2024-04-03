@@ -303,10 +303,14 @@ describe("AcreBitcoinDepositor", () => {
                   .finalizeStake(tbtcDepositData.depositKey),
               )
                 .to.be.revertedWithCustomError(
-                  bitcoinDepositor,
-                  "InsufficientTbtcBalance",
+                  stbtc,
+                  "ERC20InsufficientBalance",
                 )
-                .withArgs(bridgedTbtcAmount, mintedAmount)
+                .withArgs(
+                  await bitcoinDepositor.getAddress(),
+                  mintedAmount - depositorFee,
+                  amountToStake,
+                )
             })
           })
 
