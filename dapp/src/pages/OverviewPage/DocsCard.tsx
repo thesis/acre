@@ -5,7 +5,7 @@ import { TextSm } from "#/components/shared/Typography"
 import { ArrowUpRightAnimatedIcon } from "#/assets/icons/animated"
 import { motion } from "framer-motion"
 
-export function DocsCard({ ...props }: CardProps) {
+export function DocsCard(props: CardProps) {
   const { onOpen } = useDocsDrawer()
 
   return (

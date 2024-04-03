@@ -5,7 +5,7 @@ import { Carousel } from "#/components/shared/Carousel"
 import { ActivityCard } from "#/components/shared/ActivityCard"
 import { useActivities } from "#/hooks"
 import { ActivityInfo } from "#/types"
-import { activityCarouselSettings } from "./ActivityCarouselSettings"
+import { activityCarouselSettings } from "./settings"
 
 export function ActivityCarousel({ ...props }: BoxProps) {
   const carouselRef = useRef<HTMLInputElement & Slider>(null)
