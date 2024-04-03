@@ -267,8 +267,6 @@ contract AcreBitcoinDepositorV2 is
         return minStakeAmount;
     }
 
-    // TODO: Handle minimum deposit amount in tBTC Bridge vs stBTC.
-
     /// @notice Encodes staker address and referral as extra data.
     /// @dev Packs the data to bytes32: 20 bytes of staker address and
     ///      2 bytes of referral, 10 bytes of trailing zeros.
