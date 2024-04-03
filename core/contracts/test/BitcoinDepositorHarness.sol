@@ -25,9 +25,7 @@ contract BitcoinDepositorHarness is BitcoinDepositor {
 }
 
 /// @dev A test contract to stub tBTC Bridge contract.
-contract BridgeStub is MockBridge {
-
-}
+contract BridgeStub is MockBridge {}
 
 /// @dev A test contract to stub tBTC Vault contract.
 contract TBTCVaultStub is MockTBTCVault {
