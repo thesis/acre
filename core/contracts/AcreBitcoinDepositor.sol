@@ -151,14 +151,6 @@ contract AcreBitcoinDepositor is
         uint256 currentBalance
     );
 
-    /// @dev Attempted to notify a bridging completion, while it was already
-    ///      notified.
-    error BridgingCompletionAlreadyNotified();
-
-    /// @dev Attempted to finalize a stake request, while bridging completion has
-    /// not been notified yet.
-    error BridgingNotCompleted();
-
     /// @dev Calculated depositor fee exceeds the amount of minted tBTC tokens.
     error DepositorFeeExceedsBridgedAmount(
         uint256 depositorFee,
