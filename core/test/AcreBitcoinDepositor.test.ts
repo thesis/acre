@@ -332,18 +332,6 @@ describe("AcreBitcoinDepositor", () => {
                   .finalizeStake(tbtcDepositData.depositKey)
               })
 
-              it("should emit BridgingCompleted event", async () => {
-                await expect(tx)
-                  .to.emit(bitcoinDepositor, "BridgingCompleted")
-                  .withArgs(
-                    tbtcDepositData.depositKey,
-                    thirdParty.address,
-                    tbtcDepositData.referral,
-                    bridgedTbtcAmount,
-                    depositorFee,
-                  )
-              })
-
               it("should transfer depositor fee", async () => {
                 await expect(tx).to.changeTokenBalances(
                   tbtc,
@@ -366,7 +354,10 @@ describe("AcreBitcoinDepositor", () => {
                   .withArgs(
                     tbtcDepositData.depositKey,
                     thirdParty.address,
+                    tbtcDepositData.referral,
                     initialDepositAmount,
+                    bridgedTbtcAmount,
+                    depositorFee,
                     expectedAssetsAmount,
                   )
               })
@@ -417,18 +408,6 @@ describe("AcreBitcoinDepositor", () => {
                   .finalizeStake(tbtcDepositData.depositKey)
               })
 
-              it("should emit BridgingCompleted event", async () => {
-                await expect(tx)
-                  .to.emit(bitcoinDepositor, "BridgingCompleted")
-                  .withArgs(
-                    tbtcDepositData.depositKey,
-                    thirdParty.address,
-                    tbtcDepositData.referral,
-                    bridgedTbtcAmount,
-                    0,
-                  )
-              })
-
               it("should not transfer depositor fee", async () => {
                 await expect(tx).to.changeTokenBalances(tbtc, [treasury], [0])
               })
@@ -447,7 +426,10 @@ describe("AcreBitcoinDepositor", () => {
                   .withArgs(
                     tbtcDepositData.depositKey,
                     thirdParty.address,
+                    tbtcDepositData.referral,
                     initialDepositAmount,
+                    bridgedTbtcAmount,
+                    0,
                     expectedAssetsAmount,
                   )
               })

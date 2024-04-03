@@ -88,31 +88,22 @@ contract AcreBitcoinDepositor is
         uint256 initialAmount
     );
 
-    /// @notice Emitted when bridging completion has been notified.
-    /// @param depositKey Deposit key identifying the deposit.
-    /// @param caller Address that notified about bridging completion.
-    /// @param referral Identifier of a partner in the referral program.
-    /// @param bridgedAmount Amount of tBTC tokens that was bridged by the tBTC bridge.
-    /// @param depositorFee Depositor fee amount.
-    event BridgingCompleted(
-        uint256 indexed depositKey,
-        address indexed caller,
-        uint16 indexed referral,
-        uint256 bridgedAmount,
-        uint256 depositorFee
-    );
-
     /// @notice Emitted when a stake request is finalized.
     /// @dev Deposit details can be fetched from {{ ERC4626.Deposit }}
     ///      event emitted in the same transaction.
     /// @param depositKey Deposit key identifying the deposit.
     /// @param caller Address that finalized the stake request.
     /// @param initialAmount Amount of funding transaction.
+    /// @param bridgedAmount Amount of tBTC tokens that was bridged by the tBTC bridge.
+    /// @param depositorFee Depositor fee amount.
     /// @param stakedAmount Amount of staked tBTC tokens.
     event StakeRequestFinalized(
         uint256 indexed depositKey,
         address indexed caller,
+        uint16 indexed referral,
         uint256 initialAmount,
+        uint256 bridgedAmount,
+        uint256 depositorFee,
         uint256 stakedAmount
     );
 
@@ -304,16 +295,6 @@ contract AcreBitcoinDepositor is
 
         (address staker, uint16 referral) = decodeExtraData(extraData);
 
-        // Emit event for accounting purposes to track partner's referral ID and
-        // depositor fee taken.
-        emit BridgingCompleted(
-            depositKey,
-            msg.sender,
-            referral,
-            tbtcAmount,
-            depositorFee
-        );
-
         // Transfer depositor fee to the treasury wallet.
         if (depositorFee > 0) {
             tbtcToken.safeTransfer(stbtc.treasury(), depositorFee);
@@ -322,7 +303,10 @@ contract AcreBitcoinDepositor is
         emit StakeRequestFinalized(
             depositKey,
             msg.sender,
+            referral,
             initialAmount,
+            tbtcAmount,
+            depositorFee,
             amountToStake
         );
 
