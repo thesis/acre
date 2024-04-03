@@ -986,8 +986,8 @@ describe("stBTC", () => {
         await tbtc
           .connect(depositor1)
           .approve(await stbtc.getAddress(), amountToDeposit)
-        shares = await stbtc.previewDeposit(amountToDeposit)
-        availableToWithdraw = await stbtc.previewRedeem(shares)
+        shares = 999500249875062468n
+        availableToWithdraw = 998501748126935532n
         await stbtc
           .connect(depositor1)
           .deposit(amountToDeposit, depositor1.address)
@@ -1056,8 +1056,8 @@ describe("stBTC", () => {
           .connect(depositor1)
           .deposit(secondDeposit, depositor1.address)
 
-        shares = await stbtc.balanceOf(depositor1.address)
-        availableToWithdraw = await stbtc.previewRedeem(shares)
+        shares = 2998500749625187405n
+        availableToWithdraw = 2995505244380806598n
         withdrawTx = await stbtc.withdraw(
           availableToWithdraw,
           depositor1.address,
