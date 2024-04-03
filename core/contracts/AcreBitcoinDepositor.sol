@@ -228,11 +228,15 @@ contract AcreBitcoinDepositor is
             encodeExtraData(staker, referral)
         );
 
-        transitionStakeRequestState(
-            depositKey,
-            StakeRequestState.Unknown,
-            StakeRequestState.Initialized
-        );
+        // Validate current stake request state.
+        if (stakeRequests[depositKey] != StakeRequestState.Unknown)
+            revert UnexpectedStakeRequestState(
+                stakeRequests[depositKey],
+                StakeRequestState.Unknown
+            );
+
+        // Transition to a new state.
+        stakeRequests[depositKey] = StakeRequestState.Initialized;
 
         emit StakeRequestInitialized(depositKey, msg.sender, staker);
     }
@@ -253,11 +257,15 @@ contract AcreBitcoinDepositor is
     ///      {{AbstractTBTCDepositor#_calculateTbtcAmount}} needs a top-up.
     /// @param depositKey Deposit key identifying the deposit.
     function finalizeStake(uint256 depositKey) external {
-        transitionStakeRequestState(
-            depositKey,
-            StakeRequestState.Initialized,
-            StakeRequestState.Finalized
-        );
+        // Validate current stake request state.
+        if (stakeRequests[depositKey] != StakeRequestState.Initialized)
+            revert UnexpectedStakeRequestState(
+                stakeRequests[depositKey],
+                StakeRequestState.Initialized
+            );
+
+        // Transition to a new state.
+        stakeRequests[depositKey] = StakeRequestState.Finalized;
 
         (
             uint256 initialDepositAmount,
@@ -377,27 +385,5 @@ contract AcreBitcoinDepositor is
         staker = address(uint160(bytes20(extraData)));
         // Next 2 bytes of extra data is referral info.
         referral = uint16(bytes2(extraData << (8 * 20)));
-    }
-
-    /// @notice This function is used for state transitions. It ensures the current
-    ///         state matches expected, and updates the stake request to a new
-    ///         state.
-    /// @param depositKey Deposit key identifying the deposit.
-    /// @param expectedState Expected current stake request state.
-    /// @param newState New stake request state.
-    function transitionStakeRequestState(
-        uint256 depositKey,
-        StakeRequestState expectedState,
-        StakeRequestState newState
-    ) internal {
-        // Validate current stake request state.
-        if (stakeRequests[depositKey] != expectedState)
-            revert UnexpectedStakeRequestState(
-                stakeRequests[depositKey],
-                expectedState
-            );
-
-        // Transition to a new state.
-        stakeRequests[depositKey] = newState;
     }
 }
