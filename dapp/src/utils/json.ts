@@ -3,11 +3,12 @@
  *
  * @param input an object, array, or primitive to encode as JSON
  */
-export function encodeJSON(input: bigint | object | null): string {
+export function encodeJSON(input: unknown): string {
   return JSON.stringify(input, (_, value): object | null => {
     if (typeof value === "bigint") {
       return { B_I_G_I_N_T: value.toString() }
     }
-    return value as object | null
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return value
   })
 }
