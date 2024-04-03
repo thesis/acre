@@ -358,7 +358,6 @@ describe("AcreBitcoinDepositor", () => {
                     initialDepositAmount,
                     bridgedTbtcAmount,
                     depositorFee,
-                    expectedAssetsAmount,
                   )
               })
 
@@ -430,7 +429,6 @@ describe("AcreBitcoinDepositor", () => {
                     initialDepositAmount,
                     bridgedTbtcAmount,
                     0,
-                    expectedAssetsAmount,
                   )
               })
 

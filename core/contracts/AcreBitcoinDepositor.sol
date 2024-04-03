@@ -96,15 +96,13 @@ contract AcreBitcoinDepositor is
     /// @param initialAmount Amount of funding transaction.
     /// @param bridgedAmount Amount of tBTC tokens that was bridged by the tBTC bridge.
     /// @param depositorFee Depositor fee amount.
-    /// @param stakedAmount Amount of staked tBTC tokens.
     event StakeRequestFinalized(
         uint256 indexed depositKey,
         address indexed caller,
         uint16 indexed referral,
         uint256 initialAmount,
         uint256 bridgedAmount,
-        uint256 depositorFee,
-        uint256 stakedAmount
+        uint256 depositorFee
     );
 
     /// @notice Emitted when a minimum single stake amount is updated.
@@ -291,14 +289,12 @@ contract AcreBitcoinDepositor is
             revert DepositorFeeExceedsBridgedAmount(depositorFee, tbtcAmount);
         }
 
-        uint256 amountToStake = tbtcAmount - depositorFee;
-
-        (address staker, uint16 referral) = decodeExtraData(extraData);
-
         // Transfer depositor fee to the treasury wallet.
         if (depositorFee > 0) {
             tbtcToken.safeTransfer(stbtc.treasury(), depositorFee);
         }
+
+        (address staker, uint16 referral) = decodeExtraData(extraData);
 
         emit StakeRequestFinalized(
             depositKey,
@@ -306,9 +302,10 @@ contract AcreBitcoinDepositor is
             referral,
             initialAmount,
             tbtcAmount,
-            depositorFee,
-            amountToStake
+            depositorFee
         );
+
+        uint256 amountToStake = tbtcAmount - depositorFee;
 
         // Deposit tBTC in stBTC.
         tbtcToken.safeIncreaseAllowance(address(stbtc), amountToStake);
