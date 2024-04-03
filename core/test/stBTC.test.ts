@@ -611,116 +611,37 @@ describe("stBTC", () => {
         })
 
         context("when depositor 1 deposits more tokens", () => {
-          context(
-            "when total tBTC amount after staking would not exceed max amount",
-            () => {
-              const newAmountToDeposit = to1e18(2)
-              let sharesBefore: bigint
+          const newAmountToDeposit = to1e18(2)
+          let sharesBefore: bigint
 
-              before(async () => {
-                await afterSimulatingYieldSnapshot.restore()
+          before(async () => {
+            await afterSimulatingYieldSnapshot.restore()
 
-                sharesBefore = await stbtc.balanceOf(depositor1.address)
+            sharesBefore = await stbtc.balanceOf(depositor1.address)
 
-                await tbtc.mint(depositor1.address, newAmountToDeposit)
+            await tbtc.mint(depositor1.address, newAmountToDeposit)
 
-                await tbtc
-                  .connect(depositor1)
-                  .approve(await stbtc.getAddress(), newAmountToDeposit)
+            await tbtc
+              .connect(depositor1)
+              .approve(await stbtc.getAddress(), newAmountToDeposit)
 
-                await stbtc
-                  .connect(depositor1)
-                  .deposit(newAmountToDeposit, depositor1.address)
-                // State after deposit:
-                // Shares to mint = (assets * stBTCSupply / totalTBTCInAcre) = 2 * 10 / 15 = ~1.333333333333333333
-                // Total assets = 7(depositor 1) + 3(depositor 2) + 5(yield) + 2 = 17
-                // Total shares = 7 + 3 + ~1.3 = 11.333333333333333333
-              })
+            await stbtc
+              .connect(depositor1)
+              .deposit(newAmountToDeposit, depositor1.address)
+            // State after deposit:
+            // Shares to mint = (assets * stBTCSupply / totalTBTCInAcre) = 2 * 10 / 15 = ~1.333333333333333333
+            // Total assets = 7(depositor 1) + 3(depositor 2) + 5(yield) + 2 = 17
+            // Total shares = 7 + 3 + ~1.3 = 11.333333333333333333
+          })
 
-              it("should receive more shares", async () => {
-                const expectedSharesToMint =
-                  await stbtc.previewDeposit(newAmountToDeposit)
+          it("should receive more shares", async () => {
+            const expectedSharesToMint =
+              await stbtc.previewDeposit(newAmountToDeposit)
 
-                const shares = await stbtc.balanceOf(depositor1.address)
+            const shares = await stbtc.balanceOf(depositor1.address)
 
-                expect(shares).to.be.eq(sharesBefore + expectedSharesToMint)
-              })
-            },
-          )
-
-          context(
-            "when total tBTC amount after staking would exceed max amount",
-            () => {
-              let possibleMaxAmountToDeposit: bigint
-              let amountToDeposit: bigint
-
-              before(async () => {
-                await afterSimulatingYieldSnapshot.restore()
-
-                // In the current implementation of the `maxDeposit` the
-                // `address` param is not taken into account - it means it will
-                // return the same value for any address.
-                possibleMaxAmountToDeposit = await stbtc.maxDeposit(
-                  depositor1.address,
-                )
-                amountToDeposit = possibleMaxAmountToDeposit + 1n
-
-                await tbtc
-                  .connect(depositor1)
-                  .approve(await stbtc.getAddress(), amountToDeposit)
-              })
-
-              it("should revert", async () => {
-                await expect(stbtc.deposit(amountToDeposit, depositor1.address))
-                  .to.be.revertedWithCustomError(
-                    stbtc,
-                    "ERC4626ExceededMaxDeposit",
-                  )
-                  .withArgs(
-                    depositor1.address,
-                    amountToDeposit,
-                    possibleMaxAmountToDeposit,
-                  )
-              })
-            },
-          )
-
-          context(
-            "when total tBTC amount after staking would be equal to the max amount",
-            () => {
-              let amountToDeposit: bigint
-              let maxDeposit: bigint
-              let tx: ContractTransactionResponse
-
-              before(async () => {
-                maxDeposit = await stbtc.maxDeposit(depositor1.address)
-                amountToDeposit = maxDeposit
-
-                await tbtc
-                  .connect(depositor1)
-                  .approve(await stbtc.getAddress(), amountToDeposit)
-
-                tx = await stbtc.deposit(amountToDeposit, depositor1)
-              })
-
-              it("should deposit tokens correctly", async () => {
-                await expect(tx).to.emit(stbtc, "Deposit")
-              })
-
-              it("should not be able to deposit more tokens than the max deposit allow", async () => {
-                await expect(stbtc.deposit(amountToDeposit, depositor1))
-                  .to.be.revertedWithCustomError(
-                    stbtc,
-                    "ERC4626ExceededMaxDeposit",
-                  )
-                  .withArgs(
-                    depositor1.address,
-                    amountToDeposit,
-                    feeOnTotal(amountToDeposit, entryFeeBasisPoints),
-                  )
-              })
-            },
-          )
+            expect(shares).to.be.eq(sharesBefore + expectedSharesToMint)
+          })
         })
       })
     })
@@ -915,30 +836,6 @@ describe("stBTC", () => {
     })
 
     context(
-      "when depositor wants to mint more shares than max mint limit",
-      () => {
-        beforeAfterSnapshotWrapper()
-
-        let sharesToMint: bigint
-        let maxMint: bigint
-
-        before(async () => {
-          maxMint = await stbtc.maxMint(depositor1.address)
-
-          sharesToMint = maxMint + 1n
-        })
-
-        it("should take into account the max total assets parameter and revert", async () => {
-          await expect(
-            stbtc.connect(depositor1).mint(sharesToMint, receiver.address),
-          )
-            .to.be.revertedWithCustomError(stbtc, "ERC4626ExceededMaxMint")
-            .withArgs(receiver.address, sharesToMint, maxMint)
-        })
-      },
-    )
-
-    context(
       "when depositor wants to mint less shares than the min deposit amount",
       () => {
         beforeAfterSnapshotWrapper()
@@ -1111,7 +1008,6 @@ describe("stBTC", () => {
     beforeAfterSnapshotWrapper()
 
     const validMinimumDepositAmount = to1e18(1)
-    const validMaximumTotalAssetsAmount = to1e18(30)
 
     context("when is called by governance", () => {
       context("when all parameters are valid", () => {
@@ -1122,24 +1018,19 @@ describe("stBTC", () => {
         before(async () => {
           tx = await stbtc
             .connect(governance)
-            .updateDepositParameters(
-              validMinimumDepositAmount,
-              validMaximumTotalAssetsAmount,
-            )
+            .updateDepositParameters(validMinimumDepositAmount)
         })
 
         it("should emit DepositParametersUpdated event", async () => {
           await expect(tx)
             .to.emit(stbtc, "DepositParametersUpdated")
-            .withArgs(validMinimumDepositAmount, validMaximumTotalAssetsAmount)
+            .withArgs(validMinimumDepositAmount)
         })
 
         it("should update parameters correctly", async () => {
-          const [minimumDepositAmount, maximumTotalAssets] =
-            await stbtc.depositParameters()
+          const minimumDepositAmount = await stbtc.depositParameters()
 
           expect(minimumDepositAmount).to.be.eq(validMinimumDepositAmount)
-          expect(maximumTotalAssets).to.be.eq(validMaximumTotalAssetsAmount)
         })
       })
 
@@ -1151,35 +1042,13 @@ describe("stBTC", () => {
         before(async () => {
           await stbtc
             .connect(governance)
-            .updateDepositParameters(
-              newMinimumDepositAmount,
-              validMaximumTotalAssetsAmount,
-            )
+            .updateDepositParameters(newMinimumDepositAmount)
         })
 
         it("should update the minimum deposit amount correctly", async () => {
           const minimumDepositAmount = await stbtc.minimumDepositAmount()
 
           expect(minimumDepositAmount).to.be.eq(newMinimumDepositAmount)
-        })
-      })
-
-      context("when the maximum total assets amount is 0", () => {
-        beforeAfterSnapshotWrapper()
-
-        const newMaximumTotalAssets = 0
-
-        before(async () => {
-          await stbtc
-            .connect(governance)
-            .updateDepositParameters(
-              validMinimumDepositAmount,
-              newMaximumTotalAssets,
-            )
-        })
-
-        it("should update parameter correctly", async () => {
-          expect(await stbtc.maximumTotalAssets()).to.be.eq(0)
         })
       })
     })
@@ -1189,105 +1058,10 @@ describe("stBTC", () => {
         await expect(
           stbtc
             .connect(depositor1)
-            .updateDepositParameters(
-              validMinimumDepositAmount,
-              validMaximumTotalAssetsAmount,
-            ),
+            .updateDepositParameters(validMinimumDepositAmount),
         )
           .to.be.revertedWithCustomError(stbtc, "OwnableUnauthorizedAccount")
           .withArgs(depositor1.address)
-      })
-    })
-  })
-
-  describe("maxDeposit", () => {
-    beforeAfterSnapshotWrapper()
-
-    let maximumTotalAssets: bigint
-    let minimumDepositAmount: bigint
-
-    beforeEach(async () => {
-      ;[minimumDepositAmount, maximumTotalAssets] =
-        await stbtc.depositParameters()
-    })
-
-    context("when the vault is empty", () => {
-      it("should return maximum total assets amount", async () => {
-        expect(await stbtc.maxDeposit(depositor1.address)).to.be.eq(
-          maximumTotalAssets,
-        )
-      })
-    })
-
-    context(
-      "when total assets is greater than maximum total assets amount",
-      () => {
-        beforeAfterSnapshotWrapper()
-
-        it("should return 0", async () => {
-          await tbtc.mint(
-            await stbtc.getAddress(),
-            BigInt(maximumTotalAssets) + 1n,
-          )
-          expect(await stbtc.maxDeposit(depositor1.address)).to.be.eq(0)
-        })
-      },
-    )
-
-    context("when the maximum total amount has not yet been reached", () => {
-      beforeAfterSnapshotWrapper()
-
-      let expectedValue: bigint
-
-      beforeEach(async () => {
-        const toMint = to1e18(2)
-        await tbtc.connect(depositor1).approve(await stbtc.getAddress(), toMint)
-        await stbtc.connect(depositor1).deposit(toMint, depositor1.address)
-
-        expectedValue =
-          maximumTotalAssets - toMint + feeOnTotal(toMint, entryFeeBasisPoints)
-      })
-
-      it("should return correct value", async () => {
-        expect(await stbtc.maxDeposit(depositor1.address)).to.be.eq(
-          expectedValue,
-        )
-      })
-    })
-
-    context("when the deposit limit is disabled", () => {
-      beforeAfterSnapshotWrapper()
-
-      const maximum = MaxUint256
-
-      before(async () => {
-        await stbtc
-          .connect(governance)
-          .updateDepositParameters(minimumDepositAmount, maximum)
-      })
-
-      context("when the vault is empty", () => {
-        it("should return the maximum value", async () => {
-          expect(await stbtc.maxDeposit(depositor1.address)).to.be.eq(maximum)
-        })
-      })
-
-      context("when the vault is not empty", () => {
-        const amountToDeposit = to1e18(1)
-
-        before(async () => {
-          await tbtc
-            .connect(depositor1)
-            .approve(await stbtc.getAddress(), amountToDeposit)
-
-          await stbtc
-            .connect(depositor1)
-            .deposit(amountToDeposit, depositor1.address)
-        })
-
-        it("should return the maximum value", async () => {
-          expect(await stbtc.maxDeposit(depositor1.address)).to.be.eq(maximum)
-        })
       })
     })
   })
@@ -1520,119 +1294,6 @@ describe("stBTC", () => {
         await expect(
           stbtc.connect(depositor1).updateExitFeeBasisPoints(100n),
         ).to.be.revertedWithCustomError(stbtc, "OwnableUnauthorizedAccount")
-      })
-    })
-  })
-
-  describe("maxMint", () => {
-    beforeAfterSnapshotWrapper()
-
-    let maximumTotalAssets: bigint
-    let minimumDepositAmount: bigint
-
-    before(async () => {
-      ;[minimumDepositAmount, maximumTotalAssets] =
-        await stbtc.depositParameters()
-    })
-
-    context("when the vault is empty", () => {
-      it("should return maximum total assets amount in shares", async () => {
-        // When the vault is empty the max shares amount is equal to the maximum
-        // total assets amount.
-        expect(await stbtc.maxMint(depositor1.address)).to.be.eq(
-          maximumTotalAssets,
-        )
-      })
-    })
-
-    context(
-      "when total assets is greater than maximum total assets amount",
-      () => {
-        beforeAfterSnapshotWrapper()
-
-        it("should return 0", async () => {
-          const toMint = maximumTotalAssets + 1n
-
-          await tbtc.mint(await stbtc.getAddress(), toMint)
-
-          expect(await stbtc.maxMint(depositor1.address)).to.be.eq(0)
-        })
-      },
-    )
-
-    context("when the maximum total amount has not yet been reached", () => {
-      beforeAfterSnapshotWrapper()
-
-      let expectedSharesToReceive: bigint
-
-      before(async () => {
-        const toMint = to1e18(4)
-        const amountToDeposit = to1e18(2)
-
-        // depositor deposits 2 tBTC.
-        await tbtc
-          .connect(depositor1)
-          .approve(await stbtc.getAddress(), amountToDeposit)
-        await stbtc
-          .connect(depositor1)
-          .deposit(amountToDeposit, depositor1.address)
-
-        // Vault earns 4 tBTC.
-        await tbtc.mint(await stbtc.getAddress(), toMint)
-
-        // The current state is:
-        // Fee on deposit: 0.000999500249875063
-        // Total assets: 1.999000499750124937 + 4 = 5.999000499750124937
-        // Total supply of stBTC shares: 1.999000499750124937
-        // Maximum total assets: 25
-        // Current max deposit: 25 - 5.999000499750124937 = 19.000999500249875063
-        // Expected shares: 19.000999500249875063 * 1.999000499750124937 / 5.999000499750124937 = 6.331555981422817414
-        expectedSharesToReceive = 6331555981422817414n
-      })
-
-      it("should return correct value", async () => {
-        expectCloseTo(
-          await stbtc.maxMint(depositor1.address),
-          expectedSharesToReceive,
-        )
-      })
-    })
-
-    context("when the deposit limit is disabled", () => {
-      beforeAfterSnapshotWrapper()
-
-      const maximum = MaxUint256
-
-      before(async () => {
-        await stbtc
-          .connect(governance)
-          .updateDepositParameters(minimumDepositAmount, maximum)
-      })
-
-      context("when the vault is empty", () => {
-        it("should return the maximum value", async () => {
-          expect(await stbtc.maxMint(depositor1.address)).to.be.eq(maximum)
-        })
-      })
-
-      context("when the vault is not empty", () => {
-        beforeAfterSnapshotWrapper()
-
-        const amountToDeposit = to1e18(1)
-
-        before(async () => {
-          await tbtc
-            .connect(depositor1)
-            .approve(await stbtc.getAddress(), amountToDeposit)
-
-          await stbtc
-            .connect(depositor1)
-            .deposit(amountToDeposit, depositor1.address)
-        })
-
-        it("should return the maximum value", async () => {
-          expect(await stbtc.maxMint(depositor1.address)).to.be.eq(maximum)
-        })
       })
     })
   })
