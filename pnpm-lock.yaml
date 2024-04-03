@@ -32,6 +32,9 @@ importers:
       '@openzeppelin/contracts-upgradeable':
         specifier: ^5.0.2
         version: 5.0.2(@openzeppelin/contracts@5.0.0)
+      '@thesis-co/solidity-contracts':
+        specifier: github:thesis/solidity-contracts#c315b9d
+        version: github.com/thesis/solidity-contracts/c315b9d
       '@types/chai-as-promised':
         specifier: ^7.1.8
         version: 7.1.8
@@ -22150,6 +22153,14 @@ packages:
     resolution: {tarball: https://codeload.github.com/thesis/solidity-contracts/tar.gz/4985bcf}
     name: '@thesis/solidity-contracts'
     version: 0.0.1
+    dependencies:
+      '@openzeppelin/contracts': 4.9.5
+    dev: false
+
+  github.com/thesis/solidity-contracts/c315b9d:
+    resolution: {tarball: https://codeload.github.com/thesis/solidity-contracts/tar.gz/c315b9d}
+    name: '@thesis-co/solidity-contracts'
+    version: 0.0.1-pre
     dependencies:
       '@openzeppelin/contracts': 4.9.5
     dev: false
