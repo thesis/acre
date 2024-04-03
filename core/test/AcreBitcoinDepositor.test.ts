@@ -12,7 +12,7 @@ import type {
   StBTC,
   BridgeStub,
   TBTCVaultStub,
-  AcreBitcoinDepositorHarness,
+  AcreBitcoinDepositor,
   TestERC20,
 } from "../typechain"
 import { deployment } from "./helpers"
@@ -48,7 +48,7 @@ describe("AcreBitcoinDepositor", () => {
   const depositorFee = to1ePrecision(10, 10) // 10 satoshi
   const amountToStake = to1ePrecision(896501, 8) // 8965,01 satoshi
 
-  let bitcoinDepositor: AcreBitcoinDepositorHarness
+  let bitcoinDepositor: AcreBitcoinDepositor
   let tbtcBridge: BridgeStub
   let tbtcVault: TBTCVaultStub
   let stbtc: StBTC
