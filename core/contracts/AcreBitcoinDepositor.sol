@@ -50,14 +50,9 @@ contract AcreBitcoinDepositor is
         Finalized
     }
 
-    struct StakeRequest {
-        // State of the stake request.
-        StakeRequestState state;
-    }
-
     /// @notice Mapping of stake requests.
     /// @dev The key is a deposit key identifying the deposit.
-    mapping(uint256 => StakeRequest) public stakeRequests;
+    mapping(uint256 => StakeRequestState) public stakeRequests;
 
     /// @notice tBTC Token contract.
     IERC20 public tbtcToken;
@@ -348,14 +343,14 @@ contract AcreBitcoinDepositor is
         StakeRequestState newState
     ) internal {
         // Validate current stake request state.
-        if (stakeRequests[depositKey].state != expectedState)
+        if (stakeRequests[depositKey] != expectedState)
             revert UnexpectedStakeRequestState(
-                stakeRequests[depositKey].state,
+                stakeRequests[depositKey],
                 expectedState
             );
 
         // Transition to a new state.
-        stakeRequests[depositKey].state = newState;
+        stakeRequests[depositKey] = newState;
     }
 
     /// @notice This function should be called for previously initialized stake
