@@ -750,7 +750,7 @@ describe("stBTC", () => {
           amountStaked - feeOnTotal(amountStaked, exitFeeBasisPoints)
         tx = await stbtc
           .connect(depositor1)
-          .redeem(shares, depositor1, depositor1)
+          .redeem(shares, thirdParty, depositor1)
       })
 
       it("should emit Redeem event", async () => {
@@ -758,7 +758,7 @@ describe("stBTC", () => {
           // Caller.
           depositor1.address,
           // Receiver
-          depositor1.address,
+          thirdParty.address,
           // Owner
           depositor1.address,
           // Redeemed tokens.
@@ -776,10 +776,10 @@ describe("stBTC", () => {
         )
       })
 
-      it("should transfer tBTC tokens to a Staker", async () => {
+      it("should transfer tBTC tokens to receiver", async () => {
         await expect(tx).to.changeTokenBalances(
           tbtc,
-          [depositor1.address],
+          [thirdParty.address],
           [amountToRedeem],
         )
       })
@@ -880,7 +880,7 @@ describe("stBTC", () => {
           depositor1.address,
           // Receiver.
           receiver.address,
-          // Depositd tokens including deposit fees.
+          // Deposited tokens including deposit fees.
           amountToSpend,
           // Received shares.
           sharesToMint,
@@ -991,7 +991,7 @@ describe("stBTC", () => {
           .deposit(amountToDeposit, depositor1.address)
         tx = await stbtc
           .connect(depositor1)
-          .withdraw(availableToWithdraw, depositor1, depositor1)
+          .withdraw(availableToWithdraw, thirdParty, depositor1)
       })
 
       it("should emit Withdraw event", async () => {
@@ -999,7 +999,7 @@ describe("stBTC", () => {
           // Caller.
           depositor1.address,
           // Receiver
-          depositor1.address,
+          thirdParty.address,
           // Owner
           depositor1.address,
           // Available assets to withdraw.
@@ -1017,10 +1017,10 @@ describe("stBTC", () => {
         )
       })
 
-      it("should transfer tBTC tokens to a Staker", async () => {
+      it("should transfer tBTC tokens to a Receiver", async () => {
         await expect(tx).to.changeTokenBalances(
           tbtc,
-          [depositor1.address],
+          [thirdParty.address],
           [availableToWithdraw],
         )
       })
