@@ -191,7 +191,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     ) external returns (bool) {
         if (approve(spender, value)) {
             IReceiveApproval(spender).receiveApproval(
-                _msgSender(),
+                msg.sender,
                 value,
                 address(this),
                 extraData
