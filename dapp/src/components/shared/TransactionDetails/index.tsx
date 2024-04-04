@@ -6,14 +6,14 @@ export type TransactionDetailsItemProps = {
   label: string
   sublabel?: string
   value?: string
-  popover?: React.ReactElement
+  tooltip?: React.ReactElement
   children?: React.ReactNode
 } & ListItemProps
 
 function TransactionDetailsItem({
   label,
   sublabel,
-  popover,
+  tooltip,
   value,
   children,
   ...listItemProps
@@ -26,9 +26,14 @@ function TransactionDetailsItem({
       {...listItemProps}
     >
       <VStack alignItems="start" gap={0}>
-        <TextMd fontWeight="semibold" color="grey.700">
+        <TextMd
+          display="flex"
+          alignItems="center"
+          fontWeight="semibold"
+          color="grey.700"
+        >
           {label}
-          {popover}
+          {tooltip}
         </TextMd>
         {sublabel && <TextSm color="grey.400">{sublabel}</TextSm>}
       </VStack>

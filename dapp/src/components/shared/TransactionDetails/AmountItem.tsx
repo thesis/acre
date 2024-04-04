@@ -6,12 +6,12 @@ import { CurrencyBalanceWithConversion } from "../CurrencyBalanceWithConversion"
 type TransactionDetailsAmountItemProps = ComponentProps<
   typeof CurrencyBalanceWithConversion
 > &
-  Pick<TransactionDetailsItemProps, "label" | "sublabel" | "popover">
+  Pick<TransactionDetailsItemProps, "label" | "sublabel" | "tooltip">
 
 function TransactionDetailsAmountItem({
   label,
   sublabel,
-  popover,
+  tooltip,
   from,
   to,
 }: TransactionDetailsAmountItemProps) {
@@ -19,7 +19,7 @@ function TransactionDetailsAmountItem({
     <TransactionDetailsItem
       label={label}
       sublabel={sublabel}
-      popover={popover}
+      tooltip={tooltip}
       alignItems="start"
     >
       <Flex flexDirection="column" alignItems="end">

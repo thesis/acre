@@ -1,5 +1,5 @@
 import React from "react"
-import { HStack } from "@chakra-ui/react"
+import { ListItem } from "@chakra-ui/react"
 import {
   CurrencyBalance,
   CurrencyBalanceProps,
@@ -10,9 +10,9 @@ export type FeesItemType = CurrencyBalanceProps & {
   label: string
 }
 
-export function FeesPopoverItem({ label, amount, ...props }: FeesItemType) {
+export function FeesTooltipItem({ label, amount, ...props }: FeesItemType) {
   return (
-    <HStack w={60} justifyContent="space-between">
+    <ListItem display="flex" justifyContent="space-between">
       <TextSm color="white">{label}</TextSm>
       <CurrencyBalance
         size="sm"
@@ -22,6 +22,6 @@ export function FeesPopoverItem({ label, amount, ...props }: FeesItemType) {
         symbolFontWeight="semibold"
         {...props}
       />
-    </HStack>
+    </ListItem>
   )
 }

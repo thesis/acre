@@ -25,7 +25,7 @@ function UnstakeDetails({ currency }: { currency: CurrencyType }) {
       <TransactionDetailsAmountItem
         label="Fees"
         sublabel="How are fees calculated?"
-        popover={<FeesTooltip />}
+        tooltip={<FeesTooltip />}
         from={{
           currency,
           amount: details?.protocolFee,

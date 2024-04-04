@@ -1,7 +1,7 @@
 import React from "react"
 import { Info } from "#/assets/icons"
 import { Icon, Tooltip, List } from "@chakra-ui/react"
-import { FeesItemType, FeesPopoverItem } from "./FeesTooltipItem"
+import { FeesItemType, FeesTooltipItem } from "./FeesTooltipItem"
 
 const fees: Array<FeesItemType> = [
   {
@@ -28,7 +28,8 @@ export function FeesTooltip() {
       label={
         <List spacing={0.5} minW={60}>
           {fees.map((fee) => (
-            <FeesPopoverItem
+            <FeesTooltipItem
+              key={fee.label}
               label={fee.label}
               amount={fee.amount}
               currency={fee.currency}
