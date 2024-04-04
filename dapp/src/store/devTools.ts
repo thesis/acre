@@ -1,6 +1,6 @@
 import { encodeJSON } from "#/utils"
 
-function devToolsSanitizer<T>(input: T) {
+function devToolsSanitizer(input: unknown): unknown {
   switch (typeof input) {
     // We can make use of encodeJSON instead of recursively looping through
     // the input
@@ -8,7 +8,7 @@ function devToolsSanitizer<T>(input: T) {
     case "object":
       // We only need to sanitize bigints and objects
       // that may or may not contain them.
-      return JSON.parse(encodeJSON(input)) as T
+      return JSON.parse(encodeJSON(input))
     default:
       return input
   }
