@@ -40,7 +40,11 @@ contract MezoAllocator is Ownable2Step {
     DepositInfo public depositInfo;
 
     /// Emitted when tBTC is deposited to MezoPortal.
-    event DepositAllocated(uint256 depositId, uint256 amount);
+    event DepositAllocated(
+        uint256 indexed oldDepositId,
+        uint256 indexed newDepositId,
+        uint256 amount
+    );
 
     /// @notice Emitted when the tBTC storage address is updated.
     event TbtcStorageUpdated(address indexed tbtcStorage);
@@ -87,35 +91,28 @@ contract MezoAllocator is Ownable2Step {
         free();
         // slither-disable-next-line arbitrary-send-erc20
         IERC20(tbtc).safeTransferFrom(tbtcStorage, address(this), amount);
-        
+
         // Add freed tBTC from the previous deposit and add the new amount.
-        depositInfo.balance += amount;
-        
-        IERC20(tbtc).forceApprove(mezoPortal, depositInfo.balance);
+        uint96 newBalance = depositInfo.balance + amount;
+
+        IERC20(tbtc).forceApprove(mezoPortal, newBalance);
         // 0 denotes no lock period for this deposit. The zero lock time is
         // hardcoded as of biz decision.
-        IMezoPortal(mezoPortal).deposit(address(tbtc), depositInfo.balance, 0);
+        IMezoPortal(mezoPortal).deposit(address(tbtc), newBalance, 0);
         // MezoPortal doesn't return depositId, so we have to read depositCounter
         // which assignes depositId to the current deposit.
-        uint256 depositId = IMezoPortal(mezoPortal).depositCount();
+        uint256 newDepositId = IMezoPortal(mezoPortal).depositCount();
         // slither-disable-next-line reentrancy-benign
-        depositInfo.id = depositId;
+        uint256 oldDepositId = depositInfo.id;
+        depositInfo.id = newDepositId;
+        depositInfo.balance = newBalance;
+        // solhint-disable-next-line not-rely-on-time
         depositInfo.createdAt = uint32(block.timestamp);
+        // solhint-disable-next-line not-rely-on-time
         depositInfo.unlockAt = uint32(block.timestamp);
 
         // slither-disable-next-line reentrancy-events
-        emit DepositAllocated(depositId, amount);
-    }
-
-    /// @notice Withdraw all Acre's tBTC from MezoPortal.
-    function free() private {
-        if (depositInfo.balance > 0) {
-            IMezoPortal(mezoPortal).withdraw(
-                        address(tbtc),
-                        depositInfo.id,
-                        depositInfo.balance
-                    );
-        }
+        emit DepositAllocated(oldDepositId, newDepositId, amount);
     }
 
     /// @notice Updates the tBTC storage address.
@@ -153,5 +150,17 @@ contract MezoAllocator is Ownable2Step {
         // IMezoPortal(mezoPortal).withdraw(address(tbtc), depositId, amount);
         // TODO: update depositsById and deposits data structures.
         // IERC20(tbtc).safeTransfer(address(tbtcStorage), amount);
+    }
+
+    /// @notice Withdraw all Acre's tBTC from MezoPortal.
+    function free() private {
+        if (depositInfo.balance > 0) {
+            // slither-disable-next-line reentrancy-no-eth
+            IMezoPortal(mezoPortal).withdraw(
+                address(tbtc),
+                depositInfo.id,
+                depositInfo.balance
+            );
+        }
     }
 }
