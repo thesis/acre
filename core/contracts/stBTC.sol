@@ -2,10 +2,11 @@
 pragma solidity ^0.8.21;
 
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 
 import "./Dispatcher.sol";
+import "./PausableOwnable.sol";
 import "./lib/ERC4626Fees.sol";
+import {ZeroAddress} from "./utils/Errors.sol";
 
 /// @title stBTC
 /// @notice This contract implements the ERC-4626 tokenized vault standard. By
@@ -18,7 +19,7 @@ import "./lib/ERC4626Fees.sol";
 ///      of yield-bearing vaults. This contract facilitates the minting and
 ///      burning of shares (stBTC), which are represented as standard ERC20
 ///      tokens, providing a seamless exchange with tBTC tokens.
-contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
+contract stBTC is ERC4626Fees, PausableOwnable {
     using SafeERC20 for IERC20;
 
     /// Dispatcher contract that routes tBTC from stBTC to a given vault and back.
@@ -34,9 +35,6 @@ contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
     /// before depositing in the Acre contract.
     uint256 public minimumDepositAmount;
 
-    /// Maximum total amount of tBTC token held by Acre protocol.
-    uint256 public maximumTotalAssets;
-
     /// Entry fee basis points applied to entry fee calculation.
     uint256 public entryFeeBasisPoints;
 
@@ -49,11 +47,7 @@ contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
 
     /// Emitted when deposit parameters are updated.
     /// @param minimumDepositAmount New value of the minimum deposit amount.
-    /// @param maximumTotalAssets New value of the maximum total assets amount.
-    event DepositParametersUpdated(
-        uint256 minimumDepositAmount,
-        uint256 maximumTotalAssets
-    );
+    event MinimumDepositAmountUpdated(uint256 minimumDepositAmount);
 
     /// Emitted when the dispatcher contract is updated.
     /// @param oldDispatcher Address of the old dispatcher contract.
@@ -73,9 +67,6 @@ contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
     /// @param min Minimum amount to check 'amount' against.
     error LessThanMinDeposit(uint256 amount, uint256 min);
 
-    /// Reverts if the address is zero.
-    error ZeroAddress();
-
     /// Reverts if the address is disallowed.
     error DisallowedAddress();
 
@@ -87,8 +78,7 @@ contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
     function initialize(IERC20 asset, address _treasury) public initializer {
         __ERC4626_init(asset);
         __ERC20_init("Acre Staked Bitcoin", "stBTC");
-        __Ownable2Step_init();
-        __Ownable_init(msg.sender);
+        __PausableOwnable_init(msg.sender, msg.sender);
 
         if (address(_treasury) == address(0)) {
             revert ZeroAddress();
@@ -97,7 +87,6 @@ contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
 
         // TODO: Revisit the exact values closer to the launch.
         minimumDepositAmount = 0.001 * 1e18; // 0.001 tBTC
-        maximumTotalAssets = 25 * 1e18; // 25 tBTC
         entryFeeBasisPoints = 0; // TODO: tbd
         exitFeeBasisPoints = 0; // TODO: tbd
     }
@@ -117,26 +106,16 @@ contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
         emit TreasuryUpdated(newTreasury);
     }
 
-    /// @notice Updates deposit parameters.
-    /// @dev To disable the limit for deposits, set the maximum total assets to
-    ///      maximum (`type(uint256).max`).
-    /// @param _minimumDepositAmount New value of the minimum deposit amount. It
+    /// @notice Updates minimum deposit amount.
+    /// @param newMinimumDepositAmount New value of the minimum deposit amount. It
     ///        is the minimum amount for a single deposit operation.
-    /// @param _maximumTotalAssets New value of the maximum total assets amount.
-    ///        It is the maximum amount of the tBTC token that the Acre protocol
-    ///        can hold.
-    function updateDepositParameters(
-        uint256 _minimumDepositAmount,
-        uint256 _maximumTotalAssets
+    function updateMinimumDepositAmount(
+        uint256 newMinimumDepositAmount
     ) external onlyOwner {
         // TODO: Introduce a parameters update process.
-        minimumDepositAmount = _minimumDepositAmount;
-        maximumTotalAssets = _maximumTotalAssets;
+        minimumDepositAmount = newMinimumDepositAmount;
 
-        emit DepositParametersUpdated(
-            _minimumDepositAmount,
-            _maximumTotalAssets
-        );
+        emit MinimumDepositAmountUpdated(newMinimumDepositAmount);
     }
 
     // TODO: Implement a governed upgrade process that initiates an update and
@@ -204,7 +183,7 @@ contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
     function deposit(
         uint256 assets,
         address receiver
-    ) public override returns (uint256) {
+    ) public override whenNotPaused returns (uint256) {
         if (assets < minimumDepositAmount) {
             revert LessThanMinDeposit(assets, minimumDepositAmount);
         }
@@ -229,10 +208,26 @@ contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
     function mint(
         uint256 shares,
         address receiver
-    ) public override returns (uint256 assets) {
+    ) public override whenNotPaused returns (uint256 assets) {
         if ((assets = super.mint(shares, receiver)) < minimumDepositAmount) {
             revert LessThanMinDeposit(assets, minimumDepositAmount);
         }
+    }
+
+    function withdraw(
+        uint256 assets,
+        address receiver,
+        address owner
+    ) public override whenNotPaused returns (uint256) {
+        return super.withdraw(assets, receiver, owner);
+    }
+
+    function redeem(
+        uint256 shares,
+        address receiver,
+        address owner
+    ) public override whenNotPaused returns (uint256) {
+        return super.redeem(shares, receiver, owner);
     }
 
     /// @notice Returns value of assets that would be exchanged for the amount of
@@ -241,51 +236,6 @@ contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
     /// @return Assets amount.
     function assetsBalanceOf(address account) public view returns (uint256) {
         return convertToAssets(balanceOf(account));
-    }
-
-    /// @notice Returns the maximum amount of the tBTC token that can be
-    ///         deposited into the vault for the receiver through a deposit
-    ///         call. It takes into account the deposit parameter, maximum total
-    ///         assets, which determines the total amount of tBTC token held by
-    ///         Acre. This function always returns available limit for deposits,
-    ///         but the fee is not taken into account. As a result of this, there
-    ///         always will be some dust left. If the dust is lower than the
-    ///         minimum deposit amount, this function will return 0.
-    /// @return The maximum amount of tBTC token that can be deposited into
-    ///         Acre protocol for the receiver.
-    function maxDeposit(address) public view override returns (uint256) {
-        if (maximumTotalAssets == type(uint256).max) {
-            return type(uint256).max;
-        }
-
-        uint256 currentTotalAssets = totalAssets();
-        if (currentTotalAssets >= maximumTotalAssets) return 0;
-
-        // Max amount left for next deposits. If it is lower than the minimum
-        // deposit amount, return 0.
-        uint256 unusedLimit = maximumTotalAssets - currentTotalAssets;
-
-        return minimumDepositAmount > unusedLimit ? 0 : unusedLimit;
-    }
-
-    /// @notice Returns the maximum amount of the vault shares that can be
-    ///         minted for the receiver, through a mint call.
-    /// @dev Since the stBTC contract limits the maximum total tBTC tokens this
-    ///      function converts the maximum deposit amount to shares.
-    /// @return The maximum amount of the vault shares.
-    function maxMint(address receiver) public view override returns (uint256) {
-        uint256 _maxDeposit = maxDeposit(receiver);
-
-        // slither-disable-next-line incorrect-equality
-        return
-            _maxDeposit == type(uint256).max
-                ? type(uint256).max
-                : convertToShares(_maxDeposit);
-    }
-
-    /// @return Returns deposit parameters.
-    function depositParameters() public view returns (uint256, uint256) {
-        return (minimumDepositAmount, maximumTotalAssets);
     }
 
     /// @return Returns entry fee basis point used in deposits.
