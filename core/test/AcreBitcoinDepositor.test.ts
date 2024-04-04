@@ -64,7 +64,7 @@ describe("AcreBitcoinDepositor", () => {
     ;({ governance, treasury } = await getNamedSigners())
     ;[thirdParty] = await getUnnamedSigners()
 
-    await stbtc.connect(governance).updateDepositParameters(
+    await stbtc.connect(governance).updateMinimumDepositAmount(
       10000000000000, // 0.00001
     )
 
@@ -553,7 +553,7 @@ describe("AcreBitcoinDepositor", () => {
               .updateMinStakeAmount(newValue)
           })
 
-          it("should emit MaxSingleStakeAmountUpdated event", async () => {
+          it("should emit MinStakeAmountUpdated event", async () => {
             await expect(tx)
               .to.emit(bitcoinDepositor, "MinStakeAmountUpdated")
               .withArgs(newValue)
