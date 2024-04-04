@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity ^0.8.21;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC4626Upgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 import "./Dispatcher.sol";
 import "./PausableOwnable.sol";
+import "./lib/ERC4626Fees.sol";
 import {ZeroAddress} from "./utils/Errors.sol";
 
 /// @title stBTC
@@ -19,7 +19,7 @@ import {ZeroAddress} from "./utils/Errors.sol";
 ///      of yield-bearing vaults. This contract facilitates the minting and
 ///      burning of shares (stBTC), which are represented as standard ERC20
 ///      tokens, providing a seamless exchange with tBTC tokens.
-contract stBTC is PausableOwnable, ERC4626Upgradeable {
+contract stBTC is ERC4626Fees, PausableOwnable {
     using SafeERC20 for IERC20;
 
     /// Dispatcher contract that routes tBTC from stBTC to a given vault and back.
@@ -35,8 +35,11 @@ contract stBTC is PausableOwnable, ERC4626Upgradeable {
     /// before depositing in the Acre contract.
     uint256 public minimumDepositAmount;
 
-    /// Maximum total amount of tBTC token held by Acre protocol.
-    uint256 public maximumTotalAssets;
+    /// Entry fee basis points applied to entry fee calculation.
+    uint256 public entryFeeBasisPoints;
+
+    /// Exit fee basis points applied to exit fee calculation.
+    uint256 public exitFeeBasisPoints;
 
     /// Emitted when the treasury wallet address is updated.
     /// @param treasury New treasury wallet address.
@@ -44,16 +47,20 @@ contract stBTC is PausableOwnable, ERC4626Upgradeable {
 
     /// Emitted when deposit parameters are updated.
     /// @param minimumDepositAmount New value of the minimum deposit amount.
-    /// @param maximumTotalAssets New value of the maximum total assets amount.
-    event DepositParametersUpdated(
-        uint256 minimumDepositAmount,
-        uint256 maximumTotalAssets
-    );
+    event MinimumDepositAmountUpdated(uint256 minimumDepositAmount);
 
     /// Emitted when the dispatcher contract is updated.
     /// @param oldDispatcher Address of the old dispatcher contract.
     /// @param newDispatcher Address of the new dispatcher contract.
     event DispatcherUpdated(address oldDispatcher, address newDispatcher);
+
+    /// Emitted when the entry fee basis points are updated.
+    /// @param entryFeeBasisPoints New value of the fee basis points.
+    event EntryFeeBasisPointsUpdated(uint256 entryFeeBasisPoints);
+
+    /// Emitted when the exit fee basis points are updated.
+    /// @param exitFeeBasisPoints New value of the fee basis points.
+    event ExitFeeBasisPointsUpdated(uint256 exitFeeBasisPoints);
 
     /// Reverts if the amount is less than the minimum deposit amount.
     /// @param amount Amount to check.
@@ -80,7 +87,8 @@ contract stBTC is PausableOwnable, ERC4626Upgradeable {
 
         // TODO: Revisit the exact values closer to the launch.
         minimumDepositAmount = 0.001 * 1e18; // 0.001 tBTC
-        maximumTotalAssets = 25 * 1e18; // 25 tBTC
+        entryFeeBasisPoints = 0; // TODO: tbd
+        exitFeeBasisPoints = 0; // TODO: tbd
     }
 
     /// @notice Updates treasury wallet address.
@@ -98,26 +106,16 @@ contract stBTC is PausableOwnable, ERC4626Upgradeable {
         emit TreasuryUpdated(newTreasury);
     }
 
-    /// @notice Updates deposit parameters.
-    /// @dev To disable the limit for deposits, set the maximum total assets to
-    ///      maximum (`type(uint256).max`).
-    /// @param _minimumDepositAmount New value of the minimum deposit amount. It
+    /// @notice Updates minimum deposit amount.
+    /// @param newMinimumDepositAmount New value of the minimum deposit amount. It
     ///        is the minimum amount for a single deposit operation.
-    /// @param _maximumTotalAssets New value of the maximum total assets amount.
-    ///        It is the maximum amount of the tBTC token that the Acre protocol
-    ///        can hold.
-    function updateDepositParameters(
-        uint256 _minimumDepositAmount,
-        uint256 _maximumTotalAssets
+    function updateMinimumDepositAmount(
+        uint256 newMinimumDepositAmount
     ) external onlyOwner {
         // TODO: Introduce a parameters update process.
-        minimumDepositAmount = _minimumDepositAmount;
-        maximumTotalAssets = _maximumTotalAssets;
+        minimumDepositAmount = newMinimumDepositAmount;
 
-        emit DepositParametersUpdated(
-            _minimumDepositAmount,
-            _maximumTotalAssets
-        );
+        emit MinimumDepositAmountUpdated(newMinimumDepositAmount);
     }
 
     // TODO: Implement a governed upgrade process that initiates an update and
@@ -148,15 +146,40 @@ contract stBTC is PausableOwnable, ERC4626Upgradeable {
         IERC20(asset()).forceApprove(address(dispatcher), type(uint256).max);
     }
 
+    // TODO: Implement a governed upgrade process that initiates an update and
+    //       then finalizes it after a delay.
+    /// @notice Update the entry fee basis points.
+    /// @param newEntryFeeBasisPoints New value of the fee basis points.
+    function updateEntryFeeBasisPoints(
+        uint256 newEntryFeeBasisPoints
+    ) external onlyOwner {
+        entryFeeBasisPoints = newEntryFeeBasisPoints;
+
+        emit EntryFeeBasisPointsUpdated(newEntryFeeBasisPoints);
+    }
+
+    // TODO: Implement a governed upgrade process that initiates an update and
+    //       then finalizes it after a delay.
+    /// @notice Update the exit fee basis points.
+    /// @param newExitFeeBasisPoints New value of the fee basis points.
+    function updateExitFeeBasisPoints(
+        uint256 newExitFeeBasisPoints
+    ) external onlyOwner {
+        exitFeeBasisPoints = newExitFeeBasisPoints;
+
+        emit ExitFeeBasisPointsUpdated(newExitFeeBasisPoints);
+    }
+
     /// @notice Mints shares to receiver by depositing exactly amount of
     ///         tBTC tokens.
     /// @dev Takes into account a deposit parameter, minimum deposit amount,
     ///      which determines the minimum amount for a single deposit operation.
     ///      The amount of the assets has to be pre-approved in the tBTC
     ///      contract.
-    /// @param assets Approved amount of tBTC tokens to deposit.
+    /// @param assets Approved amount of tBTC tokens to deposit. This includes
+    ///               treasury fees for staking tBTC.
     /// @param receiver The address to which the shares will be minted.
-    /// @return Minted shares.
+    /// @return Minted shares adjusted for the fees taken by the treasury.
     function deposit(
         uint256 assets,
         address receiver
@@ -173,11 +196,15 @@ contract stBTC is PausableOwnable, ERC4626Upgradeable {
     ///      which determines the minimum amount for a single deposit operation.
     ///      The amount of the assets has to be pre-approved in the tBTC
     ///      contract.
-    ///      The msg.sender is required to grant approval for tBTC transfer.
+    ///      The msg.sender is required to grant approval for the transfer of a
+    ///      certain amount of tBTC, and in addition, approval for the associated
+    ///      fee. Specifically, the total amount to be approved (amountToApprove)
+    ///      should be equal to the sum of the deposited amount and the fee.
     ///      To determine the total assets amount necessary for approval
     ///      corresponding to a given share amount, use the `previewMint` function.
     /// @param shares Amount of shares to mint.
     /// @param receiver The address to which the shares will be minted.
+    /// @return assets Used assets to mint shares.
     function mint(
         uint256 shares,
         address receiver
@@ -211,45 +238,19 @@ contract stBTC is PausableOwnable, ERC4626Upgradeable {
         return convertToAssets(balanceOf(account));
     }
 
-    /// @notice Returns the maximum amount of the tBTC token that can be
-    ///         deposited into the vault for the receiver through a deposit
-    ///         call. It takes into account the deposit parameter, maximum total
-    ///         assets, which determines the total amount of tBTC token held by
-    ///         Acre protocol.
-    /// @dev When the remaining amount of unused limit is less than the minimum
-    ///      deposit amount, this function returns 0.
-    /// @return The maximum amount of tBTC token that can be deposited into
-    ///         Acre protocol for the receiver.
-    function maxDeposit(address) public view override returns (uint256) {
-        if (maximumTotalAssets == type(uint256).max) {
-            return type(uint256).max;
-        }
-
-        uint256 _totalAssets = totalAssets();
-
-        return
-            _totalAssets >= maximumTotalAssets
-                ? 0
-                : maximumTotalAssets - _totalAssets;
+    /// @return Returns entry fee basis point used in deposits.
+    function _entryFeeBasisPoints() internal view override returns (uint256) {
+        return entryFeeBasisPoints;
     }
 
-    /// @notice Returns the maximum amount of the vault shares that can be
-    ///         minted for the receiver, through a mint call.
-    /// @dev Since the stBTC contract limits the maximum total tBTC tokens this
-    ///      function converts the maximum deposit amount to shares.
-    /// @return The maximum amount of the vault shares.
-    function maxMint(address receiver) public view override returns (uint256) {
-        uint256 _maxDeposit = maxDeposit(receiver);
-
-        // slither-disable-next-line incorrect-equality
-        return
-            _maxDeposit == type(uint256).max
-                ? type(uint256).max
-                : convertToShares(_maxDeposit);
+    /// @return Returns exit fee basis point used in withdrawals.
+    function _exitFeeBasisPoints() internal view override returns (uint256) {
+        return exitFeeBasisPoints;
     }
 
-    /// @return Returns deposit parameters.
-    function depositParameters() public view returns (uint256, uint256) {
-        return (minimumDepositAmount, maximumTotalAssets);
+    /// @notice Returns the address of the treasury wallet, where fees should be
+    ///         transferred to.
+    function _feeRecipient() internal view override returns (address) {
+        return treasury;
     }
 }
