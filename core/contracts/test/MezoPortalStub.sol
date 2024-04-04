@@ -13,7 +13,9 @@ contract MezoPortalStub {
         address token,
         uint256 depositId,
         uint96 amount
-    ) external {}
+    ) external {
+        IERC20(token).safeTransfer(msg.sender, amount);
+    }
 
     function deposit(address token, uint96 amount, uint32 lockPeriod) external {
         depositCount++;

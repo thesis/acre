@@ -18,13 +18,11 @@ import { to1e18 } from "./utils"
 const { getNamedSigners, getUnnamedSigners } = helpers.signers
 
 async function fixture() {
-  const { tbtc, stbtc, dispatcher, mezoAllocator, mezoPortal } =
-    await deployment()
+  const { tbtc, stbtc, mezoAllocator, mezoPortal } = await deployment()
   const { governance, maintainer } = await getNamedSigners()
   const [thirdParty] = await getUnnamedSigners()
 
   return {
-    dispatcher,
     governance,
     thirdParty,
     maintainer,
@@ -98,17 +96,13 @@ describe("MezoAllocator", () => {
           )
         })
 
-        it("should populate deposits array", async () => {
-          expect(await mezoAllocator.deposits(0)).to.equal(1)
-        })
-
         it("should set deposit balance", async () => {
-          const deposit = await mezoAllocator.depositsById(1)
+          const deposit = await mezoAllocator.depositInfo()
           expect(deposit.balance).to.equal(to1e18(1))
         })
 
         it("should set creation timestamp", async () => {
-          const deposit = await mezoAllocator.depositsById(1)
+          const deposit = await mezoAllocator.depositInfo()
           const dateTime = new Date()
           // Check if the block timestamp is within 60 seconds of the current
           // test time
@@ -119,7 +113,7 @@ describe("MezoAllocator", () => {
         })
 
         it("should set unlocking timestamp", async () => {
-          const deposit = await mezoAllocator.depositsById(1)
+          const deposit = await mezoAllocator.depositInfo()
           const dateTime = new Date()
           // Check if the block timestamp is within 60 seconds of the current
           // test time
@@ -130,10 +124,9 @@ describe("MezoAllocator", () => {
         })
 
         it("should emit Deposit event", async () => {
-          const latestDepositId = await mezoAllocator.deposits(0)
           await expect(tx)
             .to.emit(mezoAllocator, "DepositAllocated")
-            .withArgs(latestDepositId, to1e18(1))
+            .withArgs(0, 1, to1e18(1))
         })
       })
 
@@ -147,13 +140,15 @@ describe("MezoAllocator", () => {
           await mezoAllocator.connect(maintainer).allocate(to1e18(5))
         })
 
-        it("should increment the deposits array", async () => {
-          expect(await mezoAllocator.deposits(1)).to.equal(2)
+        it("should increment the deposit id", async () => {
+          const depositInfo = await mezoAllocator.depositInfo()
+          expect(depositInfo.id).to.equal(2)
         })
 
-        it("should populate deposits mapping", async () => {
-          const deposit = await mezoAllocator.depositsById(2)
-          expect(deposit.balance).to.equal(to1e18(5))
+        it("should populate deposit balance", async () => {
+          const deposit = await mezoAllocator.depositInfo()
+          // 1 + 5 = 6
+          expect(deposit.balance).to.equal(to1e18(6))
         })
       })
     })
