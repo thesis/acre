@@ -12,12 +12,12 @@ import { beforeAfterSnapshotWrapper, deployment } from "./helpers"
 
 import { to1e18 } from "./utils"
 
-import type { StBTC as stBTC, TestERC20, Dispatcher } from "../typechain"
+import type { StBTC as stBTC, TestERC20 } from "../typechain"
 
 const { getNamedSigners, getUnnamedSigners } = helpers.signers
 
 async function fixture() {
-  const { tbtc, stbtc, dispatcher } = await deployment()
+  const { tbtc, stbtc } = await deployment()
   const { governance, treasury } = await getNamedSigners()
 
   const [depositor1, depositor2, thirdParty] = await getUnnamedSigners()
@@ -31,7 +31,6 @@ async function fixture() {
     tbtc,
     depositor1,
     depositor2,
-    dispatcher,
     governance,
     thirdParty,
     treasury,
@@ -45,7 +44,6 @@ describe("stBTC", () => {
 
   let stbtc: stBTC
   let tbtc: TestERC20
-  let dispatcher: Dispatcher
 
   let governance: HardhatEthersSigner
   let depositor1: HardhatEthersSigner
@@ -59,7 +57,6 @@ describe("stBTC", () => {
       tbtc,
       depositor1,
       depositor2,
-      dispatcher,
       governance,
       thirdParty,
       treasury,
@@ -1320,45 +1317,46 @@ describe("stBTC", () => {
         })
       })
 
-      context("when a new dispatcher is non-zero address", () => {
-        let newDispatcher: string
-        let stbtcAddress: string
-        let dispatcherAddress: string
-        let tx: ContractTransactionResponse
+      // TODO: uncomment once MezoAllocator is added in the following PRs
+      // context("when a new dispatcher is non-zero address", () => {
+      //   let newDispatcher: string
+      //   let stbtcAddress: string
+      //   let dispatcherAddress: string
+      //   let tx: ContractTransactionResponse
 
-        before(async () => {
-          // Dispatcher is set by the deployment scripts. See deployment tests
-          // where initial parameters are checked.
-          dispatcherAddress = await dispatcher.getAddress()
-          newDispatcher = await ethers.Wallet.createRandom().getAddress()
-          stbtcAddress = await stbtc.getAddress()
+      //   before(async () => {
+      //     // Dispatcher is set by the deployment scripts. See deployment tests
+      //     // where initial parameters are checked.
+      //     dispatcherAddress = await dispatcher.getAddress()
+      //     newDispatcher = await ethers.Wallet.createRandom().getAddress()
+      //     stbtcAddress = await stbtc.getAddress()
 
-          tx = await stbtc.connect(governance).updateDispatcher(newDispatcher)
-        })
+      //     await stbtc.connect(governance).updateDispatcher(newDispatcher)
+      //   })
 
-        it("should update the dispatcher", async () => {
-          expect(await stbtc.dispatcher()).to.be.equal(newDispatcher)
-        })
+      //   it("should update the dispatcher", async () => {
+      //     expect(await stbtc.dispatcher()).to.be.equal(newDispatcher)
+      //   })
 
-        it("should reset approval amount for the old dispatcher", async () => {
-          const allowance = await tbtc.allowance(
-            stbtcAddress,
-            dispatcherAddress,
-          )
-          expect(allowance).to.be.equal(0)
-        })
+      //   it("should reset approval amount for the old dispatcher", async () => {
+      //     const allowance = await tbtc.allowance(
+      //       stbtcAddress,
+      //       dispatcherAddress,
+      //     )
+      //     expect(allowance).to.be.equal(0)
+      //   })
 
-        it("should approve max amount for the new dispatcher", async () => {
-          const allowance = await tbtc.allowance(stbtcAddress, newDispatcher)
-          expect(allowance).to.be.equal(MaxUint256)
-        })
+      //   it("should approve max amount for the new dispatcher", async () => {
+      //     const allowance = await tbtc.allowance(stbtcAddress, newDispatcher)
+      //     expect(allowance).to.be.equal(MaxUint256)
+      //   })
 
-        it("should emit DispatcherUpdated event", async () => {
-          await expect(tx)
-            .to.emit(stbtc, "DispatcherUpdated")
-            .withArgs(dispatcherAddress, newDispatcher)
-        })
-      })
+      //   it("should emit DispatcherUpdated event", async () => {
+      //     await expect(tx)
+      //       .to.emit(stbtc, "DispatcherUpdated")
+      //       .withArgs(dispatcherAddress, newDispatcher)
+      //   })
+      // })
     })
   })
 

@@ -1,32 +1,28 @@
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 import { expect } from "chai"
-import { MaxUint256 } from "ethers"
+// import { MaxUint256 } from "ethers"
 import { helpers } from "hardhat"
 
 import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
 import { deployment } from "./helpers/context"
 
-import type { StBTC as stBTC, Dispatcher, TestERC20 } from "../typechain"
+import type { StBTC as stBTC } from "../typechain"
 
 const { getNamedSigners } = helpers.signers
 
 async function fixture() {
-  const { tbtc, stbtc, dispatcher } = await deployment()
-  const { governance, maintainer, treasury } = await getNamedSigners()
+  const { stbtc } = await deployment()
+  const { governance, treasury } = await getNamedSigners()
 
-  return { stbtc, dispatcher, tbtc, governance, maintainer, treasury }
+  return { stbtc, governance, treasury }
 }
 
 describe("Deployment", () => {
   let stbtc: stBTC
-  let dispatcher: Dispatcher
-  let tbtc: TestERC20
-  let maintainer: HardhatEthersSigner
   let treasury: HardhatEthersSigner
 
   before(async () => {
-    ;({ stbtc, dispatcher, tbtc, maintainer, treasury } =
-      await loadFixture(fixture))
+    ;({ stbtc, treasury } = await loadFixture(fixture))
   })
 
   describe("Acre", () => {
@@ -40,36 +36,25 @@ describe("Deployment", () => {
       })
     })
 
-    describe("updateDispatcher", () => {
-      context("when a dispatcher has been set", () => {
-        it("should be set to a dispatcher address by the deployment script", async () => {
-          const actualDispatcher = await stbtc.dispatcher()
+    // TODO: Uncomment and replace with MezoAllocator in the following PRs
+    // describe("updateDispatcher", () => {
+    //   context("when a dispatcher has been set", () => {
+    //     it("should be set to a dispatcher address by the deployment script", async () => {
+    //       const actualDispatcher = await stbtc.dispatcher()
 
-          expect(actualDispatcher).to.be.equal(await dispatcher.getAddress())
-        })
+    //       expect(actualDispatcher).to.be.equal(await dispatcher.getAddress())
+    //     })
 
-        it("should approve max amount for the dispatcher", async () => {
-          const actualDispatcher = await stbtc.dispatcher()
-          const allowance = await tbtc.allowance(
-            await stbtc.getAddress(),
-            actualDispatcher,
-          )
+    //     it("should approve max amount for the dispatcher", async () => {
+    //       const actualDispatcher = await stbtc.dispatcher()
+    //       const allowance = await tbtc.allowance(
+    //         await stbtc.getAddress(),
+    //         actualDispatcher,
+    //       )
 
-          expect(allowance).to.be.equal(MaxUint256)
-        })
-      })
-    })
-  })
-
-  describe("Dispatcher", () => {
-    describe("updateMaintainer", () => {
-      context("when a new maintainer has been set", () => {
-        it("should be set to a new maintainer address", async () => {
-          const actualMaintainer = await dispatcher.maintainer()
-
-          expect(actualMaintainer).to.be.equal(await maintainer.getAddress())
-        })
-      })
-    })
+    //       expect(allowance).to.be.equal(MaxUint256)
+    //     })
+    //   })
+    // })
   })
 })
