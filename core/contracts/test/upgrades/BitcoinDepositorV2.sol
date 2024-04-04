@@ -58,24 +58,12 @@ contract BitcoinDepositorV2 is AbstractTBTCDepositor, Ownable2StepUpgradeable {
     /// @param depositKey Deposit key identifying the deposit.
     /// @param caller Address that initialized the stake request.
     /// @param staker The address to which the stBTC shares will be minted.
+    /// @param initialAmount Amount of funding transaction.
     event StakeRequestInitialized(
         uint256 indexed depositKey,
         address indexed caller,
-        address indexed staker
-    );
-
-    /// @notice Emitted when bridging completion has been notified.
-    /// @param depositKey Deposit key identifying the deposit.
-    /// @param caller Address that notified about bridging completion.
-    /// @param referral Identifier of a partner in the referral program.
-    /// @param bridgedAmount Amount of tBTC tokens that was bridged by the tBTC bridge.
-    /// @param depositorFee Depositor fee amount.
-    event BridgingCompleted(
-        uint256 indexed depositKey,
-        address indexed caller,
-        uint16 indexed referral,
-        uint256 bridgedAmount,
-        uint256 depositorFee
+        address indexed staker,
+        uint256 initialAmount
     );
 
     /// @notice Emitted when a stake request is finalized.
@@ -83,11 +71,16 @@ contract BitcoinDepositorV2 is AbstractTBTCDepositor, Ownable2StepUpgradeable {
     ///      event emitted in the same transaction.
     /// @param depositKey Deposit key identifying the deposit.
     /// @param caller Address that finalized the stake request.
-    /// @param stakedAmount Amount of staked tBTC tokens.
+    /// @param initialAmount Amount of funding transaction.
+    /// @param bridgedAmount Amount of tBTC tokens that was bridged by the tBTC bridge.
+    /// @param depositorFee Depositor fee amount.
     event StakeRequestFinalized(
         uint256 indexed depositKey,
         address indexed caller,
-        uint256 stakedAmount
+        uint16 indexed referral,
+        uint256 initialAmount,
+        uint256 bridgedAmount,
+        uint256 depositorFee
     );
 
     /// @notice Emitted when a minimum single stake amount is updated.
@@ -98,6 +91,7 @@ contract BitcoinDepositorV2 is AbstractTBTCDepositor, Ownable2StepUpgradeable {
     /// @notice Emitted when a depositor fee divisor is updated.
     /// @param depositorFeeDivisor New value of the depositor fee divisor.
     event DepositorFeeDivisorUpdated(uint64 depositorFeeDivisor);
+
     // TEST: New event;
     event NewEvent();
 
@@ -115,15 +109,6 @@ contract BitcoinDepositorV2 is AbstractTBTCDepositor, Ownable2StepUpgradeable {
     error UnexpectedStakeRequestState(
         StakeRequestState currentState,
         StakeRequestState expectedState
-    );
-
-    /// @dev Attempted to finalize bridging with depositor's contract tBTC balance
-    ///      lower than the calculated bridged tBTC amount. This error means
-    ///      that Governance should top-up the tBTC reserve for bridging fees
-    ///      approximation.
-    error InsufficientTbtcBalance(
-        uint256 amountToStake,
-        uint256 currentBalance
     );
 
     /// @dev Calculated depositor fee exceeds the amount of minted tBTC tokens.
@@ -182,37 +167,86 @@ contract BitcoinDepositorV2 is AbstractTBTCDepositor, Ownable2StepUpgradeable {
         // We don't check if the request was already initialized, as this check
         // is enforced in `_initializeDeposit` when calling the
         // `Bridge.revealDepositWithExtraData` function.
-        (uint256 depositKey, ) = _initializeDeposit(
+        (uint256 depositKey, uint256 initialAmount) = _initializeDeposit(
             fundingTx,
             reveal,
             encodeExtraData(staker, referral)
         );
 
-        transitionStakeRequestState(
-            depositKey,
-            StakeRequestState.Unknown,
-            StakeRequestState.Initialized
-        );
+        // Validate current stake request state.
+        if (stakeRequests[depositKey] != StakeRequestState.Unknown)
+            revert UnexpectedStakeRequestState(
+                stakeRequests[depositKey],
+                StakeRequestState.Unknown
+            );
 
-        emit StakeRequestInitialized(depositKey, msg.sender, staker);
+        // Transition to a new state.
+        stakeRequests[depositKey] = StakeRequestState.Initialized;
+
+        emit StakeRequestInitialized(
+            depositKey,
+            msg.sender,
+            staker,
+            initialAmount
+        );
     }
 
     /// @notice This function should be called for previously initialized stake
-    ///         request, after tBTC bridging process was finalized.
-    ///         It stakes the tBTC from the given deposit into stBTC, emitting the
-    ///         stBTC shares to the staker specified in the deposit extra data
-    ///         and using the referral provided in the extra data.
+    ///         request, after tBTC minting process completed, meaning tBTC was
+    ///         minted to this contract.
+    /// @dev It calculates the amount to stake based on the approximate minted
+    ///      tBTC amount reduced by the depositor fee.
+    /// @dev IMPORTANT NOTE: The minted tBTC amount used by this function is an
+    ///      approximation. See documentation of the
+    ///      {{AbstractTBTCDepositor#_calculateTbtcAmount}} responsible for calculating
+    ///      this value for more details.
     /// @param depositKey Deposit key identifying the deposit.
     function finalizeStake(uint256 depositKey) external {
-        transitionStakeRequestState(
+        // Validate current stake request state.
+        if (stakeRequests[depositKey] != StakeRequestState.Initialized)
+            revert UnexpectedStakeRequestState(
+                stakeRequests[depositKey],
+                StakeRequestState.Initialized
+            );
+
+        // Transition to a new state.
+        stakeRequests[depositKey] = StakeRequestState.Finalized;
+
+        (
+            uint256 initialAmount,
+            uint256 tbtcAmount,
+            bytes32 extraData
+        ) = _finalizeDeposit(depositKey);
+
+        // Compute depositor fee. The fee is calculated based on the initial funding
+        // transaction amount, before the tBTC protocol network fees were taken.
+        uint256 depositorFee = depositorFeeDivisor > 0
+            ? (initialAmount / depositorFeeDivisor)
+            : 0;
+
+        // Ensure the depositor fee does not exceed the approximate minted tBTC
+        // amount.
+        if (depositorFee >= tbtcAmount) {
+            revert DepositorFeeExceedsBridgedAmount(depositorFee, tbtcAmount);
+        }
+
+        // Transfer depositor fee to the treasury wallet.
+        if (depositorFee > 0) {
+            tbtcToken.safeTransfer(stbtc.treasury(), depositorFee);
+        }
+
+        (address staker, uint16 referral) = decodeExtraData(extraData);
+
+        emit StakeRequestFinalized(
             depositKey,
-            StakeRequestState.Initialized,
-            StakeRequestState.Finalized
+            msg.sender,
+            referral,
+            initialAmount,
+            tbtcAmount,
+            depositorFee
         );
 
-        (uint256 amountToStake, address staker) = finalizeBridging(depositKey);
-
-        emit StakeRequestFinalized(depositKey, msg.sender, amountToStake);
+        uint256 amountToStake = tbtcAmount - depositorFee;
 
         // Deposit tBTC in stBTC.
         tbtcToken.safeIncreaseAllowance(address(stbtc), amountToStake);
@@ -290,94 +324,5 @@ contract BitcoinDepositorV2 is AbstractTBTCDepositor, Ownable2StepUpgradeable {
         staker = address(uint160(bytes20(extraData)));
         // Next 2 bytes of extra data is referral info.
         referral = uint16(bytes2(extraData << (8 * 20)));
-    }
-
-    /// @notice This function is used for state transitions. It ensures the current
-    ///         state matches expected, and updates the stake request to a new
-    ///         state.
-    /// @param depositKey Deposit key identifying the deposit.
-    /// @param expectedState Expected current stake request state.
-    /// @param newState New stake request state.
-    function transitionStakeRequestState(
-        uint256 depositKey,
-        StakeRequestState expectedState,
-        StakeRequestState newState
-    ) internal {
-        // Validate current stake request state.
-        if (stakeRequests[depositKey] != expectedState)
-            revert UnexpectedStakeRequestState(
-                stakeRequests[depositKey],
-                expectedState
-            );
-
-        // Transition to a new state.
-        stakeRequests[depositKey] = newState;
-    }
-
-    /// @notice This function should be called for previously initialized stake
-    ///         request, after tBTC minting process completed, meaning tBTC was
-    ///         minted to this contract.
-    /// @dev It calculates the amount to stake based on the approximate minted
-    ///      tBTC amount reduced by the depositor fee.
-    /// @dev IMPORTANT NOTE: The minted tBTC amount used by this function is an
-    ///      approximation. See documentation of the
-    ///      {{AbstractTBTCDepositor#_calculateTbtcAmount}} responsible for calculating
-    ///      this value for more details.
-    /// @dev In case balance of tBTC tokens in this contract doesn't meet the
-    ///      calculated tBTC amount, the function reverts with `InsufficientTbtcBalance`
-    ///      error. This case requires Governance's validation, as tBTC Bridge minting
-    ///      fees might changed in the way that reserve mentioned in
-    ///      {{AbstractTBTCDepositor#_calculateTbtcAmount}} needs a top-up.
-    /// @param depositKey Deposit key identifying the deposit.
-    /// @return amountToStake tBTC token amount to stake after deducting tBTC bridging
-    ///         fees and the depositor fee.
-    /// @return staker The address to which the stBTC shares will be minted.
-    function finalizeBridging(
-        uint256 depositKey
-    ) internal returns (uint256, address) {
-        (
-            uint256 initialDepositAmount,
-            uint256 tbtcAmount,
-            bytes32 extraData
-        ) = _finalizeDeposit(depositKey);
-
-        // Check if current balance is sufficient to finalize bridging of `tbtcAmount`.
-        uint256 currentBalance = tbtcToken.balanceOf(address(this));
-        if (tbtcAmount > tbtcToken.balanceOf(address(this))) {
-            revert InsufficientTbtcBalance(tbtcAmount, currentBalance);
-        }
-
-        // Compute depositor fee. The fee is calculated based on the initial funding
-        // transaction amount, before the tBTC protocol network fees were taken.
-        uint256 depositorFee = depositorFeeDivisor > 0
-            ? (initialDepositAmount / depositorFeeDivisor)
-            : 0;
-
-        // Ensure the depositor fee does not exceed the approximate minted tBTC
-        // amount.
-        if (depositorFee >= tbtcAmount) {
-            revert DepositorFeeExceedsBridgedAmount(depositorFee, tbtcAmount);
-        }
-
-        uint256 amountToStake = tbtcAmount - depositorFee;
-
-        (address staker, uint16 referral) = decodeExtraData(extraData);
-
-        // Emit event for accounting purposes to track partner's referral ID and
-        // depositor fee taken.
-        emit BridgingCompleted(
-            depositKey,
-            msg.sender,
-            referral,
-            tbtcAmount,
-            depositorFee
-        );
-
-        // Transfer depositor fee to the treasury wallet.
-        if (depositorFee > 0) {
-            tbtcToken.safeTransfer(stbtc.treasury(), depositorFee);
-        }
-
-        return (amountToStake, staker);
     }
 }

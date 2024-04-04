@@ -15,10 +15,6 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const [, deployment] = await helpers.upgrades.deployProxy(
     "BitcoinDepositor",
     {
-      contractName:
-        process.env.HARDHAT_TEST === "true"
-          ? "BitcoinDepositorHarness"
-          : "BitcoinDepositor",
       factoryOpts: {
         signer: deployer,
       },
