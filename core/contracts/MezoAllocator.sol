@@ -76,10 +76,10 @@ contract MezoAllocator is Ownable2Step {
         tbtc = _tbtc;
     }
 
-    /// @notice Deposits tBTC to MezoPortal.
+    /// @notice Allocate tBTC to MezoPortal.
     /// @dev This function can be invoked periodically by a bot.
     /// @param amount Amount of tBTC to deposit to Mezo Portal.
-    function deposit(uint96 amount) external onlyMaintainerAndOwner {
+    function allocate(uint96 amount) external onlyMaintainerAndOwner {
         // slither-disable-next-line arbitrary-send-erc20
         IERC20(tbtc).safeTransferFrom(tbtcStorage, address(this), amount);
         IERC20(tbtc).forceApprove(mezoPortal, amount);

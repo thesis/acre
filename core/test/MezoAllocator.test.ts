@@ -57,13 +57,13 @@ describe("MezoAllocator", () => {
     } = await loadFixture(fixture))
   })
 
-  describe("deposit", () => {
+  describe("allocate", () => {
     beforeAfterSnapshotWrapper()
 
     context("when the caller is not an owner", () => {
       it("should revert", async () => {
         await expect(
-          mezoAllocator.connect(thirdParty).deposit(to1e18(1)),
+          mezoAllocator.connect(thirdParty).allocate(to1e18(1)),
         ).to.be.revertedWithCustomError(mezoAllocator, "NotAuthorized")
       })
     })
@@ -71,7 +71,7 @@ describe("MezoAllocator", () => {
     context("when the caller is an owner", () => {
       it("should not revert", async () => {
         await expect(
-          mezoAllocator.connect(governance).deposit(to1e18(1)),
+          mezoAllocator.connect(governance).allocate(to1e18(1)),
         ).to.not.be.revertedWithCustomError(mezoAllocator, "NotAuthorized")
       })
     })
@@ -86,7 +86,7 @@ describe("MezoAllocator", () => {
             .connect(governance)
             .updateMaintainer(maintainer.address)
 
-          tx = await mezoAllocator.connect(maintainer).deposit(to1e18(1))
+          tx = await mezoAllocator.connect(maintainer).allocate(to1e18(1))
         })
 
         it("should deposit and transfer tBTC to Mezo Portal", async () => {
@@ -144,7 +144,7 @@ describe("MezoAllocator", () => {
             .connect(governance)
             .updateMaintainer(maintainer.address)
 
-          await mezoAllocator.connect(maintainer).deposit(to1e18(5))
+          await mezoAllocator.connect(maintainer).allocate(to1e18(5))
         })
 
         it("should increment the deposits array", async () => {
