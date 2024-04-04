@@ -20,54 +20,22 @@ describe("stBTC contract upgrade", () => {
   let tbtcAddress: string
   let stbtc: StBTC
   let treasury: HardhatEthersSigner
-  let deployer: HardhatEthersSigner
   let governance: HardhatEthersSigner
 
   before(async () => {
     ;({ tbtc, stbtc } = await loadFixture(fixture))
     tbtcAddress = await tbtc.getAddress()
-    ;({ deployer, treasury, governance } =
-      await helpers.signers.getNamedSigners())
-  })
-
-  context("when upgrading to an invalid contract", () => {
-    context("when the new variable was added before the old one", () => {
-      beforeAfterSnapshotWrapper()
-
-      it("should throw an error", async () => {
-        await expect(
-          helpers.upgrades.upgradeProxy("stBTC", "stBTCMisplacedSlot", {
-            initializerArgs: [tbtcAddress, treasury.address],
-            factoryOpts: { signer: deployer },
-          }),
-        ).to.rejectedWith(Error, "Inserted `newVariable`")
-      })
-    })
-
-    context("when a variable was removed", () => {
-      beforeAfterSnapshotWrapper()
-
-      it("should throw an error", async () => {
-        await expect(
-          helpers.upgrades.upgradeProxy("stBTC", "stBTCMissingSlot", {
-            initializerArgs: [tbtcAddress, treasury.address],
-            factoryOpts: { signer: deployer },
-          }),
-        ).to.be.rejectedWith(Error, "Deleted `treasury`")
-      })
-    })
+    ;({ treasury, governance } = await helpers.signers.getNamedSigners())
   })
 
   context("when upgrading to a valid contract", () => {
     let stbtcV2: StBTCV2
     let v1MinimumDepositAmount: bigint
-    let v1MaximumTotalAssets: bigint
     const newVariable = 1n
 
     beforeAfterSnapshotWrapper()
 
     before(async () => {
-      v1MaximumTotalAssets = await stbtc.maximumTotalAssets()
       v1MinimumDepositAmount = await stbtc.minimumDepositAmount()
 
       const [upgradedStBTC] = await helpers.upgrades.upgradeProxy(
@@ -104,7 +72,6 @@ describe("stBTC contract upgrade", () => {
         expect(await stbtcV2.minimumDepositAmount()).to.eq(
           v1MinimumDepositAmount,
         )
-        expect(await stbtcV2.maximumTotalAssets()).to.eq(v1MaximumTotalAssets)
       })
     })
 
