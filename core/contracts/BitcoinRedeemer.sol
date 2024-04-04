@@ -3,7 +3,7 @@ pragma solidity ^0.8.21;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-import "@thesis/solidity-contracts/contracts/token/IReceiveApproval.sol";
+import "@thesis-co/solidity-contracts/contracts/token/IReceiveApproval.sol";
 
 import "./stBTC.sol";
 import "./bridge/ITBTCToken.sol";
