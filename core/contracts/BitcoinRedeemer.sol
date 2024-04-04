@@ -115,6 +115,7 @@ contract BitcoinRedeemer is Initializable, IReceiveApproval {
 
         if (
             !tbtcToken.approveAndCall(
+                // TBTC Token contract owner resolves to the TBTCVault contract.
                 tbtcToken.owner(),
                 tbtcAmount,
                 tbtcRedemptionData
