@@ -62,11 +62,7 @@ export function ActivityCard({ activity, onRemove }: ActivityCardType) {
           />
           {isActivityCompleted ? (
             <Tooltip label="Remove" placement="top">
-              <CloseButton
-                size="sm"
-                onClick={onClose}
-                _hover={{ backgroundColor: undefined }}
-              />
+              <CloseButton size="sm" onClick={onClose} />
             </Tooltip>
           ) : (
             <Icon

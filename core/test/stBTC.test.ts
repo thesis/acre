@@ -18,7 +18,7 @@ const { getNamedSigners, getUnnamedSigners } = helpers.signers
 
 async function fixture() {
   const { tbtc, stbtc, dispatcher } = await deployment()
-  const { governance, treasury } = await getNamedSigners()
+  const { governance, treasury, pauseAdmin } = await getNamedSigners()
 
   const [depositor1, depositor2, thirdParty] = await getUnnamedSigners()
 
@@ -35,10 +35,15 @@ async function fixture() {
     governance,
     thirdParty,
     treasury,
+    pauseAdmin,
   }
 }
 
 describe("stBTC", () => {
+  const entryFeeBasisPoints = 5n // Used only for the tests.
+  const exitFeeBasisPoints = 10n // Used only for the tests.
+  const basisPointScale = 10000n // Matches the contract.
+
   let stbtc: stBTC
   let tbtc: TestERC20
   let dispatcher: Dispatcher
@@ -47,6 +52,8 @@ describe("stBTC", () => {
   let depositor1: HardhatEthersSigner
   let depositor2: HardhatEthersSigner
   let thirdParty: HardhatEthersSigner
+  let treasury: HardhatEthersSigner
+  let pauseAdmin: HardhatEthersSigner
 
   before(async () => {
     ;({
@@ -57,7 +64,197 @@ describe("stBTC", () => {
       dispatcher,
       governance,
       thirdParty,
+      treasury,
+      pauseAdmin,
     } = await loadFixture(fixture))
+
+    await stbtc
+      .connect(governance)
+      .updateEntryFeeBasisPoints(entryFeeBasisPoints)
+
+    await stbtc.connect(governance).updateExitFeeBasisPoints(exitFeeBasisPoints)
+  })
+
+  describe("previewDeposit", () => {
+    beforeAfterSnapshotWrapper()
+
+    context("when the vault is empty", () => {
+      const amountToDeposit = to1e18(1)
+
+      before(async () => {
+        await tbtc
+          .connect(depositor1)
+          .approve(await stbtc.getAddress(), amountToDeposit)
+      })
+
+      context("when validating preview deposit against hardcoded value", () => {
+        it("should return the correct amount of shares", async () => {
+          const shares = await stbtc.previewDeposit(amountToDeposit)
+          // amount to deposit = 1 tBTC
+          // fee = (1e18 * 5) / (10000 + 5) = 499750124937532
+          // shares = 1e18 - 499750124937532 = 999500249875062468
+          const expectedShares = 999500249875062468n
+          expect(shares).to.be.eq(expectedShares)
+        })
+      })
+
+      context(
+        "when previewing shares against programatically calculated values",
+        () => {
+          it("should return the correct amount of shares", async () => {
+            const shares = await stbtc.previewDeposit(amountToDeposit)
+            const expectedShares =
+              amountToDeposit - feeOnTotal(amountToDeposit, entryFeeBasisPoints)
+            expect(shares).to.be.eq(expectedShares)
+          })
+        },
+      )
+    })
+
+    context("when the vault is not empty", () => {
+      beforeAfterSnapshotWrapper()
+
+      const amountToDeposit1 = to1e18(1)
+      const amountToDeposit2 = to1e18(2)
+
+      before(async () => {
+        await tbtc
+          .connect(depositor1)
+          .approve(await stbtc.getAddress(), amountToDeposit1)
+
+        await stbtc
+          .connect(depositor1)
+          .deposit(amountToDeposit1, depositor1.address)
+      })
+
+      it("should return the correct amount of shares", async () => {
+        const expectedShares =
+          amountToDeposit2 - feeOnTotal(amountToDeposit2, entryFeeBasisPoints)
+        const shares = await stbtc.previewDeposit(amountToDeposit2)
+        expect(shares).to.be.eq(expectedShares)
+      })
+    })
+  })
+
+  describe("previewRedeem", () => {
+    beforeAfterSnapshotWrapper()
+
+    context("when the vault is empty", () => {
+      it("should return correct value", async () => {
+        const toRedeem = to1e18(1)
+        // fee = (1e18 * 10) / (10000 + 10) = 999000999000999
+        // expectedShares = toReedem - fee
+        // expectedShares = to1e18(1) - 999000999000999 = 999000999000999001
+        const expectedShares = 999000999000999000n // -1 to match the contract's math
+        expect(await stbtc.previewRedeem(toRedeem)).to.be.equal(expectedShares)
+      })
+    })
+
+    context("when the vault is not empty", () => {
+      beforeAfterSnapshotWrapper()
+
+      const amountToDeposit = to1e18(1)
+
+      before(async () => {
+        await tbtc
+          .connect(depositor1)
+          .approve(await stbtc.getAddress(), amountToDeposit)
+
+        await stbtc
+          .connect(depositor1)
+          .deposit(amountToDeposit, depositor1.address)
+      })
+
+      context("when there is no yield generated", () => {
+        it("should return the correct amount of assets", async () => {
+          const shares = await stbtc.balanceOf(depositor1.address)
+          // Preview redeem on already deposited amount for which entry fee was
+          // taken.
+          const availableAssetsToRedeem = await stbtc.previewRedeem(shares)
+          const actualAssets = shares
+
+          const expectedAssetsToRedeem =
+            actualAssets - feeOnTotal(actualAssets, exitFeeBasisPoints)
+          expect(availableAssetsToRedeem).to.be.eq(expectedAssetsToRedeem)
+        })
+      })
+
+      context("when there is yield generated", () => {
+        beforeAfterSnapshotWrapper()
+
+        const earnedYield = to1e18(6)
+
+        before(async () => {
+          await tbtc.mint(await stbtc.getAddress(), earnedYield)
+        })
+
+        it("should return the correct amount of assets", async () => {
+          const shares = await stbtc.balanceOf(depositor1.address)
+          const availableAssetsToRedeem = await stbtc.previewRedeem(shares)
+          const actualAssets = shares
+
+          // expected assets = (1 - depositFee(1) + earnedYield) - (exitFee(1 + earnedYield))
+          const expectedAssetsToRedeem =
+            actualAssets +
+            earnedYield -
+            feeOnTotal(actualAssets + earnedYield, exitFeeBasisPoints)
+          expectCloseTo(availableAssetsToRedeem, expectedAssetsToRedeem)
+        })
+      })
+    })
+  })
+
+  describe("previewMint", () => {
+    let amountToDeposit: bigint
+
+    beforeAfterSnapshotWrapper()
+
+    context("when validating preview mint against hardcoded value", () => {
+      it("should return the correct amount of assets", async () => {
+        // 1e18 + 500000000000000
+        amountToDeposit = 1000500000000000000n
+
+        const assetsToDeposit = await stbtc.previewMint(to1e18(1))
+        expect(assetsToDeposit).to.be.eq(amountToDeposit)
+      })
+    })
+
+    context(
+      "when validating preview mint against programatically calculated value",
+      () => {
+        context("when the vault is not empty", () => {
+          const sharesToMint1 = to1e18(1)
+          const sharesToMint2 = to1e18(2)
+
+          // To receive 1 stBTC, a user must deposit 1.0005 tBTC where 0.0005 tBTC
+          // is a fee.
+          const amountToDeposit1 =
+            sharesToMint1 + feeOnRaw(sharesToMint1, entryFeeBasisPoints)
+
+          // To receive 2 stBTC, a user must deposit 2.001 tBTC where 0.001 tBTC
+          // is a fee.
+          const amountToDeposit2 =
+            sharesToMint2 + feeOnRaw(sharesToMint2, entryFeeBasisPoints)
+
+          it("should preview the correct amount of assets for deposit 2", async () => {
+            await tbtc
+              .connect(depositor1)
+              .approve(await stbtc.getAddress(), amountToDeposit1)
+
+            await tbtc
+              .connect(depositor2)
+              .approve(await stbtc.getAddress(), amountToDeposit2)
+
+            await stbtc
+              .connect(depositor1)
+              .mint(sharesToMint1, depositor1.address)
+
+            const assets = await stbtc.previewMint(sharesToMint2)
+            expect(assets).to.be.eq(amountToDeposit2)
+          })
+        })
+      },
+    )
   })
 
   describe("assetsBalanceOf", () => {
@@ -86,8 +283,10 @@ describe("stBTC", () => {
         })
 
         it("should return the correct amount of assets", async () => {
+          const depositFee = feeOnTotal(amountToDeposit, entryFeeBasisPoints)
+
           expect(await stbtc.assetsBalanceOf(depositor1.address)).to.be.equal(
-            amountToDeposit,
+            amountToDeposit - depositFee,
           )
         })
       })
@@ -120,15 +319,24 @@ describe("stBTC", () => {
           beforeAfterSnapshotWrapper()
 
           it("should return the correct amount of assets", async () => {
+            const deposit1Fee = feeOnTotal(
+              depositor1AmountToDeposit,
+              entryFeeBasisPoints,
+            )
+            const deposit2Fee = feeOnTotal(
+              depositor2AmountToDeposit,
+              entryFeeBasisPoints,
+            )
+
             expect(
               await stbtc.assetsBalanceOf(depositor1.address),
               "invalid assets balance of depositor 1",
-            ).to.be.equal(depositor1AmountToDeposit)
+            ).to.be.equal(depositor1AmountToDeposit - deposit1Fee)
 
             expect(
               await stbtc.assetsBalanceOf(depositor2.address),
               "invalid assets balance of depositor 2",
-            ).to.be.equal(depositor2AmountToDeposit)
+            ).to.be.equal(depositor2AmountToDeposit - deposit2Fee)
           })
         })
 
@@ -138,23 +346,31 @@ describe("stBTC", () => {
           const earnedYield = to1e18(6)
 
           // Values are floor rounded as per the `convertToAssets` function.
-          const expectedAssets1 = 2999999999999999999n // 1 + (1/3 * 6)
-          const expectedAssets2 = 5999999999999999998n // 2 + (2/3 * 6)
+          // 1 - fee + (1/3 * 6) = ~3
+          const expectedAssets1 =
+            depositor1AmountToDeposit -
+            feeOnTotal(depositor1AmountToDeposit, entryFeeBasisPoints) +
+            to1e18(2)
+          // 2 - fee + (2/3 * 6) = ~6
+          const expectedAssets2 =
+            depositor2AmountToDeposit -
+            feeOnTotal(depositor2AmountToDeposit, entryFeeBasisPoints) +
+            to1e18(4)
 
           before(async () => {
             await tbtc.mint(await stbtc.getAddress(), earnedYield)
           })
 
           it("should return the correct amount of assets", async () => {
-            expect(
+            expectCloseTo(
               await stbtc.assetsBalanceOf(depositor1.address),
-              "invalid assets balance of depositor 1",
-            ).to.be.equal(expectedAssets1)
+              expectedAssets1,
+            )
 
-            expect(
+            expectCloseTo(
               await stbtc.assetsBalanceOf(depositor2.address),
-              "invalid assets balance of depositor 2",
-            ).to.be.equal(expectedAssets2)
+              expectedAssets2,
+            )
           })
         })
       })
@@ -206,7 +422,8 @@ describe("stBTC", () => {
           const minimumDepositAmount = await stbtc.minimumDepositAmount()
           amountToDeposit = minimumDepositAmount
 
-          expectedReceivedShares = amountToDeposit
+          expectedReceivedShares =
+            amountToDeposit - feeOnTotal(amountToDeposit, entryFeeBasisPoints)
 
           await tbtc.approve(await stbtc.getAddress(), amountToDeposit)
           tx = await stbtc
@@ -236,7 +453,8 @@ describe("stBTC", () => {
         })
 
         it("should transfer tBTC tokens to Acre", async () => {
-          const actualDepositdAmount = amountToDeposit
+          const actualDepositdAmount =
+            amountToDeposit - feeOnTotal(amountToDeposit, entryFeeBasisPoints)
 
           await expect(tx).to.changeTokenBalances(
             tbtc,
@@ -333,8 +551,12 @@ describe("stBTC", () => {
           })
 
           it("the total assets amount should be equal to all deposited tokens", async () => {
-            const actualDepositAmount1 = depositor1AmountToDeposit
-            const actualDepositAmount2 = depositor2AmountToDeposit
+            const actualDepositAmount1 =
+              depositor1AmountToDeposit -
+              feeOnTotal(depositor1AmountToDeposit, entryFeeBasisPoints)
+            const actualDepositAmount2 =
+              depositor2AmountToDeposit -
+              feeOnTotal(depositor2AmountToDeposit, entryFeeBasisPoints)
 
             expect(await stbtc.totalAssets()).to.eq(
               actualDepositAmount1 + actualDepositAmount2,
@@ -369,8 +591,12 @@ describe("stBTC", () => {
           })
 
           it("the vault should hold more assets minus fees", async () => {
-            const actualDepositAmount1 = depositor1AmountToDeposit
-            const actualDepositAmount2 = depositor2AmountToDeposit
+            const actualDepositAmount1 =
+              depositor1AmountToDeposit -
+              feeOnTotal(depositor1AmountToDeposit, entryFeeBasisPoints)
+            const actualDepositAmount2 =
+              depositor2AmountToDeposit -
+              feeOnTotal(depositor2AmountToDeposit, entryFeeBasisPoints)
 
             expect(await stbtc.totalAssets()).to.be.eq(
               actualDepositAmount1 + actualDepositAmount2 + earnedYield,
@@ -385,158 +611,160 @@ describe("stBTC", () => {
               depositor2SharesBefore,
             )
           })
-
-          it("the depositor 1 should be able to redeem more tokens than before", async () => {
-            const shares = await stbtc.balanceOf(depositor1.address)
-            const availableAssetsToRedeem = await stbtc.previewRedeem(shares)
-
-            // 7 * 15 / 10 = 10.5
-            // Due to Solidity's mulDiv functions the result is floor rounded.
-            const expectedAssetsToRedeem = 10499999999999999999n
-
-            expect(availableAssetsToRedeem).to.be.eq(expectedAssetsToRedeem)
-          })
-
-          it("the depositor 2 should be able to redeem more tokens than before", async () => {
-            const shares = await stbtc.balanceOf(depositor2.address)
-            const availableAssetsToRedeem = await stbtc.previewRedeem(shares)
-
-            // 3 * 15 / 10 = 4.5
-            // Due to Solidity's mulDiv functions the result is floor rounded.
-            const expectedAssetsToRedeem = 4499999999999999999n
-
-            expect(availableAssetsToRedeem).to.be.eq(expectedAssetsToRedeem)
-          })
         })
 
         context("when depositor 1 deposits more tokens", () => {
-          context(
-            "when total tBTC amount after staking would not exceed max amount",
-            () => {
-              const newAmountToDeposit = to1e18(2)
-              let sharesBefore: bigint
-              let availableToRedeemBefore: bigint
+          const newAmountToDeposit = to1e18(2)
+          let sharesBefore: bigint
 
-              before(async () => {
-                await afterSimulatingYieldSnapshot.restore()
+          before(async () => {
+            await afterSimulatingYieldSnapshot.restore()
 
-                sharesBefore = await stbtc.balanceOf(depositor1.address)
-                availableToRedeemBefore =
-                  await stbtc.previewRedeem(sharesBefore)
+            sharesBefore = await stbtc.balanceOf(depositor1.address)
 
-                await tbtc.mint(depositor1.address, newAmountToDeposit)
+            await tbtc.mint(depositor1.address, newAmountToDeposit)
 
-                await tbtc
-                  .connect(depositor1)
-                  .approve(await stbtc.getAddress(), newAmountToDeposit)
+            await tbtc
+              .connect(depositor1)
+              .approve(await stbtc.getAddress(), newAmountToDeposit)
 
-                await stbtc
-                  .connect(depositor1)
-                  .deposit(newAmountToDeposit, depositor1.address)
-                // State after deposit:
-                // Shares to mint = (assets * stBTCSupply / totalTBTCInAcre) = 2 * 10 / 15 = ~1.333333333333333333
-                // Total assets = 7(depositor 1) + 3(depositor 2) + 5(yield) + 2 = 17
-                // Total shares = 7 + 3 + ~1.3 = 11.333333333333333333
-              })
+            await stbtc
+              .connect(depositor1)
+              .deposit(newAmountToDeposit, depositor1.address)
+            // State after deposit:
+            // Shares to mint = (assets * stBTCSupply / totalTBTCInAcre) = 2 * 10 / 15 = ~1.333333333333333333
+            // Total assets = 7(depositor 1) + 3(depositor 2) + 5(yield) + 2 = 17
+            // Total shares = 7 + 3 + ~1.3 = 11.333333333333333333
+          })
 
-              it("should receive more shares", async () => {
-                const expectedSharesToMint =
-                  await stbtc.previewDeposit(newAmountToDeposit)
+          it("should receive more shares", async () => {
+            const expectedSharesToMint =
+              await stbtc.previewDeposit(newAmountToDeposit)
 
-                const shares = await stbtc.balanceOf(depositor1.address)
+            const shares = await stbtc.balanceOf(depositor1.address)
 
-                expect(shares).to.be.eq(sharesBefore + expectedSharesToMint)
-              })
-
-              it("should be able to redeem more tokens than before", async () => {
-                const shares = await stbtc.balanceOf(depositor1.address)
-                const availableToRedeem = await stbtc.previewRedeem(shares)
-
-                // Expected amount to redeem by depositor 1:
-                // (7 + ~1.3) * 17 / ~11.3 = ~12.49
-                const expectedTotalAssetsAvailableToRedeem =
-                  12499999999999999999n
-
-                expect(availableToRedeem).to.be.greaterThan(
-                  availableToRedeemBefore,
-                )
-                expect(availableToRedeem).to.be.eq(
-                  expectedTotalAssetsAvailableToRedeem,
-                )
-              })
-            },
-          )
-
-          context(
-            "when total tBTC amount after staking would exceed max amount",
-            () => {
-              let possibleMaxAmountToDeposit: bigint
-              let amountToDeposit: bigint
-
-              before(async () => {
-                await afterSimulatingYieldSnapshot.restore()
-
-                // In the current implementation of the `maxDeposit` the
-                // `address` param is not taken into account - it means it will
-                // return the same value for any address.
-                possibleMaxAmountToDeposit = await stbtc.maxDeposit(
-                  depositor1.address,
-                )
-                amountToDeposit = possibleMaxAmountToDeposit + 1n
-
-                await tbtc
-                  .connect(depositor1)
-                  .approve(await stbtc.getAddress(), amountToDeposit)
-              })
-
-              it("should revert", async () => {
-                await expect(stbtc.deposit(amountToDeposit, depositor1.address))
-                  .to.be.revertedWithCustomError(
-                    stbtc,
-                    "ERC4626ExceededMaxDeposit",
-                  )
-                  .withArgs(
-                    depositor1.address,
-                    amountToDeposit,
-                    possibleMaxAmountToDeposit,
-                  )
-              })
-            },
-          )
-
-          context(
-            "when total tBTC amount after staking would be equal to the max amount",
-            () => {
-              let amountToDeposit: bigint
-              let maxDeposit: bigint
-              let tx: ContractTransactionResponse
-
-              before(async () => {
-                maxDeposit = await stbtc.maxDeposit(depositor1.address)
-                amountToDeposit = maxDeposit
-
-                await tbtc
-                  .connect(depositor1)
-                  .approve(await stbtc.getAddress(), amountToDeposit)
-
-                tx = await stbtc.deposit(amountToDeposit, depositor1)
-              })
-
-              it("should deposit tokens correctly", async () => {
-                await expect(tx).to.emit(stbtc, "Deposit")
-              })
-
-              it("should not be able to deposit more tokens than the max deposit allow", async () => {
-                await expect(stbtc.deposit(amountToDeposit, depositor1))
-                  .to.be.revertedWithCustomError(
-                    stbtc,
-                    "ERC4626ExceededMaxDeposit",
-                  )
-                  .withArgs(depositor1.address, amountToDeposit, 0n)
-              })
-            },
-          )
+            expect(shares).to.be.eq(sharesBefore + expectedSharesToMint)
+          })
         })
+      })
+    })
+  })
+
+  describe("redeem", () => {
+    beforeAfterSnapshotWrapper()
+
+    context("when redeeming from a single deposit", () => {
+      beforeAfterSnapshotWrapper()
+
+      const amountToDeposit = to1e18(1)
+      let tx: ContractTransactionResponse
+      let amountToRedeem: bigint
+      let amountStaked: bigint
+      let shares: bigint
+
+      before(async () => {
+        await tbtc
+          .connect(depositor1)
+          .approve(await stbtc.getAddress(), amountToDeposit)
+        shares = await stbtc.previewDeposit(amountToDeposit)
+        await stbtc
+          .connect(depositor1)
+          .deposit(amountToDeposit, depositor1.address)
+        amountStaked =
+          amountToDeposit - feeOnTotal(amountToDeposit, entryFeeBasisPoints)
+        amountToRedeem =
+          amountStaked - feeOnTotal(amountStaked, exitFeeBasisPoints)
+        tx = await stbtc
+          .connect(depositor1)
+          .redeem(shares, thirdParty, depositor1)
+      })
+
+      it("should emit Redeem event", async () => {
+        await expect(tx).to.emit(stbtc, "Withdraw").withArgs(
+          // Caller.
+          depositor1.address,
+          // Receiver
+          thirdParty.address,
+          // Owner
+          depositor1.address,
+          // Redeemed tokens.
+          amountToRedeem,
+          // Burned shares.
+          shares,
+        )
+      })
+
+      it("should burn stBTC tokens", async () => {
+        await expect(tx).to.changeTokenBalances(
+          stbtc,
+          [depositor1.address],
+          [-shares],
+        )
+      })
+
+      it("should transfer tBTC tokens to receiver", async () => {
+        await expect(tx).to.changeTokenBalances(
+          tbtc,
+          [thirdParty.address],
+          [amountToRedeem],
+        )
+      })
+
+      it("should transfer tBTC tokens to Treasury", async () => {
+        await expect(tx).to.changeTokenBalances(
+          tbtc,
+          [treasury.address],
+          [feeOnTotal(amountStaked, exitFeeBasisPoints)],
+        )
+      })
+    })
+
+    context("when redeeming all shares from two deposits", () => {
+      const firstDeposit = to1e18(1)
+      const secondDeposit = to1e18(2)
+
+      before(async () => {
+        const totalDeposit = firstDeposit + secondDeposit
+        await tbtc.mint(depositor1.address, totalDeposit)
+        await tbtc
+          .connect(depositor1)
+          .approve(await stbtc.getAddress(), totalDeposit)
+        await stbtc
+          .connect(depositor1)
+          .deposit(firstDeposit, depositor1.address)
+
+        await stbtc
+          .connect(depositor1)
+          .deposit(secondDeposit, depositor1.address)
+      })
+
+      it("should be able to redeem tokens from the first and second deposit", async () => {
+        const shares = await stbtc.balanceOf(depositor1.address)
+        const redeemTx = await stbtc.redeem(
+          shares,
+          depositor1.address,
+          depositor1.address,
+        )
+
+        const shares1 =
+          firstDeposit - feeOnTotal(firstDeposit, entryFeeBasisPoints)
+        const shares2 =
+          secondDeposit - feeOnTotal(secondDeposit, entryFeeBasisPoints)
+        const expectedAssetsToReceive =
+          shares1 + shares2 - feeOnTotal(shares1 + shares2, exitFeeBasisPoints)
+
+        await expect(redeemTx).to.emit(stbtc, "Withdraw").withArgs(
+          // Caller.
+          depositor1.address,
+          // Receiver
+          depositor1.address,
+          // Owner
+          depositor1.address,
+          // Redeemed tokens.
+          expectedAssetsToReceive,
+          // Burned shares.
+          shares,
+        )
       })
     })
   })
@@ -556,13 +784,16 @@ describe("stBTC", () => {
       const sharesToMint = to1e18(1)
       let tx: ContractTransactionResponse
       let amountToDeposit: bigint
+      let amountToSpend: bigint
 
       before(async () => {
         amountToDeposit = sharesToMint
+        amountToSpend =
+          amountToDeposit + feeOnRaw(amountToDeposit, entryFeeBasisPoints)
 
         await tbtc
           .connect(depositor1)
-          .approve(await stbtc.getAddress(), amountToDeposit)
+          .approve(await stbtc.getAddress(), amountToSpend)
 
         tx = await stbtc
           .connect(depositor1)
@@ -575,8 +806,8 @@ describe("stBTC", () => {
           depositor1.address,
           // Receiver.
           receiver.address,
-          // Depositd tokens.
-          amountToDeposit,
+          // Deposited tokens including deposit fees.
+          amountToSpend,
           // Received shares.
           sharesToMint,
         )
@@ -594,34 +825,18 @@ describe("stBTC", () => {
         await expect(tx).to.changeTokenBalances(
           tbtc,
           [depositor1.address, stbtc],
-          [-amountToDeposit, amountToDeposit],
+          [-amountToSpend, amountToDeposit],
+        )
+      })
+
+      it("should transfer tBTC tokens to Treasury", async () => {
+        await expect(tx).to.changeTokenBalances(
+          tbtc,
+          [treasury.address],
+          [feeOnRaw(amountToDeposit, entryFeeBasisPoints)],
         )
       })
     })
-
-    context(
-      "when depositor wants to mint more shares than max mint limit",
-      () => {
-        beforeAfterSnapshotWrapper()
-
-        let sharesToMint: bigint
-        let maxMint: bigint
-
-        before(async () => {
-          maxMint = await stbtc.maxMint(depositor1.address)
-
-          sharesToMint = maxMint + 1n
-        })
-
-        it("should take into account the max total assets parameter and revert", async () => {
-          await expect(
-            stbtc.connect(depositor1).mint(sharesToMint, receiver.address),
-          )
-            .to.be.revertedWithCustomError(stbtc, "ERC4626ExceededMaxMint")
-            .withArgs(receiver.address, sharesToMint, maxMint)
-        })
-      },
-    )
 
     context(
       "when depositor wants to mint less shares than the min deposit amount",
@@ -656,11 +871,146 @@ describe("stBTC", () => {
     )
   })
 
-  describe("updateDepositParameters", () => {
+  describe("withdraw", () => {
+    beforeAfterSnapshotWrapper()
+
+    context("when withdrawing from a single deposit", () => {
+      beforeAfterSnapshotWrapper()
+
+      const amountToDeposit = to1e18(1)
+      let tx: ContractTransactionResponse
+      let availableToWithdraw: bigint
+      let shares: bigint
+
+      before(async () => {
+        await tbtc
+          .connect(depositor1)
+          .approve(await stbtc.getAddress(), amountToDeposit)
+        shares = 999500249875062468n
+        availableToWithdraw = 998501748126935532n
+        await stbtc
+          .connect(depositor1)
+          .deposit(amountToDeposit, depositor1.address)
+        tx = await stbtc
+          .connect(depositor1)
+          .withdraw(availableToWithdraw, thirdParty, depositor1)
+      })
+
+      it("should emit Withdraw event", async () => {
+        await expect(tx).to.emit(stbtc, "Withdraw").withArgs(
+          // Caller.
+          depositor1.address,
+          // Receiver
+          thirdParty.address,
+          // Owner
+          depositor1.address,
+          // Available assets to withdraw.
+          availableToWithdraw,
+          // Burned shares.
+          shares,
+        )
+      })
+
+      it("should burn stBTC tokens", async () => {
+        await expect(tx).to.changeTokenBalances(
+          stbtc,
+          [depositor1.address],
+          [-shares],
+        )
+      })
+
+      it("should transfer tBTC tokens to a Receiver", async () => {
+        await expect(tx).to.changeTokenBalances(
+          tbtc,
+          [thirdParty.address],
+          [availableToWithdraw],
+        )
+      })
+
+      it("should transfer tBTC tokens to Treasury", async () => {
+        await expect(tx).to.changeTokenBalances(
+          tbtc,
+          [treasury.address],
+          [feeOnRaw(availableToWithdraw, exitFeeBasisPoints)],
+        )
+      })
+    })
+
+    context("when withdrawing all shares from two deposits", () => {
+      const firstDeposit = to1e18(1)
+      const secondDeposit = to1e18(2)
+      let withdrawTx: ContractTransactionResponse
+      let availableToWithdraw: bigint
+      let shares: bigint
+
+      before(async () => {
+        await tbtc.mint(depositor1.address, firstDeposit + secondDeposit)
+        await tbtc
+          .connect(depositor1)
+          .approve(await stbtc.getAddress(), firstDeposit + secondDeposit)
+        await stbtc
+          .connect(depositor1)
+          .deposit(firstDeposit, depositor1.address)
+
+        await stbtc
+          .connect(depositor1)
+          .deposit(secondDeposit, depositor1.address)
+
+        shares = 2998500749625187405n
+        availableToWithdraw = 2995505244380806598n
+        withdrawTx = await stbtc.withdraw(
+          availableToWithdraw,
+          depositor1.address,
+          depositor1.address,
+        )
+      })
+
+      it("should emit Withdraw event", async () => {
+        await expect(withdrawTx).to.emit(stbtc, "Withdraw").withArgs(
+          // Caller.
+          depositor1.address,
+          // Receiver
+          depositor1.address,
+          // Owner
+          depositor1.address,
+          // Available assets to withdraw including fees. Actual assets sent to
+          // a user will be less because of the exit fee.
+          availableToWithdraw,
+          // Burned shares.
+          shares,
+        )
+      })
+
+      it("should burn stBTC tokens", async () => {
+        await expect(withdrawTx).to.changeTokenBalances(
+          stbtc,
+          [depositor1.address],
+          [-shares],
+        )
+      })
+
+      it("should transfer tBTC tokens to a Staker", async () => {
+        await expect(withdrawTx).to.changeTokenBalances(
+          tbtc,
+          [depositor1.address],
+          [availableToWithdraw],
+        )
+      })
+
+      it("should transfer tBTC tokens to Treasury", async () => {
+        await expect(withdrawTx).to.changeTokenBalances(
+          tbtc,
+          [treasury.address],
+          [feeOnRaw(availableToWithdraw, exitFeeBasisPoints)],
+        )
+      })
+    })
+  })
+
+  describe("updateMinimumDepositAmount", () => {
     beforeAfterSnapshotWrapper()
 
     const validMinimumDepositAmount = to1e18(1)
-    const validMaximumTotalAssetsAmount = to1e18(30)
 
     context("when is called by governance", () => {
       context("when all parameters are valid", () => {
@@ -671,24 +1021,19 @@ describe("stBTC", () => {
         before(async () => {
           tx = await stbtc
             .connect(governance)
-            .updateDepositParameters(
-              validMinimumDepositAmount,
-              validMaximumTotalAssetsAmount,
-            )
+            .updateMinimumDepositAmount(validMinimumDepositAmount)
         })
 
-        it("should emit DepositParametersUpdated event", async () => {
+        it("should emit MinimumDepositAmountUpdated event", async () => {
           await expect(tx)
-            .to.emit(stbtc, "DepositParametersUpdated")
-            .withArgs(validMinimumDepositAmount, validMaximumTotalAssetsAmount)
+            .to.emit(stbtc, "MinimumDepositAmountUpdated")
+            .withArgs(validMinimumDepositAmount)
         })
 
         it("should update parameters correctly", async () => {
-          const [minimumDepositAmount, maximumTotalAssets] =
-            await stbtc.depositParameters()
+          const minimumDepositAmount = await stbtc.minimumDepositAmount()
 
           expect(minimumDepositAmount).to.be.eq(validMinimumDepositAmount)
-          expect(maximumTotalAssets).to.be.eq(validMaximumTotalAssetsAmount)
         })
       })
 
@@ -700,35 +1045,13 @@ describe("stBTC", () => {
         before(async () => {
           await stbtc
             .connect(governance)
-            .updateDepositParameters(
-              newMinimumDepositAmount,
-              validMaximumTotalAssetsAmount,
-            )
+            .updateMinimumDepositAmount(newMinimumDepositAmount)
         })
 
         it("should update the minimum deposit amount correctly", async () => {
           const minimumDepositAmount = await stbtc.minimumDepositAmount()
 
           expect(minimumDepositAmount).to.be.eq(newMinimumDepositAmount)
-        })
-      })
-
-      context("when the maximum total assets amount is 0", () => {
-        beforeAfterSnapshotWrapper()
-
-        const newMaximumTotalAssets = 0
-
-        before(async () => {
-          await stbtc
-            .connect(governance)
-            .updateDepositParameters(
-              validMinimumDepositAmount,
-              newMaximumTotalAssets,
-            )
-        })
-
-        it("should update parameter correctly", async () => {
-          expect(await stbtc.maximumTotalAssets()).to.be.eq(0)
         })
       })
     })
@@ -738,104 +1061,10 @@ describe("stBTC", () => {
         await expect(
           stbtc
             .connect(depositor1)
-            .updateDepositParameters(
-              validMinimumDepositAmount,
-              validMaximumTotalAssetsAmount,
-            ),
+            .updateMinimumDepositAmount(validMinimumDepositAmount),
         )
           .to.be.revertedWithCustomError(stbtc, "OwnableUnauthorizedAccount")
           .withArgs(depositor1.address)
-      })
-    })
-  })
-
-  describe("maxDeposit", () => {
-    beforeAfterSnapshotWrapper()
-
-    let maximumTotalAssets: bigint
-    let minimumDepositAmount: bigint
-
-    beforeEach(async () => {
-      ;[minimumDepositAmount, maximumTotalAssets] =
-        await stbtc.depositParameters()
-    })
-
-    context("when the vault is empty", () => {
-      it("should return maximum total assets amount", async () => {
-        expect(await stbtc.maxDeposit(depositor1.address)).to.be.eq(
-          maximumTotalAssets,
-        )
-      })
-    })
-
-    context(
-      "when total assets is greater than maximum total assets amount",
-      () => {
-        beforeAfterSnapshotWrapper()
-
-        it("should return 0", async () => {
-          await tbtc.mint(
-            await stbtc.getAddress(),
-            BigInt(maximumTotalAssets) + 1n,
-          )
-          expect(await stbtc.maxDeposit(depositor1.address)).to.be.eq(0)
-        })
-      },
-    )
-
-    context("when the maximum total amount has not yet been reached", () => {
-      beforeAfterSnapshotWrapper()
-
-      let expectedValue: bigint
-
-      beforeEach(async () => {
-        const toMint = to1e18(2)
-        await tbtc.connect(depositor1).approve(await stbtc.getAddress(), toMint)
-        await stbtc.connect(depositor1).deposit(toMint, depositor1.address)
-
-        expectedValue = maximumTotalAssets - toMint
-      })
-
-      it("should return correct value", async () => {
-        expect(await stbtc.maxDeposit(depositor1.address)).to.be.eq(
-          expectedValue,
-        )
-      })
-    })
-
-    context("when the deposit limit is disabled", () => {
-      beforeAfterSnapshotWrapper()
-
-      const maximum = MaxUint256
-
-      before(async () => {
-        await stbtc
-          .connect(governance)
-          .updateDepositParameters(minimumDepositAmount, maximum)
-      })
-
-      context("when the vault is empty", () => {
-        it("should return the maximum value", async () => {
-          expect(await stbtc.maxDeposit(depositor1.address)).to.be.eq(maximum)
-        })
-      })
-
-      context("when the vault is not empty", () => {
-        const amountToDeposit = to1e18(1)
-
-        before(async () => {
-          await tbtc
-            .connect(depositor1)
-            .approve(await stbtc.getAddress(), amountToDeposit)
-
-          await stbtc
-            .connect(depositor1)
-            .deposit(amountToDeposit, depositor1.address)
-        })
-
-        it("should return the maximum value", async () => {
-          expect(await stbtc.maxDeposit(depositor1.address)).to.be.eq(maximum)
-        })
       })
     })
   })
@@ -956,113 +1185,369 @@ describe("stBTC", () => {
     })
   })
 
-  describe("maxMint", () => {
-    beforeAfterSnapshotWrapper()
+  describe("pausable", () => {
+    describe("pause", () => {
+      context("when the authorized account wants to pause contract", () => {
+        context("when caller is the owner", () => {
+          let tx: ContractTransactionResponse
 
-    let maximumTotalAssets: bigint
-    let minimumDepositAmount: bigint
+          beforeAfterSnapshotWrapper()
 
-    before(async () => {
-      ;[minimumDepositAmount, maximumTotalAssets] =
-        await stbtc.depositParameters()
-    })
+          before(async () => {
+            tx = await stbtc.connect(governance).pause()
+          })
 
-    context("when the vault is empty", () => {
-      it("should return maximum total assets amount in shares", async () => {
-        // When the vault is empty the max shares amount is equal to the maximum
-        // total assets amount.
-        expect(await stbtc.maxMint(depositor1.address)).to.be.eq(
-          maximumTotalAssets,
-        )
-      })
-    })
+          it("should change the pause state", async () => {
+            expect(await stbtc.paused()).to.be.true
+          })
 
-    context(
-      "when total assets is greater than maximum total assets amount",
-      () => {
-        beforeAfterSnapshotWrapper()
-
-        it("should return 0", async () => {
-          const toMint = maximumTotalAssets + 1n
-
-          await tbtc.mint(await stbtc.getAddress(), toMint)
-
-          expect(await stbtc.maxMint(depositor1.address)).to.be.eq(0)
+          it("should emit `Paused` event", async () => {
+            await expect(tx)
+              .to.emit(stbtc, "Paused")
+              .withArgs(governance.address)
+          })
         })
-      },
-    )
 
-    context("when the maximum total amount has not yet been reached", () => {
-      beforeAfterSnapshotWrapper()
+        context("when caller is the pause admin", () => {
+          let tx: ContractTransactionResponse
 
-      let expectedValue: bigint
+          beforeAfterSnapshotWrapper()
 
-      before(async () => {
-        const toMint = to1e18(4)
-        const amountToDeposit = to1e18(2)
+          before(async () => {
+            tx = await stbtc.connect(pauseAdmin).pause()
+          })
 
-        // depositor deposits 2 tBTC.
-        await tbtc
-          .connect(depositor1)
-          .approve(await stbtc.getAddress(), amountToDeposit)
-        await stbtc
-          .connect(depositor1)
-          .deposit(amountToDeposit, depositor1.address)
+          it("should change the pause state", async () => {
+            expect(await stbtc.paused()).to.be.true
+          })
 
-        // Vault earns 4 tBTC.
-        await tbtc.mint(await stbtc.getAddress(), toMint)
-
-        // The current state is:
-        // Total assets: 4 + 2 = 6
-        // Total supply: 2
-        // Maximum total assets: 25
-        // Current max deposit: 25 - 6 = 19
-        // Max stBTC shares: (mulDiv added 1 to totalSupply and totalAssets to help with floor rounding)
-        //  19 * 6 / 2 = 22
-        expectedValue = 6333333333333333335n
-      })
-
-      it("should return correct value", async () => {
-        expect(await stbtc.maxMint(depositor1.address)).to.be.eq(expectedValue)
-      })
-    })
-
-    context("when the deposit limit is disabled", () => {
-      beforeAfterSnapshotWrapper()
-
-      const maximum = MaxUint256
-
-      before(async () => {
-        await stbtc
-          .connect(governance)
-          .updateDepositParameters(minimumDepositAmount, maximum)
-      })
-
-      context("when the vault is empty", () => {
-        it("should return the maximum value", async () => {
-          expect(await stbtc.maxMint(depositor1.address)).to.be.eq(maximum)
+          it("should emit `Paused` event", async () => {
+            await expect(tx)
+              .to.emit(stbtc, "Paused")
+              .withArgs(pauseAdmin.address)
+          })
         })
       })
 
-      context("when the vault is not empty", () => {
+      context("when the unauthorized account tries to pause contract", () => {
         beforeAfterSnapshotWrapper()
 
-        const amountToDeposit = to1e18(1)
+        it("should revert", async () => {
+          await expect(stbtc.connect(thirdParty).pause())
+            .to.be.revertedWithCustomError(stbtc, "PausableUnauthorizedAccount")
+            .withArgs(thirdParty.address)
+        })
+      })
+
+      context("when contract is already paused", () => {
+        beforeAfterSnapshotWrapper()
 
         before(async () => {
-          await tbtc
-            .connect(depositor1)
-            .approve(await stbtc.getAddress(), amountToDeposit)
-
-          await stbtc
-            .connect(depositor1)
-            .deposit(amountToDeposit, depositor1.address)
+          await stbtc.connect(pauseAdmin).pause()
         })
 
-        it("should return the maximum value", async () => {
-          expect(await stbtc.maxMint(depositor1.address)).to.be.eq(maximum)
+        it("should revert", async () => {
+          await expect(
+            stbtc.connect(pauseAdmin).pause(),
+          ).to.be.revertedWithCustomError(stbtc, "EnforcedPause")
         })
+      })
+    })
+
+    describe("unpause", () => {
+      context("when the authorized account wants to unpause contract", () => {
+        context("when caller is the owner", () => {
+          let tx: ContractTransactionResponse
+
+          beforeAfterSnapshotWrapper()
+
+          before(async () => {
+            await stbtc.connect(governance).pause()
+
+            tx = await stbtc.connect(governance).unpause()
+          })
+
+          it("should change the pause state", async () => {
+            expect(await stbtc.paused()).to.be.false
+          })
+
+          it("should emit `Unpaused` event", async () => {
+            await expect(tx)
+              .to.emit(stbtc, "Unpaused")
+              .withArgs(governance.address)
+          })
+        })
+
+        context("when caller is the pause admin", () => {
+          let tx: ContractTransactionResponse
+
+          beforeAfterSnapshotWrapper()
+
+          before(async () => {
+            await stbtc.connect(pauseAdmin).pause()
+
+            tx = await stbtc.connect(pauseAdmin).unpause()
+          })
+
+          it("should change the pause state", async () => {
+            expect(await stbtc.paused()).to.be.false
+          })
+
+          it("should emit `Unpaused` event", async () => {
+            await expect(tx)
+              .to.emit(stbtc, "Unpaused")
+              .withArgs(pauseAdmin.address)
+          })
+        })
+      })
+
+      context("when the unauthorized account tries to unpause contract", () => {
+        beforeAfterSnapshotWrapper()
+
+        it("should revert", async () => {
+          await expect(stbtc.connect(thirdParty).unpause())
+            .to.be.revertedWithCustomError(stbtc, "PausableUnauthorizedAccount")
+            .withArgs(thirdParty.address)
+        })
+      })
+
+      context("when contract is already unpaused", () => {
+        beforeAfterSnapshotWrapper()
+
+        it("should revert", async () => {
+          await expect(
+            stbtc.connect(pauseAdmin).unpause(),
+          ).to.be.revertedWithCustomError(stbtc, "ExpectedPause")
+        })
+      })
+    })
+
+    describe("contract functions", () => {
+      const amount = to1e18(100)
+      beforeAfterSnapshotWrapper()
+
+      before(async () => {
+        await stbtc.connect(pauseAdmin).pause()
+      })
+
+      it("should pause deposits", async () => {
+        await expect(
+          stbtc.connect(depositor1).deposit(amount, depositor1),
+        ).to.be.revertedWithCustomError(stbtc, "EnforcedPause")
+      })
+
+      it("should pause minting", async () => {
+        await expect(
+          stbtc.connect(depositor1).mint(amount, depositor1),
+        ).to.be.revertedWithCustomError(stbtc, "EnforcedPause")
+      })
+
+      it("should pause withdrawals", async () => {
+        await expect(
+          stbtc.connect(depositor1).withdraw(amount, depositor1, depositor1),
+        ).to.be.revertedWithCustomError(stbtc, "EnforcedPause")
+      })
+
+      it("should pause redemptions", async () => {
+        await expect(
+          stbtc.connect(depositor1).redeem(amount, depositor1, depositor1),
+        ).to.be.revertedWithCustomError(stbtc, "EnforcedPause")
       })
     })
   })
+
+  describe("updateEntryFeeBasisPoints", () => {
+    beforeAfterSnapshotWrapper()
+
+    const validEntryFeeBasisPoints = 100n // 1%
+
+    context("when is called by governance", () => {
+      context("when entry fee basis points are valid", () => {
+        beforeAfterSnapshotWrapper()
+
+        let tx: ContractTransactionResponse
+
+        before(async () => {
+          tx = await stbtc
+            .connect(governance)
+            .updateEntryFeeBasisPoints(validEntryFeeBasisPoints)
+        })
+
+        it("should emit EntryFeeBasisPointsUpdated event", async () => {
+          await expect(tx)
+            .to.emit(stbtc, "EntryFeeBasisPointsUpdated")
+            .withArgs(validEntryFeeBasisPoints)
+        })
+
+        it("should update entry fee basis points correctly", async () => {
+          expect(await stbtc.entryFeeBasisPoints()).to.be.eq(
+            validEntryFeeBasisPoints,
+          )
+        })
+      })
+
+      context("when entry fee basis points are 0", () => {
+        beforeAfterSnapshotWrapper()
+
+        const newEntryFeeBasisPoints = 0
+
+        before(async () => {
+          await stbtc
+            .connect(governance)
+            .updateEntryFeeBasisPoints(newEntryFeeBasisPoints)
+        })
+
+        it("should update entry fee basis points correctly", async () => {
+          expect(await stbtc.entryFeeBasisPoints()).to.be.eq(
+            newEntryFeeBasisPoints,
+          )
+        })
+      })
+    })
+
+    context("when is called by non-governance", () => {
+      it("should revert", async () => {
+        await expect(
+          stbtc.connect(depositor1).updateEntryFeeBasisPoints(100n),
+        ).to.be.revertedWithCustomError(stbtc, "OwnableUnauthorizedAccount")
+      })
+    })
+  })
+
+  describe("updateExitFeeBasisPoints", () => {
+    beforeAfterSnapshotWrapper()
+
+    const validExitFeeBasisPoints = 100n // 1%
+
+    context("when is called by governance", () => {
+      context("when exit fee basis points are valid", () => {
+        beforeAfterSnapshotWrapper()
+
+        let tx: ContractTransactionResponse
+
+        before(async () => {
+          tx = await stbtc
+            .connect(governance)
+            .updateExitFeeBasisPoints(validExitFeeBasisPoints)
+        })
+
+        it("should emit ExitFeeBasisPointsUpdated event", async () => {
+          await expect(tx)
+            .to.emit(stbtc, "ExitFeeBasisPointsUpdated")
+            .withArgs(validExitFeeBasisPoints)
+        })
+
+        it("should update exit fee basis points correctly", async () => {
+          expect(await stbtc.exitFeeBasisPoints()).to.be.eq(
+            validExitFeeBasisPoints,
+          )
+        })
+      })
+
+      context("when exit fee basis points are 0", () => {
+        beforeAfterSnapshotWrapper()
+
+        const newExitFeeBasisPoints = 0
+
+        before(async () => {
+          await stbtc
+            .connect(governance)
+            .updateExitFeeBasisPoints(newExitFeeBasisPoints)
+        })
+
+        it("should update exit fee basis points correctly", async () => {
+          expect(await stbtc.exitFeeBasisPoints()).to.be.eq(
+            newExitFeeBasisPoints,
+          )
+        })
+      })
+    })
+
+    context("when is called by non-governance", () => {
+      it("should revert", async () => {
+        await expect(
+          stbtc.connect(depositor1).updateExitFeeBasisPoints(100n),
+        ).to.be.revertedWithCustomError(stbtc, "OwnableUnauthorizedAccount")
+      })
+    })
+  })
+
+  describe("feeOnTotal - internal test helper", () => {
+    context("when the fee's modulo remainder is greater than 0", () => {
+      it("should add 1 to the result", () => {
+        // feeOnTotal - test's internal function simulating the OZ mulDiv
+        // function.
+        const fee = feeOnTotal(to1e18(1), entryFeeBasisPoints)
+        // fee = (1e18 * 5) / (10000 + 5) = 499750124937531 + 1
+        const expectedFee = 499750124937532
+        expect(fee).to.be.eq(expectedFee)
+      })
+    })
+
+    context("when the fee's modulo remainder is equal to 0", () => {
+      it("should return the actual result", () => {
+        // feeOnTotal - test's internal function simulating the OZ mulDiv
+        // function.
+        const fee = feeOnTotal(2001n, entryFeeBasisPoints)
+        // fee = (2001 * 5) / (10000 + 5) = 1
+        const expectedFee = 1n
+        expect(fee).to.be.eq(expectedFee)
+      })
+    })
+  })
+
+  describe("feeOnRaw - internal test helper", () => {
+    context("when the fee's modulo remainder is greater than 0", () => {
+      it("should return the correct amount of fees", () => {
+        // feeOnRaw - this is a test internal function
+        const fee = feeOnRaw(to1e18(1), entryFeeBasisPoints)
+        // fee = (1e18 * 5) / (10000) = 500000000000000
+        const expectedFee = 500000000000000
+        expect(fee).to.be.eq(expectedFee)
+      })
+    })
+
+    context("when the fee's modulo remainder is equal to 0", () => {
+      it("should return the actual result", () => {
+        // feeOnTotal - test's internal function simulating the OZ mulDiv
+        // function.
+        const fee = feeOnTotal(2000n, entryFeeBasisPoints)
+        // fee = (2000 * 5) / 10000 = 1
+        const expectedFee = 1n
+        expect(fee).to.be.eq(expectedFee)
+      })
+    })
+  })
+
+  // Calculates the fee when it's included in the amount.
+  // One is added to the result if there is a remainder to match the Solidity
+  // mulDiv() math which rounds up towards infinity (Ceil) when fees are
+  // calculated.
+  function feeOnTotal(amount: bigint, feeBasisPoints: bigint) {
+    const result =
+      (amount * feeBasisPoints) / (feeBasisPoints + basisPointScale)
+    if ((amount * feeBasisPoints) % (feeBasisPoints + basisPointScale) > 0) {
+      return result + 1n
+    }
+    return result
+  }
+
+  // Calculates the fee when it's not included in the amount.
+  // One is added to the result if there is a remainder to match the Solidity
+  // mulDiv() math which rounds up towards infinity (Ceil) when fees are
+  // calculated.
+  function feeOnRaw(amount: bigint, feeBasisPoints: bigint) {
+    const result = (amount * feeBasisPoints) / basisPointScale
+    if ((amount * feeBasisPoints) % basisPointScale > 0) {
+      return result + 1n
+    }
+    return result
+  }
+
+  // 10 is added or subtracted to/from the expected value to match the Solidity
+  // math which rounds up or down depending on the modulo remainder. It is a very
+  // small number.
+  function expectCloseTo(actual: bigint, expected: bigint) {
+    return expect(actual, "invalid asset balance").to.be.closeTo(expected, 10n)
+  }
 })
