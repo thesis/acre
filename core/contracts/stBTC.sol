@@ -6,7 +6,6 @@ import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 
 import "@thesis-co/solidity-contracts/contracts/token/IReceiveApproval.sol";
 
-import "./BitcoinRedeemer.sol";
 import "./Dispatcher.sol";
 import "./lib/ERC4626Fees.sol";
 
@@ -27,9 +26,6 @@ contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
 
     /// Dispatcher contract that routes tBTC from stBTC to a given vault and back.
     Dispatcher public dispatcher;
-
-    /// BitcoinRedeemer contract.
-    BitcoinRedeemer public bitcoinRedeemer;
 
     /// Address of the treasury wallet, where fees should be transferred to.
     address public treasury;
@@ -55,14 +51,6 @@ contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
     /// Emitted when deposit parameters are updated.
     /// @param minimumDepositAmount New value of the minimum deposit amount.
     event MinimumDepositAmountUpdated(uint256 minimumDepositAmount);
-
-    /// Emitted when the BitcoinRedeemer contract is updated.
-    /// @param oldBitcoinRedeemer Address of the old BitcoinRedeemer contract.
-    /// @param newBitcoinRedeemer Address of the new BitcoinRedeemer contract.
-    event BitcoinRedeemerUpdated(
-        address oldBitcoinRedeemer,
-        address newBitcoinRedeemer
-    );
 
     /// Emitted when the dispatcher contract is updated.
     /// @param oldDispatcher Address of the old dispatcher contract.
@@ -136,23 +124,6 @@ contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
         minimumDepositAmount = newMinimumDepositAmount;
 
         emit MinimumDepositAmountUpdated(newMinimumDepositAmount);
-    }
-
-    /// @notice Updates the BitcoinRedeemer contract.
-    /// @param newBitcoinRedeemer Address of the new BitcoinRedeemer contract.
-    function updateBitcoinRedeemer(
-        address newBitcoinRedeemer
-    ) external onlyOwner {
-        if (newBitcoinRedeemer == address(0)) {
-            revert ZeroAddress();
-        }
-
-        emit BitcoinRedeemerUpdated(
-            address(bitcoinRedeemer),
-            newBitcoinRedeemer
-        );
-
-        bitcoinRedeemer = BitcoinRedeemer(newBitcoinRedeemer);
     }
 
     // TODO: Implement a governed upgrade process that initiates an update and
