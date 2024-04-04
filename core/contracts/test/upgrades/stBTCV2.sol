@@ -1,21 +1,26 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity ^0.8.21;
 
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC4626Upgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 
+import "@thesis-co/solidity-contracts/contracts/token/IReceiveApproval.sol";
+
+import "../../BitcoinRedeemer.sol";
 import "../../Dispatcher.sol";
+import "../../lib/ERC4626Fees.sol";
 
 /// @title stBTCV2
 /// @dev  This is a contract used to test stBTC upgradeability. It is a copy of
 ///       stBTC contract with some differences marked with `TEST:` comments.
-contract stBTCV2 is ERC4626Upgradeable, Ownable2StepUpgradeable {
+contract stBTCV2 is ERC4626Fees, Ownable2StepUpgradeable {
     using SafeERC20 for IERC20;
 
     /// Dispatcher contract that routes tBTC from stBTC to a given vault and back.
     Dispatcher public dispatcher;
+
+    /// BitcoinRedeemer contract.
+    BitcoinRedeemer public bitcoinRedeemer;
 
     /// Address of the treasury wallet, where fees should be transferred to.
     address public treasury;
@@ -40,8 +45,9 @@ contract stBTCV2 is ERC4626Upgradeable, Ownable2StepUpgradeable {
     uint256 public newVariable;
 
     /// Emitted when the treasury wallet address is updated.
-    /// @param treasury New treasury wallet address.
-    event TreasuryUpdated(address treasury);
+    /// @param oldTreasury Address of the old treasury wallet.
+    /// @param newTreasury Address of the new treasury wallet.
+    event TreasuryUpdated(address oldTreasury, address newTreasury);
 
     /// Emitted when deposit parameters are updated.
     /// @param minimumDepositAmount New value of the minimum deposit amount.
@@ -51,10 +57,26 @@ contract stBTCV2 is ERC4626Upgradeable, Ownable2StepUpgradeable {
         uint256 maximumTotalAssets
     );
 
+    /// Emitted when the BitcoinRedeemer contract is updated.
+    /// @param oldBitcoinRedeemer Address of the old BitcoinRedeemer contract.
+    /// @param newBitcoinRedeemer Address of the new BitcoinRedeemer contract.
+    event BitcoinRedeemerUpdated(
+        address oldBitcoinRedeemer,
+        address newBitcoinRedeemer
+    );
+
     /// Emitted when the dispatcher contract is updated.
     /// @param oldDispatcher Address of the old dispatcher contract.
     /// @param newDispatcher Address of the new dispatcher contract.
     event DispatcherUpdated(address oldDispatcher, address newDispatcher);
+
+    /// Emitted when the entry fee basis points are updated.
+    /// @param entryFeeBasisPoints New value of the fee basis points.
+    event EntryFeeBasisPointsUpdated(uint256 entryFeeBasisPoints);
+
+    /// Emitted when the exit fee basis points are updated.
+    /// @param exitFeeBasisPoints New value of the fee basis points.
+    event ExitFeeBasisPointsUpdated(uint256 exitFeeBasisPoints);
 
     // TEST: New event.
     event NewEvent();
@@ -95,9 +117,10 @@ contract stBTCV2 is ERC4626Upgradeable, Ownable2StepUpgradeable {
         if (newTreasury == address(this)) {
             revert DisallowedAddress();
         }
-        treasury = newTreasury;
 
-        emit TreasuryUpdated(newTreasury);
+        emit TreasuryUpdated(treasury, newTreasury);
+
+        treasury = newTreasury;
     }
 
     /// @notice Updates deposit parameters.
@@ -120,6 +143,23 @@ contract stBTCV2 is ERC4626Upgradeable, Ownable2StepUpgradeable {
             _minimumDepositAmount,
             _maximumTotalAssets
         );
+    }
+
+    /// @notice Updates the BitcoinRedeemer contract.
+    /// @param newBitcoinRedeemer Address of the new BitcoinRedeemer contract.
+    function updateBitcoinRedeemer(
+        address newBitcoinRedeemer
+    ) external onlyOwner {
+        if (newBitcoinRedeemer == address(0)) {
+            revert ZeroAddress();
+        }
+
+        emit BitcoinRedeemerUpdated(
+            address(bitcoinRedeemer),
+            newBitcoinRedeemer
+        );
+
+        bitcoinRedeemer = BitcoinRedeemer(newBitcoinRedeemer);
     }
 
     // TODO: Implement a governed upgrade process that initiates an update and
@@ -150,6 +190,56 @@ contract stBTCV2 is ERC4626Upgradeable, Ownable2StepUpgradeable {
         IERC20(asset()).forceApprove(address(dispatcher), type(uint256).max);
     }
 
+    // TODO: Implement a governed upgrade process that initiates an update and
+    //       then finalizes it after a delay.
+    /// @notice Update the entry fee basis points.
+    /// @param newEntryFeeBasisPoints New value of the fee basis points.
+    function updateEntryFeeBasisPoints(
+        uint256 newEntryFeeBasisPoints
+    ) external onlyOwner {
+        entryFeeBasisPoints = newEntryFeeBasisPoints;
+
+        emit EntryFeeBasisPointsUpdated(newEntryFeeBasisPoints);
+    }
+
+    // TODO: Implement a governed upgrade process that initiates an update and
+    //       then finalizes it after a delay.
+    /// @notice Update the exit fee basis points.
+    /// @param newExitFeeBasisPoints New value of the fee basis points.
+    function updateExitFeeBasisPoints(
+        uint256 newExitFeeBasisPoints
+    ) external onlyOwner {
+        exitFeeBasisPoints = newExitFeeBasisPoints;
+
+        emit ExitFeeBasisPointsUpdated(newExitFeeBasisPoints);
+    }
+
+    /// @notice Calls `receiveApproval` function on spender previously approving
+    ///         the spender to withdraw from the caller multiple times, up to
+    ///         the `amount` amount. If this function is called again, it
+    ///         overwrites the current allowance with `amount`. Reverts if the
+    ///         approval reverted or if `receiveApproval` call on the spender
+    ///         reverted.
+    /// @return True if both approval and `receiveApproval` calls succeeded.
+    /// @dev If the `amount` is set to `type(uint256).max` then
+    ///      `transferFrom` and `burnFrom` will not reduce an allowance.
+    function approveAndCall(
+        address spender,
+        uint256 value,
+        bytes memory extraData
+    ) external returns (bool) {
+        if (approve(spender, value)) {
+            IReceiveApproval(spender).receiveApproval(
+                _msgSender(),
+                value,
+                address(this),
+                extraData
+            );
+            return true;
+        }
+        return false;
+    }
+
     // TEST: Modified function.
     function deposit(
         uint256 assets,
@@ -169,11 +259,15 @@ contract stBTCV2 is ERC4626Upgradeable, Ownable2StepUpgradeable {
     ///      which determines the minimum amount for a single deposit operation.
     ///      The amount of the assets has to be pre-approved in the tBTC
     ///      contract.
-    ///      The msg.sender is required to grant approval for tBTC transfer.
+    ///      The msg.sender is required to grant approval for the transfer of a
+    ///      certain amount of tBTC, and in addition, approval for the associated
+    ///      fee. Specifically, the total amount to be approved (amountToApprove)
+    ///      should be equal to the sum of the deposited amount and the fee.
     ///      To determine the total assets amount necessary for approval
     ///      corresponding to a given share amount, use the `previewMint` function.
     /// @param shares Amount of shares to mint.
     /// @param receiver The address to which the shares will be minted.
+    /// @return assets Used assets to mint shares.
     function mint(
         uint256 shares,
         address receiver
@@ -195,9 +289,10 @@ contract stBTCV2 is ERC4626Upgradeable, Ownable2StepUpgradeable {
     ///         deposited into the vault for the receiver through a deposit
     ///         call. It takes into account the deposit parameter, maximum total
     ///         assets, which determines the total amount of tBTC token held by
-    ///         Acre protocol.
-    /// @dev When the remaining amount of unused limit is less than the minimum
-    ///      deposit amount, this function returns 0.
+    ///         Acre. This function always returns available limit for deposits,
+    ///         but the fee is not taken into account. As a result of this, there
+    ///         always will be some dust left. If the dust is lower than the
+    ///         minimum deposit amount, this function will return 0.
     /// @return The maximum amount of tBTC token that can be deposited into
     ///         Acre protocol for the receiver.
     function maxDeposit(address) public view override returns (uint256) {
@@ -205,12 +300,14 @@ contract stBTCV2 is ERC4626Upgradeable, Ownable2StepUpgradeable {
             return type(uint256).max;
         }
 
-        uint256 _totalAssets = totalAssets();
+        uint256 currentTotalAssets = totalAssets();
+        if (currentTotalAssets >= maximumTotalAssets) return 0;
 
-        return
-            _totalAssets >= maximumTotalAssets
-                ? 0
-                : maximumTotalAssets - _totalAssets;
+        // Max amount left for next deposits. If it is lower than the minimum
+        // deposit amount, return 0.
+        uint256 unusedLimit = maximumTotalAssets - currentTotalAssets;
+
+        return minimumDepositAmount > unusedLimit ? 0 : unusedLimit;
     }
 
     /// @notice Returns the maximum amount of the vault shares that can be
@@ -231,5 +328,21 @@ contract stBTCV2 is ERC4626Upgradeable, Ownable2StepUpgradeable {
     /// @return Returns deposit parameters.
     function depositParameters() public view returns (uint256, uint256) {
         return (minimumDepositAmount, maximumTotalAssets);
+    }
+
+    /// @return Returns entry fee basis point used in deposits.
+    function _entryFeeBasisPoints() internal view override returns (uint256) {
+        return entryFeeBasisPoints;
+    }
+
+    /// @return Returns exit fee basis point used in withdrawals.
+    function _exitFeeBasisPoints() internal view override returns (uint256) {
+        return exitFeeBasisPoints;
+    }
+
+    /// @notice Returns the address of the treasury wallet, where fees should be
+    ///         transferred to.
+    function _feeRecipient() internal view override returns (address) {
+        return treasury;
     }
 }
