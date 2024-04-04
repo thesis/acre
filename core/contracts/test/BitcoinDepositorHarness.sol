@@ -18,10 +18,6 @@ contract BitcoinDepositorHarness is BitcoinDepositor {
     ) external returns (uint256 amountToStake, address staker) {
         return finalizeBridging(depositKey);
     }
-
-    function exposed_setQueuedStakesBalance(uint256 amount) external {
-        queuedStakesBalance = amount;
-    }
 }
 
 /// @dev A test contract to stub tBTC Bridge contract.
