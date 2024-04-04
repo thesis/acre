@@ -1004,7 +1004,7 @@ describe("stBTC", () => {
     })
   })
 
-  describe("updateDepositParameters", () => {
+  describe("updateMinimumDepositAmount", () => {
     beforeAfterSnapshotWrapper()
 
     const validMinimumDepositAmount = to1e18(1)
@@ -1018,17 +1018,17 @@ describe("stBTC", () => {
         before(async () => {
           tx = await stbtc
             .connect(governance)
-            .updateDepositParameters(validMinimumDepositAmount)
+            .updateMinimumDepositAmount(validMinimumDepositAmount)
         })
 
-        it("should emit DepositParametersUpdated event", async () => {
+        it("should emit MinimumDepositAmountUpdated event", async () => {
           await expect(tx)
-            .to.emit(stbtc, "DepositParametersUpdated")
+            .to.emit(stbtc, "MinimumDepositAmountUpdated")
             .withArgs(validMinimumDepositAmount)
         })
 
         it("should update parameters correctly", async () => {
-          const minimumDepositAmount = await stbtc.depositParameters()
+          const minimumDepositAmount = await stbtc.minimumDepositAmount()
 
           expect(minimumDepositAmount).to.be.eq(validMinimumDepositAmount)
         })
@@ -1042,7 +1042,7 @@ describe("stBTC", () => {
         before(async () => {
           await stbtc
             .connect(governance)
-            .updateDepositParameters(newMinimumDepositAmount)
+            .updateMinimumDepositAmount(newMinimumDepositAmount)
         })
 
         it("should update the minimum deposit amount correctly", async () => {
@@ -1058,7 +1058,7 @@ describe("stBTC", () => {
         await expect(
           stbtc
             .connect(depositor1)
-            .updateDepositParameters(validMinimumDepositAmount),
+            .updateMinimumDepositAmount(validMinimumDepositAmount),
         )
           .to.be.revertedWithCustomError(stbtc, "OwnableUnauthorizedAccount")
           .withArgs(depositor1.address)

@@ -46,7 +46,7 @@ contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
 
     /// Emitted when deposit parameters are updated.
     /// @param minimumDepositAmount New value of the minimum deposit amount.
-    event DepositParametersUpdated(uint256 minimumDepositAmount);
+    event MinimumDepositAmountUpdated(uint256 minimumDepositAmount);
 
     /// Emitted when the dispatcher contract is updated.
     /// @param oldDispatcher Address of the old dispatcher contract.
@@ -109,16 +109,16 @@ contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
         emit TreasuryUpdated(newTreasury);
     }
 
-    /// @notice Updates deposit parameters.
-    /// @param _minimumDepositAmount New value of the minimum deposit amount. It
+    /// @notice Updates minimum deposit amount.
+    /// @param newMinimumDepositAmount New value of the minimum deposit amount. It
     ///        is the minimum amount for a single deposit operation.
-    function updateDepositParameters(
-        uint256 _minimumDepositAmount
+    function updateMinimumDepositAmount(
+        uint256 newMinimumDepositAmount
     ) external onlyOwner {
         // TODO: Introduce a parameters update process.
-        minimumDepositAmount = _minimumDepositAmount;
+        minimumDepositAmount = newMinimumDepositAmount;
 
-        emit DepositParametersUpdated(_minimumDepositAmount);
+        emit MinimumDepositAmountUpdated(newMinimumDepositAmount);
     }
 
     // TODO: Implement a governed upgrade process that initiates an update and
@@ -223,11 +223,6 @@ contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
     /// @return Assets amount.
     function assetsBalanceOf(address account) public view returns (uint256) {
         return convertToAssets(balanceOf(account));
-    }
-
-    /// @return Returns deposit parameters.
-    function depositParameters() public view returns (uint256) {
-        return (minimumDepositAmount);
     }
 
     /// @return Returns entry fee basis point used in deposits.

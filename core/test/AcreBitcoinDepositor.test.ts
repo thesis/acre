@@ -64,7 +64,7 @@ describe("AcreBitcoinDepositor", () => {
     ;({ governance, treasury } = await getNamedSigners())
     ;[thirdParty] = await getUnnamedSigners()
 
-    await stbtc.connect(governance).updateDepositParameters(
+    await stbtc.connect(governance).updateMinimumDepositAmount(
       10000000000000, // 0.00001
     )
 
