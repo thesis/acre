@@ -620,7 +620,7 @@ describe("AcreBitcoinDepositor", () => {
               .updateMinStakeAmount(newValue)
           })
 
-          it("should emit MaxSingleStakeAmountUpdated event", async () => {
+          it("should emit MinStakeAmountUpdated event", async () => {
             await expect(tx)
               .to.emit(bitcoinDepositor, "MinStakeAmountUpdated")
               .withArgs(newValue)
