@@ -25,6 +25,8 @@ import { currencyIconTheme } from "./CurrencyIcon"
 import { statusInfoTheme } from "./StatusInfo"
 import { linkTheme } from "./Link"
 import { skeletonTheme } from "./Skeleton"
+import { popoverTheme } from "./Popover"
+import { closeButtonTheme } from "./CloseButton"
 
 const defaultTheme = {
   // TODO: Remove when dark mode is ready
@@ -49,6 +51,7 @@ const defaultTheme = {
     Alert: alertTheme,
     Button: buttonTheme,
     Card: cardTheme,
+    CloseButton: closeButtonTheme,
     CurrencyBalance: currencyBalanceTheme,
     Drawer: drawerTheme,
     Form: formTheme,
@@ -58,6 +61,7 @@ const defaultTheme = {
     Input: inputTheme,
     Link: linkTheme,
     Modal: modalTheme,
+    Popover: popoverTheme,
     Sidebar: sidebarTheme,
     Spinner: spinnerTheme,
     Stepper: stepperTheme,
