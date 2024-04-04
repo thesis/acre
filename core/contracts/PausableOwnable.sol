@@ -18,6 +18,14 @@ abstract contract PausableOwnable is
     /// @notice An authorized account that can trigger emergency stop mechanism.
     address public pauseAdmin;
 
+    // Reserved storage space that allows adding more variables without affecting
+    // the storage layout of the child contracts. The convention from OpenZeppelin
+    // suggests the storage space should add up to 50 slots. If more variables are
+    // added in the upcoming versions one need to reduce the array size accordingly.
+    // See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
+    // slither-disable-next-line unused-state
+    uint256[49] private __gap;
+
     /// @notice Emitted when a pause admin address is updated.
     /// @param newAccount New pause admin address.
     /// @param oldAccount Old pause admin address.
