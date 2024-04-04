@@ -32,4 +32,8 @@ contract TestTBTC is ITBTCToken, ERC20 {
     function owner() external pure returns (address) {
         return address(1);
     }
+
+    function setApproveAndCallResult(bool value) public {
+        approveAndCallResult = value;
+    }
 }

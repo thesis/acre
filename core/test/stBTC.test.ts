@@ -12,12 +12,17 @@ import { beforeAfterSnapshotWrapper, deployment } from "./helpers"
 
 import { to1e18 } from "./utils"
 
-import type { StBTC as stBTC, TestERC20, Dispatcher } from "../typechain"
+import type {
+  StBTC as stBTC,
+  TestERC20,
+  Dispatcher,
+  BitcoinRedeemer,
+} from "../typechain"
 
 const { getNamedSigners, getUnnamedSigners } = helpers.signers
 
 async function fixture() {
-  const { tbtc, stbtc, dispatcher } = await deployment()
+  const { tbtc, stbtc, dispatcher, bitcoinRedeemer } = await deployment()
   const { governance, treasury } = await getNamedSigners()
 
   const [depositor1, depositor2, thirdParty] = await getUnnamedSigners()
@@ -29,6 +34,7 @@ async function fixture() {
   return {
     stbtc,
     tbtc,
+    bitcoinRedeemer,
     depositor1,
     depositor2,
     dispatcher,
@@ -46,6 +52,7 @@ describe("stBTC", () => {
   let stbtc: stBTC
   let tbtc: TestERC20
   let dispatcher: Dispatcher
+  let bitcoinRedeemer: BitcoinRedeemer
 
   let governance: HardhatEthersSigner
   let depositor1: HardhatEthersSigner
@@ -57,6 +64,7 @@ describe("stBTC", () => {
     ;({
       stbtc,
       tbtc,
+      bitcoinRedeemer,
       depositor1,
       depositor2,
       dispatcher,
