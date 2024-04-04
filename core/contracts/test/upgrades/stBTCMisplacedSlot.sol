@@ -6,7 +6,10 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC4626Upgrad
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 
-import "../../Dispatcher.sol";
+// slither-disable-next-line missing-inheritance
+interface IDispatcher {
+    // tbd
+}
 
 /// @title stBTCMisplacedSlot
 /// @dev  This is a contract used to test stBTC upgradeability. It is a copy of
@@ -18,7 +21,7 @@ contract stBTCMisplacedSlot is ERC4626Upgradeable, Ownable2StepUpgradeable {
     uint256 public newVariable;
 
     /// Dispatcher contract that routes tBTC from stBTC to a given vault and back.
-    Dispatcher public dispatcher;
+    IDispatcher public dispatcher;
 
     /// Address of the treasury wallet, where fees should be transferred to.
     address public treasury;
@@ -124,7 +127,7 @@ contract stBTCMisplacedSlot is ERC4626Upgradeable, Ownable2StepUpgradeable {
     /// @notice Updates the dispatcher contract and gives it an unlimited
     ///         allowance to transfer staked tBTC.
     /// @param newDispatcher Address of the new dispatcher contract.
-    function updateDispatcher(Dispatcher newDispatcher) external onlyOwner {
+    function updateDispatcher(IDispatcher newDispatcher) external onlyOwner {
         if (address(newDispatcher) == address(0)) {
             revert ZeroAddress();
         }
