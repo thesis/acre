@@ -239,11 +239,6 @@ contract AcreBitcoinDepositor is
     ///      approximation. See documentation of the
     ///      {{AbstractTBTCDepositor#_calculateTbtcAmount}} responsible for calculating
     ///      this value for more details.
-    /// @dev In case balance of tBTC tokens in this contract doesn't meet the
-    ///      calculated tBTC amount, the function reverts with `InsufficientTbtcBalance`
-    ///      error. This case requires Governance's validation, as tBTC Bridge minting
-    ///      fees might changed in the way that reserve mentioned in
-    ///      {{AbstractTBTCDepositor#_calculateTbtcAmount}} needs a top-up.
     /// @param depositKey Deposit key identifying the deposit.
     function finalizeStake(uint256 depositKey) external {
         // Validate current stake request state.
