@@ -6,23 +6,18 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { deployer } = await getNamedAccounts()
 
   const minimumDepositAmount = 10000000000000 // 0.00001 tBTC
-  const maximumTotalAssets: bigint = (await deployments.read(
-    "stBTC",
-    "maximumTotalAssets",
-  )) as bigint
 
   await deployments.execute(
     "stBTC",
     { from: deployer, log: true, waitConfirmations: 1 },
-    "updateDepositParameters",
+    "updateMinimumDepositAmount",
     minimumDepositAmount,
-    maximumTotalAssets,
   )
 }
 
 export default func
 
-func.tags = ["stBTCUpdateDepositParameters"]
+func.tags = ["stBTCUpdateMinimumDepositAmount"]
 func.dependencies = ["stBTC"]
 
 // Run only on Sepolia testnet.
