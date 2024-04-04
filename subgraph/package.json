@@ -1,0 +1,33 @@
+{
+  "name": "@acre-btc/subgraph",
+  "version": "0.0.1",
+  "license": "GPL-3.0-only",
+  "scripts": {
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ acre-subgraph",
+    "create-local": "graph create --node http://localhost:8020/ acre-subgraph",
+    "remove-local": "graph remove --node http://localhost:8020/ acre-subgraph",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 acre-subgraph",
+    "test": "graph test",
+    "format": "npm run lint:js && npm run lint:config",
+    "format:fix": "npm run lint:js:fix && npm run lint:config:fix",
+    "lint:js": "eslint .",
+    "lint:js:fix": "eslint . --fix",
+    "lint:config": "prettier -c '**/*.@(json|yaml|toml)'",
+    "lint:config:fix": "prettier -w '**/*.@(json|yaml|toml)'"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "0.68.3",
+    "@graphprotocol/graph-ts": "0.32.0",
+    "assemblyscript": "0.19.23"
+  },
+  "devDependencies": {
+    "@thesis-co/eslint-config": "github:thesis/eslint-config#7b9bc8c",
+    "@typescript-eslint/eslint-plugin": "^6.12.0",
+    "@typescript-eslint/parser": "^6.12.0",
+    "eslint": "^8.54.0",
+    "matchstick-as": "0.5.0",
+    "prettier": "^3.1.0"
+  }
+}

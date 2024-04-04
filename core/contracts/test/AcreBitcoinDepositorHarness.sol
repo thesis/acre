@@ -9,21 +9,6 @@ import {IBridgeTypes} from "@keep-network/tbtc-v2/contracts/integrator/IBridge.s
 
 import {TestERC20} from "./TestERC20.sol";
 
-/// @dev A test contract to expose internal function from AcreBitcoinDepositor contract.
-///      This solution follows Foundry recommendation:
-///      https://book.getfoundry.sh/tutorials/best-practices#internal-functions
-contract AcreBitcoinDepositorHarness is AcreBitcoinDepositor {
-    function exposed_finalizeBridging(
-        uint256 depositKey
-    ) external returns (uint256 amountToStake, address staker) {
-        return finalizeBridging(depositKey);
-    }
-
-    function exposed_setQueuedStakesBalance(uint256 amount) external {
-        queuedStakesBalance = amount;
-    }
-}
-
 /// @dev A test contract to stub tBTC Bridge contract.
 contract BridgeStub is MockBridge {}
 

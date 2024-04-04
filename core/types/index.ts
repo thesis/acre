@@ -3,7 +3,4 @@ export enum StakeRequestState {
   Unknown,
   Initialized,
   Finalized,
-  Queued,
-  FinalizedFromQueue,
-  CancelledFromQueue,
 }
