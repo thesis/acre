@@ -21,6 +21,7 @@ import "./lib/ERC4626Fees.sol";
 ///      of yield-bearing vaults. This contract facilitates the minting and
 ///      burning of shares (stBTC), which are represented as standard ERC20
 ///      tokens, providing a seamless exchange with tBTC tokens.
+// slither-disable-next-line missing-inheritance
 contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
     using SafeERC20 for IERC20;
 
