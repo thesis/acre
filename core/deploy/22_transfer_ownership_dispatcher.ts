@@ -28,3 +28,4 @@ export default func
 
 func.tags = ["TransferOwnershipDispatcher"]
 func.dependencies = ["Dispatcher"]
+func.runAtTheEnd = true

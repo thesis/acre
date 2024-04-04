@@ -18,7 +18,7 @@ const { getNamedSigners, getUnnamedSigners } = helpers.signers
 
 async function fixture() {
   const { tbtc, stbtc, mezoAllocator } = await deployment()
-  const { governance, treasury } = await getNamedSigners()
+  const { governance, treasury, pauseAdmin } = await getNamedSigners()
 
   const [depositor1, depositor2, thirdParty] = await getUnnamedSigners()
 
@@ -35,6 +35,7 @@ async function fixture() {
     thirdParty,
     treasury,
     mezoAllocator,
+    pauseAdmin,
   }
 }
 
@@ -52,6 +53,7 @@ describe("stBTC", () => {
   let depositor2: HardhatEthersSigner
   let thirdParty: HardhatEthersSigner
   let treasury: HardhatEthersSigner
+  let pauseAdmin: HardhatEthersSigner
 
   before(async () => {
     ;({
@@ -63,6 +65,7 @@ describe("stBTC", () => {
       thirdParty,
       treasury,
       mezoAllocator,
+      pauseAdmin,
     } = await loadFixture(fixture))
 
     await stbtc
@@ -1178,6 +1181,177 @@ describe("stBTC", () => {
         it("should update the treasury", async () => {
           expect(await stbtc.treasury()).to.be.equal(newTreasury)
         })
+      })
+    })
+  })
+
+  describe("pausable", () => {
+    describe("pause", () => {
+      context("when the authorized account wants to pause contract", () => {
+        context("when caller is the owner", () => {
+          let tx: ContractTransactionResponse
+
+          beforeAfterSnapshotWrapper()
+
+          before(async () => {
+            tx = await stbtc.connect(governance).pause()
+          })
+
+          it("should change the pause state", async () => {
+            expect(await stbtc.paused()).to.be.true
+          })
+
+          it("should emit `Paused` event", async () => {
+            await expect(tx)
+              .to.emit(stbtc, "Paused")
+              .withArgs(governance.address)
+          })
+        })
+
+        context("when caller is the pause admin", () => {
+          let tx: ContractTransactionResponse
+
+          beforeAfterSnapshotWrapper()
+
+          before(async () => {
+            tx = await stbtc.connect(pauseAdmin).pause()
+          })
+
+          it("should change the pause state", async () => {
+            expect(await stbtc.paused()).to.be.true
+          })
+
+          it("should emit `Paused` event", async () => {
+            await expect(tx)
+              .to.emit(stbtc, "Paused")
+              .withArgs(pauseAdmin.address)
+          })
+        })
+      })
+
+      context("when the unauthorized account tries to pause contract", () => {
+        beforeAfterSnapshotWrapper()
+
+        it("should revert", async () => {
+          await expect(stbtc.connect(thirdParty).pause())
+            .to.be.revertedWithCustomError(stbtc, "PausableUnauthorizedAccount")
+            .withArgs(thirdParty.address)
+        })
+      })
+
+      context("when contract is already paused", () => {
+        beforeAfterSnapshotWrapper()
+
+        before(async () => {
+          await stbtc.connect(pauseAdmin).pause()
+        })
+
+        it("should revert", async () => {
+          await expect(
+            stbtc.connect(pauseAdmin).pause(),
+          ).to.be.revertedWithCustomError(stbtc, "EnforcedPause")
+        })
+      })
+    })
+
+    describe("unpause", () => {
+      context("when the authorized account wants to unpause contract", () => {
+        context("when caller is the owner", () => {
+          let tx: ContractTransactionResponse
+
+          beforeAfterSnapshotWrapper()
+
+          before(async () => {
+            await stbtc.connect(governance).pause()
+
+            tx = await stbtc.connect(governance).unpause()
+          })
+
+          it("should change the pause state", async () => {
+            expect(await stbtc.paused()).to.be.false
+          })
+
+          it("should emit `Unpaused` event", async () => {
+            await expect(tx)
+              .to.emit(stbtc, "Unpaused")
+              .withArgs(governance.address)
+          })
+        })
+
+        context("when caller is the pause admin", () => {
+          let tx: ContractTransactionResponse
+
+          beforeAfterSnapshotWrapper()
+
+          before(async () => {
+            await stbtc.connect(pauseAdmin).pause()
+
+            tx = await stbtc.connect(pauseAdmin).unpause()
+          })
+
+          it("should change the pause state", async () => {
+            expect(await stbtc.paused()).to.be.false
+          })
+
+          it("should emit `Unpaused` event", async () => {
+            await expect(tx)
+              .to.emit(stbtc, "Unpaused")
+              .withArgs(pauseAdmin.address)
+          })
+        })
+      })
+
+      context("when the unauthorized account tries to unpause contract", () => {
+        beforeAfterSnapshotWrapper()
+
+        it("should revert", async () => {
+          await expect(stbtc.connect(thirdParty).unpause())
+            .to.be.revertedWithCustomError(stbtc, "PausableUnauthorizedAccount")
+            .withArgs(thirdParty.address)
+        })
+      })
+
+      context("when contract is already unpaused", () => {
+        beforeAfterSnapshotWrapper()
+
+        it("should revert", async () => {
+          await expect(
+            stbtc.connect(pauseAdmin).unpause(),
+          ).to.be.revertedWithCustomError(stbtc, "ExpectedPause")
+        })
+      })
+    })
+
+    describe("contract functions", () => {
+      const amount = to1e18(100)
+      beforeAfterSnapshotWrapper()
+
+      before(async () => {
+        await stbtc.connect(pauseAdmin).pause()
+      })
+
+      it("should pause deposits", async () => {
+        await expect(
+          stbtc.connect(depositor1).deposit(amount, depositor1),
+        ).to.be.revertedWithCustomError(stbtc, "EnforcedPause")
+      })
+
+      it("should pause minting", async () => {
+        await expect(
+          stbtc.connect(depositor1).mint(amount, depositor1),
+        ).to.be.revertedWithCustomError(stbtc, "EnforcedPause")
+      })
+
+      it("should pause withdrawals", async () => {
+        await expect(
+          stbtc.connect(depositor1).withdraw(amount, depositor1, depositor1),
+        ).to.be.revertedWithCustomError(stbtc, "EnforcedPause")
+      })
+
+      it("should pause redemptions", async () => {
+        await expect(
+          stbtc.connect(depositor1).redeem(amount, depositor1, depositor1),
+        ).to.be.revertedWithCustomError(stbtc, "EnforcedPause")
       })
     })
   })
