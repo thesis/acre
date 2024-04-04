@@ -17,9 +17,10 @@ interface IMezoPortal {
 contract MezoAllocator is Ownable2Step {
     using SafeERC20 for IERC20;
 
-    /// @notice DepositInfo keeps track of the deposit balance, creation time,
-    ///         and unlock time.
+    /// @notice DepositInfo keeps track of the deposit Id, deposit balance,
+    ///         creation time, and unlock time.
     struct DepositInfo {
+        uint256 id;
         uint96 balance;
         uint32 createdAt;
         uint32 unlockAt;
@@ -35,10 +36,8 @@ contract MezoAllocator is Ownable2Step {
     /// @notice Maintainer address which can trigger deposit flow.
     address public maintainer;
 
-    // Deposit ID -> Deposit Info
-    mapping(uint256 => DepositInfo) public depositsById;
-    // Deposit IDs
-    uint256[] public deposits;
+    /// @notice keeps track of the deposit info.
+    DepositInfo public depositInfo;
 
     /// Emitted when tBTC is deposited to MezoPortal.
     event DepositAllocated(uint256 depositId, uint256 amount);
@@ -76,31 +75,47 @@ contract MezoAllocator is Ownable2Step {
         tbtc = _tbtc;
     }
 
-    /// @notice Allocate tBTC to MezoPortal.
+    /// @notice Allocate tBTC to MezoPortal. Each allocation creates a new "rolling"
+    ///         deposit meaning that the previous Acre's deposit is fully withdrawn
+    ///         before a new deposit with added amount is created. This mimics a
+    ///         "top up" functionality with the difference that a new deposit id
+    ///         is created and the previous deposit id is no longer used.
     /// @dev This function can be invoked periodically by a bot.
     /// @param amount Amount of tBTC to deposit to Mezo Portal.
     function allocate(uint96 amount) external onlyMaintainerAndOwner {
+        // Free all Acre's tBTC from MezoPortal before creating a new deposit.
+        free();
         // slither-disable-next-line arbitrary-send-erc20
         IERC20(tbtc).safeTransferFrom(tbtcStorage, address(this), amount);
-        IERC20(tbtc).forceApprove(mezoPortal, amount);
+        
+        // Add freed tBTC from the previous deposit and add the new amount.
+        depositInfo.balance += amount;
+        
+        IERC20(tbtc).forceApprove(mezoPortal, depositInfo.balance);
         // 0 denotes no lock period for this deposit. The zero lock time is
         // hardcoded as of biz decision.
-        IMezoPortal(mezoPortal).deposit(address(tbtc), amount, 0);
+        IMezoPortal(mezoPortal).deposit(address(tbtc), depositInfo.balance, 0);
         // MezoPortal doesn't return depositId, so we have to read depositCounter
         // which assignes depositId to the current deposit.
         uint256 depositId = IMezoPortal(mezoPortal).depositCount();
         // slither-disable-next-line reentrancy-benign
-        depositsById[depositId] = DepositInfo({
-            balance: amount,
-            // solhint-disable-next-line not-rely-on-time
-            createdAt: uint32(block.timestamp),
-            // solhint-disable-next-line not-rely-on-time
-            unlockAt: uint32(block.timestamp)
-        });
-        deposits.push(depositId);
+        depositInfo.id = depositId;
+        depositInfo.createdAt = uint32(block.timestamp);
+        depositInfo.unlockAt = uint32(block.timestamp);
 
         // slither-disable-next-line reentrancy-events
         emit DepositAllocated(depositId, amount);
+    }
+
+    /// @notice Withdraw all Acre's tBTC from MezoPortal.
+    function free() private {
+        if (depositInfo.balance > 0) {
+            IMezoPortal(mezoPortal).withdraw(
+                        address(tbtc),
+                        depositInfo.id,
+                        depositInfo.balance
+                    );
+        }
     }
 
     /// @notice Updates the tBTC storage address.
@@ -138,10 +153,5 @@ contract MezoAllocator is Ownable2Step {
         // IMezoPortal(mezoPortal).withdraw(address(tbtc), depositId, amount);
         // TODO: update depositsById and deposits data structures.
         // IERC20(tbtc).safeTransfer(address(tbtcStorage), amount);
-    }
-
-    /// @notice Returns the deposit IDs.
-    function getDeposits() external view returns (uint256[] memory) {
-        return deposits;
     }
 }
