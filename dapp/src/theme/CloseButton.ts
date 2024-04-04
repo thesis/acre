@@ -1,9 +1,7 @@
 import { defineStyle, defineStyleConfig } from "@chakra-ui/react"
 
 const baseStyle = defineStyle({
-  _hover: {
-    bg: "none",
-  },
+  bg: "transparent",
 })
 
 export const closeButtonTheme = defineStyleConfig({

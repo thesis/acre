@@ -1,0 +1,15 @@
+{
+  "root": true,
+  "extends": ["@thesis-co"],
+  "rules": {
+    "@typescript-eslint/ban-types": [
+      "error",
+      {
+        "types": {
+          "BigInt": false
+        },
+        "extendDefaults": true
+      }
+    ]
+  }
+}
