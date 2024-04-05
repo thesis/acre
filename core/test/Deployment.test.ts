@@ -1,85 +1,229 @@
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 import { expect } from "chai"
-import { MaxUint256 } from "ethers"
-import { helpers } from "hardhat"
+import { Contract, MaxUint256, ZeroAddress } from "ethers"
+import { helpers, deployments, ethers } from "hardhat"
 
 import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
 import { deployment } from "./helpers/context"
 
-import type { StBTC as stBTC, TestERC20, MezoAllocator } from "../typechain"
+import type {
+  StBTC as stBTC,
+  TestERC20,
+  MezoAllocator,
+  IMezoPortal,
+  AcreBitcoinDepositor,
+  IBridge,
+  ITBTCVault,
+} from "../typechain"
+import { getDeployedContract } from "./helpers"
 
 const { getNamedSigners } = helpers.signers
 
 async function fixture() {
-  const { tbtc, stbtc, mezoAllocator } = await deployment()
-  const { governance, maintainer, treasury } = await getNamedSigners()
+  const {
+    tbtc,
+    stbtc,
+    mezoAllocator,
+    mezoPortal,
+    bitcoinDepositor,
+    tbtcBridge,
+    tbtcVault,
+  } = await deployment()
+  const { governance, maintainer, treasury, pauseAdmin } =
+    await getNamedSigners()
 
-  return { stbtc, mezoAllocator, tbtc, governance, maintainer, treasury }
+  return {
+    stbtc,
+    mezoAllocator,
+    tbtc,
+    mezoPortal,
+    bitcoinDepositor,
+    tbtcBridge,
+    tbtcVault,
+    governance,
+    maintainer,
+    treasury,
+    pauseAdmin,
+  }
 }
 
 describe("Deployment", () => {
   let stbtc: stBTC
   let mezoAllocator: MezoAllocator
   let tbtc: TestERC20
+  let mezoPortal: IMezoPortal
+  let bitcoinDepositor: AcreBitcoinDepositor
+  let tbtcBridge: IBridge
+  let tbtcVault: ITBTCVault
   let maintainer: HardhatEthersSigner
   let treasury: HardhatEthersSigner
+  let governance: HardhatEthersSigner
+  let pauseAdmin: HardhatEthersSigner
 
   before(async () => {
-    ;({ stbtc, mezoAllocator, tbtc, maintainer, treasury } =
-      await loadFixture(fixture))
+    ;({
+      stbtc,
+      mezoAllocator,
+      tbtc,
+      mezoPortal,
+      bitcoinDepositor,
+      tbtcBridge,
+      tbtcVault,
+      maintainer,
+      treasury,
+      governance,
+      pauseAdmin,
+    } = await loadFixture(fixture))
   })
 
-  describe("Acre", () => {
-    describe("constructor", () => {
-      context("when treasury has been set", () => {
-        it("should be set to a treasury address", async () => {
-          const actualTreasury = await stbtc.treasury()
+  function testUpgradeableInitialization(
+    contractName: string,
+    ...initArgs: unknown[]
+  ) {
+    it("should disable implementation initializer", async () => {
+      const implementationAddress = (await deployments.get(contractName))
+        .implementation!
 
-          expect(actualTreasury).to.be.equal(await treasury.getAddress())
-        })
+      const implementationContract = await ethers.getContractAt(
+        contractName,
+        implementationAddress,
+      )
+
+      await expect(
+        implementationContract.initialize(...initArgs),
+      ).to.be.revertedWithCustomError(
+        implementationContract,
+        "InvalidInitialization",
+      )
+    })
+
+    it("should disable proxy initializer", async () => {
+      const proxy: Contract = await getDeployedContract(contractName)
+
+      await expect(proxy.initialize(...initArgs)).to.be.revertedWithCustomError(
+        proxy,
+        "InvalidInitialization",
+      )
+    })
+  }
+
+  describe("stBTC", () => {
+    testUpgradeableInitialization("stBTC", ZeroAddress, ZeroAddress)
+
+    describe("initializer", () => {
+      it("should set asset", async () => {
+        expect(await stbtc.asset()).to.be.equal(await tbtc.getAddress())
+      })
+
+      it("should set treasury", async () => {
+        expect(await stbtc.treasury()).to.be.equal(await treasury.getAddress())
+      })
+    })
+
+    describe("ownable", () => {
+      it("should set owner", async () => {
+        expect(await stbtc.owner()).to.be.equal(await governance.getAddress())
+      })
+    })
+
+    describe("pausable", () => {
+      it("should set pauseAdmin", async () => {
+        expect(await stbtc.pauseAdmin()).to.be.equal(
+          await pauseAdmin.getAddress(),
+        )
       })
     })
 
     describe("updateDispatcher", () => {
-      context("when a dispatcher has been set", () => {
-        it("should be set to a dispatcher address by the deployment script", async () => {
-          const actualDispatcher = await stbtc.dispatcher()
+      it("should set dispatcher", async () => {
+        expect(await stbtc.dispatcher()).to.be.equal(
+          await mezoAllocator.getAddress(),
+        )
+      })
 
-          expect(actualDispatcher).to.be.equal(await mezoAllocator.getAddress())
-        })
+      it("should approve max amount for the dispatcher", async () => {
+        const allowance = await tbtc.allowance(
+          await stbtc.getAddress(),
+          await stbtc.dispatcher(),
+        )
 
-        it("should approve max amount for the dispatcher", async () => {
-          const actualDispatcher = await stbtc.dispatcher()
-          const allowance = await tbtc.allowance(
-            await stbtc.getAddress(),
-            actualDispatcher,
-          )
-
-          expect(allowance).to.be.equal(MaxUint256)
-        })
+        expect(allowance).to.be.equal(MaxUint256)
       })
     })
   })
 
   describe("MezoAllocator", () => {
-    describe("updateMaintainer", () => {
-      context("when a new maintainer has been set", () => {
-        it("should be set to a new maintainer address", async () => {
-          const actualMaintainer = await mezoAllocator.maintainer()
+    testUpgradeableInitialization("MezoAllocator", ZeroAddress, ZeroAddress)
 
-          expect(actualMaintainer).to.be.equal(await maintainer.getAddress())
-        })
-      })
+    it("should set mezoPortal", async () => {
+      expect(await mezoAllocator.mezoPortal()).to.be.equal(
+        await mezoPortal.getAddress(),
+      )
     })
 
-    describe("updateTbtcStorage", () => {
-      context("when a new stBTC address has been set", () => {
-        it("should be set to a new stBTC address by the deployment script", async () => {
-          const actualTbtcStorage = await mezoAllocator.tbtcStorage()
+    it("should set tbtc", async () => {
+      expect(await mezoAllocator.tbtc()).to.be.equal(await tbtc.getAddress())
+    })
 
-          expect(actualTbtcStorage).to.be.equal(await stbtc.getAddress())
-        })
-      })
+    it("should set owner", async () => {
+      expect(await mezoAllocator.owner()).to.be.equal(
+        await governance.getAddress(),
+      )
+    })
+
+    it("should set maintainer", async () => {
+      expect(await mezoAllocator.maintainer()).to.be.equal(
+        await maintainer.getAddress(),
+      )
+    })
+
+    it("should set tbtcStorage", async () => {
+      expect(await mezoAllocator.tbtcStorage()).to.be.equal(
+        await stbtc.getAddress(),
+      )
     })
   })
+
+  describe("BitcoinDepositor", () => {
+    testUpgradeableInitialization(
+      "AcreBitcoinDepositor",
+      ZeroAddress,
+      ZeroAddress,
+      ZeroAddress,
+      ZeroAddress,
+    )
+
+    it("should set bridge", async () => {
+      expect(await bitcoinDepositor.bridge()).to.be.equal(
+        await tbtcBridge.getAddress(),
+      )
+    })
+
+    it("should set tbtcVault", async () => {
+      expect(await bitcoinDepositor.tbtcVault()).to.be.equal(
+        await tbtcVault.getAddress(),
+      )
+    })
+
+    it("should set tbtc", async () => {
+      expect(await bitcoinDepositor.tbtcToken()).to.be.equal(
+        await tbtc.getAddress(),
+      )
+    })
+
+    it("should set stbtc", async () => {
+      expect(await bitcoinDepositor.stbtc()).to.be.equal(
+        await stbtc.getAddress(),
+      )
+    })
+
+    it("should set owner", async () => {
+      expect(await bitcoinDepositor.owner()).to.be.equal(
+        await governance.getAddress(),
+      )
+    })
+  })
+
+  // TODO: Add tests for BitcoinRedeemer
+  describe("BitcoinRedeemer", () => {})
 })
