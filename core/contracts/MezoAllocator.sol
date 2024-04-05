@@ -3,7 +3,7 @@ pragma solidity ^0.8.21;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/access/Ownable2Step.sol";
+import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 
 interface IMezoPortal {
     function deposit(address token, uint96 amount, uint32 lockPeriod) external;
@@ -14,7 +14,7 @@ interface IMezoPortal {
 }
 
 /// @notice MezoAllocator routes tBTC to/from MezoPortal.
-contract MezoAllocator is Ownable2Step {
+contract MezoAllocator is Ownable2StepUpgradeable {
     using SafeERC20 for IERC20;
 
     /// @notice DepositInfo keeps track of the deposit Id, deposit balance,
@@ -27,9 +27,9 @@ contract MezoAllocator is Ownable2Step {
     }
 
     /// Address of the MezoPortal contract.
-    address public immutable mezoPortal;
+    address public mezoPortal;
     /// tBTC token contract.
-    IERC20 public immutable tbtc;
+    IERC20 public tbtc;
     /// Contract holding tBTC deposited by stakers.
     address public tbtcStorage;
 
@@ -65,16 +65,25 @@ contract MezoAllocator is Ownable2Step {
         _;
     }
 
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
     /// @notice Initializes the MezoAllocator contract.
     /// @param _mezoPortal Address of the MezoPortal contract.
     /// @param _tbtc Address of the tBTC token contract.
-    constructor(address _mezoPortal, IERC20 _tbtc) Ownable(msg.sender) {
+    function initialize(address _mezoPortal, IERC20 _tbtc) public initializer {
+        __Ownable2Step_init();
+        __Ownable_init(msg.sender);
+
         if (_mezoPortal == address(0)) {
             revert ZeroAddress();
         }
         if (address(_tbtc) == address(0)) {
             revert ZeroAddress();
         }
+
         mezoPortal = _mezoPortal;
         tbtc = _tbtc;
     }

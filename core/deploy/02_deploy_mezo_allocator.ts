@@ -1,23 +1,29 @@
 import type { HardhatRuntimeEnvironment } from "hardhat/types"
 import type { DeployFunction } from "hardhat-deploy/types"
-import { waitConfirmationsNumber } from "../helpers/deployment"
+import { waitForTransaction } from "../helpers/deployment"
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { getNamedAccounts, deployments, helpers } = hre
-  const { deployer } = await getNamedAccounts()
+  const { governance } = await getNamedAccounts()
+  const { deployer } = await helpers.signers.getNamedSigners()
 
   const tbtc = await deployments.get("TBTC")
   const mezoPortal = await deployments.get("MezoPortal")
 
-  const mezoAllocator = await deployments.deploy("MezoAllocator", {
-    from: deployer,
-    args: [mezoPortal.address, tbtc.address],
-    log: true,
-    waitConfirmations: waitConfirmationsNumber(hre),
+  const [, deployment] = await helpers.upgrades.deployProxy("MezoAllocator", {
+    factoryOpts: {
+      signer: deployer,
+    },
+    initializerArgs: [mezoPortal.address, tbtc.address],
+    proxyOpts: {
+      kind: "transparent",
+      initialOwner: governance,
+    },
   })
 
-  if (hre.network.tags.etherscan) {
-    await helpers.etherscan.verify(mezoAllocator)
+  if (deployment.transactionHash && hre.network.tags.etherscan) {
+    await waitForTransaction(hre, deployment.transactionHash)
+    await helpers.etherscan.verify(deployment)
   }
 
   // TODO: Add Tenderly verification
