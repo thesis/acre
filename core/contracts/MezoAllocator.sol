@@ -4,6 +4,7 @@ pragma solidity ^0.8.21;
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable2Step.sol";
+import {ZeroAddress} from "./utils/Errors.sol";
 
 interface IMezoPortal {
     function deposit(address token, uint96 amount, uint32 lockPeriod) external;
@@ -54,9 +55,6 @@ contract MezoAllocator is Ownable2Step {
 
     /// @notice Reverts if the caller is not an authorized account.
     error NotAuthorized();
-
-    /// @notice Reverts if the address is 0.
-    error ZeroAddress();
 
     modifier onlyMaintainerAndOwner() {
         if (msg.sender != maintainer && owner() != msg.sender) {
