@@ -8,6 +8,11 @@ import "./PausableOwnable.sol";
 import "./lib/ERC4626Fees.sol";
 import {ZeroAddress} from "./utils/Errors.sol";
 
+// slither-disable-next-line missing-inheritance
+interface IDispatcher {
+    function withdraw(uint256 amount) external;
+}
+
 /// @title stBTC
 /// @notice This contract implements the ERC-4626 tokenized vault standard. By
 ///         staking tBTC, users acquire a liquid staking token called stBTC,
@@ -22,9 +27,9 @@ import {ZeroAddress} from "./utils/Errors.sol";
 contract stBTC is ERC4626Fees, PausableOwnable {
     using SafeERC20 for IERC20;
 
-    /// Dispatcher contract that routes tBTC from stBTC to a given destination
-    /// and back.
-    Dispatcher public dispatcher;
+    /// Dispatcher contract that routes tBTC from stBTC to a given allocation
+    /// contract and back.
+    IDispatcher public dispatcher;
 
     /// Address of the treasury wallet, where fees should be transferred to.
     address public treasury;
@@ -124,7 +129,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     /// @notice Updates the dispatcher contract and gives it an unlimited
     ///         allowance to transfer staked tBTC.
     /// @param newDispatcher Address of the new dispatcher contract.
-    function updateDispatcher(Dispatcher newDispatcher) external onlyOwner {
+    function updateDispatcher(IDispatcher newDispatcher) external onlyOwner {
         if (address(newDispatcher) == address(0)) {
             revert ZeroAddress();
         }
@@ -215,14 +220,27 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         }
     }
 
+    /// @notice Withdraws assets from the vault and transfers them to the
+    ///         receiver.
+    /// @dev Withdraw unallocated assets first and and if not enough, then pull
+    ///      the assets from the dispatcher.
+    /// @param assets Amount of assets to withdraw.
+    /// @param receiver The address to which the assets will be transferred.
+    /// @param owner The address of the owner of the shares.
     function withdraw(
         uint256 assets,
         address receiver,
         address owner
-    ) public override whenNotPaused returns (uint256) {
+    ) public override returns (uint256) {
+        if (assets > totalAssets()) {
+            uint256 missingAmount = assets - totalAssets();
+            dispatcher.withdraw(missingAmount);
+        }
+
         return super.withdraw(assets, receiver, owner);
     }
 
+    // TODO: change this function to pull assets from the dispatcher.
     function redeem(
         uint256 shares,
         address receiver,

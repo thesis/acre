@@ -38,6 +38,8 @@ contract MezoAllocator is Ownable2Step {
     stBTC public immutable stbtc;
     /// @notice Maintainer address which can trigger deposit flow.
     address public maintainer;
+    /// @notice Address that can withdraw tBTC from Mezo Portal.
+    address public withdrawer;
     /// @notice keeps track of the latest deposit ID assigned in Mezo Portal.
     uint256 public depositId;
 
@@ -49,14 +51,30 @@ contract MezoAllocator is Ownable2Step {
         uint256 newDepositAmount
     );
 
+    /// Emitted when tBTC is withdrawn from MezoPortal.
+    event DepositWithdraw(uint256 indexed depositId, uint96 amount);
+
     /// @notice Emitted when the maintainer address is updated.
     event MaintainerUpdated(address indexed maintainer);
+
+    /// @notice Emitted when the withdrawer address is updated.
+    event WithdrawerUpdated(address indexed withdrawer);
 
     /// @notice Reverts if the caller is not an authorized account.
     error NotAuthorized();
 
+    /// @notice Reverts if the caller tries to withdraw more tBTC than available.
+    error InsufficientBalance();
+
     modifier onlyMaintainerAndOwner() {
         if (msg.sender != maintainer && owner() != msg.sender) {
+            revert NotAuthorized();
+        }
+        _;
+    }
+
+    modifier onlyWithdrawer() {
+        if (msg.sender != withdrawer) {
             revert NotAuthorized();
         }
         _;
@@ -123,6 +141,22 @@ contract MezoAllocator is Ownable2Step {
         );
     }
 
+    /// @notice Withdraws tBTC from MezoPortal and transfers it to stBTC.
+    ///         This function can withdraw partial or a full amount of tBTC from
+    ///         MezoPortal for a given deposit id.
+    /// @param amount Amount of tBTC to withdraw.
+    function withdraw(uint96 amount) external onlyWithdrawer {
+        uint96 balance = mezoPortal
+            .getDeposit(address(this), address(tbtc), depositId)
+            .balance;
+        if (amount > balance) {
+            revert InsufficientBalance();
+        }
+        emit DepositWithdraw(depositId, amount);
+        mezoPortal.withdraw(address(tbtc), depositId, amount);
+        IERC20(tbtc).safeTransfer(address(stbtc), amount);
+    }
+
     /// @notice Updates the maintainer address.
     /// @param _maintainer Address of the new maintainer.
     function updateMaintainer(address _maintainer) external onlyOwner {
@@ -134,15 +168,14 @@ contract MezoAllocator is Ownable2Step {
         emit MaintainerUpdated(_maintainer);
     }
 
-    // TODO: add updatable withdrawer and onlyWithdrawer modifier (stBTC or AcreDispatcher).
-    /// @notice Withdraws tBTC from MezoPortal and transfers it to stBTC.
-    function withdraw(uint96 amount) external {
-        // TODO: Take the last deposit and pull the funds from it (FIFO).
-        //       If not enough funds, take everything from that deposit and
-        //       take the rest from the next deposit id until the amount is
-        //       reached. Delete deposit ids that are empty.
-        // IMezoPortal(mezoPortal).withdraw(address(tbtc), depositId, amount);
-        // TODO: update depositsById and deposits data structures.
-        // IERC20(tbtc).safeTransfer(address(stbtc), amount);
+    /// @notice Updates the withdrawer address.
+    /// @param _withdrawer Address of the new withdrawer.
+    function updateWithdrawer(address _withdrawer) external onlyOwner {
+        if (_withdrawer == address(0)) {
+            revert ZeroAddress();
+        }
+        withdrawer = _withdrawer;
+
+        emit WithdrawerUpdated(_withdrawer);
     }
 }
