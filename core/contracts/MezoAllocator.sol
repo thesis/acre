@@ -5,6 +5,7 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable2Step.sol";
 import {ZeroAddress} from "./utils/Errors.sol";
+import "./stBTC.sol";
 
 interface IMezoPortal {
     struct DepositInfo {
@@ -33,8 +34,8 @@ contract MezoAllocator is Ownable2Step {
     IMezoPortal public immutable mezoPortal;
     /// tBTC token contract.
     IERC20 public immutable tbtc;
-    /// Contract holding tBTC deposited by stakers.
-    address public tbtcStorage;
+    /// stBTC token vault contract.
+    stBTC public immutable stbtc;
     /// @notice Maintainer address which can trigger deposit flow.
     address public maintainer;
     /// @notice keeps track of the latest deposit ID assigned in Mezo Portal.
@@ -47,9 +48,6 @@ contract MezoAllocator is Ownable2Step {
         uint256 addedAmount,
         uint256 newDepositAmount
     );
-
-    /// @notice Emitted when the tBTC storage address is updated.
-    event TbtcStorageUpdated(address indexed tbtcStorage);
 
     /// @notice Emitted when the maintainer address is updated.
     event MaintainerUpdated(address indexed maintainer);
@@ -67,7 +65,11 @@ contract MezoAllocator is Ownable2Step {
     /// @notice Initializes the MezoAllocator contract.
     /// @param _mezoPortal Address of the MezoPortal contract.
     /// @param _tbtc Address of the tBTC token contract.
-    constructor(address _mezoPortal, IERC20 _tbtc) Ownable(msg.sender) {
+    constructor(
+        address _mezoPortal,
+        IERC20 _tbtc,
+        stBTC _stbtc
+    ) Ownable(msg.sender) {
         if (_mezoPortal == address(0)) {
             revert ZeroAddress();
         }
@@ -76,6 +78,7 @@ contract MezoAllocator is Ownable2Step {
         }
         mezoPortal = IMezoPortal(_mezoPortal);
         tbtc = _tbtc;
+        stbtc = _stbtc;
     }
 
     /// @notice Allocate tBTC to MezoPortal. Each allocation creates a new "rolling"
@@ -93,15 +96,18 @@ contract MezoAllocator is Ownable2Step {
             // slither-disable-next-line reentrancy-no-eth
             mezoPortal.withdraw(address(tbtc), depositId, depositBalance);
         }
-        uint256 addedAmount = IERC20(tbtc).balanceOf(address(tbtcStorage));
+        uint256 addedAmount = IERC20(tbtc).balanceOf(address(stbtc));
         // slither-disable-next-line arbitrary-send-erc20
-        IERC20(tbtc).safeTransferFrom(tbtcStorage, address(this), addedAmount);
+        IERC20(tbtc).safeTransferFrom(
+            address(stbtc),
+            address(this),
+            addedAmount
+        );
 
         uint96 newDepositAmount = uint96(IERC20(tbtc).balanceOf(address(this)));
 
         IERC20(tbtc).forceApprove(address(mezoPortal), newDepositAmount);
-        // 0 denotes no lock period for this deposit. The zero lock time is
-        // hardcoded as of biz decision.
+        // 0 denotes no lock period for this deposit.
         mezoPortal.deposit(address(tbtc), newDepositAmount, 0);
         uint256 oldDepositId = depositId;
         // MezoPortal doesn't return depositId, so we have to read depositCounter
@@ -115,20 +121,6 @@ contract MezoAllocator is Ownable2Step {
             addedAmount,
             newDepositAmount
         );
-    }
-
-    /// @notice Updates the tBTC storage address.
-    /// @dev At first this is going to be the stBTC contract. Once Acre
-    ///      works with more destinations for tBTC, this will be updated to
-    ///      the new storage contract like AcreDispatcher.
-    /// @param _tbtcStorage Address of the new tBTC storage.
-    function updateTbtcStorage(address _tbtcStorage) external onlyOwner {
-        if (_tbtcStorage == address(0)) {
-            revert ZeroAddress();
-        }
-        tbtcStorage = _tbtcStorage;
-
-        emit TbtcStorageUpdated(_tbtcStorage);
     }
 
     /// @notice Updates the maintainer address.
@@ -151,6 +143,6 @@ contract MezoAllocator is Ownable2Step {
         //       reached. Delete deposit ids that are empty.
         // IMezoPortal(mezoPortal).withdraw(address(tbtc), depositId, amount);
         // TODO: update depositsById and deposits data structures.
-        // IERC20(tbtc).safeTransfer(address(tbtcStorage), amount);
+        // IERC20(tbtc).safeTransfer(address(stbtc), amount);
     }
 }
