@@ -1,3 +1,4 @@
+import { DevToolsEnhancerOptions } from "@reduxjs/toolkit"
 import { encodeJSON } from "#/utils"
 
 function devToolsSanitizer(input: unknown): unknown {
@@ -15,8 +16,8 @@ function devToolsSanitizer(input: unknown): unknown {
 }
 
 export const devTools = !import.meta.env.PROD
-  ? {
+  ? ({
       actionSanitizer: devToolsSanitizer,
       stateSanitizer: devToolsSanitizer,
-    }
+    } as DevToolsEnhancerOptions)
   : false
