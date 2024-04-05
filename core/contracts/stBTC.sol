@@ -2,10 +2,11 @@
 pragma solidity ^0.8.21;
 
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 
 import "./Dispatcher.sol";
+import "./PausableOwnable.sol";
 import "./lib/ERC4626Fees.sol";
+import {ZeroAddress} from "./utils/Errors.sol";
 
 /// @title stBTC
 /// @notice This contract implements the ERC-4626 tokenized vault standard. By
@@ -18,7 +19,7 @@ import "./lib/ERC4626Fees.sol";
 ///      of yield-bearing vaults. This contract facilitates the minting and
 ///      burning of shares (stBTC), which are represented as standard ERC20
 ///      tokens, providing a seamless exchange with tBTC tokens.
-contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
+contract stBTC is ERC4626Fees, PausableOwnable {
     using SafeERC20 for IERC20;
 
     /// Dispatcher contract that routes tBTC from stBTC to a given vault and back.
@@ -66,9 +67,6 @@ contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
     /// @param min Minimum amount to check 'amount' against.
     error LessThanMinDeposit(uint256 amount, uint256 min);
 
-    /// Reverts if the address is zero.
-    error ZeroAddress();
-
     /// Reverts if the address is disallowed.
     error DisallowedAddress();
 
@@ -80,8 +78,7 @@ contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
     function initialize(IERC20 asset, address _treasury) public initializer {
         __ERC4626_init(asset);
         __ERC20_init("Acre Staked Bitcoin", "stBTC");
-        __Ownable2Step_init();
-        __Ownable_init(msg.sender);
+        __PausableOwnable_init(msg.sender, msg.sender);
 
         if (address(_treasury) == address(0)) {
             revert ZeroAddress();
@@ -186,7 +183,7 @@ contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
     function deposit(
         uint256 assets,
         address receiver
-    ) public override returns (uint256) {
+    ) public override whenNotPaused returns (uint256) {
         if (assets < minimumDepositAmount) {
             revert LessThanMinDeposit(assets, minimumDepositAmount);
         }
@@ -211,10 +208,26 @@ contract stBTC is ERC4626Fees, Ownable2StepUpgradeable {
     function mint(
         uint256 shares,
         address receiver
-    ) public override returns (uint256 assets) {
+    ) public override whenNotPaused returns (uint256 assets) {
         if ((assets = super.mint(shares, receiver)) < minimumDepositAmount) {
             revert LessThanMinDeposit(assets, minimumDepositAmount);
         }
+    }
+
+    function withdraw(
+        uint256 assets,
+        address receiver,
+        address owner
+    ) public override whenNotPaused returns (uint256) {
+        return super.withdraw(assets, receiver, owner);
+    }
+
+    function redeem(
+        uint256 shares,
+        address receiver,
+        address owner
+    ) public override whenNotPaused returns (uint256) {
+        return super.redeem(shares, receiver, owner);
     }
 
     /// @notice Returns value of assets that would be exchanged for the amount of

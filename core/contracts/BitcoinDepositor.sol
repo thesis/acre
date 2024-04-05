@@ -11,8 +11,6 @@ import "@keep-network/tbtc-v2/contracts/integrator/AbstractTBTCDepositor.sol";
 
 import {stBTC} from "./stBTC.sol";
 
-// TODO: Make Pausable
-
 /// @title Bitcoin Depositor contract.
 /// @notice The contract integrates Acre staking with tBTC minting.
 ///         User who wants to stake BTC in Acre should submit a Bitcoin transaction
