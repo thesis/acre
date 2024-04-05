@@ -8,6 +8,7 @@ import {
 } from "#/hooks"
 import { BitcoinIcon, EthereumIcon } from "#/assets/icons"
 import { ActionFlowType, PROCESS_STATUSES } from "#/types"
+import { isSupportedBTCAddressType } from "#/utils"
 import ActionFormModal from "./ActionFormModal"
 import MissingAccountModal from "./MissingAccountModal"
 import ResumeModal from "./ResumeModal"
@@ -28,7 +29,7 @@ export default function ModalContentWrapper({
   const { type, status, onClose, onResume } = useModalFlowContext()
   const { tokenAmount } = useTransactionContext()
 
-  if (!btcAccount)
+  if (!btcAccount || !isSupportedBTCAddressType(btcAccount.address))
     return (
       <MissingAccountModal
         currency="bitcoin"
