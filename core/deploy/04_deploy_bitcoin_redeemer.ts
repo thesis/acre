@@ -8,12 +8,13 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
   const tbtc = await deployments.get("TBTC")
   const stbtc = await deployments.get("stBTC")
+  const tbtcVault = await deployments.get("TBTCVault")
 
   const [_, deployment] = await helpers.upgrades.deployProxy(
     "BitcoinRedeemer",
     {
       contractName: "BitcoinRedeemer",
-      initializerArgs: [tbtc.address, stbtc.address],
+      initializerArgs: [tbtc.address, stbtc.address, tbtcVault.address],
       factoryOpts: { signer: deployer },
       proxyOpts: {
         kind: "transparent",
@@ -32,4 +33,4 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 export default func
 
 func.tags = ["BitcoinRedeemer"]
-func.dependencies = ["TBTC", "stBTC"]
+func.dependencies = ["TBTC", "stBTC", "TBTCVault"]

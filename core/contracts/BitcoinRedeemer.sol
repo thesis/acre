@@ -1,22 +1,31 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity ^0.8.21;
 
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 
 import "@thesis-co/solidity-contracts/contracts/token/IReceiveApproval.sol";
 
 import "./stBTC.sol";
 import "./bridge/ITBTCToken.sol";
+import {ZeroAddress} from "./utils/Errors.sol";
 
 /// @title Bitcoin Redeemer
 /// @notice This contract facilitates redemption of stBTC tokens to Bitcoin through
 ///         tBTC redemption process.
-contract BitcoinRedeemer is Initializable, IReceiveApproval {
+contract BitcoinRedeemer is Ownable2StepUpgradeable, IReceiveApproval {
     /// Interface for tBTC token contract.
     ITBTCToken public tbtcToken;
 
     /// stBTC token contract.
     stBTC public stbtc;
+
+    /// Address of the TBTCVault contract.
+    address public tbtcVault;
+
+    /// Emitted when the TBTCVault contract address is updated.
+    /// @param oldTbtcVault Address of the old TBTCVault contract.
+    /// @param newTbtcVault Address of the new TBTCVault contract.
+    event TbtcVaultUpdated(address oldTbtcVault, address newTbtcVault);
 
     /// Emitted when redemption is requested.
     /// @param owner Owner of stBTC tokens.
@@ -34,6 +43,9 @@ contract BitcoinRedeemer is Initializable, IReceiveApproval {
     /// Reverts if the stBTC address is zero.
     error StbtcZeroAddress();
 
+    /// Reverts if the TBTCVault address is zero.
+    error TbtcVaultZeroAddress();
+
     /// Attempted to call receiveApproval for not supported token.
     error UnsupportedToken(address token);
 
@@ -43,6 +55,9 @@ contract BitcoinRedeemer is Initializable, IReceiveApproval {
     /// Attempted to call receiveApproval with empty data.
     error EmptyExtraData();
 
+    /// Attempted to call redeemSharesAndUnmint with unexpected tBTC token owner.
+    error UnexpectedTbtcTokenOwner();
+
     /// Reverts when approveAndCall to tBTC contract fails.
     error ApproveAndCallFailed();
 
@@ -51,19 +66,31 @@ contract BitcoinRedeemer is Initializable, IReceiveApproval {
         _disableInitializers();
     }
 
-    /// @notice Initializes the contract with tBTC token and stBTC token addresses
-    /// @param _tbtcToken The address of the tBTC token contract
-    /// @param _stbtc The address of the stBTC token contract
-    function initialize(address _tbtcToken, address _stbtc) public initializer {
+    /// @notice Initializes the contract with tBTC token and stBTC token addresses.
+    /// @param _tbtcToken The address of the tBTC token contract.
+    /// @param _stbtc The address of the stBTC token contract.
+    /// @param _tbtcVault The address of the TBTCVault contract.
+    function initialize(
+        address _tbtcToken,
+        address _stbtc,
+        address _tbtcVault
+    ) public initializer {
+        __Ownable2Step_init();
+        __Ownable_init(msg.sender);
+
         if (address(_tbtcToken) == address(0)) {
             revert TbtcTokenZeroAddress();
         }
         if (address(_stbtc) == address(0)) {
             revert StbtcZeroAddress();
         }
+        if (address(_tbtcVault) == address(0)) {
+            revert TbtcVaultZeroAddress();
+        }
 
         tbtcToken = ITBTCToken(_tbtcToken);
         stbtc = stBTC(_stbtc);
+        tbtcVault = _tbtcVault;
     }
 
     /// @notice Redeems shares for tBTC and requests bridging to Bitcoin.
@@ -84,6 +111,18 @@ contract BitcoinRedeemer is Initializable, IReceiveApproval {
         if (extraData.length == 0) revert EmptyExtraData();
 
         redeemSharesAndUnmint(from, amount, extraData);
+    }
+
+    /// @notice Updates TBTCVault contract address.
+    /// @param newTbtcVault New TBTCVault contract address.
+    function updateTbtcVault(address newTbtcVault) external onlyOwner {
+        if (newTbtcVault == address(0)) {
+            revert ZeroAddress();
+        }
+
+        emit TbtcVaultUpdated(tbtcVault, newTbtcVault);
+
+        tbtcVault = newTbtcVault;
     }
 
     /// @notice Initiates the redemption process by exchanging stBTC tokens for
@@ -108,18 +147,16 @@ contract BitcoinRedeemer is Initializable, IReceiveApproval {
         uint256 shares,
         bytes calldata tbtcRedemptionData
     ) internal {
+        // TBTC Token contract owner resolves to the TBTCVault contract.
+        if (tbtcToken.owner() != tbtcVault) revert UnexpectedTbtcTokenOwner();
+
         uint256 tbtcAmount = stbtc.redeem(shares, address(this), owner);
 
         // slither-disable-next-line reentrancy-events
         emit RedemptionRequested(owner, shares, tbtcAmount);
 
         if (
-            !tbtcToken.approveAndCall(
-                // TBTC Token contract owner resolves to the TBTCVault contract.
-                tbtcToken.owner(),
-                tbtcAmount,
-                tbtcRedemptionData
-            )
+            !tbtcToken.approveAndCall(tbtcVault, tbtcAmount, tbtcRedemptionData)
         ) {
             revert ApproveAndCallFailed();
         }

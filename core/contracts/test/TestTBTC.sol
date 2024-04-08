@@ -13,7 +13,11 @@ contract TestTBTC is ITBTCToken, ERC20 {
 
     bool public approveAndCallResult = true;
 
-    constructor(string memory name, string memory symbol) ERC20(name, symbol) {}
+    address public owner;
+
+    constructor(string memory name, string memory symbol) ERC20(name, symbol) {
+        owner = address(1);
+    }
 
     function mint(address account, uint256 value) external {
         _mint(account, value);
@@ -29,11 +33,11 @@ contract TestTBTC is ITBTCToken, ERC20 {
         return approveAndCallResult;
     }
 
-    function owner() external pure returns (address) {
-        return address(1);
-    }
-
     function setApproveAndCallResult(bool value) public {
         approveAndCallResult = value;
+    }
+
+    function setOwner(address newOwner) public {
+        owner = newOwner;
     }
 }
