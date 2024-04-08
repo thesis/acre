@@ -135,12 +135,6 @@ contract MezoAllocator is Ownable2Step {
     /// @param amount Amount of tBTC to withdraw.
     function withdraw(uint256 amount) external {
         if (msg.sender != address(stbtc)) revert NotAuthorized();
-        uint96 balance = mezoPortal
-            .getDeposit(address(this), address(tbtc), depositId)
-            .balance;
-        if (amount > balance) {
-            revert InsufficientBalance();
-        }
         emit DepositWithdraw(depositId, amount);
         mezoPortal.withdraw(address(tbtc), depositId, uint96(amount));
         tbtc.safeTransfer(address(stbtc), amount);
