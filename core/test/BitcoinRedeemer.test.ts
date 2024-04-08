@@ -5,7 +5,7 @@ import {
   encodeBytes32String,
   ZeroAddress,
 } from "ethers"
-import { helpers } from "hardhat"
+import { ethers, helpers } from "hardhat"
 
 import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
 import { beforeAfterSnapshotWrapper, deployment } from "./helpers"
