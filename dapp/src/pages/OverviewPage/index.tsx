@@ -2,6 +2,7 @@ import React from "react"
 import { Flex, Grid, HStack, Switch } from "@chakra-ui/react"
 import { TextSm } from "#/components/shared/Typography"
 import { USD } from "#/constants"
+import { chakraUnitToPx } from "#/theme/utils"
 import PositionDetails from "./PositionDetails"
 import Statistics from "./Statistics"
 import TransactionHistory from "./TransactionHistory"
@@ -18,8 +19,8 @@ export default function OverviewPage() {
       </HStack>
 
       <Grid
-        templateAreas={'"activity-carousel activity-carousel docs-card"'}
-        gridTemplateColumns="1fr 1fr auto"
+        templateAreas={'"activity-carousel docs-card"'}
+        gridTemplateColumns={`calc(100% - ${chakraUnitToPx(64)}px) auto`}
       >
         <ActivityCarousel gridArea="activity-carousel" />
         <DocsCard gridArea="docs-card" />

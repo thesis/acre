@@ -10,7 +10,6 @@ export function DocsCard(props: CardProps) {
 
   return (
     <Card
-      width={64}
       h={28}
       p={4}
       pt={3}

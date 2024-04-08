@@ -43,6 +43,8 @@ export default function GlobalStyles() {
         }
         // React-slick package: Chakra-ui with react-slick package doesn't 
         // generate flex style for auto-generated slick-track wrapper.
+        // Instead of importing default styles for react-slick carousel 
+        // we only add what we need - flex for the .slick-track.
         .slick-track {
           display: flex;
         }

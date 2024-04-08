@@ -19,11 +19,13 @@ import { useActivities } from "#/hooks"
 function ActivityDetails() {
   const { selectedActivity } = useActivities()
 
-  if (!selectedActivity) return null
+  const currentActivity = selectedActivity()
+
+  if (!currentActivity) return null
 
   return (
     <Flex flexDirection="column" gap={2}>
-      {selectedActivity.status === "pending" && (
+      {currentActivity.status === "pending" && (
         <Card>
           <CardBody paddingX={10} paddingY={6}>
             <HStack marginBottom={4} justify="space-between">
@@ -49,12 +51,12 @@ function ActivityDetails() {
                 fontWeight="semibold"
                 textTransform="capitalize"
               >
-                {selectedActivity.action}
+                {currentActivity.action}
               </TextMd>
               <CurrencyBalanceWithConversion
                 from={{
-                  currency: selectedActivity.currency,
-                  amount: selectedActivity.amount,
+                  currency: currentActivity.currency,
+                  amount: currentActivity.amount,
                   variant: "greater-balance-xxl",
                   symbolFontWeight: "medium",
                 }}
@@ -65,7 +67,7 @@ function ActivityDetails() {
               />
               <Tag mt={9}>
                 <StatusInfo
-                  status={selectedActivity.status}
+                  status={currentActivity.status}
                   fontWeight="medium"
                   withIcon
                   withDefaultColor

@@ -24,7 +24,10 @@ export function useActivities() {
     [activities],
   )
 
-  const selectedActivity = getActivity(params.activityId)
+  const selectedActivity = useCallback(
+    () => getActivity(params.activityId),
+    [getActivity, params.activityId],
+  )
 
   const isSelected = useCallback(
     (activity: ActivityInfo): boolean =>
@@ -32,8 +35,10 @@ export function useActivities() {
     [getActivity, params.activityId],
   )
 
-  const isCompleted = (activity: ActivityInfo): boolean =>
-    activity.status === "completed"
+  const isCompleted = useCallback(
+    (activity: ActivityInfo): boolean => activity.status === "completed",
+    [],
+  )
 
   return {
     activities,

@@ -22,7 +22,8 @@ export const Carousel = forwardRef<HTMLInputElement, CarouselProps>(
     <Flex
       as={Slider}
       ref={ref}
-      overflowX="hidden"
+      // overflow="hidden" is required to hide the items outside the viewport.
+      overflow="hidden"
       {...carouselSettings}
       {...props}
     >

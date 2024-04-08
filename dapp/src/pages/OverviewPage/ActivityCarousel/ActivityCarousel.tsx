@@ -23,11 +23,12 @@ export function ActivityCarousel({ ...props }: BoxProps) {
   return (
     <Box pos="relative" {...props}>
       <Carousel
-        overflow="hidden"
         ref={carouselRef}
+        // pl={2} & ml={-2} props are required to show not-cut left shadow
+        // below the first card in the carousel.
         pl={2}
         ml={-2}
-        overflowX="hidden"
+        // pb={6} is required to show bottom shadow below cards in the carousel.
         pb={6}
         _after={{
           content: '""',
@@ -44,7 +45,6 @@ export function ActivityCarousel({ ...props }: BoxProps) {
             key={activity.txHash}
             activity={activity}
             onRemove={handleRemove}
-            mr={3}
           />
         ))}
       </Carousel>
