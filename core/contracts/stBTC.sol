@@ -175,9 +175,8 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     /// @notice Returns the total amount of assets held by the vault across all
     ///         allocations and this contract.
     function totalAssets() public view override returns (uint256) {
-        uint256 totalAmount = IERC20(asset()).balanceOf(address(this));
-        totalAmount += dispatcher.totalAssets();
-        return totalAmount;
+        return
+            IERC20(asset()).balanceOf(address(this)) + dispatcher.totalAssets();
     }
 
     /// @notice Mints shares to receiver by depositing exactly amount of
