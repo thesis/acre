@@ -29,7 +29,7 @@ describe("Deployment", () => {
       await loadFixture(fixture))
   })
 
-  describe("Acre", () => {
+  describe("stBTC", () => {
     describe("constructor", () => {
       context("when treasury has been set", () => {
         it("should be set to a treasury address", async () => {
@@ -72,12 +72,12 @@ describe("Deployment", () => {
       })
     })
 
-    describe("updateTbtcStorage", () => {
-      context("when a new stBTC address has been set", () => {
-        it("should be set to a new stBTC address by the deployment script", async () => {
-          const actualTbtcStorage = await mezoAllocator.tbtcStorage()
+    describe("updateWithdrawer", () => {
+      context("when a new withdrawer has been set", () => {
+        it("should be set to a new maintainer address", async () => {
+          const actualWithdrawer = await mezoAllocator.withdrawer()
 
-          expect(actualTbtcStorage).to.be.equal(await stbtc.getAddress())
+          expect(actualWithdrawer).to.be.equal(await stbtc.getAddress())
         })
       })
     })
