@@ -11,7 +11,7 @@ import Spinner from "#/components/shared/Spinner"
 import { PauseIcon } from "#/assets/icons"
 import { TextMd } from "#/components/shared/Typography"
 
-export default function ResumeModal({
+export function ResumeModal({
   onResume,
   onClose,
 }: {

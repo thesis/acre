@@ -9,12 +9,14 @@ import {
 import { BitcoinIcon, EthereumIcon } from "#/assets/icons"
 import { ActionFlowType, PROCESS_STATUSES } from "#/types"
 import { isSupportedBTCAddressType } from "#/utils"
-import ActionFormModal from "./ActionFormModal"
-import MissingAccountModal from "./MissingAccountModal"
-import ResumeModal from "./ResumeModal"
-import SuccessModal from "./SuccessModal"
-import LoadingModal from "./LoadingModal"
-import ErrorModal from "./ErrorModal"
+import {
+  MissingAccountModal,
+  ActionFormModal,
+  ResumeModal,
+  LoadingModal,
+  SuccessModal,
+  ErrorModal,
+} from "./content"
 
 export default function ModalContentWrapper({
   defaultType,

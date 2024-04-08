@@ -23,7 +23,7 @@ type SuccessModalProps = {
   tokenAmount: TokenAmount
 }
 
-export default function SuccessModal({ type, tokenAmount }: SuccessModalProps) {
+export function SuccessModal({ type, tokenAmount }: SuccessModalProps) {
   const { onClose } = useModalFlowContext()
 
   return (

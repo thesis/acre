@@ -3,7 +3,7 @@ import { ModalBody, ModalHeader, VStack } from "@chakra-ui/react"
 import Spinner from "#/components/shared/Spinner"
 import Skeleton from "#/components/shared/Skeleton"
 
-export default function LoadingModal() {
+export function LoadingModal() {
   return (
     <>
       <ModalHeader>Loading...</ModalHeader>

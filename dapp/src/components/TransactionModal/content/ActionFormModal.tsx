@@ -22,7 +22,11 @@ import UnstakeFormModal from "../ActiveUnstakingStep/UnstakeFormModal"
 
 const TABS = Object.values(ACTION_FLOW_TYPES)
 
-function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
+export function ActionFormModal({
+  defaultType,
+}: {
+  defaultType: ActionFlowType
+}) {
   const { btcAccount, ethAccount } = useWalletContext()
   const { type, setType } = useModalFlowContext()
   const { setTokenAmount } = useTransactionContext()
@@ -99,5 +103,3 @@ function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
     </>
   )
 }
-
-export default ActionFormModal

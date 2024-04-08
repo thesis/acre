@@ -6,9 +6,9 @@ import {
 } from "#/hooks"
 import { PROCESS_STATUSES } from "#/types"
 import { logPromiseFailure } from "#/utils"
-import LoadingModal from "../../ModalContentWrapper/LoadingModal"
 import ServerErrorModal from "./ServerErrorModal"
 import RetryModal from "./RetryModal"
+import { LoadingModal } from "../../content"
 
 export default function StakingErrorModal() {
   const { setStatus } = useModalFlowContext()
