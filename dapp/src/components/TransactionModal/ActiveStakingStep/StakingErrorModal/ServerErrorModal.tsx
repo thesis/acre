@@ -66,10 +66,11 @@ export default function ServerErrorModal({
         // The dialog container style has padding set by default.
         // However, the modal footer should be positioned outside this padding.
         // To avoid changing it, let's set the position to relative and calculate the correct width.
+        // To calculate the width we need to subtract the border width on two sides from the modal width.
         position="relative"
         bottom={-4}
         left={-4}
-        w={`calc(var(--chakra-sizes-${MODAL_BASE_SIZE}) - 0.25rem)`}
+        w={`calc(var(--chakra-sizes-${MODAL_BASE_SIZE}) - 2 * var(--chakra-space-modal_borderWidth))`}
       >
         <Flex flexDirection="column">
           <HStack>

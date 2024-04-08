@@ -3,7 +3,7 @@ import { createMultiStyleConfigHelpers, defineStyle } from "@chakra-ui/react"
 
 const baseStyleDialog = defineStyle({
   p: 4,
-  border: "2px",
+  borderWidth: "var(--chakra-space-modal_borderWidth)",
   boxShadow: "none",
   borderColor: "white",
   borderRadius: "xl",
