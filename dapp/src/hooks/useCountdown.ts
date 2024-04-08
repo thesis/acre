@@ -2,10 +2,10 @@ import { useState, useEffect } from "react"
 import { TimeUnits } from "#/types"
 import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import {
-  addLeadingZero,
   dateToUnixTimestamp,
   unixTimestampToTimeUnits,
-} from "../utils"
+  addLeadingZero,
+} from "#/utils"
 
 /**
  * It was decided to use an already implemented hook used by Threshold Network.
