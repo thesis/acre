@@ -8,7 +8,7 @@ import { PROCESS_STATUSES } from "#/types"
 import { logPromiseFailure } from "#/utils"
 import ServerErrorModal from "./ServerErrorModal"
 import RetryModal from "./RetryModal"
-import { LoadingModal } from "../../content"
+import LoadingModal from "../../LoadingModal"
 
 export default function StakingErrorModal() {
   const { setStatus } = useModalFlowContext()

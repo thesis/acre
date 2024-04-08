@@ -21,7 +21,7 @@ type MissingAccountModalProps = {
   requestAccount: (...params: RequestAccountParams) => Promise<void>
 }
 
-export function MissingAccountModal({
+export default function MissingAccountModal({
   currency,
   icon,
   requestAccount,
