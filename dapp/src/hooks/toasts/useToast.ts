@@ -16,7 +16,7 @@ export function useToast() {
     [toast],
   )
 
-  const open = useCallback(
+  const openToast = useCallback(
     ({ id, ...options }: UseToastOptions) => {
       if (!id) {
         overriddenToast(options)
@@ -30,11 +30,12 @@ export function useToast() {
     [overriddenToast, toast],
   )
 
-  return useMemo(
-    () => ({
-      ...Object.assign(overriddenToast, toast),
-      open,
-    }),
-    [overriddenToast, toast, open],
-  )
+  return useMemo(() => {
+    const { close: closeToast, ...rest } = Object.assign(overriddenToast, toast)
+    return {
+      ...rest,
+      openToast,
+      closeToast,
+    }
+  }, [overriddenToast, toast, openToast])
 }

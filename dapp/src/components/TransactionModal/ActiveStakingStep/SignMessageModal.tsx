@@ -15,7 +15,7 @@ export default function SignMessageModal() {
   const { goNext, setStatus } = useModalFlowContext()
   const { signMessage } = useStakeFlowContext()
   const [buttonText, setButtonText] = useState("Sign now")
-  const { close: closeToast, open: openToast } = useToast()
+  const { closeToast, openToast } = useToast()
 
   useEffect(() => {
     setStatus(PROCESS_STATUSES.PENDING)

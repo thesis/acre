@@ -24,7 +24,7 @@ export default function DepositBTCModal() {
   const { setStatus } = useModalFlowContext()
   const { btcAddress, depositReceipt, stake } = useStakeFlowContext()
   const depositTelemetry = useDepositTelemetry()
-  const { close: closeToast, open: openToast } = useToast()
+  const { closeToast, openToast } = useToast()
 
   const [isLoading, setIsLoading] = useState(false)
   const [buttonText, setButtonText] = useState("Deposit BTC")

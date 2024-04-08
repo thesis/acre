@@ -15,7 +15,7 @@ export function useShowWalletErrorToast(
   const {
     [type]: { account, requestAccount },
   } = useWallet()
-  const { close, open } = useToast()
+  const { closeToast, openToast } = useToast()
 
   const toastId = WALLET_ERROR_TOAST_ID[type]
 
@@ -26,7 +26,7 @@ export function useShowWalletErrorToast(
 
   const handleOpen = useCallback(
     () =>
-      open({
+      openToast({
         id: toastId,
         render: ({ onClose }) =>
           WalletErrorToast({
@@ -35,7 +35,7 @@ export function useShowWalletErrorToast(
             onClick: handleConnect,
           }),
       }),
-    [handleConnect, open, toastId, type],
+    [handleConnect, openToast, toastId, type],
   )
 
   useTimeout(handleOpen, delay)
@@ -43,6 +43,6 @@ export function useShowWalletErrorToast(
   useEffect(() => {
     if (!account) return
 
-    close(toastId)
-  }, [account, close, toastId])
+    closeToast(toastId)
+  }, [account, closeToast, toastId])
 }
