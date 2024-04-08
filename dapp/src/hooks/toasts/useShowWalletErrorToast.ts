@@ -5,8 +5,8 @@ import WalletErrorToast, {
   WALLET_ERROR_TOAST_ID,
 } from "#/components/WalletErrorToast"
 import { useToast } from "./useToast"
-import { useWallet } from "./useWallet"
-import { useTimeout } from "./useTimeout"
+import { useWallet } from "../useWallet"
+import { useTimeout } from "../useTimeout"
 
 export function useShowWalletErrorToast(
   type: "bitcoin" | "ethereum",

@@ -1,7 +1,7 @@
 import { useSentry } from "./sentry"
 import { useInitializeAcreSdk } from "./useInitializeAcreSdk"
 import { useFetchBTCPriceUSD } from "./useFetchBTCPriceUSD"
-import { useShowWalletErrorToast } from "./useShowWalletErrorToast"
+import { useInitGlobalToasts } from "./toasts/useInitGlobalToasts"
 
 export function useInitApp() {
   // TODO: Let's uncomment when dark mode is ready
@@ -9,6 +9,5 @@ export function useInitApp() {
   useSentry()
   useInitializeAcreSdk()
   useFetchBTCPriceUSD()
-  useShowWalletErrorToast("ethereum")
-  useShowWalletErrorToast("bitcoin")
+  useInitGlobalToasts()
 }
