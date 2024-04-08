@@ -231,7 +231,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         uint256 assets,
         address receiver,
         address owner
-    ) public override returns (uint256) {
+    ) public override whenNotPaused returns (uint256) {
         if (assets > totalAssets()) {
             uint256 missingAmount = assets - totalAssets();
             dispatcher.withdraw(missingAmount);
@@ -240,12 +240,23 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         return super.withdraw(assets, receiver, owner);
     }
 
-    // TODO: change this function to pull assets from the dispatcher.
+    /// @notice Redeems shares for assets and transfers them to the receiver.
+    /// @dev Redeem unallocated assets first and and if not enough, then pull
+    ///      the assets from the dispatcher.
+    /// @param shares Amount of shares to redeem.
+    /// @param receiver The address to which the assets will be transferred.
+    /// @param owner The address of the owner of the shares.
     function redeem(
         uint256 shares,
         address receiver,
         address owner
     ) public override whenNotPaused returns (uint256) {
+        uint256 assets = super.previewRedeem(shares);
+        if (assets > totalAssets()) {
+            uint256 missingAmount = assets - totalAssets();
+            dispatcher.withdraw(missingAmount);
+        }
+
         return super.redeem(shares, receiver, owner);
     }
 
