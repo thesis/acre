@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable2Step.sol";
 import {ZeroAddress} from "./utils/Errors.sol";
 import "./stBTC.sol";
+import "./interfaces/IDispatcher.sol";
 
 interface IMezoPortal {
     struct DepositInfo {
@@ -52,7 +53,7 @@ contract MezoAllocator is Ownable2Step {
     );
 
     /// Emitted when tBTC is withdrawn from MezoPortal.
-    event DepositWithdraw(uint256 indexed depositId, uint96 amount);
+    event DepositWithdraw(uint256 indexed depositId, uint256 amount);
 
     /// @notice Emitted when the maintainer address is updated.
     event MaintainerUpdated(address indexed maintainer);
@@ -141,7 +142,7 @@ contract MezoAllocator is Ownable2Step {
     ///         This function can withdraw partial or a full amount of tBTC from
     ///         MezoPortal for a given deposit id.
     /// @param amount Amount of tBTC to withdraw.
-    function withdraw(uint96 amount) external onlyWithdrawer {
+    function withdraw(uint256 amount) external onlyWithdrawer {
         uint96 balance = mezoPortal
             .getDeposit(address(this), address(tbtc), depositId)
             .balance;
@@ -149,7 +150,7 @@ contract MezoAllocator is Ownable2Step {
             revert InsufficientBalance();
         }
         emit DepositWithdraw(depositId, amount);
-        mezoPortal.withdraw(address(tbtc), depositId, amount);
+        mezoPortal.withdraw(address(tbtc), depositId, uint96(amount));
         tbtc.safeTransfer(address(stbtc), amount);
     }
 
@@ -173,5 +174,18 @@ contract MezoAllocator is Ownable2Step {
         withdrawer = _withdrawer;
 
         emit WithdrawerUpdated(_withdrawer);
+    }
+
+    /// @notice Returns the total amount of tBTC allocated to MezoPortal.
+    function totalAssets()
+        external
+        view
+        override
+        returns (uint256 totalAmount)
+    {
+        return
+            mezoPortal
+                .getDeposit(address(this), address(tbtc), depositId)
+                .balance;
     }
 }

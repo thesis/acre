@@ -6,12 +6,8 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "./Dispatcher.sol";
 import "./PausableOwnable.sol";
 import "./lib/ERC4626Fees.sol";
+import "./interfaces/IDispatcher.sol";
 import {ZeroAddress} from "./utils/Errors.sol";
-
-// slither-disable-next-line missing-inheritance
-interface IDispatcher {
-    function withdraw(uint256 amount) external;
-}
 
 /// @title stBTC
 /// @notice This contract implements the ERC-4626 tokenized vault standard. By
@@ -174,6 +170,14 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         exitFeeBasisPoints = newExitFeeBasisPoints;
 
         emit ExitFeeBasisPointsUpdated(newExitFeeBasisPoints);
+    }
+
+    /// @notice Returns the total amount of assets held by the vault across all
+    ///         allocations and this contract.
+    function totalAssets() public view override returns (uint256) {
+        uint256 totalAmount = IERC20(asset()).balanceOf(address(this));
+        totalAmount += dispatcher.totalAssets();
+        return totalAmount;
     }
 
     /// @notice Mints shares to receiver by depositing exactly amount of
