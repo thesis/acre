@@ -39,8 +39,6 @@ contract MezoAllocator is Ownable2Step {
     stBTC public immutable stbtc;
     /// @notice Maintainer address which can trigger deposit flow.
     address public maintainer;
-    /// @notice Address that can withdraw tBTC from Mezo Portal.
-    address public withdrawer;
     /// @notice keeps track of the latest deposit ID assigned in Mezo Portal.
     uint256 public depositId;
 
@@ -58,9 +56,6 @@ contract MezoAllocator is Ownable2Step {
     /// @notice Emitted when the maintainer address is updated.
     event MaintainerUpdated(address indexed maintainer);
 
-    /// @notice Emitted when the withdrawer address is updated.
-    event WithdrawerUpdated(address indexed withdrawer);
-
     /// @notice Reverts if the caller is not an authorized account.
     error NotAuthorized();
 
@@ -69,13 +64,6 @@ contract MezoAllocator is Ownable2Step {
 
     modifier onlyMaintainerAndOwner() {
         if (msg.sender != maintainer && owner() != msg.sender) {
-            revert NotAuthorized();
-        }
-        _;
-    }
-
-    modifier onlyWithdrawer() {
-        if (msg.sender != withdrawer) {
             revert NotAuthorized();
         }
         _;
@@ -142,7 +130,8 @@ contract MezoAllocator is Ownable2Step {
     ///         This function can withdraw partial or a full amount of tBTC from
     ///         MezoPortal for a given deposit id.
     /// @param amount Amount of tBTC to withdraw.
-    function withdraw(uint256 amount) external onlyWithdrawer {
+    function withdraw(uint256 amount) external {
+        if (msg.sender != address(stbtc)) revert NotAuthorized();
         uint96 balance = mezoPortal
             .getDeposit(address(this), address(tbtc), depositId)
             .balance;
@@ -165,22 +154,10 @@ contract MezoAllocator is Ownable2Step {
         emit MaintainerUpdated(_maintainer);
     }
 
-    /// @notice Updates the withdrawer address.
-    /// @param _withdrawer Address of the new withdrawer.
-    function updateWithdrawer(address _withdrawer) external onlyOwner {
-        if (_withdrawer == address(0)) {
-            revert ZeroAddress();
-        }
-        withdrawer = _withdrawer;
-
-        emit WithdrawerUpdated(_withdrawer);
-    }
-
     /// @notice Returns the total amount of tBTC allocated to MezoPortal.
     function totalAssets()
         external
         view
-        override
         returns (uint256 totalAmount)
     {
         return

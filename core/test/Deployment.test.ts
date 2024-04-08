@@ -71,15 +71,5 @@ describe("Deployment", () => {
         })
       })
     })
-
-    describe("updateWithdrawer", () => {
-      context("when a new withdrawer has been set", () => {
-        it("should be set to a new maintainer address", async () => {
-          const actualWithdrawer = await mezoAllocator.withdrawer()
-
-          expect(actualWithdrawer).to.be.equal(await stbtc.getAddress())
-        })
-      })
-    })
   })
 })
