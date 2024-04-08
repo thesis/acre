@@ -114,17 +114,13 @@ contract MezoAllocator is Ownable2Step {
             // slither-disable-next-line reentrancy-no-eth
             mezoPortal.withdraw(address(tbtc), depositId, depositBalance);
         }
-        uint256 addedAmount = IERC20(tbtc).balanceOf(address(stbtc));
+        uint256 addedAmount = tbtc.balanceOf(address(stbtc));
         // slither-disable-next-line arbitrary-send-erc20
-        IERC20(tbtc).safeTransferFrom(
-            address(stbtc),
-            address(this),
-            addedAmount
-        );
+        tbtc.safeTransferFrom(address(stbtc), address(this), addedAmount);
 
-        uint96 newDepositAmount = uint96(IERC20(tbtc).balanceOf(address(this)));
+        uint96 newDepositAmount = uint96(tbtc.balanceOf(address(this)));
 
-        IERC20(tbtc).forceApprove(address(mezoPortal), newDepositAmount);
+        tbtc.forceApprove(address(mezoPortal), newDepositAmount);
         // 0 denotes no lock period for this deposit.
         mezoPortal.deposit(address(tbtc), newDepositAmount, 0);
         uint256 oldDepositId = depositId;
@@ -154,7 +150,7 @@ contract MezoAllocator is Ownable2Step {
         }
         emit DepositWithdraw(depositId, amount);
         mezoPortal.withdraw(address(tbtc), depositId, amount);
-        IERC20(tbtc).safeTransfer(address(stbtc), amount);
+        tbtc.safeTransfer(address(stbtc), amount);
     }
 
     /// @notice Updates the maintainer address.
