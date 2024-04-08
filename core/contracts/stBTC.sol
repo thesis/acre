@@ -232,9 +232,9 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         address receiver,
         address owner
     ) public override whenNotPaused returns (uint256) {
-        if (assets > totalAssets()) {
-            uint256 missingAmount = assets - totalAssets();
-            dispatcher.withdraw(missingAmount);
+        uint256 currentAssetsBalance = IERC20(asset()).balanceOf(address(this));
+        if (assets > currentAssetsBalance) {
+            dispatcher.withdraw(assets - currentAssetsBalance);
         }
 
         return super.withdraw(assets, receiver, owner);
@@ -252,9 +252,9 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         address owner
     ) public override whenNotPaused returns (uint256) {
         uint256 assets = super.previewRedeem(shares);
-        if (assets > totalAssets()) {
-            uint256 missingAmount = assets - totalAssets();
-            dispatcher.withdraw(missingAmount);
+        uint256 currentAssetsBalance = IERC20(asset()).balanceOf(address(this));
+        if (assets > currentAssetsBalance) {
+            dispatcher.withdraw(assets - currentAssetsBalance);
         }
 
         return super.redeem(shares, receiver, owner);
