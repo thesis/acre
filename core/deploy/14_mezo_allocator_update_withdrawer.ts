@@ -6,7 +6,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { getNamedAccounts, deployments } = hre
   const { deployer } = await getNamedAccounts()
 
-  const stbtc = await deployments.get("stBTC")
+  const withdrawer = await deployments.get("stBTC")
 
   await deployments.execute(
     "MezoAllocator",
@@ -15,12 +15,12 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
       log: true,
       waitConfirmations: waitConfirmationsNumber(hre),
     },
-    "updateTbtcStorage",
-    stbtc.address,
+    "updateWithdrawer",
+    withdrawer.address,
   )
 }
 
 export default func
 
-func.tags = ["MezoAllocatorUpdateStorage"]
-func.dependencies = ["stBTC", "MezoAllocator"]
+func.tags = ["MezoAllocatorUpdateWithdrawer"]
+func.dependencies = ["stBTC"]

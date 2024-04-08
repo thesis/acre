@@ -7,11 +7,12 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { deployer } = await getNamedAccounts()
 
   const tbtc = await deployments.get("TBTC")
+  const stbtc = await deployments.get("stBTC")
   const mezoPortal = await deployments.get("MezoPortal")
 
   const mezoAllocator = await deployments.deploy("MezoAllocator", {
     from: deployer,
-    args: [mezoPortal.address, tbtc.address],
+    args: [mezoPortal.address, tbtc.address, stbtc.address],
     log: true,
     waitConfirmations: waitConfirmationsNumber(hre),
   })
@@ -26,4 +27,4 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 export default func
 
 func.tags = ["MezoAllocator"]
-func.dependencies = ["TBTC", "MezoPortal"]
+func.dependencies = ["TBTC", "stBTC", "MezoPortal"]
