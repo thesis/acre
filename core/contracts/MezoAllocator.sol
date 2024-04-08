@@ -31,39 +31,42 @@ interface IMezoPortal {
 contract MezoAllocator is Ownable2Step {
     using SafeERC20 for IERC20;
 
-    /// Address of the MezoPortal contract.
+    /// @notice Address of the MezoPortal contract.
     IMezoPortal public immutable mezoPortal;
-    /// tBTC token contract.
+    /// @notice tBTC token contract.
     IERC20 public immutable tbtc;
-    /// stBTC token vault contract.
+    /// @notice stBTC token vault contract.
     stBTC public immutable stbtc;
-    /// @notice Maintainer address which can trigger deposit flow.
-    address public maintainer;
+    /// @notice Keeps track of the addresses that are allowed to trigger deposit
+    ///         allocations.
+    mapping(address => bool) public isMaintainer;
+    /// @notice List of maintainers.
+    address[] public maintainers;
     /// @notice keeps track of the latest deposit ID assigned in Mezo Portal.
     uint256 public depositId;
 
-    /// Emitted when tBTC is deposited to MezoPortal.
+    /// @notice Emitted when tBTC is deposited to MezoPortal.
     event DepositAllocated(
         uint256 indexed oldDepositId,
         uint256 indexed newDepositId,
         uint256 addedAmount,
         uint256 newDepositAmount
     );
-
-    /// Emitted when tBTC is withdrawn from MezoPortal.
+    /// @notice Emitted when tBTC is withdrawn from MezoPortal.
     event DepositWithdraw(uint256 indexed depositId, uint256 amount);
-
     /// @notice Emitted when the maintainer address is updated.
-    event MaintainerUpdated(address indexed maintainer);
-
+    event MaintainerAdded(address indexed maintainer);
+    /// @notice Emitted when the maintainer address is updated.
+    event MaintainerRemoved(address indexed maintainer);
     /// @notice Reverts if the caller is not an authorized account.
     error NotAuthorized();
-
     /// @notice Reverts if the caller tries to withdraw more tBTC than available.
     error InsufficientBalance();
+    /// @notice Reverts if the caller is not a maintainer.
+    error NotMaintainer();
 
-    modifier onlyMaintainerAndOwner() {
-        if (msg.sender != maintainer && owner() != msg.sender) {
+    modifier onlyMaintainer() {
+        if (!isMaintainer[msg.sender]) {
             revert NotAuthorized();
         }
         _;
@@ -93,8 +96,8 @@ contract MezoAllocator is Ownable2Step {
     ///         before a new deposit with added amount is created. This mimics a
     ///         "top up" functionality with the difference that a new deposit id
     ///         is created and the previous deposit id is no longer in use.
-    /// @dev This function can be invoked periodically by a bot.
-    function allocate() external onlyMaintainerAndOwner {
+    /// @dev This function can be invoked periodically by a maintainer.
+    function allocate() external onlyMaintainer {
         uint96 depositBalance = mezoPortal
             .getDeposit(address(this), address(tbtc), depositId)
             .balance;
@@ -144,22 +147,39 @@ contract MezoAllocator is Ownable2Step {
     }
 
     /// @notice Updates the maintainer address.
-    /// @param _maintainer Address of the new maintainer.
-    function updateMaintainer(address _maintainer) external onlyOwner {
-        if (_maintainer == address(0)) {
+    /// @param maintainerToAdd Address of the new maintainer.
+    function addMaintainer(address maintainerToAdd) external onlyOwner {
+        if (maintainerToAdd == address(0)) {
             revert ZeroAddress();
         }
-        maintainer = _maintainer;
+        maintainers.push(maintainerToAdd);
+        isMaintainer[maintainerToAdd] = true;
 
-        emit MaintainerUpdated(_maintainer);
+        emit MaintainerAdded(maintainerToAdd);
+    }
+
+    /// @notice Removes the maintainer address.
+    /// @param maintainerToRemove Address of the maintainer to remove.
+    function removeMaintainer(address maintainerToRemove) external onlyOwner {
+        if (!isMaintainer[maintainerToRemove]) {
+            revert NotMaintainer();
+        }
+        delete (isMaintainer[maintainerToRemove]);
+
+        for (uint256 i = 0; i < maintainers.length; i++) {
+            if (maintainers[i] == maintainerToRemove) {
+                maintainers[i] = maintainers[maintainers.length - 1];
+                // slither-disable-next-line costly-loop
+                maintainers.pop();
+                break;
+            }
+        }
+
+        emit MaintainerRemoved(maintainerToRemove);
     }
 
     /// @notice Returns the total amount of tBTC allocated to MezoPortal.
-    function totalAssets()
-        external
-        view
-        returns (uint256 totalAmount)
-    {
+    function totalAssets() external view returns (uint256 totalAmount) {
         return
             mezoPortal
                 .getDeposit(address(this), address(tbtc), depositId)
