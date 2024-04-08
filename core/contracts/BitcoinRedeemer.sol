@@ -137,6 +137,10 @@ contract BitcoinRedeemer is Ownable2StepUpgradeable, IReceiveApproval {
     ///      It is a scenario that is unlikely to happen with the current Bridge
     ///      setup. This contract remains upgradable to have flexibility to handle
     ///      adjustments to tBTC Bridge changes.
+    /// @dev Redemption data should include a `redeemer` address matching the
+    ///      address of the staker who is redeeming the shares. In case anything
+    ///      goes wrong during the tBTC unminting process, the redeemer will be
+    ///      able to claim the tBTC tokens back from the tBTC Bank contract.
     /// @param owner The owner of the stBTC tokens.
     /// @param shares The number of stBTC tokens to redeem.
     /// @param tbtcRedemptionData Additional data required for the tBTC redemption.
