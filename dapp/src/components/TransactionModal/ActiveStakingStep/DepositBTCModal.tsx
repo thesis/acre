@@ -13,10 +13,11 @@ import { TextMd } from "#/components/shared/Typography"
 import { logPromiseFailure } from "#/utils"
 import { PROCESS_STATUSES } from "#/types"
 import { CardAlert } from "#/components/shared/alerts"
+import { TOASTS, TOAST_IDS } from "#/types/toast"
 import StakingStepsModalContent from "./StakingStepsModalContent"
-import DepositTransactionErrorToast, {
-  TOAST_ID,
-} from "./DepositTransactionErrorToast"
+
+const TOAST_ID = TOAST_IDS.DEPOSIT_TRANSACTION_ERROR
+const TOAST = TOASTS[TOAST_ID]
 
 export default function DepositBTCModal() {
   const { ethAccount } = useWalletContext()
@@ -53,7 +54,10 @@ export default function DepositBTCModal() {
   }, [closeToast, setStatus, handleStake])
 
   const showError = useCallback(() => {
-    openToast({ id: TOAST_ID, render: DepositTransactionErrorToast })
+    openToast({
+      id: TOAST_ID,
+      render: TOAST,
+    })
     setButtonText("Try again")
   }, [openToast])
 

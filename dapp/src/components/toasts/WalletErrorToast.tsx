@@ -1,13 +1,8 @@
 import React from "react"
 import { Flex, Button } from "@chakra-ui/react"
-import Toast from "./shared/Toast"
+import Toast from "../shared/Toast"
 
-export const WALLET_ERROR_TOAST_ID = {
-  bitcoin: "bitcoin-wallet-error",
-  ethereum: "ethereum-wallet-error",
-}
-
-export default function WalletErrorToast({
+export function WalletErrorToast({
   title,
   onClick,
   onClose,

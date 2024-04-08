@@ -6,10 +6,12 @@ import {
   useToast,
 } from "#/hooks"
 import { logPromiseFailure } from "#/utils"
-import { PROCESS_STATUSES } from "#/types"
+import { PROCESS_STATUSES, TOASTS, TOAST_IDS } from "#/types"
 import { ReceiveSTBTCAlert } from "#/components/shared/alerts"
 import StakingStepsModalContent from "./StakingStepsModalContent"
-import SigningMessageErrorToast, { TOAST_ID } from "./SigningMessageErrorToast"
+
+const TOAST_ID = TOAST_IDS.SIGNING_ERROR
+const TOAST = TOASTS[TOAST_ID]
 
 export default function SignMessageModal() {
   const { goNext, setStatus } = useModalFlowContext()
@@ -29,7 +31,7 @@ export default function SignMessageModal() {
   const onSignMessageError = useCallback(() => {
     openToast({
       id: TOAST_ID,
-      render: SigningMessageErrorToast,
+      render: TOAST,
     })
     setButtonText("Try again")
   }, [openToast])

@@ -1,9 +1,7 @@
 import React from "react"
-import Toast from "#/components/shared/Toast"
+import Toast from "../shared/Toast"
 
-export const TOAST_ID = "deposit-transaction-error"
-
-export default function DepositTransactionErrorToast({
+export function DepositTransactionErrorToast({
   onClose,
 }: {
   onClose: () => void

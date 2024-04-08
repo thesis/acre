@@ -1,13 +1,7 @@
 import React from "react"
-import Toast from "#/components/shared/Toast"
+import Toast from "../shared/Toast"
 
-export const TOAST_ID = "signing-error"
-
-export default function SigningMessageErrorToast({
-  onClose,
-}: {
-  onClose: () => void
-}) {
+export function SigningMessageErrorToast({ onClose }: { onClose: () => void }) {
   return (
     <Toast
       status="error"
