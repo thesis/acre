@@ -255,7 +255,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         address receiver,
         address owner
     ) public override whenNotPaused returns (uint256) {
-        uint256 assets = super.previewRedeem(shares);
+        uint256 assets = convertToAssets(shares);
         uint256 currentAssetsBalance = IERC20(asset()).balanceOf(address(this));
         if (assets > currentAssetsBalance) {
             dispatcher.withdraw(assets - currentAssetsBalance);
