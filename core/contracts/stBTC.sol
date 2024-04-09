@@ -97,7 +97,6 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     /// @notice Updates treasury wallet address.
     /// @param newTreasury New treasury wallet address.
     function updateTreasury(address newTreasury) external onlyOwner {
-        // TODO: Introduce a parameters update process.
         if (newTreasury == address(0)) {
             revert ZeroAddress();
         }
@@ -116,14 +115,11 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     function updateMinimumDepositAmount(
         uint256 newMinimumDepositAmount
     ) external onlyOwner {
-        // TODO: Introduce a parameters update process.
         minimumDepositAmount = newMinimumDepositAmount;
 
         emit MinimumDepositAmountUpdated(newMinimumDepositAmount);
     }
 
-    // TODO: Implement a governed upgrade process that initiates an update and
-    //       then finalizes it after a delay.
     /// @notice Updates the dispatcher contract and gives it an unlimited
     ///         allowance to transfer deposited tBTC.
     /// @param newDispatcher Address of the new dispatcher contract.
@@ -150,8 +146,6 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         IERC20(asset()).forceApprove(address(dispatcher), type(uint256).max);
     }
 
-    // TODO: Implement a governed upgrade process that initiates an update and
-    //       then finalizes it after a delay.
     /// @notice Update the entry fee basis points.
     /// @param newEntryFeeBasisPoints New value of the fee basis points.
     function updateEntryFeeBasisPoints(
@@ -162,8 +156,6 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         emit EntryFeeBasisPointsUpdated(newEntryFeeBasisPoints);
     }
 
-    // TODO: Implement a governed upgrade process that initiates an update and
-    //       then finalizes it after a delay.
     /// @notice Update the exit fee basis points.
     /// @param newExitFeeBasisPoints New value of the fee basis points.
     function updateExitFeeBasisPoints(

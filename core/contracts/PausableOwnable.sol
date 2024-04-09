@@ -92,7 +92,6 @@ abstract contract PausableOwnable is
     /// @param newPauseAdmin New account that can trigger emergency
     ///        stop mechanism.
     function updatePauseAdmin(address newPauseAdmin) external onlyOwner {
-        // TODO: Introduce a parameters update process.
         if (newPauseAdmin == address(0)) {
             revert ZeroAddress();
         }
