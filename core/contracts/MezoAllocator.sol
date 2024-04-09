@@ -86,7 +86,7 @@ contract MezoAllocator is IDispatcher, Ownable2Step {
         uint256 newDepositAmount
     );
     /// @notice Emitted when tBTC is withdrawn from MezoPortal.
-    event DepositWithdraw(uint256 indexed depositId, uint256 amount);
+    event DepositWithdrawn(uint256 indexed depositId, uint256 amount);
     /// @notice Emitted when the maintainer address is updated.
     event MaintainerAdded(address indexed maintainer);
     /// @notice Emitted when the maintainer address is updated.
@@ -165,7 +165,7 @@ contract MezoAllocator is IDispatcher, Ownable2Step {
     /// @param amount Amount of tBTC to withdraw.
     function withdraw(uint256 amount) external {
         if (msg.sender != address(stbtc)) revert NotAuthorized();
-        emit DepositWithdraw(depositId, amount);
+        emit DepositWithdrawn(depositId, amount);
         depositBalance -= uint96(amount);
         mezoPortal.withdraw(address(tbtc), depositId, uint96(amount));
         tbtc.safeTransfer(address(stbtc), amount);
