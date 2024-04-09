@@ -271,7 +271,10 @@ describe("MezoAllocator", () => {
       it("should revert", async () => {
         await expect(
           mezoAllocator.connect(thirdParty).addMaintainer(depositor.address),
-        ).to.be.revertedWithCustomError(mezoAllocator, "OwnableUnauthorizedAccount")
+        ).to.be.revertedWithCustomError(
+          mezoAllocator,
+          "OwnableUnauthorizedAccount",
+        )
       })
     })
 
@@ -299,13 +302,19 @@ describe("MezoAllocator", () => {
 
         it("should add a new maintainer to the list", async () => {
           const maintainers = await mezoAllocator.getMaintainers()
-          expect(maintainers).to.deep.equal([maintainer.address, thirdParty.address])
+          expect(maintainers).to.deep.equal([
+            maintainer.address,
+            thirdParty.address,
+          ])
         })
 
         it("should not allow to add the same maintainer twice", async () => {
           await expect(
             mezoAllocator.connect(governance).addMaintainer(thirdParty.address),
-          ).to.be.revertedWithCustomError(mezoAllocator, "MaintainerAlreadyRegistered")
+          ).to.be.revertedWithCustomError(
+            mezoAllocator,
+            "MaintainerAlreadyRegistered",
+          )
         })
 
         it("should not allow to add a zero address as a maintainer", async () => {
@@ -324,7 +333,10 @@ describe("MezoAllocator", () => {
       it("should revert", async () => {
         await expect(
           mezoAllocator.connect(thirdParty).removeMaintainer(depositor.address),
-        ).to.be.revertedWithCustomError(mezoAllocator, "OwnableUnauthorizedAccount")
+        ).to.be.revertedWithCustomError(
+          mezoAllocator,
+          "OwnableUnauthorizedAccount",
+        )
       })
     })
 
@@ -333,7 +345,9 @@ describe("MezoAllocator", () => {
         let tx: ContractTransactionResponse
 
         before(async () => {
-          await mezoAllocator.connect(governance).addMaintainer(thirdParty.address)
+          await mezoAllocator
+            .connect(governance)
+            .addMaintainer(thirdParty.address)
           tx = await mezoAllocator
             .connect(governance)
             .removeMaintainer(thirdParty.address)
@@ -358,8 +372,13 @@ describe("MezoAllocator", () => {
 
         it("should not allow to remove a maintainer twice", async () => {
           await expect(
-            mezoAllocator.connect(governance).removeMaintainer(thirdParty.address),
-          ).to.be.revertedWithCustomError(mezoAllocator, "MaintainerNotRegistered")
+            mezoAllocator
+              .connect(governance)
+              .removeMaintainer(thirdParty.address),
+          ).to.be.revertedWithCustomError(
+            mezoAllocator,
+            "MaintainerNotRegistered",
+          )
         })
       })
     })
