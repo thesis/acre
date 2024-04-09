@@ -12,10 +12,7 @@ export function useFetchMinStakeAmount() {
     if (!isInitialized || !acre) return
 
     const fetchMinStakeAmount = async () => {
-      // TODO: Use function from SDK
-      const minStakeAmount = await new Promise<bigint>((resolve) => {
-        resolve(BigInt(String(1e4))) // 0.0001 BTC
-      })
+      const minStakeAmount = await acre.staking.minStakeAmount()
 
       dispatch(setMinStakeAmount(minStakeAmount))
     }
