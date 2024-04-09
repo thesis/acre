@@ -217,4 +217,9 @@ contract MezoAllocator is IDispatcher, Ownable2Step {
     function totalAssets() external view returns (uint256 totalAmount) {
         return depositBalance;
     }
+
+    /// @notice Returns the list of maintainers.
+    function getMaintainers() external view returns (address[] memory) {
+        return maintainers;
+    }
 }
