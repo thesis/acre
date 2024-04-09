@@ -10,9 +10,9 @@ export type DecodedExtraData = {
 }
 
 /**
- * Interface for communication with the TBTCDepositor on-chain contract.
+ * Interface for communication with the BitcoinDepositor on-chain contract.
  */
-export interface TBTCDepositor extends DepositorProxy {
+export interface BitcoinDepositor extends DepositorProxy {
   /**
    * @returns The chain-specific identifier of this contract.
    */

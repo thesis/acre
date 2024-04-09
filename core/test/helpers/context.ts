@@ -8,7 +8,7 @@ import type {
   BridgeStub,
   TestERC4626,
   TBTCVaultStub,
-  AcreBitcoinDepositorHarness,
+  BitcoinDepositor,
 } from "../../typechain"
 
 // eslint-disable-next-line import/prefer-default-export
@@ -16,8 +16,8 @@ export async function deployment() {
   await deployments.fixture()
 
   const stbtc: stBTC = await getDeployedContract("stBTC")
-  const bitcoinDepositor: AcreBitcoinDepositorHarness =
-    await getDeployedContract("AcreBitcoinDepositor")
+  const bitcoinDepositor: BitcoinDepositor =
+    await getDeployedContract("BitcoinDepositor")
 
   const tbtc: TestERC20 = await getDeployedContract("TBTC")
   const tbtcBridge: BridgeStub = await getDeployedContract("Bridge")

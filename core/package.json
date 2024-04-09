@@ -26,7 +26,7 @@
     "lint:sol:fix": "solhint 'contracts/**/*.sol' --fix && prettier --write 'contracts/**/*.sol'",
     "lint:config": "prettier --check '**/*.@(json)'",
     "lint:config:fix": "prettier --write '**/*.@(json)'",
-    "test": "HARDHAT_TEST=true hardhat test"
+    "test": "hardhat test"
   },
   "devDependencies": {
     "@keep-network/hardhat-helpers": "^0.7.1",
@@ -36,7 +36,7 @@
     "@nomicfoundation/hardhat-toolbox": "^4.0.0",
     "@nomicfoundation/hardhat-verify": "^2.0.1",
     "@nomiclabs/hardhat-etherscan": "^3.1.7",
-    "@openzeppelin/hardhat-upgrades": "^2.4.1",
+    "@openzeppelin/hardhat-upgrades": "^3.0.5",
     "@thesis-co/eslint-config": "github:thesis/eslint-config#7b9bc8c",
     "@typechain/ethers-v6": "^0.5.1",
     "@typechain/hardhat": "^9.1.0",
@@ -63,6 +63,9 @@
   "dependencies": {
     "@keep-network/bitcoin-spv-sol": "3.4.0-solc-0.8",
     "@keep-network/tbtc-v2": "development",
-    "@openzeppelin/contracts": "^5.0.0"
+    "@openzeppelin/contracts": "^5.0.0",
+    "@openzeppelin/contracts-upgradeable": "^5.0.2",
+    "@types/chai-as-promised": "^7.1.8",
+    "chai-as-promised": "^7.1.1"
   }
 }

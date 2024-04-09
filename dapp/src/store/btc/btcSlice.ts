@@ -2,12 +2,16 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 import { fetchBTCPriceUSD } from "./btcThunk"
 
 type BtcState = {
+  estimatedBtcBalance: bigint
+  sharesBalance: bigint
   isLoadingPriceUSD: boolean
   usdPrice: number
   minDepositAmount: bigint
 }
 
 const initialState: BtcState = {
+  estimatedBtcBalance: 0n,
+  sharesBalance: 0n,
   isLoadingPriceUSD: false,
   usdPrice: 0,
   minDepositAmount: 0n,
@@ -18,6 +22,12 @@ export const btcSlice = createSlice({
   name: "btc",
   initialState,
   reducers: {
+    setSharesBalance(state, action: PayloadAction<bigint>) {
+      state.sharesBalance = action.payload
+    },
+    setEstimatedBtcBalance(state, action: PayloadAction<bigint>) {
+      state.estimatedBtcBalance = action.payload
+    },
     setMinDepositAmount(state, action: PayloadAction<bigint>) {
       state.minDepositAmount = action.payload
     },
@@ -39,4 +49,5 @@ export const btcSlice = createSlice({
   },
 })
 
-export const { setMinDepositAmount } = btcSlice.actions
+export const { setSharesBalance, setEstimatedBtcBalance, setMinDepositAmount } =
+  btcSlice.actions
