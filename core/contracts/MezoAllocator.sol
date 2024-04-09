@@ -28,7 +28,7 @@ interface IMezoPortal {
 }
 
 /// @notice MezoAllocator routes tBTC to/from MezoPortal.
-contract MezoAllocator is Ownable2Step {
+contract MezoAllocator is IDispatcher, Ownable2Step {
     using SafeERC20 for IERC20;
 
     /// @notice Address of the MezoPortal contract.
