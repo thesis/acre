@@ -8,18 +8,49 @@ import {ZeroAddress} from "./utils/Errors.sol";
 import "./stBTC.sol";
 import "./interfaces/IDispatcher.sol";
 
+/// @title IMezoPortal
+/// @dev Interface for the Mezo's Portal contract.
 interface IMezoPortal {
+    /// @notice DepositInfo keeps track of the deposit balance and unlock time.
+    ///         Each deposit is tracked separately and associated with a specific
+    ///         token. Some tokens can be deposited but can not be locked - in
+    ///         that case the unlockAt is the block timestamp of when the deposit
+    ///         was created. The same is true for tokens that can be locked but
+    ///         the depositor decided not to lock them.
     struct DepositInfo {
         uint96 balance;
         uint32 unlockAt;
     }
 
+    /// @notice Deposit and optionally lock tokens for the given period.
+    /// @dev Lock period will be normalized to weeks. If non-zero, it must not
+    ///      be shorter than the minimum lock period and must not be longer than
+    ///      the maximum lock period.
+    /// @param token token address to deposit
+    /// @param amount amount of tokens to deposit
+    /// @param lockPeriod lock period in seconds, 0 to not lock the deposit
     function deposit(address token, uint96 amount, uint32 lockPeriod) external;
 
+    /// @notice Withdraw deposited tokens.
+    ///         Deposited lockable tokens can be withdrawn at any time if
+    ///         there is no lock set on the deposit or the lock period has passed.
+    ///         There is no way to withdraw locked deposit. Tokens that are not
+    ///         lockable can be withdrawn at any time. Deposit can be withdrawn
+    ///         partially.
+    /// @param token deposited token address
+    /// @param depositId id of the deposit
+    /// @param amount amount of the token to be withdrawn from the deposit
     function withdraw(address token, uint256 depositId, uint96 amount) external;
 
+    /// @notice The number of deposits created. Includes the deposits that
+    ///         were fully withdrawn. This is also the identifier of the most
+    ///         recently created deposit.
     function depositCount() external view returns (uint256);
 
+    /// @notice Get the balance and unlock time of a given deposit.
+    /// @param depositor depositor address
+    /// @param token token address to get the balance
+    /// @param depositId id of the deposit
     function getDeposit(
         address depositor,
         address token,
@@ -44,6 +75,8 @@ contract MezoAllocator is IDispatcher, Ownable2Step {
     address[] public maintainers;
     /// @notice keeps track of the latest deposit ID assigned in Mezo Portal.
     uint256 public depositId;
+    /// @notice Keeps track of the total amount of tBTC allocated to MezoPortal.
+    uint96 public depositBalance;
 
     /// @notice Emitted when tBTC is deposited to MezoPortal.
     event DepositAllocated(
@@ -98,9 +131,6 @@ contract MezoAllocator is IDispatcher, Ownable2Step {
     ///         is created and the previous deposit id is no longer in use.
     /// @dev This function can be invoked periodically by a maintainer.
     function allocate() external onlyMaintainer {
-        uint96 depositBalance = mezoPortal
-            .getDeposit(address(this), address(tbtc), depositId)
-            .balance;
         if (depositBalance > 0) {
             // Free all Acre's tBTC from MezoPortal before creating a new deposit.
             // slither-disable-next-line reentrancy-no-eth
@@ -110,11 +140,11 @@ contract MezoAllocator is IDispatcher, Ownable2Step {
         // slither-disable-next-line arbitrary-send-erc20
         tbtc.safeTransferFrom(address(stbtc), address(this), addedAmount);
 
-        uint96 newDepositAmount = uint96(tbtc.balanceOf(address(this)));
+        depositBalance = uint96(tbtc.balanceOf(address(this)));
 
-        tbtc.forceApprove(address(mezoPortal), newDepositAmount);
+        tbtc.forceApprove(address(mezoPortal), depositBalance);
         // 0 denotes no lock period for this deposit.
-        mezoPortal.deposit(address(tbtc), newDepositAmount, 0);
+        mezoPortal.deposit(address(tbtc), depositBalance, 0);
         uint256 oldDepositId = depositId;
         // MezoPortal doesn't return depositId, so we have to read depositCounter
         // which assigns depositId to the current deposit.
@@ -125,7 +155,7 @@ contract MezoAllocator is IDispatcher, Ownable2Step {
             oldDepositId,
             depositId,
             addedAmount,
-            newDepositAmount
+            depositBalance
         );
     }
 
@@ -136,6 +166,7 @@ contract MezoAllocator is IDispatcher, Ownable2Step {
     function withdraw(uint256 amount) external {
         if (msg.sender != address(stbtc)) revert NotAuthorized();
         emit DepositWithdraw(depositId, amount);
+        depositBalance -= uint96(amount);
         mezoPortal.withdraw(address(tbtc), depositId, uint96(amount));
         tbtc.safeTransfer(address(stbtc), amount);
     }
@@ -174,9 +205,6 @@ contract MezoAllocator is IDispatcher, Ownable2Step {
 
     /// @notice Returns the total amount of tBTC allocated to MezoPortal.
     function totalAssets() external view returns (uint256 totalAmount) {
-        return
-            mezoPortal
-                .getDeposit(address(this), address(tbtc), depositId)
-                .balance;
+        return depositBalance;
     }
 }
