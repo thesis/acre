@@ -1,25 +1,25 @@
 import { useEffect } from "react"
-import { setMinDepositAmount } from "#/store/btc"
+import { setMinStakeAmount } from "#/store/btc"
 import { logPromiseFailure } from "#/utils"
 import { useAcreContext } from "#/acre-react/hooks"
 import { useAppDispatch } from "../store/useAppDispatch"
 
-export function useFetchMinDepositAmount() {
+export function useFetchMinStakeAmount() {
   const { acre, isInitialized } = useAcreContext()
   const dispatch = useAppDispatch()
 
   useEffect(() => {
     if (!isInitialized || !acre) return
 
-    const fetchMinDepositAmount = async () => {
+    const fetchMinStakeAmount = async () => {
       // TODO: Use function from SDK
-      const minDepositAmount = await new Promise<bigint>((resolve) => {
+      const minStakeAmount = await new Promise<bigint>((resolve) => {
         resolve(BigInt(String(1e4))) // 0.0001 BTC
       })
 
-      dispatch(setMinDepositAmount(minDepositAmount))
+      dispatch(setMinStakeAmount(minStakeAmount))
     }
 
-    logPromiseFailure(fetchMinDepositAmount())
+    logPromiseFailure(fetchMinStakeAmount())
   }, [acre, dispatch, isInitialized])
 }

@@ -1,5 +1,5 @@
-import { useFetchMinDepositAmount } from "./useFetchMinDepositAmount"
+import { useFetchMinStakeAmount } from "./useFetchMinStakeAmount"
 
 export function useFetchSdkData() {
-  useFetchMinDepositAmount()
+  useFetchMinStakeAmount()
 }

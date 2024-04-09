@@ -6,7 +6,7 @@ import { TextMd, TextSm } from "#/components/shared/Typography"
 import Spinner from "#/components/shared/Spinner"
 import { FormSubmitButton } from "#/components/shared/Form"
 import { useAppSelector } from "#/hooks"
-import { selectMinDepositAmount } from "#/store/btc"
+import { selectMinStakeAmount } from "#/store/btc"
 import UnstakeDetails from "./UnstakeDetails"
 
 // TODO: Use a position amount
@@ -17,14 +17,14 @@ function UnstakeFormModal({
 }: {
   onSubmitForm: (values: TokenAmountFormValues) => void
 }) {
-  const minDepositAmount = useAppSelector(selectMinDepositAmount)
+  const minStakeAmount = useAppSelector(selectMinStakeAmount)
 
   return (
     <TokenAmountForm
       tokenBalanceInputPlaceholder="BTC"
       currency="bitcoin"
       tokenBalance={MOCK_POSITION_AMOUNT}
-      minTokenAmount={minDepositAmount}
+      minTokenAmount={minStakeAmount}
       onSubmitForm={onSubmitForm}
     >
       <Flex flexDirection="column" gap={10}>

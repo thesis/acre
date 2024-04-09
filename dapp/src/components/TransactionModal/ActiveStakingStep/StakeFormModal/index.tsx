@@ -3,7 +3,7 @@ import TokenAmountForm from "#/components/shared/TokenAmountForm"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { useAppSelector, useWalletContext } from "#/hooks"
 import { FormSubmitButton } from "#/components/shared/Form"
-import { selectMinDepositAmount } from "#/store/btc"
+import { selectMinStakeAmount } from "#/store/btc"
 import StakeDetails from "./StakeDetails"
 
 function StakeFormModal({
@@ -11,7 +11,7 @@ function StakeFormModal({
 }: {
   onSubmitForm: (values: TokenAmountFormValues) => void
 }) {
-  const minDepositAmount = useAppSelector(selectMinDepositAmount)
+  const minStakeAmount = useAppSelector(selectMinStakeAmount)
   const { btcAccount } = useWalletContext()
   const tokenBalance = btcAccount?.balance.toString() ?? "0"
 
@@ -20,12 +20,12 @@ function StakeFormModal({
       tokenBalanceInputPlaceholder="BTC"
       currency="bitcoin"
       tokenBalance={tokenBalance}
-      minTokenAmount={minDepositAmount}
+      minTokenAmount={minStakeAmount}
       onSubmitForm={onSubmitForm}
     >
       <StakeDetails
         currency="bitcoin"
-        minTokenAmount={minDepositAmount}
+        minTokenAmount={minStakeAmount}
         maxTokenAmount={BigInt(tokenBalance)}
       />
       <FormSubmitButton mt={4}>Stake</FormSubmitButton>
