@@ -5,7 +5,6 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 import "@thesis-co/solidity-contracts/contracts/token/IReceiveApproval.sol";
 
-import "./Dispatcher.sol";
 import "./PausableOwnable.sol";
 import "./lib/ERC4626Fees.sol";
 import "./interfaces/IDispatcher.sol";

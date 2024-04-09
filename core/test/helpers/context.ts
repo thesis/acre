@@ -3,7 +3,6 @@ import { getDeployedContract } from "./contract"
 
 import type {
   StBTC as stBTC,
-  Dispatcher,
   BridgeStub,
   TestERC4626,
   TBTCVaultStub,
@@ -28,8 +27,6 @@ export async function deployment() {
   const tbtcBridge: BridgeStub = await getDeployedContract("Bridge")
   const tbtcVault: TBTCVaultStub = await getDeployedContract("TBTCVault")
 
-  const dispatcher: Dispatcher = await getDeployedContract("Dispatcher")
-
   const vault: TestERC4626 = await getDeployedContract("Vault")
   const mezoAllocator: MezoAllocator =
     await getDeployedContract("MezoAllocator")
@@ -42,7 +39,6 @@ export async function deployment() {
     bitcoinRedeemer,
     tbtcBridge,
     tbtcVault,
-    dispatcher,
     vault,
     mezoAllocator,
     mezoPortal,
