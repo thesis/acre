@@ -12,8 +12,8 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const tbtc = await deployments.get("TBTC")
   const stbtc = await deployments.get("stBTC")
 
-  const [, acreBitcoinDepositorDeployment] = await helpers.upgrades.deployProxy(
-    "AcreBitcoinDepositor",
+  const [, deployment] = await helpers.upgrades.deployProxy(
+    "BitcoinDepositor",
     {
       factoryOpts: {
         signer: deployer,
@@ -31,15 +31,9 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     },
   )
 
-  if (
-    acreBitcoinDepositorDeployment.transactionHash &&
-    hre.network.tags.etherscan
-  ) {
-    await waitForTransaction(
-      hre,
-      acreBitcoinDepositorDeployment.transactionHash,
-    )
-    await helpers.etherscan.verify(acreBitcoinDepositorDeployment)
+  if (deployment.transactionHash && hre.network.tags.etherscan) {
+    await waitForTransaction(hre, deployment.transactionHash)
+    await helpers.etherscan.verify(deployment)
   }
 
   // TODO: Add Tenderly verification
@@ -47,5 +41,5 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
 export default func
 
-func.tags = ["AcreBitcoinDepositor"]
+func.tags = ["BitcoinDepositor"]
 func.dependencies = ["TBTC", "stBTC"]
