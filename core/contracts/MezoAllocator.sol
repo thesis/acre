@@ -94,7 +94,9 @@ contract MezoAllocator is IDispatcher, Ownable2Step {
     /// @notice Reverts if the caller is not an authorized account.
     error NotAuthorized();
     /// @notice Reverts if the caller is not a maintainer.
-    error NotMaintainer();
+    error MaintainerNotRegistered();
+    /// @notice Reverts if the caller is already a maintainer.
+    error MaintainerAlreadyRegistered();
 
     modifier onlyMaintainer() {
         if (!isMaintainer[msg.sender]) {
@@ -137,12 +139,14 @@ contract MezoAllocator is IDispatcher, Ownable2Step {
             // slither-disable-next-line reentrancy-no-eth
             mezoPortal.withdraw(address(tbtc), depositId, depositBalance);
         }
+
+        // Fetch unallocated tBTC from stBTC contract.
         uint256 addedAmount = tbtc.balanceOf(address(stbtc));
         // slither-disable-next-line arbitrary-send-erc20
         tbtc.safeTransferFrom(address(stbtc), address(this), addedAmount);
 
+        // Create a new deposit in the MezoPortal.
         depositBalance = uint96(tbtc.balanceOf(address(this)));
-
         tbtc.forceApprove(address(mezoPortal), depositBalance);
         // 0 denotes no lock period for this deposit.
         mezoPortal.deposit(address(tbtc), depositBalance, 0);
@@ -166,6 +170,7 @@ contract MezoAllocator is IDispatcher, Ownable2Step {
     /// @param amount Amount of tBTC to withdraw.
     function withdraw(uint256 amount) external {
         if (msg.sender != address(stbtc)) revert NotAuthorized();
+
         emit DepositWithdrawn(depositId, amount);
         depositBalance -= uint96(amount);
         mezoPortal.withdraw(address(tbtc), depositId, uint96(amount));
@@ -178,6 +183,9 @@ contract MezoAllocator is IDispatcher, Ownable2Step {
         if (maintainerToAdd == address(0)) {
             revert ZeroAddress();
         }
+        if (isMaintainer[maintainerToAdd]) {
+            revert MaintainerAlreadyRegistered();
+        }
         maintainers.push(maintainerToAdd);
         isMaintainer[maintainerToAdd] = true;
 
@@ -188,7 +196,7 @@ contract MezoAllocator is IDispatcher, Ownable2Step {
     /// @param maintainerToRemove Address of the maintainer to remove.
     function removeMaintainer(address maintainerToRemove) external onlyOwner {
         if (!isMaintainer[maintainerToRemove]) {
-            revert NotMaintainer();
+            revert MaintainerNotRegistered();
         }
         delete (isMaintainer[maintainerToRemove]);
 
