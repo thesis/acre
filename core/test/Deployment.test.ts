@@ -65,9 +65,9 @@ describe("Deployment", () => {
     describe("updateMaintainer", () => {
       context("when a new maintainer has been set", () => {
         it("should be set to a new maintainer address", async () => {
-          const actualMaintainer = await mezoAllocator.maintainer()
+          const isMaintainer = await mezoAllocator.isMaintainer(maintainer)
 
-          expect(actualMaintainer).to.be.equal(await maintainer.getAddress())
+          expect(isMaintainer).to.be.equal(true)
         })
       })
     })

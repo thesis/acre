@@ -13,7 +13,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
       log: true,
       waitConfirmations: waitConfirmationsNumber(hre),
     },
-    "updateMaintainer",
+    "addMaintainer",
     maintainer,
   )
 }
