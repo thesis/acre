@@ -7,7 +7,7 @@ import type {
   BridgeStub,
   TestERC4626,
   TBTCVaultStub,
-  AcreBitcoinDepositor,
+  BitcoinDepositor,
   BitcoinRedeemer,
   TestTBTC,
 } from "../../typechain"
@@ -17,9 +17,8 @@ export async function deployment() {
   await deployments.fixture()
 
   const stbtc: stBTC = await getDeployedContract("stBTC")
-  const bitcoinDepositor: AcreBitcoinDepositor = await getDeployedContract(
-    "AcreBitcoinDepositor",
-  )
+  const bitcoinDepositor: BitcoinDepositor =
+    await getDeployedContract("BitcoinDepositor")
   const bitcoinRedeemer: BitcoinRedeemer =
     await getDeployedContract("BitcoinRedeemer")
 

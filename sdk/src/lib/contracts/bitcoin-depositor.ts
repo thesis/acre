@@ -10,7 +10,7 @@ export type DecodedExtraData = {
 }
 
 /**
- * Interface for communication with the AcreBitcoinDepositor on-chain contract.
+ * Interface for communication with the BitcoinDepositor on-chain contract.
  */
 export interface BitcoinDepositor extends DepositorProxy {
   /**
