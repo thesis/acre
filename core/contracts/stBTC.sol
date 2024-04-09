@@ -133,10 +133,6 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         emit DispatcherUpdated(oldDispatcher, address(newDispatcher));
         dispatcher = newDispatcher;
 
-        // TODO: Once withdrawal/rebalancing is implemented, we need to revoke the
-        // approval of the vaults share tokens from the old dispatcher and approve
-        // a new dispatcher to manage the share tokens.
-
         if (oldDispatcher != address(0)) {
             // Setting allowance to zero for the old dispatcher
             IERC20(asset()).forceApprove(oldDispatcher, 0);
