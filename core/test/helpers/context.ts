@@ -4,13 +4,14 @@ import { getDeployedContract } from "./contract"
 import type {
   StBTC as stBTC,
   Dispatcher,
-  TestERC20,
   BridgeStub,
   TestERC4626,
   TBTCVaultStub,
   MezoAllocator,
   MezoPortalStub,
   BitcoinDepositor,
+  BitcoinRedeemer,
+  TestTBTC,
 } from "../../typechain"
 
 // eslint-disable-next-line import/prefer-default-export
@@ -20,8 +21,10 @@ export async function deployment() {
   const stbtc: stBTC = await getDeployedContract("stBTC")
   const bitcoinDepositor: BitcoinDepositor =
     await getDeployedContract("BitcoinDepositor")
+  const bitcoinRedeemer: BitcoinRedeemer =
+    await getDeployedContract("BitcoinRedeemer")
 
-  const tbtc: TestERC20 = await getDeployedContract("TBTC")
+  const tbtc: TestTBTC = await getDeployedContract("TBTC")
   const tbtcBridge: BridgeStub = await getDeployedContract("Bridge")
   const tbtcVault: TBTCVaultStub = await getDeployedContract("TBTCVault")
 
@@ -36,6 +39,7 @@ export async function deployment() {
     tbtc,
     stbtc,
     bitcoinDepositor,
+    bitcoinRedeemer,
     tbtcBridge,
     tbtcVault,
     dispatcher,
