@@ -35,4 +35,9 @@ export interface BitcoinDepositor extends DepositorProxy {
    * @param extraData Encoded extra data.
    */
   decodeExtraData(extraData: string): DecodedExtraData
+
+  /**
+   * @returns Minimum stake amount.
+   */
+  minStake(): Promise<bigint>
 }

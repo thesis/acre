@@ -128,6 +128,14 @@ class EthereumBitcoinDepositor
 
     return { staker, referral }
   }
+
+  /**
+   * @see {BitcoinDepositor#minStake}
+   * @dev The value in tBTC token precision (1e18 precision).
+   */
+  async minStake(): Promise<bigint> {
+    return this.instance.minStake()
+  }
 }
 
 export { EthereumBitcoinDepositor, packRevealDepositParameters }
