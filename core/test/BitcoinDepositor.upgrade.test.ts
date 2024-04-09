@@ -8,10 +8,10 @@ import { beforeAfterSnapshotWrapper, deployment } from "./helpers"
 import {
   TestERC20,
   StBTC,
-  AcreBitcoinDepositor,
+  BitcoinDepositor,
   BridgeStub,
   TBTCVaultStub,
-  AcreBitcoinDepositorV2,
+  BitcoinDepositorV2,
 } from "../typechain"
 import { to1e18 } from "./utils"
 
@@ -24,12 +24,12 @@ async function fixture() {
   return { tbtc, stbtc, bitcoinDepositor, tbtcBridge, tbtcVault }
 }
 
-describe("AcreBitcoinDepositor contract upgrade", () => {
+describe("BitcoinDepositor contract upgrade", () => {
   let tbtc: TestERC20
   let tbtcBridge: BridgeStub
   let tbtcVault: TBTCVaultStub
   let stbtc: StBTC
-  let bitcoinDepositor: AcreBitcoinDepositor
+  let bitcoinDepositor: BitcoinDepositor
   let governance: HardhatEthersSigner
 
   before(async () => {
@@ -40,7 +40,7 @@ describe("AcreBitcoinDepositor contract upgrade", () => {
 
   context("when upgrading to a valid contract", () => {
     const newVariable = 1n
-    let bitcoinDepositorV2: AcreBitcoinDepositorV2
+    let bitcoinDepositorV2: BitcoinDepositorV2
     let v1InitialParameters: {
       minStakeAmount: bigint
       depositorFeeDivisor: bigint
@@ -59,8 +59,8 @@ describe("AcreBitcoinDepositor contract upgrade", () => {
       }
 
       const [upgradedDepositor] = await helpers.upgrades.upgradeProxy(
-        "AcreBitcoinDepositor",
-        "AcreBitcoinDepositorV2",
+        "BitcoinDepositor",
+        "BitcoinDepositorV2",
         {
           factoryOpts: { signer: governance },
           proxyOpts: {
@@ -72,8 +72,7 @@ describe("AcreBitcoinDepositor contract upgrade", () => {
         },
       )
 
-      bitcoinDepositorV2 =
-        upgradedDepositor as unknown as AcreBitcoinDepositorV2
+      bitcoinDepositorV2 = upgradedDepositor as unknown as BitcoinDepositorV2
     })
 
     it("new instance should have the same address as the old one", async () => {

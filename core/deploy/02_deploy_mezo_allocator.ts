@@ -8,13 +8,14 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { deployer } = await helpers.signers.getNamedSigners()
 
   const tbtc = await deployments.get("TBTC")
+  const stbtc = await deployments.get("stBTC")
   const mezoPortal = await deployments.get("MezoPortal")
 
   const [, deployment] = await helpers.upgrades.deployProxy("MezoAllocator", {
     factoryOpts: {
       signer: deployer,
     },
-    initializerArgs: [mezoPortal.address, tbtc.address],
+    initializerArgs: [mezoPortal.address, tbtc.address, stbtc.address],
     proxyOpts: {
       kind: "transparent",
       initialOwner: governance,
@@ -32,4 +33,4 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 export default func
 
 func.tags = ["MezoAllocator"]
-func.dependencies = ["TBTC", "MezoPortal"]
+func.dependencies = ["TBTC", "stBTC", "MezoPortal"]

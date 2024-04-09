@@ -12,7 +12,7 @@ import type {
   StBTC,
   BridgeStub,
   TBTCVaultStub,
-  AcreBitcoinDepositor,
+  BitcoinDepositor,
   TestERC20,
 } from "../typechain"
 import { deployment } from "./helpers"
@@ -30,7 +30,7 @@ async function fixture() {
 const { lastBlockTime } = helpers.time
 const { getNamedSigners, getUnnamedSigners } = helpers.signers
 
-describe("AcreBitcoinDepositor", () => {
+describe("BitcoinDepositor", () => {
   const defaultDepositDustThreshold = 1000000 // 1000000 satoshi = 0.01 BTC
   const defaultDepositTreasuryFeeDivisor = 2000 // 1/2000 = 0.05% = 0.0005
   const defaultDepositTxMaxFee = 1000 // 1000 satoshi = 0.00001 BTC
@@ -48,7 +48,7 @@ describe("AcreBitcoinDepositor", () => {
   const depositorFee = to1ePrecision(10, 10) // 10 satoshi
   const amountToStake = to1ePrecision(896501, 8) // 8965,01 satoshi
 
-  let bitcoinDepositor: AcreBitcoinDepositor
+  let bitcoinDepositor: BitcoinDepositor
   let tbtcBridge: BridgeStub
   let tbtcVault: TBTCVaultStub
   let stbtc: StBTC

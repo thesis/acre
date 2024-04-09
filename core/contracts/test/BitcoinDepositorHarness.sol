@@ -2,7 +2,7 @@
 /* solhint-disable func-name-mixedcase */
 pragma solidity ^0.8.21;
 
-import {AcreBitcoinDepositor} from "../AcreBitcoinDepositor.sol";
+import {BitcoinDepositor} from "../BitcoinDepositor.sol";
 import {MockBridge, MockTBTCVault} from "@keep-network/tbtc-v2/contracts/test/TestTBTCDepositor.sol";
 import {IBridge} from "@keep-network/tbtc-v2/contracts/integrator/IBridge.sol";
 import {IBridgeTypes} from "@keep-network/tbtc-v2/contracts/integrator/IBridge.sol";

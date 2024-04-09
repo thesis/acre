@@ -24,7 +24,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     log("deploying TBTC contract stub")
 
     await deployments.deploy("TBTC", {
-      contract: "TestERC20",
+      contract: "TestTBTC",
       args: ["Test tBTC", "TestTBTC"],
       from: deployer,
       log: true,

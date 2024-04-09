@@ -171,7 +171,7 @@ describe("Staking", () => {
             it("should sign message", () => {
               expect(messageSigner.sign).toHaveBeenCalledWith(
                 {
-                  name: "AcreBitcoinDepositor",
+                  name: "BitcoinDepositor",
                   version: "1",
                   verifyingContract:
                     contracts.bitcoinDepositor.getChainIdentifier(),

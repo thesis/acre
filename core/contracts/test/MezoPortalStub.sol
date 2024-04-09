@@ -21,4 +21,15 @@ contract MezoPortalStub {
         depositCount++;
         IERC20(token).safeTransferFrom(msg.sender, address(this), amount);
     }
+
+    function getDeposit(
+        address depositor,
+        address token,
+        uint256 depositId
+    ) external view returns (uint96 balance, uint256 unlockAt) {
+        return (
+            uint96(IERC20(token).balanceOf(address(this))),
+            block.timestamp
+        );
+    }
 }

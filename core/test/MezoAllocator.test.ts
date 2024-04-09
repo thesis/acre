@@ -39,167 +39,88 @@ describe("MezoAllocator", () => {
   let mezoAllocator: MezoAllocator
   let mezoPortal: IMezoPortal
 
-  let governance: HardhatEthersSigner
   let thirdParty: HardhatEthersSigner
   let maintainer: HardhatEthersSigner
 
   before(async () => {
-    ;({
-      governance,
-      thirdParty,
-      maintainer,
-      tbtc,
-      stbtc,
-      mezoAllocator,
-      mezoPortal,
-    } = await loadFixture(fixture))
+    ;({ thirdParty, maintainer, tbtc, stbtc, mezoAllocator, mezoPortal } =
+      await loadFixture(fixture))
   })
 
   describe("allocate", () => {
     beforeAfterSnapshotWrapper()
 
-    context("when the caller is not an owner", () => {
+    context("when a caller is not a maintainer", () => {
       it("should revert", async () => {
         await expect(
-          mezoAllocator.connect(thirdParty).allocate(to1e18(1)),
+          mezoAllocator.connect(thirdParty).allocate(),
         ).to.be.revertedWithCustomError(mezoAllocator, "NotAuthorized")
       })
     })
 
-    context("when the caller is an owner", () => {
-      it("should not revert", async () => {
-        await expect(
-          mezoAllocator.connect(governance).allocate(to1e18(1)),
-        ).to.not.be.revertedWithCustomError(mezoAllocator, "NotAuthorized")
-      })
-    })
-
     context("when the caller is maintainer", () => {
-      context("when first deposit is made", () => {
+      context("when a first deposit is made", () => {
         let tx: ContractTransactionResponse
 
         before(async () => {
-          await tbtc.mint(await stbtc.getAddress(), to1e18(1))
-          await mezoAllocator
-            .connect(governance)
-            .updateMaintainer(maintainer.address)
-
-          tx = await mezoAllocator.connect(maintainer).allocate(to1e18(1))
+          await tbtc.mint(await stbtc.getAddress(), to1e18(6))
+          tx = await mezoAllocator.connect(maintainer).allocate()
         })
 
         it("should deposit and transfer tBTC to Mezo Portal", async () => {
+          expect(await tbtc.balanceOf(await mezoPortal.getAddress())).to.equal(
+            to1e18(6),
+          )
+        })
+
+        it("should not store any tBTC in Mezo Allocator", async () => {
           expect(
             await tbtc.balanceOf(await mezoAllocator.getAddress()),
           ).to.equal(0)
-          expect(await tbtc.balanceOf(await mezoPortal.getAddress())).to.equal(
-            to1e18(1),
-          )
-        })
-
-        it("should set deposit balance", async () => {
-          const deposit = await mezoAllocator.depositInfo()
-          expect(deposit.balance).to.equal(to1e18(1))
-        })
-
-        it("should set creation timestamp", async () => {
-          const deposit = await mezoAllocator.depositInfo()
-          const dateTime = new Date()
-          // Check if the block timestamp is within 60 seconds of the current
-          // test time
-          expect(deposit.createdAt).to.be.closeTo(
-            String(dateTime.valueOf()).slice(0, -3),
-            60,
-          )
-        })
-
-        it("should set unlocking timestamp", async () => {
-          const deposit = await mezoAllocator.depositInfo()
-          const dateTime = new Date()
-          // Check if the block timestamp is within 60 seconds of the current
-          // test time
-          expect(deposit.unlockAt).to.be.closeTo(
-            String(dateTime.valueOf()).slice(0, -3),
-            60,
-          )
-        })
-
-        it("should emit Deposit event", async () => {
-          await expect(tx)
-            .to.emit(mezoAllocator, "DepositAllocated")
-            .withArgs(0, 1, to1e18(1))
-        })
-      })
-
-      context("when second deposit is made", () => {
-        before(async () => {
-          await tbtc.mint(await stbtc.getAddress(), to1e18(5))
-          await mezoAllocator
-            .connect(governance)
-            .updateMaintainer(maintainer.address)
-
-          await mezoAllocator.connect(maintainer).allocate(to1e18(5))
         })
 
         it("should increment the deposit id", async () => {
-          const depositInfo = await mezoAllocator.depositInfo()
-          expect(depositInfo.id).to.equal(2)
+          const actualDepositId = await mezoAllocator.depositId()
+          expect(actualDepositId).to.equal(1)
         })
 
-        it("should populate deposit balance", async () => {
-          const deposit = await mezoAllocator.depositInfo()
-          // 1 + 5 = 6
-          expect(deposit.balance).to.equal(to1e18(6))
+        it("should emit DepositAllocated event", async () => {
+          await expect(tx)
+            .to.emit(mezoAllocator, "DepositAllocated")
+            .withArgs(0, 1, to1e18(6), to1e18(6))
         })
       })
-    })
-  })
 
-  describe("updateTbtcStorage", () => {
-    context("when the caller is not an owner", () => {
-      it("should revert", async () => {
-        await expect(
-          mezoAllocator
-            .connect(thirdParty)
-            .updateTbtcStorage(thirdParty.address),
-        ).to.be.revertedWithCustomError(
-          mezoAllocator,
-          "OwnableUnauthorizedAccount",
-        )
-      })
-    })
+      context("when a second deposit is made", () => {
+        let tx: ContractTransactionResponse
 
-    context("when the caller is an owner", () => {
-      it("should not revert", async () => {
-        await mezoAllocator
-          .connect(governance)
-          .updateTbtcStorage(thirdParty.address)
-        const tbtcStorageAddress = await mezoAllocator.tbtcStorage()
-        expect(tbtcStorageAddress).to.equal(thirdParty.address)
-      })
-    })
-  })
+        before(async () => {
+          await tbtc.mint(await stbtc.getAddress(), to1e18(5))
 
-  describe("updateMaintainer", () => {
-    context("when the caller is not an owner", () => {
-      it("should revert", async () => {
-        await expect(
-          mezoAllocator
-            .connect(thirdParty)
-            .updateMaintainer(thirdParty.address),
-        ).to.be.revertedWithCustomError(
-          mezoAllocator,
-          "OwnableUnauthorizedAccount",
-        )
-      })
-    })
+          tx = await mezoAllocator.connect(maintainer).allocate()
+        })
 
-    context("when the caller is an owner", () => {
-      it("should not revert", async () => {
-        await mezoAllocator
-          .connect(governance)
-          .updateMaintainer(thirdParty.address)
-        const maintainerAddress = await mezoAllocator.maintainer()
-        expect(maintainerAddress).to.equal(thirdParty.address)
+        it("should increment the deposit id", async () => {
+          const actualDepositId = await mezoAllocator.depositId()
+          expect(actualDepositId).to.equal(2)
+        })
+
+        it("should emit DepositAllocated event", async () => {
+          await expect(tx)
+            .to.emit(mezoAllocator, "DepositAllocated")
+            .withArgs(1, 2, to1e18(5), to1e18(11))
+        })
+
+        it("should deposit and transfer tBTC to Mezo Portal", async () => {
+          expect(await tbtc.balanceOf(await mezoPortal.getAddress())).to.equal(
+            to1e18(11),
+          )
+        })
+
+        it("should increase tracked deposit balance amount", async () => {
+          const depositBalance = await mezoAllocator.depositBalance()
+          expect(depositBalance).to.equal(to1e18(11))
+        })
       })
     })
   })

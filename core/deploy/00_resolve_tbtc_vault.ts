@@ -26,13 +26,20 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     const tbtc = await deployments.get("TBTC")
     const bridge = await deployments.get("Bridge")
 
-    await deployments.deploy("TBTCVault", {
+    const deployment = await deployments.deploy("TBTCVault", {
       contract: "TBTCVaultStub",
       args: [tbtc.address, bridge.address],
       from: deployer,
       log: true,
       waitConfirmations: waitConfirmationsNumber(hre),
     })
+
+    await deployments.execute(
+      "TBTC",
+      { from: deployer, log: true },
+      "setOwner",
+      deployment.address,
+    )
   }
 }
 
