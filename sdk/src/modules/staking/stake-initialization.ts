@@ -120,7 +120,7 @@ class StakeInitialization {
    */
   #getStakeMessageTypedData() {
     const domain: Domain = {
-      name: "AcreBitcoinDepositor",
+      name: "BitcoinDepositor",
       version: "1",
       verifyingContract: this.#contracts.bitcoinDepositor.getChainIdentifier(),
     }

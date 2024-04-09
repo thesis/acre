@@ -11,10 +11,12 @@ import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalan
 import { TextMd } from "#/components/shared/Typography"
 import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
 import TransactionModal from "#/components/TransactionModal"
+import { useEstimatedBTCBalance } from "#/hooks/store"
 import { LiquidStakingTokenPopover } from "#/components/LiquidStakingTokenPopover"
 import { useSize } from "#/hooks"
 
 export default function PositionDetails(props: CardProps) {
+  const estimatedBtcBalance = useEstimatedBTCBalance()
   const { ref, size } = useSize()
 
   const [actionFlowType, setActionFlowType] = useState<
@@ -35,7 +37,7 @@ export default function PositionDetails(props: CardProps) {
         <CurrencyBalanceWithConversion
           from={{
             currency: "bitcoin",
-            amount: "2398567898",
+            amount: estimatedBtcBalance.toString(),
             variant: "greater-balance-xl",
             symbolFontWeight: "semibold",
           }}
