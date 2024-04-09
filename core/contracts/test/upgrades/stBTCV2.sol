@@ -117,7 +117,7 @@ contract stBTCV2 is ERC4626Fees, PausableOwnable {
     // TODO: Implement a governed upgrade process that initiates an update and
     //       then finalizes it after a delay.
     /// @notice Updates the dispatcher contract and gives it an unlimited
-    ///         allowance to transfer staked tBTC.
+    ///         allowance to transfer deposited tBTC.
     /// @param newDispatcher Address of the new dispatcher contract.
     function updateDispatcher(Dispatcher newDispatcher) external onlyOwner {
         if (address(newDispatcher) == address(0)) {

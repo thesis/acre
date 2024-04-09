@@ -19,7 +19,7 @@ contract Dispatcher is Router, Ownable2Step {
         bool authorized;
     }
 
-    /// The main stBTC contract holding tBTC deposited by stakers.
+    /// The main stBTC contract holding tBTC deposits.
     stBTC public immutable stbtc;
     /// tBTC token contract.
     IERC20 public immutable tbtc;

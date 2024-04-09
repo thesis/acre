@@ -13,10 +13,9 @@ import {ZeroAddress} from "./utils/Errors.sol";
 /// @title stBTC
 /// @notice This contract implements the ERC-4626 tokenized vault standard. By
 ///         staking tBTC, users acquire a liquid staking token called stBTC,
-///         commonly referred to as "shares". The staked tBTC is securely
-///         deposited into Acre's vaults, where it generates yield over time.
+///         commonly referred to as "shares".
 ///         Users have the flexibility to redeem stBTC, enabling them to
-///         withdraw their staked tBTC along with the accrued yield.
+///         withdraw their deposited tBTC along with the accrued yield.
 /// @dev ERC-4626 is a standard to optimize and unify the technical parameters
 ///      of yield-bearing vaults. This contract facilitates the minting and
 ///      burning of shares (stBTC), which are represented as standard ERC20
@@ -126,7 +125,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     // TODO: Implement a governed upgrade process that initiates an update and
     //       then finalizes it after a delay.
     /// @notice Updates the dispatcher contract and gives it an unlimited
-    ///         allowance to transfer staked tBTC.
+    ///         allowance to transfer deposited tBTC.
     /// @param newDispatcher Address of the new dispatcher contract.
     function updateDispatcher(Dispatcher newDispatcher) external onlyOwner {
         if (address(newDispatcher) == address(0)) {
