@@ -76,21 +76,23 @@ describe("stBTC contract upgrade", () => {
     })
 
     describe("upgraded `deposit` function", () => {
-      let amountToStake: bigint
-      let staker: HardhatEthersSigner
+      let amountToDeposit: bigint
+      let depositOwner: HardhatEthersSigner
       let tx: ContractTransactionResponse
 
       before(async () => {
-        ;[staker] = await helpers.signers.getUnnamedSigners()
-        amountToStake = v1MinimumDepositAmount + 1n
+        ;[depositOwner] = await helpers.signers.getUnnamedSigners()
+        amountToDeposit = v1MinimumDepositAmount + 1n
 
-        await tbtc.mint(staker, amountToStake)
+        await tbtc.mint(depositOwner, amountToDeposit)
 
         await tbtc
-          .connect(staker)
-          .approve(await stbtcV2.getAddress(), amountToStake)
+          .connect(depositOwner)
+          .approve(await stbtcV2.getAddress(), amountToDeposit)
 
-        tx = await stbtcV2.connect(staker).deposit(amountToStake, staker)
+        tx = await stbtcV2
+          .connect(depositOwner)
+          .deposit(amountToDeposit, depositOwner)
       })
 
       it("should emit `NewEvent` event", async () => {
