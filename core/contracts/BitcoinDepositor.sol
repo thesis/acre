@@ -320,7 +320,6 @@ contract BitcoinDepositor is AbstractTBTCDepositor, Ownable2StepUpgradeable {
     function updateDepositorFeeDivisor(
         uint64 newDepositorFeeDivisor
     ) external onlyOwner {
-        // TODO: Introduce a parameters update process.
         depositorFeeDivisor = newDepositorFeeDivisor;
 
         emit DepositorFeeDivisorUpdated(newDepositorFeeDivisor);
