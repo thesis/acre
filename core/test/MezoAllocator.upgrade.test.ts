@@ -70,17 +70,17 @@ describe("MezoAllocator contract upgrade", () => {
           await mezoPortal.getAddress(),
         )
         expect(await allocatorV2.tbtc()).to.eq(await tbtc.getAddress())
-        expect(await allocatorV2.tbtcStorage()).to.eq(await stbtc.getAddress())
+        expect(await allocatorV2.stbtc()).to.eq(await stbtc.getAddress())
       })
     })
 
-    describe("upgraded `updateTbtcStorage` function", () => {
+    describe("upgraded `addMaintainer` function", () => {
       let tx: ContractTransactionResponse
 
       before(async () => {
         const newAddress = await ethers.Wallet.createRandom().getAddress()
 
-        tx = await allocatorV2.connect(governance).updateTbtcStorage(newAddress)
+        tx = await allocatorV2.connect(governance).addMaintainer(newAddress)
       })
 
       it("should emit `NewEvent` event", async () => {

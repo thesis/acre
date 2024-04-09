@@ -4,69 +4,107 @@ pragma solidity ^0.8.21;
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
+import {ZeroAddress} from "../../utils/Errors.sol";
+import "../../stBTC.sol";
+import "../../interfaces/IDispatcher.sol";
 
+/// @title IMezoPortal
+/// @dev Interface for the Mezo's Portal contract.
 interface IMezoPortal {
-    function deposit(address token, uint96 amount, uint32 lockPeriod) external;
-
-    function withdraw(address token, uint256 depositId, uint96 amount) external;
-
-    function depositCount() external view returns (uint256);
-}
-
-/// @dev  This is a contract used to test stBTC upgradeability. It is a copy of
-///       stBTC contract with some differences marked with `TEST:` comments.
-contract MezoAllocatorV2 is Ownable2StepUpgradeable {
-    using SafeERC20 for IERC20;
-
-    /// @notice DepositInfo keeps track of the deposit Id, deposit balance,
-    ///         creation time, and unlock time.
+    /// @notice DepositInfo keeps track of the deposit balance and unlock time.
+    ///         Each deposit is tracked separately and associated with a specific
+    ///         token. Some tokens can be deposited but can not be locked - in
+    ///         that case the unlockAt is the block timestamp of when the deposit
+    ///         was created. The same is true for tokens that can be locked but
+    ///         the depositor decided not to lock them.
     struct DepositInfo {
-        uint256 id;
         uint96 balance;
-        uint32 createdAt;
         uint32 unlockAt;
     }
 
-    /// Address of the MezoPortal contract.
-    address public mezoPortal;
-    /// tBTC token contract.
+    /// @notice Deposit and optionally lock tokens for the given period.
+    /// @dev Lock period will be normalized to weeks. If non-zero, it must not
+    ///      be shorter than the minimum lock period and must not be longer than
+    ///      the maximum lock period.
+    /// @param token token address to deposit
+    /// @param amount amount of tokens to deposit
+    /// @param lockPeriod lock period in seconds, 0 to not lock the deposit
+    function deposit(address token, uint96 amount, uint32 lockPeriod) external;
+
+    /// @notice Withdraw deposited tokens.
+    ///         Deposited lockable tokens can be withdrawn at any time if
+    ///         there is no lock set on the deposit or the lock period has passed.
+    ///         There is no way to withdraw locked deposit. Tokens that are not
+    ///         lockable can be withdrawn at any time. Deposit can be withdrawn
+    ///         partially.
+    /// @param token deposited token address
+    /// @param depositId id of the deposit
+    /// @param amount amount of the token to be withdrawn from the deposit
+    function withdraw(address token, uint256 depositId, uint96 amount) external;
+
+    /// @notice The number of deposits created. Includes the deposits that
+    ///         were fully withdrawn. This is also the identifier of the most
+    ///         recently created deposit.
+    function depositCount() external view returns (uint256);
+
+    /// @notice Get the balance and unlock time of a given deposit.
+    /// @param depositor depositor address
+    /// @param token token address to get the balance
+    /// @param depositId id of the deposit
+    function getDeposit(
+        address depositor,
+        address token,
+        uint256 depositId
+    ) external view returns (DepositInfo memory);
+}
+
+/// @notice MezoAllocator routes tBTC to/from MezoPortal.
+contract MezoAllocatorV2 is IDispatcher, Ownable2StepUpgradeable {
+    using SafeERC20 for IERC20;
+
+    /// @notice Address of the MezoPortal contract.
+    IMezoPortal public mezoPortal;
+    /// @notice tBTC token contract.
     IERC20 public tbtc;
-    /// Contract holding tBTC deposited by stakers.
-    address public tbtcStorage;
-
-    /// @notice Maintainer address which can trigger deposit flow.
-    address public maintainer;
-
-    /// @notice keeps track of the deposit info.
-    DepositInfo public depositInfo;
+    /// @notice stBTC token vault contract.
+    stBTC public stbtc;
+    /// @notice Keeps track of the addresses that are allowed to trigger deposit
+    ///         allocations.
+    mapping(address => bool) public isMaintainer;
+    /// @notice List of maintainers.
+    address[] public maintainers;
+    /// @notice keeps track of the latest deposit ID assigned in Mezo Portal.
+    uint256 public depositId;
+    /// @notice Keeps track of the total amount of tBTC allocated to MezoPortal.
+    uint96 public depositBalance;
 
     // TEST: New variable.
     uint256 public newVariable;
 
-    /// Emitted when tBTC is deposited to MezoPortal.
+    /// @notice Emitted when tBTC is deposited to MezoPortal.
     event DepositAllocated(
         uint256 indexed oldDepositId,
         uint256 indexed newDepositId,
-        uint256 amount
+        uint256 addedAmount,
+        uint256 newDepositAmount
     );
-
-    /// @notice Emitted when the tBTC storage address is updated.
-    event TbtcStorageUpdated(address indexed tbtcStorage);
-
+    /// @notice Emitted when tBTC is withdrawn from MezoPortal.
+    event DepositWithdrawn(uint256 indexed depositId, uint256 amount);
     /// @notice Emitted when the maintainer address is updated.
-    event MaintainerUpdated(address indexed maintainer);
-
+    event MaintainerAdded(address indexed maintainer);
+    /// @notice Emitted when the maintainer address is updated.
+    event MaintainerRemoved(address indexed maintainer);
     // TEST: New event.
     event NewEvent();
-
     /// @notice Reverts if the caller is not an authorized account.
     error NotAuthorized();
+    /// @notice Reverts if the caller is not a maintainer.
+    error MaintainerNotRegistered();
+    /// @notice Reverts if the caller is already a maintainer.
+    error MaintainerAlreadyRegistered();
 
-    /// @notice Reverts if the address is 0.
-    error ZeroAddress();
-
-    modifier onlyMaintainerAndOwner() {
-        if (msg.sender != maintainer && owner() != msg.sender) {
+    modifier onlyMaintainer() {
+        if (!isMaintainer[msg.sender]) {
             revert NotAuthorized();
         }
         _;
@@ -80,7 +118,11 @@ contract MezoAllocatorV2 is Ownable2StepUpgradeable {
     /// @notice Initializes the MezoAllocator contract.
     /// @param _mezoPortal Address of the MezoPortal contract.
     /// @param _tbtc Address of the tBTC token contract.
-    function initialize(address _mezoPortal, IERC20 _tbtc) public initializer {
+    function initialize(
+        address _mezoPortal,
+        address _tbtc,
+        address _stbtc
+    ) public initializer {
         // TEST: Removed content of initialize function. Initialize shouldn't be
         //       called again during the upgrade because of the `initializer`
         //       modifier.
@@ -95,88 +137,94 @@ contract MezoAllocatorV2 is Ownable2StepUpgradeable {
     ///         deposit meaning that the previous Acre's deposit is fully withdrawn
     ///         before a new deposit with added amount is created. This mimics a
     ///         "top up" functionality with the difference that a new deposit id
-    ///         is created and the previous deposit id is no longer used.
-    /// @dev This function can be invoked periodically by a bot.
-    /// @param amount Amount of tBTC to deposit to Mezo Portal.
-    function allocate(uint96 amount) external onlyMaintainerAndOwner {
-        // Free all Acre's tBTC from MezoPortal before creating a new deposit.
-        free();
+    ///         is created and the previous deposit id is no longer in use.
+    /// @dev This function can be invoked periodically by a maintainer.
+    function allocate() external onlyMaintainer {
+        if (depositBalance > 0) {
+            // Free all Acre's tBTC from MezoPortal before creating a new deposit.
+            // slither-disable-next-line reentrancy-no-eth
+            mezoPortal.withdraw(address(tbtc), depositId, depositBalance);
+        }
+
+        // Fetch unallocated tBTC from stBTC contract.
+        uint256 addedAmount = tbtc.balanceOf(address(stbtc));
         // slither-disable-next-line arbitrary-send-erc20
-        IERC20(tbtc).safeTransferFrom(tbtcStorage, address(this), amount);
+        tbtc.safeTransferFrom(address(stbtc), address(this), addedAmount);
 
-        // Add freed tBTC from the previous deposit and add the new amount.
-        uint96 newBalance = depositInfo.balance + amount;
-
-        IERC20(tbtc).forceApprove(mezoPortal, newBalance);
-        // 0 denotes no lock period for this deposit. The zero lock time is
-        // hardcoded as of biz decision.
-        IMezoPortal(mezoPortal).deposit(address(tbtc), newBalance, 0);
+        // Create a new deposit in the MezoPortal.
+        depositBalance = uint96(tbtc.balanceOf(address(this)));
+        tbtc.forceApprove(address(mezoPortal), depositBalance);
+        // 0 denotes no lock period for this deposit.
+        mezoPortal.deposit(address(tbtc), depositBalance, 0);
+        uint256 oldDepositId = depositId;
         // MezoPortal doesn't return depositId, so we have to read depositCounter
-        // which assignes depositId to the current deposit.
-        uint256 newDepositId = IMezoPortal(mezoPortal).depositCount();
-        // slither-disable-next-line reentrancy-benign
-        uint256 oldDepositId = depositInfo.id;
-        depositInfo.id = newDepositId;
-        depositInfo.balance = newBalance;
-        // solhint-disable-next-line not-rely-on-time
-        depositInfo.createdAt = uint32(block.timestamp);
-        // solhint-disable-next-line not-rely-on-time
-        depositInfo.unlockAt = uint32(block.timestamp);
+        // which assigns depositId to the current deposit.
+        depositId = mezoPortal.depositCount();
 
         // slither-disable-next-line reentrancy-events
-        emit DepositAllocated(oldDepositId, newDepositId, amount);
+        emit DepositAllocated(
+            oldDepositId,
+            depositId,
+            addedAmount,
+            depositBalance
+        );
     }
 
-    /// @notice Updates the tBTC storage address.
-    /// @dev At first this is going to be the stBTC contract. Once Acre
-    ///      works with more destinations for tBTC, this will be updated to
-    ///      the new storage contract like AcreDispatcher.
-    /// @param _tbtcStorage Address of the new tBTC storage.
+    /// @notice Withdraws tBTC from MezoPortal and transfers it to stBTC.
+    ///         This function can withdraw partial or a full amount of tBTC from
+    ///         MezoPortal for a given deposit id.
+    /// @param amount Amount of tBTC to withdraw.
+    function withdraw(uint256 amount) external {
+        if (msg.sender != address(stbtc)) revert NotAuthorized();
+
+        emit DepositWithdrawn(depositId, amount);
+        mezoPortal.withdraw(address(tbtc), depositId, uint96(amount));
+        // slither-disable-next-line reentrancy-benign
+        depositBalance -= uint96(amount);
+        tbtc.safeTransfer(address(stbtc), amount);
+    }
+
+    /// @notice Updates the maintainer address.
+    /// @param maintainerToAdd Address of the new maintainer.
     // TEST: Modified function.
-    function updateTbtcStorage(address _tbtcStorage) external onlyOwner {
-        if (_tbtcStorage == address(0)) {
+    function addMaintainer(address maintainerToAdd) external onlyOwner {
+        if (maintainerToAdd == address(0)) {
             revert ZeroAddress();
         }
-        tbtcStorage = _tbtcStorage;
+        if (isMaintainer[maintainerToAdd]) {
+            revert MaintainerAlreadyRegistered();
+        }
+        maintainers.push(maintainerToAdd);
+        isMaintainer[maintainerToAdd] = true;
 
-        emit TbtcStorageUpdated(_tbtcStorage);
+        emit MaintainerAdded(maintainerToAdd);
 
         // TEST: Emit new event.
         emit NewEvent();
     }
 
-    /// @notice Updates the maintainer address.
-    /// @param _maintainer Address of the new maintainer.
-    function updateMaintainer(address _maintainer) external onlyOwner {
-        if (_maintainer == address(0)) {
-            revert ZeroAddress();
+    /// @notice Removes the maintainer address.
+    /// @param maintainerToRemove Address of the maintainer to remove.
+    function removeMaintainer(address maintainerToRemove) external onlyOwner {
+        if (!isMaintainer[maintainerToRemove]) {
+            revert MaintainerNotRegistered();
         }
-        maintainer = _maintainer;
+        delete (isMaintainer[maintainerToRemove]);
 
-        emit MaintainerUpdated(_maintainer);
+        for (uint256 i = 0; i < maintainers.length; i++) {
+            if (maintainers[i] == maintainerToRemove) {
+                maintainers[i] = maintainers[maintainers.length - 1];
+                // slither-disable-next-line costly-loop
+                maintainers.pop();
+                break;
+            }
+        }
+
+        emit MaintainerRemoved(maintainerToRemove);
     }
 
-    // TODO: add updatable withdrawer and onlyWithdrawer modifier (stBTC or AcreDispatcher).
-    /// @notice Withdraws tBTC from MezoPortal and transfers it to stBTC.
-    function withdraw(uint96 amount) external {
-        // TODO: Take the last deposit and pull the funds from it (FIFO).
-        //       If not enough funds, take everything from that deposit and
-        //       take the rest from the next deposit id until the amount is
-        //       reached. Delete deposit ids that are empty.
-        // IMezoPortal(mezoPortal).withdraw(address(tbtc), depositId, amount);
-        // TODO: update depositsById and deposits data structures.
-        // IERC20(tbtc).safeTransfer(address(tbtcStorage), amount);
-    }
-
-    /// @notice Withdraw all Acre's tBTC from MezoPortal.
-    function free() private {
-        if (depositInfo.balance > 0) {
-            // slither-disable-next-line reentrancy-no-eth
-            IMezoPortal(mezoPortal).withdraw(
-                address(tbtc),
-                depositInfo.id,
-                depositInfo.balance
-            );
-        }
+    /// @notice Returns the total amount of tBTC allocated to MezoPortal.
+    function totalAssets() external view returns (uint256 totalAmount) {
+        return depositBalance;
     }
 }
