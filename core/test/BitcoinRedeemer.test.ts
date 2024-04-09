@@ -214,13 +214,15 @@ describe("BitcoinRedeemer", () => {
                     )
                 })
 
-                it("should burn stBTC tokens", async () => {
+                it("should change stBTC tokens balance", async () => {
                   await expect(tx).to.changeTokenBalances(
                     stbtc,
                     [depositor],
                     [-stBtcAmountToRedeem],
                   )
+                })
 
+                it("should burn stBTC tokens", async () => {
                   expect(await stbtc.totalSupply()).to.be.equal(
                     depositAmount - stBtcAmountToRedeem,
                   )
