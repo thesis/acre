@@ -117,6 +117,9 @@ contract MezoAllocator is IDispatcher, Ownable2Step {
         if (address(_tbtc) == address(0)) {
             revert ZeroAddress();
         }
+        if (address(_stbtc) == address(0)) {
+            revert ZeroAddress();
+        }
         mezoPortal = IMezoPortal(_mezoPortal);
         tbtc = _tbtc;
         stbtc = _stbtc;
