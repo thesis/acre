@@ -9,36 +9,13 @@ import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
 import "@keep-network/tbtc-v2/contracts/integrator/AbstractTBTCDepositor.sol";
 
-import {stBTC} from "./stBTC.sol";
+import {stBTC} from "../../stBTC.sol";
 
-/// @title Acre Bitcoin Depositor contract.
-/// @notice The contract integrates Acre staking with tBTC minting.
-///         User who wants to stake BTC in Acre should submit a Bitcoin transaction
-///         to the most recently created off-chain ECDSA wallets of the tBTC Bridge
-///         using pay-to-script-hash (P2SH) or pay-to-witness-script-hash (P2WSH)
-///         containing hashed information about this Depositor contract address,
-///         and staker's Ethereum address.
-///         Then, the staker initiates tBTC minting by revealing their Ethereum
-///         address along with their deposit blinding factor, refund public key
-///         hash and refund locktime on the tBTC Bridge through this Depositor
-///         contract.
-///         The off-chain ECDSA wallet and Optimistic Minting bots listen for these
-///         sorts of messages and when they get one, they check the Bitcoin network
-///         to make sure the deposit lines up. Majority of tBTC minting is finalized
-///         by the Optimistic Minting process, where Minter bot initializes
-///         minting process and if there is no veto from the Guardians, the
-///         process is finalized and tBTC minted to the Depositor address. If
-///         the revealed deposit is not handled by the Optimistic Minting process
-///         the off-chain ECDSA wallet may decide to pick the deposit transaction
-///         for sweeping, and when the sweep operation is confirmed on the Bitcoin
-///         network, the tBTC Bridge and tBTC vault mint the tBTC token to the
-///         Depositor address. After tBTC is minted to the Depositor, on the stake
-///         finalization tBTC is staked in Acre and stBTC shares are emitted
-///         to the staker.
-contract AcreBitcoinDepositor is
-    AbstractTBTCDepositor,
-    Ownable2StepUpgradeable
-{
+/// @title BitcoinDepositorV2
+/// @dev This is a contract used to test Bitcoin Depositor upgradeability.
+///      It is a copy of BitcoinDepositor contract with some differences
+///      marked with `TEST:` comments.
+contract BitcoinDepositorV2 is AbstractTBTCDepositor, Ownable2StepUpgradeable {
     using SafeERC20 for IERC20;
 
     /// @notice State of the stake request.
@@ -71,6 +48,9 @@ contract AcreBitcoinDepositor is
     ///       the `depositorFeeDivisor` should be set to `50` because
     ///       `1/50 = 0.02 = 2%`.
     uint64 public depositorFeeDivisor;
+
+    // TEST: New variable;
+    uint256 public newVariable;
 
     /// @notice Emitted when a stake request is initialized.
     /// @dev Deposit details can be fetched from {{ Bridge.DepositRevealed }}
@@ -112,6 +92,9 @@ contract AcreBitcoinDepositor is
     /// @param depositorFeeDivisor New value of the depositor fee divisor.
     event DepositorFeeDivisorUpdated(uint64 depositorFeeDivisor);
 
+    // TEST: New event;
+    event NewEvent();
+
     /// Reverts if the tBTC Token address is zero.
     error TbtcTokenZeroAddress();
 
@@ -146,34 +129,14 @@ contract AcreBitcoinDepositor is
         _disableInitializers();
     }
 
-    /// @notice Acre Bitcoin Depositor contract initializer.
-    /// @param bridge tBTC Bridge contract instance.
-    /// @param tbtcVault tBTC Vault contract instance.
-    /// @param _tbtcToken tBTC token contract instance.
-    /// @param _stbtc stBTC contract instance.
-    function initialize(
-        address bridge,
-        address tbtcVault,
-        address _tbtcToken,
-        address _stbtc
-    ) public initializer {
-        __AbstractTBTCDepositor_initialize(bridge, tbtcVault);
-        __Ownable2Step_init();
-        __Ownable_init(msg.sender);
+    function initialize(IERC20 asset, address _treasury) public initializer {
+        // TEST: Removed content of initialize function. Initialize shouldn't be
+        //       called again during the upgrade because of the `initializer`
+        //       modifier.
+    }
 
-        if (address(_tbtcToken) == address(0)) {
-            revert TbtcTokenZeroAddress();
-        }
-        if (address(_stbtc) == address(0)) {
-            revert StbtcZeroAddress();
-        }
-
-        tbtcToken = IERC20(_tbtcToken);
-        stbtc = stBTC(_stbtc);
-
-        // TODO: Revisit initial values before mainnet deployment.
-        minStakeAmount = 0.015 * 1e18; // 0.015 BTC
-        depositorFeeDivisor = 1000; // 1/1000 == 10bps == 0.1% == 0.001
+    function initializeV2(uint256 _newVariable) public reinitializer(2) {
+        newVariable = _newVariable;
     }
 
     /// @notice This function allows staking process initialization for a Bitcoin
@@ -310,6 +273,9 @@ contract AcreBitcoinDepositor is
         minStakeAmount = newMinStakeAmount;
 
         emit MinStakeAmountUpdated(newMinStakeAmount);
+
+        // TEST: Emit newly added event.
+        emit NewEvent();
     }
 
     /// @notice Updates the depositor fee divisor.
