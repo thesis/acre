@@ -93,8 +93,6 @@ contract MezoAllocator is IDispatcher, Ownable2Step {
     event MaintainerRemoved(address indexed maintainer);
     /// @notice Reverts if the caller is not an authorized account.
     error NotAuthorized();
-    /// @notice Reverts if the caller tries to withdraw more tBTC than available.
-    error InsufficientBalance();
     /// @notice Reverts if the caller is not a maintainer.
     error NotMaintainer();
 
