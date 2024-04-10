@@ -23,19 +23,19 @@ export const useCountdown = (
   const [diff, setDiff] = useState(targetDateInUnix - dateToUnixTimestamp())
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const countdownInterval = setInterval(() => {
       const newDiff = targetDateInUnix - dateToUnixTimestamp()
       if (newDiff === 0) {
         if (onComplete) {
           onComplete(targetDateInUnix)
         }
-        clearInterval(interval)
+        clearInterval(countdownInterval)
       }
 
       setDiff(newDiff)
     }, ONE_SEC_IN_MILLISECONDS)
 
-    return () => clearInterval(interval)
+    return () => clearInterval(countdownInterval)
   }, [targetDateInUnix, onComplete])
 
   let { days, hours, minutes, seconds } = unixTimestampToTimeUnits(diff)
