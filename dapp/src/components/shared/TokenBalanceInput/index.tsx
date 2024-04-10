@@ -87,7 +87,7 @@ function FiatCurrencyBalance({
 export type TokenBalanceInputProps = {
   amount?: bigint
   currency: CurrencyType
-  tokenBalance: string | number
+  tokenBalance: bigint
   placeholder?: string
   size?: "lg" | "md"
   setAmount: (value?: bigint) => void
@@ -155,7 +155,7 @@ export default function TokenBalanceInput({
           }}
         />
         <InputRightElement>
-          <Button h="70%" onClick={() => setAmount(BigInt(tokenBalance))}>
+          <Button h="70%" onClick={() => setAmount(tokenBalance)}>
             Max
           </Button>
         </InputRightElement>

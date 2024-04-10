@@ -20,7 +20,7 @@ const TokenAmountForm = withFormik<TokenAmountFormProps, TokenAmountFormValues>(
 
       errors.amount = validateTokenAmount(
         amount,
-        BigInt(tokenBalance),
+        tokenBalance,
         minTokenAmount,
         currency,
       )

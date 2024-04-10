@@ -12,7 +12,7 @@ function StakeFormModal({
 }) {
   const minStakeAmount = useMinStakeAmount()
   const { btcAccount } = useWalletContext()
-  const tokenBalance = btcAccount?.balance.toString() ?? "0"
+  const tokenBalance = BigInt(btcAccount?.balance.toString() ?? "0")
 
   return (
     <TokenAmountForm

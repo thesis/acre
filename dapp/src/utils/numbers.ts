@@ -48,11 +48,12 @@ export function bigIntToUserAmount(
  *
  */
 export const formatTokenAmount = (
-  amount: number | string,
+  amount: number | string | bigint,
   decimals = 18,
   desiredDecimals = 2,
 ) => {
-  const fixedPoint = BigInt(amount)
+  const isBigInt = typeof amount === "bigint"
+  const fixedPoint = isBigInt ? amount : BigInt(amount)
 
   if (fixedPoint === 0n) {
     return `0.${"0".repeat(desiredDecimals)}`
