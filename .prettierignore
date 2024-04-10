@@ -1,5 +1,5 @@
 # Packages that have own prettier configuration.
-core/
+solidity/
 dapp/
 website/
 sdk/
