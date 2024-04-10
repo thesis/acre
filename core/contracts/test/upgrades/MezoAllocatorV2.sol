@@ -4,9 +4,9 @@ pragma solidity ^0.8.21;
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
-import {ZeroAddress} from "./utils/Errors.sol";
-import "./stBTC.sol";
-import "./interfaces/IDispatcher.sol";
+import {ZeroAddress} from "../../utils/Errors.sol";
+import "../../stBTC.sol";
+import "../../interfaces/IDispatcher.sol";
 
 /// @title IMezoPortal
 /// @dev Interface for the Mezo's Portal contract.
@@ -59,7 +59,7 @@ interface IMezoPortal {
 }
 
 /// @notice MezoAllocator routes tBTC to/from MezoPortal.
-contract MezoAllocator is IDispatcher, Ownable2StepUpgradeable {
+contract MezoAllocatorV2 is IDispatcher, Ownable2StepUpgradeable {
     using SafeERC20 for IERC20;
 
     /// @notice Address of the MezoPortal contract.
@@ -78,6 +78,9 @@ contract MezoAllocator is IDispatcher, Ownable2StepUpgradeable {
     /// @notice Keeps track of the total amount of tBTC allocated to MezoPortal.
     uint96 public depositBalance;
 
+    // TEST: New variable.
+    uint256 public newVariable;
+
     /// @notice Emitted when tBTC is deposited to MezoPortal.
     event DepositAllocated(
         uint256 indexed oldDepositId,
@@ -93,13 +96,15 @@ contract MezoAllocator is IDispatcher, Ownable2StepUpgradeable {
     event MaintainerRemoved(address indexed maintainer);
     /// @notice Emitted when tBTC is released from MezoPortal.
     event DepositReleased(uint256 indexed depositId, uint256 amount);
+    // TEST: New event.
+    event NewEvent();
     /// @notice Reverts if the caller is not a maintainer.
     error CallerNotMaintainer();
     /// @notice Reverts if the caller is not the stBTC contract.
     error CallerNotStbtc();
-    /// @notice Reverts if the maintainer is not registered.
+    /// @notice Reverts if the maintainer is already registered.
     error MaintainerNotRegistered();
-    /// @notice Reverts if the maintainer has been already registered.
+    /// @notice Reverts if the caller is already a maintainer.
     error MaintainerAlreadyRegistered();
 
     modifier onlyMaintainer() {
@@ -114,30 +119,19 @@ contract MezoAllocator is IDispatcher, Ownable2StepUpgradeable {
         _disableInitializers();
     }
 
-    /// @notice Initializes the MezoAllocator contract.
-    /// @param _mezoPortal Address of the MezoPortal contract.
-    /// @param _tbtc Address of the tBTC token contract.
     function initialize(
         address _mezoPortal,
         address _tbtc,
         address _stbtc
     ) public initializer {
-        __Ownable2Step_init();
-        __Ownable_init(msg.sender);
+        // TEST: Removed content of initialize function. Initialize shouldn't be
+        //       called again during the upgrade because of the `initializer`
+        //       modifier.
+    }
 
-        if (_mezoPortal == address(0)) {
-            revert ZeroAddress();
-        }
-        if (_tbtc == address(0)) {
-            revert ZeroAddress();
-        }
-        if (address(_stbtc) == address(0)) {
-            revert ZeroAddress();
-        }
-
-        mezoPortal = IMezoPortal(_mezoPortal);
-        tbtc = IERC20(_tbtc);
-        stbtc = stBTC(_stbtc);
+    // TEST: Initializer for V2.
+    function initializeV2(uint256 _newVariable) public reinitializer(2) {
+        newVariable = _newVariable;
     }
 
     /// @notice Allocate tBTC to MezoPortal. Each allocation creates a new "rolling"
@@ -207,6 +201,7 @@ contract MezoAllocator is IDispatcher, Ownable2StepUpgradeable {
 
     /// @notice Updates the maintainer address.
     /// @param maintainerToAdd Address of the new maintainer.
+    // TEST: Modified function.
     function addMaintainer(address maintainerToAdd) external onlyOwner {
         if (maintainerToAdd == address(0)) {
             revert ZeroAddress();
@@ -218,6 +213,9 @@ contract MezoAllocator is IDispatcher, Ownable2StepUpgradeable {
         isMaintainer[maintainerToAdd] = true;
 
         emit MaintainerAdded(maintainerToAdd);
+
+        // TEST: Emit new event.
+        emit NewEvent();
     }
 
     /// @notice Removes the maintainer address.
