@@ -93,20 +93,18 @@ contract MezoAllocator is IDispatcher, Ownable2Step {
     event MaintainerRemoved(address indexed maintainer);
     /// @notice Emitted when tBTC is released from MezoPortal.
     event DepositReleased(uint256 indexed depositId, uint256 amount);
-    /// @notice Reverts if the caller is not an authorized account.
-    error NotAuthorized();
     /// @notice Reverts if the caller is not a maintainer.
-    error NotMaintainer();
+    error CallerNotMaintainer();
     /// @notice Reverts if the caller is not the stBTC contract.
-    error NotStbtc();
-    /// @notice Reverts if the caller is not a maintainer.
+    error CallerNotStbtc();
+    /// @notice Reverts if the maintainer is already registered.
     error MaintainerNotRegistered();
     /// @notice Reverts if the caller is already a maintainer.
     error MaintainerAlreadyRegistered();
 
     modifier onlyMaintainer() {
         if (!isMaintainer[msg.sender]) {
-            revert NotMaintainer();
+            revert CallerNotMaintainer();
         }
         _;
     }
@@ -175,7 +173,7 @@ contract MezoAllocator is IDispatcher, Ownable2Step {
     ///         MezoPortal for a given deposit id.
     /// @param amount Amount of tBTC to withdraw.
     function withdraw(uint256 amount) external {
-        if (msg.sender != address(stbtc)) revert NotStbtc();
+        if (msg.sender != address(stbtc)) revert CallerNotStbtc();
 
         emit DepositWithdrawn(depositId, amount);
         mezoPortal.withdraw(address(tbtc), depositId, uint96(amount));
@@ -185,6 +183,8 @@ contract MezoAllocator is IDispatcher, Ownable2Step {
     }
 
     /// @notice Releases deposit in full from MezoPortal.
+    /// @dev This is a special function that can be used to migrate funds during
+    ///      allocator upgrade or in case of emergencies.
     function releaseDeposit() external onlyOwner {
         uint96 amount = mezoPortal
             .getDeposit(address(this), address(tbtc), depositId)
@@ -232,7 +232,7 @@ contract MezoAllocator is IDispatcher, Ownable2Step {
     }
 
     /// @notice Returns the total amount of tBTC allocated to MezoPortal.
-    function totalAssets() external view returns (uint256 totalAmount) {
+    function totalAssets() external view returns (uint256) {
         return depositBalance;
     }
 
