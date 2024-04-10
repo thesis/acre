@@ -91,6 +91,8 @@ contract MezoAllocator is IDispatcher, Ownable2Step {
     event MaintainerAdded(address indexed maintainer);
     /// @notice Emitted when the maintainer address is updated.
     event MaintainerRemoved(address indexed maintainer);
+    /// @notice Emitted when tBTC is released from MezoPortal.
+    event DepositReleased(uint256 indexed depositId, uint256 amount);
     /// @notice Reverts if the caller is not an authorized account.
     error NotAuthorized();
     /// @notice Reverts if the caller is not a maintainer.
@@ -176,6 +178,18 @@ contract MezoAllocator is IDispatcher, Ownable2Step {
         // slither-disable-next-line reentrancy-benign
         depositBalance -= uint96(amount);
         tbtc.safeTransfer(address(stbtc), amount);
+    }
+
+    /// @notice Releases deposit in full from MezoPortal.
+    function releaseDeposit() external onlyOwner {
+        uint96 amount = mezoPortal
+            .getDeposit(address(this), address(tbtc), depositId)
+            .balance;
+
+        emit DepositReleased(depositId, amount);
+        depositBalance = 0;
+        mezoPortal.withdraw(address(tbtc), depositId, amount);
+        tbtc.safeTransfer(address(stbtc), tbtc.balanceOf(address(this)));
     }
 
     /// @notice Updates the maintainer address.
