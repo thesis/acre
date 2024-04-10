@@ -133,12 +133,7 @@ describe("BitcoinRedeemer", () => {
                     to1e18(1),
                     tbtcRedemptionData.redemptionData,
                   ),
-              )
-                .to.be.revertedWithCustomError(
-                  stbtc,
-                  "ERC4626ExceededMaxRedeem",
-                )
-                .withArgs(await depositor.getAddress(), to1e18(1), 0)
+              ).to.be.revertedWithCustomError(stbtc, "ERC20InsufficientBalance")
             })
           })
 
@@ -170,16 +165,10 @@ describe("BitcoinRedeemer", () => {
                       amountToRedeem,
                       tbtcRedemptionData.redemptionData,
                     ),
+                ).to.be.revertedWithCustomError(
+                  stbtc,
+                  "ERC20InsufficientBalance",
                 )
-                  .to.be.revertedWithCustomError(
-                    stbtc,
-                    "ERC4626ExceededMaxRedeem",
-                  )
-                  .withArgs(
-                    await depositor.getAddress(),
-                    amountToRedeem,
-                    depositAmount,
-                  )
               })
             })
 

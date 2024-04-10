@@ -8,6 +8,7 @@ import "@thesis-co/solidity-contracts/contracts/token/IReceiveApproval.sol";
 import "./Dispatcher.sol";
 import "./PausableOwnable.sol";
 import "./lib/ERC4626Fees.sol";
+import "./interfaces/IDispatcher.sol";
 import {ZeroAddress} from "./utils/Errors.sol";
 
 /// @title stBTC
@@ -24,8 +25,9 @@ import {ZeroAddress} from "./utils/Errors.sol";
 contract stBTC is ERC4626Fees, PausableOwnable {
     using SafeERC20 for IERC20;
 
-    /// Dispatcher contract that routes tBTC from stBTC to a given vault and back.
-    Dispatcher public dispatcher;
+    /// Dispatcher contract that routes tBTC from stBTC to a given allocation
+    /// contract and back.
+    IDispatcher public dispatcher;
 
     /// Address of the treasury wallet, where fees should be transferred to.
     address public treasury;
@@ -123,7 +125,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     /// @notice Updates the dispatcher contract and gives it an unlimited
     ///         allowance to transfer deposited tBTC.
     /// @param newDispatcher Address of the new dispatcher contract.
-    function updateDispatcher(Dispatcher newDispatcher) external onlyOwner {
+    function updateDispatcher(IDispatcher newDispatcher) external onlyOwner {
         if (address(newDispatcher) == address(0)) {
             revert ZeroAddress();
         }
@@ -160,6 +162,13 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         exitFeeBasisPoints = newExitFeeBasisPoints;
 
         emit ExitFeeBasisPointsUpdated(newExitFeeBasisPoints);
+    }
+
+    /// @notice Returns the total amount of assets held by the vault across all
+    ///         allocations and this contract.
+    function totalAssets() public view override returns (uint256) {
+        return
+            IERC20(asset()).balanceOf(address(this)) + dispatcher.totalAssets();
     }
 
     /// @notice Calls `receiveApproval` function on spender previously approving
@@ -232,19 +241,43 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         }
     }
 
+    /// @notice Withdraws assets from the vault and transfers them to the
+    ///         receiver.
+    /// @dev Withdraw unallocated assets first and and if not enough, then pull
+    ///      the assets from the dispatcher.
+    /// @param assets Amount of assets to withdraw.
+    /// @param receiver The address to which the assets will be transferred.
+    /// @param owner The address of the owner of the shares.
     function withdraw(
         uint256 assets,
         address receiver,
         address owner
     ) public override whenNotPaused returns (uint256) {
+        uint256 currentAssetsBalance = IERC20(asset()).balanceOf(address(this));
+        if (assets > currentAssetsBalance) {
+            dispatcher.withdraw(assets - currentAssetsBalance);
+        }
+
         return super.withdraw(assets, receiver, owner);
     }
 
+    /// @notice Redeems shares for assets and transfers them to the receiver.
+    /// @dev Redeem unallocated assets first and and if not enough, then pull
+    ///      the assets from the dispatcher.
+    /// @param shares Amount of shares to redeem.
+    /// @param receiver The address to which the assets will be transferred.
+    /// @param owner The address of the owner of the shares.
     function redeem(
         uint256 shares,
         address receiver,
         address owner
     ) public override whenNotPaused returns (uint256) {
+        uint256 assets = convertToAssets(shares);
+        uint256 currentAssetsBalance = IERC20(asset()).balanceOf(address(this));
+        if (assets > currentAssetsBalance) {
+            dispatcher.withdraw(assets - currentAssetsBalance);
+        }
+
         return super.redeem(shares, receiver, owner);
     }
 
