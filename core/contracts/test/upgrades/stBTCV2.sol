@@ -3,6 +3,8 @@ pragma solidity ^0.8.21;
 
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
+import "@thesis-co/solidity-contracts/contracts/token/IReceiveApproval.sol";
+
 import "../../Dispatcher.sol";
 import "../../PausableOwnable.sol";
 import "../../lib/ERC4626Fees.sol";
@@ -37,8 +39,9 @@ contract stBTCV2 is ERC4626Fees, PausableOwnable {
     uint256 public newVariable;
 
     /// Emitted when the treasury wallet address is updated.
-    /// @param treasury New treasury wallet address.
-    event TreasuryUpdated(address treasury);
+    /// @param oldTreasury Address of the old treasury wallet.
+    /// @param newTreasury Address of the new treasury wallet.
+    event TreasuryUpdated(address oldTreasury, address newTreasury);
 
     /// Emitted when deposit parameters are updated.
     /// @param minimumDepositAmount New value of the minimum deposit amount.
@@ -93,9 +96,10 @@ contract stBTCV2 is ERC4626Fees, PausableOwnable {
         if (newTreasury == address(this)) {
             revert DisallowedAddress();
         }
-        treasury = newTreasury;
 
-        emit TreasuryUpdated(newTreasury);
+        emit TreasuryUpdated(treasury, newTreasury);
+
+        treasury = newTreasury;
     }
 
     /// @notice Updates deposit parameters.
@@ -160,6 +164,32 @@ contract stBTCV2 is ERC4626Fees, PausableOwnable {
         exitFeeBasisPoints = newExitFeeBasisPoints;
 
         emit ExitFeeBasisPointsUpdated(newExitFeeBasisPoints);
+    }
+
+    /// @notice Calls `receiveApproval` function on spender previously approving
+    ///         the spender to withdraw from the caller multiple times, up to
+    ///         the `amount` amount. If this function is called again, it
+    ///         overwrites the current allowance with `amount`. Reverts if the
+    ///         approval reverted or if `receiveApproval` call on the spender
+    ///         reverted.
+    /// @return True if both approval and `receiveApproval` calls succeeded.
+    /// @dev If the `amount` is set to `type(uint256).max` then
+    ///      `transferFrom` and `burnFrom` will not reduce an allowance.
+    function approveAndCall(
+        address spender,
+        uint256 value,
+        bytes memory extraData
+    ) external returns (bool) {
+        if (approve(spender, value)) {
+            IReceiveApproval(spender).receiveApproval(
+                _msgSender(),
+                value,
+                address(this),
+                extraData
+            );
+            return true;
+        }
+        return false;
     }
 
     // TEST: Modified function.

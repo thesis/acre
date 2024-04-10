@@ -1070,15 +1070,7 @@ describe("stBTC", () => {
   })
 
   describe("updateDispatcher", () => {
-    let snapshot: SnapshotRestorer
-
-    before(async () => {
-      snapshot = await takeSnapshot()
-    })
-
-    after(async () => {
-      await snapshot.restore()
-    })
+    beforeAfterSnapshotWrapper()
 
     context("when caller is not governance", () => {
       it("should revert", async () => {
@@ -1168,18 +1160,27 @@ describe("stBTC", () => {
       })
 
       context("when a new treasury is an allowed address", () => {
+        let oldTreasury: string
         let newTreasury: string
+        let tx: ContractTransactionResponse
 
         before(async () => {
           // Treasury is set by the deployment scripts. See deployment tests
           // where initial parameters are checked.
+          oldTreasury = await stbtc.treasury()
           newTreasury = await ethers.Wallet.createRandom().getAddress()
 
-          await stbtc.connect(governance).updateTreasury(newTreasury)
+          tx = await stbtc.connect(governance).updateTreasury(newTreasury)
         })
 
         it("should update the treasury", async () => {
           expect(await stbtc.treasury()).to.be.equal(newTreasury)
+        })
+
+        it("should emit TreasuryUpdated event", async () => {
+          await expect(tx)
+            .to.emit(stbtc, "TreasuryUpdated")
+            .withArgs(oldTreasury, newTreasury)
         })
       })
     })
