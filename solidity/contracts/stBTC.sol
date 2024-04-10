@@ -13,10 +13,9 @@ import {ZeroAddress} from "./utils/Errors.sol";
 /// @title stBTC
 /// @notice This contract implements the ERC-4626 tokenized vault standard. By
 ///         staking tBTC, users acquire a liquid staking token called stBTC,
-///         commonly referred to as "shares". The staked tBTC is securely
-///         deposited into Acre's vaults, where it generates yield over time.
+///         commonly referred to as "shares".
 ///         Users have the flexibility to redeem stBTC, enabling them to
-///         withdraw their staked tBTC along with the accrued yield.
+///         withdraw their deposited tBTC along with the accrued yield.
 /// @dev ERC-4626 is a standard to optimize and unify the technical parameters
 ///      of yield-bearing vaults. This contract facilitates the minting and
 ///      burning of shares (stBTC), which are represented as standard ERC20
@@ -99,7 +98,6 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     /// @notice Updates treasury wallet address.
     /// @param newTreasury New treasury wallet address.
     function updateTreasury(address newTreasury) external onlyOwner {
-        // TODO: Introduce a parameters update process.
         if (newTreasury == address(0)) {
             revert ZeroAddress();
         }
@@ -118,16 +116,13 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     function updateMinimumDepositAmount(
         uint256 newMinimumDepositAmount
     ) external onlyOwner {
-        // TODO: Introduce a parameters update process.
         minimumDepositAmount = newMinimumDepositAmount;
 
         emit MinimumDepositAmountUpdated(newMinimumDepositAmount);
     }
 
-    // TODO: Implement a governed upgrade process that initiates an update and
-    //       then finalizes it after a delay.
     /// @notice Updates the dispatcher contract and gives it an unlimited
-    ///         allowance to transfer staked tBTC.
+    ///         allowance to transfer deposited tBTC.
     /// @param newDispatcher Address of the new dispatcher contract.
     function updateDispatcher(IDispatcher newDispatcher) external onlyOwner {
         if (address(newDispatcher) == address(0)) {
@@ -139,10 +134,6 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         emit DispatcherUpdated(oldDispatcher, address(newDispatcher));
         dispatcher = newDispatcher;
 
-        // TODO: Once withdrawal/rebalancing is implemented, we need to revoke the
-        // approval of the vaults share tokens from the old dispatcher and approve
-        // a new dispatcher to manage the share tokens.
-
         if (oldDispatcher != address(0)) {
             // Setting allowance to zero for the old dispatcher
             IERC20(asset()).forceApprove(oldDispatcher, 0);
@@ -152,8 +143,6 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         IERC20(asset()).forceApprove(address(dispatcher), type(uint256).max);
     }
 
-    // TODO: Implement a governed upgrade process that initiates an update and
-    //       then finalizes it after a delay.
     /// @notice Update the entry fee basis points.
     /// @param newEntryFeeBasisPoints New value of the fee basis points.
     function updateEntryFeeBasisPoints(
@@ -164,8 +153,6 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         emit EntryFeeBasisPointsUpdated(newEntryFeeBasisPoints);
     }
 
-    // TODO: Implement a governed upgrade process that initiates an update and
-    //       then finalizes it after a delay.
     /// @notice Update the exit fee basis points.
     /// @param newExitFeeBasisPoints New value of the fee basis points.
     function updateExitFeeBasisPoints(
