@@ -383,4 +383,48 @@ describe("MezoAllocator", () => {
       })
     })
   })
+
+  describe("releaseDeposit", () => {
+    beforeAfterSnapshotWrapper()
+
+    context("when a caller is not a maintainer", () => {
+      it("should revert", async () => {
+        await expect(
+          mezoAllocator.connect(thirdParty).releaseDeposit(),
+        ).to.be.revertedWithCustomError(
+          mezoAllocator,
+          "OwnableUnauthorizedAccount",
+        )
+      })
+    })
+
+    context("when the caller is governance", () => {
+      context("when there is a deposit", () => {
+        let tx: ContractTransactionResponse
+
+        before(async () => {
+          await tbtc.mint(await stbtc.getAddress(), to1e18(5))
+          await mezoAllocator.connect(maintainer).allocate()
+          tx = await mezoAllocator.connect(governance).releaseDeposit()
+        })
+
+        it("should emit DepositReleased event", async () => {
+          await expect(tx)
+            .to.emit(mezoAllocator, "DepositReleased")
+            .withArgs(1, to1e18(5))
+        })
+
+        it("should decrease tracked deposit balance amount to zero", async () => {
+          const depositBalance = await mezoAllocator.depositBalance()
+          expect(depositBalance).to.equal(0)
+        })
+
+        it("should decrease Mezo Portal balance", async () => {
+          expect(await tbtc.balanceOf(await mezoPortal.getAddress())).to.equal(
+            0,
+          )
+        })
+      })
+    })
+  })
 })
