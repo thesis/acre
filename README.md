@@ -2,8 +2,6 @@
 
 Bitcoin Liquid Staking
 
-[![Solidity](https://github.com/thesis/acre/actions/workflows/solidity.yaml/badge.svg?branch=main&event=push)](https://github.com/thesis/acre/actions/workflows/solidity.yaml)
-
 ## Development
 
 ### pnpm
