@@ -209,3 +209,6 @@ export function getDesiredDecimals(amount: string | number, decimals: number) {
 
 export const addLeadingZero = (num: number): string =>
   num >= 0 && num <= 9 ? `0${num}` : `${num}`
+
+export const getPercentValue = (value: number, maxValue: number) =>
+  (value * 100) / maxValue

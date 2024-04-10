@@ -11,28 +11,18 @@ import {
 import { CableWithPlugIcon } from "#/assets/icons"
 import { TextMd, TextSm } from "#/components/shared/Typography"
 import IconWrapper from "#/components/shared/IconWrapper"
-import { dateToUnixTimestamp } from "#/utils"
+import { getExpirationTimestamp, getPercentValue } from "#/utils"
 import { useCountdown } from "#/hooks"
 import { ONE_MINUTE_IN_SECONDS, ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import { IconShieldCheckFilled, IconX } from "@tabler/icons-react"
-
-const getRetryTimestamp = () => {
-  const today = new Date()
-  const retryDate = new Date(
-    today.getTime() + ONE_MINUTE_IN_SECONDS * ONE_SEC_IN_MILLISECONDS,
-  )
-
-  return dateToUnixTimestamp(retryDate)
-}
-
-const getProgressPercent = (seconds: string) =>
-  (parseInt(seconds, 10) * 100) / ONE_MINUTE_IN_SECONDS
 
 const getCounterData = (minutes: string, seconds: string) => {
   const isLessThanMinute = parseInt(minutes, 10) <= 0
 
   const progressPercent = `${
-    isLessThanMinute ? getProgressPercent(seconds) : 100
+    isLessThanMinute
+      ? getPercentValue(parseInt(seconds, 10), ONE_MINUTE_IN_SECONDS)
+      : 100
   }%`
   const label = `${isLessThanMinute ? "0" : "1"}:${seconds}`
 
@@ -40,7 +30,11 @@ const getCounterData = (minutes: string, seconds: string) => {
 }
 
 export default function RetryModal({ retry }: { retry: () => void }) {
-  const retryTimestamp = useMemo(() => getRetryTimestamp(), [])
+  const retryTimestamp = useMemo(
+    () =>
+      getExpirationTimestamp(ONE_MINUTE_IN_SECONDS * ONE_SEC_IN_MILLISECONDS),
+    [],
+  )
   const { minutes, seconds } = useCountdown(retryTimestamp, true, retry)
 
   const { label, progressPercent } = getCounterData(minutes, seconds)
