@@ -5,9 +5,9 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 import "@thesis-co/solidity-contracts/contracts/token/IReceiveApproval.sol";
 
-import "../../Dispatcher.sol";
 import "../../PausableOwnable.sol";
 import "../../lib/ERC4626Fees.sol";
+import "../../interfaces/IDispatcher.sol";
 import {ZeroAddress} from "../../utils/Errors.sol";
 
 /// @title stBTCV2
@@ -17,7 +17,7 @@ contract stBTCV2 is ERC4626Fees, PausableOwnable {
     using SafeERC20 for IERC20;
 
     /// Dispatcher contract that routes tBTC from stBTC to a given vault and back.
-    Dispatcher public dispatcher;
+    IDispatcher public dispatcher;
 
     /// Address of the treasury wallet, where fees should be transferred to.
     address public treasury;
@@ -119,7 +119,7 @@ contract stBTCV2 is ERC4626Fees, PausableOwnable {
     /// @notice Updates the dispatcher contract and gives it an unlimited
     ///         allowance to transfer staked tBTC.
     /// @param newDispatcher Address of the new dispatcher contract.
-    function updateDispatcher(Dispatcher newDispatcher) external onlyOwner {
+    function updateDispatcher(IDispatcher newDispatcher) external onlyOwner {
         if (address(newDispatcher) == address(0)) {
             revert ZeroAddress();
         }

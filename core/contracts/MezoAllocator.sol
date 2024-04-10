@@ -97,9 +97,9 @@ contract MezoAllocator is IDispatcher, Ownable2StepUpgradeable {
     error CallerNotMaintainer();
     /// @notice Reverts if the caller is not the stBTC contract.
     error CallerNotStbtc();
-    /// @notice Reverts if the maintainer is already registered.
+    /// @notice Reverts if the maintainer is not registered.
     error MaintainerNotRegistered();
-    /// @notice Reverts if the caller is already a maintainer.
+    /// @notice Reverts if the maintainer has been already registered.
     error MaintainerAlreadyRegistered();
 
     modifier onlyMaintainer() {
