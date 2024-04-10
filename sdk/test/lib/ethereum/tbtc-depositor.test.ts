@@ -33,7 +33,7 @@ describe("BitcoinDepositor", () => {
         () => mockedContractInstance as unknown as Contract,
       )
 
-    // TODO: get the address from artifact imported from `core` package.
+    // TODO: get the address from artifact imported from `solidity` package.
     depositorAddress = EthereumAddress.from(
       await ethers.Wallet.createRandom().getAddress(),
     )

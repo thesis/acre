@@ -1,5 +1,5 @@
 import { packRevealDepositParameters } from "@keep-network/tbtc-v2.ts"
-import { BitcoinDepositor as BitcoinDepositorTypechain } from "@acre-btc/core/typechain/contracts/BitcoinDepositor"
+import { BitcoinDepositor as BitcoinDepositorTypechain } from "@acre-btc/solidity/typechain/contracts/BitcoinDepositor"
 import {
   ZeroAddress,
   dataSlice,

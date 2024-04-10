@@ -1,13 +1,13 @@
-name: Build the core package
+name: Build the Solidity package
 on:
   workflow_call:
 
 jobs:
-  build-core:
+  build-solidity:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./core
+        working-directory: ./solidity
     steps:
       - uses: actions/checkout@v4
 
@@ -17,7 +17,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: "core/.nvmrc"
+          node-version-file: "solidity/.nvmrc"
           cache: "pnpm"
 
       - name: Install Dependencies
@@ -29,9 +29,9 @@ jobs:
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: core-build
+          name: solidity-build
           path: |
-            core/build/
-            core/cache/
-            core/typechain/
+            solidity/build/
+            solidity/cache/
+            solidity/typechain/
           if-no-files-found: error

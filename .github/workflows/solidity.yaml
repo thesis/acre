@@ -1,11 +1,11 @@
-name: Core
+name: Solidity
 
 on:
   push:
     branches:
       - main
     paths:
-      - "core/**"
+      - "solidity/**"
   pull_request:
   workflow_dispatch:
     inputs:
@@ -19,14 +19,14 @@ on:
 
 defaults:
   run:
-    working-directory: ./core
+    working-directory: ./solidity
 
 jobs:
-  core-build:
-    uses: ./.github/workflows/reusable-core-build.yaml
+  solidity-build:
+    uses: ./.github/workflows/reusable-solidity-build.yaml
 
-  core-format:
-    needs: [core-build]
+  solidity-format:
+    needs: [solidity-build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -37,7 +37,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: "core/.nvmrc"
+          node-version-file: "solidity/.nvmrc"
           cache: "pnpm"
 
       - name: Install Dependencies
@@ -46,14 +46,14 @@ jobs:
       - name: Download Build Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: core-build
-          path: core/
+          name: solidity-build
+          path: solidity/
 
       - name: Format
         run: pnpm run format
 
-  core-slither:
-    needs: [core-build]
+  solidity-slither:
+    needs: [solidity-build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -64,7 +64,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: "core/.nvmrc"
+          node-version-file: "solidity/.nvmrc"
           cache: "pnpm"
 
       - name: Install Dependencies
@@ -82,14 +82,14 @@ jobs:
       - name: Download Build Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: core-build
-          path: core/
+          name: solidity-build
+          path: solidity/
 
       - name: Run Slither
         run: slither --hardhat-ignore-compile .
 
-  core-test:
-    needs: [core-build]
+  solidity-test:
+    needs: [solidity-build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -100,7 +100,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: "core/.nvmrc"
+          node-version-file: "solidity/.nvmrc"
           cache: "pnpm"
 
       - name: Install Dependencies
@@ -109,14 +109,14 @@ jobs:
       - name: Download Build Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: core-build
-          path: core/
+          name: solidity-build
+          path: solidity/
 
       - name: Test
         run: pnpm run test --no-compile
 
-  core-deploy-dry-run:
-    needs: [core-build]
+  solidity-deploy-dry-run:
+    needs: [solidity-build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -127,7 +127,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: "core/.nvmrc"
+          node-version-file: "solidity/.nvmrc"
           cache: "pnpm"
 
       - name: Install Dependencies
@@ -136,14 +136,14 @@ jobs:
       - name: Download Build Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: core-build
-          path: core/
+          name: solidity-build
+          path: solidity/
 
       - name: Deploy
         run: pnpm run deploy --no-compile
 
-  core-deploy-testnet:
-    needs: [core-deploy-dry-run]
+  solidity-deploy-testnet:
+    needs: [solidity-deploy-dry-run]
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
@@ -155,7 +155,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: "core/.nvmrc"
+          node-version-file: "solidity/.nvmrc"
           cache: "pnpm"
 
       - name: Install dependencies
@@ -164,8 +164,8 @@ jobs:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: core-build
-          path: core/
+          name: solidity-build
+          path: solidity/
 
       - name: Remove existing deployment artifacts for the selected network
         run: rm -rf deployments/${{ github.event.inputs.environment }}
@@ -186,5 +186,5 @@ jobs:
         with:
           name: deployed-contracts-${{ github.event.inputs.environment }}
           path: |
-            core/deployments/${{ github.event.inputs.environment }}
+            solidity/deployments/${{ github.event.inputs.environment }}
           if-no-files-found: error
