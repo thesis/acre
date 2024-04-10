@@ -25,7 +25,7 @@ function StakeFormModal({
       <StakeDetails
         currency="bitcoin"
         minTokenAmount={minStakeAmount}
-        maxTokenAmount={BigInt(tokenBalance)}
+        maxTokenAmount={tokenBalance}
       />
       <FormSubmitButton mt={4}>Stake</FormSubmitButton>
     </TokenAmountForm>

@@ -143,9 +143,7 @@ export default function TokenBalanceInput({
           placeholder={placeholder}
           {...inputProps}
           value={
-            amount
-              ? fixedPointNumberToString(BigInt(amount), decimals)
-              : undefined
+            amount ? fixedPointNumberToString(amount, decimals) : undefined
           }
           onValueChange={(values: NumberFormatInputValues) =>
             handleValueChange(values.value)
