@@ -28,8 +28,8 @@ async function fixture() {
 
   return { dispatcher, governance, thirdParty, maintainer, vault, tbtc, stbtc }
 }
-
-describe("Dispatcher", () => {
+// TODO: Remove these tests once Distpather contract is removed from the project.
+describe.skip("Dispatcher", () => {
   let dispatcher: Dispatcher
   let vault: TestERC4626
   let tbtc: TestERC20
