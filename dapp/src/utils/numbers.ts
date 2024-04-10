@@ -52,8 +52,7 @@ export const formatTokenAmount = (
   decimals = 18,
   desiredDecimals = 2,
 ) => {
-  const isBigInt = typeof amount === "bigint"
-  const fixedPoint = isBigInt ? amount : BigInt(amount)
+  const fixedPoint = BigInt(amount)
 
   if (fixedPoint === 0n) {
     return `0.${"0".repeat(desiredDecimals)}`
