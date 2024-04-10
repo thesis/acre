@@ -65,7 +65,7 @@ describe("MezoAllocator", () => {
       it("should revert", async () => {
         await expect(
           mezoAllocator.connect(thirdParty).allocate(),
-        ).to.be.revertedWithCustomError(mezoAllocator, "NotAuthorized")
+        ).to.be.revertedWithCustomError(mezoAllocator, "CallerNotMaintainer")
       })
     })
 
@@ -79,8 +79,10 @@ describe("MezoAllocator", () => {
         })
 
         it("should deposit and transfer tBTC to Mezo Portal", async () => {
-          expect(await tbtc.balanceOf(await mezoPortal.getAddress())).to.equal(
-            to1e18(6),
+          await expect(tx).to.changeTokenBalances(
+            tbtc,
+            [await mezoPortal.getAddress()],
+            [to1e18(6)],
           )
         })
 
@@ -93,6 +95,11 @@ describe("MezoAllocator", () => {
         it("should increment the deposit id", async () => {
           const actualDepositId = await mezoAllocator.depositId()
           expect(actualDepositId).to.equal(1)
+        })
+
+        it("should increase tracked deposit balance amount", async () => {
+          const depositBalance = await mezoAllocator.depositBalance()
+          expect(depositBalance).to.equal(to1e18(6))
         })
 
         it("should emit DepositAllocated event", async () => {
@@ -153,7 +160,7 @@ describe("MezoAllocator", () => {
       it("should revert", async () => {
         await expect(
           mezoAllocator.connect(thirdParty).withdraw(1n),
-        ).to.be.revertedWithCustomError(mezoAllocator, "NotAuthorized")
+        ).to.be.revertedWithCustomError(mezoAllocator, "CallerNotStbtc")
       })
     })
 
@@ -201,9 +208,11 @@ describe("MezoAllocator", () => {
           })
 
           it("should decrease Mezo Portal balance", async () => {
-            expect(
-              await tbtc.balanceOf(await mezoPortal.getAddress()),
-            ).to.equal(to1e18(3))
+            await expect(tx).to.changeTokenBalances(
+              tbtc,
+              [await mezoPortal.getAddress()],
+              [-to1e18(2)],
+            )
           })
         })
 
@@ -232,9 +241,11 @@ describe("MezoAllocator", () => {
           })
 
           it("should decrease Mezo Portal balance", async () => {
-            expect(
-              await tbtc.balanceOf(await mezoPortal.getAddress()),
-            ).to.equal(0)
+            await expect(tx).to.changeTokenBalances(
+              tbtc,
+              [await mezoPortal.getAddress()],
+              [-to1e18(3)],
+            )
           })
         })
       })
@@ -378,6 +389,52 @@ describe("MezoAllocator", () => {
           ).to.be.revertedWithCustomError(
             mezoAllocator,
             "MaintainerNotRegistered",
+          )
+        })
+      })
+    })
+  })
+
+  describe("releaseDeposit", () => {
+    beforeAfterSnapshotWrapper()
+
+    context("when a caller is not governance", () => {
+      it("should revert", async () => {
+        await expect(
+          mezoAllocator.connect(thirdParty).releaseDeposit(),
+        ).to.be.revertedWithCustomError(
+          mezoAllocator,
+          "OwnableUnauthorizedAccount",
+        )
+      })
+    })
+
+    context("when the caller is governance", () => {
+      context("when there is a deposit", () => {
+        let tx: ContractTransactionResponse
+
+        before(async () => {
+          await tbtc.mint(await stbtc.getAddress(), to1e18(5))
+          await mezoAllocator.connect(maintainer).allocate()
+          tx = await mezoAllocator.connect(governance).releaseDeposit()
+        })
+
+        it("should emit DepositReleased event", async () => {
+          await expect(tx)
+            .to.emit(mezoAllocator, "DepositReleased")
+            .withArgs(1, to1e18(5))
+        })
+
+        it("should decrease tracked deposit balance amount to zero", async () => {
+          const depositBalance = await mezoAllocator.depositBalance()
+          expect(depositBalance).to.equal(0)
+        })
+
+        it("should decrease Mezo Portal balance", async () => {
+          await expect(tx).to.changeTokenBalances(
+            tbtc,
+            [mezoPortal, stbtc],
+            [-to1e18(5), to1e18(5)],
           )
         })
       })
