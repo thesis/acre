@@ -28,3 +28,4 @@ export default func
 
 func.tags = ["TransferOwnershipStBTC"]
 func.dependencies = ["stBTC"]
+func.runAtTheEnd = true

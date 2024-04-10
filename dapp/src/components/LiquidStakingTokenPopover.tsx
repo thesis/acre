@@ -10,7 +10,7 @@ import {
   IconButton,
 } from "@chakra-ui/react"
 import { SizeType } from "#/types"
-import { useDocsDrawer, useWalletContext } from "#/hooks"
+import { useDocsDrawer, useSharesBalance, useWalletContext } from "#/hooks"
 import { TextMd, TextSm } from "./shared/Typography"
 import { CurrencyBalance } from "./shared/CurrencyBalance"
 import { CardAlert } from "./shared/alerts"
@@ -23,6 +23,7 @@ export function LiquidStakingTokenPopover({
 }: LiquidStakingTokenPopoverProps) {
   const { isConnected } = useWalletContext()
   const { onOpen: openDocsDrawer } = useDocsDrawer()
+  const sharesBalance = useSharesBalance()
 
   return (
     <Popover variant="no-transform" {...props}>
@@ -50,7 +51,7 @@ export function LiquidStakingTokenPopover({
         <PopoverBody p={0}>
           <TextMd fontWeight="bold">Liquid staking token</TextMd>
           <CurrencyBalance
-            amount="912312331"
+            amount={sharesBalance.toString()}
             variant="greater-balance-xl"
             currency="stbtc"
           />

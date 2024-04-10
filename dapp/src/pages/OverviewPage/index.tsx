@@ -3,11 +3,13 @@ import { Flex, Grid, HStack, Switch } from "@chakra-ui/react"
 import { useDocsDrawer, useWalletContext } from "#/hooks"
 import { TextSm } from "#/components/shared/Typography"
 import { USD } from "#/constants"
+import { chakraUnitToPx } from "#/theme/utils"
 import ButtonLink from "#/components/shared/ButtonLink"
 import PositionDetails from "./PositionDetails"
 import Statistics from "./Statistics"
 import TransactionHistory from "./TransactionHistory"
-import ActivityBar from "../../components/shared/ActivityBar"
+import { DocsCard } from "./DocsCard"
+import { ActivityCarousel } from "./ActivityCarousel"
 
 export default function OverviewPage() {
   const { onOpen } = useDocsDrawer()
@@ -29,12 +31,13 @@ export default function OverviewPage() {
       </Flex>
       {/* TODO: Add animation to show activity bar */}
       {isConnected && (
-        <Flex marginBottom={3.5} justifyContent="space-between">
-          <ActivityBar />
-          <ButtonLink colorScheme="gold" bg="gold.200" onClick={onOpen}>
-            Docs
-          </ButtonLink>
-        </Flex>
+        <Grid
+          templateAreas={'"activity-carousel docs-card"'}
+          gridTemplateColumns={`calc(100% - ${chakraUnitToPx(64)}px) auto`}
+        >
+          <ActivityCarousel gridArea="activity-carousel" />
+          <DocsCard gridArea="docs-card" />
+        </Grid>
       )}
       <Grid
         templateAreas={`"position-details statistics"
@@ -42,7 +45,7 @@ export default function OverviewPage() {
         gridTemplateColumns={{ base: "30% 1fr", xl: "20% 1fr" }}
         gridTemplateRows={{ base: "55% 1fr", xl: "45% 1fr" }}
         h="80vh"
-        gap={4}
+        gap={6}
       >
         <PositionDetails gridArea="position-details" />
         <Statistics gridArea="statistics" />

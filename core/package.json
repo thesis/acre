@@ -26,7 +26,7 @@
     "lint:sol:fix": "solhint 'contracts/**/*.sol' --fix && prettier --write 'contracts/**/*.sol'",
     "lint:config": "prettier --check '**/*.@(json)'",
     "lint:config:fix": "prettier --write '**/*.@(json)'",
-    "test": "HARDHAT_TEST=true hardhat test"
+    "test": "hardhat test"
   },
   "devDependencies": {
     "@keep-network/hardhat-helpers": "^0.7.1",
@@ -65,6 +65,7 @@
     "@keep-network/tbtc-v2": "development",
     "@openzeppelin/contracts": "^5.0.0",
     "@openzeppelin/contracts-upgradeable": "^5.0.2",
+    "@thesis-co/solidity-contracts": "github:thesis/solidity-contracts#c315b9d",
     "@types/chai-as-promised": "^7.1.8",
     "chai-as-promised": "^7.1.1"
   }

@@ -1,5 +1,4 @@
 import React from "react"
-import { useLocation } from "react-router-dom"
 import {
   Card,
   CardBody,
@@ -10,22 +9,23 @@ import {
   Flex,
   Text,
 } from "@chakra-ui/react"
-import { capitalizeFirstLetter } from "#/utils"
 import ActivityProgress from "#/assets/images/activity-progress.png"
-import { LocationState } from "#/types"
 import StatusInfo from "#/components/shared/StatusInfo"
 import { TextMd, TextSm } from "#/components/shared/Typography"
 import Spinner from "#/components/shared/Spinner"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
+import { useActivities } from "#/hooks"
 
 function ActivityDetails() {
-  const location = useLocation()
+  const { selectedActivity } = useActivities()
 
-  const { activity } = location.state as LocationState
+  const currentActivity = selectedActivity()
+
+  if (!currentActivity) return null
 
   return (
     <Flex flexDirection="column" gap={2}>
-      {activity.status === "pending" && (
+      {currentActivity.status === "pending" && (
         <Card>
           <CardBody paddingX={10} paddingY={6}>
             <HStack marginBottom={4} justify="space-between">
@@ -46,13 +46,17 @@ function ActivityDetails() {
         <CardBody padding={10}>
           <HStack>
             <VStack gap={0} w={72} alignItems="left">
-              <TextMd fontWeight="semibold" color="gold.700">
-                {capitalizeFirstLetter(activity.action)}
+              <TextMd
+                color="gold.700"
+                fontWeight="semibold"
+                textTransform="capitalize"
+              >
+                {currentActivity.action}
               </TextMd>
               <CurrencyBalanceWithConversion
                 from={{
-                  currency: activity.currency,
-                  amount: activity.amount,
+                  currency: currentActivity.currency,
+                  amount: currentActivity.amount,
                   variant: "greater-balance-xxl",
                   symbolFontWeight: "medium",
                 }}
@@ -63,7 +67,7 @@ function ActivityDetails() {
               />
               <Tag mt={9}>
                 <StatusInfo
-                  status={activity.status}
+                  status={currentActivity.status}
                   fontWeight="medium"
                   withIcon
                   withDefaultColor

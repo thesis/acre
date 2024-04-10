@@ -9,37 +9,48 @@ import {
   Tooltip,
   CloseButton,
 } from "@chakra-ui/react"
-import { useLocation } from "react-router-dom"
-import { ActivityInfo, LocationState } from "#/types"
-import { capitalizeFirstLetter } from "#/utils"
+import { useNavigate } from "react-router-dom"
+import { ActivityInfo } from "#/types"
 import { ChevronRightIcon } from "#/assets/icons"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import StatusInfo from "#/components/shared/StatusInfo"
 import { TextSm } from "#/components/shared/Typography"
-import ActivityCardContainer from "./ActivityCardContainer"
+import { routerPath } from "#/router/path"
+import { useActivities } from "#/hooks"
+import { ActivityCardWrapper } from "./ActivityCardWrapper"
 
 type ActivityCardType = CardProps & {
   activity: ActivityInfo
-  onRemove: (txHash: string) => void
+  onRemove: (activity: ActivityInfo) => void
 }
 
-function ActivityCard({ activity, onRemove }: ActivityCardType) {
-  const state = useLocation().state as LocationState | null
-  const isActive = state ? activity.txHash === state.activity.txHash : false
-  const isCompleted = activity.status === "completed"
+export function ActivityCard({ activity, onRemove }: ActivityCardType) {
+  const navigate = useNavigate()
+  const { isCompleted, isSelected } = useActivities()
+
+  const isActivitySelected = isSelected(activity)
+  const isActivityCompleted = isCompleted(activity)
+
+  const onClick = useCallback(() => {
+    navigate(`${routerPath.activity}/${activity.txHash}`)
+  }, [activity.txHash, navigate])
 
   const onClose = useCallback(
     (event: React.MouseEvent) => {
-      event.preventDefault()
-      if (activity.txHash) {
-        onRemove(activity.txHash)
+      event.stopPropagation()
+      if (activity) {
+        onRemove(activity)
       }
     },
-    [onRemove, activity.txHash],
+    [activity, onRemove],
   )
 
   return (
-    <ActivityCardContainer isCompleted={isCompleted} isActive={isActive}>
+    <ActivityCardWrapper
+      isCompleted={isActivityCompleted}
+      isActive={isActivitySelected}
+      onClick={onClick}
+    >
       <CardHeader p={0} w="100%">
         <HStack justifyContent="space-between">
           <CurrencyBalance
@@ -49,7 +60,7 @@ function ActivityCard({ activity, onRemove }: ActivityCardType) {
             balanceFontWeight="black"
             symbolFontWeight="medium"
           />
-          {isCompleted ? (
+          {isActivityCompleted ? (
             <Tooltip label="Remove" placement="top">
               <CloseButton size="sm" onClick={onClose} />
             </Tooltip>
@@ -57,15 +68,15 @@ function ActivityCard({ activity, onRemove }: ActivityCardType) {
             <Icon
               as={ChevronRightIcon}
               boxSize={5}
-              color={isActive ? "gold.700" : "grey.400"}
-              _hover={isActive ? { color: "gold.700" } : undefined}
+              color={isActivityCompleted ? "gold.700" : "grey.400"}
+              _hover={isActivityCompleted ? { color: "gold.700" } : undefined}
             />
           )}
         </HStack>
       </CardHeader>
-      <CardBody p={0}>
-        <TextSm fontWeight="semibold" marginBottom={4}>
-          {capitalizeFirstLetter(activity.action)}
+      <CardBody p={0} pb={4}>
+        <TextSm fontWeight="semibold" textTransform="capitalize">
+          {activity.action}
         </TextSm>
       </CardBody>
       <CardFooter p={0}>
@@ -76,8 +87,6 @@ function ActivityCard({ activity, onRemove }: ActivityCardType) {
           fontWeight="medium"
         />
       </CardFooter>
-    </ActivityCardContainer>
+    </ActivityCardWrapper>
   )
 }
-
-export default ActivityCard
