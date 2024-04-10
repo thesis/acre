@@ -42,19 +42,19 @@ describe("BitcoinDepositor contract upgrade", () => {
     const newVariable = 1n
     let bitcoinDepositorV2: BitcoinDepositorV2
     let v1InitialParameters: {
-      minStakeAmount: bigint
+      minDepositAmount: bigint
       depositorFeeDivisor: bigint
     }
 
     beforeAfterSnapshotWrapper()
 
     before(async () => {
-      const minStakeAmount = await bitcoinDepositor.minStakeAmount()
+      const minDepositAmount = await bitcoinDepositor.minDepositAmount()
 
       const depositorFeeDivisor = await bitcoinDepositor.depositorFeeDivisor()
 
       v1InitialParameters = {
-        minStakeAmount,
+        minDepositAmount,
         depositorFeeDivisor,
       }
 
@@ -98,8 +98,8 @@ describe("BitcoinDepositor contract upgrade", () => {
         )
         expect(await bitcoinDepositorV2.stbtc()).to.eq(await stbtc.getAddress())
 
-        expect(await bitcoinDepositorV2.minStakeAmount()).to.eq(
-          v1InitialParameters.minStakeAmount,
+        expect(await bitcoinDepositorV2.minDepositAmount()).to.eq(
+          v1InitialParameters.minDepositAmount,
         )
         expect(await bitcoinDepositorV2.depositorFeeDivisor()).to.eq(
           v1InitialParameters.depositorFeeDivisor,
@@ -107,14 +107,14 @@ describe("BitcoinDepositor contract upgrade", () => {
       })
     })
 
-    describe("upgraded `updateMinStakeAmount` function", () => {
-      const newMinStakeAmount: bigint = to1e18(1000)
+    describe("upgraded `updateMinDepositAmount` function", () => {
+      const newMinDepositAmount: bigint = to1e18(1000)
       let tx: ContractTransactionResponse
 
       before(async () => {
         tx = await bitcoinDepositorV2
           .connect(governance)
-          .updateMinStakeAmount(newMinStakeAmount)
+          .updateMinDepositAmount(newMinDepositAmount)
       })
 
       it("should emit `NewEvent` event", async () => {

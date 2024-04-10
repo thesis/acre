@@ -1,5 +1,5 @@
 /* eslint-disable import/prefer-default-export */
-export enum StakeRequestState {
+export enum DepositState {
   Unknown,
   Initialized,
   Finalized,

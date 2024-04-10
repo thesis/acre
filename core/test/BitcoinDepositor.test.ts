@@ -6,7 +6,7 @@ import { expect } from "chai"
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
 import { ContractTransactionResponse, MaxUint256, ZeroAddress } from "ethers"
 
-import { StakeRequestState } from "../types"
+import { DepositState } from "../types"
 
 import type {
   StBTC,
@@ -46,7 +46,7 @@ describe("BitcoinDepositor", () => {
   const initialDepositAmount = to1ePrecision(10000, 10) // 10000 satoshi
   const bridgedTbtcAmount = to1ePrecision(897501, 8) // 8975,01 satoshi
   const depositorFee = to1ePrecision(10, 10) // 10 satoshi
-  const amountToStake = to1ePrecision(896501, 8) // 8965,01 satoshi
+  const amountToDeposit = to1ePrecision(896501, 8) // 8965,01 satoshi
 
   let bitcoinDepositor: BitcoinDepositor
   let tbtcBridge: BridgeStub
@@ -87,24 +87,27 @@ describe("BitcoinDepositor", () => {
       .updateDepositorFeeDivisor(defaultDepositorFeeDivisor)
   })
 
-  describe("initializeStake", () => {
+  describe("initializeDeposit", () => {
     beforeAfterSnapshotWrapper()
 
-    describe("when staker is zero address", () => {
+    describe("when depositOwner is zero address", () => {
       it("should revert", async () => {
         await expect(
-          bitcoinDepositor.initializeStake(
+          bitcoinDepositor.initializeDeposit(
             tbtcDepositData.fundingTxInfo,
             tbtcDepositData.reveal,
             ZeroAddress,
             0,
           ),
-        ).to.be.revertedWithCustomError(bitcoinDepositor, "StakerIsZeroAddress")
+        ).to.be.revertedWithCustomError(
+          bitcoinDepositor,
+          "DepositOwnerIsZeroAddress",
+        )
       })
     })
 
-    describe("when staker is non zero address", () => {
-      describe("when stake is not in progress", () => {
+    describe("when depositOwner is non zero address", () => {
+      describe("when deposit is not in progress", () => {
         describe("when tbtc vault address is incorrect", () => {
           beforeAfterSnapshotWrapper()
 
@@ -115,10 +118,10 @@ describe("BitcoinDepositor", () => {
             await expect(
               bitcoinDepositor
                 .connect(thirdParty)
-                .initializeStake(
+                .initializeDeposit(
                   tbtcDepositData.fundingTxInfo,
                   { ...tbtcDepositData.reveal, vault: invalidTbtcVault },
-                  tbtcDepositData.staker,
+                  tbtcDepositData.depositOwner,
                   tbtcDepositData.referral,
                 ),
             ).to.be.revertedWith("Vault address mismatch")
@@ -134,31 +137,31 @@ describe("BitcoinDepositor", () => {
             before(async () => {
               tx = await bitcoinDepositor
                 .connect(thirdParty)
-                .initializeStake(
+                .initializeDeposit(
                   tbtcDepositData.fundingTxInfo,
                   tbtcDepositData.reveal,
-                  tbtcDepositData.staker,
+                  tbtcDepositData.depositOwner,
                   tbtcDepositData.referral,
                 )
             })
 
-            it("should emit StakeRequestInitialized event", async () => {
+            it("should emit DepositInitialized event", async () => {
               await expect(tx)
-                .to.emit(bitcoinDepositor, "StakeRequestInitialized")
+                .to.emit(bitcoinDepositor, "DepositInitialized")
                 .withArgs(
                   tbtcDepositData.depositKey,
                   thirdParty.address,
-                  tbtcDepositData.staker,
+                  tbtcDepositData.depositOwner,
                   initialDepositAmount,
                 )
             })
 
-            it("should update stake state", async () => {
-              const stakeRequest = await bitcoinDepositor.stakeRequests(
+            it("should update deposit state", async () => {
+              const deposit = await bitcoinDepositor.deposits(
                 tbtcDepositData.depositKey,
               )
 
-              expect(stakeRequest).to.be.equal(StakeRequestState.Initialized)
+              expect(deposit).to.be.equal(DepositState.Initialized)
             })
 
             it("should reveal the deposit to the bridge contract with extra data", async () => {
@@ -185,10 +188,10 @@ describe("BitcoinDepositor", () => {
               await expect(
                 bitcoinDepositor
                   .connect(thirdParty)
-                  .initializeStake(
+                  .initializeDeposit(
                     tbtcDepositData.fundingTxInfo,
                     tbtcDepositData.reveal,
-                    tbtcDepositData.staker,
+                    tbtcDepositData.depositOwner,
                     0,
                   ),
               ).to.be.not.reverted
@@ -197,49 +200,49 @@ describe("BitcoinDepositor", () => {
         })
       })
 
-      describe("when stake is already in progress", () => {
+      describe("when deposit is already in progress", () => {
         beforeAfterSnapshotWrapper()
 
         before(async () => {
-          await initializeStake()
+          await initializeDeposit()
         })
 
         it("should revert", async () => {
           await expect(
             bitcoinDepositor
               .connect(thirdParty)
-              .initializeStake(
+              .initializeDeposit(
                 tbtcDepositData.fundingTxInfo,
                 tbtcDepositData.reveal,
-                tbtcDepositData.staker,
+                tbtcDepositData.depositOwner,
                 tbtcDepositData.referral,
               ),
           ).to.be.revertedWith("Deposit already revealed")
         })
       })
 
-      describe("when stake is already finalized", () => {
+      describe("when deposit is already finalized", () => {
         beforeAfterSnapshotWrapper()
 
         before(async () => {
-          await initializeStake()
+          await initializeDeposit()
 
           // Simulate deposit request finalization.
           await finalizeMinting(tbtcDepositData.depositKey)
 
           await bitcoinDepositor
             .connect(thirdParty)
-            .finalizeStake(tbtcDepositData.depositKey)
+            .finalizeDeposit(tbtcDepositData.depositKey)
         })
 
         it("should revert", async () => {
           await expect(
             bitcoinDepositor
               .connect(thirdParty)
-              .initializeStake(
+              .initializeDeposit(
                 tbtcDepositData.fundingTxInfo,
                 tbtcDepositData.reveal,
-                tbtcDepositData.staker,
+                tbtcDepositData.depositOwner,
                 tbtcDepositData.referral,
               ),
           ).to.be.revertedWith("Deposit already revealed")
@@ -248,29 +251,29 @@ describe("BitcoinDepositor", () => {
     })
   })
 
-  describe("finalizeStake", () => {
+  describe("finalizeDeposit", () => {
     beforeAfterSnapshotWrapper()
 
-    describe("when stake has not been initialized", () => {
+    describe("when deposit has not been initialized", () => {
       it("should revert", async () => {
         await expect(
           bitcoinDepositor
             .connect(thirdParty)
-            .finalizeStake(tbtcDepositData.depositKey),
+            .finalizeDeposit(tbtcDepositData.depositKey),
         )
           .to.be.revertedWithCustomError(
             bitcoinDepositor,
-            "UnexpectedStakeRequestState",
+            "UnexpectedDepositState",
           )
-          .withArgs(StakeRequestState.Unknown, StakeRequestState.Initialized)
+          .withArgs(DepositState.Unknown, DepositState.Initialized)
       })
     })
 
-    describe("when stake has been initialized", () => {
+    describe("when deposit has been initialized", () => {
       beforeAfterSnapshotWrapper()
 
       before(async () => {
-        await initializeStake()
+        await initializeDeposit()
       })
 
       describe("when deposit was not bridged", () => {
@@ -278,13 +281,13 @@ describe("BitcoinDepositor", () => {
           await expect(
             bitcoinDepositor
               .connect(thirdParty)
-              .finalizeStake(tbtcDepositData.depositKey),
+              .finalizeDeposit(tbtcDepositData.depositKey),
           ).to.be.revertedWith("Deposit not finalized by the bridge")
         })
       })
 
       describe("when deposit was bridged", () => {
-        describe("when stake has not been finalized", () => {
+        describe("when deposit has not been finalized", () => {
           describe("when depositor contract balance is lower than bridged amount", () => {
             beforeAfterSnapshotWrapper()
 
@@ -300,7 +303,7 @@ describe("BitcoinDepositor", () => {
               await expect(
                 bitcoinDepositor
                   .connect(thirdParty)
-                  .finalizeStake(tbtcDepositData.depositKey),
+                  .finalizeDeposit(tbtcDepositData.depositKey),
               )
                 .to.be.revertedWithCustomError(
                   stbtc,
@@ -309,7 +312,7 @@ describe("BitcoinDepositor", () => {
                 .withArgs(
                   await bitcoinDepositor.getAddress(),
                   mintedAmount - depositorFee,
-                  amountToStake,
+                  amountToDeposit,
                 )
             })
           })
@@ -325,15 +328,15 @@ describe("BitcoinDepositor", () => {
             describe("when depositor fee divisor is not zero", () => {
               beforeAfterSnapshotWrapper()
 
-              const expectedAssetsAmount = amountToStake
-              const expectedReceivedSharesAmount = amountToStake
+              const expectedAssetsAmount = amountToDeposit
+              const expectedReceivedSharesAmount = amountToDeposit
 
               let tx: ContractTransactionResponse
 
               before(async () => {
                 tx = await bitcoinDepositor
                   .connect(thirdParty)
-                  .finalizeStake(tbtcDepositData.depositKey)
+                  .finalizeDeposit(tbtcDepositData.depositKey)
               })
 
               it("should transfer depositor fee", async () => {
@@ -344,17 +347,17 @@ describe("BitcoinDepositor", () => {
                 )
               })
 
-              it("should update stake state", async () => {
-                const stakeRequest = await bitcoinDepositor.stakeRequests(
+              it("should update deposit state", async () => {
+                const depositState = await bitcoinDepositor.deposits(
                   tbtcDepositData.depositKey,
                 )
 
-                expect(stakeRequest).to.be.equal(StakeRequestState.Finalized)
+                expect(depositState).to.be.equal(DepositState.Finalized)
               })
 
-              it("should emit StakeRequestFinalized event", async () => {
+              it("should emit DepositFinalized event", async () => {
                 await expect(tx)
-                  .to.emit(bitcoinDepositor, "StakeRequestFinalized")
+                  .to.emit(bitcoinDepositor, "DepositFinalized")
                   .withArgs(
                     tbtcDepositData.depositKey,
                     thirdParty.address,
@@ -370,25 +373,25 @@ describe("BitcoinDepositor", () => {
                   .to.emit(stbtc, "Deposit")
                   .withArgs(
                     await bitcoinDepositor.getAddress(),
-                    tbtcDepositData.staker,
+                    tbtcDepositData.depositOwner,
                     expectedAssetsAmount,
                     expectedReceivedSharesAmount,
                   )
               })
 
-              it("should stake in Acre contract", async () => {
+              it("should deposit in Acre contract", async () => {
                 await expect(
                   tx,
                   "invalid minted stBTC amount",
                 ).to.changeTokenBalances(
                   stbtc,
-                  [tbtcDepositData.staker],
+                  [tbtcDepositData.depositOwner],
                   [expectedReceivedSharesAmount],
                 )
 
                 await expect(
                   tx,
-                  "invalid staked tBTC amount",
+                  "invalid deposited tBTC amount",
                 ).to.changeTokenBalances(tbtc, [stbtc], [expectedAssetsAmount])
               })
             })
@@ -396,8 +399,9 @@ describe("BitcoinDepositor", () => {
             describe("when depositor fee divisor is zero", () => {
               beforeAfterSnapshotWrapper()
 
-              const expectedAssetsAmount = amountToStake + depositorFee
-              const expectedReceivedSharesAmount = amountToStake + depositorFee
+              const expectedAssetsAmount = amountToDeposit + depositorFee
+              const expectedReceivedSharesAmount =
+                amountToDeposit + depositorFee
 
               let tx: ContractTransactionResponse
 
@@ -408,24 +412,24 @@ describe("BitcoinDepositor", () => {
 
                 tx = await bitcoinDepositor
                   .connect(thirdParty)
-                  .finalizeStake(tbtcDepositData.depositKey)
+                  .finalizeDeposit(tbtcDepositData.depositKey)
               })
 
               it("should not transfer depositor fee", async () => {
                 await expect(tx).to.changeTokenBalances(tbtc, [treasury], [0])
               })
 
-              it("should update stake state", async () => {
-                const stakeRequest = await bitcoinDepositor.stakeRequests(
+              it("should update deposit state", async () => {
+                const deposit = await bitcoinDepositor.deposits(
                   tbtcDepositData.depositKey,
                 )
 
-                expect(stakeRequest).to.be.equal(StakeRequestState.Finalized)
+                expect(deposit).to.be.equal(DepositState.Finalized)
               })
 
-              it("should emit StakeRequestFinalized event", async () => {
+              it("should emit DepositFinalized event", async () => {
                 await expect(tx)
-                  .to.emit(bitcoinDepositor, "StakeRequestFinalized")
+                  .to.emit(bitcoinDepositor, "DepositFinalized")
                   .withArgs(
                     tbtcDepositData.depositKey,
                     thirdParty.address,
@@ -441,25 +445,25 @@ describe("BitcoinDepositor", () => {
                   .to.emit(stbtc, "Deposit")
                   .withArgs(
                     await bitcoinDepositor.getAddress(),
-                    tbtcDepositData.staker,
+                    tbtcDepositData.depositOwner,
                     expectedAssetsAmount,
                     expectedReceivedSharesAmount,
                   )
               })
 
-              it("should stake in Acre contract", async () => {
+              it("should deposit in Acre contract", async () => {
                 await expect(
                   tx,
                   "invalid minted stBTC amount",
                 ).to.changeTokenBalances(
                   stbtc,
-                  [tbtcDepositData.staker],
+                  [tbtcDepositData.depositOwner],
                   [expectedReceivedSharesAmount],
                 )
 
                 await expect(
                   tx,
-                  "invalid staked tBTC amount",
+                  "invalid deposited tBTC amount",
                 ).to.changeTokenBalances(tbtc, [stbtc], [expectedAssetsAmount])
               })
             })
@@ -477,7 +481,7 @@ describe("BitcoinDepositor", () => {
                 await expect(
                   bitcoinDepositor
                     .connect(thirdParty)
-                    .finalizeStake(tbtcDepositData.depositKey),
+                    .finalizeDeposit(tbtcDepositData.depositKey),
                 )
                   .to.be.revertedWithCustomError(
                     bitcoinDepositor,
@@ -489,40 +493,37 @@ describe("BitcoinDepositor", () => {
           })
         })
 
-        describe("when stake has been finalized", () => {
+        describe("when deposit has been finalized", () => {
           beforeAfterSnapshotWrapper()
 
           before(async () => {
             // Simulate deposit request finalization.
             await finalizeMinting(tbtcDepositData.depositKey)
 
-            // Finalize stake.
+            // Finalize deposit.
             await bitcoinDepositor
               .connect(thirdParty)
-              .finalizeStake(tbtcDepositData.depositKey)
+              .finalizeDeposit(tbtcDepositData.depositKey)
           })
 
           it("should revert", async () => {
             await expect(
               bitcoinDepositor
                 .connect(thirdParty)
-                .finalizeStake(tbtcDepositData.depositKey),
+                .finalizeDeposit(tbtcDepositData.depositKey),
             )
               .to.be.revertedWithCustomError(
                 bitcoinDepositor,
-                "UnexpectedStakeRequestState",
+                "UnexpectedDepositState",
               )
-              .withArgs(
-                StakeRequestState.Finalized,
-                StakeRequestState.Initialized,
-              )
+              .withArgs(DepositState.Finalized, DepositState.Initialized)
           })
         })
       })
     })
   })
 
-  describe("updateMinStakeAmount", () => {
+  describe("updateMinDepositAmount", () => {
     beforeAfterSnapshotWrapper()
 
     describe("when caller is not governance", () => {
@@ -530,7 +531,7 @@ describe("BitcoinDepositor", () => {
 
       it("should revert", async () => {
         await expect(
-          bitcoinDepositor.connect(thirdParty).updateMinStakeAmount(1234),
+          bitcoinDepositor.connect(thirdParty).updateMinDepositAmount(1234),
         )
           .to.be.revertedWithCustomError(
             bitcoinDepositor,
@@ -541,7 +542,7 @@ describe("BitcoinDepositor", () => {
     })
 
     describe("when caller is governance", () => {
-      const testUpdateMinStakeAmount = (newValue: bigint) =>
+      const testupdateMinDepositAmount = (newValue: bigint) =>
         function () {
           beforeAfterSnapshotWrapper()
 
@@ -550,17 +551,17 @@ describe("BitcoinDepositor", () => {
           before(async () => {
             tx = await bitcoinDepositor
               .connect(governance)
-              .updateMinStakeAmount(newValue)
+              .updateMinDepositAmount(newValue)
           })
 
-          it("should emit MinStakeAmountUpdated event", async () => {
+          it("should emit MinDepositAmountUpdated event", async () => {
             await expect(tx)
-              .to.emit(bitcoinDepositor, "MinStakeAmountUpdated")
+              .to.emit(bitcoinDepositor, "MinDepositAmountUpdated")
               .withArgs(newValue)
           })
 
           it("should update value correctly", async () => {
-            expect(await bitcoinDepositor.minStakeAmount()).to.be.eq(newValue)
+            expect(await bitcoinDepositor.minDepositAmount()).to.be.eq(newValue)
           })
         }
 
@@ -568,44 +569,44 @@ describe("BitcoinDepositor", () => {
 
       // Deposit dust threshold: 1000000 satoshi = 0.01 BTC
       // tBTC Bridge stores the dust threshold in satoshi precision,
-      // we need to convert it to the tBTC token precision as `updateMinStakeAmount`
+      // we need to convert it to the tBTC token precision as `updateMinDepositAmount`
       // function expects this precision.
       const bridgeDepositDustThreshold = to1ePrecision(
         defaultDepositDustThreshold,
         10,
       )
 
-      describe("when new stake amount is less than bridge deposit dust threshold", () => {
+      describe("when new deposit amount is less than bridge deposit dust threshold", () => {
         beforeAfterSnapshotWrapper()
-        const newMinStakeAmount = bridgeDepositDustThreshold - 1n
+        const newMinDepositAmount = bridgeDepositDustThreshold - 1n
 
         it("should revert", async () => {
           await expect(
             bitcoinDepositor
               .connect(governance)
-              .updateMinStakeAmount(newMinStakeAmount),
+              .updateMinDepositAmount(newMinDepositAmount),
           )
             .to.be.revertedWithCustomError(
               bitcoinDepositor,
-              "MinStakeAmountLowerThanBridgeMinDeposit",
+              "MinDepositAmountLowerThanBridgeMinDeposit",
             )
-            .withArgs(newMinStakeAmount, bridgeDepositDustThreshold)
+            .withArgs(newMinDepositAmount, bridgeDepositDustThreshold)
         })
       })
 
       describe(
-        "when new stake amount is equal to bridge deposit dust threshold",
-        testUpdateMinStakeAmount(bridgeDepositDustThreshold),
+        "when new deposit amount is equal to bridge deposit dust threshold",
+        testupdateMinDepositAmount(bridgeDepositDustThreshold),
       )
 
       describe(
-        "when new stake amount is greater than bridge deposit dust threshold",
-        testUpdateMinStakeAmount(bridgeDepositDustThreshold + 1n),
+        "when new deposit amount is greater than bridge deposit dust threshold",
+        testupdateMinDepositAmount(bridgeDepositDustThreshold + 1n),
       )
 
       describe(
-        "when new stake amount is equal max uint256",
-        testUpdateMinStakeAmount(MaxUint256),
+        "when new deposit amount is equal max uint256",
+        testupdateMinDepositAmount(MaxUint256),
       )
     })
   })
@@ -669,24 +670,24 @@ describe("BitcoinDepositor", () => {
   const extraDataValidTestData = new Map<
     string,
     {
-      staker: string
+      depositOwner: string
       referral: number
       extraData: string
     }
   >([
     [
-      "staker has leading zeros",
+      "depositOwner has leading zeros",
       {
-        staker: "0x000055d85E80A49B5930C4a77975d44f012D86C1",
+        depositOwner: "0x000055d85E80A49B5930C4a77975d44f012D86C1",
         referral: 6851, // hex: 0x1ac3
         extraData:
           "0x000055d85e80a49b5930c4a77975d44f012d86c11ac300000000000000000000",
       },
     ],
     [
-      "staker has trailing zeros",
+      "depositOwner has trailing zeros",
       {
-        staker: "0x2d2F8BC7923F7F806Dc9bb2e17F950b42CfE0000",
+        depositOwner: "0x2d2F8BC7923F7F806Dc9bb2e17F950b42CfE0000",
         referral: 6851, // hex: 0x1ac3
         extraData:
           "0x2d2f8bc7923f7f806dc9bb2e17f950b42cfe00001ac300000000000000000000",
@@ -695,7 +696,7 @@ describe("BitcoinDepositor", () => {
     [
       "referral is zero",
       {
-        staker: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
+        depositOwner: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
         referral: 0,
         extraData:
           "0xeb098d6cde6a202981316b24b19e64d82721e89e000000000000000000000000",
@@ -704,7 +705,7 @@ describe("BitcoinDepositor", () => {
     [
       "referral has leading zeros",
       {
-        staker: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
+        depositOwner: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
         referral: 31, // hex: 0x001f
         extraData:
           "0xeb098d6cde6a202981316b24b19e64d82721e89e001f00000000000000000000",
@@ -713,7 +714,7 @@ describe("BitcoinDepositor", () => {
     [
       "referral has trailing zeros",
       {
-        staker: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
+        depositOwner: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
         referral: 19712, // hex: 0x4d00
         extraData:
           "0xeb098d6cde6a202981316b24b19e64d82721e89e4d0000000000000000000000",
@@ -722,7 +723,7 @@ describe("BitcoinDepositor", () => {
     [
       "referral is maximum value",
       {
-        staker: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
+        depositOwner: "0xeb098d6cDE6A202981316b24B19e64D82721e89E",
         referral: 65535, // max uint16
         extraData:
           "0xeb098d6cde6a202981316b24b19e64d82721e89effff00000000000000000000",
@@ -733,10 +734,10 @@ describe("BitcoinDepositor", () => {
   describe("encodeExtraData", () => {
     extraDataValidTestData.forEach(
       // eslint-disable-next-line @typescript-eslint/no-shadow
-      ({ staker, referral, extraData: expectedExtraData }, testName) => {
+      ({ depositOwner, referral, extraData: expectedExtraData }, testName) => {
         it(testName, async () => {
           expect(
-            await bitcoinDepositor.encodeExtraData(staker, referral),
+            await bitcoinDepositor.encodeExtraData(depositOwner, referral),
           ).to.be.equal(expectedExtraData)
         })
       },
@@ -746,14 +747,20 @@ describe("BitcoinDepositor", () => {
   describe("decodeExtraData", () => {
     extraDataValidTestData.forEach(
       (
-        { staker: expectedStaker, referral: expectedReferral, extraData },
+        {
+          depositOwner: expoectedDepositOwner,
+          referral: expectedReferral,
+          extraData,
+        },
         testName,
       ) => {
         it(testName, async () => {
-          const [actualStaker, actualReferral] =
+          const [actualDepositOwner, actualReferral] =
             await bitcoinDepositor.decodeExtraData(extraData)
 
-          expect(actualStaker, "invalid staker").to.be.equal(expectedStaker)
+          expect(actualDepositOwner, "invalid depositOwner").to.be.equal(
+            expoectedDepositOwner,
+          )
           expect(actualReferral, "invalid referral").to.be.equal(
             expectedReferral,
           )
@@ -767,24 +774,26 @@ describe("BitcoinDepositor", () => {
       // value.
       const extraData =
         "0xeb098d6cde6a202981316b24b19e64d82721e89e1ac3105f9919321ea7d75f58"
-      const expectedStaker = "0xeb098d6cDE6A202981316b24B19e64D82721e89E"
+      const expectedDepositOwner = "0xeb098d6cDE6A202981316b24B19e64D82721e89E"
       const expectedReferral = 6851 // hex: 0x1ac3
 
-      const [actualStaker, actualReferral] =
+      const [actualDepositOwner, actualReferral] =
         await bitcoinDepositor.decodeExtraData(extraData)
 
-      expect(actualStaker, "invalid staker").to.be.equal(expectedStaker)
+      expect(actualDepositOwner, "invalid depositOwner").to.be.equal(
+        expectedDepositOwner,
+      )
       expect(actualReferral, "invalid referral").to.be.equal(expectedReferral)
     })
   })
 
-  async function initializeStake() {
+  async function initializeDeposit() {
     await bitcoinDepositor
       .connect(thirdParty)
-      .initializeStake(
+      .initializeDeposit(
         tbtcDepositData.fundingTxInfo,
         tbtcDepositData.reveal,
-        tbtcDepositData.staker,
+        tbtcDepositData.depositOwner,
         tbtcDepositData.referral,
       )
   }

@@ -659,7 +659,7 @@ describe("stBTC", () => {
       const amountToDeposit = to1e18(1)
       let tx: ContractTransactionResponse
       let amountToRedeem: bigint
-      let amountStaked: bigint
+      let amountDeposited: bigint
       let shares: bigint
 
       before(async () => {
@@ -670,10 +670,10 @@ describe("stBTC", () => {
         await stbtc
           .connect(depositor1)
           .deposit(amountToDeposit, depositor1.address)
-        amountStaked =
+        amountDeposited =
           amountToDeposit - feeOnTotal(amountToDeposit, entryFeeBasisPoints)
         amountToRedeem =
-          amountStaked - feeOnTotal(amountStaked, exitFeeBasisPoints)
+          amountDeposited - feeOnTotal(amountDeposited, exitFeeBasisPoints)
         tx = await stbtc
           .connect(depositor1)
           .redeem(shares, thirdParty, depositor1)
@@ -714,7 +714,7 @@ describe("stBTC", () => {
         await expect(tx).to.changeTokenBalances(
           tbtc,
           [treasury.address],
-          [feeOnTotal(amountStaked, exitFeeBasisPoints)],
+          [feeOnTotal(amountDeposited, exitFeeBasisPoints)],
         )
       })
     })
@@ -989,7 +989,7 @@ describe("stBTC", () => {
         )
       })
 
-      it("should transfer tBTC tokens to a Staker", async () => {
+      it("should transfer tBTC tokens to a deposit owner", async () => {
         await expect(withdrawTx).to.changeTokenBalances(
           tbtc,
           [depositor1.address],
