@@ -94,18 +94,22 @@ contract MezoAllocatorV2 is IDispatcher, Ownable2StepUpgradeable {
     event MaintainerAdded(address indexed maintainer);
     /// @notice Emitted when the maintainer address is updated.
     event MaintainerRemoved(address indexed maintainer);
+    /// @notice Emitted when tBTC is released from MezoPortal.
+    event DepositReleased(uint256 indexed depositId, uint256 amount);
     // TEST: New event.
     event NewEvent();
-    /// @notice Reverts if the caller is not an authorized account.
-    error NotAuthorized();
     /// @notice Reverts if the caller is not a maintainer.
+    error CallerNotMaintainer();
+    /// @notice Reverts if the caller is not the stBTC contract.
+    error CallerNotStbtc();
+    /// @notice Reverts if the maintainer is already registered.
     error MaintainerNotRegistered();
     /// @notice Reverts if the caller is already a maintainer.
     error MaintainerAlreadyRegistered();
 
     modifier onlyMaintainer() {
         if (!isMaintainer[msg.sender]) {
-            revert NotAuthorized();
+            revert CallerNotMaintainer();
         }
         _;
     }
@@ -115,9 +119,6 @@ contract MezoAllocatorV2 is IDispatcher, Ownable2StepUpgradeable {
         _disableInitializers();
     }
 
-    /// @notice Initializes the MezoAllocator contract.
-    /// @param _mezoPortal Address of the MezoPortal contract.
-    /// @param _tbtc Address of the tBTC token contract.
     function initialize(
         address _mezoPortal,
         address _tbtc,
@@ -175,13 +176,27 @@ contract MezoAllocatorV2 is IDispatcher, Ownable2StepUpgradeable {
     ///         MezoPortal for a given deposit id.
     /// @param amount Amount of tBTC to withdraw.
     function withdraw(uint256 amount) external {
-        if (msg.sender != address(stbtc)) revert NotAuthorized();
+        if (msg.sender != address(stbtc)) revert CallerNotStbtc();
 
         emit DepositWithdrawn(depositId, amount);
         mezoPortal.withdraw(address(tbtc), depositId, uint96(amount));
         // slither-disable-next-line reentrancy-benign
         depositBalance -= uint96(amount);
         tbtc.safeTransfer(address(stbtc), amount);
+    }
+
+    /// @notice Releases deposit in full from MezoPortal.
+    /// @dev This is a special function that can be used to migrate funds during
+    ///      allocator upgrade or in case of emergencies.
+    function releaseDeposit() external onlyOwner {
+        uint96 amount = mezoPortal
+            .getDeposit(address(this), address(tbtc), depositId)
+            .balance;
+
+        emit DepositReleased(depositId, amount);
+        depositBalance = 0;
+        mezoPortal.withdraw(address(tbtc), depositId, amount);
+        tbtc.safeTransfer(address(stbtc), tbtc.balanceOf(address(this)));
     }
 
     /// @notice Updates the maintainer address.
@@ -224,7 +239,12 @@ contract MezoAllocatorV2 is IDispatcher, Ownable2StepUpgradeable {
     }
 
     /// @notice Returns the total amount of tBTC allocated to MezoPortal.
-    function totalAssets() external view returns (uint256 totalAmount) {
+    function totalAssets() external view returns (uint256) {
         return depositBalance;
+    }
+
+    /// @notice Returns the list of maintainers.
+    function getMaintainers() external view returns (address[] memory) {
+        return maintainers;
     }
 }
