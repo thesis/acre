@@ -7,7 +7,7 @@ import { useAppSelector } from "./store"
 
 type CurrencyConversionType = {
   currency: CurrencyType
-  amount?: number | string
+  amount?: number | string | bigint
 }
 
 // TODO: should be updated to handle another currencies

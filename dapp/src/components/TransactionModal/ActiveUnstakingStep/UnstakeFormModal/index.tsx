@@ -10,7 +10,7 @@ import { selectMinStakeAmount } from "#/store/btc"
 import UnstakeDetails from "./UnstakeDetails"
 
 // TODO: Use a position amount
-const MOCK_POSITION_AMOUNT = "2398567898"
+const MOCK_POSITION_AMOUNT = BigInt("2398567898")
 
 function UnstakeFormModal({
   onSubmitForm,
