@@ -4,8 +4,8 @@ import { Flex, Link as ChakraLink, Icon } from "@chakra-ui/react"
 import { Link as ReactRouterLink } from "react-router-dom"
 import { useSidebar } from "#/hooks"
 import { ArrowLeft } from "#/assets/icons"
-import ActivityBar from "#/components/shared/ActivityBar"
 import ActivityDetails from "./ActivityDetails"
+import { ActivityBar } from "./ActivityBar"
 
 export default function ActivityPage() {
   const { onOpen: openSideBar, onClose: closeSidebar } = useSidebar()
@@ -29,7 +29,7 @@ export default function ActivityPage() {
         />
       </ChakraLink>
       <Flex gap={10}>
-        <ActivityBar flexDirection="column" />
+        <ActivityBar />
         <ActivityDetails />
       </Flex>
     </Flex>

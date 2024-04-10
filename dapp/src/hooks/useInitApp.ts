@@ -1,6 +1,7 @@
 import { useSentry } from "./sentry"
 import { useInitializeAcreSdk } from "./useInitializeAcreSdk"
 import { useFetchBTCPriceUSD } from "./useFetchBTCPriceUSD"
+import { useFetchBTCBalance } from "./useFetchBTCBalance"
 
 export function useInitApp() {
   // TODO: Let's uncomment when dark mode is ready
@@ -8,4 +9,5 @@ export function useInitApp() {
   useSentry()
   useInitializeAcreSdk()
   useFetchBTCPriceUSD()
+  useFetchBTCBalance()
 }

@@ -1,10 +1,10 @@
 import React from "react"
 import { CardProps, Card } from "@chakra-ui/react"
 
-type ActivityCardContainerProps = CardProps & {
-  isCompleted: boolean
-  isActive: boolean
+type ActivityCardWrapperProps = CardProps & {
   children: React.ReactNode
+  isCompleted: boolean
+  isActive?: boolean
 }
 
 const completedStyles = {
@@ -34,18 +34,19 @@ const activeStyles = {
   },
 }
 
-function ActivityCardContainer({
+export function ActivityCardWrapper({
   isActive,
   isCompleted,
   children,
   ...props
-}: ActivityCardContainerProps) {
+}: ActivityCardWrapperProps) {
   return (
     <Card
-      {...props}
-      width={64}
-      paddingX={5}
-      padding={3}
+      w={64}
+      mr={3}
+      px={5}
+      p={3}
+      cursor="pointer"
       borderWidth={1}
       borderColor="gold.100"
       _hover={{
@@ -55,10 +56,9 @@ function ActivityCardContainer({
       }}
       {...(isActive && activeStyles)}
       {...(isCompleted && completedStyles)}
+      {...props}
     >
       {children}
     </Card>
   )
 }
-
-export default ActivityCardContainer
