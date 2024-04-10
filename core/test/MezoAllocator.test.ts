@@ -65,7 +65,7 @@ describe("MezoAllocator", () => {
       it("should revert", async () => {
         await expect(
           mezoAllocator.connect(thirdParty).allocate(),
-        ).to.be.revertedWithCustomError(mezoAllocator, "NotAuthorized")
+        ).to.be.revertedWithCustomError(mezoAllocator, "NotMaintainer")
       })
     })
 
@@ -153,7 +153,7 @@ describe("MezoAllocator", () => {
       it("should revert", async () => {
         await expect(
           mezoAllocator.connect(thirdParty).withdraw(1n),
-        ).to.be.revertedWithCustomError(mezoAllocator, "NotAuthorized")
+        ).to.be.revertedWithCustomError(mezoAllocator, "NotStbtc")
       })
     })
 

@@ -96,13 +96,17 @@ contract MezoAllocator is IDispatcher, Ownable2Step {
     /// @notice Reverts if the caller is not an authorized account.
     error NotAuthorized();
     /// @notice Reverts if the caller is not a maintainer.
+    error NotMaintainer();
+    /// @notice Reverts if the caller is not the stBTC contract.
+    error NotStbtc();
+    /// @notice Reverts if the caller is not a maintainer.
     error MaintainerNotRegistered();
     /// @notice Reverts if the caller is already a maintainer.
     error MaintainerAlreadyRegistered();
 
     modifier onlyMaintainer() {
         if (!isMaintainer[msg.sender]) {
-            revert NotAuthorized();
+            revert NotMaintainer();
         }
         _;
     }
@@ -171,7 +175,7 @@ contract MezoAllocator is IDispatcher, Ownable2Step {
     ///         MezoPortal for a given deposit id.
     /// @param amount Amount of tBTC to withdraw.
     function withdraw(uint256 amount) external {
-        if (msg.sender != address(stbtc)) revert NotAuthorized();
+        if (msg.sender != address(stbtc)) revert NotStbtc();
 
         emit DepositWithdrawn(depositId, amount);
         mezoPortal.withdraw(address(tbtc), depositId, uint96(amount));
