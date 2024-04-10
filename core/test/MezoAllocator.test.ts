@@ -387,7 +387,7 @@ describe("MezoAllocator", () => {
   describe("releaseDeposit", () => {
     beforeAfterSnapshotWrapper()
 
-    context("when a caller is not a maintainer", () => {
+    context("when a caller is not governance", () => {
       it("should revert", async () => {
         await expect(
           mezoAllocator.connect(thirdParty).releaseDeposit(),
@@ -420,8 +420,10 @@ describe("MezoAllocator", () => {
         })
 
         it("should decrease Mezo Portal balance", async () => {
-          expect(await tbtc.balanceOf(await mezoPortal.getAddress())).to.equal(
-            0,
+          await expect(tx).to.changeTokenBalances(
+            tbtc,
+            [mezoPortal, stbtc],
+            [-to1e18(5), to1e18(5)],
           )
         })
       })
