@@ -79,8 +79,10 @@ describe("MezoAllocator", () => {
         })
 
         it("should deposit and transfer tBTC to Mezo Portal", async () => {
-          expect(await tbtc.balanceOf(await mezoPortal.getAddress())).to.equal(
-            to1e18(6),
+          await expect(tx).to.changeTokenBalances(
+            tbtc,
+            [await mezoPortal.getAddress()],
+            [to1e18(6)],
           )
         })
 
@@ -93,6 +95,11 @@ describe("MezoAllocator", () => {
         it("should increment the deposit id", async () => {
           const actualDepositId = await mezoAllocator.depositId()
           expect(actualDepositId).to.equal(1)
+        })
+
+        it("should increase tracked deposit balance amount", async () => {
+          const depositBalance = await mezoAllocator.depositBalance()
+          expect(depositBalance).to.equal(to1e18(6))
         })
 
         it("should emit DepositAllocated event", async () => {
@@ -201,9 +208,11 @@ describe("MezoAllocator", () => {
           })
 
           it("should decrease Mezo Portal balance", async () => {
-            expect(
-              await tbtc.balanceOf(await mezoPortal.getAddress()),
-            ).to.equal(to1e18(3))
+            await expect(tx).to.changeTokenBalances(
+              tbtc,
+              [await mezoPortal.getAddress()],
+              [-to1e18(2)],
+            )
           })
         })
 
@@ -232,9 +241,11 @@ describe("MezoAllocator", () => {
           })
 
           it("should decrease Mezo Portal balance", async () => {
-            expect(
-              await tbtc.balanceOf(await mezoPortal.getAddress()),
-            ).to.equal(0)
+            await expect(tx).to.changeTokenBalances(
+              tbtc,
+              [await mezoPortal.getAddress()],
+              [-to1e18(3)],
+            )
           })
         })
       })
