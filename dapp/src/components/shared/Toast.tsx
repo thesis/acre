@@ -18,6 +18,9 @@ export default function Toast({
   ...props
 }: ToastProps) {
   return (
+    // Chakra UI uses an alert component for toast under the hood.
+    // Therefore, to define custom styles for the Toast component,
+    // need to base it on the Alert component.
     <Alert onClose={onClose} withIcon withCloseButton {...props}>
       <HStack w="100%">
         <TextSm fontWeight="bold">{title}</TextSm>
