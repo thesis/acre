@@ -31,11 +31,11 @@ jobs:
           node-version-file: "sdk/.nvmrc"
           cache: "pnpm"
 
-      - name: Download Core Build Artifacts
+      - name: Download Solidity Build Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: core-build
-          path: core/
+          name: solidity-build
+          path: solidity/
 
       - name: Install Dependencies
         run: pnpm install --prefer-offline --frozen-lockfile
@@ -58,11 +58,11 @@ jobs:
           node-version-file: "sdk/.nvmrc"
           cache: "pnpm"
 
-      - name: Download Core Build Artifacts
+      - name: Download Solidity Build Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: core-build
-          path: core/
+          name: solidity-build
+          path: solidity/
 
       - name: Install Dependencies
         run: pnpm install --prefer-offline --frozen-lockfile

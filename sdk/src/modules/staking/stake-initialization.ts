@@ -27,6 +27,7 @@ type StakeOptions = {
   backoffStepMs: BackoffRetrierParameters[1]
 }
 
+// TODO: Rename to `DepositInitialization` to be consistent with the naming.
 /**
  * Represents an instance of the staking flow. Staking flow requires a few steps
  * which should be done to stake BTC.
@@ -120,7 +121,7 @@ class StakeInitialization {
    */
   #getStakeMessageTypedData() {
     const domain: Domain = {
-      name: "AcreBitcoinDepositor",
+      name: "BitcoinDepositor",
       version: "1",
       verifyingContract: this.#contracts.bitcoinDepositor.getChainIdentifier(),
     }

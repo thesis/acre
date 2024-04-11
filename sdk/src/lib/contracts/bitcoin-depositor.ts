@@ -5,12 +5,12 @@ import { DepositorProxy } from "./depositor-proxy"
 export { DepositReceipt } from "@keep-network/tbtc-v2.ts"
 
 export type DecodedExtraData = {
-  staker: ChainIdentifier
+  depositOwner: ChainIdentifier
   referral: number
 }
 
 /**
- * Interface for communication with the AcreBitcoinDepositor on-chain contract.
+ * Interface for communication with the BitcoinDepositor on-chain contract.
  */
 export interface BitcoinDepositor extends DepositorProxy {
   /**
@@ -24,14 +24,14 @@ export interface BitcoinDepositor extends DepositorProxy {
   getTbtcVaultChainIdentifier(): Promise<ChainIdentifier>
 
   /**
-   * Encodes staker address and referral as extra data.
-   * @param staker The address to which the stBTC shares will be minted.
+   * Encodes deposit owner address and referral as extra data.
+   * @param depositOwner The address to which the stBTC shares will be minted.
    * @param referral Data used for referral program.
    */
-  encodeExtraData(staker: ChainIdentifier, referral: number): Hex
+  encodeExtraData(depositOwner: ChainIdentifier, referral: number): Hex
 
   /**
-   * Decodes staker address and referral from extra data.
+   * Decodes depositOwner address and referral from extra data.
    * @param extraData Encoded extra data.
    */
   decodeExtraData(extraData: string): DecodedExtraData
