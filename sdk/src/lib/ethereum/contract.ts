@@ -1,8 +1,4 @@
 import {
-  EthersContractConfig as _EthersContractConfig,
-  EthersContractDeployment,
-} from "@keep-network/tbtc-v2.ts/dist/src/lib/ethereum/adapter"
-import {
   Contract as EthersContract,
   getAddress,
   Signer,
@@ -10,7 +6,20 @@ import {
 } from "ethers"
 import { EthereumAddress } from "./address"
 
-export { EthersContractDeployment }
+/**
+ * Contract deployment artifact.
+ * @see [hardhat-deploy#Deployment](https://github.com/wighawag/hardhat-deploy/blob/0c969e9a27b4eeff9f5ccac7e19721ef2329eed2/types.ts#L358)}
+ */
+export interface EthersContractDeployment {
+  /**
+   * Address of the deployed contract.
+   */
+  address: string
+  /**
+   * Contract's ABI.
+   */
+  abi: unknown[]
+}
 
 /**
  * Use `VoidSigner` from `ethers` if you want to initialize the Ethereum Acre
@@ -21,10 +30,16 @@ export type EthereumSigner = Signer | VoidSigner
 /**
  * Represents a config set required to connect an Ethereum contract.
  */
-export interface EthersContractConfig
-  // We want to omit the `signerOrProvider` because it points to ethers v5. We
-  // use ethers v6 in Acre SDK.
-  extends Omit<_EthersContractConfig, "signerOrProvider"> {
+export interface EthersContractConfig {
+  /**
+   * Address of the Ethereum contract as a 0x-prefixed hex string.
+   * Optional parameter, if not provided the value will be resolved from the
+   * contract artifact.
+   */
+  address?: string
+  /**
+   * Signer - will return a Contract which will act on behalf of that signer. The signer will sign all contract transactions.
+   */
   signer: EthereumSigner
 }
 
@@ -36,13 +51,6 @@ export class EthersContractWrapper<T extends EthersContract> {
    * Ethers instance of the deployed contract.
    */
   protected readonly instance: T
-
-  /**
-   * Number of a block within which the contract was deployed. Value is read
-   * from the contract deployment artifact. It can be overwritten by setting a
-   * {@link EthersContractConfig.deployedAtBlockNumber} property.
-   */
-  protected readonly deployedAtBlockNumber: number
 
   /**
    * Address of this contract instance.
@@ -61,9 +69,6 @@ export class EthersContractWrapper<T extends EthersContract> {
     ) as T
 
     this.#address = contractAddress
-
-    this.deployedAtBlockNumber =
-      config.deployedAtBlockNumber ?? deployment.receipt.blockNumber
   }
 
   /**
