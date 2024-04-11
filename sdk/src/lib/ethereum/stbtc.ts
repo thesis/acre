@@ -1,5 +1,6 @@
 import { StBTC as StBTCTypechain } from "@acre-btc/contracts/typechain/contracts/StBTC"
-import stBTC from "./artifacts/sepolia/stBTC.json"
+import stBTC from "@acre-btc/contracts/deployments/sepolia/stBTC.json"
+
 import {
   EthersContractConfig,
   EthersContractDeployment,
