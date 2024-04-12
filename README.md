@@ -2,8 +2,6 @@
 
 Bitcoin Liquid Staking
 
-[![Core](https://github.com/thesis/acre/actions/workflows/core.yaml/badge.svg?branch=main&event=push)](https://github.com/thesis/acre/actions/workflows/core.yaml)
-
 ## Development
 
 ### pnpm
@@ -51,7 +49,7 @@ commands:
 pre-commit run --all-files
 
 # Execute hooks for specific files (e.g. stBTC.sol):
-pre-commit run --files ./core/contracts/stBTC.sol
+pre-commit run --files ./solidity/contracts/stBTC.sol
 ```
 
 ### Syncpack

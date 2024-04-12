@@ -1,10 +1,10 @@
 import React from "react"
 import { Button, HStack, Icon, Tooltip } from "@chakra-ui/react"
-import { Account } from "@ledgerhq/wallet-api-client"
 import { useWallet } from "#/hooks"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import { TextMd } from "#/components/shared/Typography"
-import { Bitcoin, EthereumIcon } from "#/assets/icons"
+import { BitcoinIcon, EthereumIcon } from "#/assets/icons"
+import { Account } from "@ledgerhq/wallet-api-client"
 import { CURRENCY_ID_BITCOIN } from "#/constants"
 import {
   isSupportedBTCAddressType,
@@ -61,7 +61,7 @@ export default function ConnectWallet() {
         <Button
           variant="card"
           colorScheme={customDataBtcAccount.colorScheme}
-          leftIcon={<Icon as={Bitcoin} boxSize={6} />}
+          leftIcon={<Icon as={BitcoinIcon} boxSize={6} />}
           onClick={handleConnectBitcoinAccount}
         >
           {customDataBtcAccount.text}

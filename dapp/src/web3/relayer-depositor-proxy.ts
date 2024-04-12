@@ -72,7 +72,7 @@ class RelayerDepositorProxy<T extends BitcoinDepositor>
 
     if (!extraData) throw new Error("Invalid extra data")
 
-    const { staker, referral } =
+    const { depositOwner, referral } =
       this.#bitcoinDepositor.decodeExtraData(extraData)
 
     // TODO: Catch and handle errors + sentry.
@@ -81,7 +81,7 @@ class RelayerDepositorProxy<T extends BitcoinDepositor>
       {
         fundingTx,
         reveal,
-        staker: `0x${staker.identifierHex}`,
+        depositOwner: `0x${depositOwner.identifierHex}`,
         referral,
       },
     )

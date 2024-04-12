@@ -45,6 +45,13 @@ export const buttonTheme: ComponentSingleStyleConfig = {
         _active: {
           bg: "transparent",
         },
+        _loading: {
+          _disabled: {
+            borderColor: "white",
+            background: "opacity.white.5",
+            opacity: 1,
+          },
+        },
       }
       if (colorScheme === "gold") {
         return {
