@@ -81,10 +81,10 @@ class StakingModule {
   }
 
   /**
-   * @returns Minimum stake amount in 1e8 satoshi precision.
+   * @returns Minimum deposit amount in 1e8 satoshi precision.
    */
-  async minStakeAmount() {
-    const value = await this.#contracts.bitcoinDepositor.minStake()
+  async minDepositAmount() {
+    const value = await this.#contracts.bitcoinDepositor.minDepositAmount()
     return toSatoshi(value)
   }
 }

@@ -9,5 +9,5 @@ export const selectSharesBalance = (state: RootState): bigint =>
 export const selectBtcUsdPrice = (state: RootState): number =>
   state.btc.usdPrice
 
-export const selectMinStakeAmount = (state: RootState) =>
-  state.btc.minStakeAmount
+export const selectMinDepositAmount = (state: RootState) =>
+  state.btc.minDepositAmount

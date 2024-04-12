@@ -132,11 +132,11 @@ class EthereumBitcoinDepositor
   }
 
   /**
-   * @see {BitcoinDepositor#minStake}
+   * @see {BitcoinDepositor#minDepositAmount}
    * @dev The value in tBTC token precision (1e18 precision).
    */
-  async minStake(): Promise<bigint> {
-    return this.instance.minStake()
+  async minDepositAmount(): Promise<bigint> {
+    return this.instance.minDepositAmount()
   }
 }
 

@@ -397,8 +397,8 @@ describe("Staking", () => {
     })
   })
 
-  describe("minStakeAmount", () => {
-    describe("should return minimum stake amount", () => {
+  describe("minDepositAmount", () => {
+    describe("should return minimum deposit amount", () => {
       const spyOnToSatoshi = jest.spyOn(satoshiConverterUtils, "toSatoshi")
       const mockedResult = BigInt(0.015 * 1e18)
       // The returned result should be in satoshi precision
@@ -406,10 +406,10 @@ describe("Staking", () => {
       let result: bigint
 
       beforeAll(async () => {
-        contracts.bitcoinDepositor.minStake = jest
+        contracts.bitcoinDepositor.minDepositAmount = jest
           .fn()
           .mockResolvedValue(mockedResult)
-        result = await staking.minStakeAmount()
+        result = await staking.minDepositAmount()
       })
 
       it("should convert value to 1e8 satoshi precision", () => {

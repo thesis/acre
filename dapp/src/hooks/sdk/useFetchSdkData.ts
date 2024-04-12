@@ -1,7 +1,7 @@
 import { useFetchBTCBalance } from "./useFetchBTCBalance"
-import { useFetchMinStakeAmount } from "./useFetchMinStakeAmount"
+import { useFetchMinDepositAmount } from "./useFetchMinDepositAmount"
 
 export function useFetchSdkData() {
   useFetchBTCBalance()
-  useFetchMinStakeAmount()
+  useFetchMinDepositAmount()
 }

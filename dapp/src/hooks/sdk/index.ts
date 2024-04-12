@@ -1,4 +1,4 @@
 export * from "./useInitializeAcreSdk"
-export * from "./useFetchMinStakeAmount"
+export * from "./useFetchMinDepositAmount"
 export * from "./useFetchSdkData"
 export * from "./useFetchBTCBalance"
