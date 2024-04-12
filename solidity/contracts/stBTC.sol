@@ -253,8 +253,11 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         address owner
     ) public override whenNotPaused returns (uint256) {
         uint256 currentAssetsBalance = IERC20(asset()).balanceOf(address(this));
-        if (assets > currentAssetsBalance) {
-            dispatcher.withdraw(assets - currentAssetsBalance);
+        // If there is not enough assets in stBTC to cover user withdrawals and
+        // withdrawal fees then pull the assets from the dispatcher.
+        uint256 assetsWithFees = convertToAssets(previewWithdraw(assets));
+        if (assetsWithFees > currentAssetsBalance) {
+            dispatcher.withdraw(assetsWithFees - currentAssetsBalance);
         }
 
         return super.withdraw(assets, receiver, owner);
