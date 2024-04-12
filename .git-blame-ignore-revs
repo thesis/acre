@@ -1,3 +1,6 @@
 # Auto-fix linting
 d2a058fe6cfbab6f82d0d977d1b2d8bd9f494df1
 0976ac1b09b7257fe74389bafe94697059a07aed
+
+# Move core/ to solidity/
+9b45a73a99b879e6fd362553f60de79405abad98

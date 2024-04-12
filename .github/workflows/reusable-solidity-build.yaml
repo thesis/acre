@@ -1,17 +1,13 @@
-name: Build the SDK package
+name: Build the Solidity package
 on:
   workflow_call:
 
 jobs:
-  solidity-build:
-    uses: ./.github/workflows/reusable-solidity-build.yaml
-
-  sdk-build:
+  build-solidity:
+    runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./sdk
-    needs: [solidity-build]
-    runs-on: ubuntu-latest
+        working-directory: ./solidity
     steps:
       - uses: actions/checkout@v4
 
@@ -21,14 +17,8 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: "sdk/.nvmrc"
+          node-version-file: "solidity/.nvmrc"
           cache: "pnpm"
-
-      - name: Download Solidity Build Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: solidity-build
-          path: solidity/
 
       - name: Install Dependencies
         run: pnpm install --prefer-offline --frozen-lockfile
@@ -39,6 +29,9 @@ jobs:
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: sdk-build
-          path: sdk/dist/
+          name: solidity-build
+          path: |
+            solidity/build/
+            solidity/cache/
+            solidity/typechain/
           if-no-files-found: error

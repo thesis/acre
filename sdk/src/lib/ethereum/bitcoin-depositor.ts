@@ -1,5 +1,5 @@
 import { packRevealDepositParameters } from "@keep-network/tbtc-v2.ts"
-import { BitcoinDepositor as BitcoinDepositorTypechain } from "@acre-btc/core/typechain/contracts/BitcoinDepositor"
+import { BitcoinDepositor as BitcoinDepositorTypechain } from "@acre-btc/contracts/typechain/contracts/BitcoinDepositor"
 import {
   ZeroAddress,
   dataSlice,
@@ -84,12 +84,12 @@ class EthereumBitcoinDepositor
 
     if (!extraData) throw new Error("Invalid extra data")
 
-    const { staker, referral } = this.decodeExtraData(extraData)
+    const { depositOwner, referral } = this.decodeExtraData(extraData)
 
-    const tx = await this.instance.initializeStake(
+    const tx = await this.instance.initializeDeposit(
       fundingTx,
       reveal,
-      `0x${staker.identifierHex}`,
+      `0x${depositOwner.identifierHex}`,
       referral,
     )
 
@@ -98,19 +98,19 @@ class EthereumBitcoinDepositor
 
   /**
    * @see {BitcoinDepositor#encodeExtraData}
-   * @dev Packs the data to bytes32: 20 bytes of staker address and 2 bytes of
+   * @dev Packs the data to bytes32: 20 bytes of deposit owner address and 2 bytes of
    *      referral, 10 bytes of trailing zeros.
    */
   // eslint-disable-next-line class-methods-use-this
-  encodeExtraData(staker: ChainIdentifier, referral: number): Hex {
-    const stakerAddress = `0x${staker.identifierHex}`
+  encodeExtraData(depositOwner: ChainIdentifier, referral: number): Hex {
+    const depositOwnerAddress = `0x${depositOwner.identifierHex}`
 
-    if (!isAddress(stakerAddress) || stakerAddress === ZeroAddress)
-      throw new Error("Invalid staker address")
+    if (!isAddress(depositOwnerAddress) || depositOwnerAddress === ZeroAddress)
+      throw new Error("Invalid deposit owner address")
 
     const encodedData = solidityPacked(
       ["address", "uint16"],
-      [stakerAddress, referral],
+      [depositOwnerAddress, referral],
     )
 
     return Hex.from(zeroPadBytes(encodedData, 32))
@@ -118,15 +118,17 @@ class EthereumBitcoinDepositor
 
   /**
    * @see {BitcoinDepositor#decodeExtraData}
-   * @dev Unpacks the data from bytes32: 20 bytes of staker address and 2
+   * @dev Unpacks the data from bytes32: 20 bytes of deposit owner address and 2
    *      bytes of referral, 10 bytes of trailing zeros.
    */
   // eslint-disable-next-line class-methods-use-this
   decodeExtraData(extraData: string): DecodedExtraData {
-    const staker = EthereumAddress.from(getAddress(dataSlice(extraData, 0, 20)))
+    const depositOwner = EthereumAddress.from(
+      getAddress(dataSlice(extraData, 0, 20)),
+    )
     const referral = Number(dataSlice(extraData, 20, 22))
 
-    return { staker, referral }
+    return { depositOwner, referral }
   }
 }
 
