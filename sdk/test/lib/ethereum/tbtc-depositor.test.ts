@@ -22,7 +22,6 @@ describe("BitcoinDepositor", () => {
 
   const mockedContractInstance = {
     tbtcVault: jest.fn().mockImplementation(() => vaultAddress.identifierHex),
-    initializeStake: jest.fn(),
     initializeDeposit: jest.fn(),
     minStake: jest.fn().mockImplementation(() => minStakeAmount),
   }
