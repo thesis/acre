@@ -1,8 +1,8 @@
 import React from "react"
 import { createIcon } from "@chakra-ui/react"
 
-export const Bitcoin = createIcon({
-  displayName: "Bitcoin",
+export const BitcoinIcon = createIcon({
+  displayName: "BitcoinIcon",
   viewBox: "0 0 28 28",
   path: [
     <g clipPath="url(#clip0_1935_2913)">
