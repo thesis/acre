@@ -5,8 +5,7 @@ import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/Token
 import { TextMd, TextSm } from "#/components/shared/Typography"
 import Spinner from "#/components/shared/Spinner"
 import { FormSubmitButton } from "#/components/shared/Form"
-import { useAppSelector } from "#/hooks"
-import { selectMinStakeAmount } from "#/store/btc"
+import { useMinStakeAmount } from "#/hooks"
 import UnstakeDetails from "./UnstakeDetails"
 
 // TODO: Use a position amount
@@ -17,7 +16,7 @@ function UnstakeFormModal({
 }: {
   onSubmitForm: (values: TokenAmountFormValues) => void
 }) {
-  const minStakeAmount = useAppSelector(selectMinStakeAmount)
+  const minStakeAmount = useMinStakeAmount()
 
   return (
     <TokenAmountForm
