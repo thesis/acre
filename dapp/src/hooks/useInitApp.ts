@@ -1,4 +1,4 @@
-import { useFetchSdkData, useInitializeAcreSdk } from "./sdk"
+import { useInitDataFromSdk, useInitializeAcreSdk } from "./sdk"
 import { useSentry } from "./sentry"
 import { useFetchBTCPriceUSD } from "./useFetchBTCPriceUSD"
 
@@ -7,6 +7,6 @@ export function useInitApp() {
   // useDetectThemeMode()
   useSentry()
   useInitializeAcreSdk()
-  useFetchSdkData()
+  useInitDataFromSdk()
   useFetchBTCPriceUSD()
 }
