@@ -15,6 +15,12 @@ import {
   logPromiseFailure,
   truncateAddress,
 } from "#/utils"
+import { AnimatePresence, motion, Variants } from "framer-motion"
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0, y: -48 },
+  visible: { opacity: 1, y: 0 },
+}
 
 const getCustomDataByAccount = (
   account?: Account,
@@ -36,37 +42,47 @@ export default function ConnectWallet() {
   const customDataBtcAccount = getCustomDataByAccount(btcAccount)
 
   const isHomeRoute = useIsHomeRoute()
-  if (!isConnected && isHomeRoute) return null
 
   const handleConnectBitcoinAccount = () => {
     logPromiseFailure(requestBitcoinAccount())
   }
 
   return (
-    <HStack spacing={4}>
-      <HStack display={{ base: "none", md: "flex" }}>
-        <TextMd color="grey.500">Balance</TextMd>
-        <CurrencyBalance
-          currency="bitcoin"
-          amount={btcAccount?.balance.toString()}
-        />
-      </HStack>
-      <Tooltip
-        label="Currently, we support only Legacy or Native SegWit addresses. Please try connecting another address."
-        placement="top"
-        isDisabled={
-          !(btcAccount && !isSupportedBTCAddressType(btcAccount.address))
-        }
-      >
-        <Button
-          variant="card"
-          colorScheme={customDataBtcAccount.colorScheme}
-          leftIcon={<Icon as={BitcoinIcon} boxSize={6} />}
-          onClick={handleConnectBitcoinAccount}
+    <AnimatePresence initial={false}>
+      {isConnected || !isHomeRoute ? (
+        <HStack
+          as={motion.div}
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          exit="hidden"
+          spacing={4}
         >
-          {customDataBtcAccount.text}
-        </Button>
-      </Tooltip>
-    </HStack>
+          <HStack display={{ base: "none", md: "flex" }}>
+            <TextMd color="grey.500">Balance</TextMd>
+            <CurrencyBalance
+              currency="bitcoin"
+              amount={btcAccount?.balance.toString()}
+            />
+          </HStack>
+          <Tooltip
+            label="Currently, we support only Legacy or Native SegWit addresses. Please try connecting another address."
+            placement="top"
+            isDisabled={
+              !(btcAccount && !isSupportedBTCAddressType(btcAccount.address))
+            }
+          >
+            <Button
+              variant="card"
+              colorScheme={customDataBtcAccount.colorScheme}
+              leftIcon={<Icon as={BitcoinIcon} boxSize={6} />}
+              onClick={handleConnectBitcoinAccount}
+            >
+              {customDataBtcAccount.text}
+            </Button>
+          </Tooltip>
+        </HStack>
+      ) : null}
+    </AnimatePresence>
   )
 }
