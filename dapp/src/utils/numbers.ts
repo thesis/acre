@@ -200,3 +200,9 @@ export function userAmountToBigInt(
 // Generates a random integer in min-max range (inclusively)
 export const randomInteger = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min + 1)) + min
+
+export const addLeadingZero = (num: number): string =>
+  num >= 0 && num <= 9 ? `0${num}` : `${num}`
+
+export const getPercentValue = (value: number, maxValue: number) =>
+  (value * 100) / maxValue
