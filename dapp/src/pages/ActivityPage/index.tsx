@@ -4,7 +4,6 @@ import { Flex, Link as ChakraLink, Icon } from "@chakra-ui/react"
 import { Link as ReactRouterLink } from "react-router-dom"
 import { useSidebar } from "#/hooks"
 import { ArrowLeft } from "#/assets/icons"
-import Layout from "#/components/shared/Layout"
 import ActivityDetails from "./ActivityDetails"
 import { ActivityBar } from "./ActivityBar"
 
@@ -17,24 +16,22 @@ export default function ActivityPage() {
   }, [closeSidebar, openSideBar])
 
   return (
-    <Layout>
-      <Flex direction="column" gap={4} p={6}>
-        <ChakraLink as={ReactRouterLink} to="/">
-          <Icon
-            as={ArrowLeft}
-            boxSize={8}
-            padding={2}
-            borderRadius={16}
-            color="grey.700"
-            bg="opacity.white.5"
-            _hover={{ color: "white", bg: "brand.400" }}
-          />
-        </ChakraLink>
-        <Flex gap={10}>
-          <ActivityBar />
-          <ActivityDetails />
-        </Flex>
+    <Flex direction="column" gap={4} p={6}>
+      <ChakraLink as={ReactRouterLink} to="/">
+        <Icon
+          as={ArrowLeft}
+          boxSize={8}
+          padding={2}
+          borderRadius={16}
+          color="grey.700"
+          bg="opacity.white.5"
+          _hover={{ color: "white", bg: "brand.400" }}
+        />
+      </ChakraLink>
+      <Flex gap={10}>
+        <ActivityBar />
+        <ActivityDetails />
       </Flex>
-    </Layout>
+    </Flex>
   )
 }

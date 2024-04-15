@@ -1,16 +1,16 @@
 import React from "react"
 import { Box, BoxProps } from "@chakra-ui/react"
+import { Outlet } from "react-router-dom"
 import Header from "../Header"
 import DocsDrawer from "../DocsDrawer"
 import Sidebar from "../Sidebar"
 
 function Layout(props: BoxProps) {
-  const { children, ...restProps } = props
   return (
     <>
-      <Box as="main" {...restProps}>
+      <Box as="main" {...props}>
         <Header />
-        {children}
+        <Outlet />
       </Box>
       <Sidebar />
       <DocsDrawer />
