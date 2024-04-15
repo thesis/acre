@@ -24,6 +24,7 @@
     "@reduxjs/toolkit": "^2.2.0",
     "@sentry/react": "^7.98.0",
     "@sentry/types": "^7.102.0",
+    "@tabler/icons-react": "^3.1.0",
     "@tanstack/react-table": "^8.11.3",
     "@types/react-slick": "^0.23.13",
     "axios": "^1.6.7",
