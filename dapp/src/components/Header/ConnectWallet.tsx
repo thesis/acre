@@ -1,6 +1,7 @@
 import React from "react"
 import { Button, HStack, Icon, Tooltip } from "@chakra-ui/react"
 import {
+  useIsHomeRoute,
   useRequestBitcoinAccount,
   useRequestEthereumAccount,
   useWalletContext,
@@ -32,10 +33,13 @@ const getCustomDataByAccount = (
 export default function ConnectWallet() {
   const { requestAccount: requestBitcoinAccount } = useRequestBitcoinAccount()
   const { requestAccount: requestEthereumAccount } = useRequestEthereumAccount()
-  const { btcAccount, ethAccount } = useWalletContext()
+  const { btcAccount, ethAccount, isConnected } = useWalletContext()
 
   const customDataBtcAccount = getCustomDataByAccount(btcAccount)
   const customDataEthAccount = getCustomDataByAccount(ethAccount)
+
+  const isHomeRoute = useIsHomeRoute()
+  if (!isConnected && isHomeRoute) return null
 
   const handleConnectBitcoinAccount = () => {
     logPromiseFailure(requestBitcoinAccount())
