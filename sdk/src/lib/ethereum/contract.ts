@@ -38,7 +38,8 @@ export interface EthersContractConfig {
    */
   address?: string
   /**
-   * Signer - will return a Contract which will act on behalf of that signer. The signer will sign all contract transactions.
+   * Signer - will return a Contract which will act on behalf of that signer.
+   * The signer will sign all contract transactions.
    */
   signer: EthereumSigner
 }
