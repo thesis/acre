@@ -11,7 +11,12 @@ import {
   DepositReceipt,
   ChainIdentifier,
 } from "../../lib/contracts"
-import { Hex, backoffRetrier, BackoffRetrierParameters } from "../../lib/utils"
+import {
+  Hex,
+  backoffRetrier,
+  BackoffRetrierParameters,
+  SaveRevealRequest,
+} from "../../lib/utils"
 
 type StakeOptions = {
   /**
@@ -182,6 +187,36 @@ class StakeInitialization {
 
       if (utxos.length === 0) throw new Error("Deposit not funded yet")
     })
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  async saveReveal(revealData: SaveRevealRequest): Promise<boolean> {
+    try {
+      // TODO: Set the correct request
+      const data = await fetch(
+        new URL(
+          "reveals",
+          "https://mezo-portal-tbtc-api-staging.thesis-co.workers.dev/tbtc-api/v1",
+        ),
+        {
+          method: "POST",
+          body: JSON.stringify(revealData),
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+        },
+      )
+
+      if (!data || !data.ok) return false
+
+      const { success } = (await data.json()) as { success: boolean }
+
+      return success
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err)
+
+      return false
+    }
   }
 }
 

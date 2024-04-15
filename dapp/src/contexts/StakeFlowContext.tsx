@@ -19,6 +19,7 @@ export const StakeFlowContext = React.createContext<StakeFlowContextValue>({
   initStake: async () => {},
   signMessage: async () => {},
   stake: async () => {},
+  saveReveal: async () => Promise.resolve(false),
 })
 
 export function StakeFlowProvider({ children }: { children: React.ReactNode }) {
@@ -29,6 +30,7 @@ export function StakeFlowProvider({ children }: { children: React.ReactNode }) {
     btcAddress,
     depositReceipt,
     stake,
+    saveReveal,
   } = useStakeFlow()
 
   const initStake = useCallback(
@@ -54,8 +56,9 @@ export function StakeFlowProvider({ children }: { children: React.ReactNode }) {
       btcAddress,
       depositReceipt,
       stake,
+      saveReveal,
     }),
-    [initStake, signMessage, btcAddress, depositReceipt, stake],
+    [initStake, signMessage, btcAddress, depositReceipt, stake, saveReveal],
   )
 
   return (

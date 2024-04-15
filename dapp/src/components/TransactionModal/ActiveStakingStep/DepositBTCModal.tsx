@@ -18,7 +18,8 @@ export default function DepositBTCModal() {
   const { ethAccount } = useWalletContext()
   const { tokenAmount } = useTransactionContext()
   const { setStatus } = useModalFlowContext()
-  const { btcAddress, depositReceipt, stake } = useStakeFlowContext()
+  const { btcAddress, depositReceipt, stake, saveReveal } =
+    useStakeFlowContext()
   const depositTelemetry = useDepositTelemetry()
 
   const onStakeBTCSuccess = useCallback(() => {
@@ -57,12 +58,17 @@ export default function DepositBTCModal() {
     // TODO: Display the correct message for the user
     if (response.verificationStatus !== "valid") return
 
+    const isRevealSaved = await saveReveal()
+
+    if (!isRevealSaved) return
+
     logPromiseFailure(sendBitcoinTransaction(tokenAmount?.amount, btcAddress))
   }, [
     btcAddress,
     depositReceipt,
     depositTelemetry,
     ethAccount,
+    saveReveal,
     sendBitcoinTransaction,
     tokenAmount?.amount,
   ])

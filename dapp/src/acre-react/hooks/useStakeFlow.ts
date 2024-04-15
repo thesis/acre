@@ -4,6 +4,7 @@ import {
   EthereumAddress,
   DepositorProxy,
   DepositReceipt,
+  SaveRevealRequest,
 } from "@acre-btc/sdk"
 import { useAcreContext } from "./useAcreContext"
 
@@ -18,6 +19,7 @@ export type UseStakeFlowReturn = {
   depositReceipt?: DepositReceipt
   signMessage: () => Promise<void>
   stake: () => Promise<void>
+  saveReveal: () => Promise<boolean>
 }
 
 export function useStakeFlow(): UseStakeFlowReturn {
@@ -26,16 +28,20 @@ export function useStakeFlow(): UseStakeFlowReturn {
   const [stakeFlow, setStakeFlow] = useState<StakeInitialization | undefined>(
     undefined,
   )
+  const [depositOwner, setDepositOwner] = useState<string | undefined>(
+    undefined,
+  )
   const [btcAddress, setBtcAddress] = useState<string | undefined>(undefined)
   const [depositReceipt, setDepositReceipt] = useState<
     DepositReceipt | undefined
   >(undefined)
+  const [referral, setReferral] = useState<number | undefined>(undefined)
 
   const initStake = useCallback(
     async (
       bitcoinRecoveryAddress: string,
       ethereumAddress: string,
-      referral: number,
+      referralValue: number,
       depositor?: DepositorProxy,
     ) => {
       if (!acre || !isInitialized) throw new Error("Acre SDK not defined")
@@ -43,7 +49,7 @@ export function useStakeFlow(): UseStakeFlowReturn {
       const initializedStakeFlow = await acre.staking.initializeStake(
         bitcoinRecoveryAddress,
         EthereumAddress.from(ethereumAddress),
-        referral,
+        referralValue,
         depositor,
       )
 
@@ -53,6 +59,8 @@ export function useStakeFlow(): UseStakeFlowReturn {
       // TODO: add loading indicators or we can `@tanstack/react-query` lib for
       // handling requests.
       setStakeFlow(initializedStakeFlow)
+      setDepositOwner(bitcoinRecoveryAddress)
+      setReferral(referralValue)
       setBtcAddress(btcDepositAddress)
       setDepositReceipt(btcDepositReceipt)
     },
@@ -72,11 +80,31 @@ export function useStakeFlow(): UseStakeFlowReturn {
     await stakeFlow.stake()
   }, [stakeFlow])
 
+  const saveReveal = useCallback(async () => {
+    if (!stakeFlow) throw new Error("Initialize stake first")
+
+    if (!depositReceipt || !referral || !depositOwner) return false
+
+    const revealData: SaveRevealRequest = {
+      address: depositOwner,
+      revealInfo: depositReceipt,
+      metadata: {
+        depositOwner,
+        referral,
+      },
+      application: "acre",
+    }
+
+    const response = await stakeFlow.saveReveal(revealData)
+    return response
+  }, [depositOwner, depositReceipt, referral, stakeFlow])
+
   return {
     initStake,
     btcAddress,
     depositReceipt,
     signMessage,
     stake,
+    saveReveal,
   }
 }
