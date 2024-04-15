@@ -6,14 +6,15 @@ import {
   useTransactionContext,
   useWalletContext,
 } from "#/hooks"
-import { ConnectBTCAccount, ConnectETHAccount } from "#/assets/icons"
+import { BitcoinIcon, EthereumIcon } from "#/assets/icons"
 import { ActionFlowType, PROCESS_STATUSES } from "#/types"
 import { isSupportedBTCAddressType } from "#/utils"
 import ActionFormModal from "./ActionFormModal"
+import ErrorModal from "./ErrorModal"
+import LoadingModal from "./LoadingModal"
 import MissingAccountModal from "./MissingAccountModal"
 import ResumeModal from "./ResumeModal"
 import SuccessModal from "./SuccessModal"
-import LoadingModal from "./LoadingModal"
 
 export default function ModalContentWrapper({
   defaultType,
@@ -32,7 +33,7 @@ export default function ModalContentWrapper({
     return (
       <MissingAccountModal
         currency="bitcoin"
-        icon={ConnectBTCAccount}
+        icon={BitcoinIcon}
         requestAccount={requestBitcoinAccount}
       />
     )
@@ -41,7 +42,7 @@ export default function ModalContentWrapper({
     return (
       <MissingAccountModal
         currency="ethereum"
-        icon={ConnectETHAccount}
+        icon={EthereumIcon}
         requestAccount={requestEthereumAccount}
       />
     )
@@ -55,6 +56,8 @@ export default function ModalContentWrapper({
 
   if (status === PROCESS_STATUSES.SUCCEEDED)
     return <SuccessModal type={type} tokenAmount={tokenAmount} />
+
+  if (status === PROCESS_STATUSES.FAILED) return <ErrorModal type={type} />
 
   return children
 }

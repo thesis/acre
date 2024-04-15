@@ -17,8 +17,8 @@ import {
 import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { logPromiseFailure } from "#/utils"
-import StakeFormModal from "../ActiveStakingStep/StakeFormModal"
-import UnstakeFormModal from "../ActiveUnstakingStep/UnstakeFormModal"
+import StakeFormModal from "./ActiveStakingStep/StakeFormModal"
+import UnstakeFormModal from "./ActiveUnstakingStep/UnstakeFormModal"
 
 const TABS = Object.values(ACTION_FLOW_TYPES)
 
