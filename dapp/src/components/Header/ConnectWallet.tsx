@@ -3,12 +3,11 @@ import { Button, HStack, Icon, Tooltip } from "@chakra-ui/react"
 import {
   useIsHomeRoute,
   useRequestBitcoinAccount,
-  useRequestEthereumAccount,
   useWalletContext,
 } from "#/hooks"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import { TextMd } from "#/components/shared/Typography"
-import { BitcoinIcon, EthereumIcon } from "#/assets/icons"
+import { BitcoinIcon } from "#/assets/icons"
 import { Account } from "@ledgerhq/wallet-api-client"
 import { CURRENCY_ID_BITCOIN } from "#/constants"
 import {
@@ -32,21 +31,15 @@ const getCustomDataByAccount = (
 
 export default function ConnectWallet() {
   const { requestAccount: requestBitcoinAccount } = useRequestBitcoinAccount()
-  const { requestAccount: requestEthereumAccount } = useRequestEthereumAccount()
-  const { btcAccount, ethAccount, isConnected } = useWalletContext()
+  const { btcAccount, isConnected } = useWalletContext()
 
   const customDataBtcAccount = getCustomDataByAccount(btcAccount)
-  const customDataEthAccount = getCustomDataByAccount(ethAccount)
 
   const isHomeRoute = useIsHomeRoute()
   if (!isConnected && isHomeRoute) return null
 
   const handleConnectBitcoinAccount = () => {
     logPromiseFailure(requestBitcoinAccount())
-  }
-
-  const handleConnectEthereumAccount = () => {
-    logPromiseFailure(requestEthereumAccount())
   }
 
   return (
@@ -74,14 +67,6 @@ export default function ConnectWallet() {
           {customDataBtcAccount.text}
         </Button>
       </Tooltip>
-      <Button
-        variant="card"
-        colorScheme={customDataEthAccount.colorScheme}
-        leftIcon={<Icon as={EthereumIcon} boxSize={6} />}
-        onClick={handleConnectEthereumAccount}
-      >
-        {customDataEthAccount.text}
-      </Button>
     </HStack>
   )
 }
