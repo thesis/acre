@@ -177,7 +177,7 @@ function LiveTag(props: TagProps) {
   )
 }
 
-function SeasonCountdownSection() {
+export default function SeasonCountdownSection() {
   return (
     <Box position="relative">
       <VStack
@@ -202,5 +202,3 @@ function SeasonCountdownSection() {
     </Box>
   )
 }
-
-export default SeasonCountdownSection
