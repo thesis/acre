@@ -130,6 +130,14 @@ class EthereumBitcoinDepositor
 
     return { depositOwner, referral }
   }
+
+  /**
+   * @see {BitcoinDepositor#minDepositAmount}
+   * @dev The value in tBTC token precision (1e18 precision).
+   */
+  async minDepositAmount(): Promise<bigint> {
+    return this.instance.minDepositAmount()
+  }
 }
 
 export { EthereumBitcoinDepositor, packRevealDepositParameters }

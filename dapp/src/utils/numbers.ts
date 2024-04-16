@@ -48,7 +48,7 @@ export function bigIntToUserAmount(
  *
  */
 export const formatTokenAmount = (
-  amount: number | string,
+  amount: number | string | bigint,
   decimals = 18,
   desiredDecimals = 2,
 ) => {
@@ -200,12 +200,6 @@ export function userAmountToBigInt(
 // Generates a random integer in min-max range (inclusively)
 export const randomInteger = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min + 1)) + min
-
-export function getDesiredDecimals(amount: string | number, decimals: number) {
-  const undecimaledAmount = amount.toString()
-  const desiredDecimals = decimals - undecimaledAmount.length + 1
-  return desiredDecimals > 0 ? desiredDecimals : 2
-}
 
 export const addLeadingZero = (num: number): string =>
   num >= 0 && num <= 9 ? `0${num}` : `${num}`
