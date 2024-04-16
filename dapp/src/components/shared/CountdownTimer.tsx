@@ -27,12 +27,13 @@ function CountdownTimerDigit(props: CountdownTimerDigitProps) {
       overflow="hidden"
       {...restProps}
     >
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode="popLayout">
         <motion.div
           key={children}
-          initial={{ y: -42 }}
-          animate={{ y: 0 }}
-          exit={{ y: 42 }}
+          initial={{ y: -32, rotateX: -90, opacity: 1 }}
+          animate={{ y: 0, rotateX: 0, opacity: 1 }}
+          exit={{ y: 32, rotateX: 90, opacity: 0 }}
+          transition={{ type: "spring", mass: 1.05 }}
         >
           {children}
         </motion.div>
