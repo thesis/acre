@@ -19,7 +19,7 @@ const testData = {
     depositTreasuryFeeDivisor: 2_000n, // 1/2000 == 5bps == 0.05% == 0.0005
     depositTxMaxFee: 100_000n, // 100000 satoshi = 0.001 BTC
   },
-  optimisticMintingFeeDivisor: 500n, // 1/500 = 0.002 = 0.2%0
+  optimisticMintingFeeDivisor: 500n, // 1/500 = 0.002 = 0.2%
 }
 
 describe("BitcoinDepositor", () => {

@@ -25,20 +25,19 @@ type TBTCMintingFees = {
    */
   optimisticMintingFee: bigint
   /**
-   * Maximum amount of BTC transaction fee that can
-   * be incurred by each swept deposit being part of the given sweep
-   * transaction.
+   * Maximum amount of BTC transaction fee that can be incurred by each swept
+   * deposit being part of the given sweep transaction.
    */
   depositTxMaxFee: bigint
 }
 
 /**
- * Represents the Acre network deposit fees.
+ * Represents the Acre protocol deposit fees.
  */
 type AcreDepositFees = {
   /**
-   * The Acre network depositor fee taken from each Bitcoin deposit and
-   * transferred to the treasury upon stake request finalization.
+   * The Acre protocol depositor fee taken from each Bitcoin deposit and
+   * transferred to the treasury upon deposit request finalization.
    */
   bitcoinDepositorFee: bigint
 }
@@ -49,7 +48,6 @@ export type DepositFees = {
 }
 
 /**
- * Interface for communication with the AcreBitcoinDepositor on-chain contract.
  * Interface for communication with the BitcoinDepositor on-chain contract.
  */
 export interface BitcoinDepositor extends DepositorProxy {
