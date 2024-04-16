@@ -14,8 +14,4 @@ export const router = createBrowserRouter([
     path: `${routerPath.activity}/:activityId`,
     element: <ActivityPage />,
   },
-  // {
-  //   path: `${routerPath.activity}/:activityId`,
-  //   element: <ActivityPage />,
-  // },
 ])
