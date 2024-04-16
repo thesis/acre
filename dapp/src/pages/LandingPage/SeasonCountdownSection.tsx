@@ -29,7 +29,7 @@ function Background() {
   const containerRef = useRef(null)
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["center start", "end end"],
+    offset: ["center start", "start end"],
   })
   const smoothScrollYProgress = useSpring(scrollYProgress, {
     damping: 10,

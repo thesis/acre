@@ -11,13 +11,15 @@ import {
 } from "@chakra-ui/react"
 import { AnimatePresence, motion } from "framer-motion"
 
+const MotionBox = motion(Box)
+
 type CountdownTimerDigitProps = Omit<BoxProps, "children"> & {
   children: number
 }
 function CountdownTimerDigit(props: CountdownTimerDigitProps) {
   const { children, ...restProps } = props
   return (
-    <Box
+    <MotionBox
       px={5}
       w={14}
       py={4}
@@ -25,6 +27,8 @@ function CountdownTimerDigit(props: CountdownTimerDigitProps) {
       color="gold.200"
       bg="grey.700"
       overflow="hidden"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1, transition: { staggerChildren: 0.1 } }}
       {...restProps}
     >
       <AnimatePresence mode="popLayout">
@@ -38,7 +42,7 @@ function CountdownTimerDigit(props: CountdownTimerDigitProps) {
           {children}
         </motion.div>
       </AnimatePresence>
-    </Box>
+    </MotionBox>
   )
 }
 
