@@ -75,12 +75,12 @@ export interface BitcoinDepositor extends DepositorProxy {
   decodeExtraData(extraData: string): DecodedExtraData
 
   /**
-   * Estimates the deposit fees based on the provided amount.
+   * Calculates the deposit fee based on the provided amount.
    * @param amountToDeposit Amount to deposit in 1e18 token precision.
    * @returns Deposit fees grouped by tBTC and Acre networks in 1e18 tBTC token
    *          precision.
    */
-  estimateDepositFees(amountToDeposit: bigint): Promise<DepositFees>
+  calculateDepositFee(amountToDeposit: bigint): Promise<DepositFees>
 
   /**
    * @returns Minimum deposit amount.

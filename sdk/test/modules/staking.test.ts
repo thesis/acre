@@ -448,11 +448,13 @@ describe("Staking", () => {
     const spyOnFromSatoshi = jest.spyOn(satoshiConverter, "fromSatoshi")
 
     beforeAll(async () => {
-      contracts.bitcoinDepositor.estimateDepositFees = jest
+      contracts.bitcoinDepositor.calculateDepositFee = jest
         .fn()
         .mockResolvedValue(mockedDepositFees)
 
-      contracts.stBTC.depositFee = jest.fn().mockResolvedValue(stBTCDepositFee)
+      contracts.stBTC.calculateDepositFee = jest
+        .fn()
+        .mockResolvedValue(stBTCDepositFee)
 
       result = await staking.estimateDepositFees(amount)
     })
@@ -463,12 +465,14 @@ describe("Staking", () => {
 
     it("should get the deposit fees from Acre Bitcoin Depositor contract handle", () => {
       expect(
-        contracts.bitcoinDepositor.estimateDepositFees,
+        contracts.bitcoinDepositor.calculateDepositFee,
       ).toHaveBeenCalledWith(amountIn1e18)
     })
 
     it("should get the stBTC deposit fee", () => {
-      expect(contracts.stBTC.depositFee).toHaveBeenCalledWith(amountIn1e18)
+      expect(contracts.stBTC.calculateDepositFee).toHaveBeenCalledWith(
+        amountIn1e18,
+      )
     })
 
     it("should convert tBTC network fees to satoshi", () => {

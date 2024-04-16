@@ -162,9 +162,9 @@ class EthereumBitcoinDepositor
   }
 
   /**
-   * @see {BitcoinDepositor#estimateDepositFees}
+   * @see {BitcoinDepositor#calculateDepositFee}
    */
-  async estimateDepositFees(amountToDeposit: bigint): Promise<DepositFees> {
+  async calculateDepositFee(amountToDeposit: bigint): Promise<DepositFees> {
     const {
       depositTreasuryFeeDivisor,
       depositTxMaxFee,

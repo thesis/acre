@@ -326,7 +326,7 @@ describe("BitcoinDepositor", () => {
       let result: DepositFees
 
       beforeAll(async () => {
-        result = await depositor.estimateDepositFees(amountToStake)
+        result = await depositor.calculateDepositFee(amountToStake)
       })
 
       it("should get the bridge contract address", () => {
@@ -384,7 +384,7 @@ describe("BitcoinDepositor", () => {
         mockedBridgeContractInstance.depositsParameters.mockClear()
         mockedVaultContractInstance.optimisticMintingFeeDivisor.mockClear()
 
-        result2 = await depositor.estimateDepositFees(amountToStake)
+        result2 = await depositor.calculateDepositFee(amountToStake)
       })
 
       it("should get the deposit parameters from cache", () => {

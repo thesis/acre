@@ -86,7 +86,7 @@ describe("stbtc", () => {
         mockedEntryFeeBasisPointsValue,
       )
 
-      result = await stbtc.depositFee(amount)
+      result = await stbtc.calculateDepositFee(amount)
     })
 
     it("should get the entry fee basis points from contract", () => {

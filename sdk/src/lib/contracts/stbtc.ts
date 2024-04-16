@@ -19,5 +19,5 @@ export interface StBTC {
    * @param amount Amount to deposit in 1e18 precision.
    * @returns Deposit fee.
    */
-  depositFee(amount: bigint): Promise<bigint>
+  calculateDepositFee(amount: bigint): Promise<bigint>
 }

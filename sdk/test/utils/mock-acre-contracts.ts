@@ -13,14 +13,14 @@ export class MockAcreContracts implements AcreContracts {
       decodeExtraData: jest.fn(),
       encodeExtraData: jest.fn(),
       revealDeposit: jest.fn(),
-      estimateDepositFees: jest.fn(),
+      calculateDepositFee: jest.fn(),
       minDepositAmount: jest.fn(),
     } as BitcoinDepositor
 
     this.stBTC = {
       balanceOf: jest.fn(),
       assetsBalanceOf: jest.fn(),
-      depositFee: jest.fn(),
+      calculateDepositFee: jest.fn(),
     } as StBTC
   }
 }

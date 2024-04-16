@@ -48,9 +48,9 @@ class EthereumStBTC
   }
 
   /**
-   * @see {StBTC#depositFee}
+   * @see {StBTC#calculateDepositFee}
    */
-  async depositFee(amount: bigint): Promise<bigint> {
+  async calculateDepositFee(amount: bigint): Promise<bigint> {
     const entryFeeBasisPoints = await this.instance.entryFeeBasisPoints()
 
     return (

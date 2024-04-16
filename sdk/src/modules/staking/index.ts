@@ -99,10 +99,10 @@ class StakingModule {
     const amountInTokenPrecision = fromSatoshi(amount)
 
     const { acre: acreFees, tbtc: tbtcFees } =
-      await this.#contracts.bitcoinDepositor.estimateDepositFees(
+      await this.#contracts.bitcoinDepositor.calculateDepositFee(
         amountInTokenPrecision,
       )
-    const depositFee = await this.#contracts.stBTC.depositFee(
+    const depositFee = await this.#contracts.stBTC.calculateDepositFee(
       amountInTokenPrecision,
     )
 
