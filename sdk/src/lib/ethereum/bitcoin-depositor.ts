@@ -16,7 +16,7 @@ import {
   DecodedExtraData,
   BitcoinDepositor,
   DepositReceipt,
-  StakingFees,
+  DepositFees,
 } from "../contracts"
 import { BitcoinRawTxVectors } from "../bitcoin"
 import { EthereumAddress } from "./address"
@@ -162,9 +162,9 @@ class EthereumBitcoinDepositor
   }
 
   /**
-   * @see {BitcoinDepositor#estimateStakingFees}
+   * @see {BitcoinDepositor#estimateDepositFees}
    */
-  async estimateStakingFees(amountToStake: bigint): Promise<StakingFees> {
+  async estimateDepositFees(amountToStake: bigint): Promise<DepositFees> {
     const {
       depositTreasuryFeeDivisor,
       depositTxMaxFee,

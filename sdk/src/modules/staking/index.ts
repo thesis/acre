@@ -1,17 +1,13 @@
 import { ChainIdentifier, TBTC } from "@keep-network/tbtc-v2.ts"
-import {
-  AcreContracts,
-  DepositorProxy,
-  StakingFees as StakingFeesByNetwork,
-} from "../../lib/contracts"
+import { AcreContracts, DepositorProxy, DepositFees } from "../../lib/contracts"
 import { ChainEIP712Signer } from "../../lib/eip712-signer"
 import { StakeInitialization } from "./stake-initialization"
 import { toSatoshi } from "../../lib/utils"
 
 /**
- * Represents all total staking fees grouped by network.
+ * Represents all total deposit fees grouped by network.
  */
-export type TotalStakingFees = {
+export type TotalDepositFees = {
   tbtc: bigint
   acre: bigint
   total: bigint
@@ -94,17 +90,17 @@ class StakingModule {
   }
 
   /**
-   * Estimates the staking fees based on the provided amount.
-   * @param amountToStake Amount to stake in satoshi.
-   * @returns Staking fees grouped by tBTC and Acre networks in 1e8 satoshi
-   *          precision and total staking fees value.
+   * Estimates the deposit fees based on the provided amount.
+   * @param amount Amount to deposit in satoshi.
+   * @returns Deposit fees grouped by tBTC and Acre networks in 1e8 satoshi
+   *          precision and total deposit fees value.
    */
-  async estimateStakingFees(amount: bigint): Promise<TotalStakingFees> {
+  async estimateDepositFees(amount: bigint): Promise<TotalDepositFees> {
     const { acre: acreFees, tbtc: tbtcFees } =
-      await this.#contracts.bitcoinDepositor.estimateStakingFees(amount)
+      await this.#contracts.bitcoinDepositor.estimateDepositFees(amount)
 
     const sumFeesByNetwork = <
-      T extends StakingFeesByNetwork["tbtc"] | StakingFeesByNetwork["acre"],
+      T extends DepositFees["tbtc"] | DepositFees["acre"],
     >(
       fees: T,
     ) => Object.values(fees).reduce((reducer, fee) => reducer + fee, 0n)

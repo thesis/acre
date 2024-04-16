@@ -4,7 +4,7 @@ import {
   EthereumAddress,
   Hex,
   EthereumSigner,
-  StakingFees,
+  DepositFees,
 } from "../../../src"
 import { extraDataValidTestData } from "./data"
 
@@ -268,7 +268,7 @@ describe("BitcoinDepositor", () => {
     )
   })
 
-  describe("estimateStakingFees", () => {
+  describe("estimateDepositFees", () => {
     const mockedBridgeContractInstance = {
       depositsParameters: jest
         .fn()
@@ -323,10 +323,10 @@ describe("BitcoinDepositor", () => {
     })
 
     describe("when network fees are not yet cached", () => {
-      let result: StakingFees
+      let result: DepositFees
 
       beforeAll(async () => {
-        result = await depositor.estimateStakingFees(amountToStake)
+        result = await depositor.estimateDepositFees(amountToStake)
       })
 
       it("should get the bridge contract address", () => {
@@ -375,7 +375,7 @@ describe("BitcoinDepositor", () => {
     })
 
     describe("when network fees are already cached", () => {
-      let result2: StakingFees
+      let result2: DepositFees
 
       beforeAll(async () => {
         mockedContractInstance.bridge.mockClear()
@@ -384,7 +384,7 @@ describe("BitcoinDepositor", () => {
         mockedBridgeContractInstance.depositsParameters.mockClear()
         mockedVaultContractInstance.optimisticMintingFeeDivisor.mockClear()
 
-        result2 = await depositor.estimateStakingFees(amountToStake)
+        result2 = await depositor.estimateDepositFees(amountToStake)
       })
 
       it("should get the deposit parameters from cache", () => {
