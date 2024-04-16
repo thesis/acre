@@ -233,9 +233,7 @@ class EthereumBitcoinDepositor
       return this.#cache.depositorFeeDivisor
     }
 
-    const depositorFeeDivisor = await this.instance.depositorFeeDivisor()
-
-    this.#cache.depositorFeeDivisor = depositorFeeDivisor
+    this.#cache.depositorFeeDivisor = await this.instance.depositorFeeDivisor()
 
     return this.#cache.depositorFeeDivisor
   }
