@@ -3,7 +3,7 @@ import {
   DepositTransactionErrorToast,
   SigningMessageErrorToast,
   WalletErrorToast,
-} from "#/components/toasts"
+} from "#/components/Toast/toastTypes"
 
 export const TOAST_IDS = {
   BITCOIN_WALLET_ERROR: "bitcoin-wallet-error",

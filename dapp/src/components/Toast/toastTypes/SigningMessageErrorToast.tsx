@@ -1,5 +1,5 @@
 import React from "react"
-import Toast from "../shared/Toast"
+import Toast from "#/components/shared/Toast"
 
 export function SigningMessageErrorToast({ onClose }: { onClose: () => void }) {
   return (

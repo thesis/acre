@@ -1,5 +1,5 @@
+import Toast from "#/components/shared/Toast"
 import React from "react"
-import Toast from "../shared/Toast"
 
 export function DepositTransactionErrorToast({
   onClose,

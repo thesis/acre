@@ -1,6 +1,6 @@
 import React from "react"
 import { Flex, Button } from "@chakra-ui/react"
-import Toast from "../shared/Toast"
+import Toast from "#/components/shared/Toast"
 
 export function WalletErrorToast({
   title,
