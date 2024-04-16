@@ -63,10 +63,19 @@ export function useDepositBTCTransaction(
         await signAndBroadcastTransaction(btcAccount.id, bitcoinTransaction)
         walletApiReactTransport.disconnect()
       } catch (e) {
+        if (onError) {
+          onError(error)
+        }
         console.error(e)
       }
     },
-    [btcAccount, signAndBroadcastTransaction, walletApiReactTransport],
+    [
+      btcAccount,
+      error,
+      onError,
+      signAndBroadcastTransaction,
+      walletApiReactTransport,
+    ],
   )
 
   return { ...rest, sendBitcoinTransaction, transactionHash, error }

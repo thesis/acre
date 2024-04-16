@@ -33,16 +33,20 @@ describe("BitcoinDepositor", () => {
     ethers.Wallet.createRandom().address,
   )
 
+  const minDepositAmount = BigInt(0.015 * 1e18)
+
   const mockedContractInstance = {
     tbtcVault: jest
       .fn()
       .mockImplementation(() => `0x${vaultAddress.identifierHex}`),
-    initializeStake: jest.fn(),
+    initializeDeposit: jest.fn(),
     bridge: jest.fn().mockResolvedValue(`0x${bridgeAddress.identifierHex}`),
     depositorFeeDivisor: jest
       .fn()
       .mockResolvedValue(testData.depositorFeeDivisor),
+    minDepositAmount: jest.fn().mockImplementation(() => minDepositAmount),
   }
+
   let depositor: EthereumBitcoinDepositor
   let depositorAddress: EthereumAddress
 
@@ -51,7 +55,7 @@ describe("BitcoinDepositor", () => {
       () => mockedContractInstance as unknown as Contract,
     )
 
-    // TODO: get the address from artifact imported from `core` package.
+    // TODO: get the address from artifact imported from `solidity` package.
     depositorAddress = EthereumAddress.from(
       await ethers.Wallet.createRandom().getAddress(),
     )
@@ -82,7 +86,7 @@ describe("BitcoinDepositor", () => {
   })
 
   describe("revealDeposit", () => {
-    const staker = EthereumAddress.from(
+    const depositOwner = EthereumAddress.from(
       "0x000055d85E80A49B5930C4a77975d44f012D86C1",
     )
     const bitcoinFundingTransaction = {
@@ -97,11 +101,11 @@ describe("BitcoinDepositor", () => {
       refundPublicKeyHash: Hex.from("28e081f285138ccbe389c1eb8985716230129f89"),
       blindingFactor: Hex.from("f9f0c90d00039523"),
       refundLocktime: Hex.from("60bcea61"),
-      depositor: staker,
+      depositor: depositOwner,
     }
     describe("when extra data is defined", () => {
       const extraData = {
-        staker,
+        depositOwner,
         referral: 6851,
         hex: Hex.from(
           "0x000055d85e80a49b5930c4a77975d44f012d86c11ac300000000000000000000",
@@ -121,7 +125,7 @@ describe("BitcoinDepositor", () => {
       let result: Hex
 
       beforeAll(async () => {
-        mockedContractInstance.initializeStake.mockReturnValue({
+        mockedContractInstance.initializeDeposit.mockReturnValue({
           hash: mockedTx.toPrefixedString(),
         })
 
@@ -153,7 +157,7 @@ describe("BitcoinDepositor", () => {
         )
       })
 
-      it("should initialize stake request", () => {
+      it("should initialize deposit", () => {
         const btcTxInfo = {
           version: bitcoinFundingTransaction.version.toPrefixedString(),
           inputVector: bitcoinFundingTransaction.inputs.toPrefixedString(),
@@ -172,10 +176,10 @@ describe("BitcoinDepositor", () => {
           vault: `0x${vaultAddress.identifierHex}`,
         }
 
-        expect(mockedContractInstance.initializeStake).toHaveBeenCalledWith(
+        expect(mockedContractInstance.initializeDeposit).toHaveBeenCalledWith(
           btcTxInfo,
           revealInfo,
-          `0x${staker.identifierHex}`,
+          `0x${depositOwner.identifierHex}`,
           referral,
         )
         expect(result.toPrefixedString()).toBe(mockedTx.toPrefixedString())
@@ -202,20 +206,20 @@ describe("BitcoinDepositor", () => {
 
     it.each(extraDataValidTestData)(
       "$testDescription",
-      ({ staker, referral, extraData }) => {
-        const result = depositor.encodeExtraData(staker, referral)
+      ({ depositOwner, referral, extraData }) => {
+        const result = depositor.encodeExtraData(depositOwner, referral)
 
         expect(spyOnSolidityPacked).toHaveBeenCalledWith(
           ["address", "uint16"],
-          [`0x${staker.identifierHex}`, referral],
+          [`0x${depositOwner.identifierHex}`, referral],
         )
 
         expect(result.toPrefixedString()).toEqual(extraData)
       },
     )
 
-    describe("when staker is zero address", () => {
-      const staker = EthereumAddress.from(ZeroAddress)
+    describe("when deposit owner is zero address", () => {
+      const depositOwner = EthereumAddress.from(ZeroAddress)
 
       beforeEach(() => {
         spyOnSolidityPacked.mockClear()
@@ -223,8 +227,8 @@ describe("BitcoinDepositor", () => {
 
       it("should throw an error", () => {
         expect(() => {
-          depositor.encodeExtraData(staker, 0)
-        }).toThrow("Invalid staker address")
+          depositor.encodeExtraData(depositOwner, 0)
+        }).toThrow("Invalid deposit owner address")
         expect(spyOnSolidityPacked).not.toHaveBeenCalled()
       })
     })
@@ -237,8 +241,12 @@ describe("BitcoinDepositor", () => {
 
     it.each(extraDataValidTestData)(
       "$testDescription",
-      ({ staker: expectedStaker, extraData, referral: expectedReferral }) => {
-        const { staker, referral } = depositor.decodeExtraData(extraData)
+      ({
+        depositOwner: expectedDepositOwner,
+        extraData,
+        referral: expectedReferral,
+      }) => {
+        const { depositOwner, referral } = depositor.decodeExtraData(extraData)
 
         expect(spyOnEthersDataSlice).toHaveBeenNthCalledWith(
           1,
@@ -254,7 +262,7 @@ describe("BitcoinDepositor", () => {
           22,
         )
 
-        expect(expectedStaker.equals(staker)).toBeTruthy()
+        expect(expectedDepositOwner.equals(depositOwner)).toBeTruthy()
         expect(expectedReferral).toBe(referral)
       },
     )
@@ -402,6 +410,14 @@ describe("BitcoinDepositor", () => {
       it("should return correct fees", () => {
         expect(result2).toMatchObject(expectedResult)
       })
+    })
+  })
+
+  describe("minDepositAmount", () => {
+    it("should return minimum deposit amount", async () => {
+      const result = await depositor.minDepositAmount()
+
+      expect(result).toEqual(minDepositAmount)
     })
   })
 })

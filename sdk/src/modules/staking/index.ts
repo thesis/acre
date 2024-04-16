@@ -119,6 +119,14 @@ class StakingModule {
       total: tbtc + acre,
     }
   }
+
+  /**
+   * @returns Minimum deposit amount in 1e8 satoshi precision.
+   */
+  async minDepositAmount() {
+    const value = await this.#contracts.bitcoinDepositor.minDepositAmount()
+    return toSatoshi(value)
+  }
 }
 
 export { StakingModule, StakeInitialization }

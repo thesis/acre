@@ -1,14 +1,9 @@
 import React from "react"
-import {
-  Button,
-  HStack,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-} from "@chakra-ui/react"
+import { HStack, ModalBody, ModalFooter, ModalHeader } from "@chakra-ui/react"
 import { TextLg, TextMd } from "#/components/shared/Typography"
 import StepperBase, { StepBase } from "#/components/shared/StepperBase"
 import Spinner from "#/components/shared/Spinner"
+import { LoadingButton } from "#/components/shared/LoadingButton"
 
 export function Title({ children }: { children: React.ReactNode }) {
   return <TextLg fontWeight="bold">{children}</TextLg>
@@ -43,12 +38,14 @@ const STEPS: StepBase[] = [
 
 export default function StakingStepsModalContent({
   buttonText,
+  isLoading,
   activeStep,
   onClick,
   children,
 }: {
   buttonText: string
   activeStep: number
+  isLoading?: boolean
   onClick: () => void
   children: React.ReactNode
 }) {
@@ -68,9 +65,14 @@ export default function StakingStepsModalContent({
         {children}
       </ModalBody>
       <ModalFooter>
-        <Button size="lg" width="100%" onClick={onClick}>
+        <LoadingButton
+          size="lg"
+          width="100%"
+          onClick={onClick}
+          isLoading={isLoading}
+        >
           {buttonText}
-        </Button>
+        </LoadingButton>
       </ModalFooter>
     </>
   )

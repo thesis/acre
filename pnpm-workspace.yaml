@@ -1,5 +1,6 @@
 packages:
-  - core/
+  - solidity/
   - dapp/
   - website/
   - sdk/
+  - subgraph/

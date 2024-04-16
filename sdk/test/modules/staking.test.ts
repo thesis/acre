@@ -15,6 +15,7 @@ import * as satoshiConverter from "../../src/lib/utils/satoshi-converter"
 import { MockAcreContracts } from "../utils/mock-acre-contracts"
 import { MockMessageSigner } from "../utils/mock-message-signer"
 import { MockTBTC } from "../utils/mock-tbtc"
+import * as satoshiConverterUtils from "../../src/lib/utils/satoshi-converter"
 
 const stakingModuleData: {
   initializeStake: {
@@ -201,7 +202,7 @@ describe("Staking", () => {
             it("should sign message", () => {
               expect(messageSigner.sign).toHaveBeenCalledWith(
                 {
-                  name: "AcreBitcoinDepositor",
+                  name: "BitcoinDepositor",
                   version: "1",
                   verifyingContract:
                     contracts.bitcoinDepositor.getChainIdentifier(),
@@ -472,6 +473,32 @@ describe("Staking", () => {
 
     it("should return the staking fees in satoshi precision", () => {
       expect(result).toMatchObject(expectedStakingFeesInSatoshi)
+    })
+  })
+
+  describe("minDepositAmount", () => {
+    describe("should return minimum deposit amount", () => {
+      const spyOnToSatoshi = jest.spyOn(satoshiConverterUtils, "toSatoshi")
+      const mockedResult = BigInt(0.015 * 1e18)
+      // The returned result should be in satoshi precision
+      const expectedResult = BigInt(0.015 * 1e8)
+      let result: bigint
+
+      beforeAll(async () => {
+        contracts.bitcoinDepositor.minDepositAmount = jest
+          .fn()
+          .mockResolvedValue(mockedResult)
+        result = await staking.minDepositAmount()
+      })
+
+      it("should convert value to 1e8 satoshi precision", () => {
+        expect(spyOnToSatoshi).toHaveBeenCalledWith(mockedResult)
+        expect(spyOnToSatoshi).toHaveReturnedWith(expectedResult)
+      })
+
+      it(`should return ${expectedResult}`, () => {
+        expect(result).toBe(expectedResult)
+      })
     })
   })
 })
