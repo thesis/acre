@@ -1,7 +1,7 @@
 import React from "react"
 import { Button, Heading, VStack, Text } from "@chakra-ui/react"
 
-function HeroSection() {
+export default function HeroSection() {
   return (
     <VStack spacing={0} mt={13} mb={20}>
       <Heading fontSize="6xl" mb={2} fontWeight="semibold">
@@ -16,5 +16,3 @@ function HeroSection() {
     </VStack>
   )
 }
-
-export default HeroSection
