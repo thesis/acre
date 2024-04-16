@@ -9,11 +9,8 @@ export function handleStakeRequestInitialized(
   const entity = new StakeRequestInitialized(
     event.transaction.hash.toHexString(),
   )
-
   const stakeEntity = new Stake(event.transaction.hash.toHexString())
-
   const stakerEntity = getOrCreateStaker(event.params.staker)
-  stakerEntity.save()
 
   const logDataBtc = getOrCreateLog(
     `${event.transaction.hash.toHexString()}btc`,
@@ -26,13 +23,11 @@ export function handleStakeRequestInitialized(
   logDataBtc.timestamp = event.block.timestamp
   logDataBtc.chain = "Bitcoin"
   logDataBtc.amount = event.params.initialAmount
-  logDataBtc.save()
 
   logDataEth.activity = stakeEntity.id
   logDataEth.timestamp = event.block.timestamp
   logDataEth.chain = "Ethereum"
   logDataEth.amount = event.params.initialAmount
-  logDataEth.save()
 
   entity.depositKey = event.params.depositKey
   entity.caller = event.params.caller
@@ -42,5 +37,8 @@ export function handleStakeRequestInitialized(
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
 
+  stakerEntity.save()
+  logDataBtc.save()
+  logDataEth.save()
   entity.save()
 }
