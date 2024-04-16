@@ -20,6 +20,7 @@ export class MockAcreContracts implements AcreContracts {
     this.stBTC = {
       balanceOf: jest.fn(),
       assetsBalanceOf: jest.fn(),
+      depositFee: jest.fn(),
     } as StBTC
   }
 }

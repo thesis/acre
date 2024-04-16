@@ -16,6 +16,8 @@ class EthereumStBTC
   extends EthersContractWrapper<StBTCTypechain>
   implements StBTC
 {
+  readonly #BASIS_POINT_SCALE = BigInt(1e4)
+
   constructor(config: EthersContractConfig, network: EthereumNetwork) {
     let artifact: EthersContractDeployment
 
@@ -43,6 +45,18 @@ class EthereumStBTC
    */
   assetsBalanceOf(identifier: ChainIdentifier): Promise<bigint> {
     return this.instance.assetsBalanceOf(`0x${identifier.identifierHex}`)
+  }
+
+  /**
+   * @see {StBTC#depositFee}
+   */
+  async depositFee(amount: bigint): Promise<bigint> {
+    const entryFeeBasisPoints = await this.instance.entryFeeBasisPoints()
+
+    return (
+      (amount * entryFeeBasisPoints) /
+      (entryFeeBasisPoints + this.#BASIS_POINT_SCALE)
+    )
   }
 }
 

@@ -26,7 +26,9 @@ const stakingModuleData: {
   }
   estimateDepositFees: {
     amount: bigint
+    amountIn1e18: bigint
     mockedDepositFees: DepositFees
+    stBTCDepositFee: bigint
     expectedDepositFeesInSatoshi: TotalDepositFees
   }
 } = {
@@ -41,7 +43,9 @@ const stakingModuleData: {
       "tb1qma629cu92skg0t86lftyaf9uflzwhp7jk63h6mpmv3ezh6puvdhs6w2r05",
   },
   estimateDepositFees: {
-    amount: 10_000_000n, // 0.1 BTC
+    amount: 10_000_000n, // 0.1 BTC,
+    // 0.1 tBTC in 1e18 precision.
+    amountIn1e18: 100000000000000000n,
     mockedDepositFees: {
       tbtc: {
         // 0.00005 tBTC in 1e18 precision.
@@ -56,10 +60,12 @@ const stakingModuleData: {
         bitcoinDepositorFee: 100000000000000n,
       },
     },
+    // 0.001 in 1e18 precison
+    stBTCDepositFee: 1000000000000000n,
     expectedDepositFeesInSatoshi: {
       tbtc: 124990n,
-      acre: 10000n,
-      total: 134990n,
+      acre: 110000n,
+      total: 234990n,
     },
   },
 }
@@ -430,20 +436,30 @@ describe("Staking", () => {
     const {
       estimateDepositFees: {
         amount,
+        amountIn1e18,
         mockedDepositFees,
         expectedDepositFeesInSatoshi,
+        stBTCDepositFee,
       },
     } = stakingModuleData
 
     let result: TotalDepositFees
     const spyOnToSatoshi = jest.spyOn(satoshiConverter, "toSatoshi")
+    const spyOnFromSatoshi = jest.spyOn(satoshiConverter, "fromSatoshi")
 
     beforeAll(async () => {
       contracts.bitcoinDepositor.estimateDepositFees = jest
         .fn()
         .mockResolvedValue(mockedDepositFees)
 
+      contracts.stBTC.depositFee = jest.fn().mockResolvedValue(stBTCDepositFee)
+
       result = await staking.estimateDepositFees(amount)
+    })
+
+    it("should get the stBTC deposit fee", () => {
+      expect(spyOnFromSatoshi).toHaveBeenNthCalledWith(1, amount)
+      expect(contracts.stBTC.depositFee).toHaveBeenCalledWith(amountIn1e18)
     })
 
     it("should get the deposit fees from Acre Bitcoin Depositor contract handle", () => {

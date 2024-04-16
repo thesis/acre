@@ -2,7 +2,7 @@ import { ChainIdentifier, TBTC } from "@keep-network/tbtc-v2.ts"
 import { AcreContracts, DepositorProxy, DepositFees } from "../../lib/contracts"
 import { ChainEIP712Signer } from "../../lib/eip712-signer"
 import { StakeInitialization } from "./stake-initialization"
-import { toSatoshi } from "../../lib/utils"
+import { fromSatoshi, toSatoshi } from "../../lib/utils"
 
 /**
  * Represents all total deposit fees grouped by network.
@@ -105,9 +105,13 @@ class StakingModule {
       fees: T,
     ) => Object.values(fees).reduce((reducer, fee) => reducer + fee, 0n)
 
+    const depositFee = await this.#contracts.stBTC.depositFee(
+      fromSatoshi(amount),
+    )
+
     const tbtc = toSatoshi(sumFeesByNetwork(tbtcFees))
 
-    const acre = toSatoshi(sumFeesByNetwork(acreFees))
+    const acre = toSatoshi(sumFeesByNetwork(acreFees)) + toSatoshi(depositFee)
 
     return {
       tbtc,

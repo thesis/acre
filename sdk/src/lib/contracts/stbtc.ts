@@ -12,4 +12,12 @@ export interface StBTC {
    * @returns Maximum withdraw value.
    */
   assetsBalanceOf(identifier: ChainIdentifier): Promise<bigint>
+
+  /**
+   * Calculates the deposit fee taken from each tBTC deposit to the stBTC pool
+   * which is then transferred to the treasury.
+   * @param amount Amount to deposit in 1e18 precision.
+   * @returns Deposit fee.
+   */
+  depositFee(amount: bigint): Promise<bigint>
 }
