@@ -17,8 +17,8 @@ import {
   getCurrencyByType,
   userAmountToBigInt,
 } from "#/utils"
-import { AlertInfo } from "#/assets/icons"
 import { CurrencyType } from "#/types"
+import { IconInfoCircle } from "@tabler/icons-react"
 import NumberFormatInput, {
   NumberFormatInputValues,
 } from "../NumberFormatInput"
@@ -48,7 +48,7 @@ function HelperErrorText({
   if (helperText) {
     return (
       <FormHelperText>
-        <Icon as={AlertInfo} />
+        <Icon as={IconInfoCircle} />
         {helperText}
       </FormHelperText>
     )
