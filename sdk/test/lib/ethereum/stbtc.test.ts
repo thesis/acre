@@ -81,20 +81,44 @@ describe("stbtc", () => {
 
     let result: bigint
 
-    beforeAll(async () => {
-      mockedContractInstance.entryFeeBasisPoints.mockResolvedValue(
-        mockedEntryFeeBasisPointsValue,
-      )
+    describe("when the entry fee basis points value is not yet cached", () => {
+      beforeAll(async () => {
+        mockedContractInstance.entryFeeBasisPoints.mockResolvedValue(
+          mockedEntryFeeBasisPointsValue,
+        )
 
-      result = await stbtc.calculateDepositFee(amount)
+        result = await stbtc.calculateDepositFee(amount)
+      })
+
+      it("should get the entry fee basis points from contract", () => {
+        expect(mockedContractInstance.entryFeeBasisPoints).toHaveBeenCalled()
+      })
+
+      it("should calculate the deposit fee correctly", () => {
+        expect(result).toEqual(expectedResult)
+      })
     })
 
-    it("should get the entry fee basis points from contract", () => {
-      expect(mockedContractInstance.entryFeeBasisPoints).toHaveBeenCalled()
-    })
+    describe("the entry fee basis points value is cached", () => {
+      beforeAll(async () => {
+        mockedContractInstance.entryFeeBasisPoints.mockResolvedValue(
+          mockedEntryFeeBasisPointsValue,
+        )
 
-    it("should calculate the deposit fee correctly", () => {
-      expect(result).toEqual(expectedResult)
+        await stbtc.calculateDepositFee(amount)
+
+        result = await stbtc.calculateDepositFee(amount)
+      })
+
+      it("should get the entry fee basis points from cache", () => {
+        expect(
+          mockedContractInstance.entryFeeBasisPoints,
+        ).toHaveBeenCalledTimes(1)
+      })
+
+      it("should calculate the deposit fee correctly", () => {
+        expect(result).toEqual(expectedResult)
+      })
     })
   })
 })
