@@ -3,8 +3,8 @@ import { EthereumAddress } from "@acre-btc/sdk"
 import { useAcreContext } from "#/acre-react/hooks"
 import { logPromiseFailure } from "#/utils"
 import { setEstimatedBtcBalance, setSharesBalance } from "#/store/btc"
-import { useWalletContext } from "./useWalletContext"
-import { useAppDispatch } from "./store"
+import { useWalletContext } from "../useWalletContext"
+import { useAppDispatch } from "../store/useAppDispatch"
 
 export function useFetchBTCBalance() {
   const { acre, isInitialized } = useAcreContext()

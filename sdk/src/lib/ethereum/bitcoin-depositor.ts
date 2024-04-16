@@ -1,5 +1,7 @@
 import { packRevealDepositParameters } from "@keep-network/tbtc-v2.ts"
 import { BitcoinDepositor as BitcoinDepositorTypechain } from "@acre-btc/contracts/typechain/contracts/BitcoinDepositor"
+import SepoliaBitcoinDepositor from "@acre-btc/contracts/deployments/sepolia/BitcoinDepositor.json"
+
 import {
   ZeroAddress,
   dataSlice,
@@ -23,8 +25,6 @@ import {
 } from "./contract"
 import { Hex } from "../utils"
 import { EthereumNetwork } from "./network"
-
-import SepoliaBitcoinDepositor from "./artifacts/sepolia/BitcoinDepositor.json"
 
 /**
  * Ethereum implementation of the BitcoinDepositor.
@@ -129,6 +129,14 @@ class EthereumBitcoinDepositor
     const referral = Number(dataSlice(extraData, 20, 22))
 
     return { depositOwner, referral }
+  }
+
+  /**
+   * @see {BitcoinDepositor#minDepositAmount}
+   * @dev The value in tBTC token precision (1e18 precision).
+   */
+  async minDepositAmount(): Promise<bigint> {
+    return this.instance.minDepositAmount()
   }
 }
 

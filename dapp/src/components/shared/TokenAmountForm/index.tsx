@@ -7,7 +7,7 @@ import TokenAmountFormBase, {
 
 type TokenAmountFormProps = {
   onSubmitForm: (values: TokenAmountFormValues) => void
-  minTokenAmount: string
+  minTokenAmount: bigint
 } & TokenAmountFormBaseProps
 
 const TokenAmountForm = withFormik<TokenAmountFormProps, TokenAmountFormValues>(
