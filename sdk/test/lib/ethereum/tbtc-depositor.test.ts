@@ -18,10 +18,12 @@ describe("BitcoinDepositor", () => {
   const vaultAddress = EthereumAddress.from(
     ethers.Wallet.createRandom().address,
   )
+  const minDepositAmount = BigInt(0.015 * 1e18)
 
   const mockedContractInstance = {
     tbtcVault: jest.fn().mockImplementation(() => vaultAddress.identifierHex),
     initializeDeposit: jest.fn(),
+    minDepositAmount: jest.fn().mockImplementation(() => minDepositAmount),
   }
   let depositor: EthereumBitcoinDepositor
   let depositorAddress: EthereumAddress
@@ -244,5 +246,13 @@ describe("BitcoinDepositor", () => {
         expect(expectedReferral).toBe(referral)
       },
     )
+  })
+
+  describe("minDepositAmount", () => {
+    it("should return minimum deposit amount", async () => {
+      const result = await depositor.minDepositAmount()
+
+      expect(result).toEqual(minDepositAmount)
+    })
   })
 })
