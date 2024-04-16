@@ -78,7 +78,7 @@ export interface BitcoinDepositor extends DepositorProxy {
 
   /**
    * Estimates the deposit fees based on the provided amount.
-   * @param amountToDeposit Amount to deposit in 1e8 satoshi precision.
+   * @param amountToDeposit Amount to deposit in 1e18 token precision.
    * @returns Deposit fees grouped by tBTC and Acre networks in 1e18 tBTC token
    *          precision.
    */

@@ -281,7 +281,7 @@ describe("BitcoinDepositor", () => {
         .mockResolvedValue(testData.optimisticMintingFeeDivisor),
     }
 
-    const amountToStake = 10_000_000n // 0.1 BTC
+    const amountToStake = 100000000000000000n // 0.1 in 1e18 token precision
 
     const expectedResult = {
       tbtc: {

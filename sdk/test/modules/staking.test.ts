@@ -457,15 +457,18 @@ describe("Staking", () => {
       result = await staking.estimateDepositFees(amount)
     })
 
-    it("should get the stBTC deposit fee", () => {
+    it("should convert provided amount from satoshi to token precision", () => {
       expect(spyOnFromSatoshi).toHaveBeenNthCalledWith(1, amount)
-      expect(contracts.stBTC.depositFee).toHaveBeenCalledWith(amountIn1e18)
     })
 
     it("should get the deposit fees from Acre Bitcoin Depositor contract handle", () => {
       expect(
         contracts.bitcoinDepositor.estimateDepositFees,
-      ).toHaveBeenCalledWith(amount)
+      ).toHaveBeenCalledWith(amountIn1e18)
+    })
+
+    it("should get the stBTC deposit fee", () => {
+      expect(contracts.stBTC.depositFee).toHaveBeenCalledWith(amountIn1e18)
     })
 
     it("should convert tBTC network fees to satoshi", () => {

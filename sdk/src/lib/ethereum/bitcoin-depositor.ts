@@ -164,7 +164,7 @@ class EthereumBitcoinDepositor
   /**
    * @see {BitcoinDepositor#estimateDepositFees}
    */
-  async estimateDepositFees(amountToStake: bigint): Promise<DepositFees> {
+  async estimateDepositFees(amountToDeposit: bigint): Promise<DepositFees> {
     const {
       depositTreasuryFeeDivisor,
       depositTxMaxFee,
@@ -173,12 +173,10 @@ class EthereumBitcoinDepositor
 
     const treasuryFee =
       depositTreasuryFeeDivisor > 0
-        ? amountToStake / depositTreasuryFeeDivisor
+        ? amountToDeposit / depositTreasuryFeeDivisor
         : 0n
 
-    // Both deposit amount and treasury fee are in the 1e8 satoshi precision.
-    // We need to convert them to the 1e18 TBTC precision.
-    const amountSubTreasury = fromSatoshi(amountToStake - treasuryFee)
+    const amountSubTreasury = amountToDeposit - treasuryFee
 
     const optimisticMintingFee =
       optimisticMintingFeeDivisor > 0
@@ -189,13 +187,11 @@ class EthereumBitcoinDepositor
     // Compute depositor fee. The fee is calculated based on the initial funding
     // transaction amount, before the tBTC protocol network fees were taken.
     const depositorFee =
-      depositorFeeDivisor > 0n
-        ? fromSatoshi(amountToStake) / depositorFeeDivisor
-        : 0n
+      depositorFeeDivisor > 0n ? amountToDeposit / depositorFeeDivisor : 0n
 
     return {
       tbtc: {
-        treasuryFee: fromSatoshi(treasuryFee),
+        treasuryFee,
         optimisticMintingFee,
         depositTxMaxFee: fromSatoshi(depositTxMaxFee),
       },

@@ -96,18 +96,21 @@ class StakingModule {
    *          precision and total deposit fees value.
    */
   async estimateDepositFees(amount: bigint): Promise<TotalDepositFees> {
+    const amountInTokenPrecision = fromSatoshi(amount)
+
     const { acre: acreFees, tbtc: tbtcFees } =
-      await this.#contracts.bitcoinDepositor.estimateDepositFees(amount)
+      await this.#contracts.bitcoinDepositor.estimateDepositFees(
+        amountInTokenPrecision,
+      )
+    const depositFee = await this.#contracts.stBTC.depositFee(
+      amountInTokenPrecision,
+    )
 
     const sumFeesByNetwork = <
       T extends DepositFees["tbtc"] | DepositFees["acre"],
     >(
       fees: T,
     ) => Object.values(fees).reduce((reducer, fee) => reducer + fee, 0n)
-
-    const depositFee = await this.#contracts.stBTC.depositFee(
-      fromSatoshi(amount),
-    )
 
     const tbtc = toSatoshi(sumFeesByNetwork(tbtcFees))
 
