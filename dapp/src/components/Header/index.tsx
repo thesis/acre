@@ -13,7 +13,7 @@ const NAVIGATION_ITEMS: NavigationItemType[] = [
 
 export default function Header() {
   return (
-    <HStack as="header" p={6}>
+    <HStack as="header" px={10} py={7}>
       <Icon as={AcreLogo} w={20} h={12} />
       <Navigation items={NAVIGATION_ITEMS} />
       <Flex ml="auto">
