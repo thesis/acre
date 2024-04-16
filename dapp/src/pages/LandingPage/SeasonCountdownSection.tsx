@@ -1,5 +1,13 @@
 import React, { useRef } from "react"
-import { Box, VStack } from "@chakra-ui/react"
+import {
+  Box,
+  Tag,
+  TagLabel,
+  TagProps,
+  VStack,
+  Heading,
+  Text,
+} from "@chakra-ui/react"
 import seasonCountdownBackground from "#/assets/images/season-countdown-section-background.png"
 import seasonCountdownForeground from "#/assets/images/season-countdown-section-foreground.png"
 import {
@@ -10,6 +18,8 @@ import {
   useTransform,
   useTime,
 } from "framer-motion"
+
+const MotionBox = motion(Box)
 
 function Background() {
   const containerRef = useRef(null)
@@ -31,7 +41,15 @@ function Background() {
   const seed = useTransform(time, (value) => Math.floor(value))
 
   return (
-    <Box as="svg" ref={containerRef} w="full" h="full" pos="absolute" inset={0}>
+    <Box
+      as="svg"
+      ref={containerRef}
+      w="full"
+      h="full"
+      pos="absolute"
+      inset={0}
+      zIndex={-1}
+    >
       <defs>
         <filter
           id="noise-filter"
@@ -112,17 +130,61 @@ function Background() {
   )
 }
 
+function LiveTag(props: TagProps) {
+  return (
+    <Tag
+      px={4}
+      py={2}
+      rounded="3xl"
+      bg="grey.700"
+      variant="solid"
+      pos="relative"
+      {...props}
+    >
+      <Box rounded="full" w={2} h={2} mr={3} bg="brand.400" />
+      <MotionBox
+        pos="absolute"
+        rounded="full"
+        w={2}
+        h={2}
+        bg="brand.400"
+        animate={{ scale: [1, 6], opacity: [0.5, 0] }}
+        transition={{
+          duration: 2,
+          ease: "easeInOut",
+          repeat: Infinity,
+        }}
+      />
+      <TagLabel
+        color="gold.200"
+        textTransform="uppercase"
+        fontStyle="italic"
+        overflow="visible"
+        fontSize="md"
+        lineHeight={5}
+        fontWeight="bold"
+      >
+        Live
+      </TagLabel>
+    </Tag>
+  )
+}
+
 function SeasonCountdownSection() {
   return (
-    <VStack
-      spacing={0}
-      position="relative"
-      minH={720}
-      rounded="2xl"
-      overflow="hidden"
-    >
+    <Box position="relative" minH={720} rounded="2xl" overflow="hidden">
+      <VStack spacing={0} px={10} py={15} textAlign="center" color="white">
+        <LiveTag mb={10} />
+        <Heading fontSize="5xl" fontWeight="bold" mb={4}>
+          Season 1. Pre-launch staking
+        </Heading>
+        <Text fontSize="lg" fontWeight="medium">
+          Season 1 users that stake bitcoin before Acre launches earn the <br />
+          highest rewards and first access to upcoming Seasons.
+        </Text>
+      </VStack>
       <Background />
-    </VStack>
+    </Box>
   )
 }
 
