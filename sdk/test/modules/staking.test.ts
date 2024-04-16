@@ -9,7 +9,7 @@ import {
   DepositReceipt,
   EthereumAddress,
   DepositFees,
-  TotalDepositFees,
+  DepositFee,
 } from "../../src"
 import * as satoshiConverter from "../../src/lib/utils/satoshi-converter"
 import { MockAcreContracts } from "../utils/mock-acre-contracts"
@@ -29,7 +29,7 @@ const stakingModuleData: {
     amountIn1e18: bigint
     mockedDepositFees: DepositFees
     stBTCDepositFee: bigint
-    expectedDepositFeesInSatoshi: TotalDepositFees
+    expectedDepositFeesInSatoshi: DepositFee
   }
 } = {
   initializeStake: {
@@ -443,7 +443,7 @@ describe("Staking", () => {
       },
     } = stakingModuleData
 
-    let result: TotalDepositFees
+    let result: DepositFee
     const spyOnToSatoshi = jest.spyOn(satoshiConverter, "toSatoshi")
     const spyOnFromSatoshi = jest.spyOn(satoshiConverter, "fromSatoshi")
 
@@ -456,7 +456,7 @@ describe("Staking", () => {
         .fn()
         .mockResolvedValue(stBTCDepositFee)
 
-      result = await staking.estimateDepositFees(amount)
+      result = await staking.estimateDepositFee(amount)
     })
 
     it("should convert provided amount from satoshi to token precision", () => {

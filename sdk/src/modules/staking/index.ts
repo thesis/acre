@@ -7,7 +7,7 @@ import { fromSatoshi, toSatoshi } from "../../lib/utils"
 /**
  * Represents all total deposit fees grouped by network.
  */
-export type TotalDepositFees = {
+export type DepositFee = {
   tbtc: bigint
   acre: bigint
   total: bigint
@@ -90,12 +90,12 @@ class StakingModule {
   }
 
   /**
-   * Estimates the deposit fees based on the provided amount.
+   * Estimates the deposit fee based on the provided amount.
    * @param amount Amount to deposit in satoshi.
-   * @returns Deposit fees grouped by tBTC and Acre networks in 1e8 satoshi
-   *          precision and total deposit fees value.
+   * @returns Deposit fee grouped by tBTC and Acre networks in 1e8 satoshi
+   *          precision and total deposit fee value.
    */
-  async estimateDepositFees(amount: bigint): Promise<TotalDepositFees> {
+  async estimateDepositFee(amount: bigint): Promise<DepositFee> {
     const amountInTokenPrecision = fromSatoshi(amount)
 
     const { acre: acreFees, tbtc: tbtcFees } =
@@ -106,15 +106,15 @@ class StakingModule {
       amountInTokenPrecision,
     )
 
-    const sumFeesByNetwork = <
+    const sumFeesByProtocol = <
       T extends DepositFees["tbtc"] | DepositFees["acre"],
     >(
       fees: T,
     ) => Object.values(fees).reduce((reducer, fee) => reducer + fee, 0n)
 
-    const tbtc = toSatoshi(sumFeesByNetwork(tbtcFees))
+    const tbtc = toSatoshi(sumFeesByProtocol(tbtcFees))
 
-    const acre = toSatoshi(sumFeesByNetwork(acreFees)) + toSatoshi(depositFee)
+    const acre = toSatoshi(sumFeesByProtocol(acreFees)) + toSatoshi(depositFee)
 
     return {
       tbtc,
