@@ -47,6 +47,7 @@ const defaultTheme = {
   styles,
   space: {
     15: "3.75rem",
+    30: "7.5rem",
   },
   components: {
     Alert: alertTheme,

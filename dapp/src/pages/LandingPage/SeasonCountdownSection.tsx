@@ -17,7 +17,11 @@ import {
   useSpring,
   useTransform,
   useTime,
+  wrap,
 } from "framer-motion"
+import { CountdownTimer } from "#/components/shared/CountdownTimer"
+
+const MOCK_SEASON_DUE_TIMESTAMP = new Date(2024, 3, 20).getTime() / 1000
 
 const MotionBox = motion(Box)
 
@@ -38,7 +42,8 @@ function Background() {
     ["25%", "65%"],
   )
   const time = useTime()
-  const seed = useTransform(time, (value) => Math.floor(value))
+  // Seed value is wrapped to prevent infinite increment causing potential memory leaks
+  const seed = useTransform(time, (value) => wrap(0, 2137, Math.floor(value)))
 
   return (
     <Box
@@ -46,6 +51,8 @@ function Background() {
       ref={containerRef}
       w="full"
       h="full"
+      minH={720}
+      rounded="2xl"
       pos="absolute"
       inset={0}
       zIndex={-1}
@@ -172,16 +179,24 @@ function LiveTag(props: TagProps) {
 
 function SeasonCountdownSection() {
   return (
-    <Box position="relative" minH={720} rounded="2xl" overflow="hidden">
-      <VStack spacing={0} px={10} py={15} textAlign="center" color="white">
+    <Box position="relative">
+      <VStack
+        spacing={0}
+        px={10}
+        pt={15}
+        pb={30}
+        textAlign="center"
+        color="white"
+      >
         <LiveTag mb={10} />
         <Heading fontSize="5xl" fontWeight="bold" mb={4}>
           Season 1. Pre-launch staking
         </Heading>
-        <Text fontSize="lg" fontWeight="medium">
+        <Text fontSize="lg" fontWeight="medium" mb={10}>
           Season 1 users that stake bitcoin before Acre launches earn the <br />
           highest rewards and first access to upcoming Seasons.
         </Text>
+        <CountdownTimer timestamp={MOCK_SEASON_DUE_TIMESTAMP} />
       </VStack>
       <Background />
     </Box>
