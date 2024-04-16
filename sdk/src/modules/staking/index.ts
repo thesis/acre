@@ -2,6 +2,7 @@ import { ChainIdentifier, TBTC } from "@keep-network/tbtc-v2.ts"
 import { AcreContracts, DepositorProxy } from "../../lib/contracts"
 import { ChainEIP712Signer } from "../../lib/eip712-signer"
 import { StakeInitialization } from "./stake-initialization"
+import { toSatoshi } from "../../lib/utils"
 
 /**
  * Module exposing features related to the staking.
@@ -77,6 +78,14 @@ class StakingModule {
    */
   estimatedBitcoinBalance(identifier: ChainIdentifier) {
     return this.#contracts.stBTC.assetsBalanceOf(identifier)
+  }
+
+  /**
+   * @returns Minimum deposit amount in 1e8 satoshi precision.
+   */
+  async minDepositAmount() {
+    const value = await this.#contracts.bitcoinDepositor.minDepositAmount()
+    return toSatoshi(value)
   }
 }
 

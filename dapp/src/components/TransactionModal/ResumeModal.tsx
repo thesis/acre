@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import {
   ModalHeader,
   ModalBody,
@@ -10,6 +10,7 @@ import {
 import Spinner from "#/components/shared/Spinner"
 import { PauseIcon } from "#/assets/icons"
 import { TextMd } from "#/components/shared/Typography"
+import { useToast } from "#/hooks"
 
 export default function ResumeModal({
   onResume,
@@ -18,6 +19,13 @@ export default function ResumeModal({
   onResume: () => void
   onClose: () => void
 }) {
+  const { closeAll } = useToast()
+
+  useEffect(() => {
+    // All notifications should be closed when the user is in the resume modal.
+    closeAll()
+  }, [closeAll])
+
   return (
     <>
       <ModalHeader>Paused</ModalHeader>
