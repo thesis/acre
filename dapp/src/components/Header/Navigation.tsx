@@ -1,8 +1,7 @@
 import React from "react"
 import { List, ListItem, StackProps, HStack, Box } from "@chakra-ui/react"
-import { useLocation } from "react-router-dom"
 import { motion } from "framer-motion"
-import Link from "../shared/Link"
+import { NavLink } from "../shared/Link"
 
 export type NavigationItemType = {
   label: string
@@ -29,14 +28,12 @@ function ActiveItemIndicator() {
 
 function Navigation(props: NavigationProps) {
   const { items, ...restProps } = props
-  const { pathname } = useLocation()
 
   return (
     <HStack as={List} spacing={5} ml={12} {...restProps}>
       {items.map((item) => (
         <ListItem key={item.href} pos="relative">
-          <Link
-            isNavLink
+          <NavLink
             to={item.href}
             display="block"
             fontSize="md"
@@ -46,9 +43,13 @@ function Navigation(props: NavigationProps) {
             color="hsl(347, 5%, 39%)"
             _activeLink={{ color: "hsl(345, 6%, 13%)" }}
           >
-            {item.label}
-          </Link>
-          {pathname === item.href && <ActiveItemIndicator />}
+            {({ isActive }) => (
+              <>
+                {item.label}
+                {isActive && <ActiveItemIndicator />}
+              </>
+            )}
+          </NavLink>
         </ListItem>
       ))}
     </HStack>
