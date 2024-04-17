@@ -49,7 +49,7 @@ export default function ConnectWallet() {
 
   return (
     <AnimatePresence initial={false}>
-      {isConnected || !isHomeRoute ? (
+      {(isConnected || !isHomeRoute) && (
         <HStack
           as={motion.div}
           variants={containerVariants}
@@ -82,7 +82,7 @@ export default function ConnectWallet() {
             </Button>
           </Tooltip>
         </HStack>
-      ) : null}
+      )}
     </AnimatePresence>
   )
 }
