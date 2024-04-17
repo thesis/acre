@@ -40,8 +40,8 @@ function Navigation(props: NavigationProps) {
             lineHeight="md"
             fontWeight="bold"
             mb={2}
-            color="hsl(347, 5%, 39%)"
-            _activeLink={{ color: "hsl(345, 6%, 13%)" }}
+            color="grey.500"
+            _activeLink={{ color: "grey.700" }}
           >
             {({ isActive }) => (
               <>
