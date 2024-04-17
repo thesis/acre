@@ -17,16 +17,6 @@ interface ActivityData {
   logs: [LogData!]
 }
 
-type StakeRequestInitialized @entity {
-  id: ID!
-  depositKey: BigInt! # uint256
-  caller: Bytes! # address
-  staker: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
 type Staker @entity {
   # Id is the ethereum address of the account.
   id: ID!
