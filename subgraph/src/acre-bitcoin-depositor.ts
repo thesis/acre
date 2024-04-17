@@ -17,6 +17,11 @@ export function handleStakeRequestInitialized(
   )
 
   logDataBtc.activity = stakeEntity.id
+
+  // This timestamp may be different than the actual time
+  // when the BTC transaction took place:
+  // It indicates when Ethereum received event about this BTC deposit,
+  // not when the BTC transaction happened.
   logDataBtc.timestamp = event.block.timestamp
   logDataBtc.chain = "Bitcoin"
   logDataBtc.amount = event.params.initialAmount
