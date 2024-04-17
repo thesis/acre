@@ -7,6 +7,7 @@ const containerStyle = defineStyle({
   bg: "gold.100",
   paddingX: 4,
   paddingY: 2.5,
+  shadow: "none",
 })
 
 const multiStyleConfig = createMultiStyleConfigHelpers(parts.keys)
