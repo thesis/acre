@@ -8,8 +8,8 @@ import Sidebar from "../Sidebar"
 function Layout(props: BoxProps) {
   return (
     <>
+      <Header />
       <Box as="main" {...props}>
-        <Header />
         <Outlet />
       </Box>
       <Sidebar />
