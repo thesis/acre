@@ -5,7 +5,7 @@ import { routerPath } from "#/router/path"
 import ConnectWallet from "./ConnectWallet"
 import Navigation, { NavigationItemType } from "./Navigation"
 
-// TODO: To be adjusted after project cleanup
+// TODO: Mock data, to be adjusted after project pivot/cleanup
 const NAVIGATION_ITEMS: NavigationItemType[] = [
   { label: "Home", href: routerPath.home },
   { label: "Activity", href: `${routerPath.activity}/1` },
