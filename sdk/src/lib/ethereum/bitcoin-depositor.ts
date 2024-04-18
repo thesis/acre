@@ -9,12 +9,14 @@ import {
   isAddress,
   solidityPacked,
   zeroPadBytes,
+  Contract,
 } from "ethers"
 import {
   ChainIdentifier,
   DecodedExtraData,
   BitcoinDepositor,
   DepositReceipt,
+  DepositFees,
 } from "../contracts"
 import { BitcoinRawTxVectors } from "../bitcoin"
 import { EthereumAddress } from "./address"
@@ -23,8 +25,22 @@ import {
   EthersContractDeployment,
   EthersContractWrapper,
 } from "./contract"
-import { Hex } from "../utils"
+import { Hex, fromSatoshi } from "../utils"
 import { EthereumNetwork } from "./network"
+
+type TbtcDepositParameters = {
+  depositTreasuryFeeDivisor: bigint
+  depositTxMaxFee: bigint
+}
+
+type TbtcBridgeMintingParameters = TbtcDepositParameters & {
+  optimisticMintingFeeDivisor: bigint
+}
+
+type BitcoinDepositorCache = {
+  tbtcBridgeMintingParameters: TbtcBridgeMintingParameters | undefined
+  depositorFeeDivisor: bigint | undefined
+}
 
 /**
  * Ethereum implementation of the BitcoinDepositor.
@@ -36,6 +52,8 @@ class EthereumBitcoinDepositor
   extends EthersContractWrapper<BitcoinDepositorTypechain>
   implements BitcoinDepositor
 {
+  #cache: BitcoinDepositorCache
+
   constructor(config: EthersContractConfig, network: EthereumNetwork) {
     let artifact: EthersContractDeployment
 
@@ -49,6 +67,10 @@ class EthereumBitcoinDepositor
     }
 
     super(config, artifact)
+    this.#cache = {
+      tbtcBridgeMintingParameters: undefined,
+      depositorFeeDivisor: undefined,
+    }
   }
 
   /**
@@ -137,6 +159,83 @@ class EthereumBitcoinDepositor
    */
   async minDepositAmount(): Promise<bigint> {
     return this.instance.minDepositAmount()
+  }
+
+  /**
+   * @see {BitcoinDepositor#calculateDepositFee}
+   */
+  async calculateDepositFee(amountToDeposit: bigint): Promise<DepositFees> {
+    const {
+      depositTreasuryFeeDivisor,
+      depositTxMaxFee,
+      optimisticMintingFeeDivisor,
+    } = await this.#getTbtcBridgeMintingParameters()
+
+    const treasuryFee =
+      depositTreasuryFeeDivisor > 0
+        ? amountToDeposit / depositTreasuryFeeDivisor
+        : 0n
+
+    const amountSubTreasury = amountToDeposit - treasuryFee
+
+    const optimisticMintingFee =
+      optimisticMintingFeeDivisor > 0
+        ? amountSubTreasury / optimisticMintingFeeDivisor
+        : 0n
+
+    const depositorFeeDivisor = await this.#depositorFeeDivisor()
+    // Compute depositor fee. The fee is calculated based on the initial funding
+    // transaction amount, before the tBTC protocol network fees were taken.
+    const depositorFee =
+      depositorFeeDivisor > 0n ? amountToDeposit / depositorFeeDivisor : 0n
+
+    return {
+      tbtc: {
+        treasuryFee,
+        optimisticMintingFee,
+        depositTxMaxFee: fromSatoshi(depositTxMaxFee),
+      },
+      acre: {
+        bitcoinDepositorFee: depositorFee,
+      },
+    }
+  }
+
+  // TODO: Consider exposing it from tBTC SDK.
+  async #getTbtcBridgeMintingParameters(): Promise<TbtcBridgeMintingParameters> {
+    if (this.#cache.tbtcBridgeMintingParameters) {
+      return this.#cache.tbtcBridgeMintingParameters
+    }
+
+    const bridgeAddress = await this.instance.bridge()
+    const bridge = new Contract(bridgeAddress, [
+      "function depositsParameters()",
+    ])
+    const depositsParameters =
+      (await bridge.depositsParameters()) as TbtcDepositParameters
+
+    const vaultAddress = await this.getTbtcVaultChainIdentifier()
+    const vault = new Contract(`0x${vaultAddress.identifierHex}`, [
+      "function optimisticMintingFeeDivisor()",
+    ])
+    const optimisticMintingFeeDivisor =
+      (await vault.optimisticMintingFeeDivisor()) as bigint
+
+    this.#cache.tbtcBridgeMintingParameters = {
+      ...depositsParameters,
+      optimisticMintingFeeDivisor,
+    }
+    return this.#cache.tbtcBridgeMintingParameters
+  }
+
+  async #depositorFeeDivisor(): Promise<bigint> {
+    if (this.#cache.depositorFeeDivisor) {
+      return this.#cache.depositorFeeDivisor
+    }
+
+    this.#cache.depositorFeeDivisor = await this.instance.depositorFeeDivisor()
+
+    return this.#cache.depositorFeeDivisor
   }
 }
 
