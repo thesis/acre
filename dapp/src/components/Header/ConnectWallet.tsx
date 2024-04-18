@@ -1,7 +1,7 @@
 import React from "react"
 import { Button, HStack, Icon, Tooltip } from "@chakra-ui/react"
 import {
-  useIsHomeRoute,
+  useIsHomeRouteActive,
   useRequestBitcoinAccount,
   useWalletContext,
 } from "#/hooks"
@@ -41,7 +41,7 @@ export default function ConnectWallet() {
 
   const customDataBtcAccount = getCustomDataByAccount(btcAccount)
 
-  const isHomeRoute = useIsHomeRoute()
+  const isHomeRoute = useIsHomeRouteActive()
 
   const handleConnectBitcoinAccount = () => {
     logPromiseFailure(requestBitcoinAccount())

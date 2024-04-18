@@ -1,1 +1,1 @@
-export * from "./useIsRoute"
+export * from "./useIsActiveRoute"
