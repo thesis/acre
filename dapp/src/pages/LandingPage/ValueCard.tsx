@@ -29,7 +29,7 @@ const valueDecorator: SystemStyleObject = {
   mx: 6,
 }
 
-function IconCardBase(props: IconCardProps) {
+function ValueCardBase(props: IconCardProps) {
   const { header, value, footer = [], ...restProps } = props
   const isFooterValid = footer.every(
     (footerItem) => React.isValidElement(footerItem) && footerItem.type === Box,
@@ -51,11 +51,17 @@ function IconCardBase(props: IconCardProps) {
         {value}
       </CardBody>
       {footer.length > 0 && (
-        <CardFooter>{footer.map((footerItem) => footerItem)}</CardFooter>
+        <CardFooter>
+          {footer.map((footerItem, index) => (
+            // This is never rerendered, index key is fine
+            // eslint-disable-next-line react/no-array-index-key
+            <React.Fragment key={index}>{footerItem}</React.Fragment>
+          ))}
+        </CardFooter>
       )}
     </Card>
   )
 }
 
-const ValueCard = Object.assign(IconCardBase, { FooterItem: Box })
+const ValueCard = Object.assign(ValueCardBase, { FooterItem: Box })
 export default ValueCard
