@@ -38,7 +38,7 @@ export function SeasonCountdownSectionBackground() {
       ref={containerRef}
       w="full"
       h="full"
-      minH={720}
+      minH="43rem" // 688px
       rounded="2xl"
       pos="absolute"
       inset={0}

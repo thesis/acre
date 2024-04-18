@@ -16,7 +16,7 @@ export default function SeasonCountdownSection() {
         spacing={0}
         px={10}
         pt={15}
-        pb={30}
+        pb={20}
         textAlign="center"
         color="white"
       >
