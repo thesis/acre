@@ -45,6 +45,9 @@ const defaultTheme = {
   zIndices,
   semanticTokens,
   styles,
+  space: {
+    13: "3.25rem",
+  },
   components: {
     Alert: alertTheme,
     Button: buttonTheme,
