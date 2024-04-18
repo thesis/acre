@@ -12,9 +12,15 @@ const { getUnnamedSigners } = helpers.signers
 // eslint-disable-next-line import/prefer-default-export
 export async function getDeployedContract<T extends BaseContract>(
   deploymentName: string,
+  isIntegrationTest: boolean = false,
 ): Promise<T> {
-  const { address, abi } = await deployments.get(deploymentName)
-
+  let address: string
+  let abi: string
+  if (isIntegrationTest) {
+    ;({ address, abi } = await deployments.getArtifact(deploymentName))
+  } else {
+    ;({ address, abi } = await deployments.get(deploymentName))
+  }
   // Use default unnamed signer from index 0 to initialize the contract runner.
   const [defaultSigner] = await getUnnamedSigners()
 
