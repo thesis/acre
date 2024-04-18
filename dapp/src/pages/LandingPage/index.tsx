@@ -1,11 +1,12 @@
 import React, { useMemo } from "react"
-import { Flex, VStack, HStack, Text } from "@chakra-ui/react"
+import { Flex, VStack, HStack } from "@chakra-ui/react"
 import boostCardIcon from "#/assets/images/card-icon-boost-arrow.png"
 import misteryCardIcon from "#/assets/images/card-icon-question-mark.png"
 import keyCardIcon from "#/assets/images/card-icon-key.png"
 import { useCountdown } from "#/hooks"
 import IconCard from "./IconCard"
 import ValueCard from "./ValueCard"
+import TVLCard from "./TVLCard"
 
 const MOCK_SEASON_DUE_TIMESTAMP = new Date(2024, 3, 20).getTime() / 1000
 
@@ -52,20 +53,7 @@ export default function LandingPage() {
           />
         </HStack>
         <ValueCard header="Users joined" value="8,172" />
-        <ValueCard
-          header="Total value locked"
-          value="2,202.92 BTC"
-          color="brand.400"
-          footer={[
-            <ValueCard.FooterItem>
-              <Text as="span" color="green.400" mr={2}>
-                +2%
-              </Text>
-              +24h
-            </ValueCard.FooterItem>,
-            <ValueCard.FooterItem>USD 27,202,964.47</ValueCard.FooterItem>,
-          ]}
-        />
+        <TVLCard />
       </VStack>
     </Flex>
   )
