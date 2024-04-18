@@ -62,6 +62,36 @@ export const cardTheme: ComponentSingleStyleConfig = {
         mb: -5,
       },
     },
+    value: {
+      container: {
+        p: 10,
+        gap: 6,
+        alignItems: "center",
+      },
+      header: {
+        p: 0,
+        fontSize: "md",
+        lineHeight: 6,
+        fontWeight: "normal",
+        color: "grey.700",
+      },
+      body: {
+        p: 0,
+        fontSize: "6xl",
+        lineHeight: 1.2,
+        fontWeight: "semibold",
+        color: "currentColor",
+        letterSpacing: "0.075rem", // 1.2px
+      },
+      footer: {
+        p: 0,
+        fontSize: "md",
+        lineHeight: 6,
+        fontWeight: "medium",
+        color: "grey.700",
+        gap: 20,
+      },
+    },
   },
   sizes: {
     md: {
