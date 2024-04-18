@@ -77,11 +77,14 @@ export const cardTheme: ComponentSingleStyleConfig = {
       },
       body: {
         p: 0,
-        fontSize: "6xl",
+        fontSize: { base: "5xl", xl: "6xl" },
         lineHeight: 1.2,
         fontWeight: "semibold",
         color: "currentColor",
         letterSpacing: "0.075rem", // 1.2px
+        whiteSpace: "nowrap",
+        display: "flex",
+        alignItems: "center",
       },
       footer: {
         p: 0,

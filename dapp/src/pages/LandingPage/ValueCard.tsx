@@ -21,8 +21,8 @@ const valueDecorator: SystemStyleObject = {
   mask: `url(${decorator}) no-repeat 50% 50%`,
   maskSize: "contain",
   display: "inline-block",
-  w: "3.625rem", // 58px
-  h: 10,
+  w: { base: "2.9rem", xl: "3.625rem" }, // 46,8px, 58px
+  h: { base: 8, xl: 10 },
   transform: "auto",
   transformOrigin: "center",
   background: "currentColor",
