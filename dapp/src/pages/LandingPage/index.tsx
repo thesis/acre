@@ -12,6 +12,7 @@ import IconCard from "./IconCard"
 import ValueCard from "./ValueCard"
 import TVLCard from "./TVLCard"
 import ContentCard from "./ContentCard"
+import CardButton from "./CardButton"
 
 const MOCK_SEASON_DUE_TIMESTAMP = new Date(2024, 3, 20).getTime() / 1000
 const PARTNER_LOGOS = [baseLogo, thresholdLogo, ledgerLogo, wormholeLogo]
@@ -76,6 +77,12 @@ export default function LandingPage() {
             />
           ))}
         </ContentCard>
+        <CardButton href="#" isExternal>
+          Docs
+        </CardButton>
+        <CardButton href="#" isExternal>
+          FAQ
+        </CardButton>
       </VStack>
     </Flex>
   )
