@@ -63,7 +63,7 @@ export default function LandingPage() {
         <TVLCard />
         <ContentCard header="How it works" withBackground>
           <Box color="brand.400" fontWeight="semibold" pt={9} pb={20}>
-            inset diagram here
+            insert diagram here
           </Box>
         </ContentCard>
         <ContentCard header="Trusted by pioneers.">
