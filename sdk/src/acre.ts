@@ -1,4 +1,5 @@
 import { TBTC } from "@keep-network/tbtc-v2.ts"
+import { OrangeKitSdk } from "@orangekit/sdk"
 import { AcreContracts } from "./lib/contracts"
 import { ChainEIP712Signer } from "./lib/eip712-signer"
 import {
@@ -12,6 +13,8 @@ import { EthereumSignerCompatibleWithEthersV5 } from "./lib/utils"
 class Acre {
   readonly #tbtc: TBTC
 
+  readonly #orangeKit: OrangeKitSdk
+
   readonly #messageSigner: ChainEIP712Signer
 
   public readonly contracts: AcreContracts
@@ -22,14 +25,17 @@ class Acre {
     _contracts: AcreContracts,
     _messageSigner: ChainEIP712Signer,
     _tbtc: TBTC,
+    _orangeKit: OrangeKitSdk,
   ) {
     this.contracts = _contracts
     this.#tbtc = _tbtc
+    this.#orangeKit = _orangeKit
     this.#messageSigner = _messageSigner
     this.staking = new StakingModule(
       this.contracts,
       this.#messageSigner,
       this.#tbtc,
+      this.#orangeKit,
     )
   }
 
@@ -37,11 +43,14 @@ class Acre {
     signer: EthereumSignerCompatibleWithEthersV5,
     network: EthereumNetwork,
   ): Promise<Acre> {
+    const chainId = await signer.getChainId()
+
     const tbtc = await Acre.#getTBTCEthereumSDK(signer, network)
+    const orangeKit = await Acre.#getOrangeKitSDK(chainId)
     const contracts = getEthereumContracts(signer, network)
     const messages = new EthereumEIP712Signer(signer)
 
-    return new Acre(contracts, messages, tbtc)
+    return new Acre(contracts, messages, tbtc, orangeKit)
   }
 
   static #getTBTCEthereumSDK(
@@ -61,6 +70,14 @@ class Acre {
         // ethers v6 it won't break the Acre SDK initialization.
         return TBTC.initializeMainnet(signer)
     }
+  }
+
+  static #getOrangeKitSDK(chainId: number): Promise<OrangeKitSdk> {
+    return OrangeKitSdk.init(
+      chainId,
+      // TODO: pass rpc url as config.
+      "https://eth-mainnet.g.alchemy.com/v2/<YOUR_API_KEY>",
+    )
   }
 }
 

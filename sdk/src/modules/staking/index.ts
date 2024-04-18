@@ -1,4 +1,5 @@
 import { ChainIdentifier, TBTC } from "@keep-network/tbtc-v2.ts"
+import { OrangeKitSdk } from "@orangekit/sdk"
 import { AcreContracts, DepositorProxy, DepositFees } from "../../lib/contracts"
 import { ChainEIP712Signer } from "../../lib/eip712-signer"
 import { StakeInitialization } from "./stake-initialization"
@@ -32,14 +33,21 @@ class StakingModule {
    */
   readonly #tbtc: TBTC
 
+  /**
+   * OrangeKit SDK.
+   */
+  readonly #orangeKit: OrangeKitSdk
+
   constructor(
     _contracts: AcreContracts,
     _messageSigner: ChainEIP712Signer,
     _tbtc: TBTC,
+    _orangeKit: OrangeKitSdk,
   ) {
     this.#contracts = _contracts
     this.#messageSigner = _messageSigner
     this.#tbtc = _tbtc
+    this.#orangeKit = _orangeKit
   }
 
   /**
