@@ -5,10 +5,10 @@ import { routerPath } from "#/router/path"
 import ConnectWallet from "./ConnectWallet"
 import Navigation, { NavigationItemType } from "./Navigation"
 
-// TODO: Mock data, to be adjusted after project pivot/cleanup
+// TODO: To be adjusted after project pivot/cleanup
 const NAVIGATION_ITEMS: NavigationItemType[] = [
-  { label: "Home", href: routerPath.home },
-  { label: "Activity", href: `${routerPath.activity}/1` },
+  { label: "Season 1", href: routerPath.home },
+  { label: "Dashboard", href: routerPath.overview },
 ]
 
 export default function Header() {
