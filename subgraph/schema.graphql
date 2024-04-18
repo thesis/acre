@@ -11,9 +11,9 @@ enum LogType {
   CancelledFromQueue
 }
 
-interface ActivityData {
+interface ActivityData @key(fields: "id") {
   id: ID!
-  staker: Staker
+  staker: Staker!
   logs: [LogData!]
 }
 
@@ -23,18 +23,18 @@ type Staker @entity {
   activities: [ActivityData!] @derivedFrom(field: "staker")
 }
 
-type Stake implements ActivityData @entity {
+type Stake implements ActivityData @entity{
   id: ID!
-  staker: Staker
+  staker: Staker!
   logs: [LogData!] @derivedFrom(field: "activity")
   initialDepositAmountSatoshi: BigInt!
   amountToStakeStBtc: BigInt!
   shareStBtc: BigInt!
 }
 
-type Unstake implements ActivityData @entity {
+type Unstake implements ActivityData @entity{
   id: ID!
-  staker: Staker
+  staker: Staker!
   logs: [LogData!] @derivedFrom(field: "activity")
   initialDepositAmountSatoshi: BigInt!
   amountToStakeStBtc: BigInt!

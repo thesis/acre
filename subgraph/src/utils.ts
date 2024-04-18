@@ -1,5 +1,5 @@
 import { Address } from "@graphprotocol/graph-ts"
-import { Staker, LogData } from "../generated/schema"
+import { Staker, LogData, Stake } from "../generated/schema"
 
 export function getOrCreateStaker(stakerId: Address): Staker {
   const stakerHexString = stakerId.toHexString()
@@ -10,6 +10,17 @@ export function getOrCreateStaker(stakerId: Address): Staker {
   }
 
   return staker
+}
+
+export function getOrCreateStake(transactionId: string): Stake {
+  // const stakeHexString = transactionHash.toHexString()
+  let stake = Stake.load(transactionId)
+
+  if (!stake) {
+    stake = new Stake(transactionId)
+  }
+
+  return stake
 }
 
 export function getOrCreateLog(logId: string): LogData {
