@@ -2,6 +2,7 @@ import React, { useMemo } from "react"
 import { Flex, VStack, HStack } from "@chakra-ui/react"
 import boostCardIcon from "#/assets/images/card-icon-boost-arrow.png"
 import misteryCardIcon from "#/assets/images/card-icon-question-mark.png"
+import keyCardIcon from "#/assets/images/card-icon-key.png"
 import { useCountdown } from "#/hooks"
 import IconCard from "./IconCard"
 
@@ -36,7 +37,17 @@ export default function LandingPage() {
             flex={1}
             header="Mystery Box"
             body={`Unlockable in ${unlockableDuePeriod}`}
-            icon={{ src: misteryCardIcon, maxH: 177 }}
+            icon={{ src: misteryCardIcon, maxH: 166 }}
+          />
+          <IconCard
+            flex={1}
+            header="All Seasons Key"
+            body={
+              <>
+                Grants access to all <br /> upcoming seasons
+              </>
+            }
+            icon={{ src: keyCardIcon, maxH: 134 }}
           />
         </HStack>
       </VStack>
