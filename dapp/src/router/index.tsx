@@ -13,11 +13,11 @@ export const router = createBrowserRouter([
       {
         path: routerPath.home,
         element: <LandingPage />,
+        index: true,
       },
       {
         path: routerPath.overview,
         element: <OverviewPage />,
-        index: true,
       },
       {
         path: `${routerPath.activity}/:activityId`,
