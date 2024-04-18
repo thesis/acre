@@ -1,5 +1,5 @@
 import React, { useMemo } from "react"
-import { Box, Flex, VStack, HStack } from "@chakra-ui/react"
+import { Flex, VStack, HStack } from "@chakra-ui/react"
 import boostCardIcon from "#/assets/images/card-icon-boost-arrow.png"
 import misteryCardIcon from "#/assets/images/card-icon-question-mark.png"
 import { useCountdown } from "#/hooks"
@@ -23,9 +23,7 @@ export default function LandingPage() {
   )
 
   return (
-    // TODO: To be removed, changes for testing purposes only
-    <Flex w="full" flexFlow="column" px={10} h="400vh">
-      <Box h="336px" />
+    <Flex w="full" flexFlow="column" px={10}>
       <VStack spacing={4} mx={32}>
         <HStack spacing={5} align="stretch" mb={1} w="full">
           <IconCard
