@@ -31,13 +31,13 @@ export default function LandingPage() {
             flex={1}
             header="Rewards Boost"
             body="Platinum Boost"
-            icon={{ src: boostCardIcon, maxH: 239 }}
+            icon={{ src: boostCardIcon, maxH: "14.9375rem" }} // 239px
           />
           <IconCard
             flex={1}
             header="Mystery Box"
             body={`Unlockable in ${unlockableDuePeriod}`}
-            icon={{ src: misteryCardIcon, maxH: 166 }}
+            icon={{ src: misteryCardIcon, maxH: "10.375rem" }} // 166px
           />
           <IconCard
             flex={1}
@@ -47,7 +47,7 @@ export default function LandingPage() {
                 Grants access to all <br /> upcoming seasons
               </>
             }
-            icon={{ src: keyCardIcon, maxH: 134 }}
+            icon={{ src: keyCardIcon, maxH: "8.375rem" }} // 134px
           />
         </HStack>
       </VStack>
