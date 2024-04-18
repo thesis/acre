@@ -1,5 +1,6 @@
 import React from "react"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
+import LandingPage from "#/pages/LandingPage"
 import OverviewPage from "#/pages/OverviewPage"
 import ActivityPage from "#/pages/ActivityPage"
 import Layout from "#/components/shared/Layout"
@@ -10,7 +11,8 @@ export function Router() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index path={routerPath.home} element={<OverviewPage />} />
+          <Route index path={routerPath.home} element={<LandingPage />} />
+          <Route path={routerPath.overview} element={<OverviewPage />} />
           <Route
             path={`${routerPath.activity}/:activityId`}
             element={<ActivityPage />}

@@ -14,6 +14,7 @@ describe("stbtc", () => {
   const mockedContractInstance = {
     balanceOf: jest.fn(),
     assetsBalanceOf: jest.fn(),
+    entryFeeBasisPoints: jest.fn(),
   }
 
   beforeAll(() => {
@@ -68,6 +69,56 @@ describe("stbtc", () => {
 
     it("should return value of assets that would be exchanged for the amount of shares owned by the staker ", () => {
       expect(result).toEqual(expectedResult)
+    })
+  })
+
+  describe("depositFee", () => {
+    // 0.1 in 1e18 precision
+    const amount = 100000000000000000n
+    const mockedEntryFeeBasisPointsValue = 1n
+    // (amount * basisPoints) / (basisPoints / 1e4)
+    const expectedResult = 9999000099990n
+
+    let result: bigint
+
+    describe("when the entry fee basis points value is not yet cached", () => {
+      beforeAll(async () => {
+        mockedContractInstance.entryFeeBasisPoints.mockResolvedValue(
+          mockedEntryFeeBasisPointsValue,
+        )
+
+        result = await stbtc.calculateDepositFee(amount)
+      })
+
+      it("should get the entry fee basis points from contract", () => {
+        expect(mockedContractInstance.entryFeeBasisPoints).toHaveBeenCalled()
+      })
+
+      it("should calculate the deposit fee correctly", () => {
+        expect(result).toEqual(expectedResult)
+      })
+    })
+
+    describe("the entry fee basis points value is cached", () => {
+      beforeAll(async () => {
+        mockedContractInstance.entryFeeBasisPoints.mockResolvedValue(
+          mockedEntryFeeBasisPointsValue,
+        )
+
+        await stbtc.calculateDepositFee(amount)
+
+        result = await stbtc.calculateDepositFee(amount)
+      })
+
+      it("should get the entry fee basis points from cache", () => {
+        expect(
+          mockedContractInstance.entryFeeBasisPoints,
+        ).toHaveBeenCalledTimes(1)
+      })
+
+      it("should calculate the deposit fee correctly", () => {
+        expect(result).toEqual(expectedResult)
+      })
     })
   })
 })
