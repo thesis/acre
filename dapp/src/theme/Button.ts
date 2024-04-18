@@ -27,6 +27,12 @@ export const buttonTheme: ComponentSingleStyleConfig = {
       _active: {
         bg: "brand.400",
       },
+      _loading: {
+        _disabled: {
+          background: "gold.300",
+          opacity: 1,
+        },
+      },
     },
     outline: ({ colorScheme }: StyleFunctionProps) => {
       const defaultStyles = {
@@ -57,6 +63,18 @@ export const buttonTheme: ComponentSingleStyleConfig = {
           _hover: {
             borderColor: "grey.500",
             bg: "transparent",
+          },
+        }
+      }
+
+      if (colorScheme === "white") {
+        return {
+          ...defaultStyles,
+          color: "white",
+          borderColor: "white",
+
+          _hover: {
+            bg: "opacity.black.05",
           },
         }
       }

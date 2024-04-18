@@ -1,10 +1,6 @@
 import React from "react"
 import { Button, HStack, Icon, Tooltip } from "@chakra-ui/react"
-import {
-  useIsHomeRouteActive,
-  useRequestBitcoinAccount,
-  useWalletContext,
-} from "#/hooks"
+import { useIsHomeRouteActive, useWallet, useWalletContext } from "#/hooks"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import { TextMd } from "#/components/shared/Typography"
 import { BitcoinIcon } from "#/assets/icons"
@@ -36,8 +32,11 @@ const getCustomDataByAccount = (
 }
 
 export default function ConnectWallet() {
-  const { requestAccount: requestBitcoinAccount } = useRequestBitcoinAccount()
-  const { btcAccount, isConnected } = useWalletContext()
+  const {
+    bitcoin: { account: btcAccount, requestAccount: requestBitcoinAccount },
+  } = useWallet()
+  // TODO: Move `isConnected` to useWallet hook
+  const { isConnected } = useWalletContext()
 
   const customDataBtcAccount = getCustomDataByAccount(btcAccount)
 

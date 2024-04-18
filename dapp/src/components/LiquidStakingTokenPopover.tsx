@@ -12,8 +12,8 @@ import {
 import { SizeType } from "#/types"
 import { useDocsDrawer, useSharesBalance, useWalletContext } from "#/hooks"
 import { TextMd, TextSm } from "./shared/Typography"
-import Alert from "./shared/Alert"
 import { CurrencyBalance } from "./shared/CurrencyBalance"
+import { CardAlert } from "./shared/alerts"
 
 type LiquidStakingTokenPopoverProps = PopoverProps & { popoverSize: SizeType }
 
@@ -55,18 +55,18 @@ export function LiquidStakingTokenPopover({
             variant="greater-balance-xl"
             currency="stbtc"
           />
-          <Alert
+          <CardAlert
             mt={5}
             status="info"
-            withAlertIcon={false}
-            withActionIcon
-            onclick={openDocsDrawer}
+            withIcon={false}
+            withLink
+            onClick={openDocsDrawer}
           >
             <TextSm>
               Your tokens are this Ethereum address once the staking transaction
               is finalized.
             </TextSm>
-          </Alert>
+          </CardAlert>
         </PopoverBody>
       </PopoverContent>
     </Popover>

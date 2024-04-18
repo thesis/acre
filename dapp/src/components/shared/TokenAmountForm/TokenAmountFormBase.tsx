@@ -19,7 +19,7 @@ export const useTokenAmountFormValue = () => {
 
 export type TokenAmountFormBaseProps = {
   formId?: string
-  tokenBalance: string
+  tokenBalance: bigint
   tokenBalanceInputPlaceholder: string
   currency: CurrencyType
   children?: React.ReactNode
