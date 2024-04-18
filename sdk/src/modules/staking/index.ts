@@ -1,4 +1,8 @@
-import { ChainIdentifier, TBTC } from "@keep-network/tbtc-v2.ts"
+import {
+  ChainIdentifier,
+  EthereumAddress,
+  TBTC,
+} from "@keep-network/tbtc-v2.ts"
 import { OrangeKitSdk } from "@orangekit/sdk"
 import { AcreContracts, DepositorProxy, DepositFees } from "../../lib/contracts"
 import { ChainEIP712Signer } from "../../lib/eip712-signer"
@@ -51,32 +55,50 @@ class StakingModule {
   }
 
   /**
-   * Initializes the Acre staking process.
-   * @param bitcoinRecoveryAddress P2PKH or P2WPKH Bitcoin address that can be
-   *                               used for emergency recovery of the deposited
-   *                               funds.
-   * @param staker The address to which the stBTC shares will be minted.
+   * Initializes the Acre deposit process.
+   * @param depositor The Bitcoin depositor address. Supported addresses:
+   *        `P2WPKH`, `P2PKH`, `P2SH-P2WPKH`.
    * @param referral Data used for referral program.
    * @param depositorProxy Depositor proxy used to initiate the deposit.
-   * @returns Object represents the staking process.
+   * @param bitcoinRecoveryAddress `P2PKH` or `P2WPKH` Bitcoin address that can
+   *        be used for emergency recovery of the deposited funds. If
+   *        `undefined` the `depositor` address is used as bitcoin recovery
+   *        address then the `depositor` must be `P2WPKH` or `P2PKH`.
+   * @returns Object represents the deposit process.
    */
   async initializeStake(
-    bitcoinRecoveryAddress: string,
-    staker: ChainIdentifier,
+    depositor: string,
     referral: number,
     depositorProxy?: DepositorProxy,
+    bitcoinRecoveryAddress?: string,
   ) {
+    // TODO: If we want to handle other chains we should create the wrapper for
+    // OrangeKit SDK to return `ChainIdentifier` from `predictAddress` fn. Or we
+    // can create `EVMChainIdentifier` class and use it as a type in `modules`
+    // and `lib`. Currently we support only `Ethereum` so here we force to
+    // `EthereumAddress`.
+    const depositOwnerChainAddress = EthereumAddress.from(
+      await this.#orangeKit.predictAddress(depositor),
+    )
+
+    // tBTC-v2 SDK will handle Bitcoin address validation and throw an error if
+    // address is not supported.
+    const finalBitcoinRecoveryAddress = bitcoinRecoveryAddress ?? depositor
+
     const deposit = await this.#tbtc.deposits.initiateDepositWithProxy(
-      bitcoinRecoveryAddress,
+      finalBitcoinRecoveryAddress,
       depositorProxy ?? this.#contracts.bitcoinDepositor,
-      this.#contracts.bitcoinDepositor.encodeExtraData(staker, referral),
+      this.#contracts.bitcoinDepositor.encodeExtraData(
+        depositOwnerChainAddress,
+        referral,
+      ),
     )
 
     return new StakeInitialization(
       this.#contracts,
       this.#messageSigner,
-      bitcoinRecoveryAddress,
-      staker,
+      finalBitcoinRecoveryAddress,
+      depositOwnerChainAddress,
       deposit,
     )
   }

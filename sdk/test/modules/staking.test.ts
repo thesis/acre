@@ -1,5 +1,6 @@
 import { BitcoinTxHash } from "@keep-network/tbtc-v2.ts"
 import { ethers } from "ethers"
+import { OrangeKitSdk } from "@orangekit/sdk"
 import {
   AcreContracts,
   StakingModule,
@@ -100,11 +101,13 @@ describe("Staking", () => {
   const contracts: AcreContracts = new MockAcreContracts()
   const messageSigner = new MockMessageSigner()
   const tbtc = new MockTBTC()
+  const orangeKit = {} as OrangeKitSdk
 
   const staking: StakingModule = new StakingModule(
     contracts,
     messageSigner,
     tbtc,
+    orangeKit,
   )
 
   describe("initializeStake", () => {
@@ -142,11 +145,7 @@ describe("Staking", () => {
 
         messageSigner.sign = jest.fn().mockResolvedValue(mockedSignedMessage)
 
-        result = await staking.initializeStake(
-          bitcoinRecoveryAddress,
-          staker,
-          referral,
-        )
+        result = await staking.initializeStake(bitcoinRecoveryAddress, referral)
       })
 
       it("should encode extra data", () => {
@@ -370,7 +369,6 @@ describe("Staking", () => {
 
         result = await staking.initializeStake(
           bitcoinRecoveryAddress,
-          staker,
           referral,
           customDepositorProxy,
         )
