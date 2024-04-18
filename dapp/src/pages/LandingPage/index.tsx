@@ -1,14 +1,20 @@
 import React, { useMemo } from "react"
-import { Flex, VStack, HStack } from "@chakra-ui/react"
+import { Flex, VStack, HStack, Box, Image } from "@chakra-ui/react"
 import boostCardIcon from "#/assets/images/card-icon-boost-arrow.png"
 import misteryCardIcon from "#/assets/images/card-icon-question-mark.png"
 import keyCardIcon from "#/assets/images/card-icon-key.png"
 import { useCountdown } from "#/hooks"
+import baseLogo from "#/assets/images/partner-logos/base-logo.png"
+import thresholdLogo from "#/assets/images/partner-logos/threshold-logo.png"
+import ledgerLogo from "#/assets/images/partner-logos/ledger-logo.png"
+import wormholeLogo from "#/assets/images/partner-logos/wormhole-logo.png"
 import IconCard from "./IconCard"
 import ValueCard from "./ValueCard"
 import TVLCard from "./TVLCard"
+import ContentCard from "./ContentCard"
 
 const MOCK_SEASON_DUE_TIMESTAMP = new Date(2024, 3, 20).getTime() / 1000
+const PARTNER_LOGOS = [baseLogo, thresholdLogo, ledgerLogo, wormholeLogo]
 
 export default function LandingPage() {
   const countdown = useCountdown(MOCK_SEASON_DUE_TIMESTAMP)
@@ -54,6 +60,22 @@ export default function LandingPage() {
         </HStack>
         <ValueCard header="Users joined" value="8,172" />
         <TVLCard />
+        <ContentCard header="How it works" withBackground>
+          <Box color="brand.400" fontWeight="semibold" pt={9} pb={20}>
+            inset diagram here
+          </Box>
+        </ContentCard>
+        <ContentCard header="Trusted by pioneers.">
+          {PARTNER_LOGOS.map((logoSrc) => (
+            <Image
+              key={logoSrc}
+              src={logoSrc}
+              objectFit="contain"
+              maxH={10}
+              alt="Partner logo"
+            />
+          ))}
+        </ContentCard>
       </VStack>
     </Flex>
   )

@@ -92,6 +92,31 @@ export const cardTheme: ComponentSingleStyleConfig = {
         gap: 20,
       },
     },
+    content: {
+      container: {
+        p: 10,
+        gap: 10,
+        alignItems: "center",
+      },
+      header: {
+        p: 0,
+        fontSize: "md",
+        lineHeight: 6,
+        fontWeight: "semibold",
+        color: "grey.700",
+        zIndex: 1,
+      },
+      body: {
+        p: 0,
+        zIndex: 1,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-evenly",
+        gap: 12,
+        flexFlow: { base: "column", xl: "row" },
+        w: "full",
+      },
+    },
   },
   sizes: {
     md: {
