@@ -1,12 +1,17 @@
-import { StakeRequestInitialized as StakeRequestInitializedEvent } from "../generated/AcreBitcoinDepositor/AcreBitcoinDepositor"
-import { getOrCreateStaker, getOrCreateStake, getOrCreateLog } from "./utils"
+import { DepositInitialized as DepositInitializedEvent } from "../generated/AcreBitcoinDepositor/AcreBitcoinDepositor"
+import {
+  getOrCreateDepositOwner,
+  getOrCreateStake,
+  getOrCreateLog,
+} from "./utils"
 
 // eslint-disable-next-line import/prefer-default-export
-export function handleStakeRequestInitialized(
-  event: StakeRequestInitializedEvent,
-): void {
-  const stakerEntity = getOrCreateStaker(event.params.staker)
+export function handleDepositInitialized(event: DepositInitializedEvent): void {
+  const depositOwnerEntity = getOrCreateDepositOwner(event.params.depositOwner)
   const stakeEntity = getOrCreateStake(event.transaction.hash.toHexString())
+
+  stakeEntity.depositOwner = depositOwnerEntity.id
+  stakeEntity.initialDepositAmountSatoshi = event.params.initialAmount
 
   const logDataBtc = getOrCreateLog(
     `${event.transaction.hash.toHexString()}btc`,
@@ -30,8 +35,8 @@ export function handleStakeRequestInitialized(
   logDataEth.chain = "Ethereum"
   logDataEth.amount = event.params.initialAmount
 
-  stakerEntity.save()
-  // stakeEntity.save()
+  depositOwnerEntity.save()
+  stakeEntity.save()
   logDataBtc.save()
   logDataEth.save()
 }

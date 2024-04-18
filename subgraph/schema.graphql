@@ -13,36 +13,36 @@ enum LogType {
 
 interface ActivityData @key(fields: "id") {
   id: ID!
-  staker: Staker!
+  depositOwner: DepositOwner!
   logs: [LogData!]
 }
 
-type Staker @entity {
+type DepositOwner @entity {
   # Id is the ethereum address of the account.
   id: ID!
-  activities: [ActivityData!] @derivedFrom(field: "staker")
+  activities: [ActivityData!] @derivedFrom(field: "depositOwner")
 }
 
 type Stake implements ActivityData @entity{
   id: ID!
-  staker: Staker!
+  depositOwner: DepositOwner!
   logs: [LogData!] @derivedFrom(field: "activity")
   initialDepositAmountSatoshi: BigInt!
-  amountToStakeStBtc: BigInt!
-  shareStBtc: BigInt!
+  amountToStakeStBtc: BigInt
+  shareStBtc: BigInt
 }
 
 type Unstake implements ActivityData @entity{
   id: ID!
-  staker: Staker!
+  depositOwner: DepositOwner!
   logs: [LogData!] @derivedFrom(field: "activity")
   initialDepositAmountSatoshi: BigInt!
-  amountToStakeStBtc: BigInt!
-  shareStBtc: BigInt!
+  amountToStakeStBtc: BigInt
+  shareStBtc: BigInt
 }
 
 type LogData @entity {
-  # Id is the transaction hash
+  # Id is the transaction hash.
   id: ID!
   timestamp: BigInt!
   activity: ActivityData

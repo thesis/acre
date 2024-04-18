@@ -1,18 +1,17 @@
 import { ethereum, BigInt, Address } from "@graphprotocol/graph-ts"
 import { newMockEvent } from "matchstick-as/assembly/defaults"
-import { StakeRequestInitialized } from "../generated/AcreBitcoinDepositor/AcreBitcoinDepositor"
+import { DepositInitialized } from "../generated/AcreBitcoinDepositor/AcreBitcoinDepositor"
 
 // eslint-disable-next-line import/prefer-default-export
-export function createStakeRequestInitializedEvent(
+export function createDepositInitializedEvent(
   depositKey: BigInt,
   caller: Address,
-  staker: Address,
+  depositOwner: Address,
   initialAmount: BigInt,
-): StakeRequestInitialized {
-  const stakeRequestInitializedEvent =
-    changetype<StakeRequestInitialized>(newMockEvent())
+): DepositInitialized {
+  const depositInitializedEvent = changetype<DepositInitialized>(newMockEvent())
 
-  stakeRequestInitializedEvent.parameters = []
+  depositInitializedEvent.parameters = []
 
   const depositKeyParam = new ethereum.EventParam(
     "depositKey",
@@ -23,9 +22,9 @@ export function createStakeRequestInitializedEvent(
     ethereum.Value.fromAddress(caller),
   )
 
-  const stakerParam = new ethereum.EventParam(
-    "staker",
-    ethereum.Value.fromAddress(staker),
+  const depositOwnerParam = new ethereum.EventParam(
+    "depositOwner",
+    ethereum.Value.fromAddress(depositOwner),
   )
 
   const initialAmountParam = new ethereum.EventParam(
@@ -33,10 +32,10 @@ export function createStakeRequestInitializedEvent(
     ethereum.Value.fromUnsignedBigInt(initialAmount),
   )
 
-  stakeRequestInitializedEvent.parameters.push(depositKeyParam)
-  stakeRequestInitializedEvent.parameters.push(callerParam)
-  stakeRequestInitializedEvent.parameters.push(stakerParam)
-  stakeRequestInitializedEvent.parameters.push(initialAmountParam)
+  depositInitializedEvent.parameters.push(depositKeyParam)
+  depositInitializedEvent.parameters.push(callerParam)
+  depositInitializedEvent.parameters.push(depositOwnerParam)
+  depositInitializedEvent.parameters.push(initialAmountParam)
 
-  return stakeRequestInitializedEvent
+  return depositInitializedEvent
 }

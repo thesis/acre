@@ -1,15 +1,15 @@
 import { Address } from "@graphprotocol/graph-ts"
-import { Staker, LogData, Stake } from "../generated/schema"
+import { DepositOwner, LogData, Stake } from "../generated/schema"
 
-export function getOrCreateStaker(stakerId: Address): Staker {
-  const stakerHexString = stakerId.toHexString()
-  let staker = Staker.load(stakerHexString)
+export function getOrCreateDepositOwner(depositOwnerId: Address): DepositOwner {
+  const depositOwnerHexString = depositOwnerId.toHexString()
+  let depositOwner = DepositOwner.load(depositOwnerHexString)
 
-  if (!staker) {
-    staker = new Staker(stakerHexString)
+  if (!depositOwner) {
+    depositOwner = new DepositOwner(depositOwnerHexString)
   }
 
-  return staker
+  return depositOwner
 }
 
 export function getOrCreateStake(transactionId: string): Stake {

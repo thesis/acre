@@ -17,7 +17,7 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "staker",
+        "name": "depositOwner",
         "type": "address"
       },
       {
@@ -27,7 +27,7 @@
         "type": "uint256"
       }
     ],
-    "name": "StakeRequestInitialized",
+    "name": "DepositInitialized",
     "type": "event"
   }
 ]
