@@ -1,12 +1,12 @@
 import React from "react"
-import { Flex, VStack, HStack, Box, Image } from "@chakra-ui/react"
+import { Flex, VStack, HStack, Box, Image, ImageProps } from "@chakra-ui/react"
 import boostCardIcon from "#/assets/images/card-icon-boost-arrow.png"
 import misteryCardIcon from "#/assets/images/card-icon-question-mark.png"
 import keyCardIcon from "#/assets/images/card-icon-key.png"
-import baseLogo from "#/assets/images/partner-logos/base-logo.png"
-import thresholdLogo from "#/assets/images/partner-logos/threshold-logo.png"
-import ledgerLogo from "#/assets/images/partner-logos/ledger-logo.png"
-import wormholeLogo from "#/assets/images/partner-logos/wormhole-logo.png"
+import baseLogo from "#/assets/images/partner-logos/base-logo.svg"
+import thresholdLogo from "#/assets/images/partner-logos/threshold-logo.svg"
+import ledgerLogo from "#/assets/images/partner-logos/ledger-logo.svg"
+import wormholeLogo from "#/assets/images/partner-logos/wormhole-logo.svg"
 import { EXTERNAL_HREF } from "#/constants"
 import IconCard from "./IconCard"
 import ValueCard from "./ValueCard"
@@ -14,7 +14,12 @@ import TVLCard from "./TVLCard"
 import ContentCard from "./ContentCard"
 import CardButton from "./CardButton"
 
-const PARTNER_LOGOS = [baseLogo, thresholdLogo, ledgerLogo, wormholeLogo]
+const PARTNER_LOGOS: Pick<ImageProps, "src" | "maxW" | "alt">[] = [
+  { src: baseLogo, maxW: "5.625rem", alt: "Base logo" }, // 90px
+  { src: thresholdLogo, maxW: "13.125rem", alt: "Threshold logo" }, // 210px
+  { src: ledgerLogo, maxW: "7.4375rem", alt: "Ledger logo" }, // 119px
+  { src: wormholeLogo, maxW: "11.375rem", alt: "Wormhole logo" }, // 182px
+]
 
 export default function LandingPage() {
   return (
@@ -60,14 +65,8 @@ export default function LandingPage() {
           </Box>
         </ContentCard>
         <ContentCard header="Trusted by pioneers.">
-          {PARTNER_LOGOS.map((logoSrc) => (
-            <Image
-              key={logoSrc}
-              src={logoSrc}
-              objectFit="contain"
-              maxH={10}
-              alt="Partner logo"
-            />
+          {PARTNER_LOGOS.map((logoAttributes) => (
+            <Image h="auto" {...logoAttributes} />
           ))}
         </ContentCard>
         <CardButton href={EXTERNAL_HREF.DOCS} isExternal>
