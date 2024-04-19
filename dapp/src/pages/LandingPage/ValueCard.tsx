@@ -6,27 +6,12 @@ import {
   CardHeader,
   CardProps,
   Box,
-  SystemStyleObject,
 } from "@chakra-ui/react"
-import decorator from "#/assets/images/card-value-decorator.svg"
 
 type IconCardProps = CardProps & {
   header: React.ReactNode
   value: React.ReactNode
   footer?: React.ReactNode[]
-}
-
-const valueDecorator: SystemStyleObject = {
-  content: "''",
-  mask: `url(${decorator}) no-repeat 50% 50%`,
-  maskSize: "contain",
-  display: "inline-block",
-  w: { base: "2.9rem", xl: "3.625rem" }, // 46,8px, 58px
-  h: { base: 8, xl: 10 },
-  transform: "auto",
-  transformOrigin: "center",
-  background: "currentColor",
-  mx: 6,
 }
 
 function ValueCardBase(props: IconCardProps) {
@@ -44,12 +29,7 @@ function ValueCardBase(props: IconCardProps) {
   return (
     <Card variant="value" {...restProps}>
       <CardHeader>{header}</CardHeader>
-      <CardBody
-        _before={valueDecorator}
-        _after={{ ...valueDecorator, rotate: 180 }}
-      >
-        {value}
-      </CardBody>
+      <CardBody>{value}</CardBody>
       {footer.length > 0 && (
         <CardFooter>
           {footer.map((footerItem, index) => (

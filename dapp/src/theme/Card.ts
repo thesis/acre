@@ -1,9 +1,8 @@
-import {
-  ComponentSingleStyleConfig,
-  StyleFunctionProps,
-} from "@chakra-ui/react"
+import { ComponentMultiStyleConfig, StyleFunctionProps } from "@chakra-ui/react"
+import contentCardBackground from "#/assets/images/content-card-bg.png"
+import valueCardDecorator from "#/assets/images/card-value-decorator.svg"
 
-export const cardTheme: ComponentSingleStyleConfig = {
+export const cardTheme: ComponentMultiStyleConfig = {
   baseStyle: {
     container: {
       boxShadow: "none",
@@ -11,6 +10,7 @@ export const cardTheme: ComponentSingleStyleConfig = {
       bg: "gold.200",
     },
   },
+  parts: ["container", "header", "body", "footer"],
   variants: {
     elevated: ({ colorScheme }: StyleFunctionProps) => {
       if (!colorScheme) return {}
@@ -23,7 +23,6 @@ export const cardTheme: ComponentSingleStyleConfig = {
       }
     },
     icon: {
-      // @ts-expect-error To override false positive types error
       container: {
         px: 6,
         py: 5,
@@ -85,6 +84,19 @@ export const cardTheme: ComponentSingleStyleConfig = {
         whiteSpace: "nowrap",
         display: "flex",
         alignItems: "center",
+        "&::before, &::after": {
+          content: "''",
+          mask: `url(${valueCardDecorator})`,
+          maskSize: "contain",
+          display: "inline-block",
+          w: { base: "2.9rem", xl: "3.625rem" }, // 46,8px, 58px
+          h: { base: 8, xl: 10 },
+          transform: "auto",
+          transformOrigin: "center",
+          background: "currentColor",
+          mx: 6,
+        },
+        _after: { rotate: 180 },
       },
       footer: {
         p: 0,
@@ -95,11 +107,26 @@ export const cardTheme: ComponentSingleStyleConfig = {
         gap: 20,
       },
     },
-    content: {
+    content: ({ withBackground }) => ({
       container: {
         p: 10,
         gap: 10,
         alignItems: "center",
+        position: "relative",
+        _after: withBackground
+          ? {
+              content: "''",
+              pos: "absolute",
+              w: "full",
+              h: "full",
+              inset: 0,
+              bgImage: contentCardBackground,
+              bgSize: "cover",
+              mixBlendMode: "overlay",
+              opacity: 0.5,
+              zIndex: 0,
+            }
+          : undefined,
       },
       header: {
         p: 0,
@@ -119,7 +146,7 @@ export const cardTheme: ComponentSingleStyleConfig = {
         flexFlow: { base: "column", xl: "row" },
         w: "full",
       },
-    },
+    }),
   },
   sizes: {
     md: {
@@ -135,5 +162,6 @@ export const cardTheme: ComponentSingleStyleConfig = {
   },
   defaultProps: {
     size: "lg",
+    withBackground: false,
   },
 }
