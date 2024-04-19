@@ -106,7 +106,7 @@ export function CountdownTimer(props: CountdownTimerProps) {
     [countdown],
   )
   return (
-    <HStack spacing={2} {...restProps}>
+    <HStack spacing={2} userSelect="none" {...restProps}>
       {parsedCountdown.map(([label, value]) => (
         <CountdownTimerSegment key={label} label={label} value={value} />
       ))}
