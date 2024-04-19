@@ -23,7 +23,14 @@ const PARTNER_LOGOS: Pick<ImageProps, "src" | "maxW" | "alt">[] = [
 
 export default function LandingPage() {
   return (
-    <Flex w="full" flexFlow="column" px={10}>
+    <Flex
+      w="full"
+      flexFlow="column"
+      px={10}
+      pb={10}
+      maxW="100.625rem"
+      mx="auto"
+    >
       <VStack spacing={4} mx={32} align="stretch">
         <HStack spacing={5} align="stretch" mb={12} w="full">
           <IconCard
