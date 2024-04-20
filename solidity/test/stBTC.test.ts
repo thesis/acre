@@ -878,6 +878,77 @@ describe("stBTC", () => {
       })
     })
 
+    context("when stBTC allocated all of the assets", () => {
+      beforeAfterSnapshotWrapper()
+
+      let tx: ContractTransactionResponse
+      let firstDepositBalance: bigint
+
+      const amountToDeposit = to1e18(3)
+
+      before(async () => {
+        await tbtc.mint(depositor1.address, amountToDeposit)
+        await tbtc
+          .connect(depositor1)
+          .approve(await stbtc.getAddress(), amountToDeposit)
+        // Depositor deposits 3 tBTC.
+        await stbtc
+          .connect(depositor1)
+          .deposit(amountToDeposit, depositor1.address)
+        // Allocate 3 tBTC to Mezo Portal.
+        await mezoAllocator.connect(maintainer).allocate()
+        firstDepositBalance = await mezoAllocator.depositBalance()
+        // Depositor redeems 2 stBTC.
+        tx = await stbtc
+          .connect(depositor1)
+          .redeem(to1e18(2), depositor1, depositor1)
+      })
+
+      it("should transfer tBTC back to a depositor1", async () => {
+        const expectedRedeemedAssets = await stbtc.previewRedeem(to1e18(2))
+        await expect(tx).to.changeTokenBalances(
+          tbtc,
+          [depositor1.address],
+          [expectedRedeemedAssets],
+        )
+      })
+
+      it("should transfer redeem fee to Treasury", async () => {
+        const assetsToWithdraw = await stbtc.previewRedeem(to1e18(2))
+        const redeemFee = feeOnRaw(assetsToWithdraw, exitFeeBasisPoints)
+        await expect(tx).to.changeTokenBalances(
+          tbtc,
+          [treasury.address],
+          [redeemFee],
+        )
+      })
+
+      it("should decrease the deposit balance tracking in Mezo Allocator", async () => {
+        const depositBalance = await mezoAllocator.depositBalance()
+        const assetsToWithdraw = await stbtc.previewRedeem(to1e18(2))
+        const redeemFee = feeOnRaw(assetsToWithdraw, exitFeeBasisPoints)
+        const assetsToWithdrawFromMezo = assetsToWithdraw + redeemFee
+
+        expect(depositBalance).to.be.eq(
+          firstDepositBalance - assetsToWithdrawFromMezo,
+        )
+      })
+
+      it("should emit Withdraw event", async () => {
+        const assetsToWithdraw = await stbtc.previewRedeem(to1e18(2))
+
+        await expect(tx)
+          .to.emit(stbtc, "Withdraw")
+          .withArgs(
+            depositor1.address,
+            depositor1.address,
+            depositor1.address,
+            assetsToWithdraw,
+            to1e18(2),
+          )
+      })
+    })
+
     context("when stBTC allocated some of the assets", () => {
       beforeAfterSnapshotWrapper()
 
@@ -1161,6 +1232,81 @@ describe("stBTC", () => {
             [feeOnRaw(availableToWithdraw, exitFeeBasisPoints)],
           )
         })
+      })
+    })
+
+    context("when stBTC allocated all of the assets", () => {
+      beforeAfterSnapshotWrapper()
+
+      let tx: ContractTransactionResponse
+      let firstDepositBalance: bigint
+
+      const amountToDeposit = to1e18(3)
+
+      before(async () => {
+        await tbtc.mint(depositor1.address, amountToDeposit)
+        await tbtc
+          .connect(depositor1)
+          .approve(await stbtc.getAddress(), amountToDeposit)
+        // Depositor deposits 3 tBTC.
+        await stbtc
+          .connect(depositor1)
+          .deposit(amountToDeposit, depositor1.address)
+        // Allocate 3 tBTC to Mezo Portal.
+        await mezoAllocator.connect(maintainer).allocate()
+        firstDepositBalance = await mezoAllocator.depositBalance()
+        // Depositor withdraws 2 stBTC.
+        tx = await stbtc
+          .connect(depositor1)
+          .withdraw(to1e18(2), depositor1, depositor1)
+      })
+
+      it("should transfer tBTC back to a depositor1", async () => {
+        const expectedWithdrawnAssets = to1e18(2)
+
+        await expect(tx).to.changeTokenBalances(
+          tbtc,
+          [depositor1.address],
+          [expectedWithdrawnAssets],
+        )
+      })
+
+      it("should transfer withdrawal fee to Treasury", async () => {
+        const assetsToWithdraw = to1e18(2)
+        const withdrawFee = feeOnRaw(assetsToWithdraw, exitFeeBasisPoints)
+
+        await expect(tx).to.changeTokenBalances(
+          tbtc,
+          [treasury.address],
+          [withdrawFee],
+        )
+      })
+
+      it("should decrease the deposit balance tracking in Mezo Allocator", async () => {
+        const depositBalance = await mezoAllocator.depositBalance()
+        const assetsToWithdraw = to1e18(2)
+        const withdrawFee = feeOnRaw(assetsToWithdraw, exitFeeBasisPoints)
+        const assetsToWithdrawFromMezo = assetsToWithdraw + withdrawFee
+
+        expect(depositBalance).to.be.eq(
+          firstDepositBalance - assetsToWithdrawFromMezo,
+        )
+      })
+
+      it("should emit Withdraw event", async () => {
+        const assetsToWithdraw = to1e18(2)
+        const sharesToBurn =
+          to1e18(2) + feeOnRaw(assetsToWithdraw, exitFeeBasisPoints)
+
+        await expect(tx)
+          .to.emit(stbtc, "Withdraw")
+          .withArgs(
+            depositor1.address,
+            depositor1.address,
+            depositor1.address,
+            assetsToWithdraw,
+            sharesToBurn,
+          )
       })
     })
 
