@@ -963,6 +963,68 @@ describe("stBTC", () => {
           )
       })
     })
+
+    context("when the entry and exit fee is zero", () => {
+      beforeAfterSnapshotWrapper()
+
+      context("when redeeming from a single deposit", () => {
+        beforeAfterSnapshotWrapper()
+
+        const amountToDeposit = to1e18(1)
+        let tx: ContractTransactionResponse
+
+        before(async () => {
+          await stbtc.connect(governance).updateExitFeeBasisPoints(0)
+          await stbtc.connect(governance).updateEntryFeeBasisPoints(0)
+
+          await tbtc
+            .connect(depositor1)
+            .approve(await stbtc.getAddress(), amountToDeposit)
+
+          await stbtc
+            .connect(depositor1)
+            .deposit(amountToDeposit, depositor1.address)
+          tx = await stbtc
+            .connect(depositor1)
+            .redeem(amountToDeposit, thirdParty, depositor1)
+        })
+
+        it("should emit Withdraw event", async () => {
+          await expect(tx).to.emit(stbtc, "Withdraw").withArgs(
+            // Caller.
+            depositor1.address,
+            // Receiver
+            thirdParty.address,
+            // Owner
+            depositor1.address,
+            // Redeemed tokens.
+            amountToDeposit,
+            // Burned shares.
+            amountToDeposit,
+          )
+        })
+
+        it("should burn stBTC tokens", async () => {
+          await expect(tx).to.changeTokenBalances(
+            stbtc,
+            [depositor1.address],
+            [-amountToDeposit],
+          )
+        })
+
+        it("should transfer tBTC tokens to a receiver", async () => {
+          await expect(tx).to.changeTokenBalances(
+            tbtc,
+            [thirdParty.address],
+            [amountToDeposit],
+          )
+        })
+
+        it("should not transfer any tBTC tokens to Treasury", async () => {
+          await expect(tx).to.changeTokenBalances(tbtc, [treasury.address], [0])
+        })
+      })
+    })
   })
 
   describe("withdraw", () => {
@@ -1177,6 +1239,68 @@ describe("stBTC", () => {
             to1e18(2),
             sharesToBurn,
           )
+      })
+    })
+
+    context("when the entry and exit fee is zero", () => {
+      beforeAfterSnapshotWrapper()
+
+      context("when withdrawing from a single deposit", () => {
+        beforeAfterSnapshotWrapper()
+
+        const amountToDeposit = to1e18(1)
+        let tx: ContractTransactionResponse
+
+        before(async () => {
+          await stbtc.connect(governance).updateExitFeeBasisPoints(0)
+          await stbtc.connect(governance).updateEntryFeeBasisPoints(0)
+
+          await tbtc
+            .connect(depositor1)
+            .approve(await stbtc.getAddress(), amountToDeposit)
+
+          await stbtc
+            .connect(depositor1)
+            .deposit(amountToDeposit, depositor1.address)
+          tx = await stbtc
+            .connect(depositor1)
+            .withdraw(amountToDeposit, thirdParty, depositor1)
+        })
+
+        it("should emit Withdraw event", async () => {
+          await expect(tx).to.emit(stbtc, "Withdraw").withArgs(
+            // Caller.
+            depositor1.address,
+            // Receiver
+            thirdParty.address,
+            // Owner
+            depositor1.address,
+            // Withdrew tokens.
+            amountToDeposit,
+            // Burned shares.
+            amountToDeposit,
+          )
+        })
+
+        it("should burn stBTC tokens", async () => {
+          await expect(tx).to.changeTokenBalances(
+            stbtc,
+            [depositor1.address],
+            [-amountToDeposit],
+          )
+        })
+
+        it("should transfer tBTC tokens to a receiver", async () => {
+          await expect(tx).to.changeTokenBalances(
+            tbtc,
+            [thirdParty.address],
+            [amountToDeposit],
+          )
+        })
+
+        it("should not transfer any tBTC tokens to Treasury", async () => {
+          await expect(tx).to.changeTokenBalances(tbtc, [treasury.address], [0])
+        })
       })
     })
   })
