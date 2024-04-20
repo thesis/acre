@@ -531,9 +531,9 @@ describe("stBTC", () => {
           })
 
           it("depositor 1 should receive shares equal to a deposited amount", async () => {
-            const expectedShares = await stbtc.previewDeposit(
-              depositor1AmountToDeposit,
-            )
+            const expectedShares =
+              depositor1AmountToDeposit -
+              feeOnTotal(depositor1AmountToDeposit, entryFeeBasisPoints)
 
             await expect(depositTx1).to.changeTokenBalances(
               stbtc,
@@ -543,9 +543,9 @@ describe("stBTC", () => {
           })
 
           it("depositor 2 should receive shares equal to a deposited amount", async () => {
-            const expectedShares = await stbtc.previewDeposit(
-              depositor2AmountToDeposit,
-            )
+            const expectedShares =
+              depositor2AmountToDeposit -
+              feeOnTotal(depositor2AmountToDeposit, entryFeeBasisPoints)
 
             await expect(depositTx2).to.changeTokenBalances(
               stbtc,
@@ -733,7 +733,9 @@ describe("stBTC", () => {
 
         before(async () => {
           minimumDepositAmount = await stbtc.minimumDepositAmount()
-          const shares = await stbtc.previewDeposit(minimumDepositAmount)
+          const shares =
+            minimumDepositAmount -
+            feeOnTotal(minimumDepositAmount, entryFeeBasisPoints)
 
           sharesToMint = shares - 1n
           await tbtc
@@ -773,7 +775,8 @@ describe("stBTC", () => {
           await tbtc
             .connect(depositor1)
             .approve(await stbtc.getAddress(), amountToDeposit)
-          shares = await stbtc.previewDeposit(amountToDeposit)
+          shares =
+            amountToDeposit - feeOnTotal(amountToDeposit, entryFeeBasisPoints)
           await stbtc
             .connect(depositor1)
             .deposit(amountToDeposit, depositor1.address)
@@ -839,7 +842,6 @@ describe("stBTC", () => {
           await stbtc
             .connect(depositor1)
             .deposit(firstDeposit, depositor1.address)
-
           await stbtc
             .connect(depositor1)
             .deposit(secondDeposit, depositor1.address)
@@ -905,7 +907,8 @@ describe("stBTC", () => {
       })
 
       it("should transfer tBTC back to a depositor1", async () => {
-        const expectedRedeemedAssets = await stbtc.previewRedeem(to1e18(2))
+        const expectedRedeemedAssets =
+          to1e18(2) - feeOnTotal(to1e18(2), exitFeeBasisPoints)
         await expect(tx).to.changeTokenBalances(
           tbtc,
           [depositor1.address],
@@ -914,8 +917,7 @@ describe("stBTC", () => {
       })
 
       it("should transfer redeem fee to Treasury", async () => {
-        const assetsToWithdraw = await stbtc.previewRedeem(to1e18(2))
-        const redeemFee = feeOnRaw(assetsToWithdraw, exitFeeBasisPoints)
+        const redeemFee = feeOnTotal(to1e18(2), exitFeeBasisPoints)
         await expect(tx).to.changeTokenBalances(
           tbtc,
           [treasury.address],
@@ -925,8 +927,8 @@ describe("stBTC", () => {
 
       it("should decrease the deposit balance tracking in Mezo Allocator", async () => {
         const depositBalance = await mezoAllocator.depositBalance()
-        const assetsToWithdraw = await stbtc.previewRedeem(to1e18(2))
-        const redeemFee = feeOnRaw(assetsToWithdraw, exitFeeBasisPoints)
+        const redeemFee = feeOnTotal(to1e18(2), exitFeeBasisPoints)
+        const assetsToWithdraw = to1e18(2) - redeemFee
         const assetsToWithdrawFromMezo = assetsToWithdraw + redeemFee
 
         expect(depositBalance).to.be.eq(
@@ -935,7 +937,8 @@ describe("stBTC", () => {
       })
 
       it("should emit Withdraw event", async () => {
-        const assetsToWithdraw = await stbtc.previewRedeem(to1e18(2))
+        const assetsToWithdraw =
+          to1e18(2) - feeOnTotal(to1e18(2), exitFeeBasisPoints)
 
         await expect(tx)
           .to.emit(stbtc, "Withdraw")
@@ -1374,7 +1377,25 @@ describe("stBTC", () => {
       })
 
       it("should emit Withdraw event", async () => {
-        const sharesToBurn = (await stbtc.previewWithdraw(to1e18(2))) + 1n // adjust for rounding
+        // total assets and total supply right after the deposit of 3 tBTC, before
+        // the yield and withdrawal. This also includes the entry fee.
+        // totalAssets() -> 2998500749625187406n
+        // totalSupply() -> 2998500749625187406n
+
+        // Donate 1 tBTC to stBTC.
+        // totalAssets() -> 3998500749625187406n (tBTC)
+        // totalSupply() -> 2998500749625187406n (stBTC)
+
+        // Withdraw 2 tBTC.
+        // sharesToBurnWithNoFees = 2tBTC * totalAssets() / totalSupply()
+        // sharesToBurnWithNoFees = 2tBTC * 3998500749625187406n / 2998500749625187406n
+        const sharesToBurnWithNoFees = 1499812523434570678n
+
+        // Add the withdrawal fee. Adjust for rounding.
+        const sharesToBurn =
+          sharesToBurnWithNoFees +
+          feeOnRaw(sharesToBurnWithNoFees, exitFeeBasisPoints) +
+          1n
 
         await expect(tx)
           .to.emit(stbtc, "Withdraw")
