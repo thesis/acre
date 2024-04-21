@@ -4,11 +4,9 @@ enum ChainType {
 }
 
 enum LogType {
+  Unknown
   Initialized
   Finalized
-  Queued
-  FinalizedFromQueue
-  CancelledFromQueue
 }
 
 interface ActivityData @key(fields: "id") {
@@ -23,21 +21,21 @@ type DepositOwner @entity {
   activities: [ActivityData!] @derivedFrom(field: "depositOwner")
 }
 
-type Stake implements ActivityData @entity{
+type Deposit implements ActivityData @entity {
   id: ID!
   depositOwner: DepositOwner!
   logs: [LogData!] @derivedFrom(field: "activity")
   initialDepositAmountSatoshi: BigInt!
-  amountToStakeStBtc: BigInt
+  amountToDepositStBtc: BigInt
   shareStBtc: BigInt
 }
 
-type Unstake implements ActivityData @entity{
+type Withdraw implements ActivityData @entity {
   id: ID!
   depositOwner: DepositOwner!
   logs: [LogData!] @derivedFrom(field: "activity")
   initialDepositAmountSatoshi: BigInt!
-  amountToStakeStBtc: BigInt
+  amountToDepositStBtc: BigInt
   shareStBtc: BigInt
 }
 
