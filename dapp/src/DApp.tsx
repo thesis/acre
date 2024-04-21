@@ -6,6 +6,7 @@ import { useInitApp } from "./hooks"
 import { store } from "./store"
 import theme from "./theme"
 import {
+  ApolloClientProvider,
   DocsDrawerContextProvider,
   LedgerWalletAPIProvider,
   SidebarContextProvider,
@@ -35,22 +36,24 @@ function DApp() {
 
 function DAppProviders() {
   return (
-    <LedgerWalletAPIProvider>
-      <WalletContextProvider>
-        <AcreSdkProvider>
-          <DocsDrawerContextProvider>
-            <SidebarContextProvider>
-              <ReduxProvider store={store}>
-                <ChakraProvider theme={theme}>
-                  <GlobalStyles />
-                  <DApp />
-                </ChakraProvider>
-              </ReduxProvider>
-            </SidebarContextProvider>
-          </DocsDrawerContextProvider>
-        </AcreSdkProvider>
-      </WalletContextProvider>
-    </LedgerWalletAPIProvider>
+    <ApolloClientProvider>
+      <LedgerWalletAPIProvider>
+        <WalletContextProvider>
+          <AcreSdkProvider>
+            <DocsDrawerContextProvider>
+              <SidebarContextProvider>
+                <ReduxProvider store={store}>
+                  <ChakraProvider theme={theme}>
+                    <GlobalStyles />
+                    <DApp />
+                  </ChakraProvider>
+                </ReduxProvider>
+              </SidebarContextProvider>
+            </DocsDrawerContextProvider>
+          </AcreSdkProvider>
+        </WalletContextProvider>
+      </LedgerWalletAPIProvider>
+    </ApolloClientProvider>
   )
 }
 

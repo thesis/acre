@@ -1,11 +1,27 @@
-import { useCallback, useState } from "react"
-import { mockedActivities } from "#/mock"
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+
+import { useCallback, useEffect, useState } from "react"
+// import { mockedActivities } from "#/mock"
 import { useParams } from "react-router-dom"
 import { ActivityInfo } from "#/types"
+import { GET_ACTIVITIES } from "#/queries"
+import { useQuery } from "@apollo/client"
 
 export function useActivities() {
   // TODO: should be replaced by redux store when subgraphs are implemented
-  const [activities, setActivities] = useState<ActivityInfo[]>(mockedActivities)
+  const { loading, error, data } = useQuery(GET_ACTIVITIES)
+  const [activities, setActivities] = useState<ActivityInfo[]>(
+    data?.activityDatas || [],
+  )
+
+  useEffect(() => {
+    data && setActivities(data.activityDatas)
+  }, [data])
+
   const params = useParams()
 
   const getActivity = useCallback(
