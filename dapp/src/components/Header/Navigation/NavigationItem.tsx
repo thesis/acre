@@ -6,7 +6,7 @@ import {
   useMultiStyleConfig,
 } from "@chakra-ui/react"
 import { motion } from "framer-motion"
-import { NavLink } from "../../shared/Link"
+import { NavLink } from "../../shared/NavLink"
 
 export type NavigationItemProps = ListItemProps & {
   label: string
