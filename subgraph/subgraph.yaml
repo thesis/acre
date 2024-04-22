@@ -27,6 +27,6 @@ dataSources:
         - event: DepositInitialized(indexed uint256,indexed address,indexed address,uint256)
           handler: handleDepositInitialized
           receipt: true
-        - event: DepositFinalized(indexed uint256,indexed address,indexed address,indexed uint16,uint256,uint256,uint256)
+        - event: DepositFinalized(indexed uint256,indexed address,indexed uint16,uint256,uint256,uint256)
           handler: handleDepositFinalized
       file: ./src/bitcoin-depositor.ts

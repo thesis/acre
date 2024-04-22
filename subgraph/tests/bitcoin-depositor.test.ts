@@ -3,8 +3,8 @@ import {
   describe,
   test,
   clearStore,
-  afterEach,
-  beforeEach,
+  beforeAll,
+  afterAll,
 } from "matchstick-as/assembly/index"
 import { BigInt, Address } from "@graphprotocol/graph-ts"
 import {
@@ -36,7 +36,6 @@ const depositInitializedEvent = createDepositInitializedEvent(
 const depositFinalizedEvent = createDepositFinalizedEvent(
   depositKey,
   caller,
-  depositOwner,
   referral,
   initialAmount,
   bridgedAmount,
@@ -44,11 +43,11 @@ const depositFinalizedEvent = createDepositFinalizedEvent(
 )
 
 describe("createDepositInitializedEvent event", () => {
-  beforeEach(() => {
+  beforeAll(() => {
     handleDepositInitialized(depositInitializedEvent)
   })
 
-  afterEach(() => {
+  afterAll(() => {
     clearStore()
   })
 
@@ -60,8 +59,8 @@ describe("createDepositInitializedEvent event", () => {
     assert.entityCount("Deposit", 1)
   })
 
-  test("should create LogData entities", () => {
-    assert.entityCount("LogData", 2)
+  test("should create Event entity", () => {
+    assert.entityCount("Event", 1)
   })
 
   test("Deposit entity has proper fields", () => {
@@ -82,70 +81,62 @@ describe("createDepositInitializedEvent event", () => {
     assert.fieldEquals(
       "Deposit",
       depositInitializedEvent.params.depositKey.toHexString(),
-      "initialDepositAmountSatoshi",
+      "initialDepositAmount",
       depositInitializedEvent.params.initialAmount.toString(),
     )
   })
 
-  test("LogData entity has proper fields", () => {
-    const txBtcId = `${depositInitializedEvent.transaction.hash.toHexString()}btc`
-    const txEthId = `${depositInitializedEvent.transaction.hash.toHexString()}eth`
+  test("Event entity has proper fields", () => {
+    const txId = depositInitializedEvent.transaction.hash.toHexString()
 
     assert.fieldEquals(
-      "LogData",
-      txBtcId,
+      "Event",
+      txId,
       "activity",
       depositInitializedEvent.params.depositKey.toHexString(),
     )
 
     assert.fieldEquals(
-      "LogData",
-      txEthId,
+      "Event",
+      txId,
       "activity",
       depositInitializedEvent.params.depositKey.toHexString(),
     )
 
     assert.fieldEquals(
-      "LogData",
-      txBtcId,
+      "Event",
+      txId,
       "timestamp",
       depositInitializedEvent.block.timestamp.toString(),
     )
 
     assert.fieldEquals(
-      "LogData",
-      txEthId,
+      "Event",
+      txId,
       "timestamp",
       depositInitializedEvent.block.timestamp.toString(),
     )
 
-    assert.fieldEquals("LogData", txBtcId, "chain", "Bitcoin")
-    assert.fieldEquals("LogData", txEthId, "chain", "Ethereum")
-
-    assert.fieldEquals("LogData", txBtcId, "amount", initialAmount.toString())
-    assert.fieldEquals("LogData", txEthId, "amount", initialAmount.toString())
+    assert.fieldEquals("Event", txId, "amount", initialAmount.toString())
   })
 })
 
 describe("createDepositFinalizedEvent event", () => {
-  beforeEach(() => {
+  beforeAll(() => {
+    handleDepositInitialized(depositInitializedEvent)
     handleDepositFinalized(depositFinalizedEvent)
   })
 
-  afterEach(() => {
+  afterAll(() => {
     clearStore()
   })
 
-  test("should create DepositOwner entity", () => {
-    assert.entityCount("DepositOwner", 1)
-  })
-
-  test("should create Deposit entity", () => {
+  test("should load Deposit entity", () => {
     assert.entityCount("Deposit", 1)
   })
 
-  test("should create LogData entities", () => {
-    assert.entityCount("LogData", 2)
+  test("should create Event entity", () => {
+    assert.entityCount("Event", 1)
   })
 
   test("Deposit entity has proper fields", () => {
@@ -159,47 +150,42 @@ describe("createDepositFinalizedEvent event", () => {
     assert.fieldEquals(
       "Deposit",
       depositFinalizedEvent.params.depositKey.toHexString(),
-      "initialDepositAmountSatoshi",
+      "initialDepositAmount",
       depositFinalizedEvent.params.initialAmount.toString(),
     )
   })
 
-  test("LogData entity has proper fields", () => {
-    const txBtcId = `${depositFinalizedEvent.transaction.hash.toHexString()}btc`
-    const txEthId = `${depositFinalizedEvent.transaction.hash.toHexString()}eth`
+  test("Event entity has proper fields", () => {
+    const txId = depositFinalizedEvent.transaction.hash.toHexString()
 
     assert.fieldEquals(
-      "LogData",
-      txBtcId,
+      "Event",
+      txId,
       "activity",
       depositFinalizedEvent.params.depositKey.toHexString(),
     )
 
     assert.fieldEquals(
-      "LogData",
-      txEthId,
+      "Event",
+      txId,
       "activity",
       depositFinalizedEvent.params.depositKey.toHexString(),
     )
 
     assert.fieldEquals(
-      "LogData",
-      txBtcId,
+      "Event",
+      txId,
       "timestamp",
       depositFinalizedEvent.block.timestamp.toString(),
     )
 
     assert.fieldEquals(
-      "LogData",
-      txEthId,
+      "Event",
+      txId,
       "timestamp",
       depositFinalizedEvent.block.timestamp.toString(),
     )
 
-    assert.fieldEquals("LogData", txBtcId, "chain", "Bitcoin")
-    assert.fieldEquals("LogData", txEthId, "chain", "Ethereum")
-
-    assert.fieldEquals("LogData", txBtcId, "amount", initialAmount.toString())
-    assert.fieldEquals("LogData", txEthId, "amount", initialAmount.toString())
+    assert.fieldEquals("Event", txId, "amount", initialAmount.toString())
   })
 })

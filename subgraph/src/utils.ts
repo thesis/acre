@@ -1,5 +1,5 @@
 import { Address } from "@graphprotocol/graph-ts"
-import { DepositOwner, LogData, Deposit } from "../generated/schema"
+import { DepositOwner, Deposit, Event } from "../generated/schema"
 
 export function getOrCreateDepositOwner(depositOwnerId: Address): DepositOwner {
   const depositOwnerHexString = depositOwnerId.toHexString()
@@ -22,12 +22,12 @@ export function getOrCreateDeposit(transactionId: string): Deposit {
   return deposit
 }
 
-export function getOrCreateLog(logId: string): LogData {
-  let log = LogData.load(logId)
+export function getOrCreateEvent(eventId: string): Event {
+  let event = Event.load(eventId)
 
-  if (!log) {
-    log = new LogData(logId)
+  if (!event) {
+    event = new Event(eventId)
   }
 
-  return log
+  return event
 }

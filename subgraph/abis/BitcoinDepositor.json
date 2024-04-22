@@ -16,12 +16,6 @@
       },
       {
         "indexed": true,
-        "internalType": "address",
-        "name": "depositOwner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
         "internalType": "uint16",
         "name": "referral",
         "type": "uint16"

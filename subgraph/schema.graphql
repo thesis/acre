@@ -1,9 +1,4 @@
-enum ChainType {
-  Bitcoin
-  Ethereum
-}
-
-enum LogType {
+enum EventType {
   Unknown
   Initialized
   Finalized
@@ -12,7 +7,8 @@ enum LogType {
 interface ActivityData @key(fields: "id") {
   id: ID!
   depositOwner: DepositOwner!
-  logs: [LogData!]
+  events: [Event!]
+  txBtcId: String
 }
 
 type DepositOwner @entity {
@@ -24,27 +20,33 @@ type DepositOwner @entity {
 type Deposit implements ActivityData @entity {
   id: ID!
   depositOwner: DepositOwner!
-  logs: [LogData!] @derivedFrom(field: "activity")
-  initialDepositAmountSatoshi: BigInt!
-  amountToDepositStBtc: BigInt
-  shareStBtc: BigInt
+  events: [Event!] @derivedFrom(field: "activity")
+  initialDepositAmount: BigInt!
+  amountToDeposit: BigInt
+  bridgedAmount: BigInt
+  depositorFee: BigInt
+  referral: BigInt
+  txBtcId: String
+  # TODO: add these fields when event & contract be ready
+  # entryFee (amountToDeposit - depositedAmount)
+  # depositedAmount: assets from deposit event (stbtc contract)
+  # shares: shares from deposit event(stbtc contract)
 }
 
 type Withdraw implements ActivityData @entity {
   id: ID!
   depositOwner: DepositOwner!
-  logs: [LogData!] @derivedFrom(field: "activity")
-  initialDepositAmountSatoshi: BigInt!
-  amountToDepositStBtc: BigInt
-  shareStBtc: BigInt
+  events: [Event!] @derivedFrom(field: "activity")
+  initialDepositAmount: BigInt!
+  amountToDeposit: BigInt
+  txBtcId: String
 }
 
-type LogData @entity {
+type Event @entity {
   # Id is the transaction hash.
   id: ID!
   timestamp: BigInt!
   activity: ActivityData
-  chain: ChainType!
-  type: LogType
+  type: EventType
   amount: BigInt!
 }

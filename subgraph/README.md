@@ -78,7 +78,17 @@ Note: use it only if your subgraph is not created in the local Graph node.
 
 ### Deploy the subgraph to Subgraph Studio
 
-1. Once your subgraph has been created in Subgraph Studio you can initialize the subgraph code using this command:
+1. You need to connect wallet to use Subgraph Studio [Metamask, WalletConnect, Coinbase Wallet or Safe].
+
+   ```
+   https://thegraph.com/studio/
+   ```
+
+2. We're going to create a Subgraph. To do that you need to click Create a Subgraph button in My Dashboard of Subgraph Studio.
+
+3. In the next step you'll need to add name of Subgraph and choose indexed blockchain from the list.
+
+4. Once your subgraph has been created in Subgraph Studio you can initialize the subgraph code using this command:
 
    ```
       graph init --studio <SUBGRAPH_SLUG>
@@ -87,7 +97,7 @@ Note: use it only if your subgraph is not created in the local Graph node.
    The <SUBGRAPH_SLUG> value can be found on your subgraph details page in Subgraph Studio
    (https://thegraph.com/docs/en/deploying/deploying-a-subgraph-to-studio/#create-your-subgraph-in-subgraph-studio)
 
-2. Before being able to deploy your subgraph to Subgraph Studio, you need to login into your account within the CLI.
+5. Before being able to deploy your subgraph to Subgraph Studio, you need to login into your account within the CLI.
 
    ```
       graph auth --studio <DEPLOY KEY>
@@ -95,10 +105,16 @@ Note: use it only if your subgraph is not created in the local Graph node.
 
    The <SUBGRAPH_SLUG> can be found on your "My Subgraphs" page or your subgraph details page.
 
-3. Deploying a Subgraph to Subgraph Studio
+6. Deploying a Subgraph to Subgraph Studio
 
    ```
    graph deploy --studio <SUBGRAPH_SLUG>
    ```
 
    After running this command, the CLI will ask for a version label, you can name it however you want, you can use labels such as 0.1 and 0.2 or use letters as well such as uniswap-v2-0.1.
+
+7. More information about deploying your subgraph to Subgraph Studio:
+
+   ```
+   https://thegraph.com/docs/en/deploying/subgraph-studio/
+   ```
