@@ -1938,6 +1938,107 @@ describe("stBTC", () => {
     })
   })
 
+  describe("totalAssets", () => {
+    beforeAfterSnapshotWrapper()
+
+    const donation = to1e18(1)
+    const firstDeposit = to1e18(2)
+    const secondDeposit = to1e18(3)
+
+    context("when there are no deposits", () => {
+      it("should return 0", async () => {
+        expect(await stbtc.totalAssets()).to.be.eq(0)
+      })
+    })
+
+    context("when there are deposits", () => {
+      context("when there is a first deposit made", () => {
+        before(async () => {
+          await tbtc.mint(depositor1.address, firstDeposit)
+          await tbtc
+            .connect(depositor1)
+            .approve(await stbtc.getAddress(), firstDeposit)
+          await stbtc
+            .connect(depositor1)
+            .deposit(firstDeposit, depositor1.address)
+        })
+
+        it("should return the total assets", async () => {
+          const expectedAssets =
+            firstDeposit - feeOnTotal(firstDeposit, entryFeeBasisPoints)
+          expect(await stbtc.totalAssets()).to.be.eq(expectedAssets)
+        })
+      })
+
+      context("when there is a second deposit made", () => {
+        before(async () => {
+          await tbtc.mint(depositor1.address, secondDeposit)
+          await tbtc
+            .connect(depositor1)
+            .approve(await stbtc.getAddress(), secondDeposit)
+          await stbtc
+            .connect(depositor1)
+            .deposit(secondDeposit, depositor1.address)
+        })
+
+        it("should return the total assets", async () => {
+          const expectedAssetsFirstDeposit =
+            firstDeposit - feeOnTotal(firstDeposit, entryFeeBasisPoints)
+          const expectedAssetsSecondDeposit =
+            secondDeposit - feeOnTotal(secondDeposit, entryFeeBasisPoints)
+          expect(await stbtc.totalAssets()).to.be.eq(
+            expectedAssetsFirstDeposit + expectedAssetsSecondDeposit,
+          )
+        })
+      })
+
+      context("when the funds were allocated", () => {
+        before(async () => {
+          await mezoAllocator.connect(maintainer).allocate()
+        })
+
+        it("should return the total assets", async () => {
+          const expectedAssets = await mezoAllocator.depositBalance()
+          expect(await stbtc.totalAssets()).to.be.eq(expectedAssets)
+        })
+      })
+
+      context("when there is a donation made", () => {
+        let totalAssetsBeforeDonation = 0n
+
+        before(async () => {
+          totalAssetsBeforeDonation = await stbtc.totalAssets()
+          await tbtc.mint(await stbtc.getAddress(), donation)
+        })
+
+        it("should return the total assets", async () => {
+          expect(await stbtc.totalAssets()).to.be.eq(
+            totalAssetsBeforeDonation + donation,
+          )
+        })
+      })
+
+      context("when there was a withdrawal", () => {
+        let totalAssetsBeforeWithdrawal = 0n
+
+        before(async () => {
+          totalAssetsBeforeWithdrawal = await stbtc.totalAssets()
+          await stbtc
+            .connect(depositor1)
+            .withdraw(to1e18(1), depositor1, depositor1)
+        })
+
+        it("should return the total assets", async () => {
+          const actualWithdrawnAssets =
+            to1e18(1) + feeOnRaw(to1e18(1), exitFeeBasisPoints)
+          expect(await stbtc.totalAssets()).to.be.eq(
+            totalAssetsBeforeWithdrawal - actualWithdrawnAssets,
+          )
+        })
+      })
+    })
+  })
+
   describe("feeOnTotal - internal test helper", () => {
     context("when the fee's modulo remainder is greater than 0", () => {
       it("should add 1 to the result", () => {
