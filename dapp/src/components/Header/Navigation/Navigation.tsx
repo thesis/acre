@@ -1,9 +1,10 @@
 import React from "react"
 import { Box, BoxProps, HStack, List } from "@chakra-ui/react"
-import NavigationItem, { NavigationItemProps } from "./NavigationItem"
+import { NavigationItemType } from "#/types/navigation"
+import NavigationItem from "./NavigationItem"
 
 type NavigationProps = BoxProps & {
-  items: NavigationItemProps[]
+  items: NavigationItemType[]
 }
 
 function Navigation(props: NavigationProps) {
