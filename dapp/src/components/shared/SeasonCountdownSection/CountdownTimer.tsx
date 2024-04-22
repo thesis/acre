@@ -101,7 +101,7 @@ export function CountdownTimer(props: CountdownTimerProps) {
         .filter(([key]) => key !== "seconds")
         .map(([key, value]) => [
           key,
-          [...value].map((x) => +x) as [number, number],
+          [...value].map((x) => +x || 0) as [number, number],
         ]),
     [countdown],
   )
