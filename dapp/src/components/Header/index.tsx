@@ -1,9 +1,9 @@
 import React from "react"
 import { AcreLogo } from "#/assets/icons"
-import { Flex, HStack, Icon } from "@chakra-ui/react"
 import { routerPath } from "#/router/path"
+import { Flex, HStack, Icon } from "@chakra-ui/react"
 import ConnectWallet from "./ConnectWallet"
-import Navigation, { NavigationItemType } from "./Navigation"
+import { Navigation, NavigationItemType } from "./Navigation"
 
 // TODO: To be adjusted after project pivot/cleanup
 const NAVIGATION_ITEMS: NavigationItemType[] = [
