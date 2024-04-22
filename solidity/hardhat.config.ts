@@ -30,7 +30,7 @@ const config: HardhatUserConfig = {
       tags: ["allowStubs"],
     },
     integration: {
-      url: "http://localhost:8545",
+      url: "http://127.0.0.1:8545",
       tags: ["allowStubs"],
     },
     sepolia: {
