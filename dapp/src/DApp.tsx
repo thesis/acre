@@ -17,7 +17,12 @@ import theme from "./theme"
 function DApp() {
   useInitApp()
 
-  return <Router />
+  return (
+    <>
+      <GlobalStyles />
+      <Router />
+    </>
+  )
 }
 
 function DAppProviders() {
@@ -29,7 +34,6 @@ function DAppProviders() {
             <SidebarContextProvider>
               <ReduxProvider store={store}>
                 <ChakraProvider theme={theme}>
-                  <GlobalStyles />
                   <DApp />
                 </ChakraProvider>
               </ReduxProvider>
