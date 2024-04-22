@@ -1,5 +1,5 @@
 export const routerPath = {
   home: "/",
-  overview: "/overview",
+  dashboard: "/dashboard",
   activity: "/activity-details",
 }

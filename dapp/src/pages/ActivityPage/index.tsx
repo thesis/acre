@@ -18,7 +18,7 @@ export default function ActivityPage() {
 
   return (
     <Flex direction="column" gap={4} p={6}>
-      <ChakraLink as={ReactRouterLink} to={routerPath.overview}>
+      <ChakraLink as={ReactRouterLink} to={routerPath.dashboard}>
         <Icon
           as={ArrowLeft}
           boxSize={8}
