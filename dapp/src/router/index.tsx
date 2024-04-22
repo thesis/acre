@@ -1,8 +1,8 @@
 import React from "react"
 import { createBrowserRouter } from "react-router-dom"
 import LandingPage from "#/pages/LandingPage"
-import OverviewPage from "#/pages/OverviewPage"
 import ActivityPage from "#/pages/ActivityPage"
+import DashboardPage from "#/pages/DashboardPage"
 import { routerPath } from "./path"
 
 export const router = createBrowserRouter([
@@ -12,8 +12,8 @@ export const router = createBrowserRouter([
     index: true,
   },
   {
-    path: routerPath.overview,
-    element: <OverviewPage />,
+    path: routerPath.dashboard,
+    element: <DashboardPage />,
   },
   {
     path: `${routerPath.activity}/:activityId`,
