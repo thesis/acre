@@ -140,7 +140,7 @@ jobs:
           path: solidity/
 
       - name: Deploy
-        run: pnpm run deploy --no-compile
+        run: pnpm run deployment --no-compile
 
   solidity-deploy-testnet:
     needs: [solidity-deploy-dry-run]
