@@ -1,5 +1,6 @@
 import React from "react"
 import { Flex } from "@chakra-ui/react"
+import HeroSection from "./HeroSection"
 
 export default function LandingPage() {
   return (
@@ -11,7 +12,7 @@ export default function LandingPage() {
       maxW="100.625rem"
       mx="auto"
     >
-      Content
+      <HeroSection />
     </Flex>
   )
 }
