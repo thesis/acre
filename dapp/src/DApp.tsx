@@ -1,10 +1,8 @@
 import React from "react"
 import { ChakraProvider } from "@chakra-ui/react"
 import { Provider as ReduxProvider } from "react-redux"
-import { RouterProvider } from "react-router-dom"
-import { useInitApp } from "./hooks"
-import { store } from "./store"
-import theme from "./theme"
+import { AcreSdkProvider } from "./acre-react/contexts"
+import GlobalStyles from "./components/GlobalStyles"
 import {
   DocsDrawerContextProvider,
   LedgerWalletAPIProvider,
@@ -14,11 +12,20 @@ import {
 import { AcreSdkProvider } from "./acre-react/contexts"
 import GlobalStyles from "./components/GlobalStyles"
 import { router } from "./router"
+import { useInitApp } from "./hooks"
+import { Router } from "./router"
+import { store } from "./store"
+import theme from "./theme"
 
 function DApp() {
   useInitApp()
 
-  return <RouterProvider router={router} />
+  return (
+    <>
+      <GlobalStyles />
+      <Router />
+    </>
+  )
 }
 
 function DAppProviders() {
@@ -30,7 +37,6 @@ function DAppProviders() {
             <SidebarContextProvider>
               <ReduxProvider store={store}>
                 <ChakraProvider theme={theme}>
-                  <GlobalStyles />
                   <DApp />
                 </ChakraProvider>
               </ReduxProvider>
