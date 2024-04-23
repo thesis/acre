@@ -9,9 +9,6 @@ import {
   SidebarContextProvider,
   WalletContextProvider,
 } from "./contexts"
-import { AcreSdkProvider } from "./acre-react/contexts"
-import GlobalStyles from "./components/GlobalStyles"
-import { router } from "./router"
 import { useInitApp } from "./hooks"
 import { Router } from "./router"
 import { store } from "./store"

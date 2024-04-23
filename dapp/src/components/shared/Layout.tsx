@@ -1,5 +1,4 @@
 import React, { useState } from "react"
-import { Box, BoxProps } from "@chakra-ui/react"
 import { AnimatePresence, motion, Variants } from "framer-motion"
 import { useLocation, useOutlet } from "react-router-dom"
 import Header from "../Header"

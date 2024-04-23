@@ -9,7 +9,7 @@ import { Navigation } from "./Navigation"
 // TODO: To be adjusted after project pivot/cleanup
 const NAVIGATION_ITEMS: NavigationItemType[] = [
   { label: "Season 1", href: routerPath.home },
-  { label: "Dashboard", href: routerPath.overview },
+  { label: "Dashboard", href: routerPath.dashboard },
 ]
 
 export default function Header() {
