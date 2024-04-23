@@ -1953,6 +1953,8 @@ describe("stBTC", () => {
 
     context("when there are deposits", () => {
       context("when there is a first deposit made", () => {
+        beforeAfterSnapshotWrapper()
+
         before(async () => {
           await tbtc.mint(depositor1.address, firstDeposit)
           await tbtc
@@ -1968,14 +1970,25 @@ describe("stBTC", () => {
             firstDeposit - feeOnTotal(firstDeposit, entryFeeBasisPoints)
           expect(await stbtc.totalAssets()).to.be.eq(expectedAssets)
         })
+
+        it("should be equal to tBTC balance of the contract", async () => {
+          expect(await stbtc.totalAssets()).to.be.eq(
+            await tbtc.balanceOf(await stbtc.getAddress()),
+          )
+        })
       })
 
-      context("when there is a second deposit made", () => {
+      context("when there are two deposits made", () => {
+        beforeAfterSnapshotWrapper()
+
         before(async () => {
-          await tbtc.mint(depositor1.address, secondDeposit)
+          await tbtc.mint(depositor1.address, firstDeposit + secondDeposit)
           await tbtc
             .connect(depositor1)
-            .approve(await stbtc.getAddress(), secondDeposit)
+            .approve(await stbtc.getAddress(), firstDeposit + secondDeposit)
+          await stbtc
+            .connect(depositor1)
+            .deposit(firstDeposit, depositor1.address)
           await stbtc
             .connect(depositor1)
             .deposit(secondDeposit, depositor1.address)
@@ -1992,21 +2005,44 @@ describe("stBTC", () => {
         })
       })
 
-      context("when the funds were allocated", () => {
+      context("when the funds were allocated after deposits", () => {
+        beforeAfterSnapshotWrapper()
+
         before(async () => {
+          await tbtc.mint(depositor1.address, firstDeposit + secondDeposit)
+          await tbtc
+            .connect(depositor1)
+            .approve(await stbtc.getAddress(), firstDeposit + secondDeposit)
+          await stbtc
+            .connect(depositor1)
+            .deposit(firstDeposit, depositor1.address)
+          await stbtc
+            .connect(depositor1)
+            .deposit(secondDeposit, depositor1.address)
           await mezoAllocator.connect(maintainer).allocate()
         })
 
         it("should return the total assets", async () => {
-          const expectedAssets = await mezoAllocator.depositBalance()
+          const deposits = firstDeposit + secondDeposit
+          const expectedAssets =
+            deposits - feeOnTotal(deposits, entryFeeBasisPoints)
           expect(await stbtc.totalAssets()).to.be.eq(expectedAssets)
         })
       })
 
       context("when there is a donation made", () => {
-        let totalAssetsBeforeDonation = 0n
+        beforeAfterSnapshotWrapper()
+
+        let totalAssetsBeforeDonation: bigint
 
         before(async () => {
+          await tbtc.mint(depositor1.address, firstDeposit)
+          await tbtc
+            .connect(depositor1)
+            .approve(await stbtc.getAddress(), firstDeposit)
+          await stbtc
+            .connect(depositor1)
+            .deposit(firstDeposit, depositor1.address)
           totalAssetsBeforeDonation = await stbtc.totalAssets()
           await tbtc.mint(await stbtc.getAddress(), donation)
         })
@@ -2019,9 +2055,18 @@ describe("stBTC", () => {
       })
 
       context("when there was a withdrawal", () => {
-        let totalAssetsBeforeWithdrawal = 0n
+        beforeAfterSnapshotWrapper()
+
+        let totalAssetsBeforeWithdrawal: bigint
 
         before(async () => {
+          await tbtc.mint(depositor1.address, firstDeposit)
+          await tbtc
+            .connect(depositor1)
+            .approve(await stbtc.getAddress(), firstDeposit)
+          await stbtc
+            .connect(depositor1)
+            .deposit(firstDeposit, depositor1.address)
           totalAssetsBeforeWithdrawal = await stbtc.totalAssets()
           await stbtc
             .connect(depositor1)
