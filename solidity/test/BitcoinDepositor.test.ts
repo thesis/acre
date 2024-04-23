@@ -6,7 +6,7 @@ import { expect } from "chai"
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
 import { ContractTransactionResponse, MaxUint256, ZeroAddress } from "ethers"
 
-import { DepositState } from "../types"
+import DepositState from "../types/depositState"
 
 import type {
   StBTC,
