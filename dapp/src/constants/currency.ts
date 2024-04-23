@@ -1,13 +1,13 @@
 import { Currency, CurrencyType } from "#/types"
 import { EthereumNetwork } from "@acre-btc/sdk"
 import { ETHEREUM_NETWORK } from "./chains"
-import { BITCOIN_DESIRED_DECIMALS } from "./staking"
 
 export const BITCOIN: Currency = {
   name: "Bitcoin",
   symbol: "BTC",
   decimals: 8,
-  desiredDecimals: BITCOIN_DESIRED_DECIMALS,
+  // TODO: Change when min amount of BTC will be updated
+  desiredDecimals: 5,
 }
 
 export const STBTC: Currency = {

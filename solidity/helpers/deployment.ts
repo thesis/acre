@@ -15,7 +15,7 @@ export function waitConfirmationsNumber(
   switch (hre.network.name) {
     case "mainnet":
     case "sepolia":
-      return 2
+      return 6
     default:
       return 1
   }
