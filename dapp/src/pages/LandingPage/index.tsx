@@ -12,7 +12,7 @@ export default function LandingPage() {
       pb={10}
       maxW="100.625rem"
       mx="auto"
-    >      
+    >
       <HeroSection />
       <SeasonCountdownSection />
     </Flex>
