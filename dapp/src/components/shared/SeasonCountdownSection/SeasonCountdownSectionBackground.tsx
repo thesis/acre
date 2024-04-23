@@ -1,5 +1,6 @@
 import React, { useRef } from "react"
 import { Box } from "@chakra-ui/react"
+import { useSize } from "@chakra-ui/react-use-size"
 import seasonCountdownBackground from "#/assets/images/season-countdown-section-background.png"
 import seasonCountdownForeground from "#/assets/images/season-countdown-section-foreground.png"
 import {
@@ -31,6 +32,8 @@ export function SeasonCountdownSectionBackground() {
   const time = useTime()
   // Seed value is wrapped to prevent infinite increment causing potential memory leaks
   const seed = useTransform(time, (value) => wrap(0, 2137, Math.floor(value)))
+
+  const size = useSize(containerRef)
 
   return (
     <Box
@@ -93,28 +96,35 @@ export function SeasonCountdownSectionBackground() {
           />
         </filter>
       </defs>
-      <Box as="rect" x="0" y="0" w="full" h="full" fill="brand.400" />
+      <Box
+        as="rect"
+        x="0"
+        y="0"
+        style={{ width: size?.width }}
+        h="full"
+        fill="brand.400"
+      />
       <Box as="g" mixBlendMode="overlay">
         <Box
           as="image"
           href={seasonCountdownBackground}
-          w="full"
+          style={{ width: size?.width }}
           h="full"
-          preserveAspectRatio="xMidYMin slice"
+          preserveAspectRatio="xMinYMin slice"
         />
         <Box
           as={motion.image}
           href={seasonCountdownForeground}
           w="full"
-          h="full"
-          preserveAspectRatio="xMinYMin slice"
           y={foregroundParallax}
+          preserveAspectRatio="xMinYMin slice"
         />
       </Box>
       <Box
         as="rect"
         mixBlendMode="soft-light"
-        w="full"
+        // TOOD: Investigate width update delay
+        style={{ width: size?.width }}
         h="full"
         fill="#0600ff"
         filter="url(#noise-filter)"
