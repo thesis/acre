@@ -1,8 +1,8 @@
 import React from "react"
 import { Flex, VStack, HStack, Box, Image, ImageProps } from "@chakra-ui/react"
-import boostCardIcon from "#/assets/images/card-icon-boost-arrow.png"
-import misteryCardIcon from "#/assets/images/card-icon-question-mark.png"
-import keyCardIcon from "#/assets/images/card-icon-key.png"
+import boostCardIcon from "#/assets/images/rewards-boost.svg"
+import misteryCardIcon from "#/assets/images/mystery-box.svg"
+import keyCardIcon from "#/assets/images/season-key.svg"
 import baseLogo from "#/assets/images/partner-logos/base-logo.svg"
 import thresholdLogo from "#/assets/images/partner-logos/threshold-logo.svg"
 import ledgerLogo from "#/assets/images/partner-logos/ledger-logo.svg"
@@ -41,7 +41,7 @@ export default function LandingPage() {
                 Boosts your APY when <br /> Acre fully launches
               </>
             }
-            icon={{ src: boostCardIcon, maxH: "14.9375rem" }} // 239px
+            icon={{ src: boostCardIcon }}
           />
           <IconCard
             flex={1}
@@ -51,7 +51,7 @@ export default function LandingPage() {
                 Grants you a random <br /> reward gift.
               </>
             }
-            icon={{ src: misteryCardIcon, maxH: "10.375rem" }} // 166px
+            icon={{ src: misteryCardIcon }}
           />
           <IconCard
             flex={1}
@@ -61,7 +61,7 @@ export default function LandingPage() {
                 Grants access to all <br /> upcoming seasons
               </>
             }
-            icon={{ src: keyCardIcon, maxH: "8.375rem" }} // 134px
+            icon={{ src: keyCardIcon }}
           />
         </HStack>
         <ValueCard header="Users joined" value="8,172" />

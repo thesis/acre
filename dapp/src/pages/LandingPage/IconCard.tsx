@@ -23,7 +23,11 @@ export default function IconCard(props: IconCardProps) {
       <CardHeader>{header}</CardHeader>
       <CardBody>{body}</CardBody>
       <CardFooter>
-        <Image pointerEvents="none" {...icon} />
+        <Image
+          pointerEvents="none"
+          {...icon}
+          maxW="12.5rem" // 200px
+        />
       </CardFooter>
     </Card>
   )
