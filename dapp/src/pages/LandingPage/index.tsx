@@ -1,5 +1,5 @@
 import React from "react"
-import { Flex } from "@chakra-ui/react"
+import { Box, Flex } from "@chakra-ui/react"
 import SeasonCountdownSection from "./SeasonCountdownSection"
 import HeroSection from "./HeroSection"
 
@@ -8,9 +8,9 @@ export default function LandingPage() {
     <Flex
       w="full"
       flexFlow="column"
-      px={10}
+      px={16} // 40px + 24px
       pb={10}
-      maxW="100.625rem"
+      maxW="87.25rem" // 1268px + 2 * (40px + 24px)
       mx="auto"
     >
       <HeroSection />

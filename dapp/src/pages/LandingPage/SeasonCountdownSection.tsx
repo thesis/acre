@@ -11,7 +11,7 @@ const MOCK_SEASON_DUE_TIMESTAMP = new Date(2024, 3, 20).getTime() / 1000
 
 export default function SeasonCountdownSection() {
   return (
-    <Box position="relative">
+    <Box display="grid" sx={{ ">*": { gridArea: "-1 / -1" } }}>
       <VStack
         spacing={0}
         px={10}
@@ -30,7 +30,16 @@ export default function SeasonCountdownSection() {
         </Text>
         <CountdownTimer timestamp={MOCK_SEASON_DUE_TIMESTAMP} />
       </VStack>
-      <SeasonCountdownSectionBackground />
+      <SeasonCountdownSectionBackground
+        pos="absolute"
+        left="50%"
+        translateX="-50%"
+        transform="auto"
+        w="calc(100% - 2 * 2.5rem)" // 100% - 2 * 40px
+        maxW="125rem" // 2000px
+        maxH="43rem" // 688px
+        zIndex={-1}
+      />
     </Box>
   )
 }

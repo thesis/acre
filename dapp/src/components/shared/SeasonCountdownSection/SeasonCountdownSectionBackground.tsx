@@ -1,5 +1,5 @@
 import React, { useRef } from "react"
-import { Box } from "@chakra-ui/react"
+import { Box, BoxProps } from "@chakra-ui/react"
 import { useSize } from "@chakra-ui/react-use-size"
 import seasonCountdownBackground from "#/assets/images/season-countdown-section-background.png"
 import seasonCountdownForeground from "#/assets/images/season-countdown-section-foreground.png"
@@ -13,7 +13,7 @@ import {
   wrap,
 } from "framer-motion"
 
-export function SeasonCountdownSectionBackground() {
+export function SeasonCountdownSectionBackground(props: BoxProps) {
   const containerRef = useRef(null)
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -36,17 +36,7 @@ export function SeasonCountdownSectionBackground() {
   const size = useSize(containerRef)
 
   return (
-    <Box
-      as="svg"
-      ref={containerRef}
-      w="full"
-      h="full"
-      minH="43rem" // 688px
-      rounded="2xl"
-      pos="absolute"
-      inset={0}
-      zIndex={-1}
-    >
+    <Box as="svg" ref={containerRef} w="full" h="full" rounded="2xl" {...props}>
       <defs>
         <filter
           id="noise-filter"
