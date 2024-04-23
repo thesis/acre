@@ -103,7 +103,7 @@ abstract contract ERC4626Fees is ERC4626Upgradeable {
     function _feeOnRaw(
         uint256 assets,
         uint256 feeBasisPoints
-    ) private pure returns (uint256) {
+    ) internal pure returns (uint256) {
         return
             assets.mulDiv(
                 feeBasisPoints,
@@ -117,7 +117,7 @@ abstract contract ERC4626Fees is ERC4626Upgradeable {
     function _feeOnTotal(
         uint256 assets,
         uint256 feeBasisPoints
-    ) private pure returns (uint256) {
+    ) internal pure returns (uint256) {
         return
             assets.mulDiv(
                 feeBasisPoints,
