@@ -1,4 +1,7 @@
-import { Deposit as TbtcDeposit } from "@keep-network/tbtc-v2.ts"
+import TbtcDeposit from "../tbtc/Deposit"
+
+import type { DepositReceipt } from "../tbtc"
+
 import {
   ChainEIP712Signer,
   ChainSignedMessage,
@@ -6,28 +9,8 @@ import {
   Message,
   Types,
 } from "../../lib/eip712-signer"
-import {
-  AcreContracts,
-  DepositReceipt,
-  ChainIdentifier,
-} from "../../lib/contracts"
-import { Hex, backoffRetrier, BackoffRetrierParameters } from "../../lib/utils"
+import { AcreContracts, ChainIdentifier } from "../../lib/contracts"
 
-type StakeOptions = {
-  /**
-   * The number of retries to perform before bubbling the failure out.
-   * @see backoffRetrier for more details.
-   */
-  retires: BackoffRetrierParameters[0]
-  /**
-   * Initial backoff step in milliseconds that will be increased exponentially
-   * for subsequent retry attempts. (default = 1000 ms)
-   * @see backoffRetrier for more details.
-   */
-  backoffStepMs: BackoffRetrierParameters[1]
-}
-
-// TODO: Rename to `DepositInitialization` to be consistent with the naming.
 /**
  * Represents an instance of the staking flow. Staking flow requires a few steps
  * which should be done to stake BTC.
@@ -44,7 +27,7 @@ class StakeInitialization {
   readonly #messageSigner: ChainEIP712Signer
 
   /**
-   * Component representing an instance of the tBTC v2 deposit process.
+   * Component representing an instance of the tBTC deposit process.
    */
   readonly #tbtcDeposit: TbtcDeposit
 
@@ -158,30 +141,14 @@ class StakeInitialization {
    *                @see StakeOptions for more details.
    * @returns Transaction hash of the stake initiation transaction.
    */
-  async stake(
-    options: StakeOptions = { retires: 5, backoffStepMs: 5_000 },
-  ): Promise<Hex> {
+  async stake(options = { retires: 5, backoffStepMs: 5_000 }): Promise<string> {
     if (!this.#signedMessage) {
       throw new Error("Sign message first")
     }
 
-    await this.#waitForBitcoinFundingTx(options)
+    await this.#tbtcDeposit.waitForFunding(options)
 
-    return this.#tbtcDeposit.initiateMinting()
-  }
-
-  async #waitForBitcoinFundingTx({
-    retires,
-    backoffStepMs,
-  }: StakeOptions): Promise<void> {
-    await backoffRetrier<void>(
-      retires,
-      backoffStepMs,
-    )(async () => {
-      const utxos = await this.#tbtcDeposit.detectFunding()
-
-      if (utxos.length === 0) throw new Error("Deposit not funded yet")
-    })
+    return this.#tbtcDeposit.createDeposit()
   }
 }
 
