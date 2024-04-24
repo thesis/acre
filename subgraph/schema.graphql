@@ -8,7 +8,7 @@ interface ActivityData @key(fields: "id") {
   id: ID!
   depositOwner: DepositOwner!
   events: [Event!]
-  txBtcId: String
+  bitcoinTransactionId: String
 }
 
 type DepositOwner @entity {
@@ -26,7 +26,7 @@ type Deposit implements ActivityData @entity {
   bridgedAmount: BigInt
   depositorFee: BigInt
   referral: BigInt
-  txBtcId: String
+  bitcoinTransactionId: String
   # TODO: add these fields when event & contract be ready
   # entryFee (amountToDeposit - depositedAmount)
   # depositedAmount: assets from deposit event (stbtc contract)
@@ -39,7 +39,7 @@ type Withdraw implements ActivityData @entity {
   events: [Event!] @derivedFrom(field: "activity")
   initialDepositAmount: BigInt!
   amountToDeposit: BigInt
-  txBtcId: String
+  bitcoinTransactionId: String
 }
 
 type Event @entity {
