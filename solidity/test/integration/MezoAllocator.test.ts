@@ -182,6 +182,8 @@ describe("MezoAllocator", () => {
 
     context("when the caller is stBTC contract", () => {
       context("when there is no deposit", () => {
+        beforeAfterSnapshotWrapper()
+
         it("should revert", async () => {
           // It is reverted because deposit Id is 0 and there is no deposit
           // with id 0 in Mezo Portal for Acre. Mezo Portal reverts with the
@@ -192,6 +194,8 @@ describe("MezoAllocator", () => {
       })
 
       context("when there is a deposit", () => {
+        beforeAfterSnapshotWrapper()
+
         let tx: ContractTransactionResponse
 
         before(async () => {
@@ -202,6 +206,8 @@ describe("MezoAllocator", () => {
         })
 
         context("when the deposit is not fully withdrawn", () => {
+          beforeAfterSnapshotWrapper()
+
           before(async () => {
             tx = await stbtc.withdraw(to1e18(2), depositor, depositor)
           })
@@ -235,22 +241,24 @@ describe("MezoAllocator", () => {
         })
 
         context("when the deposit is fully withdrawn", () => {
+          beforeAfterSnapshotWrapper()
+
           before(async () => {
-            tx = await stbtc.withdraw(to1e18(3), depositor, depositor)
+            tx = await stbtc.withdraw(to1e18(5), depositor, depositor)
           })
 
-          it("should transfer 3 tBTC back to a depositor", async () => {
+          it("should transfer 5 tBTC back to a depositor", async () => {
             await expect(tx).to.changeTokenBalances(
               tbtc,
               [depositor.address],
-              [to1e18(3)],
+              [to1e18(5)],
             )
           })
 
           it("should emit DepositWithdrawn event", async () => {
             await expect(tx)
               .to.emit(mezoAllocator, "DepositWithdrawn")
-              .withArgs(2273, to1e18(3))
+              .withArgs(2273, to1e18(5))
           })
 
           it("should decrease tracked deposit balance amount to zero", async () => {
@@ -262,7 +270,7 @@ describe("MezoAllocator", () => {
             await expect(tx).to.changeTokenBalances(
               tbtc,
               [await mezoPortal.getAddress()],
-              [-to1e18(3)],
+              [-to1e18(5)],
             )
           })
         })
