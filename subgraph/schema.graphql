@@ -21,9 +21,9 @@ type Deposit implements ActivityData @entity {
   depositOwner: DepositOwner!
   events: [Event!] @derivedFrom(field: "activity")
   initialDepositAmount: BigInt!
-  amountToDeposit: BigInt
   bridgedAmount: BigInt
   depositorFee: BigInt
+  amountToDeposit: BigInt
   referral: BigInt
   bitcoinTransactionId: String
   # TODO: add these fields when event & contract be ready
@@ -36,8 +36,8 @@ type Withdraw implements ActivityData @entity {
   id: ID!
   depositOwner: DepositOwner!
   events: [Event!] @derivedFrom(field: "activity")
-  initialDepositAmount: BigInt!
-  amountToDeposit: BigInt
+  # TODO: amount field will be updated when working on withdraw 
+  amount: BigInt
   bitcoinTransactionId: String
 }
 
