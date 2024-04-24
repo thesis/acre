@@ -1,4 +1,4 @@
-import { helpers } from "hardhat"
+import { helpers, ethers } from "hardhat"
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
 import { expect } from "chai"
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers"
@@ -63,7 +63,6 @@ describe("MezoAllocator", () => {
     } = await loadFixture(fixture))
 
     await impersonateAccount(whaleAddress)
-    // eslint-disable-next-line
     tbtcHolder = await ethers.getSigner(whaleAddress)
   })
 
