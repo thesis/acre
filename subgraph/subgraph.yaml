@@ -19,7 +19,7 @@ dataSources:
         - DepositOwner
         - Deposit
         - Withdraw
-        - LogData
+        - Event
       abis:
         - name: BitcoinDepositor
           file: ./abis/BitcoinDepositor.json

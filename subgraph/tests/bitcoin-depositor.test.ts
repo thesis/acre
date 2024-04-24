@@ -96,7 +96,6 @@ describe("handleDepositInitialized", () => {
       depositInitializedEvent.block.timestamp.toString(),
     )
 
-    assert.fieldEquals("Event", txId, "amount", initialAmount.toString())
     assert.fieldEquals("Event", txId, "type", "Initialized")
   })
 })
@@ -152,7 +151,6 @@ describe("handleDepositFinalized", () => {
       depositFinalizedEvent.block.timestamp.toString(),
     )
 
-    assert.fieldEquals("Event", txId, "amount", initialAmount.toString())
     assert.fieldEquals("Event", txId, "type", "Finalized")
   })
 })
