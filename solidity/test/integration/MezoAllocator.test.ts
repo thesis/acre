@@ -104,7 +104,7 @@ describe("MezoAllocator", () => {
 
         it("should increment the deposit id", async () => {
           const actualDepositId = await mezoAllocator.depositId()
-          // As of writing this test, the deposit id was 2272 before the new
+          // As of a forked block 19680873, the deposit id was 2272 before the new
           // allocation. The deposit id should be incremented by 1.
           expect(actualDepositId).to.equal(2273)
         })
