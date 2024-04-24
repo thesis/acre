@@ -132,6 +132,29 @@ describe("handleDepositFinalized", () => {
       "initialDepositAmount",
       depositFinalizedEvent.params.initialAmount.toString(),
     )
+
+    assert.fieldEquals(
+      "Deposit",
+      depositFinalizedEvent.params.depositKey.toHexString(),
+      "bridgedAmount",
+      depositFinalizedEvent.params.bridgedAmount.toString(),
+    )
+
+    assert.fieldEquals(
+      "Deposit",
+      depositFinalizedEvent.params.depositKey.toHexString(),
+      "depositorFee",
+      depositFinalizedEvent.params.depositorFee.toString(),
+    )
+
+    assert.fieldEquals(
+      "Deposit",
+      depositFinalizedEvent.params.depositKey.toHexString(),
+      "amountToDeposit",
+      depositFinalizedEvent.params.bridgedAmount
+        .minus(depositFinalizedEvent.params.depositorFee)
+        .toString(),
+    )
   })
 
   test("Event entity has proper fields", () => {
