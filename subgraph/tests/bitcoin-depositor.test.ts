@@ -97,6 +97,7 @@ describe("handleDepositInitialized", () => {
     )
 
     assert.fieldEquals("Event", txId, "amount", initialAmount.toString())
+    assert.fieldEquals("Event", txId, "type", "Initialized")
   })
 })
 
@@ -152,5 +153,6 @@ describe("handleDepositFinalized", () => {
     )
 
     assert.fieldEquals("Event", txId, "amount", initialAmount.toString())
+    assert.fieldEquals("Event", txId, "type", "Finalized")
   })
 })

@@ -46,6 +46,6 @@ type Event @entity {
   id: ID!
   timestamp: BigInt!
   activity: ActivityData
-  type: EventType
+  type: EventType!
   amount: BigInt!
 }
