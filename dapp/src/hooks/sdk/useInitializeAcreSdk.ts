@@ -5,16 +5,17 @@ import { useAcreContext } from "#/acre-react/hooks"
 import { useWalletContext } from "../useWalletContext"
 
 export function useInitializeAcreSdk() {
-  const { ethAccount } = useWalletContext()
+  const { btcAccount } = useWalletContext()
   const { init } = useAcreContext()
+  const bitcoinAddress = btcAccount?.address
 
   useEffect(() => {
-    // TODO: Init Acre SDK w/o Ethereum account.
-    if (!ethAccount) return
+    if (!bitcoinAddress) return
 
-    const initSDK = async (ethAddress: string) => {
-      await init(ethAddress, ETHEREUM_NETWORK)
+    const initSDK = async (_bitcoinAddress: string) => {
+      await init(_bitcoinAddress, ETHEREUM_NETWORK)
     }
-    logPromiseFailure(initSDK(ethAccount))
-  }, [ethAccount, init])
+
+    logPromiseFailure(initSDK(bitcoinAddress))
+  }, [bitcoinAddress, init])
 }

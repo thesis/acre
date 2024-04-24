@@ -12,7 +12,7 @@ import {
   TypedDataField,
   TransactionResponse,
 } from "ethers"
-import { CURRENCY_ID_ETHEREUM } from "#/constants"
+import { CURRENCY_ID_BITCOIN } from "#/constants"
 import { EthereumSignerCompatibleWithEthersV5 } from "@acre-btc/sdk"
 import {
   getLedgerWalletAPITransport as getDappLedgerWalletAPITransport,
@@ -28,10 +28,10 @@ class LedgerLiveEthereumSigner extends EthereumSignerCompatibleWithEthersV5 {
 
   readonly #client: WalletAPIClient
 
-  readonly #account: Account
+  readonly #bitcoinAccount: Account
 
   static async fromAddress(
-    address: string,
+    bitcoinAddress: string,
     getLedgerWalletAPITransport: () => WindowMessageTransport = getDappLedgerWalletAPITransport,
   ) {
     const dappTransport = getLedgerWalletAPITransport()
@@ -41,14 +41,14 @@ class LedgerLiveEthereumSigner extends EthereumSignerCompatibleWithEthersV5 {
     const client = new WalletAPIClient(dappTransport)
 
     const accountsList = await client.account.list({
-      currencyIds: [CURRENCY_ID_ETHEREUM],
+      currencyIds: [CURRENCY_ID_BITCOIN],
     })
 
     dappTransport.disconnect()
 
-    const account = accountsList.find((acc) => acc.address === address)
+    const account = accountsList.find((acc) => acc.address === bitcoinAddress)
 
-    if (!account) throw new Error("Account not found")
+    if (!account) throw new Error("Bitcoin Account not found")
 
     return new LedgerLiveEthereumSigner(
       dappTransport,
@@ -65,13 +65,19 @@ class LedgerLiveEthereumSigner extends EthereumSignerCompatibleWithEthersV5 {
     provider: Provider | null,
   ) {
     super(provider)
-    this.#account = account
+    this.#bitcoinAccount = account
     this.#transport = transport
     this.#client = walletApiClient
   }
 
+  // eslint-disable-next-line class-methods-use-this
   getAddress(): Promise<string> {
-    return Promise.resolve(this.#account.address)
+    // TODO: We should return the Ethereum address created based on the Bitcoin
+    // address. We probably will use the Signer from OrangeKit once it is
+    // implemented. For now, the `Signer.getAddress` is not used anywhere in the
+    // Acre SDK, only during the tBTC-v2.ts SDK initialization, so we can set
+    // random ethereum account.
+    return Promise.resolve("0x7b570B83D53e0671271DCa2CDf3429E9C4CAb12E")
   }
 
   async #clientRequest<T>(callback: () => Promise<T>) {
@@ -87,7 +93,7 @@ class LedgerLiveEthereumSigner extends EthereumSignerCompatibleWithEthersV5 {
     return new LedgerLiveEthereumSigner(
       this.#transport,
       this.#client,
-      this.#account,
+      this.#bitcoinAccount,
       provider,
     )
   }
@@ -97,7 +103,10 @@ class LedgerLiveEthereumSigner extends EthereumSignerCompatibleWithEthersV5 {
       serializeLedgerWalletApiEthereumTransaction(transaction)
 
     const buffer = await this.#clientRequest<Buffer>(() =>
-      this.#client.transaction.sign(this.#account.id, ethereumTransaction),
+      this.#client.transaction.sign(
+        this.#bitcoinAccount.id,
+        ethereumTransaction,
+      ),
     )
 
     return buffer.toString()
@@ -111,7 +120,7 @@ class LedgerLiveEthereumSigner extends EthereumSignerCompatibleWithEthersV5 {
 
     const transactionHash = await this.#clientRequest<string>(() =>
       this.#client.transaction.signAndBroadcast(
-        this.#account.id,
+        this.#bitcoinAccount.id,
         ethereumTransaction,
       ),
     )
@@ -129,7 +138,7 @@ class LedgerLiveEthereumSigner extends EthereumSignerCompatibleWithEthersV5 {
   async signMessage(message: string | Uint8Array): Promise<string> {
     const buffer = await this.#clientRequest<Buffer>(() =>
       this.#client.message.sign(
-        this.#account.id,
+        this.#bitcoinAccount.id,
         Buffer.from(message.toString()),
       ),
     )

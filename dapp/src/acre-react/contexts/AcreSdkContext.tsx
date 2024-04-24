@@ -6,7 +6,7 @@ const TBTC_API_ENDPOINT = import.meta.env.VITE_TBTC_API_ENDPOINT
 
 type AcreSdkContextValue = {
   acre?: Acre
-  init: (ethereumAddress: string, network: EthereumNetwork) => Promise<void>
+  init: (bitcoinAddress: string, network: EthereumNetwork) => Promise<void>
   isInitialized: boolean
 }
 
@@ -22,11 +22,11 @@ export function AcreSdkProvider({ children }: { children: React.ReactNode }) {
 
   // TODO: initialize Acre SDK w/o Ethereum address.
   const init = useCallback<AcreSdkContextValue["init"]>(
-    async (ethereumAddress: string, network: EthereumNetwork) => {
-      if (!ethereumAddress) throw new Error("Ethereum address not defined")
+    async (bitcoinAddress: string, network: EthereumNetwork) => {
+      if (!bitcoinAddress) throw new Error("Bitcoin address not defined")
 
       const sdk = await Acre.initializeEthereum(
-        await LedgerLiveEthereumSigner.fromAddress(ethereumAddress),
+        await LedgerLiveEthereumSigner.fromAddress(bitcoinAddress),
         network,
         TBTC_API_ENDPOINT,
       )
