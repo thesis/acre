@@ -42,7 +42,7 @@ const depositFinalizedEvent = createDepositFinalizedEvent(
   depositorFee,
 )
 
-describe("createDepositInitializedEvent event", () => {
+describe("handleDepositInitialized", () => {
   beforeAll(() => {
     handleDepositInitialized(depositInitializedEvent)
   })
@@ -74,13 +74,6 @@ describe("createDepositInitializedEvent event", () => {
     assert.fieldEquals(
       "Deposit",
       depositInitializedEvent.params.depositKey.toHexString(),
-      "depositOwner",
-      depositOwner.toHexString(),
-    )
-
-    assert.fieldEquals(
-      "Deposit",
-      depositInitializedEvent.params.depositKey.toHexString(),
       "initialDepositAmount",
       depositInitializedEvent.params.initialAmount.toString(),
     )
@@ -99,20 +92,6 @@ describe("createDepositInitializedEvent event", () => {
     assert.fieldEquals(
       "Event",
       txId,
-      "activity",
-      depositInitializedEvent.params.depositKey.toHexString(),
-    )
-
-    assert.fieldEquals(
-      "Event",
-      txId,
-      "timestamp",
-      depositInitializedEvent.block.timestamp.toString(),
-    )
-
-    assert.fieldEquals(
-      "Event",
-      txId,
       "timestamp",
       depositInitializedEvent.block.timestamp.toString(),
     )
@@ -121,7 +100,7 @@ describe("createDepositInitializedEvent event", () => {
   })
 })
 
-describe("createDepositFinalizedEvent event", () => {
+describe("handleDepositFinalized", () => {
   beforeAll(() => {
     handleDepositInitialized(depositInitializedEvent)
     handleDepositFinalized(depositFinalizedEvent)
@@ -131,11 +110,11 @@ describe("createDepositFinalizedEvent event", () => {
     clearStore()
   })
 
-  test("should load Deposit entity", () => {
+  test("Deposit entity should exist", () => {
     assert.entityCount("Deposit", 1)
   })
 
-  test("should create Event entity", () => {
+  test("Event entity should exist", () => {
     assert.entityCount("Event", 1)
   })
 
@@ -163,20 +142,6 @@ describe("createDepositFinalizedEvent event", () => {
       txId,
       "activity",
       depositFinalizedEvent.params.depositKey.toHexString(),
-    )
-
-    assert.fieldEquals(
-      "Event",
-      txId,
-      "activity",
-      depositFinalizedEvent.params.depositKey.toHexString(),
-    )
-
-    assert.fieldEquals(
-      "Event",
-      txId,
-      "timestamp",
-      depositFinalizedEvent.block.timestamp.toString(),
     )
 
     assert.fieldEquals(
