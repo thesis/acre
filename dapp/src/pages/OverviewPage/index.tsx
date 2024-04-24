@@ -16,12 +16,32 @@ export default function OverviewPage() {
     <PageLayout
       leftSidebar={
         <PageLayout.Sidebar>
-          <CurrentSeasonCard />
+          <CurrentSeasonCard
+            heading={
+              <>
+                Season 1<br />
+                Pre-launch staking
+              </>
+            }
+            timestamp={new Date().getTime() / 1000}
+            totalJoined={3045}
+            tvl={1981}
+          />
         </PageLayout.Sidebar>
       }
       rightSidebar={
         <PageLayout.Sidebar>
-          <CurrentSeasonCard />
+          <CurrentSeasonCard
+            heading={
+              <>
+                Season 1<br />
+                Pre-launch staking
+              </>
+            }
+            timestamp={new Date().getTime() / 1000}
+            totalJoined={3045}
+            tvl={1981}
+          />
         </PageLayout.Sidebar>
       }
     >

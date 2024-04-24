@@ -7,24 +7,40 @@ import {
   CardHeader,
   CardProps,
   Tag,
+  Text,
 } from "@chakra-ui/react"
+import { getNumberWithSeparator } from "#/utils"
 
-export function CurrentSeasonCard(props: CardProps) {
+type CurrentSeasonCardProps = CardProps & {
+  heading: React.ReactNode
+  timestamp: number
+  totalJoined: number
+  tvl: number
+}
+
+export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
+  const { heading, timestamp, totalJoined, tvl, ...restProps } = props
   return (
-    <Card {...props}>
-      <CardHeader>
-        <Tag>Live</Tag>
-        Season 1.
-        <br />
-        Pre-launch staking
-      </CardHeader>
-      <CardBody>
-        <Box>02 23 12</Box>
-      </CardBody>
+    <Card variant="current-season" {...restProps}>
+      <Tag>Live</Tag>
+      <CardHeader>{heading}</CardHeader>
+      <CardBody>{timestamp}</CardBody>
+      {/* TODO: Add `CountdownTimer` component when merged */}
       <CardFooter>
-        <Box>Total joined 3,045</Box>
-        <Box>TVL 1,445 BTC</Box>
+        <Box>
+          Total joined&nbsp;
+          <Text as="span" fontWeight="bold">
+            {getNumberWithSeparator(totalJoined)}
+          </Text>
+        </Box>
+        <Box>
+          TVL&nbsp;
+          <Text as="span" fontWeight="bold">
+            {getNumberWithSeparator(tvl)} BTC
+          </Text>
+        </Box>
       </CardFooter>
+      {/* TODO: Add `Background` component when merged */}
     </Card>
   )
 }

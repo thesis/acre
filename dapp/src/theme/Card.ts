@@ -22,6 +22,36 @@ export const cardTheme: ComponentSingleStyleConfig = {
         },
       }
     },
+    "current-season": {
+      container: {
+        bg: "brand.400",
+        borderWidth: 0,
+        gap: 4,
+        rounded: "xl",
+        px: 5,
+        py: 4,
+      },
+      header: {
+        p: 0,
+        color: "gold.100",
+        fontSize: "2xl",
+        lineHeight: 1,
+        fontWeight: "bold",
+        letterSpacing: "-0.03rem", // -0.48px
+      },
+      body: {
+        p: 0,
+      },
+      footer: {
+        p: 0,
+        display: "flex",
+        alignItems: "baseline",
+        justifyContent: "space-between",
+        fontSize: "md",
+        fontWeight: "medium",
+        color: "white",
+      },
+    },
   },
   sizes: {
     md: {
