@@ -27,7 +27,7 @@
     "lint:config": "prettier --check '**/*.@(json)'",
     "lint:config:fix": "prettier --write '**/*.@(json)'",
     "test": "hardhat test ./test/*.test.ts",
-    "test:integration": "INTEGRATION_TEST=true hardhat test ./test/integration/*.test.ts --network integration"
+    "test:integration": "hardhat test --deploy-fixture ./test/integration/*.test.ts --network integration"
   },
   "devDependencies": {
     "@keep-network/hardhat-helpers": "^0.7.1",

@@ -11,14 +11,14 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { log } = deployments
   const { deployer } = await getNamedAccounts()
 
-  let mezoPortal = await deployments.getOrNull("MezoPortal")
-  if (hre.network.name === "integration") {
-    mezoPortal = await deployments.getArtifact("MezoPortal")
-  }
+  const mezoPortal = await deployments.getOrNull("MezoPortal")
 
   if (mezoPortal && isNonZeroAddress(mezoPortal.address)) {
     log(`using MezoPortal contract at ${mezoPortal.address}`)
-  } else if ((hre.network.config as HardhatNetworkConfig)?.forking?.enabled) {
+  } else if (
+    hre.network.name === "integration" ||
+    (hre.network.config as HardhatNetworkConfig)?.forking?.enabled
+  ) {
     throw new Error("deployed MezoPortal contract not found")
   } else {
     log("deploying Mezo Portal contract stub")

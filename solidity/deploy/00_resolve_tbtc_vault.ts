@@ -23,11 +23,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   } else {
     log("deploying TBTCVault contract stub")
 
-    let tbtc = await deployments.getOrNull("TBTC")
-    if (hre.network.name === "integration") {
-      tbtc = await deployments.getArtifact("TBTC")
-    }
-
+    const tbtc = await deployments.get("TBTC")
     const bridge = await deployments.get("Bridge")
 
     const deployment = await deployments.deploy("TBTCVault", {

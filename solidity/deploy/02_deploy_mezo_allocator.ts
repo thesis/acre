@@ -8,12 +8,8 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { deployer } = await helpers.signers.getNamedSigners()
 
   const stbtc = await deployments.get("stBTC")
-  let tbtc = await deployments.getOrNull("TBTC")
-  let mezoPortal = await deployments.getOrNull("MezoPortal")
-  if (hre.network.name === "integration") {
-    mezoPortal = await deployments.getArtifact("MezoPortal")
-    tbtc = await deployments.getArtifact("TBTC")
-  }
+  const tbtc = await deployments.get("TBTC")
+  const mezoPortal = await deployments.get("MezoPortal")
 
   const [, deployment] = await helpers.upgrades.deployProxy("MezoAllocator", {
     factoryOpts: {

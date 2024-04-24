@@ -11,14 +11,12 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { log } = deployments
   const { deployer } = await getNamedAccounts()
 
-  let tbtc = await deployments.getOrNull("TBTC")
-  if (hre.network.name === "integration") {
-    tbtc = await deployments.getArtifact("TBTC")
-  }
+  const tbtc = await deployments.getOrNull("TBTC")
 
   if (tbtc && isNonZeroAddress(tbtc.address)) {
     log(`using TBTC contract at ${tbtc.address}`)
   } else if (
+    hre.network.name === "integration" ||
     !hre.network.tags.allowStubs ||
     (hre.network.config as HardhatNetworkConfig)?.forking?.enabled
   ) {

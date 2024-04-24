@@ -7,10 +7,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { treasury, governance } = await getNamedAccounts()
   const { deployer: deployerSigner } = await helpers.signers.getNamedSigners()
 
-  let tbtc = await deployments.getOrNull("TBTC")
-  if (hre.network.name === "integration") {
-    tbtc = await deployments.getArtifact("TBTC")
-  }
+  const tbtc = await deployments.get("TBTC")
 
   const [, stbtcDeployment] = await helpers.upgrades.deployProxy("stBTC", {
     contractName: "stBTC",
