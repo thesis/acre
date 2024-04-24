@@ -13,8 +13,15 @@ const baseStyleDialog = defineStyle({
 const baseCloseButton = defineStyle({
   top: -10,
   right: -10,
+  height: 7,
+  width: 7,
+  p: 1.5,
   rounded: "100%",
   bg: "opacity.white.5",
+
+  _hover: {
+    bg: "opacity.white.5",
+  },
 })
 
 const baseStyleOverlay = defineStyle({

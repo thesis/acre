@@ -2,7 +2,7 @@ import { useEffect } from "react"
 import { ETHEREUM_NETWORK } from "#/constants"
 import { logPromiseFailure } from "#/utils"
 import { useAcreContext } from "#/acre-react/hooks"
-import { useWalletContext } from "./useWalletContext"
+import { useWalletContext } from "../useWalletContext"
 
 export function useInitializeAcreSdk() {
   const { ethAccount } = useWalletContext()

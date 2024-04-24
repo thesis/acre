@@ -10,8 +10,8 @@ import {
 import { LoadingSpinnerSuccessIcon } from "#/assets/icons"
 import { useModalFlowContext } from "#/hooks"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
-import AlertReceiveSTBTC from "#/components/shared/AlertReceiveSTBTC"
 import { ACTION_FLOW_TYPES, ActionFlowType, TokenAmount } from "#/types"
+import { ReceiveSTBTCAlert } from "#/components/shared/alerts"
 
 const HEADER = {
   [ACTION_FLOW_TYPES.STAKE]: "Staking successful!",
@@ -46,7 +46,7 @@ export default function SuccessModal({ type, tokenAmount }: SuccessModalProps) {
             />
           </Box>
         </VStack>
-        <AlertReceiveSTBTC />
+        <ReceiveSTBTCAlert />
       </ModalBody>
       <ModalFooter mt={4}>
         <Button size="lg" width="100%" variant="outline" onClick={onClose}>
