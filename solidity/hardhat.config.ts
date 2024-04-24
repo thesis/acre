@@ -26,9 +26,6 @@ const config: HardhatUserConfig = {
   },
 
   networks: {
-    hardhat: {
-      tags: ["allowStubs"],
-    },
     integration: {
       url: "http://localhost:8545",
     },
