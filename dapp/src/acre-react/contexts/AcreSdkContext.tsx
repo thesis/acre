@@ -20,6 +20,7 @@ export function AcreSdkProvider({ children }: { children: React.ReactNode }) {
   const [acre, setAcre] = useState<Acre | undefined>(undefined)
   const [isInitialized, setIsInitialized] = useState<boolean>(false)
 
+  // TODO: initialize Acre SDK w/o Ethereum address.
   const init = useCallback<AcreSdkContextValue["init"]>(
     async (ethereumAddress: string, network: EthereumNetwork) => {
       if (!ethereumAddress) throw new Error("Ethereum address not defined")

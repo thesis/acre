@@ -9,11 +9,12 @@ export function useInitializeAcreSdk() {
   const { init } = useAcreContext()
 
   useEffect(() => {
-    if (!ethAccount?.address) return
+    // TODO: Init Acre SDK w/o Ethereum account.
+    if (!ethAccount) return
 
     const initSDK = async (ethAddress: string) => {
       await init(ethAddress, ETHEREUM_NETWORK)
     }
-    logPromiseFailure(initSDK(ethAccount.address))
-  }, [ethAccount?.address, init])
+    logPromiseFailure(initSDK(ethAccount))
+  }, [ethAccount, init])
 }

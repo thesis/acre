@@ -1,18 +1,25 @@
 import { useMemo } from "react"
+import { ZeroAddress } from "ethers"
 import { useWalletContext } from "./useWalletContext"
 import { useRequestBitcoinAccount } from "./useRequestBitcoinAccount"
-import { useRequestEthereumAccount } from "./useRequestEthereumAccount"
 
 export function useWallet() {
-  const { btcAccount, ethAccount } = useWalletContext()
+  const { btcAccount, ethAccount, setEthAccount } = useWalletContext()
   const { requestAccount: requestBitcoinAccount } = useRequestBitcoinAccount()
-  const { requestAccount: requestEthereumAccount } = useRequestEthereumAccount()
 
   return useMemo(
     () => ({
-      bitcoin: { account: btcAccount, requestAccount: requestBitcoinAccount },
-      ethereum: { account: ethAccount, requestAccount: requestEthereumAccount },
+      bitcoin: {
+        account: btcAccount,
+        requestAccount: async () => {
+          await requestBitcoinAccount()
+          // TODO: Temporary solution - we do not need the eth account and we
+          // want to create the Acre SDK w/o passing the Ethereum Account.
+          setEthAccount(ZeroAddress)
+        },
+      },
+      ethereum: { account: ethAccount },
     }),
-    [btcAccount, requestBitcoinAccount, ethAccount, requestEthereumAccount],
+    [btcAccount, requestBitcoinAccount, ethAccount, setEthAccount],
   )
 }
