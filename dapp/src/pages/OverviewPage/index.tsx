@@ -8,13 +8,22 @@ import Statistics from "./Statistics"
 import TransactionHistory from "./TransactionHistory"
 import { DocsCard } from "./DocsCard"
 import { ActivityCarousel } from "./ActivityCarousel"
+import { CurrentSeasonCard } from "./CurrentSeasonCard"
 import PageLayout from "./PageLayout"
 
 export default function OverviewPage() {
   return (
     <PageLayout
-      leftSidebar={<PageLayout.Sidebar>Left sidebar</PageLayout.Sidebar>}
-      rightSidebar={<PageLayout.Sidebar>Right sidebar</PageLayout.Sidebar>}
+      leftSidebar={
+        <PageLayout.Sidebar>
+          <CurrentSeasonCard />
+        </PageLayout.Sidebar>
+      }
+      rightSidebar={
+        <PageLayout.Sidebar>
+          <CurrentSeasonCard />
+        </PageLayout.Sidebar>
+      }
     >
       Content
     </PageLayout>
