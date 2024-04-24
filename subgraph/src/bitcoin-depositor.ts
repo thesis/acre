@@ -15,6 +15,8 @@ export function handleDepositInitialized(event: DepositInitializedEvent): void {
     event.params.depositKey.toHexString(),
   )
 
+  // TODO: get the bitcoin transaction hash from this Ethereum transaction
+  // by finding the DepositRevealed event in logs from the tBTC-v2 Bridge contract.
   depositEntity.depositOwner = depositOwnerEntity.id
   depositEntity.initialDepositAmount = event.params.initialAmount
 
