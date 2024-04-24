@@ -274,6 +274,15 @@ describe("MezoAllocator", () => {
             )
           })
         })
+
+        context("when withdrawing more than was deposited", () => {
+          beforeAfterSnapshotWrapper()
+
+          it("should revert", async () => {
+            await expect(await stbtc.withdraw(to1e18(6), depositor, depositor))
+              .to.be.reverted
+          })
+        })
       })
     })
   })
