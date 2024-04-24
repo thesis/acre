@@ -8,8 +8,18 @@ import Statistics from "./Statistics"
 import TransactionHistory from "./TransactionHistory"
 import { DocsCard } from "./DocsCard"
 import { ActivityCarousel } from "./ActivityCarousel"
+import PageLayout from "./PageLayout"
 
 export default function OverviewPage() {
+  return (
+    <PageLayout
+      leftSidebar={<PageLayout.Sidebar>Left sidebar</PageLayout.Sidebar>}
+      rightSidebar={<PageLayout.Sidebar>Right sidebar</PageLayout.Sidebar>}
+    >
+      Content
+    </PageLayout>
+  )
+
   return (
     <Flex direction="column" p={6}>
       <HStack pb={3.5}>
