@@ -2,6 +2,7 @@ import {
   DepositInitialized as DepositInitializedEvent,
   DepositFinalized as DepositFinalizedEvent,
 } from "../generated/BitcoinDepositor/BitcoinDepositor"
+import { Deposit } from "../generated/schema"
 import {
   getOrCreateDepositOwner,
   getOrCreateDeposit,
@@ -29,9 +30,11 @@ export function handleDepositInitialized(event: DepositInitializedEvent): void {
 }
 
 export function handleDepositFinalized(event: DepositFinalizedEvent): void {
-  const depositEntity = getOrCreateDeposit(
-    event.params.depositKey.toHexString(),
-  )
+  const depositEntity = Deposit.load(event.params.depositKey.toHexString())
+
+  if (!depositEntity) {
+    throw new Error("Deposit entity does not exist")
+  }
 
   depositEntity.initialDepositAmount = event.params.initialAmount
   depositEntity.amountToDeposit = event.params.bridgedAmount
