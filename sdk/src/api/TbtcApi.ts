@@ -65,7 +65,7 @@ type RevealMetadata = {
 /**
  * Represents the request payload for saving a reveal.
  */
-type SaveRevealRequest = {
+export type SaveRevealRequest = {
   address: string
   revealInfo: BitcoinDepositReceiptJson
   metadata: RevealMetadata
