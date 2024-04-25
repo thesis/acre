@@ -115,7 +115,7 @@ describe("handleDepositFinalized", () => {
   })
 
   test("Event entity should exist", () => {
-    assert.entityCount("Event", 1)
+    assert.entityCount("Event", 2)
   })
 
   test("Deposit entity has proper fields", () => {
