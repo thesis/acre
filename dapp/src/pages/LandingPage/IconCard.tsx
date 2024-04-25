@@ -25,8 +25,8 @@ export default function IconCard(props: IconCardProps) {
       <CardFooter>
         <Image
           pointerEvents="none"
-          {...icon}
           maxW="12.5rem" // 200px
+          {...icon}
         />
       </CardFooter>
     </Card>
