@@ -12,11 +12,11 @@ export function getOrCreateDepositOwner(depositOwnerId: Address): DepositOwner {
   return depositOwner
 }
 
-export function getOrCreateDeposit(transactionId: string): Deposit {
-  let deposit = Deposit.load(transactionId)
+export function getOrCreateDeposit(depositKey: string): Deposit {
+  let deposit = Deposit.load(depositKey)
 
   if (!deposit) {
-    deposit = new Deposit(transactionId)
+    deposit = new Deposit(depositKey)
   }
 
   return deposit
