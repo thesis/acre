@@ -28,7 +28,7 @@ $ pnpm test
 
 To run the integration tests follow these steps:
 
-- Define `CHAIN_API_URL` environment variable pointing to Ethereum Mainnet RPC URL.
+- Define `MAINNET_RPC_URL` environment variable pointing to Ethereum Mainnet RPC URL.
 
 - Run the Hardhat Node locally forking Mainnet:
 
