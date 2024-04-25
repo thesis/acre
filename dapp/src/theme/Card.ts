@@ -101,7 +101,7 @@ export const cardTheme: ComponentMultiStyleConfig = {
         p: 0,
         fontSize: "md",
         lineHeight: 6,
-        fontWeight: "medium",
+        fontWeight: "semibold",
         color: "grey.700",
         gap: 20,
       },

@@ -7,10 +7,16 @@ import {
   CardProps,
   Box,
 } from "@chakra-ui/react"
+import {
+  CurrencyBalance,
+  CurrencyBalanceProps,
+} from "#/components/shared/CurrencyBalance"
 
 type IconCardProps = CardProps & {
   header: React.ReactNode
-  value: React.ReactNode
+  value:
+    | React.ReactNode
+    | Pick<CurrencyBalanceProps, "amount" | "currency" | "shouldBeFormatted">
   footer?: React.ReactNode[]
 }
 
@@ -26,10 +32,24 @@ function ValueCardBase(props: IconCardProps) {
     )
   }
 
+  const shouldRenderCurrencyBalance =
+    typeof value !== "string" && "amount" in (value as CurrencyBalanceProps)
+
   return (
     <Card variant="value" {...restProps}>
       <CardHeader>{header}</CardHeader>
-      <CardBody>{value}</CardBody>
+      <CardBody>
+        {shouldRenderCurrencyBalance ? (
+          <CurrencyBalance
+            {...(value as CurrencyBalanceProps)}
+            fontSize="inherit"
+            lineHeight="inherit"
+            fontWeight="inherit"
+          />
+        ) : (
+          (value as React.ReactNode)
+        )}
+      </CardBody>
       {footer.length > 0 && (
         <CardFooter>
           {footer.map((footerItem, index) => (

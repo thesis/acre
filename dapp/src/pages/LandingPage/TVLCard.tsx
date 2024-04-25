@@ -1,12 +1,17 @@
 import React from "react"
 import { Text } from "@chakra-ui/react"
+import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import ValueCard from "./ValueCard"
 
 export default function TVLCard() {
   return (
     <ValueCard
       header="Total value locked"
-      value="2,202.92 BTC"
+      value={{
+        amount: "2202.92",
+        currency: "usd",
+        shouldBeFormatted: false,
+      }}
       color="brand.400"
       footer={[
         <ValueCard.FooterItem>
@@ -15,7 +20,16 @@ export default function TVLCard() {
           </Text>
           +24h
         </ValueCard.FooterItem>,
-        <ValueCard.FooterItem>USD 27,202,964.47</ValueCard.FooterItem>,
+        <ValueCard.FooterItem>
+          <CurrencyBalance
+            amount="27202964.47"
+            currency="usd"
+            shouldBeFormatted={false}
+            symbolFontWeight="unset"
+            balanceFontWeight="unset"
+            symbolPosition="prefix"
+          />
+        </ValueCard.FooterItem>,
       ]}
     />
   )
