@@ -1,27 +1,15 @@
-import React from "react"
-import { Link, Button, ButtonProps, LinkProps, Icon } from "@chakra-ui/react"
-import { IconArrowUpRight } from "@tabler/icons-react"
+import React, { ComponentProps } from "react"
+import ButtonLink from "#/components/shared/ButtonLink"
 
-type CardButtonProps = ButtonProps & Pick<LinkProps, "isExternal" | "href">
-
-export default function CardButton(props: CardButtonProps) {
-  const { children, isExternal, ...restProps } = props
+export default function CardButton(props: ComponentProps<typeof ButtonLink>) {
   return (
-    <Button
-      as={Link}
+    <ButtonLink
       variant="card"
-      isExternal={isExternal}
-      {...restProps}
+      justifyContent="center"
       _hover={{ bg: "gold.100" }}
-      leftIcon={
-        isExternal ? (
-          <Icon as={IconArrowUpRight} color="brand.400" w={4} h={4} />
-        ) : undefined
-      }
       iconSpacing={1}
       fontWeight="semibold"
-    >
-      {children}
-    </Button>
+      {...props}
+    />
   )
 }
