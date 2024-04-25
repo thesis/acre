@@ -208,21 +208,25 @@ class EthereumBitcoinDepositor
     }
 
     const bridgeAddress = await this.instance.bridge()
-    const bridge = new Contract(bridgeAddress, [
-      "function depositsParameters()",
-    ])
-    const depositsParameters =
-      (await bridge.depositsParameters()) as TbtcDepositParameters
+    const bridge = new Contract(
+      bridgeAddress,
+      ["function depositParameters()"],
+      this.instance.runner,
+    )
+    const depositParameters =
+      (await bridge.depositParameters()) as TbtcDepositParameters
 
     const vaultAddress = await this.getTbtcVaultChainIdentifier()
-    const vault = new Contract(`0x${vaultAddress.identifierHex}`, [
-      "function optimisticMintingFeeDivisor()",
-    ])
+    const vault = new Contract(
+      `0x${vaultAddress.identifierHex}`,
+      ["function optimisticMintingFeeDivisor()"],
+      this.instance.runner,
+    )
     const optimisticMintingFeeDivisor =
       (await vault.optimisticMintingFeeDivisor()) as bigint
 
     this.#cache.tbtcBridgeMintingParameters = {
-      ...depositsParameters,
+      ...depositParameters,
       optimisticMintingFeeDivisor,
     }
     return this.#cache.tbtcBridgeMintingParameters

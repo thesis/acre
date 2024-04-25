@@ -24,6 +24,22 @@ To run the test execute:
 $ pnpm test
 ```
 
+### Integration testing
+
+To run the integration tests follow these steps:
+
+- Run the Hardhat Node locally forking Mainnet at block `19680873`:
+
+```
+$ npx hardhat node --no-deploy --fork https://eth-mainnet.g.alchemy.com/v2/<key> --fork-block-number 19680873
+```
+
+- Once the local node is running you can execute the integration tests:
+
+```
+$ pnpm test:integration
+```
+
 ### Deploying
 
 We deploy our contracts with

@@ -26,8 +26,8 @@ const config: HardhatUserConfig = {
   },
 
   networks: {
-    hardhat: {
-      tags: ["allowStubs"],
+    integration: {
+      url: "http://localhost:8545",
     },
     sepolia: {
       url: process.env.CHAIN_API_URL || "",
@@ -51,6 +51,7 @@ const config: HardhatUserConfig = {
     deployments: {
       sepolia: ["./external/sepolia"],
       mainnet: ["./external/mainnet"],
+      integration: ["./external/mainnet"],
     },
   },
 
