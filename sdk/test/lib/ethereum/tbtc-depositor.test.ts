@@ -339,7 +339,9 @@ describe("BitcoinDepositor", () => {
         expect(Contract).toHaveBeenNthCalledWith(
           1,
           `0x${bridgeAddress.identifierHex}`,
-          ["function depositParameters()"],
+          [
+            "function depositParameters() view returns (uint64 depositDustThreshold, uint64 depositTreasuryFeeDivisor, uint64 depositTxMaxFee, uint32 depositRevealAheadPeriod)",
+          ],
           mockedContractInstance.runner,
         )
       })
@@ -358,7 +360,7 @@ describe("BitcoinDepositor", () => {
         expect(Contract).toHaveBeenNthCalledWith(
           2,
           `0x${vaultAddress.identifierHex}`,
-          ["function optimisticMintingFeeDivisor()"],
+          ["function optimisticMintingFeeDivisor() view returns (uint32)"],
           mockedContractInstance.runner,
         )
       })
