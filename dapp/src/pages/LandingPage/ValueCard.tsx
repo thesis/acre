@@ -11,6 +11,7 @@ import {
   CurrencyBalance,
   CurrencyBalanceProps,
 } from "#/components/shared/CurrencyBalance"
+import valueCardDecorator from "#/assets/images/card-value-decorator.svg"
 
 type IconCardProps = CardProps & {
   header: React.ReactNode
@@ -36,9 +37,42 @@ function ValueCardBase(props: IconCardProps) {
     typeof value !== "string" && "amount" in (value as CurrencyBalanceProps)
 
   return (
-    <Card variant="value" {...restProps}>
-      <CardHeader>{header}</CardHeader>
-      <CardBody>
+    <Card p={10} gap={6} alignItems="center" {...restProps}>
+      <CardHeader
+        p={0}
+        fontSize="md"
+        lineHeight={6}
+        fontWeight="normal"
+        color="grey.700"
+      >
+        {header}
+      </CardHeader>
+      <CardBody
+        p={0}
+        fontSize={{ base: "5xl", xl: "6xl" }}
+        lineHeight={1.2}
+        fontWeight="semibold"
+        color="currentColor"
+        letterSpacing="0.075rem" // 1.2px
+        whiteSpace="nowrap"
+        display="flex"
+        alignItems="center"
+        sx={{
+          "&::before, &::after": {
+            content: "''",
+            mask: `url(${valueCardDecorator})`,
+            maskSize: "contain",
+            display: "inline-block",
+            w: { base: "2.9rem", xl: "3.625rem" }, // 46,8px, 58px
+            h: { base: 8, xl: 10 },
+            transform: "auto",
+            transformOrigin: "center",
+            background: "currentColor",
+            mx: 6,
+          },
+        }}
+        _after={{ rotate: 180 }}
+      >
         {shouldRenderCurrencyBalance ? (
           <CurrencyBalance
             {...(value as CurrencyBalanceProps)}
@@ -51,7 +85,14 @@ function ValueCardBase(props: IconCardProps) {
         )}
       </CardBody>
       {footer.length > 0 && (
-        <CardFooter>
+        <CardFooter
+          p={0}
+          fontSize="md"
+          lineHeight={6}
+          fontWeight="semibold"
+          color="grey.700"
+          gap={20}
+        >
           {footer.map((footerItem, index) => (
             // This is never rerendered, index key is fine
             // eslint-disable-next-line react/no-array-index-key
