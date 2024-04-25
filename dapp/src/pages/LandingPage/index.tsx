@@ -50,6 +50,7 @@ export default function LandingPage() {
         <TVLCard />
         <ContentCard header="How it works" withBackground>
           <Box color="brand.400" fontWeight="semibold" pt={9} pb={20}>
+            {/* TODO: Replace with diagram image/component. */}
             insert diagram here
           </Box>
         </ContentCard>
