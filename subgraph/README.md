@@ -91,7 +91,7 @@ Note: use it only if your subgraph is not created in the local Graph node.
 4. Once your subgraph has been created in Subgraph Studio you can initialize the subgraph code using this command:
 
    ```
-      graph init --studio <SUBGRAPH_SLUG>
+   graph init --studio <SUBGRAPH_SLUG>
    ```
 
    The <SUBGRAPH_SLUG> value can be found on your subgraph details page in Subgraph Studio
@@ -100,7 +100,7 @@ Note: use it only if your subgraph is not created in the local Graph node.
 5. Before being able to deploy your subgraph to Subgraph Studio, you need to login into your account within the CLI.
 
    ```
-      graph auth --studio <DEPLOY KEY>
+   graph auth --studio <DEPLOY KEY>
    ```
 
    The <SUBGRAPH_SLUG> can be found on your "My Subgraphs" page or your subgraph details page.
@@ -113,8 +113,4 @@ Note: use it only if your subgraph is not created in the local Graph node.
 
    After running this command, the CLI will ask for a version label, you can name it however you want, you can use labels such as 0.1 and 0.2 or use letters as well such as uniswap-v2-0.1.
 
-7. More information about deploying your subgraph to Subgraph Studio:
-
-   ```
-   https://thegraph.com/docs/en/deploying/subgraph-studio/
-   ```
+7. More information about deploying your subgraph to Subgraph Studio: https://thegraph.com/docs/en/deploying/subgraph-studio/
