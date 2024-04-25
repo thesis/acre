@@ -67,7 +67,8 @@ export function useStakeFlow(): UseStakeFlowReturn {
 
   const stake = useCallback(async () => {
     if (!stakeFlow) throw new Error("Initialize stake first")
-
+    // The current waiting time for repeat transactions is very long.
+    // TODO: Find the right value and pass it as additional options.
     await stakeFlow.stake()
   }, [stakeFlow])
 

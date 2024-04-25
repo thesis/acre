@@ -1,7 +1,7 @@
 import React from "react"
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table"
 import { StakeHistory } from "#/types"
-import { capitalize, truncateAddress } from "#/utils"
+import { capitalizeFirstLetter, truncateAddress } from "#/utils"
 import CustomCell from "../Cell/Custom"
 import Cell from "../Cell"
 import SimpleText from "../Cell/components/SimpleText"
@@ -32,10 +32,14 @@ export const COLUMNS: ColumnDef<StakeHistory, any>[] = [
     cell: ({ row: { original } }) => (
       <Cell
         firstField={
-          <SimpleText>{capitalize(original.callTx.action)}</SimpleText>
+          <SimpleText>
+            {capitalizeFirstLetter(original.callTx.action)}
+          </SimpleText>
         }
         secondField={
-          <SimpleText>{capitalize(original.receiptTx.action)}</SimpleText>
+          <SimpleText>
+            {capitalizeFirstLetter(original.receiptTx.action)}
+          </SimpleText>
         }
       />
     ),

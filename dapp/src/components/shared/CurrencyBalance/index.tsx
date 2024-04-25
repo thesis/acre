@@ -9,7 +9,7 @@ import { CurrencyType } from "#/types"
 
 export type CurrencyBalanceProps = {
   currency: CurrencyType
-  amount?: string | number
+  amount?: string | number | bigint
   shouldBeFormatted?: boolean
   desiredDecimals?: number
   size?: string
@@ -40,7 +40,7 @@ export function CurrencyBalance({
 
   const balance = useMemo(() => {
     const value = amount ?? 0
-    if (shouldBeFormatted)
+    if (shouldBeFormatted || typeof value === "bigint")
       return formatTokenAmount(value, decimals, desiredDecimals)
 
     return numberToLocaleString(value, desiredDecimals)

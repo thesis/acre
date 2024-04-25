@@ -3,7 +3,7 @@ import { createMultiStyleConfigHelpers, defineStyle } from "@chakra-ui/react"
 
 const baseStyleDialog = defineStyle({
   p: 4,
-  border: "2px",
+  borderWidth: "var(--chakra-space-modal_borderWidth)",
   boxShadow: "none",
   borderColor: "white",
   borderRadius: "xl",
@@ -13,8 +13,15 @@ const baseStyleDialog = defineStyle({
 const baseCloseButton = defineStyle({
   top: -10,
   right: -10,
+  height: 7,
+  width: 7,
+  p: 1.5,
   rounded: "100%",
   bg: "opacity.white.5",
+
+  _hover: {
+    bg: "opacity.white.5",
+  },
 })
 
 const baseStyleOverlay = defineStyle({
@@ -40,6 +47,11 @@ const baseStyleBody = defineStyle({
   gap: 6,
 })
 
+const baseStyleFooter = defineStyle({
+  flexDirection: "column",
+  gap: 6,
+})
+
 const multiStyleConfig = createMultiStyleConfigHelpers(parts.keys)
 
 const baseStyle = multiStyleConfig.definePartsStyle({
@@ -48,6 +60,7 @@ const baseStyle = multiStyleConfig.definePartsStyle({
   overlay: baseStyleOverlay,
   header: baseStyleHeader,
   body: baseStyleBody,
+  footer: baseStyleFooter,
 })
 
 export const modalTheme = multiStyleConfig.defineMultiStyleConfig({ baseStyle })
