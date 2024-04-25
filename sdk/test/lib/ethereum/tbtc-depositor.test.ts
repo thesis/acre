@@ -25,6 +25,7 @@ const testData = {
 describe("BitcoinDepositor", () => {
   const spyOnEthersDataSlice = jest.spyOn(ethers, "dataSlice")
   const spyOnEthersContract = jest.spyOn(ethers, "Contract")
+  const signer = {} as EthereumSigner
 
   const vaultAddress = EthereumAddress.from(
     ethers.Wallet.createRandom().address,
@@ -45,6 +46,7 @@ describe("BitcoinDepositor", () => {
       .fn()
       .mockResolvedValue(testData.depositorFeeDivisor),
     minDepositAmount: jest.fn().mockImplementation(() => minDepositAmount),
+    runner: signer,
   }
 
   let depositor: EthereumBitcoinDepositor
@@ -62,7 +64,7 @@ describe("BitcoinDepositor", () => {
 
     depositor = new EthereumBitcoinDepositor(
       {
-        signer: {} as EthereumSigner,
+        signer,
         address: depositorAddress.identifierHex,
       },
       "sepolia",
@@ -268,9 +270,9 @@ describe("BitcoinDepositor", () => {
     )
   })
 
-  describe("estimateDepositFees", () => {
+  describe("calculateDepositFee", () => {
     const mockedBridgeContractInstance = {
-      depositsParameters: jest
+      depositParameters: jest
         .fn()
         .mockResolvedValue(testData.depositParameters),
     }
@@ -337,13 +339,14 @@ describe("BitcoinDepositor", () => {
         expect(Contract).toHaveBeenNthCalledWith(
           1,
           `0x${bridgeAddress.identifierHex}`,
-          ["function depositsParameters()"],
+          ["function depositParameters()"],
+          mockedContractInstance.runner,
         )
       })
 
       it("should get the deposit parameters from chain", () => {
         expect(
-          mockedBridgeContractInstance.depositsParameters,
+          mockedBridgeContractInstance.depositParameters,
         ).toHaveBeenCalled()
       })
 
@@ -351,11 +354,12 @@ describe("BitcoinDepositor", () => {
         expect(mockedContractInstance.tbtcVault).toHaveBeenCalled()
       })
 
-      it("should create the ethers Contract instance of the Bridge contract", () => {
+      it("should create the ethers Contract instance of the tBTC Vault contract", () => {
         expect(Contract).toHaveBeenNthCalledWith(
           2,
           `0x${vaultAddress.identifierHex}`,
           ["function optimisticMintingFeeDivisor()"],
+          mockedContractInstance.runner,
         )
       })
 
@@ -381,7 +385,7 @@ describe("BitcoinDepositor", () => {
         mockedContractInstance.bridge.mockClear()
         mockedContractInstance.tbtcVault.mockClear()
         mockedContractInstance.depositorFeeDivisor.mockClear()
-        mockedBridgeContractInstance.depositsParameters.mockClear()
+        mockedBridgeContractInstance.depositParameters.mockClear()
         mockedVaultContractInstance.optimisticMintingFeeDivisor.mockClear()
 
         result2 = await depositor.calculateDepositFee(amountToStake)
@@ -390,7 +394,7 @@ describe("BitcoinDepositor", () => {
       it("should get the deposit parameters from cache", () => {
         expect(mockedContractInstance.bridge).toHaveBeenCalledTimes(0)
         expect(
-          mockedBridgeContractInstance.depositsParameters,
+          mockedBridgeContractInstance.depositParameters,
         ).toHaveBeenCalledTimes(0)
       })
 
