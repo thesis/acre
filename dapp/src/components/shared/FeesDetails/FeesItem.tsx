@@ -1,20 +1,27 @@
 import React, { ComponentProps } from "react"
 import { Flex } from "@chakra-ui/react"
-import TransactionDetailsItem, { TransactionDetailsItemProps } from "."
+import FeesDetailsItem, { FeesDetailsItemProps } from "."
 import { CurrencyBalanceWithConversion } from "../CurrencyBalanceWithConversion"
 
-type TransactionDetailsAmountItemProps = ComponentProps<
+type FeesDetailsItemAmountItemProps = ComponentProps<
   typeof CurrencyBalanceWithConversion
 > &
-  Pick<TransactionDetailsItemProps, "label">
+  Pick<FeesDetailsItemProps, "label" | "sublabel" | "tooltip">
 
-function TransactionDetailsAmountItem({
+function FeesDetailsAmountItem({
   label,
+  sublabel,
+  tooltip,
   from,
   to,
-}: TransactionDetailsAmountItemProps) {
+}: FeesDetailsItemAmountItemProps) {
   return (
-    <TransactionDetailsItem label={label} alignItems="start">
+    <FeesDetailsItem
+      label={label}
+      sublabel={sublabel}
+      tooltip={tooltip}
+      alignItems="start"
+    >
       <Flex flexDirection="column" alignItems="end">
         <CurrencyBalanceWithConversion
           from={{
@@ -29,8 +36,8 @@ function TransactionDetailsAmountItem({
           }}
         />
       </Flex>
-    </TransactionDetailsItem>
+    </FeesDetailsItem>
   )
 }
 
-export default TransactionDetailsAmountItem
+export default FeesDetailsAmountItem

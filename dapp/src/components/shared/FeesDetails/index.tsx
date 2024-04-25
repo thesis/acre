@@ -1,19 +1,23 @@
 import React from "react"
 import { ListItem, ListItemProps, VStack } from "@chakra-ui/react"
-import { TextMd } from "../Typography"
+import { TextMd, TextSm } from "../Typography"
 
-export type TransactionDetailsItemProps = {
+export type FeesDetailsItemProps = {
   label: string
+  sublabel: string
   value?: string
+  tooltip: React.ReactElement
   children?: React.ReactNode
 } & ListItemProps
 
-function TransactionDetailsItem({
+function FeesDetailsItem({
   label,
+  sublabel,
+  tooltip,
   value,
   children,
   ...listItemProps
-}: TransactionDetailsItemProps) {
+}: FeesDetailsItemProps) {
   return (
     <ListItem
       display="flex"
@@ -29,11 +33,13 @@ function TransactionDetailsItem({
           color="grey.700"
         >
           {label}
+          {tooltip}
         </TextMd>
+        {sublabel && <TextSm color="grey.400">{sublabel}</TextSm>}
       </VStack>
       {value ? <TextMd color="grey.700">{value}</TextMd> : children}
     </ListItem>
   )
 }
 
-export default TransactionDetailsItem
+export default FeesDetailsItem

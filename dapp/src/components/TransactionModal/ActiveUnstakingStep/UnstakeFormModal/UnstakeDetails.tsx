@@ -1,6 +1,7 @@
 import React from "react"
 import { List } from "@chakra-ui/react"
 import TransactionDetailsAmountItem from "#/components/shared/TransactionDetails/AmountItem"
+import FeesDetailsAmountItem from "#/components/shared/FeesDetails/FeesItem"
 import { useTokenAmountFormValue } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { FeesTooltip } from "#/components/TransactionModal/FeesTooltip"
 import { useTransactionDetails } from "#/hooks"
@@ -22,7 +23,7 @@ function UnstakeDetails({ currency }: { currency: CurrencyType }) {
           currency: "usd",
         }}
       />
-      <TransactionDetailsAmountItem
+      <FeesDetailsAmountItem
         label="Fees"
         sublabel="How are fees calculated?"
         tooltip={<FeesTooltip />}
