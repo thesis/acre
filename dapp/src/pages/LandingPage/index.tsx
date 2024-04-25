@@ -11,7 +11,6 @@ import ContentCard from "./ContentCard"
 import CardButton from "./CardButton"
 import HeroSection from "./HeroSection"
 
-
 export default function LandingPage() {
   return (
     <Flex
