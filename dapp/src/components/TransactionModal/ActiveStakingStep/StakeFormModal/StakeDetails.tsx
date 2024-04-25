@@ -5,6 +5,7 @@ import { useTokenAmountFormValue } from "#/components/shared/TokenAmountForm/Tok
 import { FeesTooltip } from "#/components/TransactionModal/FeesTooltip"
 import { useTransactionDetails } from "#/hooks"
 import { CurrencyType } from "#/types"
+import { useTransactionFee } from "#/hooks/useTransactionFee"
 
 function StakeDetails({
   currency,
@@ -21,6 +22,7 @@ function StakeDetails({
   // Let's not calculate the details of the transaction when the value is not valid.
   const amount = !isMaximumValueExceeded && isMinimumValueFulfilled ? value : 0n
   const details = useTransactionDetails(amount)
+  const transactionFee = useTransactionFee(amount)
 
   return (
     <List spacing={3} mt={10}>
@@ -40,7 +42,7 @@ function StakeDetails({
         tooltip={<FeesTooltip />}
         from={{
           currency,
-          amount: details?.protocolFee,
+          amount: transactionFee.total,
         }}
         to={{
           currency: "usd",
