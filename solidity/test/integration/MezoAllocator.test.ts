@@ -274,6 +274,19 @@ describe("MezoAllocator", () => {
             )
           })
         })
+
+        context("when withdrawing more than was deposited", () => {
+          beforeAfterSnapshotWrapper()
+
+          it("should revert", async () => {
+            await expect(stbtc.withdraw(to1e18(6), depositor, depositor))
+              .to.be.revertedWithCustomError(
+                mezoPortal,
+                "InsufficientDepositAmount",
+              )
+              .withArgs(to1e18(6), to1e18(5))
+          })
+        })
       })
     })
   })
