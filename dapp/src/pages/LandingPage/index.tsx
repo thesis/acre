@@ -1,8 +1,9 @@
 import React from "react"
 import { Flex } from "@chakra-ui/react"
-import SeasonCountdownSection from "./SeasonCountdownSection"
-import HeroSection from "./HeroSection"
-
+import {
+  SeasonCountdownSection,
+  HeroSection,
+} from "#/pages/LandingPage/components"
 export default function LandingPage() {
   return (
     <Flex
