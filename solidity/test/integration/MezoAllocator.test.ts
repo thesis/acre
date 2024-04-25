@@ -185,11 +185,11 @@ describe("MezoAllocator", () => {
         beforeAfterSnapshotWrapper()
 
         it("should revert", async () => {
-          // It is reverted because deposit Id is 0 and there is no deposit
-          // with id 0 in Mezo Portal for Acre. Mezo Portal reverts with the
-          // "unrecognized custom error" that is why we verify only against
-          // a generic revert.
-          await expect(stbtc.withdraw(1n, depositor, depositor)).to.be.reverted
+          // It is reverted because deposit id is 0 and there is no deposit
+          // with id 0 in Mezo Portal for Acre.
+          await expect(
+            stbtc.withdraw(1n, depositor, depositor),
+          ).to.be.revertedWithCustomError(mezoPortal, "DepositNotFound")
         })
       })
 
