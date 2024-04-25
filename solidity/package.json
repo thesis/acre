@@ -15,9 +15,10 @@
   ],
   "scripts": {
     "clean": "hardhat clean && rm -rf cache/ export/ gen/ export.json",
-    "build": "hardhat compile",
-    "deploy": "hardhat deploy --export export.json",
-    "docs": "hardhat docgen",
+    "prepare:env": "cp -n .env.example .env || true",
+    "build": "npm run prepare:env && hardhat compile",
+    "deploy": "npm run prepare:env && hardhat deploy --export export.json",
+    "docs": "npm run prepare:env && hardhat docgen",
     "format": "npm run lint:js && npm run lint:sol && npm run lint:config",
     "format:fix": "npm run lint:js:fix && npm run lint:sol:fix && npm run lint:config:fix",
     "lint:js": "eslint .",
@@ -27,7 +28,7 @@
     "lint:config": "prettier --check '**/*.@(json)'",
     "lint:config:fix": "prettier --write '**/*.@(json)'",
     "node:forking": "FORKING=true hardhat node --no-deploy",
-    "test": "hardhat test ./test/*.test.ts",
+    "test": "npm run prepare:env && hardhat test ./test/*.test.ts",
     "test:integration": "hardhat test --deploy-fixture ./test/integration/*.test.ts --network integration"
   },
   "devDependencies": {
