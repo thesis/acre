@@ -1,23 +1,35 @@
 import { useAcreContext } from "#/acre-react/hooks"
 import { setEstimatedDepositFee } from "#/store/btc"
 import { logPromiseFailure } from "#/utils"
-import { useEffect } from "react"
-import { useAppDispatch, useEstimatedDepositFee } from "."
+import { useEffect, useState } from "react"
+import { DepositFee } from "#/types"
+import { useAppDispatch } from "./store"
+
+const initialDepositFee = {
+  tbtc: 0n,
+  acre: 0n,
+  total: 0n,
+}
 
 export function useTransactionFee(amount?: bigint) {
-  const { acre, isInitialized } = useAcreContext()
-  const estimatedDepositFee = useEstimatedDepositFee()
+  const [depositFee, setDepositFee] = useState<DepositFee>(initialDepositFee)
+  const { acre } = useAcreContext()
   const dispatch = useAppDispatch()
 
   useEffect(() => {
-    const getEstimatedDepositFee = async () => {
-      if (!acre || !amount) return
-      const depositFee = await acre.staking.estimateDepositFee(amount)
+    if (!amount) {
+      setDepositFee(initialDepositFee)
+    } else {
+      const getEstimatedDepositFee = async () => {
+        if (!acre) return
+        const fee = await acre.staking.estimateDepositFee(amount)
 
-      dispatch(setEstimatedDepositFee(depositFee))
+        dispatch(setEstimatedDepositFee(fee))
+        setDepositFee(fee)
+      }
+      logPromiseFailure(getEstimatedDepositFee())
     }
-    logPromiseFailure(getEstimatedDepositFee())
-  }, [acre, isInitialized, dispatch, amount])
+  }, [acre, dispatch, amount])
 
-  return estimatedDepositFee
+  return depositFee
 }

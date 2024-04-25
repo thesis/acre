@@ -4,12 +4,13 @@ import TransactionDetailsAmountItem from "#/components/shared/TransactionDetails
 import FeesDetailsAmountItem from "#/components/shared/FeesDetails/FeesItem"
 import { useTokenAmountFormValue } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { FeesTooltip } from "#/components/TransactionModal/FeesTooltip"
-import { useTransactionDetails } from "#/hooks"
+import { useTransactionDetails, useTransactionFee } from "#/hooks"
 import { CurrencyType } from "#/types"
 
 function UnstakeDetails({ currency }: { currency: CurrencyType }) {
   const value = useTokenAmountFormValue()
   const details = useTransactionDetails(value ?? 0n)
+  const transactionFee = useTransactionFee(value)
 
   return (
     <List spacing={3} mt={10}>
@@ -29,7 +30,7 @@ function UnstakeDetails({ currency }: { currency: CurrencyType }) {
         tooltip={<FeesTooltip />}
         from={{
           currency,
-          amount: details?.protocolFee,
+          amount: transactionFee.total,
         }}
         to={{
           currency: "usd",
