@@ -3,14 +3,14 @@ on:
   workflow_call:
 
 jobs:
-  core-build:
-    uses: ./.github/workflows/reusable-core-build.yaml
+  solidity-build:
+    uses: ./.github/workflows/reusable-solidity-build.yaml
 
   sdk-build:
     defaults:
       run:
         working-directory: ./sdk
-    needs: [core-build]
+    needs: [solidity-build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,11 +24,11 @@ jobs:
           node-version-file: "sdk/.nvmrc"
           cache: "pnpm"
 
-      - name: Download Core Build Artifacts
+      - name: Download Solidity Build Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: core-build
-          path: core/
+          name: solidity-build
+          path: solidity/
 
       - name: Install Dependencies
         run: pnpm install --prefer-offline --frozen-lockfile

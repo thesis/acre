@@ -10,10 +10,10 @@ import {
   IconButton,
 } from "@chakra-ui/react"
 import { SizeType } from "#/types"
-import { useDocsDrawer, useWalletContext } from "#/hooks"
+import { useDocsDrawer, useSharesBalance, useWalletContext } from "#/hooks"
 import { TextMd, TextSm } from "./shared/Typography"
-import Alert from "./shared/Alert"
 import { CurrencyBalance } from "./shared/CurrencyBalance"
+import { CardAlert } from "./shared/alerts"
 
 type LiquidStakingTokenPopoverProps = PopoverProps & { popoverSize: SizeType }
 
@@ -23,6 +23,7 @@ export function LiquidStakingTokenPopover({
 }: LiquidStakingTokenPopoverProps) {
   const { isConnected } = useWalletContext()
   const { onOpen: openDocsDrawer } = useDocsDrawer()
+  const sharesBalance = useSharesBalance()
 
   return (
     <Popover variant="no-transform" {...props}>
@@ -50,22 +51,22 @@ export function LiquidStakingTokenPopover({
         <PopoverBody p={0}>
           <TextMd fontWeight="bold">Liquid staking token</TextMd>
           <CurrencyBalance
-            amount="912312331"
+            amount={sharesBalance.toString()}
             variant="greater-balance-xl"
             currency="stbtc"
           />
-          <Alert
+          <CardAlert
             mt={5}
             status="info"
-            withAlertIcon={false}
-            withActionIcon
-            onclick={openDocsDrawer}
+            withIcon={false}
+            withLink
+            onClick={openDocsDrawer}
           >
             <TextSm>
               Your tokens are this Ethereum address once the staking transaction
               is finalized.
             </TextSm>
-          </Alert>
+          </CardAlert>
         </PopoverBody>
       </PopoverContent>
     </Popover>

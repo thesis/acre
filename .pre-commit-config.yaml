@@ -5,28 +5,28 @@ repos:
       - id: root-lint
         name: "lint root"
         entry: /usr/bin/env bash -c "npm run format"
-        exclude: (^core/|^dapp/|^website/|^subgraph/)
+        exclude: (^solidity/|^dapp/|^website/|^subgraph/)
         language: script
         description: "Checks code according to the package's linter configuration"
-      # Core
-      - id: core-lint-sol
-        name: "lint core sol"
-        entry: /usr/bin/env bash -c "npm --prefix ./core/ run lint:sol"
-        files: ^core/
+      # Solidity
+      - id: solidity-lint-sol
+        name: "lint solidity sol"
+        entry: /usr/bin/env bash -c "npm --prefix ./solidity/ run lint:sol"
+        files: ^solidity/
         types: [solidity]
         language: script
         description: "Checks solidity code according to the package's linter configuration"
-      - id: core-lint-js
-        name: "lint core ts/js"
-        entry: /usr/bin/env bash -c "npm --prefix ./core/ run lint:js"
-        files: ^core/
+      - id: solidity-lint-js
+        name: "lint solidity ts/js"
+        entry: /usr/bin/env bash -c "npm --prefix ./solidity/ run lint:js"
+        files: ^solidity/
         types_or: [ts, javascript]
         language: script
         description: "Checks TS/JS code according to the package's linter configuration"
-      - id: core-lint-config
-        name: "lint core json/yaml"
-        entry: /usr/bin/env bash -c "npm --prefix ./core/ run lint:config"
-        files: ^core/
+      - id: solidity-lint-config
+        name: "lint solidity json/yaml"
+        entry: /usr/bin/env bash -c "npm --prefix ./solidity/ run lint:config"
+        files: ^solidity/
         types_or: [json, yaml]
         language: script
         description: "Checks JSON/YAML code according to the package's linter configuration"
@@ -90,4 +90,3 @@ repos:
         types_or: [json, yaml]
         language: script
         description: "Checks JSON/YAML code according to the package's linter configuration"
-
