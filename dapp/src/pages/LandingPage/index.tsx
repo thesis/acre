@@ -25,33 +25,24 @@ export default function LandingPage() {
           <IconCard
             flex={1}
             header="Rewards Boost"
-            body={
-              <>
-                Boosts your APY when <br /> Acre fully launches
-              </>
-            }
             icon={{ src: boostCardIcon }}
-          />
+          >
+            Boosts your APY when <br /> Acre fully launches
+          </IconCard>
           <IconCard
             flex={1}
             header="Mystery Box"
-            body={
-              <>
-                Grants you a random <br /> reward gift.
-              </>
-            }
             icon={{ src: misteryCardIcon }}
-          />
+          >
+            Grants you a random <br /> reward gift.
+          </IconCard>
           <IconCard
             flex={1}
             header="All Seasons Key"
-            body={
-              <>
-                Grants access to all <br /> upcoming seasons
-              </>
-            }
             icon={{ src: keyCardIcon }}
-          />
+          >
+            Grants access to all <br /> upcoming seasons
+          </IconCard>
         </HStack>
         <ValueCard header="Users joined" value="8,172" />
         <TVLCard />

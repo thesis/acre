@@ -11,17 +11,16 @@ import {
 
 type IconCardProps = CardProps & {
   header: React.ReactNode
-  body: React.ReactNode
   icon: ImageProps
 }
 
 export default function IconCard(props: IconCardProps) {
-  const { header, body, icon, ...restProps } = props
+  const { header, children, icon, ...restProps } = props
 
   return (
     <Card variant="icon" {...restProps}>
       <CardHeader>{header}</CardHeader>
-      <CardBody>{body}</CardBody>
+      {children && <CardBody>{children}</CardBody>}
       <CardFooter>
         <Image
           pointerEvents="none"
