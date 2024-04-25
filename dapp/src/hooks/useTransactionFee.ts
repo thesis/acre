@@ -11,11 +11,10 @@ export function useTransactionFee(amount?: bigint) {
 
   useEffect(() => {
     const getEstimatedDepositFee = async () => {
-      if (!acre) throw new Error("Acre SDK not defined")
-      if (!amount) return
-      const edf = await acre.staking.estimateDepositFee(amount)
+      if (!acre || !amount) return
+      const depositFee = await acre.staking.estimateDepositFee(amount)
 
-      dispatch(setEstimatedDepositFee(edf))
+      dispatch(setEstimatedDepositFee(depositFee))
     }
     logPromiseFailure(getEstimatedDepositFee())
   }, [acre, isInitialized, dispatch, amount])
