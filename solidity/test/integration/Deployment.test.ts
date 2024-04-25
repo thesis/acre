@@ -3,77 +3,50 @@ import { expect } from "chai"
 import { Contract, MaxUint256, ZeroAddress } from "ethers"
 import { helpers, deployments, ethers } from "hardhat"
 
-import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
-import { deployment } from "./helpers/context"
+import { deployment } from "../helpers/context"
 
 import type {
   StBTC as stBTC,
   TestERC20,
   MezoAllocator,
-  IMezoPortal,
   BitcoinDepositor,
-  IBridge,
-  ITBTCVault,
-} from "../typechain"
-import { getDeployedContract } from "./helpers"
-
-const { getNamedSigners } = helpers.signers
+} from "../../typechain"
+import { getDeployedContract } from "../helpers"
 
 async function fixture() {
-  const {
-    tbtc,
-    stbtc,
-    mezoAllocator,
-    mezoPortal,
-    bitcoinDepositor,
-    tbtcBridge,
-    tbtcVault,
-  } = await deployment()
-  const { governance, maintainer, treasury, pauseAdmin } =
-    await getNamedSigners()
+  const { stbtc, mezoAllocator, bitcoinDepositor, tbtc } = await deployment()
 
   return {
     stbtc,
     mezoAllocator,
-    tbtc,
-    mezoPortal,
     bitcoinDepositor,
-    tbtcBridge,
-    tbtcVault,
-    governance,
-    maintainer,
-    treasury,
-    pauseAdmin,
+    tbtc,
   }
+}
+
+const mainnetContracts = {
+  mezoPortal: "0xAB13B8eecf5AA2460841d75da5d5D861fD5B8A39",
+  tbtc: "0x18084fbA666a33d37592fA2633fD49a74DD93a88",
+  bridge: "0x5e4861a80B55f035D899f66772117F00FA0E8e7B",
+  tbtcVault: "0x9C070027cdC9dc8F82416B2e5314E11DFb4FE3CD",
+}
+
+const mainnetAccounts = {
+  treasury: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+  governance: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+  pauseAdmin: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+  maintainer: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
 }
 
 describe("Deployment", () => {
   let stbtc: stBTC
   let mezoAllocator: MezoAllocator
   let tbtc: TestERC20
-  let mezoPortal: IMezoPortal
   let bitcoinDepositor: BitcoinDepositor
-  let tbtcBridge: IBridge
-  let tbtcVault: ITBTCVault
-  let maintainer: HardhatEthersSigner
-  let treasury: HardhatEthersSigner
-  let governance: HardhatEthersSigner
-  let pauseAdmin: HardhatEthersSigner
 
   before(async () => {
-    ;({
-      stbtc,
-      mezoAllocator,
-      tbtc,
-      mezoPortal,
-      bitcoinDepositor,
-      tbtcBridge,
-      tbtcVault,
-      maintainer,
-      treasury,
-      governance,
-      pauseAdmin,
-    } = await loadFixture(fixture))
+    ;({ stbtc, mezoAllocator, bitcoinDepositor, tbtc } =
+      await loadFixture(fixture))
   })
 
   function testUpgradeableInitialization(
@@ -112,25 +85,23 @@ describe("Deployment", () => {
 
     describe("initializer", () => {
       it("should set asset", async () => {
-        expect(await stbtc.asset()).to.be.equal(await tbtc.getAddress())
+        expect(await stbtc.asset()).to.be.equal(mainnetContracts.tbtc)
       })
 
       it("should set treasury", async () => {
-        expect(await stbtc.treasury()).to.be.equal(await treasury.getAddress())
+        expect(await stbtc.treasury()).to.be.equal(mainnetAccounts.treasury)
       })
     })
 
     describe("ownable", () => {
       it("should set owner", async () => {
-        expect(await stbtc.owner()).to.be.equal(await governance.getAddress())
+        expect(await stbtc.owner()).to.be.equal(mainnetAccounts.governance)
       })
     })
 
     describe("pausable", () => {
       it("should set pauseAdmin", async () => {
-        expect(await stbtc.pauseAdmin()).to.be.equal(
-          await pauseAdmin.getAddress(),
-        )
+        expect(await stbtc.pauseAdmin()).to.be.equal(mainnetAccounts.pauseAdmin)
       })
     })
 
@@ -153,16 +124,21 @@ describe("Deployment", () => {
   })
 
   describe("MezoAllocator", () => {
-    testUpgradeableInitialization("MezoAllocator", ZeroAddress, ZeroAddress)
+    testUpgradeableInitialization(
+      "MezoAllocator",
+      ZeroAddress,
+      ZeroAddress,
+      ZeroAddress,
+    )
 
     it("should set mezoPortal", async () => {
       expect(await mezoAllocator.mezoPortal()).to.be.equal(
-        await mezoPortal.getAddress(),
+        mainnetContracts.mezoPortal,
       )
     })
 
     it("should set tbtc", async () => {
-      expect(await mezoAllocator.tbtc()).to.be.equal(await tbtc.getAddress())
+      expect(await mezoAllocator.tbtc()).to.be.equal(mainnetContracts.tbtc)
     })
 
     it("should set stbtc", async () => {
@@ -171,18 +147,19 @@ describe("Deployment", () => {
 
     it("should set owner", async () => {
       expect(await mezoAllocator.owner()).to.be.equal(
-        await governance.getAddress(),
+        mainnetAccounts.governance,
       )
     })
 
     it("should set maintainer", async () => {
-      expect(await mezoAllocator.isMaintainer(maintainer.address)).to.be.true
+      expect(await mezoAllocator.isMaintainer(mainnetAccounts.maintainer)).to.be
+        .true
     })
   })
 
   describe("BitcoinDepositor", () => {
     testUpgradeableInitialization(
-      "AcreBitcoinDepositor",
+      "BitcoinDepositor",
       ZeroAddress,
       ZeroAddress,
       ZeroAddress,
@@ -191,19 +168,19 @@ describe("Deployment", () => {
 
     it("should set bridge", async () => {
       expect(await bitcoinDepositor.bridge()).to.be.equal(
-        await tbtcBridge.getAddress(),
+        mainnetContracts.bridge,
       )
     })
 
     it("should set tbtcVault", async () => {
       expect(await bitcoinDepositor.tbtcVault()).to.be.equal(
-        await tbtcVault.getAddress(),
+        mainnetContracts.tbtcVault,
       )
     })
 
     it("should set tbtc", async () => {
       expect(await bitcoinDepositor.tbtcToken()).to.be.equal(
-        await tbtc.getAddress(),
+        mainnetContracts.tbtc,
       )
     })
 
@@ -215,7 +192,7 @@ describe("Deployment", () => {
 
     it("should set owner", async () => {
       expect(await bitcoinDepositor.owner()).to.be.equal(
-        await governance.getAddress(),
+        mainnetAccounts.governance,
       )
     })
   })
