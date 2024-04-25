@@ -26,6 +26,12 @@ const config: HardhatUserConfig = {
   },
 
   networks: {
+    hardhat: {
+      forking:
+        process.env.FORKING === "true"
+          ? { url: process.env.CHAIN_API_URL ?? "", blockNumber: 19680873 }
+          : undefined,
+    },
     integration: {
       url: "http://localhost:8545",
     },

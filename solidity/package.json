@@ -26,6 +26,7 @@
     "lint:sol:fix": "solhint 'contracts/**/*.sol' --fix && prettier --write 'contracts/**/*.sol'",
     "lint:config": "prettier --check '**/*.@(json)'",
     "lint:config:fix": "prettier --write '**/*.@(json)'",
+    "node:forking": "FORKING=true hardhat node --no-deploy",
     "test": "hardhat test ./test/*.test.ts",
     "test:integration": "hardhat test --deploy-fixture ./test/integration/*.test.ts --network integration"
   },
