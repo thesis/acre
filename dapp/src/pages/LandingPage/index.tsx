@@ -9,6 +9,8 @@ import ValueCard from "./ValueCard"
 import TVLCard from "./TVLCard"
 import ContentCard from "./ContentCard"
 import CardButton from "./CardButton"
+import HeroSection from "./HeroSection"
+
 
 export default function LandingPage() {
   return (
@@ -20,6 +22,7 @@ export default function LandingPage() {
       maxW="100.625rem"
       mx="auto"
     >
+      <HeroSection />
       <VStack spacing={4} mx={32} align="stretch">
         <HStack spacing={5} align="stretch" mb={12} w="full">
           <IconCard
