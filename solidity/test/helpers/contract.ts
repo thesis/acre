@@ -14,7 +14,6 @@ export async function getDeployedContract<T extends BaseContract>(
   deploymentName: string,
 ): Promise<T> {
   const { address, abi } = await deployments.get(deploymentName)
-
   // Use default unnamed signer from index 0 to initialize the contract runner.
   const [defaultSigner] = await getUnnamedSigners()
 
