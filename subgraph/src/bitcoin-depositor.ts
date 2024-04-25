@@ -22,7 +22,9 @@ export function handleDepositInitialized(event: DepositInitializedEvent): void {
   depositEntity.depositOwner = depositOwnerEntity.id
   depositEntity.initialDepositAmount = event.params.initialAmount
 
-  const eventEntity = getOrCreateEvent(event.transaction.hash.toHexString())
+  const eventEntity = getOrCreateEvent(
+    `${event.transaction.hash.toHexString()}_DepositInitialized`,
+  )
 
   eventEntity.activity = depositEntity.id
   eventEntity.timestamp = event.block.timestamp
@@ -51,7 +53,9 @@ export function handleDepositFinalized(event: DepositFinalizedEvent): void {
     ).toBigInt()
   }
 
-  const eventEntity = getOrCreateEvent(event.transaction.hash.toHexString())
+  const eventEntity = getOrCreateEvent(
+    `${event.transaction.hash.toHexString()}_DepositFinalized`,
+  )
 
   eventEntity.activity = depositEntity.id
   eventEntity.timestamp = event.block.timestamp

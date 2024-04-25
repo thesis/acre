@@ -80,7 +80,7 @@ describe("handleDepositInitialized", () => {
   })
 
   test("Event entity has proper fields", () => {
-    const txId = depositInitializedEvent.transaction.hash.toHexString()
+    const txId = `${depositInitializedEvent.transaction.hash.toHexString()}_DepositInitialized`
 
     assert.fieldEquals(
       "Event",
@@ -158,7 +158,7 @@ describe("handleDepositFinalized", () => {
   })
 
   test("Event entity has proper fields", () => {
-    const txId = depositFinalizedEvent.transaction.hash.toHexString()
+    const txId = `${depositInitializedEvent.transaction.hash.toHexString()}_DepositFinalized`
 
     assert.fieldEquals(
       "Event",
