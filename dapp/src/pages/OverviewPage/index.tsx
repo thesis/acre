@@ -13,7 +13,11 @@ import { DashboardCard } from "./DashboardCard"
 export default function OverviewPage() {
   return (
     <Flex p={6}>
-      <DashboardCard bitcoinAmount={499000000} usdAmount="311683.38" />
+      <DashboardCard
+        positionPercentage={20}
+        bitcoinAmount={499000000}
+        usdAmount="311683.38"
+      />
     </Flex>
   )
 

@@ -30,31 +30,78 @@ export default function DashboardCard(props: DashboardCardProps) {
     <Card px={5} py={10} gap={10} {...restProps}>
       <CardHeader p={0} textAlign="center">
         {positionPercentage ? (
-          <TextMd>
-            My position <Tag>Top {positionPercentage}%</Tag>
+          <TextMd fontWeight="bold">
+            My position
+            <Tag
+              px={3}
+              py={1}
+              ml={2}
+              borderWidth={0}
+              color="gold.100"
+              bg="gold.700"
+              fontWeight="bold"
+              lineHeight={5}
+              verticalAlign="baseline"
+            >
+              Top {positionPercentage}%
+            </Tag>
           </TextMd>
         ) : (
           // TODO: Update when designer provides alternative copy
-          <TextMd>Dashboard</TextMd>
+          <TextMd fontWeight="bold">Dashboard</TextMd>
         )}
       </CardHeader>
       <CardBody as={VStack} p={0} spacing={10}>
         <VStack justify="center" spacing={6}>
           <VStack justify="center" spacing={0}>
-            <CurrencyBalance amount={bitcoinAmount} currency="bitcoin" />
+            <CurrencyBalance
+              amount={bitcoinAmount}
+              currency="bitcoin"
+              fontSize="6xl"
+              lineHeight={1.2}
+              letterSpacing="-0.075rem" // -1.2px
+              fontWeight="bold"
+              color="grey.700"
+            />
             <CurrencyBalance
               amount={usdAmount}
               currency="usd"
               shouldBeFormatted={false}
+              color="grey.500"
+              fontWeight="medium"
             />
           </VStack>
 
-          <Tag>Rewards Boost</Tag>
+          <Tag // TODO: Add icon, define as `IconTag`
+            borderWidth={0}
+            bg="gold.400"
+            fontSize="sm"
+            lineHeight={5}
+            fontWeight="bold"
+            pl={1}
+            gap={2}
+            color="grey.700"
+          >
+            Rewards Boost
+          </Tag>
         </VStack>
 
-        <HStack spacing={2}>
-          <Button>Deposit More</Button>
-          <Button variant="outline">Withdraw</Button>
+        <HStack w="full" justify="center" spacing={2}>
+          <Button
+            flex={1}
+            maxW="12.5rem" // 200px
+            size="xl"
+          >
+            Deposit More
+          </Button>
+          <Button
+            flex={1}
+            maxW="12.5rem" // 200px
+            size="xl"
+            variant="outline"
+          >
+            Withdraw
+          </Button>
         </HStack>
       </CardBody>
     </Card>

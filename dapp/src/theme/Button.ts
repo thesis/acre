@@ -16,6 +16,14 @@ export const buttonTheme: ComponentSingleStyleConfig = {
       py: "1rem",
       borderRadius: "lg",
     },
+    xl: {
+      fontSize: "md",
+      fontWeight: "bold",
+      lineHeight: 6,
+      py: 4,
+      px: 7,
+      borderRadius: "lg",
+    },
   },
   variants: {
     solid: {
