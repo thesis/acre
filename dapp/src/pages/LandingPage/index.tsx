@@ -4,6 +4,7 @@ import {
   SeasonCountdownSection,
   HeroSection,
 } from "#/pages/LandingPage/components"
+
 export default function LandingPage() {
   return (
     <Flex
