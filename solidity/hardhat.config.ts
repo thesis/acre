@@ -96,21 +96,25 @@ const config: HardhatUserConfig = {
       default: 2,
       sepolia: 0, // TODO: updated to the actual address once available
       mainnet: "", // TODO: updated to the actual address once available
+      integration: 0, // TODO: update to the same value as mainnet
     },
     treasury: {
       default: 3,
       sepolia: 0, // TODO: updated to the actual address once available
       mainnet: "", // TODO: updated to the actual address once available
+      integration: 0, // TODO: update to the same value as mainnet
     },
     maintainer: {
       default: 4,
       sepolia: 0, // TODO: updated to the actual address once available
       mainnet: "", // TODO: updated to the actual address once available
+      integration: 0, // TODO: update to the same value as mainnet
     },
     pauseAdmin: {
       default: 5,
       sepolia: 0, // TODO: updated to the actual address once available
       mainnet: "", // TODO: updated to the actual address once available
+      integration: 0, // TODO: update to the same value as mainnet
     },
   },
 
