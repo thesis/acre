@@ -1,7 +1,7 @@
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 import { expect } from "chai"
 import { Contract, MaxUint256, ZeroAddress } from "ethers"
-import { helpers, deployments, ethers } from "hardhat"
+import { deployments, ethers } from "hardhat"
 
 import { deployment } from "../helpers/context"
 
