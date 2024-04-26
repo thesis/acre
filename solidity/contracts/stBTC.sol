@@ -255,8 +255,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         uint256 currentAssetsBalance = IERC20(asset()).balanceOf(address(this));
         // If there is not enough assets in stBTC to cover user withdrawals and
         // withdrawal fees then pull the assets from the dispatcher.
-        uint256 assetsWithFees = assets +
-            _feeOnRaw(assets, _exitFeeBasisPoints());
+        uint256 assetsWithFees = assets + _feeOnRaw(assets, exitFeeBasisPoints);
         if (assetsWithFees > currentAssetsBalance) {
             dispatcher.withdraw(assetsWithFees - currentAssetsBalance);
         }

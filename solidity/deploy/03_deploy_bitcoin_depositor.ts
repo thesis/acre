@@ -7,10 +7,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { governance } = await getNamedAccounts()
   const { deployer } = await helpers.signers.getNamedSigners()
 
-  let tbtc = await deployments.getOrNull("TBTC")
-  if (hre.network.name === "integration") {
-    tbtc = await deployments.getArtifact("TBTC")
-  }
+  const tbtc = await deployments.get("TBTC")
   const bridge = await deployments.get("Bridge")
   const tbtcVault = await deployments.get("TBTCVault")
   const stbtc = await deployments.get("stBTC")

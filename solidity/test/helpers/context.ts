@@ -14,7 +14,6 @@ import type {
 
 // eslint-disable-next-line import/prefer-default-export
 export async function deployment() {
-  const isIntegration = deployments.getNetworkName() === "integration"
   await deployments.fixture()
 
   const stbtc: stBTC = await getDeployedContract("stBTC")
@@ -23,16 +22,13 @@ export async function deployment() {
   const bitcoinRedeemer: BitcoinRedeemer =
     await getDeployedContract("BitcoinRedeemer")
 
-  const tbtc: TestTBTC = await getDeployedContract("TBTC", isIntegration)
+  const tbtc: TestTBTC = await getDeployedContract("TBTC")
   const tbtcBridge: BridgeStub = await getDeployedContract("Bridge")
   const tbtcVault: TBTCVaultStub = await getDeployedContract("TBTCVault")
 
   const mezoAllocator: MezoAllocator =
     await getDeployedContract("MezoAllocator")
-  const mezoPortal: IMezoPortal = await getDeployedContract(
-    "MezoPortal",
-    isIntegration,
-  )
+  const mezoPortal: IMezoPortal = await getDeployedContract("MezoPortal")
 
   return {
     tbtc,

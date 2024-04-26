@@ -1,4 +1,4 @@
-import { helpers } from "hardhat"
+import { helpers, ethers } from "hardhat"
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
 import { expect } from "chai"
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers"
@@ -63,7 +63,6 @@ describe("MezoAllocator", () => {
     } = await loadFixture(fixture))
 
     await impersonateAccount(whaleAddress)
-    // eslint-disable-next-line
     tbtcHolder = await ethers.getSigner(whaleAddress)
   })
 
@@ -105,7 +104,7 @@ describe("MezoAllocator", () => {
 
         it("should increment the deposit id", async () => {
           const actualDepositId = await mezoAllocator.depositId()
-          // As of writing this test, the deposit id was 2272 before the new
+          // As of a forked block 19680873, the deposit id was 2272 before the new
           // allocation. The deposit id should be incremented by 1.
           expect(actualDepositId).to.equal(2273)
         })
@@ -183,16 +182,20 @@ describe("MezoAllocator", () => {
 
     context("when the caller is stBTC contract", () => {
       context("when there is no deposit", () => {
+        beforeAfterSnapshotWrapper()
+
         it("should revert", async () => {
-          // It is reverted because deposit Id is 0 and there is no deposit
-          // with id 0 in Mezo Portal for Acre. Mezo Portal reverts with the
-          // "unrecognized custom error" that is why we verify only against
-          // a generic revert.
-          await expect(stbtc.withdraw(1n, depositor, depositor)).to.be.reverted
+          // It is reverted because deposit id is 0 and there is no deposit
+          // with id 0 in Mezo Portal for Acre.
+          await expect(
+            stbtc.withdraw(1n, depositor, depositor),
+          ).to.be.revertedWithCustomError(mezoPortal, "DepositNotFound")
         })
       })
 
       context("when there is a deposit", () => {
+        beforeAfterSnapshotWrapper()
+
         let tx: ContractTransactionResponse
 
         before(async () => {
@@ -203,6 +206,8 @@ describe("MezoAllocator", () => {
         })
 
         context("when the deposit is not fully withdrawn", () => {
+          beforeAfterSnapshotWrapper()
+
           before(async () => {
             tx = await stbtc.withdraw(to1e18(2), depositor, depositor)
           })
@@ -236,22 +241,24 @@ describe("MezoAllocator", () => {
         })
 
         context("when the deposit is fully withdrawn", () => {
+          beforeAfterSnapshotWrapper()
+
           before(async () => {
-            tx = await stbtc.withdraw(to1e18(3), depositor, depositor)
+            tx = await stbtc.withdraw(to1e18(5), depositor, depositor)
           })
 
-          it("should transfer 3 tBTC back to a depositor", async () => {
+          it("should transfer 5 tBTC back to a depositor", async () => {
             await expect(tx).to.changeTokenBalances(
               tbtc,
               [depositor.address],
-              [to1e18(3)],
+              [to1e18(5)],
             )
           })
 
           it("should emit DepositWithdrawn event", async () => {
             await expect(tx)
               .to.emit(mezoAllocator, "DepositWithdrawn")
-              .withArgs(2273, to1e18(3))
+              .withArgs(2273, to1e18(5))
           })
 
           it("should decrease tracked deposit balance amount to zero", async () => {
@@ -263,8 +270,21 @@ describe("MezoAllocator", () => {
             await expect(tx).to.changeTokenBalances(
               tbtc,
               [await mezoPortal.getAddress()],
-              [-to1e18(3)],
+              [-to1e18(5)],
             )
+          })
+        })
+
+        context("when withdrawing more than was deposited", () => {
+          beforeAfterSnapshotWrapper()
+
+          it("should revert", async () => {
+            await expect(stbtc.withdraw(to1e18(6), depositor, depositor))
+              .to.be.revertedWithCustomError(
+                mezoPortal,
+                "InsufficientDepositAmount",
+              )
+              .withArgs(to1e18(6), to1e18(5))
           })
         })
       })
