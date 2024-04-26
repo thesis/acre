@@ -115,6 +115,40 @@ jobs:
       - name: Test
         run: pnpm run test --no-compile
 
+  solidity-integration-test:
+    needs: [solidity-build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: "solidity/.nvmrc"
+          cache: "pnpm"
+
+      - name: Install Dependencies
+        run: pnpm install --prefer-offline --frozen-lockfile
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: solidity-build
+          path: solidity/
+
+      - name: Run Hardhat Node
+        env:
+          MAINNET_RPC_URL: ${{ secrets.MAINNET_CHAIN_API_URL }}
+        run: |
+          pnpm node:forking &
+          while [[ -z $(lsof -i :8545 -t) ]]; do echo "Waiting for port 8545 to be open..."; sleep 10; done
+
+      - name: Run Integration Tests
+        run: pnpm run test:integration --no-compile
+
   solidity-deploy-dry-run:
     needs: [solidity-build]
     runs-on: ubuntu-latest
