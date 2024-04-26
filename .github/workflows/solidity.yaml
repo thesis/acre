@@ -140,8 +140,10 @@ jobs:
           path: solidity/
 
       - name: Run Hardhat Node
+        env:
+          MAINNET_RPC_URL: ${{ secrets.MAINNET_CHAIN_API_URL }}
         run: |
-          MAINNET_RPC_URL=${{ secrets.MAINNET_CHAIN_API_URL }} pnpm node:forking &
+          pnpm node:forking &
           while [[ -z $(lsof -i :8545 -t) ]]; do echo "Waiting for port 8545 to be open..."; sleep 10; done
 
       - name: Run Integration Tests
