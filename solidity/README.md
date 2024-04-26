@@ -28,10 +28,12 @@ $ pnpm test
 
 To run the integration tests follow these steps:
 
-- Run the Hardhat Node locally forking Mainnet at block `19680873`:
+- Define `MAINNET_RPC_URL` environment variable pointing to Ethereum Mainnet RPC URL.
+
+- Run the Hardhat Node locally forking Mainnet:
 
 ```
-$ npx hardhat node --no-deploy --fork https://eth-mainnet.g.alchemy.com/v2/<key> --fork-block-number 19680873
+$ pnpm run node:forking
 ```
 
 - Once the local node is running you can execute the integration tests:
