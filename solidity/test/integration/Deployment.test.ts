@@ -31,6 +31,7 @@ const mainnetContracts = {
   tbtcVault: "0x9C070027cdC9dc8F82416B2e5314E11DFb4FE3CD",
 }
 
+// TODO: Replace with actual addresses once defined for mainnet.
 const mainnetAccounts = {
   treasury: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
   governance: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
