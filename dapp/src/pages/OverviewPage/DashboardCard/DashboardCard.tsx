@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react"
 import {
   Button,
@@ -14,6 +15,8 @@ import {
   CurrencyBalance,
   CurrencyBalanceProps,
 } from "#/components/shared/CurrencyBalance"
+import IconTag from "#/components/shared/IconTag"
+import { BoostArrow } from "#/assets/icons/BoostArrow"
 
 type AmountType = CurrencyBalanceProps["amount"]
 type DashboardCardProps = CardProps & {
@@ -72,18 +75,8 @@ export default function DashboardCard(props: DashboardCardProps) {
             />
           </VStack>
 
-          <Tag // TODO: Add icon, define as `IconTag`
-            borderWidth={0}
-            bg="gold.400"
-            fontSize="sm"
-            lineHeight={5}
-            fontWeight="bold"
-            pl={1}
-            gap={2}
-            color="grey.700"
-          >
-            Rewards Boost
-          </Tag>
+          {/* // TODO: Bring it back in post MVP phases  */}
+          {/* <IconTag icon={BoostArrow}>Rewards Boost</IconTag> */}
         </VStack>
 
         <HStack w="full" justify="center" spacing={2}>
