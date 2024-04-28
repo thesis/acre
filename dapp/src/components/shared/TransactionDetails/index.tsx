@@ -1,5 +1,5 @@
 import React from "react"
-import { ListItem, ListItemProps, VStack } from "@chakra-ui/react"
+import { ListItem, ListItemProps } from "@chakra-ui/react"
 import { TextMd } from "../Typography"
 
 export type TransactionDetailsItemProps = {
@@ -21,16 +21,9 @@ function TransactionDetailsItem({
       alignItems="center"
       {...listItemProps}
     >
-      <VStack alignItems="start" gap={0}>
-        <TextMd
-          display="flex"
-          alignItems="center"
-          fontWeight="semibold"
-          color="grey.700"
-        >
-          {label}
-        </TextMd>
-      </VStack>
+      <TextMd fontWeight="semibold" color="grey.700">
+        {label}
+      </TextMd>
       {value ? <TextMd color="grey.700">{value}</TextMd> : children}
     </ListItem>
   )
