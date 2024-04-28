@@ -36,25 +36,23 @@ export function handleDepositInitialized(event: DepositInitializedEvent): void {
 export function handleDepositFinalized(event: DepositFinalizedEvent): void {
   const depositEntity = Deposit.load(event.params.depositKey.toHexString())
 
-  if (!depositEntity) {
-    throw new Error("Deposit entity does not exist")
+  if (depositEntity) {
+    depositEntity.bridgedAmount = event.params.bridgedAmount
+    depositEntity.depositorFee = event.params.depositorFee
+    depositEntity.amountToDeposit = event.params.bridgedAmount.minus(
+      event.params.depositorFee,
+    )
+    depositEntity.referral = event.params.referral
+
+    const eventEntity = getOrCreateEvent(
+      `${event.transaction.hash.toHexString()}_DepositFinalized`,
+    )
+
+    eventEntity.activity = depositEntity.id
+    eventEntity.timestamp = event.block.timestamp
+    eventEntity.type = "Finalized"
+
+    depositEntity.save()
+    eventEntity.save()
   }
-
-  depositEntity.bridgedAmount = event.params.bridgedAmount
-  depositEntity.depositorFee = event.params.depositorFee
-  depositEntity.amountToDeposit = event.params.bridgedAmount.minus(
-    event.params.depositorFee,
-  )
-  depositEntity.referral = event.params.referral
-
-  const eventEntity = getOrCreateEvent(
-    `${event.transaction.hash.toHexString()}_DepositFinalized`,
-  )
-
-  eventEntity.activity = depositEntity.id
-  eventEntity.timestamp = event.block.timestamp
-  eventEntity.type = "Finalized"
-
-  depositEntity.save()
-  eventEntity.save()
 }
