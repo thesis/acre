@@ -24,7 +24,7 @@ type Deposit implements ActivityData @entity {
   bridgedAmount: BigInt
   depositorFee: BigInt
   amountToDeposit: BigInt
-  referral: BigInt
+  referral: Int
   bitcoinTransactionId: String
 }
 

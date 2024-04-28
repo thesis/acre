@@ -1,5 +1,3 @@
-import { ethereum } from "@graphprotocol/graph-ts"
-
 import {
   DepositInitialized as DepositInitializedEvent,
   DepositFinalized as DepositFinalizedEvent,
@@ -47,11 +45,7 @@ export function handleDepositFinalized(event: DepositFinalizedEvent): void {
   depositEntity.amountToDeposit = event.params.bridgedAmount.minus(
     event.params.depositorFee,
   )
-  if (event.params.referral) {
-    depositEntity.referral = ethereum.Value.fromI32(
-      event.params.referral,
-    ).toBigInt()
-  }
+  depositEntity.referral = event.params.referral
 
   const eventEntity = getOrCreateEvent(
     `${event.transaction.hash.toHexString()}_DepositFinalized`,
