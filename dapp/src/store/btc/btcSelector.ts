@@ -8,7 +8,7 @@ export const selectSharesBalance = (state: RootState): bigint =>
   state.btc.sharesBalance
 
 export const selectEstimatedDepositFee = (state: RootState): DepositFee =>
-  state.btc.estimateDepositFee
+  state.btc.estimatedDepositFee
 
 export const selectBtcUsdPrice = (state: RootState): number =>
   state.btc.usdPrice
