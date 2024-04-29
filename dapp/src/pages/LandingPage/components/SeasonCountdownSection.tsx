@@ -7,7 +7,7 @@ import {
   CountdownTimer,
 } from "#/components/shared/SeasonCountdownSection"
 
-const MOCK_SEASON_DUE_TIMESTAMP = new Date(2024, 3, 20).getTime() / 1000
+const MOCK_SEASON_DUE_TIMESTAMP = new Date(2024, 3, 30).getTime() / 1000
 
 export default function SeasonCountdownSection() {
   return (

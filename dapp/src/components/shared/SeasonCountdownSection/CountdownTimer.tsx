@@ -10,6 +10,7 @@ import {
   StackProps,
 } from "@chakra-ui/react"
 import { AnimatePresence, motion } from "framer-motion"
+import { Tuple } from "#/types"
 
 const MotionBox = motion(Box)
 
@@ -62,7 +63,7 @@ function CountdownTimerSegmentLabel(props: TextProps) {
 
 type CountdownTimerSegmentProps = Omit<BoxProps, "children"> & {
   label: string
-  value: [number, number]
+  value: Tuple<number>
 }
 function CountdownTimerSegment(props: CountdownTimerSegmentProps) {
   const { label, value, ...restProps } = props
@@ -93,16 +94,27 @@ type CountdownTimerProps = Omit<StackProps, "children"> & {
 }
 export function CountdownTimer(props: CountdownTimerProps) {
   const { timestamp, ...restProps } = props
-  const countdown = useCountdown(timestamp, true)
+  const countdown = useCountdown(timestamp)
 
-  const parsedCountdown = useMemo<[string, [number, number]][]>(
+  const parsedCountdown = useMemo(
     () =>
-      Object.entries(countdown)
-        .filter(([key]) => key !== "seconds")
-        .map(([key, value]) => [
-          key,
-          [...value].map((x) => +x || 0) as [number, number],
-        ]),
+      Object.entries(countdown).reduce<[string, Tuple<number>][]>(
+        (accumulator, currentValue) => {
+          const [key, stringValue] = currentValue
+
+          if (key === "seconds") return accumulator
+
+          const value = +stringValue
+          const parsedValue = (
+            value > 0
+              ? Array.from(value.toString().padStart(2, "0")).map(Number)
+              : Array(2).fill(0)
+          ) as Tuple<number>
+
+          return [...accumulator, [key, parsedValue]]
+        },
+        [],
+      ),
     [countdown],
   )
   return (
