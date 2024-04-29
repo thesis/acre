@@ -1,6 +1,5 @@
 import { BitcoinTxHash } from "@keep-network/tbtc-v2.ts"
 import { ethers } from "ethers"
-import { OrangeKitSdk } from "@orangekit/sdk"
 import {
   AcreContracts,
   StakingModule,
@@ -16,14 +15,15 @@ import * as satoshiConverter from "../../src/lib/utils/satoshi-converter"
 import { MockAcreContracts } from "../utils/mock-acre-contracts"
 import { MockMessageSigner } from "../utils/mock-message-signer"
 import { MockTBTC } from "../utils/mock-tbtc"
+import { MockOrangeKitSdk } from "../utils/mock-orangekit"
 
 const stakingModuleData: {
-  initializeStake: {
-    staker: EthereumAddress
+  initializeDeposit: {
     referral: number
     extraData: Hex
-    bitcoinRecoveryAddress: string
     mockedDepositBTCAddress: string
+    bitcoinDepositorAddress: string
+    predictedEthereumDepositorAddress: EthereumAddress
   }
   estimateDepositFees: {
     amount: bigint
@@ -33,15 +33,18 @@ const stakingModuleData: {
     expectedDepositFeesInSatoshi: DepositFee
   }
 } = {
-  initializeStake: {
-    staker: EthereumAddress.from(ethers.Wallet.createRandom().address),
+  initializeDeposit: {
     referral: 1,
+
     extraData: Hex.from(
       "0xeb098d6cde6a202981316b24b19e64d82721e89e4d0000000000000000000000",
     ),
-    bitcoinRecoveryAddress: "mjc2zGWypwpNyDi4ZxGbBNnUA84bfgiwYc",
     mockedDepositBTCAddress:
       "tb1qma629cu92skg0t86lftyaf9uflzwhp7jk63h6mpmv3ezh6puvdhs6w2r05",
+    bitcoinDepositorAddress: "mjc2zGWypwpNyDi4ZxGbBNnUA84bfgiwYc",
+    predictedEthereumDepositorAddress: EthereumAddress.from(
+      "0x9996baD9C879B1643Ac921454815F93BadA090AB",
+    ),
   },
   estimateDepositFees: {
     amount: 10_000_000n, // 0.1 BTC,
@@ -85,7 +88,7 @@ const stakingInitializationData: {
     walletPublicKeyHash: Hex.from("666666"),
     refundPublicKeyHash: Hex.from("0x2cd680318747b720d67bf4246eb7403b476adb34"),
     refundLocktime: Hex.from("888888"),
-    extraData: stakingModuleData.initializeStake.extraData,
+    extraData: stakingModuleData.initializeDeposit.extraData,
   },
   mockedInitializeTxHash: Hex.from("999999"),
   fundingUtxo: {
@@ -101,23 +104,29 @@ describe("Staking", () => {
   const contracts: AcreContracts = new MockAcreContracts()
   const messageSigner = new MockMessageSigner()
   const tbtc = new MockTBTC()
-  const orangeKit = {} as OrangeKitSdk
+  const orangeKit = new MockOrangeKitSdk()
 
   const staking: StakingModule = new StakingModule(
     contracts,
     messageSigner,
     tbtc,
+    // @ts-expect-error Error: Property '#private' is missing in type
+    // 'MockOrangeKitSdk' but required in type 'OrangeKitSdk'.
     orangeKit,
   )
 
   describe("initializeStake", () => {
     const {
       mockedDepositBTCAddress,
-      bitcoinRecoveryAddress,
-      staker,
+      bitcoinDepositorAddress,
+      predictedEthereumDepositorAddress,
       referral,
       extraData,
-    } = stakingModuleData.initializeStake
+    } = stakingModuleData.initializeDeposit
+    // TODO: Rename to `depositor`.
+    const staker = predictedEthereumDepositorAddress
+    const bitcoinRecoveryAddress = bitcoinDepositorAddress
+
     const mockedDeposit = {
       getBitcoinAddress: jest.fn().mockResolvedValue(mockedDepositBTCAddress),
       detectFunding: jest.fn(),
@@ -143,9 +152,24 @@ describe("Staking", () => {
           .fn()
           .mockReturnValue(mockedDeposit)
 
+        orangeKit.predictAddress = jest
+          .fn()
+          .mockResolvedValue(
+            `0x${predictedEthereumDepositorAddress.identifierHex}`,
+          )
+
         messageSigner.sign = jest.fn().mockResolvedValue(mockedSignedMessage)
 
-        result = await staking.initializeStake(bitcoinRecoveryAddress, referral)
+        result = await staking.initializeStake(
+          bitcoinDepositorAddress,
+          referral,
+        )
+      })
+
+      it("should get Ethereum depositor owner address", () => {
+        expect(orangeKit.predictAddress).toHaveBeenCalledWith(
+          bitcoinDepositorAddress,
+        )
       })
 
       it("should encode extra data", () => {
@@ -154,7 +178,7 @@ describe("Staking", () => {
 
       it("should initiate tBTC deposit", () => {
         expect(tbtc.deposits.initiateDepositWithProxy).toHaveBeenCalledWith(
-          bitcoinRecoveryAddress,
+          bitcoinDepositorAddress,
           contracts.bitcoinDepositor,
           extraData,
         )
@@ -195,7 +219,9 @@ describe("Staking", () => {
             const depositorAddress = ethers.Wallet.createRandom().address
 
             beforeEach(async () => {
-              mockedSignedMessage.verify.mockReturnValue(staker)
+              mockedSignedMessage.verify.mockReturnValue(
+                predictedEthereumDepositorAddress,
+              )
               contracts.bitcoinDepositor.getChainIdentifier = jest
                 .fn()
                 .mockReturnValue(EthereumAddress.from(depositorAddress))
@@ -218,8 +244,9 @@ describe("Staking", () => {
                   ],
                 },
                 {
-                  ethereumStakerAddress: staker.identifierHex,
-                  bitcoinRecoveryAddress,
+                  ethereumStakerAddress:
+                    predictedEthereumDepositorAddress.identifierHex,
+                  bitcoinRecoveryAddress: bitcoinDepositorAddress,
                 },
               )
             })
@@ -250,7 +277,9 @@ describe("Staking", () => {
 
         describe("stake", () => {
           beforeAll(() => {
-            mockedSignedMessage.verify.mockReturnValue(staker)
+            mockedSignedMessage.verify.mockReturnValue(
+              predictedEthereumDepositorAddress,
+            )
           })
 
           describe("when the message has not been signed yet", () => {
@@ -392,17 +421,18 @@ describe("Staking", () => {
   })
 
   describe("sharesBalance", () => {
-    const { staker } = stakingModuleData.initializeStake
+    const depositor = EthereumAddress.from(ethers.Wallet.createRandom().address)
+
     const expectedResult = 4294967295n
     let result: bigint
 
     beforeAll(async () => {
       contracts.stBTC.balanceOf = jest.fn().mockResolvedValue(expectedResult)
-      result = await staking.sharesBalance(staker)
+      result = await staking.sharesBalance(depositor)
     })
 
     it("should get balance of stBTC", () => {
-      expect(contracts.stBTC.balanceOf).toHaveBeenCalledWith(staker)
+      expect(contracts.stBTC.balanceOf).toHaveBeenCalledWith(depositor)
     })
 
     it("should return value of the basis for calculating final BTC balance", () => {
@@ -412,17 +442,17 @@ describe("Staking", () => {
 
   describe("estimatedBitcoinBalance", () => {
     const expectedResult = 4294967295n
-    const { staker } = stakingModuleData.initializeStake
+    const depositor = EthereumAddress.from(ethers.Wallet.createRandom().address)
     let result: bigint
     beforeAll(async () => {
       contracts.stBTC.assetsBalanceOf = jest
         .fn()
         .mockResolvedValue(expectedResult)
-      result = await staking.estimatedBitcoinBalance(staker)
+      result = await staking.estimatedBitcoinBalance(depositor)
     })
 
     it("should get staker's balance of tBTC tokens in vault ", () => {
-      expect(contracts.stBTC.assetsBalanceOf).toHaveBeenCalledWith(staker)
+      expect(contracts.stBTC.assetsBalanceOf).toHaveBeenCalledWith(depositor)
     })
 
     it("should return maximum withdraw value", () => {
