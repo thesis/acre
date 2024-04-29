@@ -1,4 +1,4 @@
-import { Deposit as TbtcDeposit } from "@keep-network/tbtc-v2.ts"
+import { Deposit as TbtcSdkDeposit } from "@keep-network/tbtc-v2.ts"
 
 import type { DepositReceipt as TbtcSdkDepositReceipt } from "@keep-network/tbtc-v2.ts"
 import type { SaveRevealRequest as DepositRevealData } from "../../api/TbtcApi"
@@ -15,17 +15,17 @@ export type DepositReceipt = TbtcSdkDepositReceipt
 export default class Deposit {
   readonly #tbtcApi: TbtcApi
 
-  readonly #tbtcDeposit: TbtcDeposit
+  readonly #tbtcSdkDeposit: TbtcSdkDeposit
 
   readonly #revealData: DepositRevealData
 
   constructor(
     tbtcApi: TbtcApi,
-    tbtcDeposit: TbtcDeposit,
+    tbtcSdkDeposit: TbtcSdkDeposit,
     revealData: DepositRevealData,
   ) {
     this.#tbtcApi = tbtcApi
-    this.#tbtcDeposit = tbtcDeposit
+    this.#tbtcSdkDeposit = tbtcSdkDeposit
     this.#revealData = revealData
   }
 
@@ -36,7 +36,7 @@ export default class Deposit {
    * @returns The Bitcoin address corresponding to this deposit.
    */
   async getBitcoinAddress(): Promise<string> {
-    return this.#tbtcDeposit.getBitcoinAddress()
+    return this.#tbtcSdkDeposit.getBitcoinAddress()
   }
 
   /**
@@ -44,7 +44,7 @@ export default class Deposit {
    * @returns The deposit receipt.
    */
   getReceipt(): DepositReceipt {
-    return this.#tbtcDeposit.getReceipt()
+    return this.#tbtcSdkDeposit.getReceipt()
   }
 
   /**
@@ -57,7 +57,7 @@ export default class Deposit {
       options.retires,
       options.backoffStepMs,
     )(async () => {
-      const utxos = await this.#tbtcDeposit.detectFunding()
+      const utxos = await this.#tbtcSdkDeposit.detectFunding()
 
       if (utxos.length === 0) throw new Error("Deposit not funded yet")
     })
