@@ -99,7 +99,7 @@ type CreateDepositRequest = {
 /**
  * Represents the status of a deposit.
  */
-enum DepositStatus {
+export enum DepositStatus {
   Queued = "QUEUED",
   Initialized = "INITIALIZED",
   Finalized = "FINALIZED",
