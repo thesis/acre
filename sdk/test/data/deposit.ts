@@ -3,7 +3,7 @@ import { BigNumber } from "@ethersproject/bignumber"
 import type { ChainIdentifier } from "../../src/lib/contracts"
 
 import type { DepositReceipt } from "../../src/modules/tbtc"
-import type { SaveRevealRequest } from "../../src/api/TbtcApi"
+import type { SaveRevealRequest } from "../lib/api/TbtcApi"
 
 const depositTestData: {
   depositOwner: ChainIdentifier

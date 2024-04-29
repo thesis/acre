@@ -1,6 +1,6 @@
 import { ChainIdentifier, TBTC as TbtcSdk } from "@keep-network/tbtc-v2.ts"
 
-import TbtcApi from "../../api/TbtcApi"
+import TbtcApi from "../../lib/api/TbtcApi"
 import { BitcoinDepositor } from "../../lib/contracts"
 import { EthereumNetwork } from "../../lib/ethereum"
 

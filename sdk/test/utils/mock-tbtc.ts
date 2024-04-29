@@ -1,7 +1,7 @@
 import { TBTC as TbtcSdk } from "@keep-network/tbtc-v2.ts"
 
 import Tbtc from "../../src/modules/tbtc"
-import TbtcApi from "../../src/api/TbtcApi"
+import TbtcApi from "../../src/lib/api/TbtcApi"
 
 import { BitcoinDepositor } from "../../src/lib/contracts"
 

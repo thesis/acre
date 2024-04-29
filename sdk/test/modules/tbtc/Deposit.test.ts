@@ -1,5 +1,5 @@
 import { Deposit as TbtcSdkDeposit } from "@keep-network/tbtc-v2.ts"
-import TbtcApi, { DepositStatus } from "../../../src/api/TbtcApi"
+import TbtcApi, { DepositStatus } from "../../../src/lib/api/TbtcApi"
 import Deposit from "../../../src/modules/tbtc/Deposit"
 
 import { fundingUtxo, revealTestData } from "../../data/deposit"

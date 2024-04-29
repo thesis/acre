@@ -6,7 +6,7 @@ import {
 
 import { EthereumSignerCompatibleWithEthersV5 } from "../../../src"
 import Deposit from "../../../src/modules/tbtc/Deposit"
-import TbtcApi from "../../../src/api/TbtcApi"
+import TbtcApi from "../../../src/lib/api/TbtcApi"
 
 import Tbtc from "../../../src/modules/tbtc"
 import {

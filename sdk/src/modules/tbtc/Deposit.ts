@@ -1,9 +1,9 @@
 import { Deposit as TbtcSdkDeposit } from "@keep-network/tbtc-v2.ts"
 
 import type { DepositReceipt as TbtcSdkDepositReceipt } from "@keep-network/tbtc-v2.ts"
-import type { SaveRevealRequest as DepositRevealData } from "../../api/TbtcApi"
+import type { SaveRevealRequest as DepositRevealData } from "../../lib/api/TbtcApi"
 
-import TbtcApi from "../../api/TbtcApi"
+import TbtcApi from "../../lib/api/TbtcApi"
 
 import { backoffRetrier, RetryOptions } from "../../lib/utils"
 
