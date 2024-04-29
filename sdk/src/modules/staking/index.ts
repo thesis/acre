@@ -50,7 +50,6 @@ class StakingModule {
    *                               funds.
    * @param staker The address to which the stBTC shares will be minted.
    * @param referral Data used for referral program.
-   * @param depositorProxy Depositor proxy used to initiate the deposit.
    * @returns Object represents the staking process.
    */
   async initializeStake(
