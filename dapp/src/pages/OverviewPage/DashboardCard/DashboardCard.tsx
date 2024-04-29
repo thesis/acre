@@ -22,9 +22,7 @@ type AmountType = CurrencyBalanceProps["amount"]
 type DashboardCardProps = CardProps & {
   bitcoinAmount: AmountType
   usdAmount: AmountType
-  // TODO: Make this required in post MVP (ternary operator below should be
-  //       removed)
-  positionPercentage?: number
+  positionPercentage?: number // TODO: Make this required in post MVP phase
 }
 
 export default function DashboardCard(props: DashboardCardProps) {
@@ -32,9 +30,9 @@ export default function DashboardCard(props: DashboardCardProps) {
   return (
     <Card px={5} py={10} gap={10} {...restProps}>
       <CardHeader p={0} textAlign="center">
-        {positionPercentage ? (
-          <TextMd fontWeight="bold">
-            My position
+        <TextMd fontWeight="bold">
+          My position
+          {positionPercentage && (
             <Tag
               px={3}
               py={1}
@@ -48,11 +46,8 @@ export default function DashboardCard(props: DashboardCardProps) {
             >
               Top {positionPercentage}%
             </Tag>
-          </TextMd>
-        ) : (
-          // TODO: Update when designer provides alternative copy
-          <TextMd fontWeight="bold">Dashboard</TextMd>
-        )}
+          )}
+        </TextMd>
       </CardHeader>
       <CardBody as={VStack} p={0} spacing={10}>
         <VStack justify="center" spacing={6}>
@@ -75,8 +70,7 @@ export default function DashboardCard(props: DashboardCardProps) {
             />
           </VStack>
 
-          {/* // TODO: Bring it back in post MVP phases  */}
-          {/* <IconTag icon={BoostArrow}>Rewards Boost</IconTag> */}
+          <IconTag icon={BoostArrow}>Rewards Boost</IconTag>
         </VStack>
 
         <HStack w="full" justify="center" spacing={2}>
