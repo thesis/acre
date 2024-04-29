@@ -1,33 +1,17 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-import {
-  BitcoinClient,
-  BitcoinNetwork,
-  DepositsService,
-  MaintenanceService,
-  RedemptionsService,
-  TBTC,
-  TBTCContracts,
-} from "@keep-network/tbtc-v2.ts"
+import { TBTC as TbtcSdk } from "@keep-network/tbtc-v2.ts"
+
+import Tbtc from "../../src/modules/tbtc"
+import TbtcApi from "../../src/api/TbtcApi"
+
+import { BitcoinDepositor } from "../../src/lib/contracts"
 
 // eslint-disable-next-line import/prefer-default-export
-export class MockTBTC implements TBTC {
-  deposits: DepositsService
-
-  maintenance: MaintenanceService
-
-  redemptions: RedemptionsService
-
-  tbtcContracts: TBTCContracts
-
-  bitcoinClient: BitcoinClient
-
+export class MockTbtc extends Tbtc {
   constructor() {
-    this.deposits = jest.fn() as unknown as DepositsService
-    this.maintenance = jest.fn() as unknown as MaintenanceService
-    this.redemptions = jest.fn() as unknown as RedemptionsService
-    this.tbtcContracts = jest.fn() as unknown as TBTCContracts
-    this.bitcoinClient = {
-      getNetwork: jest.fn().mockResolvedValue(BitcoinNetwork.Testnet),
-    } as unknown as BitcoinClient
+    const tbtcApi = jest.fn() as unknown as TbtcApi
+    const tbtcSdk = jest.fn() as unknown as TbtcSdk
+    const bitcoinDepositor = jest.fn() as unknown as BitcoinDepositor
+
+    super(tbtcApi, tbtcSdk, bitcoinDepositor)
   }
 }
