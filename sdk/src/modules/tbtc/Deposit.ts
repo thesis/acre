@@ -54,7 +54,7 @@ export default class Deposit {
    */
   async waitForFunding(options: RetryOptions): Promise<void> {
     await backoffRetrier<void>(
-      options.retires,
+      options.retries,
       options.backoffStepMs,
     )(async () => {
       const utxos = await this.#tbtcSdkDeposit.detectFunding()

@@ -141,7 +141,7 @@ class StakeInitialization {
    *                @see StakeOptions for more details.
    * @returns Transaction hash of the stake initiation transaction.
    */
-  async stake(options = { retires: 5, backoffStepMs: 5_000 }): Promise<string> {
+  async stake(options = { retries: 5, backoffStepMs: 5_000 }): Promise<string> {
     if (!this.#signedMessage) {
       throw new Error("Sign message first")
     }
