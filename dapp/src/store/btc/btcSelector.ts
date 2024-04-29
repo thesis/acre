@@ -1,4 +1,3 @@
-import { DepositFee } from "#/types"
 import { RootState } from ".."
 
 export const selectEstimatedBtcBalance = (state: RootState): bigint =>
@@ -6,10 +5,6 @@ export const selectEstimatedBtcBalance = (state: RootState): bigint =>
 
 export const selectSharesBalance = (state: RootState): bigint =>
   state.btc.sharesBalance
-
-export const selectEstimatedDepositFee = (
-  state: RootState,
-): DepositFee | undefined => state.btc.estimatedDepositFee
 
 export const selectBtcUsdPrice = (state: RootState): number =>
   state.btc.usdPrice

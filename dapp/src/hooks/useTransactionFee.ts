@@ -1,5 +1,4 @@
 import { useAcreContext } from "#/acre-react/hooks"
-import { setEstimatedDepositFee } from "#/store/btc"
 import { logPromiseFailure } from "#/utils"
 import { useEffect, useState } from "react"
 import { DepositFee } from "#/types"
@@ -24,7 +23,6 @@ export function useTransactionFee(amount?: bigint) {
         if (!acre) return
         const fee = await acre.staking.estimateDepositFee(amount)
 
-        dispatch(setEstimatedDepositFee(fee))
         setDepositFee(fee)
       }
       logPromiseFailure(getEstimatedDepositFee())
