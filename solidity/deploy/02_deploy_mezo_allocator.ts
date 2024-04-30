@@ -7,8 +7,8 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { governance } = await getNamedAccounts()
   const { deployer } = await helpers.signers.getNamedSigners()
 
-  const tbtc = await deployments.get("TBTC")
   const stbtc = await deployments.get("stBTC")
+  const tbtc = await deployments.get("TBTC")
   const mezoPortal = await deployments.get("MezoPortal")
 
   const [, deployment] = await helpers.upgrades.deployProxy("MezoAllocator", {

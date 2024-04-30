@@ -12,13 +12,14 @@ import { beforeAfterSnapshotWrapper, deployment } from "./helpers"
 
 import { to1e18 } from "./utils"
 
-import type { StBTC as stBTC, TestERC20, MezoAllocator } from "../typechain"
+import { StBTC as stBTC, TestERC20, MezoAllocator } from "../typechain"
 
 const { getNamedSigners, getUnnamedSigners } = helpers.signers
 
 async function fixture() {
   const { tbtc, stbtc, mezoAllocator } = await deployment()
-  const { governance, treasury, pauseAdmin } = await getNamedSigners()
+  const { governance, treasury, pauseAdmin, maintainer } =
+    await getNamedSigners()
 
   const [depositor1, depositor2, thirdParty] = await getUnnamedSigners()
 
@@ -36,6 +37,7 @@ async function fixture() {
     treasury,
     mezoAllocator,
     pauseAdmin,
+    maintainer,
   }
 }
 
@@ -54,6 +56,7 @@ describe("stBTC", () => {
   let thirdParty: HardhatEthersSigner
   let treasury: HardhatEthersSigner
   let pauseAdmin: HardhatEthersSigner
+  let maintainer: HardhatEthersSigner
 
   before(async () => {
     ;({
@@ -66,6 +69,7 @@ describe("stBTC", () => {
       treasury,
       mezoAllocator,
       pauseAdmin,
+      maintainer,
     } = await loadFixture(fixture))
 
     await stbtc
@@ -527,9 +531,9 @@ describe("stBTC", () => {
           })
 
           it("depositor 1 should receive shares equal to a deposited amount", async () => {
-            const expectedShares = await stbtc.previewDeposit(
-              depositor1AmountToDeposit,
-            )
+            const expectedShares =
+              depositor1AmountToDeposit -
+              feeOnTotal(depositor1AmountToDeposit, entryFeeBasisPoints)
 
             await expect(depositTx1).to.changeTokenBalances(
               stbtc,
@@ -539,9 +543,9 @@ describe("stBTC", () => {
           })
 
           it("depositor 2 should receive shares equal to a deposited amount", async () => {
-            const expectedShares = await stbtc.previewDeposit(
-              depositor2AmountToDeposit,
-            )
+            const expectedShares =
+              depositor2AmountToDeposit -
+              feeOnTotal(depositor2AmountToDeposit, entryFeeBasisPoints)
 
             await expect(depositTx2).to.changeTokenBalances(
               stbtc,
@@ -650,125 +654,6 @@ describe("stBTC", () => {
     })
   })
 
-  describe("redeem", () => {
-    beforeAfterSnapshotWrapper()
-
-    context("when redeeming from a single deposit", () => {
-      beforeAfterSnapshotWrapper()
-
-      const amountToDeposit = to1e18(1)
-      let tx: ContractTransactionResponse
-      let amountToRedeem: bigint
-      let amountDeposited: bigint
-      let shares: bigint
-
-      before(async () => {
-        await tbtc
-          .connect(depositor1)
-          .approve(await stbtc.getAddress(), amountToDeposit)
-        shares = await stbtc.previewDeposit(amountToDeposit)
-        await stbtc
-          .connect(depositor1)
-          .deposit(amountToDeposit, depositor1.address)
-        amountDeposited =
-          amountToDeposit - feeOnTotal(amountToDeposit, entryFeeBasisPoints)
-        amountToRedeem =
-          amountDeposited - feeOnTotal(amountDeposited, exitFeeBasisPoints)
-        tx = await stbtc
-          .connect(depositor1)
-          .redeem(shares, thirdParty, depositor1)
-      })
-
-      it("should emit Redeem event", async () => {
-        await expect(tx).to.emit(stbtc, "Withdraw").withArgs(
-          // Caller.
-          depositor1.address,
-          // Receiver
-          thirdParty.address,
-          // Owner
-          depositor1.address,
-          // Redeemed tokens.
-          amountToRedeem,
-          // Burned shares.
-          shares,
-        )
-      })
-
-      it("should burn stBTC tokens", async () => {
-        await expect(tx).to.changeTokenBalances(
-          stbtc,
-          [depositor1.address],
-          [-shares],
-        )
-      })
-
-      it("should transfer tBTC tokens to receiver", async () => {
-        await expect(tx).to.changeTokenBalances(
-          tbtc,
-          [thirdParty.address],
-          [amountToRedeem],
-        )
-      })
-
-      it("should transfer tBTC tokens to Treasury", async () => {
-        await expect(tx).to.changeTokenBalances(
-          tbtc,
-          [treasury.address],
-          [feeOnTotal(amountDeposited, exitFeeBasisPoints)],
-        )
-      })
-    })
-
-    context("when redeeming all shares from two deposits", () => {
-      const firstDeposit = to1e18(1)
-      const secondDeposit = to1e18(2)
-
-      before(async () => {
-        const totalDeposit = firstDeposit + secondDeposit
-        await tbtc.mint(depositor1.address, totalDeposit)
-        await tbtc
-          .connect(depositor1)
-          .approve(await stbtc.getAddress(), totalDeposit)
-        await stbtc
-          .connect(depositor1)
-          .deposit(firstDeposit, depositor1.address)
-
-        await stbtc
-          .connect(depositor1)
-          .deposit(secondDeposit, depositor1.address)
-      })
-
-      it("should be able to redeem tokens from the first and second deposit", async () => {
-        const shares = await stbtc.balanceOf(depositor1.address)
-        const redeemTx = await stbtc.redeem(
-          shares,
-          depositor1.address,
-          depositor1.address,
-        )
-
-        const shares1 =
-          firstDeposit - feeOnTotal(firstDeposit, entryFeeBasisPoints)
-        const shares2 =
-          secondDeposit - feeOnTotal(secondDeposit, entryFeeBasisPoints)
-        const expectedAssetsToReceive =
-          shares1 + shares2 - feeOnTotal(shares1 + shares2, exitFeeBasisPoints)
-
-        await expect(redeemTx).to.emit(stbtc, "Withdraw").withArgs(
-          // Caller.
-          depositor1.address,
-          // Receiver
-          depositor1.address,
-          // Owner
-          depositor1.address,
-          // Redeemed tokens.
-          expectedAssetsToReceive,
-          // Burned shares.
-          shares,
-        )
-      })
-    })
-  })
-
   describe("mint", () => {
     beforeAfterSnapshotWrapper()
 
@@ -848,7 +733,9 @@ describe("stBTC", () => {
 
         before(async () => {
           minimumDepositAmount = await stbtc.minimumDepositAmount()
-          const shares = await stbtc.previewDeposit(minimumDepositAmount)
+          const shares =
+            minimumDepositAmount -
+            feeOnTotal(minimumDepositAmount, entryFeeBasisPoints)
 
           sharesToMint = shares - 1n
           await tbtc
@@ -871,138 +758,716 @@ describe("stBTC", () => {
     )
   })
 
-  describe("withdraw", () => {
+  describe("redeem", () => {
     beforeAfterSnapshotWrapper()
 
-    context("when withdrawing from a single deposit", () => {
-      beforeAfterSnapshotWrapper()
+    context("when stBTC did not allocate any assets", () => {
+      context("when redeeming from a single deposit", () => {
+        beforeAfterSnapshotWrapper()
 
-      const amountToDeposit = to1e18(1)
-      let tx: ContractTransactionResponse
-      let availableToWithdraw: bigint
-      let shares: bigint
+        const amountToDeposit = to1e18(1)
+        let tx: ContractTransactionResponse
+        let amountToRedeem: bigint
+        let amountDeposited: bigint
+        let shares: bigint
 
-      before(async () => {
-        await tbtc
-          .connect(depositor1)
-          .approve(await stbtc.getAddress(), amountToDeposit)
-        shares = 999500249875062468n
-        availableToWithdraw = 998501748126935532n
-        await stbtc
-          .connect(depositor1)
-          .deposit(amountToDeposit, depositor1.address)
-        tx = await stbtc
-          .connect(depositor1)
-          .withdraw(availableToWithdraw, thirdParty, depositor1)
+        before(async () => {
+          await tbtc
+            .connect(depositor1)
+            .approve(await stbtc.getAddress(), amountToDeposit)
+          shares =
+            amountToDeposit - feeOnTotal(amountToDeposit, entryFeeBasisPoints)
+          await stbtc
+            .connect(depositor1)
+            .deposit(amountToDeposit, depositor1.address)
+          amountDeposited =
+            amountToDeposit - feeOnTotal(amountToDeposit, entryFeeBasisPoints)
+          amountToRedeem =
+            amountDeposited - feeOnTotal(amountDeposited, exitFeeBasisPoints)
+          tx = await stbtc
+            .connect(depositor1)
+            .redeem(shares, thirdParty, depositor1)
+        })
+
+        it("should emit Redeem event", async () => {
+          await expect(tx).to.emit(stbtc, "Withdraw").withArgs(
+            // Caller.
+            depositor1.address,
+            // Receiver
+            thirdParty.address,
+            // Owner
+            depositor1.address,
+            // Redeemed tokens.
+            amountToRedeem,
+            // Burned shares.
+            shares,
+          )
+        })
+
+        it("should burn stBTC tokens", async () => {
+          await expect(tx).to.changeTokenBalances(
+            stbtc,
+            [depositor1.address],
+            [-shares],
+          )
+        })
+
+        it("should transfer tBTC tokens to receiver", async () => {
+          await expect(tx).to.changeTokenBalances(
+            tbtc,
+            [thirdParty.address],
+            [amountToRedeem],
+          )
+        })
+
+        it("should transfer tBTC tokens to Treasury", async () => {
+          await expect(tx).to.changeTokenBalances(
+            tbtc,
+            [treasury.address],
+            [feeOnTotal(amountDeposited, exitFeeBasisPoints)],
+          )
+        })
       })
 
-      it("should emit Withdraw event", async () => {
-        await expect(tx).to.emit(stbtc, "Withdraw").withArgs(
-          // Caller.
-          depositor1.address,
-          // Receiver
-          thirdParty.address,
-          // Owner
-          depositor1.address,
-          // Available assets to withdraw.
-          availableToWithdraw,
-          // Burned shares.
-          shares,
-        )
-      })
+      context("when redeeming all shares from two deposits", () => {
+        const firstDeposit = to1e18(1)
+        const secondDeposit = to1e18(2)
 
-      it("should burn stBTC tokens", async () => {
-        await expect(tx).to.changeTokenBalances(
-          stbtc,
-          [depositor1.address],
-          [-shares],
-        )
-      })
+        before(async () => {
+          const totalDeposit = firstDeposit + secondDeposit
+          await tbtc.mint(depositor1.address, totalDeposit)
+          await tbtc
+            .connect(depositor1)
+            .approve(await stbtc.getAddress(), totalDeposit)
+          await stbtc
+            .connect(depositor1)
+            .deposit(firstDeposit, depositor1.address)
+          await stbtc
+            .connect(depositor1)
+            .deposit(secondDeposit, depositor1.address)
+        })
 
-      it("should transfer tBTC tokens to a Receiver", async () => {
-        await expect(tx).to.changeTokenBalances(
-          tbtc,
-          [thirdParty.address],
-          [availableToWithdraw],
-        )
-      })
+        it("should be able to redeem tokens from the first and second deposit", async () => {
+          const shares = await stbtc.balanceOf(depositor1.address)
+          const redeemTx = await stbtc.redeem(
+            shares,
+            depositor1.address,
+            depositor1.address,
+          )
 
-      it("should transfer tBTC tokens to Treasury", async () => {
-        await expect(tx).to.changeTokenBalances(
-          tbtc,
-          [treasury.address],
-          [feeOnRaw(availableToWithdraw, exitFeeBasisPoints)],
-        )
+          const shares1 =
+            firstDeposit - feeOnTotal(firstDeposit, entryFeeBasisPoints)
+          const shares2 =
+            secondDeposit - feeOnTotal(secondDeposit, entryFeeBasisPoints)
+          const expectedAssetsToReceive =
+            shares1 +
+            shares2 -
+            feeOnTotal(shares1 + shares2, exitFeeBasisPoints)
+
+          await expect(redeemTx).to.emit(stbtc, "Withdraw").withArgs(
+            // Caller.
+            depositor1.address,
+            // Receiver
+            depositor1.address,
+            // Owner
+            depositor1.address,
+            // Redeemed tokens.
+            expectedAssetsToReceive,
+            // Burned shares.
+            shares,
+          )
+        })
       })
     })
 
-    context("when withdrawing all shares from two deposits", () => {
-      const firstDeposit = to1e18(1)
-      const secondDeposit = to1e18(2)
-      let withdrawTx: ContractTransactionResponse
-      let availableToWithdraw: bigint
-      let shares: bigint
+    context("when stBTC allocated all of the assets", () => {
+      beforeAfterSnapshotWrapper()
+
+      let tx: ContractTransactionResponse
+      let firstDepositBalance: bigint
+
+      const amountToDeposit = to1e18(3)
 
       before(async () => {
-        await tbtc.mint(depositor1.address, firstDeposit + secondDeposit)
+        await tbtc.mint(depositor1.address, amountToDeposit)
         await tbtc
           .connect(depositor1)
-          .approve(await stbtc.getAddress(), firstDeposit + secondDeposit)
+          .approve(await stbtc.getAddress(), amountToDeposit)
+        // Depositor deposits 3 tBTC.
         await stbtc
           .connect(depositor1)
-          .deposit(firstDeposit, depositor1.address)
-
-        await stbtc
+          .deposit(amountToDeposit, depositor1.address)
+        // Allocate 3 tBTC to Mezo Portal.
+        await mezoAllocator.connect(maintainer).allocate()
+        firstDepositBalance = await mezoAllocator.depositBalance()
+        // Depositor redeems 2 stBTC.
+        tx = await stbtc
           .connect(depositor1)
-          .deposit(secondDeposit, depositor1.address)
+          .redeem(to1e18(2), depositor1, depositor1)
+      })
 
-        shares = 2998500749625187405n
-        availableToWithdraw = 2995505244380806598n
-        withdrawTx = await stbtc.withdraw(
-          availableToWithdraw,
-          depositor1.address,
-          depositor1.address,
+      it("should transfer tBTC back to a depositor1", async () => {
+        const expectedRedeemedAssets =
+          to1e18(2) - feeOnTotal(to1e18(2), exitFeeBasisPoints)
+        await expect(tx).to.changeTokenBalances(
+          tbtc,
+          [depositor1.address],
+          [expectedRedeemedAssets],
+        )
+      })
+
+      it("should transfer redeem fee to Treasury", async () => {
+        const redeemFee = feeOnTotal(to1e18(2), exitFeeBasisPoints)
+        await expect(tx).to.changeTokenBalances(
+          tbtc,
+          [treasury.address],
+          [redeemFee],
+        )
+      })
+
+      it("should decrease the deposit balance tracking in Mezo Allocator", async () => {
+        const depositBalance = await mezoAllocator.depositBalance()
+        const redeemFee = feeOnTotal(to1e18(2), exitFeeBasisPoints)
+        const assetsToWithdraw = to1e18(2) - redeemFee
+        const assetsToWithdrawFromMezo = assetsToWithdraw + redeemFee
+
+        expect(depositBalance).to.be.eq(
+          firstDepositBalance - assetsToWithdrawFromMezo,
         )
       })
 
       it("should emit Withdraw event", async () => {
-        await expect(withdrawTx).to.emit(stbtc, "Withdraw").withArgs(
-          // Caller.
-          depositor1.address,
-          // Receiver
-          depositor1.address,
-          // Owner
-          depositor1.address,
-          // Available assets to withdraw including fees. Actual assets sent to
-          // a user will be less because of the exit fee.
-          availableToWithdraw,
-          // Burned shares.
-          shares,
-        )
+        const assetsToWithdraw =
+          to1e18(2) - feeOnTotal(to1e18(2), exitFeeBasisPoints)
+
+        await expect(tx)
+          .to.emit(stbtc, "Withdraw")
+          .withArgs(
+            depositor1.address,
+            depositor1.address,
+            depositor1.address,
+            assetsToWithdraw,
+            to1e18(2),
+          )
+      })
+    })
+
+    context("when stBTC allocated some of the assets", () => {
+      beforeAfterSnapshotWrapper()
+
+      let tx: ContractTransactionResponse
+      let firstDepositBalance: bigint
+
+      const amountToDeposit = to1e18(3)
+
+      before(async () => {
+        await tbtc.mint(depositor1.address, amountToDeposit)
+        await tbtc
+          .connect(depositor1)
+          .approve(await stbtc.getAddress(), amountToDeposit)
+        // Depositor deposits 3 tBTC.
+        await stbtc
+          .connect(depositor1)
+          .deposit(amountToDeposit, depositor1.address)
+        // Allocate 3 tBTC to Mezo Portal.
+        await mezoAllocator.connect(maintainer).allocate()
+        firstDepositBalance = await mezoAllocator.depositBalance()
+        // Donate 1 tBTC to stBTC.
+        await tbtc.mint(await stbtc.getAddress(), to1e18(1))
+        // Depositor redeems 2 stBTC.
+        tx = await stbtc
+          .connect(depositor1)
+          .redeem(to1e18(2), depositor1, depositor1)
       })
 
-      it("should burn stBTC tokens", async () => {
-        await expect(withdrawTx).to.changeTokenBalances(
-          stbtc,
-          [depositor1.address],
-          [-shares],
-        )
-      })
-
-      it("should transfer tBTC tokens to a deposit owner", async () => {
-        await expect(withdrawTx).to.changeTokenBalances(
+      it("should transfer tBTC back to a depositor1", async () => {
+        // adjusting for rounding
+        const expectedRedeemedAssets =
+          (await stbtc.previewRedeem(to1e18(2))) - 2n
+        await expect(tx).to.changeTokenBalances(
           tbtc,
           [depositor1.address],
-          [availableToWithdraw],
+          [expectedRedeemedAssets],
         )
       })
 
-      it("should transfer tBTC tokens to Treasury", async () => {
-        await expect(withdrawTx).to.changeTokenBalances(
+      it("should use all unallocated assets", async () => {
+        await expect(tx).to.changeTokenBalances(
+          tbtc,
+          [await stbtc.getAddress()],
+          [-to1e18(1)],
+        )
+      })
+
+      it("should transfer redeem fee to Treasury", async () => {
+        const assetsToWithdraw = await stbtc.previewRedeem(to1e18(2))
+        const redeemFee = feeOnRaw(assetsToWithdraw, exitFeeBasisPoints)
+        await expect(tx).to.changeTokenBalances(
           tbtc,
           [treasury.address],
-          [feeOnRaw(availableToWithdraw, exitFeeBasisPoints)],
+          [redeemFee],
         )
+      })
+
+      it("should decrease the deposit balance tracking in Mezo Allocator", async () => {
+        const depositBalance = await mezoAllocator.depositBalance()
+        const assetsToWithdraw = await stbtc.previewRedeem(to1e18(2))
+        const redeemFee = feeOnRaw(assetsToWithdraw, exitFeeBasisPoints)
+        // adjusting for rounding
+        const assetsToWithdrawFromMezo =
+          assetsToWithdraw + redeemFee - to1e18(1) - 2n
+
+        expect(depositBalance).to.be.eq(
+          firstDepositBalance - assetsToWithdrawFromMezo,
+        )
+      })
+
+      it("should emit Withdraw event", async () => {
+        // adjust for rounding
+        const assetsToWithdraw = (await stbtc.previewRedeem(to1e18(2))) - 2n
+
+        await expect(tx)
+          .to.emit(stbtc, "Withdraw")
+          .withArgs(
+            depositor1.address,
+            depositor1.address,
+            depositor1.address,
+            assetsToWithdraw,
+            to1e18(2),
+          )
+      })
+    })
+
+    context("when the entry and exit fee is zero", () => {
+      beforeAfterSnapshotWrapper()
+
+      context("when redeeming from a single deposit", () => {
+        beforeAfterSnapshotWrapper()
+
+        const amountToDeposit = to1e18(1)
+        let tx: ContractTransactionResponse
+
+        before(async () => {
+          await stbtc.connect(governance).updateExitFeeBasisPoints(0)
+          await stbtc.connect(governance).updateEntryFeeBasisPoints(0)
+
+          await tbtc
+            .connect(depositor1)
+            .approve(await stbtc.getAddress(), amountToDeposit)
+
+          await stbtc
+            .connect(depositor1)
+            .deposit(amountToDeposit, depositor1.address)
+          tx = await stbtc
+            .connect(depositor1)
+            .redeem(amountToDeposit, thirdParty, depositor1)
+        })
+
+        it("should emit Withdraw event", async () => {
+          await expect(tx).to.emit(stbtc, "Withdraw").withArgs(
+            // Caller.
+            depositor1.address,
+            // Receiver
+            thirdParty.address,
+            // Owner
+            depositor1.address,
+            // Redeemed tokens.
+            amountToDeposit,
+            // Burned shares.
+            amountToDeposit,
+          )
+        })
+
+        it("should burn stBTC tokens", async () => {
+          await expect(tx).to.changeTokenBalances(
+            stbtc,
+            [depositor1.address],
+            [-amountToDeposit],
+          )
+        })
+
+        it("should transfer tBTC tokens to a receiver", async () => {
+          await expect(tx).to.changeTokenBalances(
+            tbtc,
+            [thirdParty.address],
+            [amountToDeposit],
+          )
+        })
+
+        it("should not transfer any tBTC tokens to Treasury", async () => {
+          await expect(tx).to.changeTokenBalances(tbtc, [treasury.address], [0])
+        })
+      })
+    })
+  })
+
+  describe("withdraw", () => {
+    beforeAfterSnapshotWrapper()
+
+    context("when stBTC did not allocate any assets", () => {
+      context("when withdrawing from a single deposit", () => {
+        beforeAfterSnapshotWrapper()
+
+        const amountToDeposit = to1e18(1)
+        let tx: ContractTransactionResponse
+        let availableToWithdraw: bigint
+        let shares: bigint
+
+        before(async () => {
+          await tbtc
+            .connect(depositor1)
+            .approve(await stbtc.getAddress(), amountToDeposit)
+          shares = 999500249875062468n
+          availableToWithdraw = 998501748126935532n
+          await stbtc
+            .connect(depositor1)
+            .deposit(amountToDeposit, depositor1.address)
+          tx = await stbtc
+            .connect(depositor1)
+            .withdraw(availableToWithdraw, thirdParty, depositor1)
+        })
+
+        it("should emit Withdraw event", async () => {
+          await expect(tx).to.emit(stbtc, "Withdraw").withArgs(
+            // Caller.
+            depositor1.address,
+            // Receiver
+            thirdParty.address,
+            // Owner
+            depositor1.address,
+            // Available assets to withdraw.
+            availableToWithdraw,
+            // Burned shares.
+            shares,
+          )
+        })
+
+        it("should burn stBTC tokens", async () => {
+          await expect(tx).to.changeTokenBalances(
+            stbtc,
+            [depositor1.address],
+            [-shares],
+          )
+        })
+
+        it("should transfer tBTC tokens to a Receiver", async () => {
+          await expect(tx).to.changeTokenBalances(
+            tbtc,
+            [thirdParty.address],
+            [availableToWithdraw],
+          )
+        })
+
+        it("should transfer tBTC tokens to Treasury", async () => {
+          await expect(tx).to.changeTokenBalances(
+            tbtc,
+            [treasury.address],
+            [feeOnRaw(availableToWithdraw, exitFeeBasisPoints)],
+          )
+        })
+      })
+
+      context("when withdrawing all shares from two deposits", () => {
+        const firstDeposit = to1e18(1)
+        const secondDeposit = to1e18(2)
+        let withdrawTx: ContractTransactionResponse
+        let availableToWithdraw: bigint
+        let shares: bigint
+
+        before(async () => {
+          await tbtc.mint(depositor1.address, firstDeposit + secondDeposit)
+          await tbtc
+            .connect(depositor1)
+            .approve(await stbtc.getAddress(), firstDeposit + secondDeposit)
+          await stbtc
+            .connect(depositor1)
+            .deposit(firstDeposit, depositor1.address)
+
+          await stbtc
+            .connect(depositor1)
+            .deposit(secondDeposit, depositor1.address)
+
+          shares = 2998500749625187405n
+          availableToWithdraw = 2995505244380806598n
+          withdrawTx = await stbtc.withdraw(
+            availableToWithdraw,
+            depositor1.address,
+            depositor1.address,
+          )
+        })
+
+        it("should emit Withdraw event", async () => {
+          await expect(withdrawTx).to.emit(stbtc, "Withdraw").withArgs(
+            // Caller.
+            depositor1.address,
+            // Receiver
+            depositor1.address,
+            // Owner
+            depositor1.address,
+            // Available assets to withdraw including fees. Actual assets sent to
+            // a user will be less because of the exit fee.
+            availableToWithdraw,
+            // Burned shares.
+            shares,
+          )
+        })
+
+        it("should burn stBTC tokens", async () => {
+          await expect(withdrawTx).to.changeTokenBalances(
+            stbtc,
+            [depositor1.address],
+            [-shares],
+          )
+        })
+
+        it("should transfer tBTC tokens to a deposit owner", async () => {
+          await expect(withdrawTx).to.changeTokenBalances(
+            tbtc,
+            [depositor1.address],
+            [availableToWithdraw],
+          )
+        })
+
+        it("should transfer tBTC tokens to Treasury", async () => {
+          await expect(withdrawTx).to.changeTokenBalances(
+            tbtc,
+            [treasury.address],
+            [feeOnRaw(availableToWithdraw, exitFeeBasisPoints)],
+          )
+        })
+      })
+    })
+
+    context("when stBTC allocated all of the assets", () => {
+      beforeAfterSnapshotWrapper()
+
+      let tx: ContractTransactionResponse
+      let firstDepositBalance: bigint
+
+      const amountToDeposit = to1e18(3)
+
+      before(async () => {
+        await tbtc.mint(depositor1.address, amountToDeposit)
+        await tbtc
+          .connect(depositor1)
+          .approve(await stbtc.getAddress(), amountToDeposit)
+        // Depositor deposits 3 tBTC.
+        await stbtc
+          .connect(depositor1)
+          .deposit(amountToDeposit, depositor1.address)
+        // Allocate 3 tBTC to Mezo Portal.
+        await mezoAllocator.connect(maintainer).allocate()
+        firstDepositBalance = await mezoAllocator.depositBalance()
+        // Depositor withdraws 2 stBTC.
+        tx = await stbtc
+          .connect(depositor1)
+          .withdraw(to1e18(2), depositor1, depositor1)
+      })
+
+      it("should transfer tBTC back to a depositor1", async () => {
+        const expectedWithdrawnAssets = to1e18(2)
+
+        await expect(tx).to.changeTokenBalances(
+          tbtc,
+          [depositor1.address],
+          [expectedWithdrawnAssets],
+        )
+      })
+
+      it("should transfer withdrawal fee to Treasury", async () => {
+        const assetsToWithdraw = to1e18(2)
+        const withdrawFee = feeOnRaw(assetsToWithdraw, exitFeeBasisPoints)
+
+        await expect(tx).to.changeTokenBalances(
+          tbtc,
+          [treasury.address],
+          [withdrawFee],
+        )
+      })
+
+      it("should decrease the deposit balance tracking in Mezo Allocator", async () => {
+        const depositBalance = await mezoAllocator.depositBalance()
+        const assetsToWithdraw = to1e18(2)
+        const withdrawFee = feeOnRaw(assetsToWithdraw, exitFeeBasisPoints)
+        const assetsToWithdrawFromMezo = assetsToWithdraw + withdrawFee
+
+        expect(depositBalance).to.be.eq(
+          firstDepositBalance - assetsToWithdrawFromMezo,
+        )
+      })
+
+      it("should emit Withdraw event", async () => {
+        const assetsToWithdraw = to1e18(2)
+        const sharesToBurn =
+          to1e18(2) + feeOnRaw(assetsToWithdraw, exitFeeBasisPoints)
+
+        await expect(tx)
+          .to.emit(stbtc, "Withdraw")
+          .withArgs(
+            depositor1.address,
+            depositor1.address,
+            depositor1.address,
+            assetsToWithdraw,
+            sharesToBurn,
+          )
+      })
+    })
+
+    context("when stBTC allocated some of the assets", () => {
+      beforeAfterSnapshotWrapper()
+
+      let tx: ContractTransactionResponse
+      let firstDepositBalance: bigint
+
+      const amountToDeposit = to1e18(3)
+
+      before(async () => {
+        await tbtc.mint(depositor1.address, amountToDeposit)
+        await tbtc
+          .connect(depositor1)
+          .approve(await stbtc.getAddress(), amountToDeposit)
+        // Depositor deposits 3 tBTC.
+        await stbtc
+          .connect(depositor1)
+          .deposit(amountToDeposit, depositor1.address)
+        // Allocate 3 tBTC to Mezo Portal.
+        await mezoAllocator.connect(maintainer).allocate()
+        firstDepositBalance = await mezoAllocator.depositBalance()
+        // Donate 1 tBTC to stBTC.
+        await tbtc.mint(await stbtc.getAddress(), to1e18(1))
+        // Depositor withdraws 2 tBTC.
+        tx = await stbtc
+          .connect(depositor1)
+          .withdraw(to1e18(2), depositor1, depositor1)
+      })
+
+      it("should transfer 2 tBTC back to a depositor1", async () => {
+        await expect(tx).to.changeTokenBalances(
+          tbtc,
+          [depositor1.address],
+          [to1e18(2)],
+        )
+      })
+
+      it("should use all unallocated assets", async () => {
+        await expect(tx).to.changeTokenBalances(
+          tbtc,
+          [await stbtc.getAddress()],
+          [-to1e18(1)],
+        )
+      })
+
+      it("should transfer withdrawal fee to Treasury", async () => {
+        const withdrawalFee = feeOnRaw(to1e18(2), exitFeeBasisPoints)
+        await expect(tx).to.changeTokenBalances(
+          tbtc,
+          [treasury.address],
+          [withdrawalFee],
+        )
+      })
+
+      it("should decrease the deposit balance tracking in Mezo Allocator", async () => {
+        const depositBalance = await mezoAllocator.depositBalance()
+        const withdrawalFee = feeOnRaw(to1e18(2), exitFeeBasisPoints)
+        const assetsToWithdrawFromMezo = to1e18(2) + withdrawalFee - to1e18(1)
+
+        expect(depositBalance).to.be.eq(
+          firstDepositBalance - assetsToWithdrawFromMezo,
+        )
+      })
+
+      it("should emit Withdraw event", async () => {
+        // total assets and total supply right after the deposit of 3 tBTC, before
+        // the yield and withdrawal. This also includes the entry fee.
+        // totalAssets() -> 2998500749625187406n
+        // totalSupply() -> 2998500749625187406n
+
+        // Donate 1 tBTC to stBTC.
+        // totalAssets() -> 3998500749625187406n (tBTC)
+        // totalSupply() -> 2998500749625187406n (stBTC)
+
+        // Withdraw 2 tBTC.
+        // sharesToBurnWithNoFees = 2tBTC * totalAssets() / totalSupply()
+        // sharesToBurnWithNoFees = 2tBTC * 3998500749625187406n / 2998500749625187406n
+        const sharesToBurnWithNoFees = 1499812523434570678n
+
+        // Add the withdrawal fee. Adjust for rounding.
+        const sharesToBurn =
+          sharesToBurnWithNoFees +
+          feeOnRaw(sharesToBurnWithNoFees, exitFeeBasisPoints) +
+          1n
+
+        await expect(tx)
+          .to.emit(stbtc, "Withdraw")
+          .withArgs(
+            depositor1.address,
+            depositor1.address,
+            depositor1.address,
+            to1e18(2),
+            sharesToBurn,
+          )
+      })
+    })
+
+    context("when the entry and exit fee is zero", () => {
+      beforeAfterSnapshotWrapper()
+
+      context("when withdrawing from a single deposit", () => {
+        beforeAfterSnapshotWrapper()
+
+        const amountToDeposit = to1e18(1)
+        let tx: ContractTransactionResponse
+
+        before(async () => {
+          await stbtc.connect(governance).updateExitFeeBasisPoints(0)
+          await stbtc.connect(governance).updateEntryFeeBasisPoints(0)
+
+          await tbtc
+            .connect(depositor1)
+            .approve(await stbtc.getAddress(), amountToDeposit)
+
+          await stbtc
+            .connect(depositor1)
+            .deposit(amountToDeposit, depositor1.address)
+          tx = await stbtc
+            .connect(depositor1)
+            .withdraw(amountToDeposit, thirdParty, depositor1)
+        })
+
+        it("should emit Withdraw event", async () => {
+          await expect(tx).to.emit(stbtc, "Withdraw").withArgs(
+            // Caller.
+            depositor1.address,
+            // Receiver
+            thirdParty.address,
+            // Owner
+            depositor1.address,
+            // Withdrew tokens.
+            amountToDeposit,
+            // Burned shares.
+            amountToDeposit,
+          )
+        })
+
+        it("should burn stBTC tokens", async () => {
+          await expect(tx).to.changeTokenBalances(
+            stbtc,
+            [depositor1.address],
+            [-amountToDeposit],
+          )
+        })
+
+        it("should transfer tBTC tokens to a receiver", async () => {
+          await expect(tx).to.changeTokenBalances(
+            tbtc,
+            [thirdParty.address],
+            [amountToDeposit],
+          )
+        })
+
+        it("should not transfer any tBTC tokens to Treasury", async () => {
+          await expect(tx).to.changeTokenBalances(tbtc, [treasury.address], [0])
+        })
       })
     })
   })
@@ -1469,6 +1934,152 @@ describe("stBTC", () => {
         await expect(
           stbtc.connect(depositor1).updateExitFeeBasisPoints(100n),
         ).to.be.revertedWithCustomError(stbtc, "OwnableUnauthorizedAccount")
+      })
+    })
+  })
+
+  describe("totalAssets", () => {
+    beforeAfterSnapshotWrapper()
+
+    const donation = to1e18(1)
+    const firstDeposit = to1e18(2)
+    const secondDeposit = to1e18(3)
+
+    context("when there are no deposits", () => {
+      it("should return 0", async () => {
+        expect(await stbtc.totalAssets()).to.be.eq(0)
+      })
+    })
+
+    context("when there are deposits", () => {
+      context("when there is a first deposit made", () => {
+        beforeAfterSnapshotWrapper()
+
+        before(async () => {
+          await tbtc.mint(depositor1.address, firstDeposit)
+          await tbtc
+            .connect(depositor1)
+            .approve(await stbtc.getAddress(), firstDeposit)
+          await stbtc
+            .connect(depositor1)
+            .deposit(firstDeposit, depositor1.address)
+        })
+
+        it("should return the total assets", async () => {
+          const expectedAssets =
+            firstDeposit - feeOnTotal(firstDeposit, entryFeeBasisPoints)
+          expect(await stbtc.totalAssets()).to.be.eq(expectedAssets)
+        })
+
+        it("should be equal to tBTC balance of the contract", async () => {
+          expect(await stbtc.totalAssets()).to.be.eq(
+            await tbtc.balanceOf(await stbtc.getAddress()),
+          )
+        })
+      })
+
+      context("when there are two deposits made", () => {
+        beforeAfterSnapshotWrapper()
+
+        before(async () => {
+          await tbtc.mint(depositor1.address, firstDeposit + secondDeposit)
+          await tbtc
+            .connect(depositor1)
+            .approve(await stbtc.getAddress(), firstDeposit + secondDeposit)
+          await stbtc
+            .connect(depositor1)
+            .deposit(firstDeposit, depositor1.address)
+          await stbtc
+            .connect(depositor1)
+            .deposit(secondDeposit, depositor1.address)
+        })
+
+        it("should return the total assets", async () => {
+          const expectedAssetsFirstDeposit =
+            firstDeposit - feeOnTotal(firstDeposit, entryFeeBasisPoints)
+          const expectedAssetsSecondDeposit =
+            secondDeposit - feeOnTotal(secondDeposit, entryFeeBasisPoints)
+          expect(await stbtc.totalAssets()).to.be.eq(
+            expectedAssetsFirstDeposit + expectedAssetsSecondDeposit,
+          )
+        })
+      })
+
+      context("when the funds were allocated after deposits", () => {
+        beforeAfterSnapshotWrapper()
+
+        before(async () => {
+          await tbtc.mint(depositor1.address, firstDeposit + secondDeposit)
+          await tbtc
+            .connect(depositor1)
+            .approve(await stbtc.getAddress(), firstDeposit + secondDeposit)
+          await stbtc
+            .connect(depositor1)
+            .deposit(firstDeposit, depositor1.address)
+          await stbtc
+            .connect(depositor1)
+            .deposit(secondDeposit, depositor1.address)
+          await mezoAllocator.connect(maintainer).allocate()
+        })
+
+        it("should return the total assets", async () => {
+          const deposits = firstDeposit + secondDeposit
+          const expectedAssets =
+            deposits - feeOnTotal(deposits, entryFeeBasisPoints)
+          expect(await stbtc.totalAssets()).to.be.eq(expectedAssets)
+        })
+      })
+
+      context("when there is a donation made", () => {
+        beforeAfterSnapshotWrapper()
+
+        let totalAssetsBeforeDonation: bigint
+
+        before(async () => {
+          await tbtc.mint(depositor1.address, firstDeposit)
+          await tbtc
+            .connect(depositor1)
+            .approve(await stbtc.getAddress(), firstDeposit)
+          await stbtc
+            .connect(depositor1)
+            .deposit(firstDeposit, depositor1.address)
+          totalAssetsBeforeDonation = await stbtc.totalAssets()
+          await tbtc.mint(await stbtc.getAddress(), donation)
+        })
+
+        it("should return the total assets", async () => {
+          expect(await stbtc.totalAssets()).to.be.eq(
+            totalAssetsBeforeDonation + donation,
+          )
+        })
+      })
+
+      context("when there was a withdrawal", () => {
+        beforeAfterSnapshotWrapper()
+
+        let totalAssetsBeforeWithdrawal: bigint
+
+        before(async () => {
+          await tbtc.mint(depositor1.address, firstDeposit)
+          await tbtc
+            .connect(depositor1)
+            .approve(await stbtc.getAddress(), firstDeposit)
+          await stbtc
+            .connect(depositor1)
+            .deposit(firstDeposit, depositor1.address)
+          totalAssetsBeforeWithdrawal = await stbtc.totalAssets()
+          await stbtc
+            .connect(depositor1)
+            .withdraw(to1e18(1), depositor1, depositor1)
+        })
+
+        it("should return the total assets", async () => {
+          const actualWithdrawnAssets =
+            to1e18(1) + feeOnRaw(to1e18(1), exitFeeBasisPoints)
+          expect(await stbtc.totalAssets()).to.be.eq(
+            totalAssetsBeforeWithdrawal - actualWithdrawnAssets,
+          )
+        })
       })
     })
   })

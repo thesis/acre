@@ -6,7 +6,7 @@ import type {
   BridgeStub,
   TBTCVaultStub,
   MezoAllocator,
-  MezoPortalStub,
+  IMezoPortal,
   BitcoinDepositor,
   BitcoinRedeemer,
   TestTBTC,
@@ -28,7 +28,7 @@ export async function deployment() {
 
   const mezoAllocator: MezoAllocator =
     await getDeployedContract("MezoAllocator")
-  const mezoPortal: MezoPortalStub = await getDeployedContract("MezoPortal")
+  const mezoPortal: IMezoPortal = await getDeployedContract("MezoPortal")
 
   return {
     tbtc,
