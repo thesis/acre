@@ -187,87 +187,91 @@ describe("handleDepositInitialized", () => {
 })
 
 describe("handleDepositFinalized", () => {
-  beforeEach(() => {
-    handleDepositInitialized(depositInitializedEvent)
-    handleDepositFinalized(depositFinalizedEvent)
+  describe("when deposit entity already exist", () => {
+    beforeEach(() => {
+      handleDepositInitialized(depositInitializedEvent)
+      handleDepositFinalized(depositFinalizedEvent)
+    })
+
+    afterEach(() => {
+      clearStore()
+    })
+
+    test("Deposit entity should exist", () => {
+      assert.entityCount("Deposit", 1)
+    })
+
+    test("Event entity should exist", () => {
+      assert.entityCount("Event", 2)
+    })
+
+    test("Deposit entity has proper fields", () => {
+      assert.fieldEquals(
+        "Deposit",
+        depositFinalizedEvent.params.depositKey.toHexString(),
+        "depositOwner",
+        depositOwner.toHexString(),
+      )
+
+      assert.fieldEquals(
+        "Deposit",
+        depositFinalizedEvent.params.depositKey.toHexString(),
+        "initialDepositAmount",
+        depositFinalizedEvent.params.initialAmount.toString(),
+      )
+
+      assert.fieldEquals(
+        "Deposit",
+        depositFinalizedEvent.params.depositKey.toHexString(),
+        "bridgedAmount",
+        depositFinalizedEvent.params.bridgedAmount.toString(),
+      )
+
+      assert.fieldEquals(
+        "Deposit",
+        depositFinalizedEvent.params.depositKey.toHexString(),
+        "depositorFee",
+        depositFinalizedEvent.params.depositorFee.toString(),
+      )
+
+      assert.fieldEquals(
+        "Deposit",
+        depositFinalizedEvent.params.depositKey.toHexString(),
+        "amountToDeposit",
+        depositFinalizedEvent.params.bridgedAmount
+          .minus(depositFinalizedEvent.params.depositorFee)
+          .toString(),
+      )
+    })
+
+    test("Event entity has proper fields", () => {
+      const txId = `${depositInitializedEvent.transaction.hash.toHexString()}_DepositFinalized`
+
+      assert.fieldEquals(
+        "Event",
+        txId,
+        "activity",
+        depositFinalizedEvent.params.depositKey.toHexString(),
+      )
+
+      assert.fieldEquals(
+        "Event",
+        txId,
+        "timestamp",
+        depositFinalizedEvent.block.timestamp.toString(),
+      )
+
+      assert.fieldEquals("Event", txId, "type", "Finalized")
+    })
   })
 
-  afterEach(() => {
-    clearStore()
-  })
-
-  test("Deposit entity should exist", () => {
-    assert.entityCount("Deposit", 1)
-  })
-
-  test("Event entity should exist", () => {
-    assert.entityCount("Event", 2)
-  })
-
-  test("Deposit entity has proper fields", () => {
-    assert.fieldEquals(
-      "Deposit",
-      depositFinalizedEvent.params.depositKey.toHexString(),
-      "depositOwner",
-      depositOwner.toHexString(),
+  describe("when the Deposit entity does not exist", () => {
+    test(
+      "should throw an error",
+      () => {
+        handleDepositFinalized(depositFinalizedEvent)
+      },
+      true,
     )
-
-    assert.fieldEquals(
-      "Deposit",
-      depositFinalizedEvent.params.depositKey.toHexString(),
-      "initialDepositAmount",
-      depositFinalizedEvent.params.initialAmount.toString(),
-    )
-
-    assert.fieldEquals(
-      "Deposit",
-      depositFinalizedEvent.params.depositKey.toHexString(),
-      "bridgedAmount",
-      depositFinalizedEvent.params.bridgedAmount.toString(),
-    )
-
-    assert.fieldEquals(
-      "Deposit",
-      depositFinalizedEvent.params.depositKey.toHexString(),
-      "depositorFee",
-      depositFinalizedEvent.params.depositorFee.toString(),
-    )
-
-    assert.fieldEquals(
-      "Deposit",
-      depositFinalizedEvent.params.depositKey.toHexString(),
-      "amountToDeposit",
-      depositFinalizedEvent.params.bridgedAmount
-        .minus(depositFinalizedEvent.params.depositorFee)
-        .toString(),
-    )
-  })
-
-  test("Event entity has proper fields", () => {
-    const txId = `${depositInitializedEvent.transaction.hash.toHexString()}_DepositFinalized`
-
-    assert.fieldEquals(
-      "Event",
-      txId,
-      "activity",
-      depositFinalizedEvent.params.depositKey.toHexString(),
-    )
-
-    assert.fieldEquals(
-      "Event",
-      txId,
-      "timestamp",
-      depositFinalizedEvent.block.timestamp.toString(),
-    )
-
-    assert.fieldEquals("Event", txId, "type", "Finalized")
-  })
-
-  test("doesn't create entities when depositEntity not exist", () => {
-    clearStore()
-    handleDepositFinalized(depositFinalizedEvent)
-    assert.entityCount("Deposit", 0)
-    assert.entityCount("DepositOwner", 0)
-    assert.entityCount("Event", 0)
   })
 })
