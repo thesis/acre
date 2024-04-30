@@ -5,8 +5,6 @@ import {
   useStakeFlow,
 } from "#/acre-react/hooks"
 import { REFERRAL } from "#/constants"
-import { RelayerDepositorProxy } from "#/web3"
-import { EthereumBitcoinDepositor } from "@acre-btc/sdk"
 
 type StakeFlowContextValue = Omit<UseStakeFlowReturn, "initStake"> & {
   initStake: (
@@ -35,14 +33,7 @@ export function StakeFlowProvider({ children }: { children: React.ReactNode }) {
     async (bitcoinRecoveryAddress: string, ethereumAddress: string) => {
       if (!acre) throw new Error("Acre SDK not defined")
 
-      await acreInitStake(
-        bitcoinRecoveryAddress,
-        ethereumAddress,
-        REFERRAL,
-        RelayerDepositorProxy.fromEthereumBitcoinDepositor(
-          acre.contracts.bitcoinDepositor as EthereumBitcoinDepositor,
-        ),
-      )
+      await acreInitStake(bitcoinRecoveryAddress, ethereumAddress, REFERRAL)
     },
     [acreInitStake, acre],
   )
