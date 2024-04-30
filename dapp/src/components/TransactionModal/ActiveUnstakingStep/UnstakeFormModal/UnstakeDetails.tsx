@@ -1,16 +1,13 @@
 import React from "react"
 import { List } from "@chakra-ui/react"
 import TransactionDetailsAmountItem from "#/components/shared/TransactionDetails/AmountItem"
-import FeesDetailsAmountItem from "#/components/shared/FeesDetails/FeesItem"
 import { useTokenAmountFormValue } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
-import { FeesTooltip } from "#/components/TransactionModal/FeesTooltip"
-import { useTransactionDetails, useTransactionFee } from "#/hooks"
+import { useTransactionDetails } from "#/hooks"
 import { CurrencyType } from "#/types"
 
 function UnstakeDetails({ currency }: { currency: CurrencyType }) {
   const value = useTokenAmountFormValue()
   const details = useTransactionDetails(value ?? 0n)
-  const transactionFee = useTransactionFee(value)
 
   return (
     <List spacing={3} mt={10}>
@@ -24,10 +21,11 @@ function UnstakeDetails({ currency }: { currency: CurrencyType }) {
           currency: "usd",
         }}
       />
-      <FeesDetailsAmountItem
+      {/* TODO: Uncomment when unstaking fees are ready.  */}
+      {/* <FeesDetailsAmountItem
         label="Fees"
         sublabel="How are fees calculated?"
-        tooltip={<FeesTooltip />}
+        tooltip={<FeesTooltip fees={{}} />}
         from={{
           currency,
           amount: transactionFee.total,
@@ -35,7 +33,7 @@ function UnstakeDetails({ currency }: { currency: CurrencyType }) {
         to={{
           currency: "usd",
         }}
-      />
+      /> */}
       <TransactionDetailsAmountItem
         label="Approximately unstaked tokens"
         from={{

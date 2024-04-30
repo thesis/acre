@@ -5,8 +5,19 @@ import FeesDetailsAmountItem from "#/components/shared/FeesDetails/FeesItem"
 import { useTokenAmountFormValue } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { FeesTooltip } from "#/components/TransactionModal/FeesTooltip"
 import { useTransactionDetails } from "#/hooks"
-import { CurrencyType } from "#/types"
+import { CurrencyType, DepositFee } from "#/types"
 import { useTransactionFee } from "#/hooks/useTransactionFee"
+
+const mapDepositFeeToLabel = (feeId: keyof DepositFee) => {
+  switch (feeId) {
+    case "acre":
+      return "Acre protocol fees"
+    case "tbtc":
+      return "tBTC bridge fees"
+    default:
+      return ""
+  }
+}
 
 function StakeDetails({
   currency,
@@ -23,7 +34,7 @@ function StakeDetails({
   // Let's not calculate the details of the transaction when the value is not valid.
   const amount = !isMaximumValueExceeded && isMinimumValueFulfilled ? value : 0n
   const details = useTransactionDetails(amount)
-  const transactionFee = useTransactionFee(amount)
+  const { total, ...restFees } = useTransactionFee(amount)
 
   return (
     <List spacing={3} mt={10}>
@@ -40,10 +51,12 @@ function StakeDetails({
       <FeesDetailsAmountItem
         label="Fees"
         sublabel="How are fees calculated?"
-        tooltip={<FeesTooltip />}
+        tooltip={
+          <FeesTooltip fees={restFees} mapFeeToLabel={mapDepositFeeToLabel} />
+        }
         from={{
           currency,
-          amount: transactionFee.total,
+          amount: total,
         }}
         to={{
           currency: "usd",

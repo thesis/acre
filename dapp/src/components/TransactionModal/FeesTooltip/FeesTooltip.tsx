@@ -1,35 +1,25 @@
 import React from "react"
 import { Info } from "#/assets/icons"
 import { Icon, Tooltip, List } from "@chakra-ui/react"
-import { DepositFee } from "#/types"
-import { useTransactionFee } from "#/hooks/useTransactionFee"
 import { FeesTooltipItem } from "./FeesTooltipItem"
 
-const mapFeeKeyToLabel = (feeId: keyof DepositFee) => {
-  switch (feeId) {
-    case "acre":
-      return "Acre protocol fees"
-    case "tbtc":
-      return "tBTC bridge fees"
-    case "total":
-      return "Bitcoin network fees"
-    default:
-      return ""
-  }
+type Fee = { [key: string]: bigint }
+
+type Props<F extends Fee> = {
+  fees: F
+  mapFeeToLabel: (feeName: keyof F) => string
 }
 
-export function FeesTooltip() {
-  const estimatedDepositFee = useTransactionFee()
-
+export function FeesTooltip<F extends Fee>({ fees, mapFeeToLabel }: Props<F>) {
   return (
     <Tooltip
       placement="right"
       label={
         <List spacing={0.5} minW={60}>
-          {Object.entries(estimatedDepositFee).map(([feeKey, feeValue]) => (
+          {Object.entries(fees).map(([feeKey, feeValue]) => (
             <FeesTooltipItem
               key={feeKey}
-              label={mapFeeKeyToLabel(feeKey as keyof DepositFee)}
+              label={mapFeeToLabel(feeKey)}
               amount={feeValue}
               currency="bitcoin"
             />
