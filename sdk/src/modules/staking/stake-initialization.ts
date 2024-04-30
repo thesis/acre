@@ -1,6 +1,6 @@
 import TbtcDeposit from "../tbtc/Deposit"
 
-import type { DepositReceipt } from "../tbtc"
+import type { DepositReceipt } from "."
 
 import {
   ChainEIP712Signer,

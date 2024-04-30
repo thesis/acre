@@ -5,6 +5,8 @@ import { StakeInitialization } from "./stake-initialization"
 import { fromSatoshi, toSatoshi } from "../../lib/utils"
 import Tbtc from "../tbtc"
 
+export { DepositReceipt } from "../tbtc"
+
 /**
  * Represents all total deposit fees grouped by network.
  */
