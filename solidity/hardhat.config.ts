@@ -5,6 +5,28 @@ import "hardhat-contract-sizer"
 import "hardhat-deploy"
 import "solidity-docgen"
 import "@keep-network/hardhat-helpers"
+import dotenv from "dotenv-safer"
+
+dotenv.config({
+  allowEmptyValues: true,
+  example: process.env.CI ? ".env.ci.example" : ".env.example",
+})
+
+const MAINNET_RPC_URL = process.env.MAINNET_RPC_URL ?? ""
+
+const MAINNET_PRIVATE_KEY = process.env.MAINNET_PRIVATE_KEY
+  ? [process.env.MAINNET_PRIVATE_KEY]
+  : []
+
+const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL ?? ""
+
+const SEPOLIA_PRIVATE_KEY = process.env.SEPOLIA_PRIVATE_KEY
+  ? [process.env.SEPOLIA_PRIVATE_KEY]
+  : []
+
+const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY ?? ""
+
+const COINMARKETCAP_API_KEY = process.env.COINMARKETCAP_API_KEY ?? ""
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -26,23 +48,25 @@ const config: HardhatUserConfig = {
   },
 
   networks: {
+    hardhat: {
+      forking:
+        process.env.FORKING === "true"
+          ? { url: MAINNET_RPC_URL, blockNumber: 19680873 }
+          : undefined,
+    },
     integration: {
       url: "http://localhost:8545",
     },
     sepolia: {
-      url: process.env.CHAIN_API_URL || "",
+      url: SEPOLIA_RPC_URL,
       chainId: 11155111,
-      accounts: process.env.ACCOUNTS_PRIVATE_KEYS
-        ? process.env.ACCOUNTS_PRIVATE_KEYS.split(",")
-        : undefined,
+      accounts: SEPOLIA_PRIVATE_KEY,
       tags: ["etherscan"],
     },
     mainnet: {
-      url: process.env.CHAIN_API_URL || "",
+      url: MAINNET_RPC_URL,
       chainId: 1,
-      accounts: process.env.ACCOUNTS_PRIVATE_KEYS
-        ? process.env.ACCOUNTS_PRIVATE_KEYS.split(",")
-        : undefined,
+      accounts: MAINNET_PRIVATE_KEY,
       tags: ["etherscan"],
     },
   },
@@ -57,8 +81,8 @@ const config: HardhatUserConfig = {
 
   etherscan: {
     apiKey: {
-      sepolia: process.env.ETHERSCAN_API_KEY,
-      mainnet: process.env.ETHERSCAN_API_KEY,
+      sepolia: ETHERSCAN_API_KEY,
+      mainnet: ETHERSCAN_API_KEY,
     },
   },
 
@@ -72,21 +96,25 @@ const config: HardhatUserConfig = {
       default: 2,
       sepolia: 0, // TODO: updated to the actual address once available
       mainnet: "", // TODO: updated to the actual address once available
+      integration: 0, // TODO: update to the same value as mainnet
     },
     treasury: {
       default: 3,
       sepolia: 0, // TODO: updated to the actual address once available
       mainnet: "", // TODO: updated to the actual address once available
+      integration: 0, // TODO: update to the same value as mainnet
     },
     maintainer: {
       default: 4,
       sepolia: 0, // TODO: updated to the actual address once available
       mainnet: "", // TODO: updated to the actual address once available
+      integration: 0, // TODO: update to the same value as mainnet
     },
     pauseAdmin: {
       default: 5,
       sepolia: 0, // TODO: updated to the actual address once available
       mainnet: "", // TODO: updated to the actual address once available
+      integration: 0, // TODO: update to the same value as mainnet
     },
   },
 
@@ -98,7 +126,7 @@ const config: HardhatUserConfig = {
 
   gasReporter: {
     enabled: true,
-    coinmarketcap: process.env.COINMARKETCAP_API_KEY,
+    coinmarketcap: COINMARKETCAP_API_KEY,
   },
 
   typechain: {

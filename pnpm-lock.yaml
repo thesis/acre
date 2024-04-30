@@ -242,6 +242,9 @@ importers:
       chai:
         specifier: ^4.3.10
         version: 4.3.10
+      dotenv-safer:
+        specifier: ^1.0.0
+        version: 1.0.0(dotenv@8.6.0)
       eslint:
         specifier: ^8.54.0
         version: 8.54.0
@@ -10702,6 +10705,14 @@ packages:
 
   /dotenv-expand@5.1.0:
     resolution: {integrity: sha512-YXQl1DSa4/PQyRfgrv6aoNjhasp/p4qs9FjJ4q4cQk+8m4r6k4ZSiEyytKG8f8W9gi8WsQtIObNmKd+tMzNTmA==}
+
+  /dotenv-safer@1.0.0(dotenv@8.6.0):
+    resolution: {integrity: sha512-QzRM3UrtdWn9iYJ4rgd1zPwSb1PjYVTpkWk0KVCdwZkatbonwGDuuKkw+lwXGTVAMGN/uVDs0HfOgxrBqlwElQ==}
+    peerDependencies:
+      dotenv: '>= 8.2.0'
+    dependencies:
+      dotenv: 8.6.0
+    dev: true
 
   /dotenv@7.0.0:
     resolution: {integrity: sha512-M3NhsLbV1i6HuGzBUH8vXrtxOk+tWmzWKDMbAVSUp3Zsjm7ywFeuwrUXhmhQyRK1q5B5GGy7hcXPbj3bnfZg2g==}
