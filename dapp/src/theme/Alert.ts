@@ -61,8 +61,11 @@ const variantSubtle = multiStyleConfig.definePartsStyle((props) =>
   statusStyles(props),
 )
 
+const processVariant = multiStyleConfig.definePartsStyle(() => ({}))
+
 const variants = {
   subtle: variantSubtle,
+  process: processVariant,
 }
 
 export const alertTheme = multiStyleConfig.defineMultiStyleConfig({
