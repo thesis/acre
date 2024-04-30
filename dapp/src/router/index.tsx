@@ -1,9 +1,9 @@
 import React from "react"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import LandingPage from "#/pages/LandingPage"
+import Layout from "#/components/shared/Layout"
 import ActivityPage from "#/pages/ActivityPage"
 import DashboardPage from "#/pages/DashboardPage"
-import Layout from "#/components/shared/Layout"
 import { routerPath } from "./path"
 
 export function Router() {

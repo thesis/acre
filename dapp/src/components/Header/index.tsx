@@ -1,12 +1,22 @@
 import React from "react"
-import { Flex, HStack, Icon } from "@chakra-ui/react"
 import { AcreLogo } from "#/assets/icons"
+import { routerPath } from "#/router/path"
+import { Flex, HStack, Icon } from "@chakra-ui/react"
+import { NavigationItemType } from "#/types/navigation"
 import ConnectWallet from "./ConnectWallet"
+import { Navigation } from "./Navigation"
+
+// TODO: To be adjusted after project pivot/cleanup
+const NAVIGATION_ITEMS: NavigationItemType[] = [
+  { label: "Season 1", href: routerPath.home },
+  { label: "Dashboard", href: routerPath.dashboard },
+]
 
 export default function Header() {
   return (
-    <HStack as="header" p={6}>
+    <HStack as="header" px={10} py={7}>
       <Icon as={AcreLogo} w={20} h={12} />
+      <Navigation items={NAVIGATION_ITEMS} />
       <Flex ml="auto">
         <ConnectWallet />
       </Flex>
