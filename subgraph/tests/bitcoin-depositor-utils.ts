@@ -45,7 +45,7 @@ export function createDepositInitializedEvent(
 export function createDepositFinalizedEvent(
   depositKey: BigInt,
   caller: Address,
-  referral: BigInt,
+  referral: i16,
   initialAmount: BigInt,
   bridgedAmount: BigInt,
   depositorFee: BigInt,
@@ -65,7 +65,7 @@ export function createDepositFinalizedEvent(
 
   const referralParam = new ethereum.EventParam(
     "referral",
-    ethereum.Value.fromUnsignedBigInt(referral),
+    ethereum.Value.fromI32(referral),
   )
 
   const initialAmountParam = new ethereum.EventParam(

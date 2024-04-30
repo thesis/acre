@@ -25,7 +25,7 @@ const caller = Address.fromString("0x0000000000000000000000000000000000000001")
 const depositOwner = Address.fromString(
   "0x0000000000000000000000000000000000000001",
 )
-const referral = BigInt.fromI32(234)
+const referral: i16 = 234
 const initialAmount = BigInt.fromI32(234)
 const bridgedAmount = BigInt.fromI32(234)
 const depositorFee = BigInt.fromI32(234)
