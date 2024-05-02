@@ -1819,6 +1819,22 @@ describe("stBTC", () => {
           stbtc.connect(depositor1).redeem(amount, depositor1, depositor1),
         ).to.be.revertedWithCustomError(stbtc, "EnforcedPause")
       })
+
+      it("should return 0 when calling maxDeposit", async () => {
+        expect(await stbtc.maxDeposit(depositor1)).to.be.eq(0)
+      })
+
+      it("should return 0 when calling maxMint", async () => {
+        expect(await stbtc.maxMint(depositor1)).to.be.eq(0)
+      })
+
+      it("should return 0 when calling maxRedeem", async () => {
+        expect(await stbtc.maxRedeem(depositor1)).to.be.eq(0)
+      })
+
+      it("should return 0 when calling maxWithdraw", async () => {
+        expect(await stbtc.maxWithdraw(depositor1)).to.be.eq(0)
+      })
     })
   })
 
