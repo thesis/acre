@@ -5,9 +5,15 @@ import {
   clearStore,
   beforeAll,
   afterAll,
+  dataSourceMock,
 } from "matchstick-as/assembly/index"
 
-import { BigInt, Address } from "@graphprotocol/graph-ts"
+import {
+  BigInt,
+  Address,
+  DataSourceContext,
+  Bytes,
+} from "@graphprotocol/graph-ts"
 import {
   createDepositInitializedEvent,
   createDepositFinalizedEvent,
@@ -64,6 +70,19 @@ const depositFinalizedEvent = createDepositFinalizedEvent(
   initialAmount,
   bridgedAmount,
   depositorFee,
+)
+
+// Set up context
+const context = new DataSourceContext()
+context.setBytes(
+  "tbtcBridgeAddress",
+  Bytes.fromHexString("0x9b1a7fE5a16A15F2f9475C5B231750598b113403"),
+)
+
+dataSourceMock.setReturnValues(
+  "0x2F86FE8C5683372Db667E6f6d88dcB6d55a81286",
+  "sepolia",
+  context,
 )
 
 describe("handleDepositInitialized", () => {

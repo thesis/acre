@@ -5,6 +5,7 @@ import {
   ByteArray,
   BigInt,
   Bytes,
+  dataSource,
 } from "@graphprotocol/graph-ts"
 
 const DEPOSIT_REVEALED_EVENT_SIGNATURE = crypto.keccak256(
@@ -13,15 +14,14 @@ const DEPOSIT_REVEALED_EVENT_SIGNATURE = crypto.keccak256(
   ),
 )
 
-// TODO: Set correct address for mainnet.
-const TBTC_V2_BRIDGE_CONTRACT_ADDRESS = Address.fromString(
-  "0x9b1a7fE5a16A15F2f9475C5B231750598b113403",
-)
-
 // eslint-disable-next-line import/prefer-default-export
 export function findBitcoinTransactionIdFromTransactionReceipt(
   transactionReceipt: ethereum.TransactionReceipt | null,
 ): string {
+  const tbtcV2BridgeAddress = Address.fromBytes(
+    dataSource.context().getBytes("tbtcBridgeAddress"),
+  )
+
   if (!transactionReceipt) {
     throw new Error("Transaction receipt not available")
   }
@@ -31,11 +31,17 @@ export function findBitcoinTransactionIdFromTransactionReceipt(
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const receipt = transactionReceipt as ethereum.TransactionReceipt
 
-  const depositRevealedLogIndex = receipt.logs.findIndex(
-    (receiptLog) =>
-      receiptLog.address.equals(TBTC_V2_BRIDGE_CONTRACT_ADDRESS) &&
-      receiptLog.topics[0].equals(DEPOSIT_REVEALED_EVENT_SIGNATURE),
-  )
+  let depositRevealedLogIndex = -1
+  for (let i = 0; i < receipt.logs.length; i += 1) {
+    const receiptLog = receipt.logs[i]
+
+    if (
+      receiptLog.address.equals(tbtcV2BridgeAddress) &&
+      receiptLog.topics[0].equals(DEPOSIT_REVEALED_EVENT_SIGNATURE)
+    ) {
+      depositRevealedLogIndex = i
+    }
+  }
 
   if (depositRevealedLogIndex < 0) {
     throw new Error("Cannot find `DepositRevealed` event in transaction logs")
