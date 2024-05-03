@@ -128,7 +128,15 @@ Subgraph Studio dashboard.
      and will allow you to test curation elements. This is recommended for
      testing purposes only.
 
-4. Click the "Publish new Subgraph" button. Once a subgraph is published, it
+4. During the publication flow, it is possible to add signal to your subgraph.
+   This is not a required step and you can add GRT signal to a published
+   subgraph from the Graph Explorer later.
+
+   - Adding signal to a subgraph which is not eligible for rewards will not
+     attract additional Indexers. More info
+     [here](https://thegraph.com/docs/en/publishing/publishing-a-subgraph/#adding-signal-to-your-subgraph).
+
+5. Click the "Publish new Subgraph" button. Once a subgraph is published, it
    will be available to view in the [Graph
    Explorer](https://thegraph.com/explorer).
 
