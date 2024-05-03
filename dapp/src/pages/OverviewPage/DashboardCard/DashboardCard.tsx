@@ -11,22 +11,19 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { TextMd } from "#/components/shared/Typography"
-import {
-  CurrencyBalance,
-  CurrencyBalanceProps,
-} from "#/components/shared/CurrencyBalance"
+import { CurrencyBalanceProps } from "#/components/shared/CurrencyBalance"
 import IconTag from "#/components/shared/IconTag"
 import { BoostArrowIcon } from "#/assets/icons"
+import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 
 type AmountType = CurrencyBalanceProps["amount"]
 type DashboardCardProps = CardProps & {
   bitcoinAmount: AmountType
-  usdAmount: AmountType
   positionPercentage?: number // TODO: Make this required in post MVP phase
 }
 
 export default function DashboardCard(props: DashboardCardProps) {
-  const { bitcoinAmount, usdAmount, positionPercentage, ...restProps } = props
+  const { bitcoinAmount, positionPercentage, ...restProps } = props
   return (
     <Card px={5} py={10} gap={10} {...restProps}>
       <CardHeader p={0} textAlign="center">
@@ -52,21 +49,22 @@ export default function DashboardCard(props: DashboardCardProps) {
       <CardBody as={VStack} p={0} spacing={10}>
         <VStack justify="center" spacing={6}>
           <VStack justify="center" spacing={0}>
-            <CurrencyBalance
-              amount={bitcoinAmount}
-              currency="bitcoin"
-              fontSize="6xl"
-              lineHeight={1.2}
-              letterSpacing="-0.075rem" // -1.2px
-              fontWeight="bold"
-              color="grey.700"
-            />
-            <CurrencyBalance
-              amount={usdAmount}
-              currency="usd"
-              shouldBeFormatted={false}
-              color="grey.500"
-              fontWeight="medium"
+            <CurrencyBalanceWithConversion
+              from={{
+                amount: bitcoinAmount,
+                currency: "bitcoin",
+                fontSize: "6xl",
+                lineHeight: 1.2,
+                letterSpacing: "-0.075rem", // -1.2px
+                fontWeight: "bold",
+                color: "grey.700",
+              }}
+              to={{
+                currency: "usd",
+                shouldBeFormatted: false,
+                color: "grey.500",
+                fontWeight: "medium",
+              }}
             />
           </VStack>
 
