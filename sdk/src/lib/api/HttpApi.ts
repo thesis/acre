@@ -9,10 +9,10 @@ export default abstract class HttpApi {
   }
 
   /**
-   * Factory function for running GET requests
-   * @param endpoint api endpoint
-   * @param requestInit additional data passed to request
-   * @returns api response
+   * Factory function for running GET requests.
+   * @param endpoint API endpoint.
+   * @param requestInit Additional data passed to request.
+   * @returns API response.
    */
   protected async getRequest(
     endpoint: string,
@@ -25,11 +25,11 @@ export default abstract class HttpApi {
   }
 
   /**
-   * Factory function for running POST requests
-   * @param endpoint api endpoint
-   * @param body data passed to POST request
-   * @param requestInit additional data passed to request
-   * @returns api response
+   * Factory function for running POST requests.
+   * @param endpoint API endpoint,
+   * @param body Data passed to POST request.
+   * @param requestInit Additional data passed to request.
+   * @returns API response.
    */
   protected async postRequest(
     endpoint: string,
