@@ -1,5 +1,13 @@
 import React from "react"
-import { Card, CardBody, CardHeader, CardProps, Icon } from "@chakra-ui/react"
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  CardProps,
+  Text,
+  HStack,
+  Icon,
+} from "@chakra-ui/react"
 import { IconDiscountCheckFilled, IconLock } from "@tabler/icons-react"
 
 type GrantedSeasonPassCardProps = CardProps & {
@@ -13,25 +21,26 @@ export default function GrantedSeasonPassCard(
 
   return (
     <Card size="md" px={5} py={4} gap={4} {...restProps}>
-      <CardHeader fontWeight="bold" p={0}>
-        {heading}
-        <Icon
-          as={IconLock}
-          ml={1}
-          my={0.5}
-          boxSize={5}
-          verticalAlign="bottom"
-        />
+      <CardHeader
+        as={HStack}
+        spacing={1}
+        alignItems="normal"
+        fontWeight="bold"
+        p={0}
+      >
+        <Text>{heading}</Text>
+        <Icon as={IconLock} boxSize={5} />
       </CardHeader>
-      <CardBody color="green.400" fontWeight="semibold" p={0}>
-        <Icon
-          as={IconDiscountCheckFilled}
-          mr={2}
-          my={0.5}
-          boxSize={5}
-          verticalAlign="bottom"
-        />
-        Your seat is secured.
+      <CardBody
+        as={HStack}
+        spacing={2}
+        alignItems="center"
+        color="green.400"
+        fontWeight="semibold"
+        p={0}
+      >
+        <Icon as={IconDiscountCheckFilled} boxSize={5} />
+        <Text>Your seat is secured.</Text>
       </CardBody>
     </Card>
   )
