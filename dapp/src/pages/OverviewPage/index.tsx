@@ -8,12 +8,12 @@ import Statistics from "./Statistics"
 import TransactionHistory from "./TransactionHistory"
 import { DocsCard } from "./DocsCard"
 import { ActivityCarousel } from "./ActivityCarousel"
-import { DashboardCard } from "./DashboardCard"
+import DashboardCard from "./DashboardCard"
 
 export default function OverviewPage() {
   return (
     <Flex direction="column" p={6}>
-      <DashboardCard bitcoinAmount={499000000} usdAmount="148000" />
+      <DashboardCard bitcoinAmount={499000000} />
     </Flex>
   )
 
