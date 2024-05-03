@@ -19,8 +19,7 @@ export default function GrantedSeasonPassCard(
           as={IconLock}
           ml={1}
           my={0.5}
-          w={5}
-          h={5}
+          boxSize={5}
           verticalAlign="bottom"
         />
       </CardHeader>
@@ -29,8 +28,7 @@ export default function GrantedSeasonPassCard(
           as={IconDiscountCheckFilled}
           mr={2}
           my={0.5}
-          w={5}
-          h={5}
+          boxSize={5}
           verticalAlign="bottom"
         />
         Your seat is secured.
