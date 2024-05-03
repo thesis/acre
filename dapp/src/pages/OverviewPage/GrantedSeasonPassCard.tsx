@@ -13,7 +13,7 @@ export default function GrantedSeasonPassCard(
 
   return (
     <Card size="md" px={5} py={4} gap={4} {...restProps}>
-      <CardHeader fontWeight="bold">
+      <CardHeader fontWeight="bold" p={0}>
         {heading}
         <Icon
           as={IconLock}
@@ -24,7 +24,7 @@ export default function GrantedSeasonPassCard(
           verticalAlign="bottom"
         />
       </CardHeader>
-      <CardBody color="green.400" fontWeight="semibold">
+      <CardBody color="green.400" fontWeight="semibold" p={0}>
         <Icon
           as={IconDiscountCheckFilled}
           mr={2}
