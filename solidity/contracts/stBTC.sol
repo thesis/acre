@@ -209,7 +209,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     function deposit(
         uint256 assets,
         address receiver
-    ) public override whenNotPaused returns (uint256) {
+    ) public override returns (uint256) {
         if (assets < minimumDepositAmount) {
             revert LessThanMinDeposit(assets, minimumDepositAmount);
         }
@@ -234,7 +234,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     function mint(
         uint256 shares,
         address receiver
-    ) public override whenNotPaused returns (uint256 assets) {
+    ) public override returns (uint256 assets) {
         if ((assets = super.mint(shares, receiver)) < minimumDepositAmount) {
             revert LessThanMinDeposit(assets, minimumDepositAmount);
         }
@@ -251,7 +251,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         uint256 assets,
         address receiver,
         address owner
-    ) public override whenNotPaused returns (uint256) {
+    ) public override returns (uint256) {
         uint256 currentAssetsBalance = IERC20(asset()).balanceOf(address(this));
         // If there is not enough assets in stBTC to cover user withdrawals and
         // withdrawal fees then pull the assets from the dispatcher.
@@ -273,7 +273,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         uint256 shares,
         address receiver,
         address owner
-    ) public override whenNotPaused returns (uint256) {
+    ) public override returns (uint256) {
         uint256 assets = convertToAssets(shares);
         uint256 currentAssetsBalance = IERC20(asset()).balanceOf(address(this));
         if (assets > currentAssetsBalance) {
