@@ -9,12 +9,23 @@ import {
   Tag,
   HStack,
   VStack,
+  ButtonProps,
 } from "@chakra-ui/react"
 import { TextMd } from "#/components/shared/Typography"
 import IconTag from "#/components/shared/IconTag"
 import { BoostArrowIcon } from "#/assets/icons"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import { AmountType } from "#/types"
+
+const buttonStyles: ButtonProps = {
+  size: "lg",
+  flex: 1,
+  maxW: "12.5rem", // 200px
+  fontWeight: "bold",
+  lineHeight: 6,
+  px: 7,
+  h: "auto",
+}
 
 type DashboardCardProps = CardProps & {
   bitcoinAmount: AmountType
@@ -71,27 +82,8 @@ export default function DashboardCard(props: DashboardCardProps) {
         </VStack>
 
         <HStack w="full" justify="center" spacing={2}>
-          <Button
-            size="lg"
-            flex={1}
-            maxW="12.5rem" // 200px
-            fontWeight="bold"
-            lineHeight={6}
-            px={7}
-            h="auto"
-          >
-            Deposit More
-          </Button>
-          <Button
-            size="lg"
-            flex={1}
-            maxW="12.5rem" // 200px
-            variant="outline"
-            fontWeight="bold"
-            lineHeight={6}
-            px={7}
-            h="auto"
-          >
+          <Button {...buttonStyles}>Deposit More</Button>
+          <Button variant="outline" {...buttonStyles}>
             Withdraw
           </Button>
         </HStack>
