@@ -40,9 +40,9 @@ create a private one
 
 1. Install Docker on your local machine:
 
-   - Mac: https://docs.docker.com/desktop/install/mac-install/
-   - Windows: https://docs.docker.com/desktop/install/windows-install/
-   - Linux: https://docs.docker.com/desktop/install/linux-install/
+   - [Mac](https://docs.docker.com/desktop/install/mac-install/)
+   - [Windows](https://docs.docker.com/desktop/install/windows-install/)
+   - [Linux](https://docs.docker.com/desktop/install/linux-install/)
 
 2. Set the API key in the `docker-compose.yaml` file.
 
