@@ -1,11 +1,11 @@
 import React from "react"
 import { Text } from "@chakra-ui/react"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
-import ValueCard from "./ValueCard"
+import HighlightedValueCard from "./HighlightedValueCard"
 
 export default function TVLCard() {
   return (
-    <ValueCard
+    <HighlightedValueCard
       header="Total value locked"
       value={{
         amount: "2202.92",
@@ -14,13 +14,13 @@ export default function TVLCard() {
       }}
       color="brand.400"
       footer={[
-        <ValueCard.FooterItem>
+        <HighlightedValueCard.FooterItem>
           <Text as="span" color="green.400" mr={2}>
             +2%
           </Text>
           +24h
-        </ValueCard.FooterItem>,
-        <ValueCard.FooterItem>
+        </HighlightedValueCard.FooterItem>,
+        <HighlightedValueCard.FooterItem>
           <CurrencyBalance
             amount="27202964.47"
             currency="usd"
@@ -28,7 +28,7 @@ export default function TVLCard() {
             fontWeight="unset"
             symbolPosition="prefix"
           />
-        </ValueCard.FooterItem>,
+        </HighlightedValueCard.FooterItem>,
       ]}
     />
   )

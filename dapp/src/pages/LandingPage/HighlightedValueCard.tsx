@@ -29,7 +29,7 @@ function ValueCardBase(props: ValueCardProps) {
 
   if (!isFooterValid) {
     throw new Error(
-      "Footer items must be valid <ValueCard.FooterItem /> components.",
+      "Footer items must be valid <HighlightedValueCard.FooterItem /> components.",
     )
   }
 
@@ -104,5 +104,5 @@ function ValueCardBase(props: ValueCardProps) {
   )
 }
 
-const ValueCard = Object.assign(ValueCardBase, { FooterItem: Box })
-export default ValueCard
+const HighlightedValueCard = Object.assign(ValueCardBase, { FooterItem: Box })
+export default HighlightedValueCard

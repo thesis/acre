@@ -5,7 +5,7 @@ import mysteryCardIcon from "#/assets/images/mystery-box.svg"
 import keyCardIcon from "#/assets/images/season-key.svg"
 import { EXTERNAL_HREF, PARTNER_LOGOS } from "#/constants"
 import IconCard from "./IconCard"
-import ValueCard from "./ValueCard"
+import HighlightedValueCard from "./HighlightedValueCard"
 import TVLCard from "./TVLCard"
 import ContentCard from "./ContentCard"
 import CardButton from "./CardButton"
@@ -54,7 +54,7 @@ export default function LandingPage() {
             <Text>upcoming seasons</Text>
           </IconCard>
         </Flex>
-        <ValueCard header="Users joined" value="8,172" />
+        <HighlightedValueCard header="Users joined" value="8,172" />
         <TVLCard />
         <ContentCard header="How it works" withBackground>
           <Box color="brand.400" fontWeight="semibold" pt={9} pb={20}>
