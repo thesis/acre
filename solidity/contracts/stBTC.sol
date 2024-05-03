@@ -209,7 +209,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     function deposit(
         uint256 assets,
         address receiver
-    ) public override whenNotPaused returns (uint256) {
+    ) public override returns (uint256) {
         if (assets < minimumDepositAmount) {
             revert LessThanMinDeposit(assets, minimumDepositAmount);
         }
@@ -234,7 +234,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     function mint(
         uint256 shares,
         address receiver
-    ) public override whenNotPaused returns (uint256 assets) {
+    ) public override returns (uint256 assets) {
         if ((assets = super.mint(shares, receiver)) < minimumDepositAmount) {
             revert LessThanMinDeposit(assets, minimumDepositAmount);
         }
@@ -251,7 +251,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         uint256 assets,
         address receiver,
         address owner
-    ) public override whenNotPaused returns (uint256) {
+    ) public override returns (uint256) {
         uint256 currentAssetsBalance = IERC20(asset()).balanceOf(address(this));
         // If there is not enough assets in stBTC to cover user withdrawals and
         // withdrawal fees then pull the assets from the dispatcher.
@@ -273,7 +273,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         uint256 shares,
         address receiver,
         address owner
-    ) public override whenNotPaused returns (uint256) {
+    ) public override returns (uint256) {
         uint256 assets = convertToAssets(shares);
         uint256 currentAssetsBalance = IERC20(asset()).balanceOf(address(this));
         if (assets > currentAssetsBalance) {
@@ -281,6 +281,46 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         }
 
         return super.redeem(shares, receiver, owner);
+    }
+
+    /// @dev Returns the maximum amount of the underlying asset that can be
+    ///      deposited into the Vault for the receiver, through a deposit call.
+    ///      If the Vault is paused, returns 0.
+    function maxDeposit(address) public view override returns (uint256) {
+        if (paused()) {
+            return 0;
+        }
+        return type(uint256).max;
+    }
+
+    /// @dev Returns the maximum amount of the Vault shares that can be minted
+    ///      for the receiver, through a mint call.
+    ///      If the Vault is paused, returns 0.
+    function maxMint(address) public view override returns (uint256) {
+        if (paused()) {
+            return 0;
+        }
+        return type(uint256).max;
+    }
+
+    /// @dev Returns the maximum amount of the underlying asset that can be
+    ///      withdrawn from the owner balance in the Vault, through a withdraw call.
+    ///      If the Vault is paused, returns 0.
+    function maxWithdraw(address owner) public view override returns (uint256) {
+        if (paused()) {
+            return 0;
+        }
+        return super.maxWithdraw(owner);
+    }
+
+    /// @dev Returns the maximum amount of Vault shares that can be redeemed from
+    ///      the owner balance in the Vault, through a redeem call.
+    ///      If the Vault is paused, returns 0.
+    function maxRedeem(address owner) public view override returns (uint256) {
+        if (paused()) {
+            return 0;
+        }
+        return super.maxRedeem(owner);
     }
 
     /// @notice Returns value of assets that would be exchanged for the amount of
