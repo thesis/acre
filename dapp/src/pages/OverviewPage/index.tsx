@@ -13,12 +13,6 @@ import DashboardCard from "./DashboardCard"
 export default function OverviewPage() {
   return (
     <Flex direction="column" p={6}>
-      <DashboardCard bitcoinAmount={499000000} />
-    </Flex>
-  )
-
-  return (
-    <Flex direction="column" p={6}>
       <HStack pb={3.5}>
         {/* TODO: Handle click actions */}
         <Switch size="sm" />
