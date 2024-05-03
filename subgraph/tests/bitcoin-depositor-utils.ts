@@ -1,4 +1,10 @@
-import { ethereum, BigInt, Address } from "@graphprotocol/graph-ts"
+import {
+  ethereum,
+  BigInt,
+  Address,
+  Bytes,
+  Wrapped,
+} from "@graphprotocol/graph-ts"
 import { newMockEvent } from "matchstick-as/assembly/defaults"
 import {
   DepositInitialized,
@@ -10,6 +16,7 @@ export function createDepositInitializedEvent(
   caller: Address,
   depositOwner: Address,
   initialAmount: BigInt,
+  btcFundingTxHash: string,
 ): DepositInitialized {
   const depositInitializedEvent = changetype<DepositInitialized>(newMockEvent())
 
@@ -32,6 +39,40 @@ export function createDepositInitializedEvent(
   const initialAmountParam = new ethereum.EventParam(
     "initialAmount",
     ethereum.Value.fromUnsignedBigInt(initialAmount),
+  )
+
+  // Logs data from https://sepolia.etherscan.io/tx/0x6805986942c86496853cb1d0146120a6b55e57fb4feec605c49edef2b34903bb#eventlog
+  const log = new ethereum.Log(
+    Address.fromString("0x9b1a7fE5a16A15F2f9475C5B231750598b113403"),
+    [
+      // Event signature
+      Bytes.fromHexString(
+        "0xa7382159a693ed317a024daf0fd1ba30805cdf9928ee09550af517c516e2ef05",
+      ),
+      // `depositor` - indexed topic 1
+      Bytes.fromHexString(
+        "0x0000000000000000000000002f86fe8c5683372db667e6f6d88dcb6d55a81286",
+      ),
+      // `walletPubKeyHash` - indexed topic 2
+      Bytes.fromHexString(
+        "0x79073502d1fcf0cc9b9a1b7c56cadda76d33fe98000000000000000000000000",
+      ),
+    ],
+    Bytes.fromHexString(
+      `0x${btcFundingTxHash}000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000186a00f56f5715acb9a25000000000000000000000000000000000000000000000000f2096fc9cbf2aca10025af13cbf9a685d963fde8000000000000000000000000e1c1946700000000000000000000000000000000000000000000000000000000000000000000000000000000b5679de944a79732a75ce556191df11f489448d5`,
+    ),
+    depositInitializedEvent.block.hash,
+    Bytes.fromI32(1),
+    depositInitializedEvent.transaction.hash,
+    depositInitializedEvent.transaction.index,
+    depositInitializedEvent.logIndex,
+    depositInitializedEvent.transactionLogIndex,
+    depositInitializedEvent.logType as string,
+    new Wrapped(false),
+  )
+
+  ;(depositInitializedEvent.receipt as ethereum.TransactionReceipt).logs.push(
+    log,
   )
 
   depositInitializedEvent.parameters.push(depositKeyParam)
