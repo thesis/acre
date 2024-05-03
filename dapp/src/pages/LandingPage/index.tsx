@@ -64,7 +64,7 @@ export default function LandingPage() {
         </ContentCard>
         <ContentCard header="Trusted by pioneers.">
           {PARTNER_LOGOS.map((logoAttributes) => (
-            <Image h="auto" {...logoAttributes} />
+            <Image key={logoAttributes.src} h="auto" {...logoAttributes} />
           ))}
         </ContentCard>
         <CardButton href={EXTERNAL_HREF.DOCS} isExternal>
