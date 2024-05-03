@@ -13,7 +13,7 @@ import {
 } from "#/components/shared/CurrencyBalance"
 import valueCardDecorator from "#/assets/images/card-value-decorator.svg"
 
-type IconCardProps = CardProps & {
+type ValueCardProps = CardProps & {
   header: React.ReactNode
   value:
     | React.ReactNode
@@ -21,7 +21,7 @@ type IconCardProps = CardProps & {
   footer?: React.ReactNode[]
 }
 
-function ValueCardBase(props: IconCardProps) {
+function ValueCardBase(props: ValueCardProps) {
   const { header, value, footer = [], ...restProps } = props
   const isFooterValid = footer.every(
     (footerItem) => React.isValidElement(footerItem) && footerItem.type === Box,
