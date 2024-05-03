@@ -25,8 +25,7 @@ export default function TVLCard() {
             amount="27202964.47"
             currency="usd"
             shouldBeFormatted={false}
-            symbolFontWeight="unset"
-            balanceFontWeight="unset"
+            fontWeight="unset"
             symbolPosition="prefix"
           />
         </ValueCard.FooterItem>,
