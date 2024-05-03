@@ -11,12 +11,11 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { TextMd } from "#/components/shared/Typography"
-import { CurrencyBalanceProps } from "#/components/shared/CurrencyBalance"
 import IconTag from "#/components/shared/IconTag"
 import { BoostArrowIcon } from "#/assets/icons"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
+import { AmountType } from "#/types"
 
-type AmountType = CurrencyBalanceProps["amount"]
 type DashboardCardProps = CardProps & {
   bitcoinAmount: AmountType
   positionPercentage?: number // TODO: Make this required in post MVP phase
