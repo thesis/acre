@@ -6,7 +6,9 @@ type GrantedSeasonPassCardProps = CardProps & {
   heading: string
 }
 
-export function GrantedSeasonPassCard(props: GrantedSeasonPassCardProps) {
+export default function GrantedSeasonPassCard(
+  props: GrantedSeasonPassCardProps,
+) {
   const { heading, ...restProps } = props
 
   return (
