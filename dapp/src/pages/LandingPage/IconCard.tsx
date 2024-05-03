@@ -24,10 +24,9 @@ export default function IconCard(props: IconCardProps) {
       bg="gold.300"
       display="grid"
       gridAutoFlow="row"
-      gridAutoColumns="1fr auto"
+      gridAutoColumns="auto 1fr"
       gridTemplateRows="auto 1fr"
-      maxH={{ base: "auto", "2xl": "11.25rem" }} // 180px
-      gap={{ base: 2, "2xl": 0 }}
+      rowGap="3.75rem" // 60px
       {...restProps}
     >
       <CardHeader
@@ -43,11 +42,10 @@ export default function IconCard(props: IconCardProps) {
         <CardBody
           p={0}
           fontSize="md"
-          mt={{ base: 0, "2xl": "auto" }}
           lineHeight={6}
           fontWeight="medium"
           color="grey.500"
-          flex={0}
+          alignSelf="end"
         >
           {children}
         </CardBody>
@@ -55,14 +53,14 @@ export default function IconCard(props: IconCardProps) {
       <CardFooter
         px={0}
         py={0}
-        gridArea={{ base: "unset", "2xl": "1 / 2 / 3 / 3" }}
-        alignSelf="end"
-        mx={-6}
-        mt={{ base: "auto", "2xl": -5 }}
-        mb={-5}
+        gridArea="1 / 2 / 3 / 3"
+        ml={{ base: "auto", xl: 6 }}
+        my={-5}
+        w="full"
         maxW="12.5rem" // 200px
+        position="relative"
       >
-        <Image pointerEvents="none" {...icon} />
+        <Image pointerEvents="none" position="absolute" bottom={0} {...icon} />
       </CardFooter>
     </Card>
   )

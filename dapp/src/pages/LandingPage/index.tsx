@@ -1,5 +1,5 @@
 import React from "react"
-import { Flex, VStack, HStack, Box, Image, Text } from "@chakra-ui/react"
+import { Flex, VStack, Box, Image, Text } from "@chakra-ui/react"
 import boostCardIcon from "#/assets/images/rewards-boost.svg"
 import misteryCardIcon from "#/assets/images/mystery-box.svg"
 import keyCardIcon from "#/assets/images/season-key.svg"
@@ -13,17 +13,22 @@ import HeroSection from "./HeroSection"
 
 export default function LandingPage() {
   return (
-    <Flex
-      w="full"
-      flexFlow="column"
-      px={10}
-      pb={10}
-      maxW="100.625rem"
-      mx="auto"
-    >
+    <Flex w="full" flexFlow="column" px={10} pb={10}>
       <HeroSection />
-      <VStack spacing={4} mx={32} align="stretch">
-        <HStack spacing={5} align="stretch" mb={12} w="full">
+      <VStack
+        spacing={4}
+        w="full"
+        maxW="79.25rem" // 1268px
+        mx="auto"
+        align="stretch"
+      >
+        <Flex
+          flexDirection={{ base: "column", xl: "row" }}
+          gap={5}
+          align="stretch"
+          mb={12}
+          w="full"
+        >
           <IconCard
             flex={1}
             header="Rewards Boost"
@@ -48,7 +53,7 @@ export default function LandingPage() {
             <Text>Grants access to all</Text>
             <Text>upcoming seasons</Text>
           </IconCard>
-        </HStack>
+        </Flex>
         <ValueCard header="Users joined" value="8,172" />
         <TVLCard />
         <ContentCard header="How it works" withBackground>
