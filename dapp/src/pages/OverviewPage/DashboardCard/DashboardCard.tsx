@@ -72,17 +72,25 @@ export default function DashboardCard(props: DashboardCardProps) {
 
         <HStack w="full" justify="center" spacing={2}>
           <Button
+            size="lg"
             flex={1}
             maxW="12.5rem" // 200px
-            size="xl"
+            fontWeight="bold"
+            lineHeight={6}
+            px={7}
+            h="auto"
           >
             Deposit More
           </Button>
           <Button
+            size="lg"
             flex={1}
             maxW="12.5rem" // 200px
-            size="xl"
             variant="outline"
+            fontWeight="bold"
+            lineHeight={6}
+            px={7}
+            h="auto"
           >
             Withdraw
           </Button>
