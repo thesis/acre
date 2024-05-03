@@ -1,7 +1,7 @@
 import React from "react"
 import { Flex, VStack, Box, Image, Text } from "@chakra-ui/react"
 import boostCardIcon from "#/assets/images/rewards-boost.svg"
-import misteryCardIcon from "#/assets/images/mystery-box.svg"
+import mysteryCardIcon from "#/assets/images/mystery-box.svg"
 import keyCardIcon from "#/assets/images/season-key.svg"
 import { EXTERNAL_HREF, PARTNER_LOGOS } from "#/constants"
 import IconCard from "./IconCard"
@@ -40,7 +40,7 @@ export default function LandingPage() {
           <IconCard
             flex={1}
             header="Mystery Box"
-            icon={{ src: misteryCardIcon }}
+            icon={{ src: mysteryCardIcon }}
           >
             <Text>Grants you a random</Text>
             <Text>reward gift.</Text>
