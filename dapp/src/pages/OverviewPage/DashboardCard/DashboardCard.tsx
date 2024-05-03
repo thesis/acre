@@ -16,7 +16,7 @@ import {
   CurrencyBalanceProps,
 } from "#/components/shared/CurrencyBalance"
 import IconTag from "#/components/shared/IconTag"
-import { BoostArrow } from "#/assets/icons/BoostArrow"
+import { BoostArrowIcon } from "#/assets/icons"
 
 type AmountType = CurrencyBalanceProps["amount"]
 type DashboardCardProps = CardProps & {
@@ -70,7 +70,7 @@ export default function DashboardCard(props: DashboardCardProps) {
             />
           </VStack>
 
-          <IconTag icon={BoostArrow}>Rewards Boost</IconTag>
+          <IconTag icon={BoostArrowIcon}>Rewards Boost</IconTag>
         </VStack>
 
         <HStack w="full" justify="center" spacing={2}>

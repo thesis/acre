@@ -1,7 +1,7 @@
 import React from "react"
 import { createIcon } from "@chakra-ui/react"
 
-export const BoostArrow = createIcon({
+export const BoostArrowIcon = createIcon({
   displayName: "BoostArrow",
   viewBox: "0 0 230 300",
   defaultProps: { w: 230, h: 300 },
