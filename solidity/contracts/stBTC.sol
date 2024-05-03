@@ -172,13 +172,6 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         emit ExitFeeBasisPointsUpdated(newExitFeeBasisPoints);
     }
 
-    /// @notice Returns the total amount of assets held by the vault across all
-    ///         allocations and this contract.
-    function totalAssets() public view override returns (uint256) {
-        return
-            IERC20(asset()).balanceOf(address(this)) + dispatcher.totalAssets();
-    }
-
     /// @notice Calls `receiveApproval` function on spender previously approving
     ///         the spender to withdraw from the caller multiple times, up to
     ///         the `amount` amount. If this function is called again, it
@@ -290,6 +283,13 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         }
 
         return super.redeem(shares, receiver, owner);
+    }
+
+    /// @notice Returns the total amount of assets held by the vault across all
+    ///         allocations and this contract.
+    function totalAssets() public view override returns (uint256) {
+        return
+            IERC20(asset()).balanceOf(address(this)) + dispatcher.totalAssets();
     }
 
     /// @notice Returns value of assets that would be exchanged for the amount of
