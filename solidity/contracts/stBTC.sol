@@ -74,6 +74,9 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     /// Reverts if the address is disallowed.
     error DisallowedAddress();
 
+    /// Reverts if the fee basis points exceed the maximum value.
+    error ExceedsMaxFeeBasisPoints();
+
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
@@ -148,6 +151,9 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     function updateEntryFeeBasisPoints(
         uint256 newEntryFeeBasisPoints
     ) external onlyOwner {
+        if (newEntryFeeBasisPoints > _BASIS_POINT_SCALE) {
+            revert ExceedsMaxFeeBasisPoints();
+        }
         entryFeeBasisPoints = newEntryFeeBasisPoints;
 
         emit EntryFeeBasisPointsUpdated(newEntryFeeBasisPoints);
@@ -158,6 +164,9 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     function updateExitFeeBasisPoints(
         uint256 newExitFeeBasisPoints
     ) external onlyOwner {
+        if (newExitFeeBasisPoints > _BASIS_POINT_SCALE) {
+            revert ExceedsMaxFeeBasisPoints();
+        }
         exitFeeBasisPoints = newExitFeeBasisPoints;
 
         emit ExitFeeBasisPointsUpdated(newExitFeeBasisPoints);

@@ -13,7 +13,7 @@ import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 abstract contract ERC4626Fees is ERC4626Upgradeable {
     using Math for uint256;
 
-    uint256 private constant _BASIS_POINT_SCALE = 1e4;
+    uint256 internal constant _BASIS_POINT_SCALE = 1e4;
 
     // === Overrides ===
 

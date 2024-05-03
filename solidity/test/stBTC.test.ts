@@ -1846,7 +1846,7 @@ describe("stBTC", () => {
 
     const validEntryFeeBasisPoints = 100n // 1%
 
-    context("when is called by governance", () => {
+    context("when called by the governance", () => {
       context("when entry fee basis points are valid", () => {
         beforeAfterSnapshotWrapper()
 
@@ -1888,6 +1888,16 @@ describe("stBTC", () => {
           )
         })
       })
+
+      context("when entry fee basis points exceed 10000", () => {
+        beforeAfterSnapshotWrapper()
+
+        it("should revert", async () => {
+          await expect(
+            stbtc.connect(governance).updateEntryFeeBasisPoints(10001n),
+          ).to.be.revertedWithCustomError(stbtc, "ExceedsMaxFeeBasisPoints")
+        })
+      })
     })
 
     context("when is called by non-governance", () => {
@@ -1904,7 +1914,7 @@ describe("stBTC", () => {
 
     const validExitFeeBasisPoints = 100n // 1%
 
-    context("when is called by governance", () => {
+    context("when called by the governance", () => {
       context("when exit fee basis points are valid", () => {
         beforeAfterSnapshotWrapper()
 
@@ -1926,6 +1936,16 @@ describe("stBTC", () => {
           expect(await stbtc.exitFeeBasisPoints()).to.be.eq(
             validExitFeeBasisPoints,
           )
+        })
+      })
+
+      context("when exit fee basis points exceed 10000", () => {
+        beforeAfterSnapshotWrapper()
+
+        it("should revert", async () => {
+          await expect(
+            stbtc.connect(governance).updateExitFeeBasisPoints(10001n),
+          ).to.be.revertedWithCustomError(stbtc, "ExceedsMaxFeeBasisPoints")
         })
       })
 
