@@ -8,7 +8,6 @@ import Statistics from "./Statistics"
 import TransactionHistory from "./TransactionHistory"
 import { DocsCard } from "./DocsCard"
 import { ActivityCarousel } from "./ActivityCarousel"
-import DashboardCard from "./DashboardCard"
 
 export default function OverviewPage() {
   return (
