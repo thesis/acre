@@ -1819,6 +1819,25 @@ describe("stBTC", () => {
           stbtc.connect(depositor1).redeem(amount, depositor1, depositor1),
         ).to.be.revertedWithCustomError(stbtc, "EnforcedPause")
       })
+
+      it("should pause transfers", async () => {
+        await expect(
+          stbtc.connect(depositor1).transfer(depositor2, amount),
+        ).to.be.revertedWithCustomError(stbtc, "EnforcedPause")
+      })
+
+      it("should pause transfersFrom", async () => {
+        await expect(
+          stbtc
+            .connect(depositor1)
+            .approve(depositor2.address, amount)
+            .then(() =>
+              stbtc
+                .connect(depositor2)
+                .transferFrom(depositor1, depositor2, amount),
+            ),
+        ).to.be.revertedWithCustomError(stbtc, "EnforcedPause")
+      })
     })
   })
 
