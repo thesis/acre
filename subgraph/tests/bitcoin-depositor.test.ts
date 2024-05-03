@@ -5,11 +5,15 @@ import {
   clearStore,
   beforeAll,
   afterAll,
-  beforeEach,
-  afterEach,
+  dataSourceMock,
 } from "matchstick-as/assembly/index"
 
-import { BigInt, Address } from "@graphprotocol/graph-ts"
+import {
+  BigInt,
+  Address,
+  DataSourceContext,
+  Bytes,
+} from "@graphprotocol/graph-ts"
 import {
   createDepositInitializedEvent,
   createDepositFinalizedEvent,
@@ -18,9 +22,9 @@ import {
   handleDepositFinalized,
   handleDepositInitialized,
 } from "../src/bitcoin-depositor"
+import { DepositOwner } from "../generated/schema"
 
-const depositKey = BigInt.fromI32(234)
-const nextDepositKey = BigInt.fromI32(345)
+// Shared
 const caller = Address.fromString("0x0000000000000000000000000000000000000001")
 const depositOwner = Address.fromString(
   "0x0000000000000000000000000000000000000001",
@@ -30,20 +34,35 @@ const initialAmount = BigInt.fromI32(234)
 const bridgedAmount = BigInt.fromI32(234)
 const depositorFee = BigInt.fromI32(234)
 
+// First deposit
+const depositKey = BigInt.fromI32(234)
+const fundingTxHash =
+  "03063F39C8F0F9D3D742A73D1D5AF22548BFFF2E4D292BEAFF2BE1FE75CE1556"
+const expectedBitcoinTxId =
+  "5615CE75FEE12BFFEA2B294D2EFFBF4825F25A1D3DA742D7D3F9F0C8393F0603".toLowerCase()
 const depositInitializedEvent = createDepositInitializedEvent(
   depositKey,
   caller,
   depositOwner,
   initialAmount,
+  fundingTxHash,
 )
 
-const nextDepositInitializedEvent = createDepositInitializedEvent(
-  nextDepositKey,
+// Second deposit
+const secondDepositKey = BigInt.fromI32(555)
+const secondFundingTxHash =
+  "1F0BCD97CD8556AFBBF0EE1D319A8F873B11EA60C536F57AAF25812B19A7F76C"
+const secondExpectedBitcoinTxId =
+  "6CF7A7192B8125AF7AF536C560EA113B878F9A311DEEF0BBAF5685CD97CD0B1F".toLowerCase()
+const secondDepositInitializedEvent = createDepositInitializedEvent(
+  secondDepositKey,
   caller,
   depositOwner,
   initialAmount,
+  secondFundingTxHash,
 )
 
+// First deposit finalized
 const depositFinalizedEvent = createDepositFinalizedEvent(
   depositKey,
   caller,
@@ -51,6 +70,19 @@ const depositFinalizedEvent = createDepositFinalizedEvent(
   initialAmount,
   bridgedAmount,
   depositorFee,
+)
+
+// Set up context
+const context = new DataSourceContext()
+context.setBytes(
+  "tbtcBridgeAddress",
+  Bytes.fromHexString("0x9b1a7fE5a16A15F2f9475C5B231750598b113403"),
+)
+
+dataSourceMock.setReturnValues(
+  "0x2F86FE8C5683372Db667E6f6d88dcB6d55a81286",
+  "sepolia",
+  context,
 )
 
 describe("handleDepositInitialized", () => {
@@ -76,18 +108,28 @@ describe("handleDepositInitialized", () => {
     })
 
     test("Deposit entity has proper fields", () => {
+      const depositEntityId =
+        depositInitializedEvent.params.depositKey.toHexString()
+
       assert.fieldEquals(
         "Deposit",
-        depositInitializedEvent.params.depositKey.toHexString(),
+        depositEntityId,
         "depositOwner",
         depositOwner.toHexString(),
       )
 
       assert.fieldEquals(
         "Deposit",
-        depositInitializedEvent.params.depositKey.toHexString(),
+        depositEntityId,
         "initialDepositAmount",
         depositInitializedEvent.params.initialAmount.toString(),
+      )
+
+      assert.fieldEquals(
+        "Deposit",
+        depositEntityId,
+        "bitcoinTransactionId",
+        expectedBitcoinTxId,
       )
     })
 
@@ -115,70 +157,63 @@ describe("handleDepositInitialized", () => {
   describe("when the deposit owner already exists", () => {
     beforeAll(() => {
       handleDepositInitialized(depositInitializedEvent)
-      handleDepositInitialized(nextDepositInitializedEvent)
+      handleDepositInitialized(secondDepositInitializedEvent)
     })
 
     afterAll(() => {
       clearStore()
     })
 
-    test("should create DepositOwner entity", () => {
+    test("the DepositOwner entity should already exists", () => {
+      const existingDepositOwner = DepositOwner.load(
+        secondDepositInitializedEvent.params.depositOwner.toHexString(),
+      )
+
+      assert.assertNotNull(existingDepositOwner)
       assert.entityCount("DepositOwner", 1)
     })
 
-    test("should create Deposit entity", () => {
-      assert.entityCount("Deposit", 2)
-    })
+    test("should create the second deposit correctly", () => {
+      const secondDepositEntityId =
+        secondDepositInitializedEvent.params.depositKey.toHexString()
 
-    test("should create Event entity", () => {
-      assert.entityCount("Event", 1)
-    })
-
-    test("Deposit entity has proper fields", () => {
       assert.fieldEquals(
         "Deposit",
-        depositInitializedEvent.params.depositKey.toHexString(),
+        secondDepositEntityId,
         "depositOwner",
         depositOwner.toHexString(),
       )
 
       assert.fieldEquals(
         "Deposit",
-        depositInitializedEvent.params.depositKey.toHexString(),
+        secondDepositEntityId,
         "initialDepositAmount",
         depositInitializedEvent.params.initialAmount.toString(),
       )
 
       assert.fieldEquals(
         "Deposit",
-        nextDepositInitializedEvent.params.depositKey.toHexString(),
-        "depositOwner",
-        depositOwner.toHexString(),
-      )
-
-      assert.fieldEquals(
-        "Deposit",
-        nextDepositInitializedEvent.params.depositKey.toHexString(),
-        "initialDepositAmount",
-        nextDepositInitializedEvent.params.initialAmount.toString(),
+        secondDepositEntityId,
+        "bitcoinTransactionId",
+        secondExpectedBitcoinTxId,
       )
     })
 
     test("Event entity has proper fields", () => {
-      const nextTxId = `${nextDepositInitializedEvent.transaction.hash.toHexString()}_DepositInitialized`
+      const nextTxId = `${secondDepositInitializedEvent.transaction.hash.toHexString()}_DepositInitialized`
 
       assert.fieldEquals(
         "Event",
         nextTxId,
         "activity",
-        nextDepositInitializedEvent.params.depositKey.toHexString(),
+        secondDepositInitializedEvent.params.depositKey.toHexString(),
       )
 
       assert.fieldEquals(
         "Event",
         nextTxId,
         "timestamp",
-        nextDepositInitializedEvent.block.timestamp.toString(),
+        secondDepositInitializedEvent.block.timestamp.toString(),
       )
 
       assert.fieldEquals("Event", nextTxId, "type", "Initialized")
@@ -188,12 +223,12 @@ describe("handleDepositInitialized", () => {
 
 describe("handleDepositFinalized", () => {
   describe("when deposit entity already exist", () => {
-    beforeEach(() => {
+    beforeAll(() => {
       handleDepositInitialized(depositInitializedEvent)
       handleDepositFinalized(depositFinalizedEvent)
     })
 
-    afterEach(() => {
+    afterAll(() => {
       clearStore()
     })
 
