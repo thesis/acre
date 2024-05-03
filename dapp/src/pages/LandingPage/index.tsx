@@ -1,5 +1,5 @@
 import React from "react"
-import { Flex, VStack, HStack, Box, Image } from "@chakra-ui/react"
+import { Flex, VStack, HStack, Box, Image, Text } from "@chakra-ui/react"
 import boostCardIcon from "#/assets/images/rewards-boost.svg"
 import misteryCardIcon from "#/assets/images/mystery-box.svg"
 import keyCardIcon from "#/assets/images/season-key.svg"
@@ -29,21 +29,24 @@ export default function LandingPage() {
             header="Rewards Boost"
             icon={{ src: boostCardIcon }}
           >
-            Boosts your APY when <br /> Acre fully launches
+            <Text>Boosts your APY when</Text>
+            <Text>Acre fully launches</Text>
           </IconCard>
           <IconCard
             flex={1}
             header="Mystery Box"
             icon={{ src: misteryCardIcon }}
           >
-            Grants you a random <br /> reward gift.
+            <Text>Grants you a random</Text>
+            <Text>reward gift.</Text>
           </IconCard>
           <IconCard
             flex={1}
             header="All Seasons Key"
             icon={{ src: keyCardIcon }}
           >
-            Grants access to all <br /> upcoming seasons
+            <Text>Grants access to all</Text>
+            <Text>upcoming seasons</Text>
           </IconCard>
         </HStack>
         <ValueCard header="Users joined" value="8,172" />

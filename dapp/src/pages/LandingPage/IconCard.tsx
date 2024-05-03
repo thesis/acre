@@ -53,19 +53,16 @@ export default function IconCard(props: IconCardProps) {
         </CardBody>
       )}
       <CardFooter
-        px={6}
+        px={0}
         py={0}
         gridArea={{ base: "unset", "2xl": "1 / 2 / 3 / 3" }}
         alignSelf="end"
         mx={-6}
         mt={{ base: "auto", "2xl": -5 }}
         mb={-5}
+        maxW="12.5rem" // 200px
       >
-        <Image
-          pointerEvents="none"
-          maxW="12.5rem" // 200px
-          {...icon}
-        />
+        <Image pointerEvents="none" {...icon} />
       </CardFooter>
     </Card>
   )
