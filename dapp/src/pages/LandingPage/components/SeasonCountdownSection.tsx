@@ -7,7 +7,7 @@ import {
   CountdownTimer,
 } from "#/components/shared/SeasonCountdownSection"
 
-const MOCK_SEASON_DUE_TIMESTAMP = new Date(2024, 3, 30).getTime() / 1000
+const SEASON_DUE_TIMESTAMP = new Date(2024, 5, 9).getTime() / 1000
 
 export default function SeasonCountdownSection() {
   return (
@@ -28,7 +28,7 @@ export default function SeasonCountdownSection() {
           Season 1 users that stake bitcoin before Acre launches earn the <br />
           highest rewards and first access to upcoming Seasons.
         </Text>
-        <CountdownTimer timestamp={MOCK_SEASON_DUE_TIMESTAMP} />
+        <CountdownTimer timestamp={SEASON_DUE_TIMESTAMP} />
       </VStack>
       <SeasonCountdownSectionBackground
         pos="absolute"
