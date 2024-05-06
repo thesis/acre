@@ -1,8 +1,8 @@
 import React from "react"
 import {
+  Box,
   Card,
   CardBody,
-  CardFooter,
   CardHeader,
   CardProps,
   Image,
@@ -38,30 +38,34 @@ export default function IconCard(props: IconCardProps) {
       >
         {header}
       </CardHeader>
-      {children && (
-        <CardBody
-          p={0}
-          fontSize="md"
-          lineHeight={6}
-          fontWeight="medium"
-          color="grey.500"
-          alignSelf="end"
+      <CardBody p={0} display="contents">
+        {children && (
+          <Box
+            fontSize="md"
+            lineHeight={6}
+            fontWeight="medium"
+            color="grey.500"
+            alignSelf="end"
+          >
+            {children}
+          </Box>
+        )}
+        <Box
+          gridArea="1 / 2 / 3 / 3"
+          ml={{ base: "auto", xl: 6 }}
+          my={-5}
+          w="full"
+          maxW="12.5rem" // 200px
+          position="relative"
         >
-          {children}
-        </CardBody>
-      )}
-      <CardFooter
-        px={0}
-        py={0}
-        gridArea="1 / 2 / 3 / 3"
-        ml={{ base: "auto", xl: 6 }}
-        my={-5}
-        w="full"
-        maxW="12.5rem" // 200px
-        position="relative"
-      >
-        <Image pointerEvents="none" position="absolute" bottom={0} {...icon} />
-      </CardFooter>
+          <Image
+            pointerEvents="none"
+            position="absolute"
+            bottom={0}
+            {...icon}
+          />
+        </Box>
+      </CardBody>
     </Card>
   )
 }
