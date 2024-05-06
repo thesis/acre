@@ -27,6 +27,8 @@ async function fixture() {
   const amountToMint = to1e18(100000)
   await tbtc.mint(depositor, amountToMint)
 
+  await stbtc.connect(governance).updateExitFeeBasisPoints(10n)
+
   return {
     stbtc,
     tbtc,
@@ -156,6 +158,11 @@ describe("BitcoinRedeemer", () => {
 
             context("when redeeming too many tokens", () => {
               const amountToRedeem = depositAmount + 1n
+
+              const expectedTbtcWithdrawnAmount = depositAmount + earnedYield
+              const expectedMaxTbtcWithdrawalAmount =
+                depositAmount + earnedYield - 1n
+
               it("should revert", async () => {
                 await expect(
                   stbtc
@@ -165,21 +172,33 @@ describe("BitcoinRedeemer", () => {
                       amountToRedeem,
                       tbtcRedemptionData.redemptionData,
                     ),
-                ).to.be.revertedWithCustomError(
-                  stbtc,
-                  "ERC20InsufficientBalance",
                 )
+                  .to.be.revertedWithCustomError(
+                    stbtc,
+                    "ERC4626ExceededMaxWithdraw",
+                  )
+                  .withArgs(
+                    depositor.address,
+                    expectedTbtcWithdrawnAmount,
+                    expectedMaxTbtcWithdrawalAmount,
+                  )
               })
             })
 
-            context("when redeeming deposit partially", () => {
-              const stBtcAmountToRedeem = to1e18(6)
-              // 6 / 10 * (10 + 8) = 10.8
-              // 10.7(9) to match stBTC calculations rounding.
-              const tbtcAmountToRedeem = 10799999999999999999n
+            context("when tBTC.approveAndCall returns true", () => {
+              beforeAfterSnapshotWrapper()
 
-              context("when tBTC.approveAndCall returns true", () => {
+              context("when redeeming deposit fully", () => {
                 beforeAfterSnapshotWrapper()
+
+                const stBtcAmountToRedeem = depositAmount
+
+                // Rounded down by SATOSHI_MULTIPLIER to avoid burning stBTC shares
+                // for tBTC that won't be bridged to Bitcoin in tBTC Bridge due to
+                // conversion of tBTC to satoshi.
+                const expectedTbtcWithdrawnAmount = 17999999990000000000n
+                const expectedStbtcRedeemedAmount = 9999999994444444445n
+                const expectedStbtcRemainingAmount = 5555555555n
 
                 let tx: ContractTransactionResponse
 
@@ -198,8 +217,8 @@ describe("BitcoinRedeemer", () => {
                     .to.emit(bitcoinRedeemer, "RedemptionRequested")
                     .withArgs(
                       depositor.address,
-                      stBtcAmountToRedeem,
-                      tbtcAmountToRedeem,
+                      expectedStbtcRedeemedAmount,
+                      expectedTbtcWithdrawnAmount,
                     )
                 })
 
@@ -207,13 +226,13 @@ describe("BitcoinRedeemer", () => {
                   await expect(tx).to.changeTokenBalances(
                     stbtc,
                     [depositor],
-                    [-stBtcAmountToRedeem],
+                    [-expectedStbtcRedeemedAmount],
                   )
                 })
 
                 it("should burn stBTC tokens", async () => {
                   expect(await stbtc.totalSupply()).to.be.equal(
-                    depositAmount - stBtcAmountToRedeem,
+                    depositAmount - expectedStbtcRedeemedAmount,
                   )
                 })
 
@@ -221,7 +240,13 @@ describe("BitcoinRedeemer", () => {
                   await expect(tx).to.changeTokenBalances(
                     tbtc,
                     [stbtc, bitcoinRedeemer],
-                    [-tbtcAmountToRedeem, tbtcAmountToRedeem],
+                    [-expectedTbtcWithdrawnAmount, expectedTbtcWithdrawnAmount],
+                  )
+                })
+
+                it("should leave remainder stBTC tokens", async () => {
+                  expect(await stbtc.balanceOf(depositor)).to.be.equal(
+                    expectedStbtcRemainingAmount,
                   )
                 })
 
@@ -230,33 +255,110 @@ describe("BitcoinRedeemer", () => {
                     .to.emit(tbtc, "ApproveAndCallCalled")
                     .withArgs(
                       await tbtc.owner(),
-                      tbtcAmountToRedeem,
+                      expectedTbtcWithdrawnAmount,
                       tbtcRedemptionData.redemptionData,
                     )
                 })
               })
 
-              context("when tBTC.approveAndCall returns false", () => {
+              context("when redeeming deposit partially", () => {
                 beforeAfterSnapshotWrapper()
 
+                const stBtcAmountToRedeem = to1e18(6)
+
+                // 6 / 10 * (10 + 8) = 10.8
+                // 10.7(9) to match stBTC calculations rounding.
+                // Rounded down by SATOSHI_MULTIPLIER to avoid burning stBTC shares
+                // for tBTC that won't be bridged to Bitcoin in tBTC Bridge due to
+                // conversion of tBTC to satoshi.
+                const expectedTbtcWithdrawnAmount = 10799999990000000000n
+                // 10.7(9) * 10 / 18 = 5.9(9)
+                const expectedStbtcRedeemedAmount = 5999999994444444445n
+                // (10 - 6) + remainder
+                const expectedStbtcRemainingAmount = 4000000005555555555n
+
+                let tx: ContractTransactionResponse
+
                 before(async () => {
-                  await tbtc.setApproveAndCallResult(false)
+                  tx = await stbtc
+                    .connect(depositor)
+                    .approveAndCall(
+                      await bitcoinRedeemer.getAddress(),
+                      stBtcAmountToRedeem,
+                      tbtcRedemptionData.redemptionData,
+                    )
                 })
 
-                it("should revert", async () => {
-                  await expect(
-                    stbtc
-                      .connect(depositor)
-                      .approveAndCall(
-                        await bitcoinRedeemer.getAddress(),
-                        stBtcAmountToRedeem,
-                        tbtcRedemptionData.redemptionData,
-                      ),
-                  ).to.be.revertedWithCustomError(
-                    bitcoinRedeemer,
-                    "ApproveAndCallFailed",
+                it("should emit RedemptionRequested event", async () => {
+                  await expect(tx)
+                    .to.emit(bitcoinRedeemer, "RedemptionRequested")
+                    .withArgs(
+                      depositor.address,
+                      expectedStbtcRedeemedAmount,
+                      expectedTbtcWithdrawnAmount,
+                    )
+                })
+
+                it("should change stBTC tokens balance", async () => {
+                  await expect(tx).to.changeTokenBalances(
+                    stbtc,
+                    [depositor],
+                    [-expectedStbtcRedeemedAmount],
                   )
                 })
+
+                it("should burn stBTC tokens", async () => {
+                  expect(await stbtc.totalSupply()).to.be.equal(
+                    depositAmount - expectedStbtcRedeemedAmount,
+                  )
+                })
+
+                it("should transfer tBTC tokens", async () => {
+                  await expect(tx).to.changeTokenBalances(
+                    tbtc,
+                    [stbtc, bitcoinRedeemer],
+                    [-expectedTbtcWithdrawnAmount, expectedTbtcWithdrawnAmount],
+                  )
+                })
+
+                it("should leave remainder stBTC tokens", async () => {
+                  expect(await stbtc.balanceOf(depositor)).to.be.equal(
+                    expectedStbtcRemainingAmount,
+                  )
+                })
+
+                it("should call approveAndCall in tBTC contract", async () => {
+                  await expect(tx)
+                    .to.emit(tbtc, "ApproveAndCallCalled")
+                    .withArgs(
+                      await tbtc.owner(),
+                      expectedTbtcWithdrawnAmount,
+                      tbtcRedemptionData.redemptionData,
+                    )
+                })
+              })
+            })
+
+            context("when tBTC.approveAndCall returns false", () => {
+              beforeAfterSnapshotWrapper()
+
+              before(async () => {
+                await tbtc.setApproveAndCallResult(false)
+              })
+
+              it("should revert", async () => {
+                await expect(
+                  stbtc
+                    .connect(depositor)
+                    .approveAndCall(
+                      await bitcoinRedeemer.getAddress(),
+                      to1e18(6),
+                      tbtcRedemptionData.redemptionData,
+                    ),
+                ).to.be.revertedWithCustomError(
+                  bitcoinRedeemer,
+                  "ApproveAndCallFailed",
+                )
               })
             })
           })

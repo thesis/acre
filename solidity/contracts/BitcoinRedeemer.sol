@@ -13,6 +13,9 @@ import {ZeroAddress} from "./utils/Errors.sol";
 /// @notice This contract facilitates redemption of stBTC tokens to Bitcoin through
 ///         tBTC redemption process.
 contract BitcoinRedeemer is Ownable2StepUpgradeable, IReceiveApproval {
+    /// @notice Multiplier to convert satoshi to TBTC token units.
+    uint256 public constant SATOSHI_MULTIPLIER = 10 ** 10;
+
     /// Interface for tBTC token contract.
     ITBTCToken public tbtcToken;
 
@@ -154,13 +157,28 @@ contract BitcoinRedeemer is Ownable2StepUpgradeable, IReceiveApproval {
         // TBTC Token contract owner resolves to the TBTCVault contract.
         if (tbtcToken.owner() != tbtcVault) revert UnexpectedTbtcTokenOwner();
 
-        uint256 tbtcAmount = stbtc.redeem(shares, address(this), owner);
+        // tBTC Bridge redeems to Bitcoin in satoshis precision. The amount of
+        // tBTC token to redeem should be a multiple of SATOSHI_MULTIPLIER, so
+        // the user don't lose the remainder.
+        uint256 previewTbtcAmount = stbtc.previewRedeem(shares);
+        uint256 remainder = (previewTbtcAmount % SATOSHI_MULTIPLIER);
+        uint256 withdrawalTbtcAmount = previewTbtcAmount - remainder;
+
+        uint256 redeemedShares = stbtc.withdraw(
+            withdrawalTbtcAmount,
+            address(this),
+            owner
+        );
 
         // slither-disable-next-line reentrancy-events
-        emit RedemptionRequested(owner, shares, tbtcAmount);
+        emit RedemptionRequested(owner, redeemedShares, withdrawalTbtcAmount);
 
         if (
-            !tbtcToken.approveAndCall(tbtcVault, tbtcAmount, tbtcRedemptionData)
+            !tbtcToken.approveAndCall(
+                tbtcVault,
+                withdrawalTbtcAmount,
+                tbtcRedemptionData
+            )
         ) {
             revert ApproveAndCallFailed();
         }
