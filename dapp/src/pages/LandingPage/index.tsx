@@ -22,6 +22,7 @@ export default function LandingPage() {
         spacing={4}
         w="full"
         maxW="79.25rem" // 1268px
+        px={{ base: 6, xl: 0 }}
         mx="auto"
         align="stretch"
       >
