@@ -7,22 +7,30 @@ import {
   CardProps,
   Box,
 } from "@chakra-ui/react"
+import valueCardDecorator from "#/assets/images/card-value-decorator.svg"
 import {
   CurrencyBalance,
   CurrencyBalanceProps,
 } from "#/components/shared/CurrencyBalance"
-import valueCardDecorator from "#/assets/images/card-value-decorator.svg"
 
-type ValueCardProps = CardProps & {
+type HighlightedValueCardProps = CardProps & {
   header: React.ReactNode
-  value:
-    | React.ReactNode
-    | Pick<CurrencyBalanceProps, "amount" | "currency" | "shouldBeFormatted">
   footer?: React.ReactNode[]
 }
 
-function ValueCardBase(props: ValueCardProps) {
-  const { header, value, footer = [], ...restProps } = props
+function StyledCurrencyBalance(props: CurrencyBalanceProps) {
+  return (
+    <CurrencyBalance
+      {...props}
+      fontSize="inherit"
+      lineHeight="inherit"
+      fontWeight="inherit"
+    />
+  )
+}
+
+function HighlightedValueCardBase(props: HighlightedValueCardProps) {
+  const { header, children, footer = [], ...restProps } = props
   const isFooterValid = footer.every(
     (footerItem) => React.isValidElement(footerItem) && footerItem.type === Box,
   )
@@ -32,9 +40,6 @@ function ValueCardBase(props: ValueCardProps) {
       "Footer items must be valid <HighlightedValueCard.FooterItem /> components.",
     )
   }
-
-  const shouldRenderCurrencyBalance =
-    typeof value !== "string" && "amount" in (value as CurrencyBalanceProps)
 
   return (
     <Card p={10} gap={6} alignItems="center" {...restProps}>
@@ -73,16 +78,7 @@ function ValueCardBase(props: ValueCardProps) {
         }}
         _after={{ rotate: 180 }}
       >
-        {shouldRenderCurrencyBalance ? (
-          <CurrencyBalance
-            {...(value as CurrencyBalanceProps)}
-            fontSize="inherit"
-            lineHeight="inherit"
-            fontWeight="inherit"
-          />
-        ) : (
-          (value as React.ReactNode)
-        )}
+        {children}
       </CardBody>
       {footer.length > 0 && (
         <CardFooter
@@ -104,5 +100,8 @@ function ValueCardBase(props: ValueCardProps) {
   )
 }
 
-const HighlightedValueCard = Object.assign(ValueCardBase, { FooterItem: Box })
+const HighlightedValueCard = Object.assign(HighlightedValueCardBase, {
+  FooterItem: Box,
+  CurrencyBalance: StyledCurrencyBalance,
+})
 export default HighlightedValueCard

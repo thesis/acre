@@ -120,6 +120,17 @@ const size4Xl = multiStyleConfig.definePartsStyle({
   },
 })
 
+const size6Xl = multiStyleConfig.definePartsStyle({
+  balance: {
+    fontSize: "6xl",
+    lineHeight: "6xl",
+  },
+  symbol: {
+    fontSize: "6xl",
+    lineHeight: "6xl",
+  },
+})
+
 const sizes = {
   xs: sizeXs,
   sm: sizeSm,
@@ -127,6 +138,7 @@ const sizes = {
   lg: sizeLg,
   xl: sizeXl,
   "4xl": size4Xl,
+  "6xl": size6Xl,
 }
 
 export const currencyBalanceTheme = multiStyleConfig.defineMultiStyleConfig({

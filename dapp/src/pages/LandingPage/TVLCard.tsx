@@ -7,11 +7,6 @@ export default function TVLCard() {
   return (
     <HighlightedValueCard
       header="Total value locked"
-      value={{
-        amount: "2202.92",
-        currency: "usd",
-        shouldBeFormatted: false,
-      }}
       color="brand.400"
       footer={[
         <HighlightedValueCard.FooterItem>
@@ -30,6 +25,12 @@ export default function TVLCard() {
           />
         </HighlightedValueCard.FooterItem>,
       ]}
-    />
+    >
+      <HighlightedValueCard.CurrencyBalance
+        amount="2202.92"
+        currency="usd"
+        shouldBeFormatted={false}
+      />
+    </HighlightedValueCard>
   )
 }

@@ -55,7 +55,7 @@ export default function LandingPage() {
             <TextMd>upcoming seasons</TextMd>
           </BenefitCard>
         </Flex>
-        <HighlightedValueCard header="Users joined" value="8,172" />
+        <HighlightedValueCard header="Users joined">8,172</HighlightedValueCard>
         <TVLCard />
         <ContentCard header="How it works" withBackground>
           <Box color="brand.400" fontWeight="semibold" pt={9} pb={20}>
