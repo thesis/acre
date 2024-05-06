@@ -4,7 +4,7 @@ import boostCardIcon from "#/assets/images/rewards-boost.svg"
 import mysteryCardIcon from "#/assets/images/mystery-box.svg"
 import keyCardIcon from "#/assets/images/season-key.svg"
 import { EXTERNAL_HREF, PARTNER_LOGOS } from "#/constants"
-import IconCard from "./IconCard"
+import BenefitCard from "./BenefitCard"
 import HighlightedValueCard from "./HighlightedValueCard"
 import TVLCard from "./TVLCard"
 import ContentCard from "./ContentCard"
@@ -29,30 +29,30 @@ export default function LandingPage() {
           mb={12}
           w="full"
         >
-          <IconCard
+          <BenefitCard
             flex={1}
             header="Rewards Boost"
             icon={{ src: boostCardIcon }}
           >
             <Text>Boosts your APY when</Text>
             <Text>Acre fully launches</Text>
-          </IconCard>
-          <IconCard
+          </BenefitCard>
+          <BenefitCard
             flex={1}
             header="Mystery Box"
             icon={{ src: mysteryCardIcon }}
           >
             <Text>Grants you a random</Text>
             <Text>reward gift.</Text>
-          </IconCard>
-          <IconCard
+          </BenefitCard>
+          <BenefitCard
             flex={1}
             header="All Seasons Key"
             icon={{ src: keyCardIcon }}
           >
             <Text>Grants access to all</Text>
             <Text>upcoming seasons</Text>
-          </IconCard>
+          </BenefitCard>
         </Flex>
         <HighlightedValueCard header="Users joined" value="8,172" />
         <TVLCard />

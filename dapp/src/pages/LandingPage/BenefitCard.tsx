@@ -14,7 +14,7 @@ type IconCardProps = CardProps & {
   icon: ImageProps
 }
 
-export default function IconCard(props: IconCardProps) {
+export default function BenefitCard(props: IconCardProps) {
   const { header, children, icon, ...restProps } = props
 
   return (
