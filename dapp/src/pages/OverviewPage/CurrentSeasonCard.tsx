@@ -21,12 +21,37 @@ type CurrentSeasonCardProps = CardProps & {
 export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
   const { heading, timestamp, totalJoined, tvl, ...restProps } = props
   return (
-    <Card variant="current-season" {...restProps}>
+    <Card
+      bg="brand.400"
+      borderWidth={0}
+      gap={4}
+      rounded="xl"
+      px={5}
+      py={4}
+      {...restProps}
+    >
       <Tag>Live</Tag>
-      <CardHeader>{heading}</CardHeader>
-      <CardBody>{timestamp}</CardBody>
+      <CardHeader
+        p={0}
+        color="gold.100"
+        fontSize="2xl"
+        lineHeight={1}
+        fontWeight="bold"
+        letterSpacing="-0.03rem" // -0.48px
+      >
+        {heading}
+      </CardHeader>
+      <CardBody p={0}>{timestamp}</CardBody>
       {/* TODO: Add `CountdownTimer` component when merged */}
-      <CardFooter>
+      <CardFooter
+        p={0}
+        display="flex"
+        alignItems="baseline"
+        justifyContent="space-between"
+        fontSize="md"
+        fontWeight="medium"
+        color="white"
+      >
         {totalJoined && (
           <Box>
             Total joined&nbsp;
