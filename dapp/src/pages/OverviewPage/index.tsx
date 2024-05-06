@@ -8,14 +8,8 @@ import Statistics from "./Statistics"
 import TransactionHistory from "./TransactionHistory"
 import { DocsCard } from "./DocsCard"
 import { ActivityCarousel } from "./ActivityCarousel"
-import GrantedSeasonPassCard from "./GrantedSeasonPassCard"
 
 export default function OverviewPage() {
-  return (
-    <Flex direction="column" p={6}>
-      <GrantedSeasonPassCard heading="Season 2: tururu" />
-    </Flex>
-  )
   return (
     <Flex direction="column" p={6}>
       <HStack pb={3.5}>
