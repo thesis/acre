@@ -3,13 +3,14 @@ import {
   Box,
   Card,
   CardBody,
-  CardFooter,
   CardHeader,
   CardProps,
+  Flex,
   Tag,
   Text,
 } from "@chakra-ui/react"
 import { getNumberWithSeparator } from "#/utils"
+import { TextMd } from "#/components/shared/Typography"
 
 type CurrentSeasonCardProps = CardProps & {
   heading: React.ReactNode
@@ -31,6 +32,7 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
       {...restProps}
     >
       <Tag>Live</Tag>
+
       <CardHeader
         p={0}
         color="gold.100"
@@ -41,34 +43,32 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
       >
         {heading}
       </CardHeader>
-      <CardBody p={0}>{timestamp}</CardBody>
-      {/* TODO: Add `CountdownTimer` component when merged */}
-      <CardFooter
-        p={0}
-        display="flex"
-        alignItems="baseline"
-        justifyContent="space-between"
-        fontSize="md"
-        fontWeight="medium"
-        color="white"
-      >
-        {totalJoined && (
-          <Box>
-            Total joined&nbsp;
-            <Text as="span" fontWeight="bold">
-              {getNumberWithSeparator(totalJoined)}
-            </Text>
-          </Box>
-        )}
-        {tvl && (
-          <Box>
-            TVL&nbsp;
-            <Text as="span" fontWeight="bold">
-              {getNumberWithSeparator(tvl)} BTC
-            </Text>
-          </Box>
-        )}
-      </CardFooter>
+
+      <CardBody p={0} display="contents">
+        <Box>
+          {/* TODO: Add `CountdownTimer` component when merged */}
+          {timestamp}
+        </Box>
+
+        <Flex align="baseline" justify="space-between" color="white">
+          {totalJoined && (
+            <TextMd fontWeight="medium">
+              Total joined&nbsp;
+              <TextMd as="span" fontWeight="bold">
+                {getNumberWithSeparator(totalJoined)}
+              </TextMd>
+            </TextMd>
+          )}
+          {tvl && (
+            <TextMd fontWeight="medium">
+              TVL&nbsp;
+              <TextMd as="span" fontWeight="bold">
+                {getNumberWithSeparator(tvl)} BTC
+              </TextMd>
+            </TextMd>
+          )}
+        </Flex>
+      </CardBody>
       {/* TODO: Add `Background` component when merged */}
     </Card>
   )
