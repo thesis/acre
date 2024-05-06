@@ -1,13 +1,11 @@
 import React from "react"
-import { Flex, VStack, Box, Image } from "@chakra-ui/react"
+import { Flex, VStack, Image } from "@chakra-ui/react"
 import boostCardIcon from "#/assets/images/rewards-boost.svg"
 import mysteryCardIcon from "#/assets/images/mystery-box.svg"
 import keyCardIcon from "#/assets/images/season-key.svg"
 import { EXTERNAL_HREF, PARTNER_LOGOS } from "#/constants"
 import { TextMd } from "#/components/shared/Typography"
 import BenefitCard from "./BenefitCard"
-import HighlightedValueCard from "./HighlightedValueCard"
-import TVLCard from "./TVLCard"
 import ContentCard from "./ContentCard"
 import CardButton from "./CardButton"
 import HeroSection from "./HeroSection"
@@ -55,14 +53,17 @@ export default function LandingPage() {
             <TextMd>upcoming seasons</TextMd>
           </BenefitCard>
         </Flex>
+        {/* 
+        TODO: Bring back when TVL, user count and/or how-it-works diagram are available
+
         <HighlightedValueCard header="Users joined">8,172</HighlightedValueCard>
-        <TVLCard />
+        <TVLCard /> 
         <ContentCard header="How it works" withBackground>
           <Box color="brand.400" fontWeight="semibold" pt={9} pb={20}>
-            {/* TODO: Replace with diagram image/component. */}
             insert diagram here
           </Box>
         </ContentCard>
+          */}
         <ContentCard header="Trusted by pioneers.">
           {PARTNER_LOGOS.map((logoAttributes) => (
             <Image key={logoAttributes.src} h="auto" {...logoAttributes} />
