@@ -39,8 +39,6 @@ export default function OverviewPage() {
               </>
             }
             timestamp={new Date().getTime() / 1000}
-            totalJoined={3045}
-            tvl={1981}
           />
         </PageLayout.Sidebar>
       }
