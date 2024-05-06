@@ -7,7 +7,6 @@ import {
   CardProps,
   Flex,
   Tag,
-  Text,
 } from "@chakra-ui/react"
 import { getNumberWithSeparator } from "#/utils"
 import { TextMd } from "#/components/shared/Typography"
