@@ -5,15 +5,19 @@ import mysteryCardIcon from "#/assets/images/mystery-box.svg"
 import keyCardIcon from "#/assets/images/season-key.svg"
 import { EXTERNAL_HREF, PARTNER_LOGOS } from "#/constants"
 import { TextMd } from "#/components/shared/Typography"
+import {
+  SeasonCountdownSection,
+  HeroSection,
+} from "#/pages/LandingPage/components"
 import BenefitCard from "./BenefitCard"
 import ContentCard from "./ContentCard"
 import CardButton from "./CardButton"
-import HeroSection from "./HeroSection"
 
 export default function LandingPage() {
   return (
     <Flex w="full" flexFlow="column" px={10} pb={10}>
       <HeroSection />
+      <SeasonCountdownSection />
       <VStack
         spacing={4}
         w="full"
