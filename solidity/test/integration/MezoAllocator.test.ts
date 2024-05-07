@@ -1,21 +1,22 @@
-import { helpers } from "hardhat"
+import { helpers, ethers } from "hardhat"
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
 import { expect } from "chai"
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 
-import { ContractTransactionResponse, ZeroAddress } from "ethers"
-import { beforeAfterSnapshotWrapper, deployment } from "./helpers"
+import { ContractTransactionResponse } from "ethers"
+import { beforeAfterSnapshotWrapper, deployment } from "../helpers"
 
 import {
   StBTC as stBTC,
   TestERC20,
   MezoAllocator,
   IMezoPortal,
-} from "../typechain"
+} from "../../typechain"
 
-import { to1e18 } from "./utils"
+import { to1e18 } from "../utils"
 
 const { getNamedSigners, getUnnamedSigners } = helpers.signers
+const { impersonateAccount } = helpers.account
 
 async function fixture() {
   const { tbtc, stbtc, mezoAllocator, mezoPortal } = await deployment()
@@ -35,6 +36,9 @@ async function fixture() {
 }
 
 describe("MezoAllocator", () => {
+  // This is a random mainnet address of the whale account that holds 100 tBTC
+  // tokens that can be used for testing purposes after impersonation.
+  const whaleAddress = "0x84eA3907b9206427F45c7b2614925a2B86D12611"
   let tbtc: TestERC20
   let stbtc: stBTC
   let mezoAllocator: MezoAllocator
@@ -44,6 +48,7 @@ describe("MezoAllocator", () => {
   let depositor: HardhatEthersSigner
   let maintainer: HardhatEthersSigner
   let governance: HardhatEthersSigner
+  let tbtcHolder: HardhatEthersSigner
 
   before(async () => {
     ;({
@@ -56,6 +61,9 @@ describe("MezoAllocator", () => {
       mezoAllocator,
       mezoPortal,
     } = await loadFixture(fixture))
+
+    await impersonateAccount(whaleAddress)
+    tbtcHolder = await ethers.getSigner(whaleAddress)
   })
 
   describe("allocate", () => {
@@ -74,7 +82,9 @@ describe("MezoAllocator", () => {
         let tx: ContractTransactionResponse
 
         before(async () => {
-          await tbtc.mint(await stbtc.getAddress(), to1e18(6))
+          await tbtc
+            .connect(tbtcHolder)
+            .transfer(await stbtc.getAddress(), to1e18(6))
           tx = await mezoAllocator.connect(maintainer).allocate()
         })
 
@@ -94,7 +104,9 @@ describe("MezoAllocator", () => {
 
         it("should increment the deposit id", async () => {
           const actualDepositId = await mezoAllocator.depositId()
-          expect(actualDepositId).to.equal(1)
+          // As of a forked block 19680873, the deposit id was 2272 before the new
+          // allocation. The deposit id should be incremented by 1.
+          expect(actualDepositId).to.equal(2273)
         })
 
         it("should increase tracked deposit balance amount", async () => {
@@ -105,7 +117,7 @@ describe("MezoAllocator", () => {
         it("should emit DepositAllocated event", async () => {
           await expect(tx)
             .to.emit(mezoAllocator, "DepositAllocated")
-            .withArgs(0, 1, to1e18(6), to1e18(6))
+            .withArgs(0, 2273, to1e18(6), to1e18(6))
         })
       })
 
@@ -113,25 +125,29 @@ describe("MezoAllocator", () => {
         let tx: ContractTransactionResponse
 
         before(async () => {
-          await tbtc.mint(await stbtc.getAddress(), to1e18(5))
+          await tbtc
+            .connect(tbtcHolder)
+            .transfer(await stbtc.getAddress(), to1e18(5))
 
           tx = await mezoAllocator.connect(maintainer).allocate()
         })
 
         it("should increment the deposit id", async () => {
           const actualDepositId = await mezoAllocator.depositId()
-          expect(actualDepositId).to.equal(2)
+          expect(actualDepositId).to.equal(2274)
         })
 
         it("should emit DepositAllocated event", async () => {
           await expect(tx)
             .to.emit(mezoAllocator, "DepositAllocated")
-            .withArgs(1, 2, to1e18(5), to1e18(11))
+            .withArgs(2273, 2274, to1e18(5), to1e18(11))
         })
 
         it("should deposit and transfer tBTC to Mezo Portal", async () => {
-          expect(await tbtc.balanceOf(await mezoPortal.getAddress())).to.equal(
-            to1e18(11),
+          await expect(tx).to.changeTokenBalances(
+            tbtc,
+            [await mezoPortal.getAddress()],
+            [to1e18(5)],
           )
         })
 
@@ -166,24 +182,32 @@ describe("MezoAllocator", () => {
 
     context("when the caller is stBTC contract", () => {
       context("when there is no deposit", () => {
+        beforeAfterSnapshotWrapper()
+
         it("should revert", async () => {
-          await expect(stbtc.withdraw(1n, depositor, depositor))
-            .to.be.revertedWithCustomError(tbtc, "ERC20InsufficientBalance")
-            .withArgs(await mezoPortal.getAddress(), 0, 1n)
+          // It is reverted because deposit id is 0 and there is no deposit
+          // with id 0 in Mezo Portal for Acre.
+          await expect(
+            stbtc.withdraw(1n, depositor, depositor),
+          ).to.be.revertedWithCustomError(mezoPortal, "DepositNotFound")
         })
       })
 
       context("when there is a deposit", () => {
+        beforeAfterSnapshotWrapper()
+
         let tx: ContractTransactionResponse
 
         before(async () => {
-          await tbtc.mint(depositor, to1e18(5))
+          await tbtc.connect(tbtcHolder).transfer(depositor.address, to1e18(11))
           await tbtc.approve(await stbtc.getAddress(), to1e18(5))
           await stbtc.connect(depositor).deposit(to1e18(5), depositor)
           await mezoAllocator.connect(maintainer).allocate()
         })
 
         context("when the deposit is not fully withdrawn", () => {
+          beforeAfterSnapshotWrapper()
+
           before(async () => {
             tx = await stbtc.withdraw(to1e18(2), depositor, depositor)
           })
@@ -199,7 +223,7 @@ describe("MezoAllocator", () => {
           it("should emit DepositWithdrawn event", async () => {
             await expect(tx)
               .to.emit(mezoAllocator, "DepositWithdrawn")
-              .withArgs(1, to1e18(2))
+              .withArgs(2273, to1e18(2))
           })
 
           it("should decrease tracked deposit balance amount", async () => {
@@ -217,22 +241,24 @@ describe("MezoAllocator", () => {
         })
 
         context("when the deposit is fully withdrawn", () => {
+          beforeAfterSnapshotWrapper()
+
           before(async () => {
-            tx = await stbtc.withdraw(to1e18(3), depositor, depositor)
+            tx = await stbtc.withdraw(to1e18(5), depositor, depositor)
           })
 
-          it("should transfer 3 tBTC back to a depositor", async () => {
+          it("should transfer 5 tBTC back to a depositor", async () => {
             await expect(tx).to.changeTokenBalances(
               tbtc,
               [depositor.address],
-              [to1e18(3)],
+              [to1e18(5)],
             )
           })
 
           it("should emit DepositWithdrawn event", async () => {
             await expect(tx)
               .to.emit(mezoAllocator, "DepositWithdrawn")
-              .withArgs(1, to1e18(3))
+              .withArgs(2273, to1e18(5))
           })
 
           it("should decrease tracked deposit balance amount to zero", async () => {
@@ -244,8 +270,21 @@ describe("MezoAllocator", () => {
             await expect(tx).to.changeTokenBalances(
               tbtc,
               [await mezoPortal.getAddress()],
-              [-to1e18(3)],
+              [-to1e18(5)],
             )
+          })
+        })
+
+        context("when withdrawing more than was deposited", () => {
+          beforeAfterSnapshotWrapper()
+
+          it("should revert", async () => {
+            await expect(stbtc.withdraw(to1e18(6), depositor, depositor))
+              .to.be.revertedWithCustomError(
+                mezoPortal,
+                "InsufficientDepositAmount",
+              )
+              .withArgs(to1e18(6), to1e18(5))
           })
         })
       })
@@ -264,138 +303,15 @@ describe("MezoAllocator", () => {
 
     context("when there is a deposit", () => {
       before(async () => {
-        await tbtc.mint(await stbtc.getAddress(), to1e18(5))
+        await tbtc
+          .connect(tbtcHolder)
+          .transfer(await stbtc.getAddress(), to1e18(5))
         await mezoAllocator.connect(maintainer).allocate()
       })
 
       it("should return the total assets value", async () => {
         const totalAssets = await mezoAllocator.totalAssets()
         expect(totalAssets).to.equal(to1e18(5))
-      })
-
-      it("should be equal to the deposit balance", async () => {
-        const depositBalance = await mezoAllocator.depositBalance()
-        expect(await mezoAllocator.totalAssets()).to.equal(depositBalance)
-      })
-    })
-  })
-
-  describe("addMaintainer", () => {
-    beforeAfterSnapshotWrapper()
-
-    context("when a caller is not a governance", () => {
-      it("should revert", async () => {
-        await expect(
-          mezoAllocator.connect(thirdParty).addMaintainer(depositor.address),
-        ).to.be.revertedWithCustomError(
-          mezoAllocator,
-          "OwnableUnauthorizedAccount",
-        )
-      })
-    })
-
-    context("when a caller is governance", () => {
-      context("when a maintainer is added", () => {
-        let tx: ContractTransactionResponse
-
-        before(async () => {
-          tx = await mezoAllocator
-            .connect(governance)
-            .addMaintainer(thirdParty.address)
-        })
-
-        it("should add a maintainer", async () => {
-          expect(await mezoAllocator.isMaintainer(thirdParty.address)).to.equal(
-            true,
-          )
-        })
-
-        it("should emit MaintainerAdded event", async () => {
-          await expect(tx)
-            .to.emit(mezoAllocator, "MaintainerAdded")
-            .withArgs(thirdParty.address)
-        })
-
-        it("should add a new maintainer to the list", async () => {
-          const maintainers = await mezoAllocator.getMaintainers()
-          expect(maintainers).to.deep.equal([
-            maintainer.address,
-            thirdParty.address,
-          ])
-        })
-
-        it("should not allow to add the same maintainer twice", async () => {
-          await expect(
-            mezoAllocator.connect(governance).addMaintainer(thirdParty.address),
-          ).to.be.revertedWithCustomError(
-            mezoAllocator,
-            "MaintainerAlreadyRegistered",
-          )
-        })
-
-        it("should not allow to add a zero address as a maintainer", async () => {
-          await expect(
-            mezoAllocator.connect(governance).addMaintainer(ZeroAddress),
-          ).to.be.revertedWithCustomError(mezoAllocator, "ZeroAddress")
-        })
-      })
-    })
-  })
-
-  describe("removeMaintainer", () => {
-    beforeAfterSnapshotWrapper()
-
-    context("when a caller is not a governance", () => {
-      it("should revert", async () => {
-        await expect(
-          mezoAllocator.connect(thirdParty).removeMaintainer(depositor.address),
-        ).to.be.revertedWithCustomError(
-          mezoAllocator,
-          "OwnableUnauthorizedAccount",
-        )
-      })
-    })
-
-    context("when a caller is governance", () => {
-      context("when a maintainer is removed", () => {
-        let tx: ContractTransactionResponse
-
-        before(async () => {
-          await mezoAllocator
-            .connect(governance)
-            .addMaintainer(thirdParty.address)
-          tx = await mezoAllocator
-            .connect(governance)
-            .removeMaintainer(thirdParty.address)
-        })
-
-        it("should remove a maintainer", async () => {
-          expect(await mezoAllocator.isMaintainer(thirdParty.address)).to.equal(
-            false,
-          )
-        })
-
-        it("should emit MaintainerRemoved event", async () => {
-          await expect(tx)
-            .to.emit(mezoAllocator, "MaintainerRemoved")
-            .withArgs(thirdParty.address)
-        })
-
-        it("should remove a maintainer from the list", async () => {
-          const maintainers = await mezoAllocator.getMaintainers()
-          expect(maintainers).to.deep.equal([maintainer.address])
-        })
-
-        it("should not allow to remove a maintainer twice", async () => {
-          await expect(
-            mezoAllocator
-              .connect(governance)
-              .removeMaintainer(thirdParty.address),
-          ).to.be.revertedWithCustomError(
-            mezoAllocator,
-            "MaintainerNotRegistered",
-          )
-        })
       })
     })
   })
@@ -419,7 +335,9 @@ describe("MezoAllocator", () => {
         let tx: ContractTransactionResponse
 
         before(async () => {
-          await tbtc.mint(await stbtc.getAddress(), to1e18(5))
+          await tbtc
+            .connect(tbtcHolder)
+            .transfer(await stbtc.getAddress(), to1e18(5))
           await mezoAllocator.connect(maintainer).allocate()
           tx = await mezoAllocator.connect(governance).releaseDeposit()
         })
@@ -427,7 +345,7 @@ describe("MezoAllocator", () => {
         it("should emit DepositReleased event", async () => {
           await expect(tx)
             .to.emit(mezoAllocator, "DepositReleased")
-            .withArgs(1, to1e18(5))
+            .withArgs(2273, to1e18(5))
         })
 
         it("should decrease tracked deposit balance amount to zero", async () => {

@@ -7,9 +7,9 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { governance } = await getNamedAccounts()
   const { deployer } = await helpers.signers.getNamedSigners()
 
+  const tbtc = await deployments.get("TBTC")
   const bridge = await deployments.get("Bridge")
   const tbtcVault = await deployments.get("TBTCVault")
-  const tbtc = await deployments.get("TBTC")
   const stbtc = await deployments.get("stBTC")
 
   const [, deployment] = await helpers.upgrades.deployProxy(
