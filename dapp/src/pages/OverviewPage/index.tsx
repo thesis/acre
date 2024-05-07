@@ -16,14 +16,22 @@ export default function OverviewPage() {
       <StakingActivitiesList
         items={[
           {
+            id: "staking-activity-1",
             status: "success",
             amount: 499000000,
-            transactionUrl: "#",
           },
           {
+            id: "staking-activity-2",
             status: "pending",
             amount: 100000000,
             estimatedTime: Date.now() + 3600000,
+            transactionUrl: "#",
+          },
+          {
+            id: "staking-activity-3",
+            status: "success",
+            amount: 499000000,
+            isUnstaking: true,
           },
         ]}
       />

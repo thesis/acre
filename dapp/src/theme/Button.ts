@@ -135,9 +135,10 @@ export const buttonTheme: ComponentSingleStyleConfig = {
     },
     link: {
       bg: "initial",
-      color: "initial",
+      color: "inherit",
       p: 0,
       textDecoration: "underline",
+      fontWeight: "medium",
     },
   },
 }

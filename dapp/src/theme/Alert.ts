@@ -61,7 +61,30 @@ const variantSubtle = multiStyleConfig.definePartsStyle((props) =>
   statusStyles(props),
 )
 
-const processVariant = multiStyleConfig.definePartsStyle(() => ({}))
+const processVariant = multiStyleConfig.definePartsStyle(() => ({
+  container: {
+    px: 6,
+    py: 4,
+    bg: "gold.300",
+    borderWidth: 1,
+    borderColor: "gold.100",
+    shadow: "none",
+  },
+  icon: {
+    mr: 4,
+    w: 12,
+    h: 12,
+  },
+  title: {
+    color: "grey.700",
+    fontWeight: "bold",
+    m: 0,
+  },
+  description: {
+    color: "grey.500",
+    fontWeight: "medium",
+  },
+}))
 
 const variants = {
   subtle: variantSubtle,
