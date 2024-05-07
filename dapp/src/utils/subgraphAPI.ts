@@ -35,6 +35,10 @@ const mapToActivity = (activityData: ActivityDataResponse): Activity => {
 }
 
 // TODO: Fetch transactions for withdrawals
+/**
+ * Returns the  activities for the owner of the deposit..
+ * @param depositOwner Deposit owner's Ethereum address.
+ */
 async function fetchActivityDatas(depositOwner: string): Promise<Activity[]> {
   const response = await axios.post<{
     errors?: unknown
