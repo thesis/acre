@@ -21,16 +21,19 @@ function UnstakeDetails({ currency }: { currency: CurrencyType }) {
           currency: "usd",
         }}
       />
-      <TransactionDetailsAmountItem
-        label="Protocol fee (0.01%)"
+      {/* TODO: Uncomment when unstaking fees are ready.  */}
+      {/* <FeesDetailsAmountItem
+        label="Fees"
+        sublabel="How are fees calculated?"
+        tooltip={<FeesTooltip fees={{}} />}
         from={{
           currency,
-          amount: details?.protocolFee,
+          amount: transactionFee.total,
         }}
         to={{
           currency: "usd",
         }}
-      />
+      /> */}
       <TransactionDetailsAmountItem
         label="Approximately unstaked tokens"
         from={{

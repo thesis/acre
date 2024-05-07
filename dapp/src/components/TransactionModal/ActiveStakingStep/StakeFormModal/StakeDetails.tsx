@@ -1,9 +1,23 @@
 import React from "react"
 import { List } from "@chakra-ui/react"
 import TransactionDetailsAmountItem from "#/components/shared/TransactionDetails/AmountItem"
+import FeesDetailsAmountItem from "#/components/shared/FeesDetails/FeesItem"
 import { useTokenAmountFormValue } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
+import { FeesTooltip } from "#/components/TransactionModal/FeesTooltip"
 import { useTransactionDetails } from "#/hooks"
-import { CurrencyType } from "#/types"
+import { CurrencyType, DepositFee } from "#/types"
+import { useTransactionFee } from "#/hooks/useTransactionFee"
+
+const mapDepositFeeToLabel = (feeId: keyof DepositFee) => {
+  switch (feeId) {
+    case "acre":
+      return "Acre protocol fees"
+    case "tbtc":
+      return "tBTC bridge fees"
+    default:
+      return ""
+  }
+}
 
 function StakeDetails({
   currency,
@@ -20,6 +34,7 @@ function StakeDetails({
   // Let's not calculate the details of the transaction when the value is not valid.
   const amount = !isMaximumValueExceeded && isMinimumValueFulfilled ? value : 0n
   const details = useTransactionDetails(amount)
+  const { total, ...restFees } = useTransactionFee(amount)
 
   return (
     <List spacing={3} mt={10}>
@@ -33,11 +48,17 @@ function StakeDetails({
           currency: "usd",
         }}
       />
-      <TransactionDetailsAmountItem
-        label="Protocol fee (0.01%)"
+      <FeesDetailsAmountItem
+        label="Fees"
+        sublabel="How are fees calculated?"
+        // TODO: Add `Bitcoin Network fee` (funding transaction fee selected by
+        // the user) and figure out how to estimate this fee.
+        tooltip={
+          <FeesTooltip fees={restFees} mapFeeToLabel={mapDepositFeeToLabel} />
+        }
         from={{
           currency,
-          amount: details?.protocolFee,
+          amount: total,
         }}
         to={{
           currency: "usd",
