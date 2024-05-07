@@ -5,11 +5,11 @@ import {
   getCurrencyByType,
   numberToLocaleString,
 } from "#/utils"
-import { CurrencyType } from "#/types"
+import { CurrencyType, AmountType } from "#/types"
 
 export type CurrencyBalanceProps = {
   currency: CurrencyType
-  amount?: string | number | bigint
+  amount?: AmountType
   shouldBeFormatted?: boolean
   desiredDecimals?: number
   size?: string
