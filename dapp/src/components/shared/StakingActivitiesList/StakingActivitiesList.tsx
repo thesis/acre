@@ -32,30 +32,29 @@ function StakingActivitiesList(props: StakingActivitiesListProps) {
     setDismissedItemIds((prev) => [...prev, id])
   }
 
-  const visibleItems = React.useMemo(
-    () => items.filter((item) => !dismissedItemIds.includes(item.id)),
-    [dismissedItemIds, items],
-  )
-
   return (
-    <MotionList layout spacing={2} pos="relative" {...restProps}>
-      <AnimatePresence mode="popLayout">
-        {visibleItems.map((item) => (
-          <MotionListItem
-            layout="position"
-            key={item.id}
-            variants={listItemVariants}
-            initial={false}
-            animate="mounted"
-            exit="dismissed"
-          >
-            <StakingActivitiesListItem
-              {...item}
-              handleDismiss={() => handleItemDismiss(item.id)}
-            />
-          </MotionListItem>
-        ))}
-      </AnimatePresence>
+    <MotionList pos="relative" {...restProps}>
+      {items.map((item) => (
+        <AnimatePresence mode="popLayout">
+          {!dismissedItemIds.includes(item.id) && (
+            <MotionListItem
+              layout="position"
+              key={item.id}
+              variants={listItemVariants}
+              initial={false}
+              animate="mounted"
+              exit="dismissed"
+              pb={2}
+              _last={{ pb: 0 }}
+            >
+              <StakingActivitiesListItem
+                {...item}
+                handleDismiss={() => handleItemDismiss(item.id)}
+              />
+            </MotionListItem>
+          )}
+        </AnimatePresence>
+      ))}
     </MotionList>
   )
 }
