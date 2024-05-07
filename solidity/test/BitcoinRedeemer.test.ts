@@ -15,14 +15,20 @@ import { to1e18 } from "./utils"
 import type { StBTC as stBTC, BitcoinRedeemer, TestTBTC } from "../typechain"
 import { tbtcRedemptionData } from "./data/tbtc"
 
+const { impersonateAccount } = helpers.account
 const { getNamedSigners, getUnnamedSigners } = helpers.signers
 
 async function fixture() {
   const { tbtc, stbtc, bitcoinRedeemer } = await deployment()
 
-  const { governance } = await getNamedSigners()
+  const { deployer, governance } = await getNamedSigners()
 
-  const [depositor, thirdParty] = await getUnnamedSigners()
+  const [thirdParty] = await getUnnamedSigners()
+
+  await impersonateAccount(tbtcRedemptionData.redeemer, {
+    from: deployer,
+  })
+  const depositor = await ethers.getSigner(tbtcRedemptionData.redeemer)
 
   const amountToMint = to1e18(100000)
   await tbtc.mint(depositor, amountToMint)
@@ -152,6 +158,32 @@ describe("BitcoinRedeemer", () => {
                 .deposit(depositAmount, depositor.address)
 
               await tbtc.mint(await stbtc.getAddress(), earnedYield)
+            })
+
+            context("when redeemer doesn't match token owner", () => {
+              it("should revert", async () => {
+                // Replace the redeemer address in the redemption data.
+                const invalidRedemptionData =
+                  tbtcRedemptionData.redemptionData.replace(
+                    depositor.address.toLowerCase().slice(2),
+                    thirdParty.address.toLowerCase().slice(2),
+                  )
+
+                await expect(
+                  stbtc
+                    .connect(depositor)
+                    .approveAndCall(
+                      await bitcoinRedeemer.getAddress(),
+                      depositAmount,
+                      invalidRedemptionData,
+                    ),
+                )
+                  .to.be.revertedWithCustomError(
+                    bitcoinRedeemer,
+                    "RedeemerNotOwner",
+                  )
+                  .withArgs(thirdParty.address, depositor.address)
+              })
             })
 
             context("when redeeming too many tokens", () => {
