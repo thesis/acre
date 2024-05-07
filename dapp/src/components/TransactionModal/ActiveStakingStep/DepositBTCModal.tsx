@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react"
+import React, { useCallback } from "react"
 import {
   useDepositBTCTransaction,
   useDepositTelemetry,
@@ -9,12 +9,13 @@ import {
   useTransactionContext,
   useWalletContext,
 } from "#/hooks"
-import { TextMd } from "#/components/shared/Typography"
 import { logPromiseFailure } from "#/utils"
 import { PROCESS_STATUSES } from "#/types"
-import { CardAlert } from "#/components/shared/alerts"
 import { TOASTS, TOAST_IDS } from "#/types/toast"
-import StakingStepsModalContent from "./StakingStepsModalContent"
+import { ModalBody, ModalHeader, Highlight } from "@chakra-ui/react"
+import Spinner from "#/components/shared/Spinner"
+import { TextMd } from "#/components/shared/Typography"
+import { CardAlert } from "#/components/shared/alerts"
 
 const TOAST_ID = TOAST_IDS.DEPOSIT_TRANSACTION_ERROR
 const TOAST = TOASTS[TOAST_ID]
@@ -26,9 +27,6 @@ export default function DepositBTCModal() {
   const { btcAddress, depositReceipt, stake } = useStakeFlowContext()
   const depositTelemetry = useDepositTelemetry()
   const { closeToast, openToast } = useToast()
-
-  const [isLoading, setIsLoading] = useState(false)
-  const [buttonText, setButtonText] = useState("Deposit BTC")
 
   const onStakeBTCSuccess = useCallback(
     () => setStatus(PROCESS_STATUSES.SUCCEEDED),
@@ -57,7 +55,6 @@ export default function DepositBTCModal() {
       id: TOAST_ID,
       render: TOAST,
     })
-    setButtonText("Try again")
   }, [openToast])
 
   const onDepositBTCError = useCallback(() => showError(), [showError])
@@ -71,13 +68,11 @@ export default function DepositBTCModal() {
     if (!tokenAmount?.amount || !btcAddress || !depositReceipt || !ethAccount)
       return
 
-    setIsLoading(true)
     const response = await depositTelemetry(
       depositReceipt,
       btcAddress,
       ethAccount.address,
     )
-    setIsLoading(false)
 
     if (response.verificationStatus === "valid") {
       logPromiseFailure(sendBitcoinTransaction(tokenAmount?.amount, btcAddress))
@@ -94,22 +89,26 @@ export default function DepositBTCModal() {
     tokenAmount?.amount,
   ])
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handledDepositBTCWrapper = useCallback(() => {
     logPromiseFailure(handledDepositBTC())
   }, [handledDepositBTC])
 
   return (
-    <StakingStepsModalContent
-      buttonText={buttonText}
-      activeStep={1}
-      isLoading={isLoading}
-      onClick={handledDepositBTCWrapper}
-    >
-      <CardAlert status="error">
-        <TextMd>
-          Make a Bitcoin transaction to deposit and stake your BTC.
-        </TextMd>
-      </CardAlert>
-    </StakingStepsModalContent>
+    <>
+      <ModalHeader>Waiting transaction...</ModalHeader>
+      <ModalBody>
+        <Spinner size="xl" />
+        <TextMd>Please complete the transaction in your wallet.</TextMd>
+        <CardAlert>
+          <TextMd>
+            <Highlight query="Rewards" styles={{ fontWeight: "bold" }}>
+              You will receive your Rewards once the deposit transaction is
+              completed.
+            </Highlight>
+          </TextMd>
+        </CardAlert>
+      </ModalBody>
+    </>
   )
 }
