@@ -138,9 +138,15 @@ importers:
       '@keep-network/tbtc-v2.ts':
         specifier: 2.4.0-dev.3
         version: 2.4.0-dev.3(@keep-network/keep-core@1.8.1-dev.0)
+      '@ledgerhq/wallet-api-client':
+        specifier: ^1.5.0
+        version: 1.5.0
       '@orangekit/sdk':
-        specifier: 1.0.0-beta.8
-        version: 1.0.0-beta.8
+        specifier: 1.0.0-beta.9
+        version: 1.0.0-beta.9
+      '@swan-bitcoin/xpub-lib':
+        specifier: ^0.1.5
+        version: 0.1.5
       ethers:
         specifier: ^6.10.0
         version: 6.10.0
@@ -1638,6 +1644,14 @@ packages:
       '@babel/core': 7.23.3
       '@babel/helper-create-regexp-features-plugin': 7.22.15(@babel/core@7.23.3)
       '@babel/helper-plugin-utils': 7.22.5
+
+  /@babel/polyfill@7.12.1:
+    resolution: {integrity: sha512-X0pi0V6gxLi6lFZpGmeNa4zxtwEmCs42isWLNjZZDE0Y8yVfgu0T2OAHlzBbdYlqbW/YXVvoBHpATEM+goCj8g==}
+    deprecated: 🚨 This package has been deprecated in favor of separate inclusion of a polyfill and regenerator-runtime (when needed). See the @babel/polyfill docs (https://babeljs.io/docs/en/babel-polyfill) for more information.
+    dependencies:
+      core-js: 2.6.12
+      regenerator-runtime: 0.13.11
+    dev: false
 
   /@babel/preset-env@7.23.7(@babel/core@7.23.3):
     resolution: {integrity: sha512-SY27X/GtTz/L4UryMNJ6p4fH4nsgWbz84y9FE0bQeWJP6O5BhgVCt53CotQKHCOeXJel8VyhlhujhlltKms/CA==}
@@ -5658,8 +5672,8 @@ packages:
       - ethers
     dev: false
 
-  /@orangekit/sdk@1.0.0-beta.8:
-    resolution: {integrity: sha512-eyEjw5cuT0cigL6GOKrnKEbIMjFWVe1g5hu9dkFhaRHKfsLq8IzYXRpFYBZYdCCiBUj8aN7zMf9WevgMcBiU7g==}
+  /@orangekit/sdk@1.0.0-beta.9:
+    resolution: {integrity: sha512-qQja7YLt1aDolXqCTnC7a3aFTUi5I5DJTQ1yHawsV5OIdDlDGkxy+NQWDylzQXRcB2+Nmc1PMnHiM1ucFtVlzQ==}
     dependencies:
       '@orangekit/contracts': 1.0.0-beta.2(ethers@6.11.1)
       bitcoinjs-lib: 6.1.5
@@ -6746,6 +6760,13 @@ packages:
       - bufferutil
       - supports-color
       - utf-8-validate
+    dev: false
+
+  /@swan-bitcoin/xpub-lib@0.1.5:
+    resolution: {integrity: sha512-UdCs+GQ0Oh1kEMzlQ4BxQ2BwQJAH2TRUd1HkGZSACgc/yFtfS0fm5dD/Ae2Eaq52BBOoJRFf9AIcvTNT5tcPVQ==}
+    dependencies:
+      bitcoinjs-lib: 5.2.0
+      unchained-bitcoin: 0.0.15
     dev: false
 
   /@swc/helpers@0.4.14:
@@ -8717,6 +8738,10 @@ packages:
     resolution: {integrity: sha512-S4XzBk5sMB+Rcb/LNcpzXr57VRTxgAvaAEDAl1AwRx27j00hT84O6OkteE7u8UB3NuaaygCRrEpqox4uDOrbdQ==}
     dev: false
 
+  /bignumber.js@8.1.1:
+    resolution: {integrity: sha512-QD46ppGintwPGuL1KqmwhR0O+N2cZUg8JG/VzwI2e28sM9TqHjQB10lI4QAaMHVbLzwVLLAwEglpKPViWX+5NQ==}
+    dev: false
+
   /bignumber.js@9.1.2:
     resolution: {integrity: sha512-2/mKyZH9K85bzOEfhXDBFZTGd1CTs+5IHpeFQo9luiBG7hghdC851Pj2WAhb6E3R6b9tZj/XKhbg4fum+Kepug==}
     dev: false
@@ -8757,6 +8782,18 @@ packages:
     engines: {node: '>=8.0.0'}
     dev: false
 
+  /bip32@1.0.4:
+    resolution: {integrity: sha512-8T21eLWylZETolyqCPgia+MNp+kY37zFr7PTFDTPObHeNi9JlfG4qGIh8WzerIJidtwoK+NsWq2I5i66YfHoIw==}
+    engines: {node: '>=6.0.0'}
+    dependencies:
+      bs58check: 2.1.2
+      create-hash: 1.2.0
+      create-hmac: 1.1.7
+      tiny-secp256k1: 1.1.6
+      typeforce: 1.18.0
+      wif: 2.0.6
+    dev: false
+
   /bip32@2.0.5:
     resolution: {integrity: sha512-zVY4VvJV+b2fS0/dcap/5XLlpqtgwyN8oRkuGgAS1uLOeEp0Yo6Tw2yUTozTtlrMJO3G8n4g/KX/XGFHW6Pq3g==}
     engines: {node: '>=6.0.0'}
@@ -8777,6 +8814,66 @@ packages:
       create-hash: 1.2.0
       pbkdf2: 3.1.2
       randombytes: 2.1.0
+    dev: false
+
+  /bip66@1.1.5:
+    resolution: {integrity: sha512-nemMHz95EmS38a26XbbdxIYj5csHd3RMP3H5bwQknX0WYHF01qhpufP42mLOwVICuH2JmhIhXiWs89MfUGL7Xw==}
+    dependencies:
+      safe-buffer: 5.2.1
+    dev: false
+
+  /bitcoin-address-validation@0.2.9:
+    resolution: {integrity: sha512-47/XSK0yCA5Ivbt0YK5wCXm82TJWQRfkEiVRQScug5DNvmLCLeUekY6gwtH4dr7Ms2m13Nktq6/dhvsjdut0xg==}
+    dependencies:
+      base-x: 3.0.9
+      bech32: 1.1.4
+      hash.js: 1.1.7
+    dev: false
+
+  /bitcoin-ops@1.4.1:
+    resolution: {integrity: sha512-pef6gxZFztEhaE9RY9HmWVmiIHqCb2OyS4HPKkpc6CIiiOa3Qmuoylxc5P2EkU3w+5eTSifI9SEZC88idAIGow==}
+    dev: false
+
+  /bitcoinjs-lib@4.0.5:
+    resolution: {integrity: sha512-gYs7K2hiY4Xb96J8AIF+Rx+hqbwjVlp5Zt6L6AnHOdzfe/2tODdmDxsEytnaxVCdhOUg0JnsGpl+KowBpGLxtA==}
+    engines: {node: '>=8.0.0'}
+    dependencies:
+      bech32: 1.1.4
+      bip32: 1.0.4
+      bip66: 1.1.5
+      bitcoin-ops: 1.4.1
+      bs58check: 2.1.2
+      create-hash: 1.2.0
+      create-hmac: 1.1.7
+      merkle-lib: 2.0.10
+      pushdata-bitcoin: 1.0.1
+      randombytes: 2.1.0
+      safe-buffer: 5.2.1
+      tiny-secp256k1: 1.1.6
+      typeforce: 1.18.0
+      varuint-bitcoin: 1.1.2
+      wif: 2.0.6
+    dev: false
+
+  /bitcoinjs-lib@5.2.0:
+    resolution: {integrity: sha512-5DcLxGUDejgNBYcieMIUfjORtUeNWl828VWLHJGVKZCb4zIS1oOySTUr0LGmcqJBQgTBz3bGbRQla4FgrdQEIQ==}
+    engines: {node: '>=8.0.0'}
+    dependencies:
+      bech32: 1.1.4
+      bip174: 2.1.1
+      bip32: 2.0.5
+      bip66: 1.1.5
+      bitcoin-ops: 1.4.1
+      bs58check: 2.1.2
+      create-hash: 1.2.0
+      create-hmac: 1.1.7
+      merkle-lib: 2.0.10
+      pushdata-bitcoin: 1.0.1
+      randombytes: 2.1.0
+      tiny-secp256k1: 1.1.6
+      typeforce: 1.18.0
+      varuint-bitcoin: 1.1.2
+      wif: 2.0.6
     dev: false
 
   /bitcoinjs-lib@6.1.5:
@@ -9835,6 +9932,12 @@ packages:
   /core-js-pure@3.33.3:
     resolution: {integrity: sha512-taJ00IDOP+XYQEA2dAe4ESkmHt1fL8wzYDo3mRWQey8uO9UojlBFMneA65kMyxfYP7106c6LzWaq7/haDT6BCQ==}
     requiresBuild: true
+
+  /core-js@2.6.12:
+    resolution: {integrity: sha512-Kb2wC0fvsWfQrgk8HU5lW6U/Lcs8+9aaYcy4ZFc6DDlo4nZ7n70dEgE5rtR0oG6ufKDUnrwfWL1mXR5ljDatrQ==}
+    deprecated: core-js@<3.23.3 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Some versions have web compatibility issues. Please, upgrade your dependencies to the actual version of core-js.
+    requiresBuild: true
+    dev: false
 
   /core-js@3.33.3:
     resolution: {integrity: sha512-lo0kOocUlLKmm6kv/FswQL8zbkH7mVsLJ/FULClOhv8WRVmKLVcs6XPNQAzstfeJTCHMyButEwG+z1kHxHoDZw==}
@@ -15934,6 +16037,10 @@ packages:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==}
     engines: {node: '>= 8'}
 
+  /merkle-lib@2.0.10:
+    resolution: {integrity: sha512-XrNQvUbn1DL5hKNe46Ccs+Tu3/PYOlrcZILuGUhb95oKBPjc/nmIC8D462PQkipVDGKRvwhn+QFg2cCdIvmDJA==}
+    dev: false
+
   /methods@1.1.2:
     resolution: {integrity: sha512-iclAHeNqNm68zFtnZ0e+1L2yUIdvzNoauKU4WBA3VvH/vPFieF7qfRlwUZU+DA9P9bPXIS90ulxoUoCH23sV2w==}
     engines: {node: '>= 0.6'}
@@ -17772,6 +17879,12 @@ packages:
   /pure-rand@6.0.4:
     resolution: {integrity: sha512-LA0Y9kxMYv47GIPJy6MI84fqTd2HmYZI83W/kM/SkKfDlajnZYfmXFTxkbY+xSBPkLJxltMa9hIkmdc29eguMA==}
     dev: true
+
+  /pushdata-bitcoin@1.0.1:
+    resolution: {integrity: sha512-hw7rcYTJRAl4olM8Owe8x0fBuJJ+WGbMhQuLWOXEMN3PxPCKQHRkhfL+XG0+iXUmSHjkMmb3Ba55Mt21cZc9kQ==}
+    dependencies:
+      bitcoin-ops: 1.4.1
+    dev: false
 
   /pvtsutils@1.3.5:
     resolution: {integrity: sha512-ARvb14YB9Nm2Xi6nBq1ZX6dAM0FsJnuk+31aUp4TrcZEdKUlSqOqsxJHUPJDNE3qiIp+iUPEIeR6Je/tgV7zsA==}
@@ -20331,6 +20444,20 @@ packages:
   /unc-path-regex@0.1.2:
     resolution: {integrity: sha512-eXL4nmJT7oCpkZsHZUOJo8hcX3GbsiDOa0Qu9F646fi8dT3XuSVopVqAcEiVzSKKH7UoDti23wNX3qGFxcW5Qg==}
     engines: {node: '>=0.10.0'}
+
+  /unchained-bitcoin@0.0.15:
+    resolution: {integrity: sha512-IubzpcTT4spAV5uZ7bcpT50qNBKbda8epu2zilEvEBerUQNKXEidUIdccSNVYwabu4d04VkXK+3vyMX02Ilw+g==}
+    deprecated: future maintenance for this library has been moved to @caravan/bitcoin
+    dependencies:
+      '@babel/polyfill': 7.12.1
+      bignumber.js: 8.1.1
+      bip32: 2.0.5
+      bitcoin-address-validation: 0.2.9
+      bitcoinjs-lib: 4.0.5
+      bs58check: 2.1.2
+      bufio: 1.2.1
+      core-js: 2.6.12
+    dev: false
 
   /underscore@1.12.1:
     resolution: {integrity: sha512-hEQt0+ZLDVUMhebKxL4x1BTtDY7bavVofhZ9KZ4aI26X9SRaE+Y3m83XUL1UP2jn8ynjndwCCpEHdUG+9pP1Tw==}
