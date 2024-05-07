@@ -1,13 +1,12 @@
-import {
-  ChainIdentifier,
-  EthereumAddress,
-  TBTC,
-} from "@keep-network/tbtc-v2.ts"
+import { ChainIdentifier, EthereumAddress } from "@keep-network/tbtc-v2.ts"
 import { OrangeKitSdk } from "@orangekit/sdk"
-import { AcreContracts, DepositorProxy, DepositFees } from "../../lib/contracts"
+import { AcreContracts, DepositFees } from "../../lib/contracts"
 import { ChainEIP712Signer } from "../../lib/eip712-signer"
 import { StakeInitialization } from "./stake-initialization"
 import { fromSatoshi, toSatoshi } from "../../lib/utils"
+import Tbtc from "../tbtc"
+
+export { DepositReceipt } from "../tbtc"
 
 /**
  * Represents all total deposit fees grouped by network.
@@ -33,9 +32,9 @@ class StakingModule {
   readonly #messageSigner: ChainEIP712Signer
 
   /**
-   * tBTC SDK.
+   * tBTC Module.
    */
-  readonly #tbtc: TBTC
+  readonly #tbtc: Tbtc
 
   /**
    * OrangeKit SDK.
@@ -45,8 +44,8 @@ class StakingModule {
   constructor(
     _contracts: AcreContracts,
     _messageSigner: ChainEIP712Signer,
-    _tbtc: TBTC,
     _orangeKit: OrangeKitSdk,
+    _tbtc: Tbtc,
   ) {
     this.#contracts = _contracts
     this.#messageSigner = _messageSigner
@@ -59,7 +58,6 @@ class StakingModule {
    * @param depositor The Bitcoin depositor address. Supported addresses:
    *        `P2WPKH`, `P2PKH`, `P2SH-P2WPKH`.
    * @param referral Data used for referral program.
-   * @param depositorProxy Depositor proxy used to initiate the deposit.
    * @param bitcoinRecoveryAddress `P2PKH` or `P2WPKH` Bitcoin address that can
    *        be used for emergency recovery of the deposited funds. If
    *        `undefined` the `depositor` address is used as bitcoin recovery
@@ -69,7 +67,6 @@ class StakingModule {
   async initializeStake(
     depositor: string,
     referral: number,
-    depositorProxy?: DepositorProxy,
     bitcoinRecoveryAddress?: string,
   ) {
     // TODO: If we want to handle other chains we should create the wrapper for
@@ -85,13 +82,10 @@ class StakingModule {
     // address is not supported.
     const finalBitcoinRecoveryAddress = bitcoinRecoveryAddress ?? depositor
 
-    const deposit = await this.#tbtc.deposits.initiateDepositWithProxy(
+    const tbtcDeposit = await this.#tbtc.initiateDeposit(
+      depositOwnerChainAddress,
       finalBitcoinRecoveryAddress,
-      depositorProxy ?? this.#contracts.bitcoinDepositor,
-      this.#contracts.bitcoinDepositor.encodeExtraData(
-        depositOwnerChainAddress,
-        referral,
-      ),
+      referral,
     )
 
     return new StakeInitialization(
@@ -99,7 +93,7 @@ class StakingModule {
       this.#messageSigner,
       finalBitcoinRecoveryAddress,
       depositOwnerChainAddress,
-      deposit,
+      tbtcDeposit,
     )
   }
 

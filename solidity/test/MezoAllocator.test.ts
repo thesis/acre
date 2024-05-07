@@ -272,6 +272,11 @@ describe("MezoAllocator", () => {
         const totalAssets = await mezoAllocator.totalAssets()
         expect(totalAssets).to.equal(to1e18(5))
       })
+
+      it("should be equal to the deposit balance", async () => {
+        const depositBalance = await mezoAllocator.depositBalance()
+        expect(await mezoAllocator.totalAssets()).to.equal(depositBalance)
+      })
     })
   })
 

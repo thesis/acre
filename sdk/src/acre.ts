@@ -1,4 +1,3 @@
-import { TBTC } from "@keep-network/tbtc-v2.ts"
 import { OrangeKitSdk } from "@orangekit/sdk"
 import { AcreContracts } from "./lib/contracts"
 import { ChainEIP712Signer } from "./lib/eip712-signer"
@@ -8,10 +7,11 @@ import {
   getEthereumContracts,
 } from "./lib/ethereum"
 import { StakingModule } from "./modules/staking"
+import Tbtc from "./modules/tbtc"
 import { EthereumSignerCompatibleWithEthersV5 } from "./lib/utils"
 
 class Acre {
-  readonly #tbtc: TBTC
+  readonly #tbtc: Tbtc
 
   readonly #orangeKit: OrangeKitSdk
 
@@ -24,8 +24,8 @@ class Acre {
   constructor(
     _contracts: AcreContracts,
     _messageSigner: ChainEIP712Signer,
-    _tbtc: TBTC,
     _orangeKit: OrangeKitSdk,
+    _tbtc: Tbtc,
   ) {
     this.contracts = _contracts
     this.#tbtc = _tbtc
@@ -34,42 +34,31 @@ class Acre {
     this.staking = new StakingModule(
       this.contracts,
       this.#messageSigner,
-      this.#tbtc,
       this.#orangeKit,
+      this.#tbtc,
     )
   }
 
   static async initializeEthereum(
     signer: EthereumSignerCompatibleWithEthersV5,
     network: EthereumNetwork,
+    tbtcApiUrl: string,
   ): Promise<Acre> {
     const chainId = await signer.getChainId()
 
-    const tbtc = await Acre.#getTBTCEthereumSDK(signer, network)
-    const orangeKit = await Acre.#getOrangeKitSDK(chainId)
     const contracts = getEthereumContracts(signer, network)
     const messages = new EthereumEIP712Signer(signer)
 
-    return new Acre(contracts, messages, tbtc, orangeKit)
-  }
+    const orangeKit = await Acre.#getOrangeKitSDK(chainId)
 
-  static #getTBTCEthereumSDK(
-    signer: EthereumSignerCompatibleWithEthersV5,
-    network: EthereumNetwork,
-  ): Promise<TBTC> {
-    switch (network) {
-      case "sepolia":
-        // @ts-expect-error We require the `signer` must include the ether v5
-        // signer's methods used in tBTC-v2.ts SDK so if we pass signer from
-        // ethers v6 it won't break the Acre SDK initialization.
-        return TBTC.initializeSepolia(signer)
-      case "mainnet":
-      default:
-        // @ts-expect-error We require the `signer` must include the ether v5
-        // signer's methods used in tBTC-v2.ts SDK so if we pass signer from
-        // ethers v6 it won't break the Acre SDK initialization.
-        return TBTC.initializeMainnet(signer)
-    }
+    const tbtc = await Tbtc.initialize(
+      signer,
+      network,
+      tbtcApiUrl,
+      contracts.bitcoinDepositor,
+    )
+
+    return new Acre(contracts, messages, orangeKit, tbtc)
   }
 
   static #getOrangeKitSDK(chainId: number): Promise<OrangeKitSdk> {

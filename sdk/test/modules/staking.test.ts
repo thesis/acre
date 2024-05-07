@@ -5,8 +5,6 @@ import {
   StakingModule,
   Hex,
   StakeInitialization,
-  DepositorProxy,
-  DepositReceipt,
   EthereumAddress,
   DepositFees,
   DepositFee,
@@ -14,8 +12,9 @@ import {
 import * as satoshiConverter from "../../src/lib/utils/satoshi-converter"
 import { MockAcreContracts } from "../utils/mock-acre-contracts"
 import { MockMessageSigner } from "../utils/mock-message-signer"
-import { MockTBTC } from "../utils/mock-tbtc"
 import { MockOrangeKitSdk } from "../utils/mock-orangekit"
+import { MockTbtc } from "../utils/mock-tbtc"
+import { DepositReceipt } from "../../src/modules/tbtc"
 
 const stakingModuleData: {
   initializeDeposit: {
@@ -77,6 +76,7 @@ const stakingModuleData: {
 const stakingInitializationData: {
   depositReceipt: Omit<DepositReceipt, "depositor">
   mockedInitializeTxHash: Hex
+  mockedDepositId: string
   fundingUtxo: {
     transactionHash: BitcoinTxHash
     outputIndex: number
@@ -91,6 +91,7 @@ const stakingInitializationData: {
     extraData: stakingModuleData.initializeDeposit.extraData,
   },
   mockedInitializeTxHash: Hex.from("999999"),
+  mockedDepositId: "deposit-id-1234",
   fundingUtxo: {
     transactionHash: BitcoinTxHash.from(
       "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
@@ -103,16 +104,16 @@ const stakingInitializationData: {
 describe("Staking", () => {
   const contracts: AcreContracts = new MockAcreContracts()
   const messageSigner = new MockMessageSigner()
-  const tbtc = new MockTBTC()
   const orangeKit = new MockOrangeKitSdk()
+  const tbtc = new MockTbtc()
 
   const staking: StakingModule = new StakingModule(
     contracts,
     messageSigner,
-    tbtc,
     // @ts-expect-error Error: Property '#private' is missing in type
     // 'MockOrangeKitSdk' but required in type 'OrangeKitSdk'.
     orangeKit,
+    tbtc,
   )
 
   describe("initializeStake", () => {
@@ -127,11 +128,13 @@ describe("Staking", () => {
     const staker = predictedEthereumDepositorAddress
     const bitcoinRecoveryAddress = bitcoinDepositorAddress
 
+    const { mockedDepositId } = stakingInitializationData
+
     const mockedDeposit = {
       getBitcoinAddress: jest.fn().mockResolvedValue(mockedDepositBTCAddress),
-      detectFunding: jest.fn(),
+      waitForFunding: jest.fn(),
       getReceipt: jest.fn().mockReturnValue({ extraData }),
-      initiateMinting: jest.fn(),
+      createDeposit: jest.fn().mockReturnValue(mockedDepositId),
     }
 
     describe("with default depositor proxy implementation", () => {
@@ -148,9 +151,7 @@ describe("Staking", () => {
           .fn()
           .mockReturnValue(extraData)
 
-        tbtc.deposits.initiateDepositWithProxy = jest
-          .fn()
-          .mockReturnValue(mockedDeposit)
+        tbtc.initiateDeposit = jest.fn().mockReturnValue(mockedDeposit)
 
         orangeKit.predictAddress = jest
           .fn()
@@ -172,15 +173,11 @@ describe("Staking", () => {
         )
       })
 
-      it("should encode extra data", () => {
-        expect(contracts.bitcoinDepositor.encodeExtraData(staker, referral))
-      })
-
       it("should initiate tBTC deposit", () => {
-        expect(tbtc.deposits.initiateDepositWithProxy).toHaveBeenCalledWith(
-          bitcoinDepositorAddress,
-          contracts.bitcoinDepositor,
-          extraData,
+        expect(tbtc.initiateDeposit).toHaveBeenCalledWith(
+          predictedEthereumDepositorAddress,
+          bitcoinRecoveryAddress,
+          referral,
         )
       })
 
@@ -199,7 +196,7 @@ describe("Staking", () => {
           mockedDeposit.getReceipt.mockReturnValue(depositReceipt)
         })
 
-        describe("getDepositAddress", () => {
+        describe("getBitcoinAddress", () => {
           it("should return bitcoin deposit address", async () => {
             expect(await result.getBitcoinAddress()).toBe(
               mockedDepositBTCAddress,
@@ -289,133 +286,28 @@ describe("Staking", () => {
           })
 
           describe("when message has already been signed", () => {
-            let tx: Hex
-            const { mockedInitializeTxHash: mockedTxHash, fundingUtxo } =
-              stakingInitializationData
+            let depositId: string
 
             beforeAll(async () => {
-              mockedDeposit.initiateMinting.mockResolvedValue(mockedTxHash)
-              mockedDeposit.detectFunding.mockResolvedValue([fundingUtxo])
+              mockedDeposit.waitForFunding.mockResolvedValue(undefined)
               await result.signMessage()
 
-              tx = await result.stake()
+              depositId = await result.stake()
             })
 
-            it("should stake tokens via tbtc depositor proxy", () => {
-              expect(mockedDeposit.initiateMinting).toHaveBeenCalled()
+            it("should wait for funding", () => {
+              expect(mockedDeposit.waitForFunding).toHaveBeenCalled()
             })
 
-            it("should return transaction hash", () => {
-              expect(tx).toBe(mockedTxHash)
-            })
-          })
-
-          describe("when waiting for bitcoin deposit tx", () => {
-            const { mockedInitializeTxHash: mockedTxHash } =
-              stakingInitializationData
-
-            describe("when can't find transaction after max number of retries", () => {
-              beforeEach(async () => {
-                jest.useFakeTimers()
-
-                mockedDeposit.initiateMinting.mockResolvedValue(mockedTxHash)
-                mockedDeposit.detectFunding.mockClear()
-                mockedDeposit.detectFunding.mockResolvedValue([])
-
-                await result.signMessage()
-              })
-
-              it("should throw an error", async () => {
-                // eslint-disable-next-line no-void
-                void expect(result.stake()).rejects.toThrow(
-                  "Deposit not funded yet",
-                )
-
-                await jest.runAllTimersAsync()
-
-                expect(mockedDeposit.detectFunding).toHaveBeenCalledTimes(6)
-              })
+            it("should create the deposit", () => {
+              expect(mockedDeposit.createDeposit).toHaveBeenCalled()
             })
 
-            describe("when the funding tx is available", () => {
-              const { fundingUtxo } = stakingInitializationData
-              let txPromise: Promise<Hex>
-
-              beforeAll(async () => {
-                jest.useFakeTimers()
-
-                mockedDeposit.initiateMinting.mockResolvedValue(mockedTxHash)
-
-                mockedDeposit.detectFunding.mockClear()
-                mockedDeposit.detectFunding
-                  // First attempt. Deposit not funded yet.
-                  .mockResolvedValueOnce([])
-                  // Second attempt. Deposit funded.
-                  .mockResolvedValueOnce([fundingUtxo])
-
-                await result.signMessage()
-
-                txPromise = result.stake()
-
-                await jest.runAllTimersAsync()
-              })
-
-              it("should wait for deposit transaction", () => {
-                expect(mockedDeposit.detectFunding).toHaveBeenCalledTimes(2)
-              })
-
-              it("should stake tokens via tbtc depositor proxy", () => {
-                expect(mockedDeposit.initiateMinting).toHaveBeenCalled()
-              })
-
-              it("should return transaction hash", async () => {
-                const txHash = await txPromise
-
-                expect(txHash).toBe(mockedTxHash)
-              })
+            it("should return deposit id", () => {
+              expect(depositId).toBe(mockedDepositId)
             })
           })
         })
-      })
-    })
-
-    describe("with custom depositor proxy", () => {
-      const customDepositorProxy: DepositorProxy = {
-        getChainIdentifier: jest.fn(),
-        revealDeposit: jest.fn(),
-      } as unknown as DepositorProxy
-
-      let result: StakeInitialization
-
-      beforeEach(async () => {
-        contracts.bitcoinDepositor.encodeExtraData = jest
-          .fn()
-          .mockReturnValue(extraData)
-
-        tbtc.deposits.initiateDepositWithProxy = jest
-          .fn()
-          .mockReturnValue(mockedDeposit)
-
-        result = await staking.initializeStake(
-          bitcoinRecoveryAddress,
-          referral,
-          customDepositorProxy,
-        )
-      })
-
-      it("should initiate tBTC deposit", () => {
-        expect(tbtc.deposits.initiateDepositWithProxy).toHaveBeenCalledWith(
-          bitcoinRecoveryAddress,
-          customDepositorProxy,
-          extraData,
-        )
-      })
-
-      it("should return stake initialization object", () => {
-        expect(result).toBeInstanceOf(StakeInitialization)
-        expect(result.getBitcoinAddress).toBeDefined()
-        expect(result.stake).toBeDefined()
-        expect(result.signMessage).toBeDefined()
       })
     })
   })
