@@ -3,7 +3,6 @@ import { Flex, Grid, HStack, Switch } from "@chakra-ui/react"
 import { TextSm } from "#/components/shared/Typography"
 import { USD } from "#/constants"
 import { chakraUnitToPx } from "#/theme/utils"
-import { StakingActivitiesList } from "#/components/shared/StakingActivitiesList"
 import PositionDetails from "./PositionDetails"
 import Statistics from "./Statistics"
 import TransactionHistory from "./TransactionHistory"
@@ -11,33 +10,6 @@ import { DocsCard } from "./DocsCard"
 import { ActivityCarousel } from "./ActivityCarousel"
 
 export default function OverviewPage() {
-  return (
-    <Flex direction="column" p={6}>
-      <StakingActivitiesList
-        items={[
-          {
-            id: "staking-activity-1",
-            status: "success",
-            amount: 499000000,
-          },
-          {
-            id: "staking-activity-2",
-            status: "pending",
-            amount: 100000000,
-            estimatedTime: Date.now() + 3600000,
-            transactionUrl: "#",
-          },
-          {
-            id: "staking-activity-3",
-            status: "success",
-            amount: 499000000,
-            isUnstaking: true,
-          },
-        ]}
-      />
-    </Flex>
-  )
-
   return (
     <Flex direction="column" p={6}>
       <HStack pb={3.5}>
