@@ -3,6 +3,7 @@ import { Flex, Grid, HStack, Switch } from "@chakra-ui/react"
 import { TextSm } from "#/components/shared/Typography"
 import { USD } from "#/constants"
 import { chakraUnitToPx } from "#/theme/utils"
+import { Pagination } from "#/components/shared/Pagination"
 import PositionDetails from "./PositionDetails"
 import Statistics from "./Statistics"
 import TransactionHistory from "./TransactionHistory"
@@ -10,6 +11,14 @@ import { DocsCard } from "./DocsCard"
 import { ActivityCarousel } from "./ActivityCarousel"
 
 export default function OverviewPage() {
+  return (
+    <Flex direction="column" p={6}>
+      <Pagination data={["🍊", "🍎", "🥑"]}>
+        {(pageData) => pageData.map((item) => <div>{item}</div>)}
+      </Pagination>
+    </Flex>
+  )
+
   return (
     <Flex direction="column" p={6}>
       <HStack pb={3.5}>
