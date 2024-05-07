@@ -2,8 +2,6 @@ import { Hex } from "../utils"
 import { ChainIdentifier } from "./chain-identifier"
 import { DepositorProxy } from "./depositor-proxy"
 
-export { DepositReceipt } from "@keep-network/tbtc-v2.ts"
-
 export type DecodedExtraData = {
   depositOwner: ChainIdentifier
   referral: number

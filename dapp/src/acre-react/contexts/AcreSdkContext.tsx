@@ -2,6 +2,8 @@ import React, { useCallback, useMemo, useState } from "react"
 import { LedgerLiveEthereumSigner } from "#/web3"
 import { Acre, EthereumNetwork } from "@acre-btc/sdk"
 
+const TBTC_API_ENDPOINT = import.meta.env.VITE_TBTC_API_ENDPOINT
+
 type AcreSdkContextValue = {
   acre?: Acre
   init: (ethereumAddress: string, network: EthereumNetwork) => Promise<void>
@@ -25,6 +27,7 @@ export function AcreSdkProvider({ children }: { children: React.ReactNode }) {
       const sdk = await Acre.initializeEthereum(
         await LedgerLiveEthereumSigner.fromAddress(ethereumAddress),
         network,
+        TBTC_API_ENDPOINT,
       )
       setAcre(sdk)
       setIsInitialized(true)
