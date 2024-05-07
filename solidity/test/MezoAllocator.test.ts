@@ -357,6 +357,8 @@ describe("MezoAllocator", () => {
     })
 
     context("when there is a deposit", () => {
+      beforeAfterSnapshotWrapper()
+
       before(async () => {
         await tbtc.mint(await stbtc.getAddress(), to1e18(5))
         await mezoAllocator.connect(maintainer).allocate()
@@ -370,6 +372,22 @@ describe("MezoAllocator", () => {
       it("should be equal to the deposit balance", async () => {
         const depositBalance = await mezoAllocator.depositBalance()
         expect(await mezoAllocator.totalAssets()).to.equal(depositBalance)
+      })
+    })
+
+    context("when there is a deposit plus 'donation' made", () => {
+      beforeAfterSnapshotWrapper()
+
+      before(async () => {
+        await tbtc.mint(await stbtc.getAddress(), to1e18(5))
+        await mezoAllocator.connect(maintainer).allocate()
+        // donation
+        await tbtc.mint(await mezoAllocator.getAddress(), to1e18(1))
+      })
+
+      it("should return the total assets value", async () => {
+        const totalAssets = await mezoAllocator.totalAssets()
+        expect(totalAssets).to.equal(to1e18(6))
       })
     })
   })
