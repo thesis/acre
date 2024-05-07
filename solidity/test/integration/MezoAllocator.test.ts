@@ -39,6 +39,11 @@ describe("MezoAllocator", () => {
   // This is a random mainnet address of the whale account that holds 100 tBTC
   // tokens that can be used for testing purposes after impersonation.
   const whaleAddress = "0x84eA3907b9206427F45c7b2614925a2B86D12611"
+
+  // As of a forked block 19813880, the deposit id was 4999 before the new
+  // allocation. The deposit id should be incremented by 1.
+  const expectedDepositId = 5000n
+
   let tbtc: TestERC20
   let stbtc: stBTC
   let mezoAllocator: MezoAllocator
@@ -104,9 +109,8 @@ describe("MezoAllocator", () => {
 
         it("should increment the deposit id", async () => {
           const actualDepositId = await mezoAllocator.depositId()
-          // As of a forked block 19680873, the deposit id was 2272 before the new
-          // allocation. The deposit id should be incremented by 1.
-          expect(actualDepositId).to.equal(2273)
+
+          expect(actualDepositId).to.equal(expectedDepositId)
         })
 
         it("should increase tracked deposit balance amount", async () => {
@@ -117,7 +121,7 @@ describe("MezoAllocator", () => {
         it("should emit DepositAllocated event", async () => {
           await expect(tx)
             .to.emit(mezoAllocator, "DepositAllocated")
-            .withArgs(0, 2273, to1e18(6), to1e18(6))
+            .withArgs(0, expectedDepositId, to1e18(6), to1e18(6))
         })
       })
 
@@ -134,13 +138,18 @@ describe("MezoAllocator", () => {
 
         it("should increment the deposit id", async () => {
           const actualDepositId = await mezoAllocator.depositId()
-          expect(actualDepositId).to.equal(2274)
+          expect(actualDepositId).to.equal(expectedDepositId + 1n)
         })
 
         it("should emit DepositAllocated event", async () => {
           await expect(tx)
             .to.emit(mezoAllocator, "DepositAllocated")
-            .withArgs(2273, 2274, to1e18(5), to1e18(11))
+            .withArgs(
+              expectedDepositId,
+              expectedDepositId + 1n,
+              to1e18(5),
+              to1e18(11),
+            )
         })
 
         it("should deposit and transfer tBTC to Mezo Portal", async () => {
@@ -223,7 +232,7 @@ describe("MezoAllocator", () => {
           it("should emit DepositWithdrawn event", async () => {
             await expect(tx)
               .to.emit(mezoAllocator, "DepositWithdrawn")
-              .withArgs(2273, to1e18(2))
+              .withArgs(expectedDepositId, to1e18(2))
           })
 
           it("should decrease tracked deposit balance amount", async () => {
@@ -258,7 +267,7 @@ describe("MezoAllocator", () => {
           it("should emit DepositWithdrawn event", async () => {
             await expect(tx)
               .to.emit(mezoAllocator, "DepositWithdrawn")
-              .withArgs(2273, to1e18(5))
+              .withArgs(expectedDepositId, to1e18(5))
           })
 
           it("should decrease tracked deposit balance amount to zero", async () => {
@@ -345,7 +354,7 @@ describe("MezoAllocator", () => {
         it("should emit DepositReleased event", async () => {
           await expect(tx)
             .to.emit(mezoAllocator, "DepositReleased")
-            .withArgs(2273, to1e18(5))
+            .withArgs(expectedDepositId, to1e18(5))
         })
 
         it("should decrease tracked deposit balance amount to zero", async () => {
