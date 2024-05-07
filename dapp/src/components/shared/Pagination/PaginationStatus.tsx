@@ -1,18 +1,17 @@
 import React from "react"
 import { TextProps } from "@chakra-ui/react"
 import { TextSm } from "../Typography"
-
-const MOCK_PAGE_SIZE = 10
-const MOCK_PAGE = 2
-const MOCK_TOTAL_SIZE = 27
+import { usePagination } from "./PaginationContext"
 
 function PaginationStatus(props: TextProps) {
-  const rangeStart = MOCK_PAGE * MOCK_PAGE_SIZE + 1 // Pages are indexed from 0
-  const rangeEnd = Math.min(rangeStart + MOCK_PAGE_SIZE - 1, MOCK_TOTAL_SIZE)
+  const { page, pageSize, totalSize } = usePagination()
+
+  const rangeStart = page * pageSize + 1 // Pages are indexed from 0
+  const rangeEnd = Math.min(rangeStart + pageSize - 1, totalSize)
 
   return (
     <TextSm {...props}>
-      Showing {rangeStart}-{rangeEnd} out of {MOCK_TOTAL_SIZE} transactions
+      Showing {rangeStart}-{rangeEnd} out of {totalSize} transactions
     </TextSm>
   )
 }

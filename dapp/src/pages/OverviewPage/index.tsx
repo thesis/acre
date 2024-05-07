@@ -10,11 +10,37 @@ import TransactionHistory from "./TransactionHistory"
 import { DocsCard } from "./DocsCard"
 import { ActivityCarousel } from "./ActivityCarousel"
 
+const MOCK_DATA = [
+  { emoji: "🍎", name: "Red Apple" },
+  { emoji: "🍏", name: "Green Apple" },
+  { emoji: "🍐", name: "Pear" },
+  { emoji: "🍊", name: "Tangerine" },
+  { emoji: "🍋", name: "Lemon" },
+  { emoji: "🍌", name: "Banana" },
+  { emoji: "🍉", name: "Watermelon" },
+  { emoji: "🍇", name: "Grapes" },
+  { emoji: "🍓", name: "Strawberry" },
+  { emoji: "🍈", name: "Melon" },
+  { emoji: "🍒", name: "Cherries" },
+  { emoji: "🍑", name: "Peach" },
+  { emoji: "🥭", name: "Mango" },
+  { emoji: "🍍", name: "Pineapple" },
+  { emoji: "🥥", name: "Coconut" },
+  { emoji: "🥝", name: "Kiwi Fruit" },
+  { emoji: "🍅", name: "Tomato" },
+]
+
 export default function OverviewPage() {
   return (
     <Flex direction="column" p={6}>
-      <Pagination data={["🍊", "🍎", "🥑"]}>
-        {(pageData) => pageData.map((item) => <div>{item}</div>)}
+      <Pagination data={MOCK_DATA} pageSize={3}>
+        {(pageData) =>
+          pageData.map(({ emoji, name }) => (
+            <div>
+              {emoji} {name}
+            </div>
+          ))
+        }
       </Pagination>
     </Flex>
   )
