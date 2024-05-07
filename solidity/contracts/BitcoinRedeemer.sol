@@ -58,6 +58,9 @@ contract BitcoinRedeemer is Ownable2StepUpgradeable, IReceiveApproval {
     /// Attempted to call redeemSharesAndUnmint with unexpected tBTC token owner.
     error UnexpectedTbtcTokenOwner();
 
+    /// Reverts if the redeemer address is zero.
+    error RedeemerNotOwner(address redeemer, address owner);
+
     /// Reverts when approveAndCall to tBTC contract fails.
     error ApproveAndCallFailed();
 
@@ -158,6 +161,13 @@ contract BitcoinRedeemer is Ownable2StepUpgradeable, IReceiveApproval {
 
         // slither-disable-next-line reentrancy-events
         emit RedemptionRequested(owner, shares, tbtcAmount);
+
+        // Decode the redemption data to get the redeemer address.
+        (address redeemer, , , , , ) = abi.decode(
+            tbtcRedemptionData,
+            (address, bytes20, bytes32, uint32, uint64, bytes)
+        );
+        if (redeemer != owner) revert RedeemerNotOwner(redeemer, owner);
 
         if (
             !tbtcToken.approveAndCall(tbtcVault, tbtcAmount, tbtcRedemptionData)
