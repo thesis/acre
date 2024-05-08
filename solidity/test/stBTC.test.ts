@@ -2155,7 +2155,7 @@ describe("stBTC", () => {
   describe("maxWithdraw", () => {
     beforeAfterSnapshotWrapper()
     const amountToDeposit = to1e18(1)
-    let expectedlDepositedAmount: bigint
+    let expectedDepositedAmount: bigint
     let expectedWithdrawnAmount: bigint
 
     before(async () => {
@@ -2165,11 +2165,11 @@ describe("stBTC", () => {
       await stbtc
         .connect(depositor1)
         .deposit(amountToDeposit, depositor1.address)
-      expectedlDepositedAmount =
+      expectedDepositedAmount =
         amountToDeposit - feeOnTotal(amountToDeposit, entryFeeBasisPoints)
       expectedWithdrawnAmount =
-        expectedlDepositedAmount -
-        feeOnTotal(expectedlDepositedAmount, exitFeeBasisPoints)
+        expectedDepositedAmount -
+        feeOnTotal(expectedDepositedAmount, exitFeeBasisPoints)
     })
 
     it("should account for the exit fee", async () => {
