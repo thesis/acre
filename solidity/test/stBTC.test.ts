@@ -23,9 +23,9 @@ async function fixture() {
 
   const [depositor1, depositor2, thirdParty] = await getUnnamedSigners()
 
-  const amountToMint = to1e18(100000)
-  await tbtc.mint(depositor1, amountToMint)
-  await tbtc.mint(depositor2, amountToMint)
+  // const amountToMint = to1e18(100000)
+  // await tbtc.mint(depositor1, amountToMint)
+  // await tbtc.mint(depositor2, amountToMint)
 
   return {
     stbtc,
@@ -826,6 +826,100 @@ describe("stBTC", () => {
             [treasury.address],
             [feeOnTotal(amountDeposited, exitFeeBasisPoints)],
           )
+        })
+      })
+
+      // sharesAmount = totalShares * assetAmount / asset.balanceOf(stBTC)
+
+      context.only("when checking against the inflation attack", () => {
+        beforeAfterSnapshotWrapper()
+
+        let depositor: HardhatEthersSigner
+        let attacker: HardhatEthersSigner
+        let acreDepositor: HardhatEthersSigner
+
+        before(async () => {
+          // Waive any fees for the testing purposes of the attack.
+          await stbtc.connect(governance).updateEntryFeeBasisPoints(0)
+          await stbtc.connect(governance).updateExitFeeBasisPoints(0)
+          ;[depositor, attacker, acreDepositor] = await getUnnamedSigners()
+        })
+
+        it("should not cause any losses by a legitimate depositor", async () => {
+          let attackerShares = await stbtc.balanceOf(attacker)
+          console.log("initial attacker's shares:", attackerShares)
+
+          // Initial friendly deposit by the Acre depositor.
+          const initialDeposit = 1000000000000000n // this amount is equal to a min deposit of 0.001 tBTC
+          await tbtc.mint(acreDepositor, initialDeposit)
+          await tbtc
+            .connect(thirdParty)
+            .approve(await stbtc.getAddress(), initialDeposit)
+          await stbtc
+            .connect(thirdParty)
+            .deposit(initialDeposit, thirdParty.address)
+
+          // Attacker deposit
+          const attackerInitialAmount = 1000000000000000n // 0.001 tBTC
+          await tbtc.mint(attacker, attackerInitialAmount)
+          await tbtc
+            .connect(attacker)
+            .approve(await stbtc.getAddress(), attackerInitialAmount)
+          await stbtc.connect(attacker).deposit(attackerInitialAmount, attacker)
+          attackerShares = await stbtc.balanceOf(attacker)
+          console.log(
+            "attacker's shares after initial deposit:",
+            attackerShares,
+          )
+
+          // Attacker "inflates" the total supply of shares by direct transfer of
+          // assets to the vault.
+          await tbtc.mint(attacker, to1e18(10))
+          await tbtc
+            .connect(attacker)
+            .transfer(await stbtc.getAddress(), to1e18(1))
+
+          // A legitimate depositor deposits 1 tBTC
+          // Expected shares:
+          // sharesAmount = totalShares * assetAmount / asset.balanceOf(stBTC)
+          // sharesAmount = 0.002stBTC * 1tBTC / 1.002tBTC => ~0.001996007984031937 stBTC // adjusted for rounding
+          const legitDeposit = to1e18(1)
+          await tbtc.mint(depositor, legitDeposit)
+          await tbtc
+            .connect(depositor)
+            .approve(await stbtc.getAddress(), legitDeposit)
+          await stbtc.connect(depositor).deposit(legitDeposit, depositor)
+          let depositorShares = await stbtc.balanceOf(depositor)
+          console.log("depositor's shares after deposit:", depositorShares)
+
+          // Attacker redeems it's shares
+          await stbtc
+            .connect(attacker)
+            .redeem(attackerShares, attacker, attacker)
+          const attackersBalance = await tbtc.balanceOf(attacker)
+          // attacker's balance: 500999999999999765 => ~0.5 tBTC
+          // attacker spent 1.001 tBTC and received ~0.5 which is more than 50%
+          // of the total amount set for the attack. Attacker is at ~50% loss.
+          console.log(
+            "attacker's balance after redeeming it's shares:",
+            attackersBalance,
+          )
+
+          // A legitamate depositor redeems it's shares
+          depositorShares = await stbtc.balanceOf(depositor)
+          console.log("depositor shares:", depositorShares)
+          await stbtc
+            .connect(depositor)
+            .redeem(depositorShares, depositor, depositor)
+          const depositorBalance = await tbtc.balanceOf(depositor)
+          // Depositor's balance is at very minimal loss of 3.1*10^-17 => 0.000000000000000031 tBTC
+          console.log(
+            "depositor's balance after redeeming it's shares:",
+            depositorBalance,
+          )
+
+          // Conclusion: The attack is not profitable for the attacker and in the
+          // current setup it makes absolutely no sense to perform it.
         })
       })
 
