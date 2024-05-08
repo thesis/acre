@@ -36,17 +36,17 @@ const mapToActivity = (activityData: ActivityDataResponse): Activity => {
 
 // TODO: Fetch transactions for withdrawals
 /**
- * Returns the  activities for the owner of the deposit..
- * @param depositOwner Deposit owner's Ethereum address.
+ * Returns the activities for a given account.
+ * @param account The Ethereum address for which the activities will be fetched.
  */
-async function fetchActivityDatas(depositOwner: string): Promise<Activity[]> {
+async function fetchActivityData(account: string): Promise<Activity[]> {
   const response = await axios.post<{
     errors?: unknown
     data: { activityDatas: ActivityDataResponse[] }
   }>(ACRE_SUBGRAPH_URL, {
     query: `query {
             activityDatas(
-              where: {depositOwner_: {id: "${depositOwner}"}}
+              where: {depositOwner_: {id: "${account}"}}
             ) {
               id
               bitcoinTransactionId
@@ -70,5 +70,5 @@ async function fetchActivityDatas(depositOwner: string): Promise<Activity[]> {
 }
 
 export const subgraphAPI = {
-  fetchActivityDatas,
+  fetchActivityData,
 }
