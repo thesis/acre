@@ -32,10 +32,10 @@ export default function ServerErrorModal({
   return (
     <>
       <ModalCloseButton />
-      <ModalHeader color="red.400">
+      <ModalHeader color="red.400" textAlign="center">
         We&apos;re currently facing system issues.
       </ModalHeader>
-      <ModalBody gap={10} pt={4}>
+      <ModalBody gap={10} pb={6}>
         <IconWrapper icon={CableWithPlugIcon} boxSize={32} color="red.400">
           <Icon as={IconServerBolt} boxSize={14} strokeWidth={1} />
         </IconWrapper>
@@ -56,7 +56,6 @@ export default function ServerErrorModal({
         </Button>
       </ModalBody>
       <ModalFooter
-        mt={4}
         py={6}
         px={8}
         flexDirection="row"
@@ -68,8 +67,6 @@ export default function ServerErrorModal({
         // To avoid changing it, let's set the position to relative and calculate the correct width.
         // To calculate the width we need to subtract the border width on two sides from the modal width.
         position="relative"
-        bottom={-4}
-        left={-4}
         w={`calc(var(--chakra-sizes-${MODAL_BASE_SIZE}) - 2 * var(--chakra-space-modal_borderWidth))`}
       >
         <Flex flexDirection="column">
