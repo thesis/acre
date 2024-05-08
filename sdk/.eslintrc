@@ -3,7 +3,7 @@
   "extends": ["@thesis-co"],
   "overrides": [
     {
-      "files": ["test/*/*.test.ts"],
+      "files": ["test/**/*.test.ts"],
       "rules": {
         "@typescript-eslint/unbound-method": "off"
       }
