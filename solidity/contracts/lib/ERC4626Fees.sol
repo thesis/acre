@@ -2,7 +2,7 @@
 
 // Inspired by https://docs.openzeppelin.com/contracts/5.x/erc4626#fees
 
-pragma solidity ^0.8.21;
+pragma solidity 0.8.21;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ERC4626Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC4626Upgradeable.sol";
