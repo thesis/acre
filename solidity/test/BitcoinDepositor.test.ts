@@ -748,7 +748,7 @@ describe("BitcoinDepositor", () => {
     extraDataValidTestData.forEach(
       (
         {
-          depositOwner: expoectedDepositOwner,
+          depositOwner: expectedDepositOwner,
           referral: expectedReferral,
           extraData,
         },
@@ -759,7 +759,7 @@ describe("BitcoinDepositor", () => {
             await bitcoinDepositor.decodeExtraData(extraData)
 
           expect(actualDepositOwner, "invalid depositOwner").to.be.equal(
-            expoectedDepositOwner,
+            expectedDepositOwner,
           )
           expect(actualReferral, "invalid referral").to.be.equal(
             expectedReferral,
