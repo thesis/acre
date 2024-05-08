@@ -9,9 +9,37 @@ import TransactionHistory from "./TransactionHistory"
 import { DocsCard } from "./DocsCard"
 import { ActivityCarousel } from "./ActivityCarousel"
 
+const MOCK_TRANSACTION_HISTORY_DATA = [
+  {
+    date: "2 mins ago",
+    type: "Deposit",
+    amount: 499000000,
+    address: "1Lbcfr7sA.....8LK4ZnX71",
+    transactionUrl: "",
+  },
+  {
+    date: "3 hours ago",
+    type: "Withdraw",
+    amount: 499000000,
+    address: "1Lbcfr7sA.....8LK4ZnX71",
+    transactionUrl: "",
+  },
+  Array(16).fill({
+    date: "23/11/2023, 12:01",
+    type: "Deposit",
+    amount: 499000000,
+    address: "1Lbcfr7sA.....8LK4ZnX71",
+    transactionUrl: "",
+  }),
+].flat()
+
 export default function OverviewPage() {
   return (
-    <Flex direction="column" p={6}>
+    <Flex direction="column" p={6} gap={8}>
+      <Card overflow="hidden" p={5} w="full" maxW={748} mx="auto">
+        <TransactionHistory data={MOCK_TRANSACTION_HISTORY_DATA} />
+      </Card>
+
       <Card overflow="hidden" p={5} w="full" maxW={748} mx="auto">
         <TransactionHistory />
       </Card>
@@ -43,7 +71,7 @@ export default function OverviewPage() {
       >
         <PositionDetails gridArea="position-details" />
         <Statistics gridArea="statistics" />
-        <TransactionHistory gridArea="transaction-history" />
+        {/* <TransactionHistory gridArea="transaction-history" /> */}
       </Grid>
     </Flex>
   )
