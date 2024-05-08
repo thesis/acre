@@ -57,6 +57,7 @@ describe("Deposit", () => {
             // Second attempt. Deposit not funded yet.
             .mockResolvedValueOnce([])
             // Third attempt. Deposit funded.
+            // @ts-expect-error The missing `value` property is not used in the code.
             .mockResolvedValueOnce([fundingUtxo])
 
           txPromise = deposit.waitForFunding({
