@@ -55,7 +55,12 @@ export default function TransactionHistory(props: TransactionHistoryProps) {
               // TODO: Fix type assertion of `pageData`
               (pageData as typeof data).map(
                 ({ date, type, amount, address, url }) => (
-                  <Card role="group" variant="elevated" colorScheme="gold">
+                  <Card
+                    key={url}
+                    role="group"
+                    variant="elevated"
+                    colorScheme="gold"
+                  >
                     <CardBody as={HStack} spacing={0} p={4}>
                       <TextSm color="grey.500" flex={1}>
                         {date}

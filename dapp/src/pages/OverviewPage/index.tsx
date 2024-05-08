@@ -15,22 +15,23 @@ const MOCK_TRANSACTION_HISTORY_DATA = [
     type: "Deposit",
     amount: 499000000,
     address: "1Lbcfr7sA.....8LK4ZnX71",
-    transactionUrl: "",
+    url: "#1",
   },
   {
     date: "3 hours ago",
     type: "Withdraw",
     amount: 499000000,
     address: "1Lbcfr7sA.....8LK4ZnX71",
-    transactionUrl: "",
+    url: "#2",
   },
-  Array(16).fill({
-    date: "23/11/2023, 12:01",
-    type: "Deposit",
-    amount: 499000000,
-    address: "1Lbcfr7sA.....8LK4ZnX71",
-    transactionUrl: "",
-  }),
+  Array(16)
+    .fill({
+      date: "23/11/2023, 12:01",
+      type: "Deposit",
+      amount: 499000000,
+      address: "1Lbcfr7sA.....8LK4ZnX71",
+    })
+    .map((x, i) => ({ ...x, url: `#${i + 3}` })),
 ].flat()
 
 export default function OverviewPage() {
