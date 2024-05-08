@@ -1,20 +1,16 @@
 import React from "react"
-import { HStack, StackProps, VStack } from "@chakra-ui/react"
+import { StackProps, VStack } from "@chakra-ui/react"
 import { motion } from "framer-motion"
-import PaginationButton from "./PaginationButton"
-import PaginationStatus from "./PaginationStatus"
 import { PaginationContext } from "./PaginationContext"
-import PaginationPage from "./PaginationPage"
 
-export type PaginationProps<T> = Omit<StackProps, "children" | "as"> & {
+export type PaginationProps<T> = Omit<StackProps, "as"> & {
   data: T[]
-  children: (pageData: T[]) => React.ReactNode
   pageSize?: number
   defaultPage?: number
   dataLabel?: string
 }
 
-function Pagination<T>(props: PaginationProps<T>) {
+export function Pagination<T>(props: PaginationProps<T>) {
   const {
     data,
     children,
@@ -35,6 +31,11 @@ function Pagination<T>(props: PaginationProps<T>) {
     [currentPage],
   )
 
+  const pageData = React.useMemo(
+    () => data.slice(currentPage * pageSize, currentPage * pageSize + pageSize),
+    [data, currentPage, pageSize],
+  )
+
   const contextValue = React.useMemo(
     () => ({
       pageSize,
@@ -43,13 +44,17 @@ function Pagination<T>(props: PaginationProps<T>) {
       setPage: handleSetPage,
       totalSize: data.length,
       dataLabel,
+      pageData,
     }),
-    [pageSize, currentPage, data, dataLabel, direction, handleSetPage],
-  )
-
-  const pageData = React.useMemo(
-    () => data.slice(currentPage * pageSize, currentPage * pageSize + pageSize),
-    [data, currentPage, pageSize],
+    [
+      pageSize,
+      currentPage,
+      data,
+      dataLabel,
+      direction,
+      handleSetPage,
+      pageData,
+    ],
   )
 
   return (
@@ -61,19 +66,8 @@ function Pagination<T>(props: PaginationProps<T>) {
         align="stretch"
         {...restProps}
       >
-        <PaginationPage>{children(pageData)}</PaginationPage>
-
-        <HStack spacing={6}>
-          <HStack spacing={2}>
-            <PaginationButton mode="previous" />
-            <PaginationButton mode="next" />
-          </HStack>
-
-          <PaginationStatus />
-        </HStack>
+        {children}
       </VStack>
     </PaginationContext.Provider>
   )
 }
-
-export default Pagination

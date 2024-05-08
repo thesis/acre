@@ -1,21 +1,22 @@
 import React from "react"
 
-type PaginationContextType = {
+type PaginationContextType<T = unknown> = {
   pageSize: number
   currentPage: number
   direction: "left" | "right"
   totalSize: number
   setPage: (page: number) => void
   dataLabel: string
+  pageData: T[]
+} | null
+
+export const PaginationContext =
+  React.createContext<PaginationContextType>(null)
+
+export const usePagination = () => {
+  const context = React.useContext(PaginationContext)
+  if (!context) {
+    throw new Error("usePagination must be used within a PaginationProvider")
+  }
+  return context
 }
-
-export const PaginationContext = React.createContext<PaginationContextType>({
-  pageSize: 10,
-  currentPage: 0,
-  direction: "left",
-  totalSize: 0,
-  setPage: () => {},
-  dataLabel: "items",
-})
-
-export const usePagination = () => React.useContext(PaginationContext)

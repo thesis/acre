@@ -4,7 +4,7 @@ import { motion } from "framer-motion"
 import { TextSm } from "../Typography"
 import { usePagination } from "./PaginationContext"
 
-function PaginationStatus(props: TextProps) {
+export function PaginationStatus(props: TextProps) {
   const { currentPage, pageSize, totalSize, dataLabel } = usePagination()
 
   const rangeStart = currentPage * pageSize + 1 // Pages are indexed from 0
@@ -21,5 +21,3 @@ function PaginationStatus(props: TextProps) {
     </TextSm>
   )
 }
-
-export default PaginationStatus

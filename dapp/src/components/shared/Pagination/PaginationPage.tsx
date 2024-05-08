@@ -1,6 +1,6 @@
+import { Box, BoxProps } from "@chakra-ui/react"
+import { AnimatePresence, Transition, Variants, motion } from "framer-motion"
 import React from "react"
-import { BoxProps, Box } from "@chakra-ui/react"
-import { Variants, AnimatePresence, motion, Transition } from "framer-motion"
 import { usePagination } from "./PaginationContext"
 
 const pageTransition: Transition = {
@@ -10,7 +10,7 @@ const pageTransition: Transition = {
 
 const pageVariants: Variants = {
   enter: (direction: "left" | "right") => ({
-    x: direction === "right" ? "100%" : "-100%",
+    x: direction === "right" ? "150%" : "-150%",
     transition: pageTransition,
   }),
   center: {
@@ -18,13 +18,18 @@ const pageVariants: Variants = {
     transition: pageTransition,
   },
   exit: (direction: "left" | "right") => ({
-    x: direction === "left" ? "100%" : "-100%",
+    x: direction === "left" ? "150%" : "-150%",
     transition: pageTransition,
   }),
 }
 
-function PaginationPage(props: BoxProps) {
-  const { currentPage, direction } = usePagination()
+type PaginationPageProps = Omit<BoxProps, "children"> & {
+  children: (pageData: unknown[]) => React.ReactNode
+}
+
+export function PaginationPage(props: PaginationPageProps) {
+  const { children, ...restProps } = props
+  const { currentPage, direction, pageData } = usePagination()
 
   return (
     <AnimatePresence mode="popLayout" initial={false} custom={direction}>
@@ -36,10 +41,10 @@ function PaginationPage(props: BoxProps) {
         animate="center"
         initial="enter"
         exit="exit"
-        {...props}
-      />
+        {...restProps}
+      >
+        {children(pageData)}
+      </Box>
     </AnimatePresence>
   )
 }
-
-export default PaginationPage

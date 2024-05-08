@@ -1,9 +1,22 @@
 import React from "react"
-import { Card, CardBody, Flex, Grid, HStack, Switch } from "@chakra-ui/react"
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  Flex,
+  Grid,
+  HStack,
+  Switch,
+} from "@chakra-ui/react"
 import { TextSm } from "#/components/shared/Typography"
 import { USD } from "#/constants"
 import { chakraUnitToPx } from "#/theme/utils"
-import { Pagination } from "#/components/shared/Pagination"
+import {
+  Pagination,
+  PaginationButton,
+  PaginationPage,
+  PaginationStatus,
+} from "#/components/shared/Pagination"
 import PositionDetails from "./PositionDetails"
 import Statistics from "./Statistics"
 import TransactionHistory from "./TransactionHistory"
@@ -33,16 +46,31 @@ const MOCK_DATA = [
 export default function OverviewPage() {
   return (
     <Flex direction="column" p={6}>
-      <Card>
-        <CardBody>
+      <Card overflow="hidden" w={512} mx="auto" p={6}>
+        <CardHeader p={0} mb={4} fontWeight="bold">
+          Pagination example
+        </CardHeader>
+        <CardBody p={0}>
           <Pagination data={MOCK_DATA} pageSize={3}>
-            {(pageData) =>
-              pageData.map(({ emoji, name }) => (
-                <div>
-                  {emoji} {name}
-                </div>
-              ))
-            }
+            <PaginationPage>
+              {(pageData) =>
+                // TODO: Fix type assertion of `pageData`
+                (pageData as typeof MOCK_DATA).map(({ emoji, name }) => (
+                  <div>
+                    {emoji} {name}
+                  </div>
+                ))
+              }
+            </PaginationPage>
+
+            <HStack spacing={2}>
+              <HStack spacing={2}>
+                <PaginationButton mode="previous" />
+                <PaginationButton mode="next" />
+              </HStack>
+
+              <PaginationStatus />
+            </HStack>
           </Pagination>
         </CardBody>
       </Card>

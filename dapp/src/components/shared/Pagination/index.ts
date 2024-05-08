@@ -1,2 +1,4 @@
-export { default as Pagination } from "./Pagination"
-export type { PaginationProps } from "./Pagination"
+export { Pagination } from "./Pagination"
+export { PaginationStatus } from "./PaginationStatus"
+export { PaginationPage } from "./PaginationPage"
+export { PaginationButton } from "./PaginationButton"
