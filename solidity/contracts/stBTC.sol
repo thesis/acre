@@ -180,7 +180,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     ///      `transferFrom` and `burnFrom` will not reduce an allowance.
     /// @param spender The address which will spend the funds.
     /// @param value The amount of tokens to be spent.
-    /// @param extraData Additional data..
+    /// @param extraData Additional data.
     /// @return True if both approval and `receiveApproval` calls succeeded.
     function approveAndCall(
         address spender,
