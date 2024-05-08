@@ -172,13 +172,16 @@ contract stBTC is ERC4626Fees, PausableOwnable {
 
     /// @notice Calls `receiveApproval` function on spender previously approving
     ///         the spender to withdraw from the caller multiple times, up to
-    ///         the `amount` amount. If this function is called again, it
-    ///         overwrites the current allowance with `amount`. Reverts if the
+    ///         the `value` amount. If this function is called again, it
+    ///         overwrites the current allowance with `value`. Reverts if the
     ///         approval reverted or if `receiveApproval` call on the spender
     ///         reverted.
-    /// @return True if both approval and `receiveApproval` calls succeeded.
-    /// @dev If the `amount` is set to `type(uint256).max` then
+    /// @dev If the `value` is set to `type(uint256).max` then
     ///      `transferFrom` and `burnFrom` will not reduce an allowance.
+    /// @param spender The address which will spend the funds.
+    /// @param value The amount of tokens to be spent.
+    /// @param extraData Additional data..
+    /// @return True if both approval and `receiveApproval` calls succeeded.
     function approveAndCall(
         address spender,
         uint256 value,
