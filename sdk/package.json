@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.23.7",
+    "@ethersproject/bignumber": "^5.7.0",
     "@thesis-co/eslint-config": "github:thesis/eslint-config#7b9bc8c",
     "@types/jest": "^29.5.11",
     "@types/node": "^20.9.4",
@@ -26,8 +27,8 @@
     "typescript": "^5.3.2"
   },
   "dependencies": {
-    "@keep-network/tbtc-v2.ts": "2.4.0-dev.3",
     "@acre-btc/contracts": "workspace:*",
+    "@keep-network/tbtc-v2.ts": "2.4.0-dev.3",
     "ethers": "^6.10.0"
   }
 }
