@@ -12,15 +12,6 @@ function Pagination<T>(props: PaginationProps<T>) {
   const { data, children, pageSize = 10, defaultPage = 0, ...restProps } = props
 
   const [currentPage, setCurrentPage] = React.useState(defaultPage)
-  const [direction, setDirection] = React.useState<"left" | "right">("right")
-
-  const handleSetPage = React.useCallback(
-    (newPage: number) => {
-      setDirection(newPage > currentPage ? "right" : "left")
-      setCurrentPage(newPage)
-    },
-    [currentPage],
-  )
 
   const pageData = React.useMemo(
     () => data.slice(currentPage * pageSize, currentPage * pageSize + pageSize),
@@ -31,12 +22,11 @@ function Pagination<T>(props: PaginationProps<T>) {
     () => ({
       pageSize,
       currentPage,
-      direction,
-      setPage: handleSetPage,
+      setPage: setCurrentPage,
       totalSize: data.length,
       pageData,
     }),
-    [pageSize, currentPage, data, direction, handleSetPage, pageData],
+    [pageSize, currentPage, data, pageData],
   )
 
   return (

@@ -3,7 +3,6 @@ import React from "react"
 type PaginationContextType<T = unknown> = {
   pageSize: number
   currentPage: number
-  direction: "left" | "right"
   totalSize: number
   setPage: (page: number) => void
   pageData: T[]

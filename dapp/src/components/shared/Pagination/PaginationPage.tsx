@@ -1,6 +1,6 @@
+import React from "react"
 import { StackProps, Stack, Box } from "@chakra-ui/react"
 import { AnimatePresence, Transition, Variants, motion } from "framer-motion"
-import React from "react"
 import { useSize } from "@chakra-ui/react-use-size"
 import { usePagination } from "./PaginationContext"
 
@@ -30,15 +30,22 @@ type PaginationPageProps = Omit<StackProps, "children"> & {
 
 function PaginationPage(props: PaginationPageProps) {
   const { children, ...restProps } = props
-  const { currentPage, direction, pageData } = usePagination()
+  const { currentPage, pageData } = usePagination()
 
   const ref = React.useRef<HTMLDivElement>(null)
   const { height } = useSize(ref) ?? { height: 0 }
 
+  const previousPage = React.useRef<number>(0)
+  React.useEffect(() => {
+    previousPage.current = currentPage
+  }, [currentPage])
+
+  const direction = currentPage < previousPage.current ? "left" : "right"
+
   return (
     <Box as={motion.div} layout animate={{ height, transition }}>
       <Box ref={ref}>
-        <AnimatePresence mode="popLayout" initial={false}>
+        <AnimatePresence mode="popLayout" custom={direction} initial={false}>
           <Stack
             as={motion.div}
             custom={direction}
