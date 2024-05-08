@@ -27,7 +27,7 @@ function StakeFormModal({
         minTokenAmount={minDepositAmount}
         maxTokenAmount={tokenBalance}
       />
-      <FormSubmitButton mt={4}>Stake</FormSubmitButton>
+      <FormSubmitButton mt={10}>Stake</FormSubmitButton>
     </TokenAmountForm>
   )
 }

@@ -47,7 +47,7 @@ function UnstakeFormModal({
           </CardBody>
         </Card>
       </Flex>
-      <FormSubmitButton mt={6}>Unstake</FormSubmitButton>
+      <FormSubmitButton mt={10}>Unstake</FormSubmitButton>
     </TokenAmountForm>
   )
 }
