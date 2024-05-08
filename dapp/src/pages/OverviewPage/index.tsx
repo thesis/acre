@@ -1,5 +1,5 @@
 import React from "react"
-import { Flex, Grid, HStack, Switch } from "@chakra-ui/react"
+import { Card, CardBody, Flex, Grid, HStack, Switch } from "@chakra-ui/react"
 import { TextSm } from "#/components/shared/Typography"
 import { USD } from "#/constants"
 import { chakraUnitToPx } from "#/theme/utils"
@@ -33,15 +33,19 @@ const MOCK_DATA = [
 export default function OverviewPage() {
   return (
     <Flex direction="column" p={6}>
-      <Pagination data={MOCK_DATA} pageSize={3}>
-        {(pageData) =>
-          pageData.map(({ emoji, name }) => (
-            <div>
-              {emoji} {name}
-            </div>
-          ))
-        }
-      </Pagination>
+      <Card>
+        <CardBody>
+          <Pagination data={MOCK_DATA} pageSize={3}>
+            {(pageData) =>
+              pageData.map(({ emoji, name }) => (
+                <div>
+                  {emoji} {name}
+                </div>
+              ))
+            }
+          </Pagination>
+        </CardBody>
+      </Card>
     </Flex>
   )
 

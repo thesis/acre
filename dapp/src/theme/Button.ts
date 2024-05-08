@@ -120,14 +120,21 @@ export const buttonTheme: ComponentSingleStyleConfig = {
     pagination: {
       bg: "white",
       color: "grey.700",
-      border: "1px solid transparent",
+      ring: 0,
+      ringInset: "inset",
+      ringColor: "white",
 
       _hover: {
-        borderColor: "white",
+        color: "brand.400",
         bg: "opacity.white.6",
+        ring: 1,
+      },
+      _active: {
+        ring: 1,
+        ringColor: "brand.400",
       },
       _disabled: {
-        color: "grey.200",
+        color: "grey.300",
         bg: "white",
         opacity: 1,
         pointerEvents: "none",
