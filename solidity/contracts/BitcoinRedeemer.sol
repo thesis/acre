@@ -46,9 +46,6 @@ contract BitcoinRedeemer is Ownable2StepUpgradeable, IReceiveApproval {
     /// Reverts if the TBTCVault address is zero.
     error TbtcVaultZeroAddress();
 
-    /// Attempted to call receiveApproval for not supported token.
-    error UnsupportedToken(address token);
-
     /// Attempted to call receiveApproval by supported token.
     error CallerNotAllowed(address caller);
 
@@ -96,18 +93,16 @@ contract BitcoinRedeemer is Ownable2StepUpgradeable, IReceiveApproval {
     /// @notice Redeems shares for tBTC and requests bridging to Bitcoin.
     /// @param from Shares token holder executing redemption.
     /// @param amount Amount of shares to redeem.
-    /// @param token stBTC token address.
     /// @param extraData Redemption data in a format expected from
     ///        `redemptionData` parameter of Bridge's `receiveBalanceApproval`
     ///        function.
     function receiveApproval(
         address from,
         uint256 amount,
-        address token,
+        address,
         bytes calldata extraData
     ) external {
-        if (token != address(stbtc)) revert UnsupportedToken(token);
-        if (msg.sender != token) revert CallerNotAllowed(msg.sender);
+        if (msg.sender != address(stbtc)) revert CallerNotAllowed(msg.sender);
         if (extraData.length == 0) revert EmptyExtraData();
 
         redeemSharesAndUnmint(from, amount, extraData);
