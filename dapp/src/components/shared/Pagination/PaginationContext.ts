@@ -2,9 +2,9 @@ import React from "react"
 
 type PaginationContextType<T = unknown> = {
   pageSize: number
-  currentPage: number
+  page: number
   totalSize: number
-  setPage: (page: number) => void
+  setPage: React.Dispatch<React.SetStateAction<number>>
   pageData: T[]
 } | null
 

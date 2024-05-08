@@ -11,22 +11,22 @@ export type PaginationProps<T> = Omit<StackProps, "as"> & {
 function Pagination<T>(props: PaginationProps<T>) {
   const { data, children, pageSize = 10, defaultPage = 0, ...restProps } = props
 
-  const [currentPage, setCurrentPage] = React.useState(defaultPage)
+  const [page, setPage] = React.useState(defaultPage)
 
   const pageData = React.useMemo(
-    () => data.slice(currentPage * pageSize, currentPage * pageSize + pageSize),
-    [data, currentPage, pageSize],
+    () => data.slice(page * pageSize, page * pageSize + pageSize),
+    [data, page, pageSize],
   )
 
   const contextValue = React.useMemo(
     () => ({
       pageSize,
-      currentPage,
-      setPage: setCurrentPage,
+      page,
+      setPage,
       totalSize: data.length,
       pageData,
     }),
-    [pageSize, currentPage, data, pageData],
+    [pageSize, page, data, pageData],
   )
 
   return (

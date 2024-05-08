@@ -9,16 +9,13 @@ type PaginationButtonProps = Omit<IconButtonProps, "aria-label" | "icon"> & {
 
 function PaginationButton(props: PaginationButtonProps) {
   const { mode, ...restProps } = props
-  const { currentPage, setPage, totalSize, pageSize } = usePagination()
+  const { page, setPage, totalSize, pageSize } = usePagination()
 
-  const handleClick = () =>
-    setPage(mode === "next" ? currentPage + 1 : currentPage - 1)
+  const handleClick = () => setPage(mode === "next" ? page + 1 : page - 1)
   const isDisabled = React.useMemo(
     () =>
-      mode === "next"
-        ? currentPage * pageSize + pageSize >= totalSize
-        : currentPage === 0,
-    [mode, currentPage, pageSize, totalSize],
+      mode === "next" ? page * pageSize + pageSize >= totalSize : page === 0,
+    [mode, page, pageSize, totalSize],
   )
 
   return (

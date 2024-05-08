@@ -9,9 +9,9 @@ type PaginationStatusProps = TextProps & {
 
 function PaginationStatus(props: PaginationStatusProps) {
   const { dataLabel = "items", ...restProps } = props
-  const { currentPage, pageSize, totalSize } = usePagination()
+  const { page, pageSize, totalSize } = usePagination()
 
-  const rangeStart = currentPage * pageSize + 1 // Pages are indexed from 0
+  const rangeStart = page * pageSize + 1 // Pages are indexed from 0
   const rangeEnd = Math.min(rangeStart + pageSize - 1, totalSize)
 
   return (
