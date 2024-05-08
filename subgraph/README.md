@@ -40,9 +40,9 @@ create a private one
 
 1. Install Docker on your local machine:
 
-   - Mac: https://docs.docker.com/desktop/install/mac-install/
-   - Windows: https://docs.docker.com/desktop/install/windows-install/
-   - Linux: https://docs.docker.com/desktop/install/linux-install/
+   - [Mac](https://docs.docker.com/desktop/install/mac-install/)
+   - [Windows](https://docs.docker.com/desktop/install/windows-install/)
+   - [Linux](https://docs.docker.com/desktop/install/linux-install/)
 
 2. Set the API key in the `docker-compose.yaml` file.
 
@@ -78,39 +78,67 @@ Note: use it only if your subgraph is not created in the local Graph node.
 
 ### Deploy the subgraph to Subgraph Studio
 
-1. You need to connect wallet to use Subgraph Studio [Metamask, WalletConnect, Coinbase Wallet or Safe].
+1. Go to [Subgraph Studio](https://thegraph.com/studio/). Connect wallet to use
+   the Subgraph Studio using Metamask, WalletConnect, Coinbase Wallet or Safe.
+   Use a dedicated account for the Acre team.
 
-   ```
-   https://thegraph.com/studio/
-   ```
+2. Once the account is connected, all subgraphs are available in the [My
+   Dashboard](https://thegraph.com/studio/) tab. Select the correct subgraph.
 
-2. We're going to create a Subgraph. To do that you need to click Create a Subgraph button in My Dashboard of Subgraph Studio.
-
-3. In the next step you'll need to add name of Subgraph and choose indexed blockchain from the list.
-
-4. Once your subgraph has been created in Subgraph Studio you can initialize the subgraph code using this command:
-
-   ```
-   graph init --studio <SUBGRAPH_SLUG>
-   ```
-
-   The <SUBGRAPH_SLUG> value can be found on your subgraph details page in Subgraph Studio
-   (https://thegraph.com/docs/en/deploying/deploying-a-subgraph-to-studio/#create-your-subgraph-in-subgraph-studio)
-
-5. Before being able to deploy your subgraph to Subgraph Studio, you need to login into your account within the CLI.
+3. Before being able to deploy subgraph to the Subgraph Studio, you need to
+   login into your account within the CLI.
 
    ```
    graph auth --studio <DEPLOY KEY>
    ```
 
-   The <SUBGRAPH_SLUG> can be found on your "My Subgraphs" page or your subgraph details page.
+   The `<DEPLOY_KEY>` can be found on "My Subgraphs" page or subgraph details
+   page.
 
-6. Deploying a Subgraph to Subgraph Studio
+4. Deploying a Subgraph to Subgraph Studio
 
    ```
    graph deploy --studio <SUBGRAPH_SLUG>
    ```
 
-   After running this command, the CLI will ask for a version label, you can name it however you want, you can use labels such as 0.1 and 0.2 or use letters as well such as uniswap-v2-0.1.
+   The `<SUBGRAPH_SLUG>` can be found on subgraph details page in the Subgraph
+   Studio.
 
-7. More information about deploying your subgraph to Subgraph Studio: https://thegraph.com/docs/en/deploying/subgraph-studio/
+   After running this command, the CLI will ask for a version label, you can
+   name it however you want, you can use labels such as 0.1 and 0.2 or use
+   letters as well such as uniswap-v2-0.1.
+
+If you have any problems, take a look
+[here](https://thegraph.com/docs/en/deploying/deploying-a-subgraph-to-studio/).
+
+### Publish the subgraph to the Decentralized Network
+
+Subgraphs can be published to the decentralized network directly from the
+Subgraph Studio dashboard.
+
+1. Select the correct subgraph from the Subgraph Studio.
+
+2. Click the "Publish" button
+
+3. While you’re going through your publishing flow, you’ll be able to push to
+   either Arbitrum One or Arbitrum Sepolia.
+
+   - Publishing to Arbitrum Sepolia is free. This will allow you to see how the
+     subgraph will work in the [Graph Explorer](https://thegraph.com/explorer)
+     and will allow you to test curation elements. This is recommended for
+     testing purposes only.
+
+4. During the publication flow, it is possible to add signal to your subgraph.
+   This is not a required step and you can add GRT signal to a published
+   subgraph from the Graph Explorer later.
+
+   - Adding signal to a subgraph which is not eligible for rewards will not
+     attract additional Indexers. More info
+     [here](https://thegraph.com/docs/en/publishing/publishing-a-subgraph/#adding-signal-to-your-subgraph).
+
+5. Click the "Publish new Subgraph" button. Once a subgraph is published, it
+   will be available to view in the [Graph
+   Explorer](https://thegraph.com/explorer).
+
+If you have any problems, take a look
+[here](https://thegraph.com/docs/en/publishing/publishing-a-subgraph/).

@@ -15,10 +15,9 @@ import {
   ChainIdentifier,
   DecodedExtraData,
   BitcoinDepositor,
-  DepositReceipt,
   DepositFees,
 } from "../contracts"
-import { BitcoinRawTxVectors } from "../bitcoin"
+
 import { EthereumAddress } from "./address"
 import {
   EthersContractConfig,
@@ -89,33 +88,9 @@ class EthereumBitcoinDepositor
     return EthereumAddress.from(vault)
   }
 
-  /**
-   * @see {BitcoinDepositor#revealDeposit}
-   */
-  async revealDeposit(
-    depositTx: BitcoinRawTxVectors,
-    depositOutputIndex: number,
-    deposit: DepositReceipt,
-  ): Promise<Hex> {
-    const { fundingTx, reveal, extraData } = packRevealDepositParameters(
-      depositTx,
-      depositOutputIndex,
-      deposit,
-      await this.getTbtcVaultChainIdentifier(),
-    )
-
-    if (!extraData) throw new Error("Invalid extra data")
-
-    const { depositOwner, referral } = this.decodeExtraData(extraData)
-
-    const tx = await this.instance.initializeDeposit(
-      fundingTx,
-      reveal,
-      `0x${depositOwner.identifierHex}`,
-      referral,
-    )
-
-    return Hex.from(tx.hash)
+  // eslint-disable-next-line class-methods-use-this
+  revealDeposit(): Promise<Hex> {
+    throw new Error("Unsupported")
   }
 
   /**

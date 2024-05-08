@@ -2,7 +2,6 @@ import ethers, { Contract, ZeroAddress, getAddress } from "ethers"
 import {
   EthereumBitcoinDepositor,
   EthereumAddress,
-  Hex,
   EthereumSigner,
   DepositFees,
 } from "../../../src"
@@ -84,122 +83,6 @@ describe("BitcoinDepositor", () => {
       const address = await depositor.getTbtcVaultChainIdentifier()
 
       expect(address.equals(vaultAddress)).toBeTruthy()
-    })
-  })
-
-  describe("revealDeposit", () => {
-    const depositOwner = EthereumAddress.from(
-      "0x000055d85E80A49B5930C4a77975d44f012D86C1",
-    )
-    const bitcoinFundingTransaction = {
-      version: Hex.from("00000000"),
-      inputs: Hex.from("11111111"),
-      outputs: Hex.from("22222222"),
-      locktime: Hex.from("33333333"),
-    }
-    const depositReveal = {
-      fundingOutputIndex: 2,
-      walletPublicKeyHash: Hex.from("8db50eb52063ea9d98b3eac91489a90f738986f6"),
-      refundPublicKeyHash: Hex.from("28e081f285138ccbe389c1eb8985716230129f89"),
-      blindingFactor: Hex.from("f9f0c90d00039523"),
-      refundLocktime: Hex.from("60bcea61"),
-      depositor: depositOwner,
-    }
-    describe("when extra data is defined", () => {
-      const extraData = {
-        depositOwner,
-        referral: 6851,
-        hex: Hex.from(
-          "0x000055d85e80a49b5930c4a77975d44f012d86c11ac300000000000000000000",
-        ),
-      }
-
-      const depositWithExtraData = {
-        ...depositReveal,
-        extraData: extraData.hex,
-      }
-
-      const { referral } = extraData
-
-      const mockedTx = Hex.from(
-        "0483fe6a05f245bccc7b10085f3c4d282d87ca42f27437d077acfd75e91183a0",
-      )
-      let result: Hex
-
-      beforeAll(async () => {
-        mockedContractInstance.initializeDeposit.mockReturnValue({
-          hash: mockedTx.toPrefixedString(),
-        })
-
-        const { fundingOutputIndex, ...restDepositData } = depositWithExtraData
-
-        result = await depositor.revealDeposit(
-          bitcoinFundingTransaction,
-          fundingOutputIndex,
-          restDepositData,
-        )
-      })
-
-      it("should get the vault address", () => {
-        expect(mockedContractInstance.tbtcVault).toHaveBeenCalled()
-      })
-
-      it("should decode extra data", () => {
-        expect(spyOnEthersDataSlice).toHaveBeenNthCalledWith(
-          1,
-          extraData.hex.toPrefixedString(),
-          0,
-          20,
-        )
-        expect(spyOnEthersDataSlice).toHaveBeenNthCalledWith(
-          2,
-          extraData.hex.toPrefixedString(),
-          20,
-          22,
-        )
-      })
-
-      it("should initialize deposit", () => {
-        const btcTxInfo = {
-          version: bitcoinFundingTransaction.version.toPrefixedString(),
-          inputVector: bitcoinFundingTransaction.inputs.toPrefixedString(),
-          outputVector: bitcoinFundingTransaction.outputs.toPrefixedString(),
-          locktime: bitcoinFundingTransaction.locktime.toPrefixedString(),
-        }
-
-        const revealInfo = {
-          fundingOutputIndex: depositReveal.fundingOutputIndex,
-          blindingFactor: depositReveal.blindingFactor.toPrefixedString(),
-          walletPubKeyHash:
-            depositReveal.walletPublicKeyHash.toPrefixedString(),
-          refundPubKeyHash:
-            depositReveal.refundPublicKeyHash.toPrefixedString(),
-          refundLocktime: depositReveal.refundLocktime.toPrefixedString(),
-          vault: `0x${vaultAddress.identifierHex}`,
-        }
-
-        expect(mockedContractInstance.initializeDeposit).toHaveBeenCalledWith(
-          btcTxInfo,
-          revealInfo,
-          `0x${depositOwner.identifierHex}`,
-          referral,
-        )
-        expect(result.toPrefixedString()).toBe(mockedTx.toPrefixedString())
-      })
-    })
-
-    describe("when extra data not defined", () => {
-      it("should throw an error", async () => {
-        const { fundingOutputIndex, ...restDepositData } = depositReveal
-
-        await expect(
-          depositor.revealDeposit(
-            bitcoinFundingTransaction,
-            fundingOutputIndex,
-            restDepositData,
-          ),
-        ).rejects.toThrow("Invalid extra data")
-      })
     })
   })
 

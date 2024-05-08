@@ -74,6 +74,12 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     /// Reverts if the address is disallowed.
     error DisallowedAddress();
 
+    /// Reverts if the treasury address is the same.
+    error SameTreasury();
+
+    /// Reverts if the dispatcher address is the same.
+    error SameDispatcher();
+
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
@@ -104,6 +110,9 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         if (newTreasury == address(this)) {
             revert DisallowedAddress();
         }
+        if (newTreasury == treasury) {
+            revert SameTreasury();
+        }
 
         emit TreasuryUpdated(treasury, newTreasury);
 
@@ -127,6 +136,9 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     function updateDispatcher(IDispatcher newDispatcher) external onlyOwner {
         if (address(newDispatcher) == address(0)) {
             revert ZeroAddress();
+        }
+        if (address(newDispatcher) == address(dispatcher)) {
+            revert SameDispatcher();
         }
 
         address oldDispatcher = address(dispatcher);
@@ -209,7 +221,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     function deposit(
         uint256 assets,
         address receiver
-    ) public override whenNotPaused returns (uint256) {
+    ) public override returns (uint256) {
         if (assets < minimumDepositAmount) {
             revert LessThanMinDeposit(assets, minimumDepositAmount);
         }
@@ -234,7 +246,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     function mint(
         uint256 shares,
         address receiver
-    ) public override whenNotPaused returns (uint256 assets) {
+    ) public override returns (uint256 assets) {
         if ((assets = super.mint(shares, receiver)) < minimumDepositAmount) {
             revert LessThanMinDeposit(assets, minimumDepositAmount);
         }
@@ -251,7 +263,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         uint256 assets,
         address receiver,
         address owner
-    ) public override whenNotPaused returns (uint256) {
+    ) public override returns (uint256) {
         uint256 currentAssetsBalance = IERC20(asset()).balanceOf(address(this));
         // If there is not enough assets in stBTC to cover user withdrawals and
         // withdrawal fees then pull the assets from the dispatcher.
@@ -273,7 +285,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         uint256 shares,
         address receiver,
         address owner
-    ) public override whenNotPaused returns (uint256) {
+    ) public override returns (uint256) {
         uint256 assets = convertToAssets(shares);
         uint256 currentAssetsBalance = IERC20(asset()).balanceOf(address(this));
         if (assets > currentAssetsBalance) {
@@ -330,6 +342,21 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     /// @return Assets amount.
     function assetsBalanceOf(address account) public view returns (uint256) {
         return convertToAssets(balanceOf(account));
+    }
+
+    /// @dev Transfers a `value` amount of tokens from `from` to `to`, or
+    ///      alternatively mints (or burns) if `from` (or `to`) is the zero
+    ///      address. All customizations to transfers, mints, and burns should
+    ///      be done by overriding this function.
+    /// @param from Sender of tokens.
+    /// @param to Receiver of tokens.
+    /// @param value Amount of tokens to transfer.
+    function _update(
+        address from,
+        address to,
+        uint256 value
+    ) internal override whenNotPaused {
+        super._update(from, to, value);
     }
 
     /// @return Returns entry fee basis point used in deposits.

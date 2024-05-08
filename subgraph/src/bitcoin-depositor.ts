@@ -8,6 +8,7 @@ import {
   getOrCreateDeposit,
   getOrCreateEvent,
 } from "./utils"
+import { findBitcoinTransactionIdFromTransactionReceipt } from "./tbtc-utils"
 
 export function handleDepositInitialized(event: DepositInitializedEvent): void {
   const depositOwnerEntity = getOrCreateDepositOwner(event.params.depositOwner)
@@ -15,11 +16,11 @@ export function handleDepositInitialized(event: DepositInitializedEvent): void {
     event.params.depositKey.toHexString(),
   )
 
-  // TODO: Get the bitcoin transaction hash from this Ethereum transaction
-  // by finding the `DepositRevealed` event in logs from the tBTC-v2 Bridge
-  // contract.
   depositEntity.depositOwner = depositOwnerEntity.id
   depositEntity.initialDepositAmount = event.params.initialAmount
+
+  depositEntity.bitcoinTransactionId =
+    findBitcoinTransactionIdFromTransactionReceipt(event.receipt)
 
   const eventEntity = getOrCreateEvent(
     `${event.transaction.hash.toHexString()}_DepositInitialized`,

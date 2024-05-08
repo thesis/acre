@@ -6,3 +6,5 @@ export type Currency = {
 }
 
 export type CurrencyType = "bitcoin" | "ethereum" | "usd" | "stbtc"
+
+export type AmountType = string | number | bigint
