@@ -1,6 +1,5 @@
 import React from "react"
 import { StackProps, VStack } from "@chakra-ui/react"
-import { motion } from "framer-motion"
 import { PaginationContext } from "./PaginationContext"
 
 export type PaginationProps<T> = Omit<StackProps, "as"> & {
@@ -15,7 +14,7 @@ export function Pagination<T>(props: PaginationProps<T>) {
     data,
     children,
     pageSize = 10,
-    defaultPage = 3,
+    defaultPage = 0,
     dataLabel = "items",
     ...restProps
   } = props
@@ -59,13 +58,7 @@ export function Pagination<T>(props: PaginationProps<T>) {
 
   return (
     <PaginationContext.Provider value={contextValue}>
-      <VStack
-        as={motion.div}
-        layout="size"
-        spacing={6}
-        align="stretch"
-        {...restProps}
-      >
+      <VStack spacing={6} align="stretch" w="full" {...restProps}>
         {children}
       </VStack>
     </PaginationContext.Provider>

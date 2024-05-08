@@ -1,4 +1,4 @@
-import { Box, BoxProps } from "@chakra-ui/react"
+import { StackProps, Stack } from "@chakra-ui/react"
 import { AnimatePresence, Transition, Variants, motion } from "framer-motion"
 import React from "react"
 import { usePagination } from "./PaginationContext"
@@ -23,7 +23,7 @@ const pageVariants: Variants = {
   }),
 }
 
-type PaginationPageProps = Omit<BoxProps, "children"> & {
+type PaginationPageProps = Omit<StackProps, "children"> & {
   children: (pageData: unknown[]) => React.ReactNode
 }
 
@@ -33,8 +33,9 @@ export function PaginationPage(props: PaginationPageProps) {
 
   return (
     <AnimatePresence mode="popLayout" initial={false} custom={direction}>
-      <Box
+      <Stack
         as={motion.div}
+        layout
         custom={direction}
         key={currentPage}
         variants={pageVariants}
@@ -44,7 +45,7 @@ export function PaginationPage(props: PaginationPageProps) {
         {...restProps}
       >
         {children(pageData)}
-      </Box>
+      </Stack>
     </AnimatePresence>
   )
 }

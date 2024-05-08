@@ -1,6 +1,5 @@
 import React from "react"
 import { TextProps } from "@chakra-ui/react"
-import { motion } from "framer-motion"
 import { TextSm } from "../Typography"
 import { usePagination } from "./PaginationContext"
 
@@ -11,12 +10,7 @@ export function PaginationStatus(props: TextProps) {
   const rangeEnd = Math.min(rangeStart + pageSize - 1, totalSize)
 
   return (
-    <TextSm
-      as={motion.p}
-      // @ts-expect-error - Chakra doesn't capture Framer Motion props definition properly
-      layout="position"
-      {...props}
-    >
+    <TextSm {...props}>
       Showing {rangeStart}-{rangeEnd} out of {totalSize} {dataLabel}
     </TextSm>
   )

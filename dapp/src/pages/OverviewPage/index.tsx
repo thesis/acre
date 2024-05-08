@@ -1,78 +1,19 @@
 import React from "react"
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  Flex,
-  Grid,
-  HStack,
-  Switch,
-} from "@chakra-ui/react"
+import { Card, Flex, Grid, HStack, Switch } from "@chakra-ui/react"
 import { TextSm } from "#/components/shared/Typography"
 import { USD } from "#/constants"
 import { chakraUnitToPx } from "#/theme/utils"
-import {
-  Pagination,
-  PaginationButton,
-  PaginationPage,
-  PaginationStatus,
-} from "#/components/shared/Pagination"
 import PositionDetails from "./PositionDetails"
 import Statistics from "./Statistics"
 import TransactionHistory from "./TransactionHistory"
 import { DocsCard } from "./DocsCard"
 import { ActivityCarousel } from "./ActivityCarousel"
 
-const MOCK_DATA = [
-  { emoji: "🍎", name: "Red Apple" },
-  { emoji: "🍏", name: "Green Apple" },
-  { emoji: "🍐", name: "Pear" },
-  { emoji: "🍊", name: "Tangerine" },
-  { emoji: "🍋", name: "Lemon" },
-  { emoji: "🍌", name: "Banana" },
-  { emoji: "🍉", name: "Watermelon" },
-  { emoji: "🍇", name: "Grapes" },
-  { emoji: "🍓", name: "Strawberry" },
-  { emoji: "🍈", name: "Melon" },
-  { emoji: "🍒", name: "Cherries" },
-  { emoji: "🍑", name: "Peach" },
-  { emoji: "🥭", name: "Mango" },
-  { emoji: "🍍", name: "Pineapple" },
-  { emoji: "🥥", name: "Coconut" },
-  { emoji: "🥝", name: "Kiwi Fruit" },
-  { emoji: "🍅", name: "Tomato" },
-]
-
 export default function OverviewPage() {
   return (
     <Flex direction="column" p={6}>
-      <Card overflow="hidden" w={512} mx="auto" p={6}>
-        <CardHeader p={0} mb={4} fontWeight="bold">
-          Pagination example
-        </CardHeader>
-        <CardBody p={0}>
-          <Pagination data={MOCK_DATA} pageSize={3}>
-            <PaginationPage>
-              {(pageData) =>
-                // TODO: Fix type assertion of `pageData`
-                (pageData as typeof MOCK_DATA).map(({ emoji, name }) => (
-                  <div>
-                    {emoji} {name}
-                  </div>
-                ))
-              }
-            </PaginationPage>
-
-            <HStack spacing={2}>
-              <HStack spacing={2}>
-                <PaginationButton mode="previous" />
-                <PaginationButton mode="next" />
-              </HStack>
-
-              <PaginationStatus />
-            </HStack>
-          </Pagination>
-        </CardBody>
+      <Card overflow="hidden" p={5} w="full" maxW={748} mx="auto">
+        <TransactionHistory />
       </Card>
     </Flex>
   )
