@@ -7,7 +7,7 @@ import {
 import { REFERRAL } from "#/constants"
 
 type StakeFlowContextValue = Omit<UseStakeFlowReturn, "initStake"> & {
-  initStake: (bitcoinAddress: string) => Promise<void>
+  initStake: () => Promise<void>
 }
 
 export const StakeFlowContext = React.createContext<StakeFlowContextValue>({
@@ -26,14 +26,11 @@ export function StakeFlowProvider({ children }: { children: React.ReactNode }) {
     stake,
   } = useStakeFlow()
 
-  const initStake = useCallback(
-    async (bitcoinAddress: string) => {
-      if (!acre) throw new Error("Acre SDK not defined")
+  const initStake = useCallback(async () => {
+    if (!acre) throw new Error("Acre SDK not defined")
 
-      await acreInitStake(bitcoinAddress, REFERRAL)
-    },
-    [acreInitStake, acre],
-  )
+    await acreInitStake(REFERRAL)
+  }, [acreInitStake, acre])
 
   const context = useMemo(
     () => ({
