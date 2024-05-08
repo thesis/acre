@@ -46,7 +46,6 @@ export default function SuccessModal({ type, tokenAmount }: SuccessModalProps) {
             />
           </Box>
         </VStack>
-        <ReceiveSTBTCAlert />
       </ModalBody>
       <ModalFooter mt={4}>
         <Button size="lg" width="100%" variant="outline" onClick={onClose}>

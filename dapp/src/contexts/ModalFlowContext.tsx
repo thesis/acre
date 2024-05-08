@@ -5,9 +5,7 @@ export type ModalFlowContextValue = {
   type: ActionFlowType
   activeStep: number
   status: ProcessStatus
-  setType: React.Dispatch<React.SetStateAction<ActionFlowType>>
   onClose: () => void
-  onResume: () => void
   goNext: () => void
   setStatus: React.Dispatch<React.SetStateAction<ProcessStatus>>
 }

@@ -1,15 +1,6 @@
 import React, { useCallback, useState } from "react"
+import { Box, ModalBody, ModalCloseButton, ModalHeader } from "@chakra-ui/react"
 import {
-  ModalBody,
-  Tabs,
-  TabList,
-  Tab,
-  TabPanels,
-  TabPanel,
-  ModalCloseButton,
-} from "@chakra-ui/react"
-import {
-  useModalFlowContext,
   useStakeFlowContext,
   useTransactionContext,
   useWalletContext,
@@ -20,15 +11,35 @@ import { logPromiseFailure } from "#/utils"
 import StakeFormModal from "./ActiveStakingStep/StakeFormModal"
 import UnstakeFormModal from "./ActiveUnstakingStep/UnstakeFormModal"
 
-const TABS = Object.values(ACTION_FLOW_TYPES)
+const FORM_DATA: Record<
+  ActionFlowType,
+  {
+    header: string
+    FormComponent: (
+      props: React.ComponentProps<
+        typeof StakeFormModal | typeof UnstakeFormModal
+      >,
+    ) => React.ReactNode
+  }
+> = {
+  stake: {
+    header: "Deposit",
+    FormComponent: StakeFormModal,
+  },
+  unstake: {
+    header: "Withdraw",
+    FormComponent: UnstakeFormModal,
+  },
+}
 
-function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
+function ActionFormModal({ type }: { type: ActionFlowType }) {
   const { btcAccount, ethAccount } = useWalletContext()
-  const { type, setType } = useModalFlowContext()
   const { setTokenAmount } = useTransactionContext()
   const { initStake } = useStakeFlowContext()
 
   const [isLoading, setIsLoading] = useState(false)
+
+  const { header, FormComponent } = FORM_DATA[type]
 
   const handleInitStake = useCallback(async () => {
     const btcAddress = btcAccount?.address
@@ -67,34 +78,11 @@ function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
   return (
     <>
       {!isLoading && <ModalCloseButton />}
+      <ModalHeader>{header}</ModalHeader>
       <ModalBody>
-        <Tabs
-          w="100%"
-          variant="underline"
-          defaultIndex={TABS.indexOf(defaultType)}
-        >
-          <TabList pb={6}>
-            {TABS.map((actionFlowType) => (
-              <Tab
-                key={actionFlowType}
-                w="50%"
-                pb={4}
-                onClick={() => setType(actionFlowType)}
-                isDisabled={actionFlowType !== type && isLoading}
-              >
-                {actionFlowType}
-              </Tab>
-            ))}
-          </TabList>
-          <TabPanels>
-            <TabPanel>
-              <StakeFormModal onSubmitForm={handleSubmitFormWrapper} />
-            </TabPanel>
-            <TabPanel>
-              <UnstakeFormModal onSubmitForm={handleSubmitFormWrapper} />
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
+        <Box w="100%">
+          <FormComponent onSubmitForm={handleSubmitFormWrapper} />
+        </Box>
       </ModalBody>
     </>
   )

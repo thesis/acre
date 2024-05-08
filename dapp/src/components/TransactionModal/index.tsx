@@ -6,12 +6,7 @@ import {
   TransactionContextProvider,
 } from "#/contexts"
 import { useSidebar } from "#/hooks"
-import {
-  ACTION_FLOW_TYPES,
-  ActionFlowType,
-  PROCESS_STATUSES,
-  ProcessStatus,
-} from "#/types"
+import { ActionFlowType, PROCESS_STATUSES, ProcessStatus } from "#/types"
 import { ModalCloseButton } from "@chakra-ui/react"
 import ModalBase from "../shared/ModalBase"
 import ModalContentWrapper from "./ModalContentWrapper"
@@ -20,47 +15,29 @@ import { ActiveFlowStep } from "./ActiveFlowStep"
 const DEFAULT_ACTIVE_STEP = 1
 
 type TransactionModalProps = {
+  type: ActionFlowType
   isOpen: boolean
-  defaultType?: ActionFlowType
   onClose: () => void
 }
 
 export default function TransactionModal({
+  type,
   isOpen,
-  defaultType = ACTION_FLOW_TYPES.STAKE,
   onClose,
 }: TransactionModalProps) {
   const { onOpen: openSideBar, onClose: closeSidebar } = useSidebar()
 
-  const [type, setType] = useState(defaultType)
   const [activeStep, setActiveStep] = useState(DEFAULT_ACTIVE_STEP)
   const [status, setStatus] = useState<ProcessStatus>(PROCESS_STATUSES.IDLE)
-
-  const handleResume = useCallback(() => {
-    setStatus(PROCESS_STATUSES.PENDING)
-  }, [])
 
   const handleGoNext = useCallback(() => {
     setActiveStep((prevStep) => prevStep + 1)
   }, [])
 
-  const handleClose = useCallback(() => {
-    if (status === PROCESS_STATUSES.PENDING) {
-      setStatus(PROCESS_STATUSES.PAUSED)
-    } else {
-      onClose()
-    }
-  }, [onClose, status])
-
   const resetState = useCallback(() => {
-    setType(defaultType)
     setActiveStep(DEFAULT_ACTIVE_STEP)
     setStatus(PROCESS_STATUSES.IDLE)
-  }, [defaultType, setStatus])
-
-  useEffect(() => {
-    setType(defaultType)
-  }, [defaultType])
+  }, [setStatus])
 
   useEffect(() => {
     let timeout: NodeJS.Timeout
@@ -79,25 +56,19 @@ export default function TransactionModal({
       type,
       activeStep,
       status,
-      setType,
       setStatus,
-      onClose: handleClose,
-      onResume: handleResume,
+      onClose,
       goNext: handleGoNext,
     }),
-    [type, activeStep, status, handleClose, handleResume, handleGoNext],
+    [type, activeStep, status, onClose, handleGoNext],
   )
 
   return (
-    <ModalBase
-      isOpen={isOpen}
-      onClose={handleClose}
-      closeOnOverlayClick={false}
-    >
+    <ModalBase isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false}>
       <TransactionContextProvider>
         <ModalFlowContext.Provider value={contextValue}>
           <StakeFlowProvider>
-            <ModalContentWrapper defaultType={defaultType}>
+            <ModalContentWrapper>
               <ModalCloseButton />
               <ActiveFlowStep />
             </ModalContentWrapper>
