@@ -6,18 +6,10 @@ export type PaginationProps<T> = Omit<StackProps, "as"> & {
   data: T[]
   pageSize?: number
   defaultPage?: number
-  dataLabel?: string
 }
 
-export function Pagination<T>(props: PaginationProps<T>) {
-  const {
-    data,
-    children,
-    pageSize = 10,
-    defaultPage = 0,
-    dataLabel = "items",
-    ...restProps
-  } = props
+function Pagination<T>(props: PaginationProps<T>) {
+  const { data, children, pageSize = 10, defaultPage = 0, ...restProps } = props
 
   const [currentPage, setCurrentPage] = React.useState(defaultPage)
   const [direction, setDirection] = React.useState<"left" | "right">("right")
@@ -42,18 +34,9 @@ export function Pagination<T>(props: PaginationProps<T>) {
       direction,
       setPage: handleSetPage,
       totalSize: data.length,
-      dataLabel,
       pageData,
     }),
-    [
-      pageSize,
-      currentPage,
-      data,
-      dataLabel,
-      direction,
-      handleSetPage,
-      pageData,
-    ],
+    [pageSize, currentPage, data, direction, handleSetPage, pageData],
   )
 
   return (
@@ -64,3 +47,5 @@ export function Pagination<T>(props: PaginationProps<T>) {
     </PaginationContext.Provider>
   )
 }
+
+export default Pagination

@@ -1,4 +1,4 @@
-export { Pagination } from "./Pagination"
-export { PaginationStatus } from "./PaginationStatus"
-export { PaginationPage } from "./PaginationPage"
-export { PaginationButton } from "./PaginationButton"
+export { default as Pagination } from "./Pagination"
+export { default as PaginationStatus } from "./PaginationStatus"
+export { default as PaginationPage } from "./PaginationPage"
+export { default as PaginationButton } from "./PaginationButton"

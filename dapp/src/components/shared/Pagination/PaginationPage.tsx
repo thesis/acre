@@ -27,7 +27,7 @@ type PaginationPageProps = Omit<StackProps, "children"> & {
   children: (pageData: unknown[]) => React.ReactNode
 }
 
-export function PaginationPage(props: PaginationPageProps) {
+function PaginationPage(props: PaginationPageProps) {
   const { children, ...restProps } = props
   const { currentPage, direction, pageData } = usePagination()
 
@@ -49,3 +49,5 @@ export function PaginationPage(props: PaginationPageProps) {
     </AnimatePresence>
   )
 }
+
+export default PaginationPage

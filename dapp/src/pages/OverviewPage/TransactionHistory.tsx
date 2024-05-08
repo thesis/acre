@@ -49,7 +49,7 @@ export default function TransactionHistory(props: TransactionHistoryProps) {
           <TextMd color="grey.400">You have no transactions yet!</TextMd>
         </VStack>
       ) : (
-        <Pagination data={data} pageSize={10} dataLabel="transactions">
+        <Pagination data={data} pageSize={10}>
           <PaginationPage direction="column" spacing={2}>
             {(pageData) =>
               // TODO: Fix type assertion of `pageData`
@@ -108,7 +108,7 @@ export default function TransactionHistory(props: TransactionHistoryProps) {
               <PaginationButton mode="next" />
             </HStack>
 
-            <PaginationStatus color="grey.500" />
+            <PaginationStatus dataLabel="transactions" color="grey.500" />
           </HStack>
         </Pagination>
       )}

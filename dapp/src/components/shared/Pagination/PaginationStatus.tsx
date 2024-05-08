@@ -3,15 +3,22 @@ import { TextProps } from "@chakra-ui/react"
 import { TextSm } from "../Typography"
 import { usePagination } from "./PaginationContext"
 
-export function PaginationStatus(props: TextProps) {
-  const { currentPage, pageSize, totalSize, dataLabel } = usePagination()
+type PaginationStatusProps = TextProps & {
+  dataLabel?: string
+}
+
+function PaginationStatus(props: PaginationStatusProps) {
+  const { dataLabel = "items", ...restProps } = props
+  const { currentPage, pageSize, totalSize } = usePagination()
 
   const rangeStart = currentPage * pageSize + 1 // Pages are indexed from 0
   const rangeEnd = Math.min(rangeStart + pageSize - 1, totalSize)
 
   return (
-    <TextSm {...props}>
+    <TextSm {...restProps}>
       Showing {rangeStart}-{rangeEnd} out of {totalSize} {dataLabel}
     </TextSm>
   )
 }
+
+export default PaginationStatus

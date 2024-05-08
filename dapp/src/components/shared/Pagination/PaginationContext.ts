@@ -6,7 +6,6 @@ type PaginationContextType<T = unknown> = {
   direction: "left" | "right"
   totalSize: number
   setPage: (page: number) => void
-  dataLabel: string
   pageData: T[]
 } | null
 

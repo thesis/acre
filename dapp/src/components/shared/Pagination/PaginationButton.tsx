@@ -7,7 +7,7 @@ type PaginationButtonProps = Omit<IconButtonProps, "aria-label" | "icon"> & {
   mode: "previous" | "next"
 }
 
-export function PaginationButton(props: PaginationButtonProps) {
+function PaginationButton(props: PaginationButtonProps) {
   const { mode, ...restProps } = props
   const { currentPage, setPage, totalSize, pageSize } = usePagination()
 
@@ -42,3 +42,5 @@ export function PaginationButton(props: PaginationButtonProps) {
     />
   )
 }
+
+export default PaginationButton
