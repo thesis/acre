@@ -1,21 +1,19 @@
 import { OrangeKitSdk } from "@orangekit/sdk"
+import { JsonRpcProvider } from "ethers"
 import { AcreContracts } from "./lib/contracts"
-import { ChainEIP712Signer } from "./lib/eip712-signer"
-import {
-  EthereumEIP712Signer,
-  EthereumNetwork,
-  getEthereumContracts,
-} from "./lib/ethereum"
+import { EthereumNetwork, getEthereumContracts } from "./lib/ethereum"
 import { StakingModule } from "./modules/staking"
 import Tbtc from "./modules/tbtc"
-import { EthereumSignerCompatibleWithEthersV5 } from "./lib/utils"
+import { VoidSignerCompatibleWithEthersV5 } from "./lib/utils"
+import { BitcoinProvider } from "./lib/bitcoin/providers"
+import { getChainIdByNetwork } from "./lib/ethereum/network"
 
 class Acre {
   readonly #tbtc: Tbtc
 
   readonly #orangeKit: OrangeKitSdk
 
-  readonly #messageSigner: ChainEIP712Signer
+  readonly #bitcoinProvider: BitcoinProvider
 
   public readonly contracts: AcreContracts
 
@@ -23,33 +21,48 @@ class Acre {
 
   constructor(
     _contracts: AcreContracts,
-    _messageSigner: ChainEIP712Signer,
+    _bitcoinProvider: BitcoinProvider,
     _orangeKit: OrangeKitSdk,
     _tbtc: Tbtc,
   ) {
     this.contracts = _contracts
     this.#tbtc = _tbtc
     this.#orangeKit = _orangeKit
-    this.#messageSigner = _messageSigner
+    this.#bitcoinProvider = _bitcoinProvider
     this.staking = new StakingModule(
       this.contracts,
-      this.#messageSigner,
+      this.#bitcoinProvider,
       this.#orangeKit,
       this.#tbtc,
     )
   }
 
   static async initializeEthereum(
-    signer: EthereumSignerCompatibleWithEthersV5,
+    bitcoinProvider: BitcoinProvider,
+    // TODO: change to Bitcoin network.
     network: EthereumNetwork,
     tbtcApiUrl: string,
   ): Promise<Acre> {
-    const chainId = await signer.getChainId()
+    const chainId = getChainIdByNetwork(network)
+    const orangeKit = await Acre.#getOrangeKitSDK(chainId)
+
+    // TODO: Should we store this address in context so that we do not to
+    // recalculate it when necessary?
+    const ethereumAddress = await orangeKit.predictAddress(
+      await bitcoinProvider.getAddress(),
+    )
+
+    // TODO: Should we hardcode the url on the Acre side or pass it as a config?
+    const provider = new JsonRpcProvider(
+      "https://eth-sepolia.g.alchemy.com/v2/<YOUR_API_KEY>",
+    )
+
+    const signer = new VoidSignerCompatibleWithEthersV5(
+      ethereumAddress,
+      provider,
+    )
 
     const contracts = getEthereumContracts(signer, network)
-    const messages = new EthereumEIP712Signer(signer)
-
-    const orangeKit = await Acre.#getOrangeKitSDK(chainId)
 
     const tbtc = await Tbtc.initialize(
       signer,
@@ -58,14 +71,14 @@ class Acre {
       contracts.bitcoinDepositor,
     )
 
-    return new Acre(contracts, messages, orangeKit, tbtc)
+    return new Acre(contracts, bitcoinProvider, orangeKit, tbtc)
   }
 
   static #getOrangeKitSDK(chainId: number): Promise<OrangeKitSdk> {
     return OrangeKitSdk.init(
       chainId,
       // TODO: pass rpc url as config.
-      "https://eth-mainnet.g.alchemy.com/v2/<YOUR_API_KEY>",
+      "https://eth-sepolia.g.alchemy.com/v2/<YOUR_API_KEY>",
     )
   }
 }

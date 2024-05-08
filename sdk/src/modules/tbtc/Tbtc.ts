@@ -5,7 +5,7 @@ import { BitcoinDepositor } from "../../lib/contracts"
 import { EthereumNetwork } from "../../lib/ethereum"
 
 import Deposit from "./Deposit"
-import { EthereumSignerCompatibleWithEthersV5 } from "../../lib/utils"
+import { IEthereumSignerCompatibleWithEthersV5 as EthereumSignerCompatibleWithEthersV5 } from "../../lib/utils"
 
 /**
  * Represents the tBTC module.

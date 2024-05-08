@@ -1,10 +1,10 @@
 import { ChainIdentifier, EthereumAddress } from "@keep-network/tbtc-v2.ts"
 import { OrangeKitSdk } from "@orangekit/sdk"
 import { AcreContracts, DepositFees } from "../../lib/contracts"
-import { ChainEIP712Signer } from "../../lib/eip712-signer"
 import { StakeInitialization } from "./stake-initialization"
 import { fromSatoshi, toSatoshi } from "../../lib/utils"
 import Tbtc from "../tbtc"
+import { BitcoinProvider } from "../../lib/bitcoin/providers"
 
 export { DepositReceipt } from "../tbtc"
 
@@ -29,7 +29,7 @@ class StakingModule {
   /**
    * Typed structured data signer.
    */
-  readonly #messageSigner: ChainEIP712Signer
+  readonly #bitcoinProvider: BitcoinProvider
 
   /**
    * tBTC Module.
@@ -43,32 +43,29 @@ class StakingModule {
 
   constructor(
     _contracts: AcreContracts,
-    _messageSigner: ChainEIP712Signer,
+    _bitcoinProvider: BitcoinProvider,
     _orangeKit: OrangeKitSdk,
     _tbtc: Tbtc,
   ) {
     this.#contracts = _contracts
-    this.#messageSigner = _messageSigner
+    this.#bitcoinProvider = _bitcoinProvider
     this.#tbtc = _tbtc
     this.#orangeKit = _orangeKit
   }
 
   /**
    * Initializes the Acre deposit process.
-   * @param depositor The Bitcoin depositor address. Supported addresses:
-   *        `P2WPKH`, `P2PKH`, `P2SH-P2WPKH`.
    * @param referral Data used for referral program.
    * @param bitcoinRecoveryAddress `P2PKH` or `P2WPKH` Bitcoin address that can
    *        be used for emergency recovery of the deposited funds. If
-   *        `undefined` the `depositor` address is used as bitcoin recovery
-   *        address then the `depositor` must be `P2WPKH` or `P2PKH`.
+   *        `undefined` the bitcoin address from bitcoin provider is used as
+   *        bitcoin recovery address - note that an address returned by bitcoin
+   *        provider must then be `P2WPKH` or `P2PKH`.
    * @returns Object represents the deposit process.
    */
-  async initializeStake(
-    depositor: string,
-    referral: number,
-    bitcoinRecoveryAddress?: string,
-  ) {
+  async initializeStake(referral: number, bitcoinRecoveryAddress?: string) {
+    const depositor = await this.#bitcoinProvider.getAddress()
+
     // TODO: If we want to handle other chains we should create the wrapper for
     // OrangeKit SDK to return `ChainIdentifier` from `predictAddress` fn. Or we
     // can create `EVMChainIdentifier` class and use it as a type in `modules`
@@ -90,7 +87,7 @@ class StakingModule {
 
     return new StakeInitialization(
       this.#contracts,
-      this.#messageSigner,
+      this.#bitcoinProvider,
       finalBitcoinRecoveryAddress,
       depositOwnerChainAddress,
       tbtcDeposit,

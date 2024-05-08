@@ -4,7 +4,10 @@ import {
   Deposit as TbtcSdkDeposit,
 } from "@keep-network/tbtc-v2.ts"
 
-import { EthereumSignerCompatibleWithEthersV5 } from "../../../src"
+import {
+  EthereumSignerCompatibleWithEthersV5,
+  IEthereumSignerCompatibleWithEthersV5,
+} from "../../../src"
 import Deposit from "../../../src/modules/tbtc/Deposit"
 import TbtcApi from "../../../src/lib/api/TbtcApi"
 
@@ -43,7 +46,7 @@ describe("Tbtc", () => {
   const { bitcoinDepositor } = new MockAcreContracts()
 
   describe("initialize", () => {
-    const mockedSigner: EthereumSignerCompatibleWithEthersV5 =
+    const mockedSigner: IEthereumSignerCompatibleWithEthersV5 =
       new MockEthereumSignerCompatibleWithEthersV5()
 
     describe("when network is mainnet", () => {
