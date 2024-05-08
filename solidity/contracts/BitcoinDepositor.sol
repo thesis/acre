@@ -261,7 +261,7 @@ contract BitcoinDepositor is AbstractTBTCDepositor, Ownable2StepUpgradeable {
         // Compute depositor fee. The fee is calculated based on the initial funding
         // transaction amount, before the tBTC protocol network fees were taken.
         uint256 depositorFee = depositorFeeDivisor > 0
-            ? (initialAmount / depositorFeeDivisor)
+            ? Math.ceilDiv(initialAmount, depositorFeeDivisor)
             : 0;
 
         // Ensure the depositor fee does not exceed the approximate minted tBTC
