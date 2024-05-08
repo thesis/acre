@@ -238,9 +238,10 @@ contract MezoAllocatorV2 is IDispatcher, Ownable2StepUpgradeable {
         emit MaintainerRemoved(maintainerToRemove);
     }
 
-    /// @notice Returns the total amount of tBTC allocated to MezoPortal.
+    /// @notice Returns the total amount of tBTC allocated to MezoPortal including
+    ///         the amount that is currently hold by this contract.
     function totalAssets() external view returns (uint256) {
-        return depositBalance;
+        return depositBalance + tbtc.balanceOf(address(this));
     }
 
     /// @notice Returns the list of maintainers.

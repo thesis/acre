@@ -1554,6 +1554,14 @@ describe("stBTC", () => {
         })
       })
 
+      context("when a new dispatcher is the same as the old one", () => {
+        it("should revert", async () => {
+          await expect(
+            stbtc.connect(governance).updateDispatcher(mezoAllocator),
+          ).to.be.revertedWithCustomError(stbtc, "SameDispatcher")
+        })
+      })
+
       context("when a new dispatcher is non-zero address", () => {
         let newDispatcher: string
         let stbtcAddress: string
@@ -1613,6 +1621,14 @@ describe("stBTC", () => {
           await expect(
             stbtc.connect(governance).updateTreasury(ZeroAddress),
           ).to.be.revertedWithCustomError(stbtc, "ZeroAddress")
+        })
+      })
+
+      context("when a new treasury is same as the old one", () => {
+        it("should revert", async () => {
+          await expect(
+            stbtc.connect(governance).updateTreasury(treasury),
+          ).to.be.revertedWithCustomError(stbtc, "SameTreasury")
         })
       })
 
@@ -1691,6 +1707,16 @@ describe("stBTC", () => {
             await expect(tx)
               .to.emit(stbtc, "Paused")
               .withArgs(pauseAdmin.address)
+          })
+        })
+
+        context("when updating pause admin to the same address", () => {
+          beforeAfterSnapshotWrapper()
+
+          it("should revert", async () => {
+            await expect(
+              stbtc.connect(governance).updatePauseAdmin(pauseAdmin.address),
+            ).to.be.revertedWithCustomError(stbtc, "SamePauseAdmin")
           })
         })
       })

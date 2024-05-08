@@ -77,6 +77,12 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     /// Reverts if the fee basis points exceed the maximum value.
     error ExceedsMaxFeeBasisPoints();
 
+    /// Reverts if the treasury address is the same.
+    error SameTreasury();
+
+    /// Reverts if the dispatcher address is the same.
+    error SameDispatcher();
+
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
@@ -107,6 +113,9 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         if (newTreasury == address(this)) {
             revert DisallowedAddress();
         }
+        if (newTreasury == treasury) {
+            revert SameTreasury();
+        }
 
         emit TreasuryUpdated(treasury, newTreasury);
 
@@ -130,6 +139,9 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     function updateDispatcher(IDispatcher newDispatcher) external onlyOwner {
         if (address(newDispatcher) == address(0)) {
             revert ZeroAddress();
+        }
+        if (address(newDispatcher) == address(dispatcher)) {
+            revert SameDispatcher();
         }
 
         address oldDispatcher = address(dispatcher);
