@@ -2,7 +2,7 @@ import React from "react"
 import { AcreLogo } from "#/assets/icons"
 import { routerPath } from "#/router/path"
 import { Flex, HStack, Icon } from "@chakra-ui/react"
-import { NavigationItemType } from "#/types/navigation"
+import { NavigationItemType } from "#/types"
 import ConnectWallet from "./ConnectWallet"
 import { Navigation } from "./Navigation"
 
