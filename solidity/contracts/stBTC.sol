@@ -74,6 +74,9 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     /// Reverts if the address is disallowed.
     error DisallowedAddress();
 
+    /// Reverts if the fee basis points exceed the maximum value.
+    error ExceedsMaxFeeBasisPoints();
+
     /// Reverts if the treasury address is the same.
     error SameTreasury();
 
@@ -160,6 +163,9 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     function updateEntryFeeBasisPoints(
         uint256 newEntryFeeBasisPoints
     ) external onlyOwner {
+        if (newEntryFeeBasisPoints > _BASIS_POINT_SCALE) {
+            revert ExceedsMaxFeeBasisPoints();
+        }
         entryFeeBasisPoints = newEntryFeeBasisPoints;
 
         emit EntryFeeBasisPointsUpdated(newEntryFeeBasisPoints);
@@ -170,27 +176,26 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     function updateExitFeeBasisPoints(
         uint256 newExitFeeBasisPoints
     ) external onlyOwner {
+        if (newExitFeeBasisPoints > _BASIS_POINT_SCALE) {
+            revert ExceedsMaxFeeBasisPoints();
+        }
         exitFeeBasisPoints = newExitFeeBasisPoints;
 
         emit ExitFeeBasisPointsUpdated(newExitFeeBasisPoints);
     }
 
-    /// @notice Returns the total amount of assets held by the vault across all
-    ///         allocations and this contract.
-    function totalAssets() public view override returns (uint256) {
-        return
-            IERC20(asset()).balanceOf(address(this)) + dispatcher.totalAssets();
-    }
-
     /// @notice Calls `receiveApproval` function on spender previously approving
     ///         the spender to withdraw from the caller multiple times, up to
-    ///         the `amount` amount. If this function is called again, it
-    ///         overwrites the current allowance with `amount`. Reverts if the
+    ///         the `value` amount. If this function is called again, it
+    ///         overwrites the current allowance with `value`. Reverts if the
     ///         approval reverted or if `receiveApproval` call on the spender
     ///         reverted.
-    /// @return True if both approval and `receiveApproval` calls succeeded.
-    /// @dev If the `amount` is set to `type(uint256).max` then
+    /// @dev If the `value` is set to `type(uint256).max` then
     ///      `transferFrom` and `burnFrom` will not reduce an allowance.
+    /// @param spender The address which will spend the funds.
+    /// @param value The amount of tokens to be spent.
+    /// @param extraData Additional data.
+    /// @return True if both approval and `receiveApproval` calls succeeded.
     function approveAndCall(
         address spender,
         uint256 value,
@@ -295,6 +300,13 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         return super.redeem(shares, receiver, owner);
     }
 
+    /// @notice Returns the total amount of assets held by the vault across all
+    ///         allocations and this contract.
+    function totalAssets() public view override returns (uint256) {
+        return
+            IERC20(asset()).balanceOf(address(this)) + dispatcher.totalAssets();
+    }
+
     /// @dev Returns the maximum amount of the underlying asset that can be
     ///      deposited into the Vault for the receiver, through a deposit call.
     ///      If the Vault is paused, returns 0.
@@ -322,7 +334,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         if (paused()) {
             return 0;
         }
-        return super.maxWithdraw(owner);
+        return _maxWithdraw(owner);
     }
 
     /// @dev Returns the maximum amount of Vault shares that can be redeemed from

@@ -47,6 +47,10 @@ const defaultTheme = {
   styles,
   breakpoints: {
     "2.5xl": "100.5rem", // 1608px
+  space: {
+    13: "3.25rem",
+    15: "3.75rem",
+    30: "7.5rem",
   },
   components: {
     Alert: alertTheme,

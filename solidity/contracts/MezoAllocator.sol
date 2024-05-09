@@ -205,7 +205,7 @@ contract MezoAllocator is IDispatcher, Ownable2StepUpgradeable {
         tbtc.safeTransfer(address(stbtc), tbtc.balanceOf(address(this)));
     }
 
-    /// @notice Updates the maintainer address.
+    /// @notice Adds a new maintainer address.
     /// @param maintainerToAdd Address of the new maintainer.
     function addMaintainer(address maintainerToAdd) external onlyOwner {
         if (maintainerToAdd == address(0)) {
