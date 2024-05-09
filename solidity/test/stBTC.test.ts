@@ -1895,7 +1895,7 @@ describe("stBTC", () => {
 
     const validEntryFeeBasisPoints = 100n // 1%
 
-    context("when is called by governance", () => {
+    context("when called by the governance", () => {
       context("when entry fee basis points are valid", () => {
         beforeAfterSnapshotWrapper()
 
@@ -1937,6 +1937,16 @@ describe("stBTC", () => {
           )
         })
       })
+
+      context("when entry fee basis points exceed 10000", () => {
+        beforeAfterSnapshotWrapper()
+
+        it("should revert", async () => {
+          await expect(
+            stbtc.connect(governance).updateEntryFeeBasisPoints(10001n),
+          ).to.be.revertedWithCustomError(stbtc, "ExceedsMaxFeeBasisPoints")
+        })
+      })
     })
 
     context("when is called by non-governance", () => {
@@ -1953,7 +1963,7 @@ describe("stBTC", () => {
 
     const validExitFeeBasisPoints = 100n // 1%
 
-    context("when is called by governance", () => {
+    context("when called by the governance", () => {
       context("when exit fee basis points are valid", () => {
         beforeAfterSnapshotWrapper()
 
@@ -1975,6 +1985,16 @@ describe("stBTC", () => {
           expect(await stbtc.exitFeeBasisPoints()).to.be.eq(
             validExitFeeBasisPoints,
           )
+        })
+      })
+
+      context("when exit fee basis points exceed 10000", () => {
+        beforeAfterSnapshotWrapper()
+
+        it("should revert", async () => {
+          await expect(
+            stbtc.connect(governance).updateExitFeeBasisPoints(10001n),
+          ).to.be.revertedWithCustomError(stbtc, "ExceedsMaxFeeBasisPoints")
         })
       })
 
@@ -2149,6 +2169,50 @@ describe("stBTC", () => {
           )
         })
       })
+    })
+  })
+
+  describe("maxWithdraw", () => {
+    beforeAfterSnapshotWrapper()
+    const amountToDeposit = to1e18(1)
+    let expectedDepositedAmount: bigint
+    let expectedWithdrawnAmount: bigint
+
+    before(async () => {
+      await tbtc
+        .connect(depositor1)
+        .approve(await stbtc.getAddress(), amountToDeposit)
+      await stbtc
+        .connect(depositor1)
+        .deposit(amountToDeposit, depositor1.address)
+      expectedDepositedAmount =
+        amountToDeposit - feeOnTotal(amountToDeposit, entryFeeBasisPoints)
+      expectedWithdrawnAmount =
+        expectedDepositedAmount -
+        feeOnTotal(expectedDepositedAmount, exitFeeBasisPoints)
+    })
+
+    it("should account for the exit fee", async () => {
+      const maxWithdraw = await stbtc.maxWithdraw(depositor1.address)
+
+      expect(maxWithdraw).to.be.eq(expectedWithdrawnAmount)
+    })
+
+    it("should be equal to the actual redeemable amount", async () => {
+      const maxWithdraw = await stbtc.maxWithdraw(depositor1.address)
+      const availableShares = await stbtc.balanceOf(depositor1.address)
+
+      const tx = await stbtc.redeem(
+        availableShares,
+        depositor1.address,
+        depositor1.address,
+      )
+
+      await expect(tx).to.changeTokenBalances(
+        tbtc,
+        [depositor1.address],
+        [maxWithdraw],
+      )
     })
   })
 
