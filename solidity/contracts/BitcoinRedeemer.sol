@@ -157,17 +157,17 @@ contract BitcoinRedeemer is Ownable2StepUpgradeable, IReceiveApproval {
         // TBTC Token contract owner resolves to the TBTCVault contract.
         if (tbtcToken.owner() != tbtcVault) revert UnexpectedTbtcTokenOwner();
 
-        uint256 tbtcAmount = stbtc.redeem(shares, address(this), owner);
-
-        // slither-disable-next-line reentrancy-events
-        emit RedemptionRequested(owner, shares, tbtcAmount);
-
         // Decode the redemption data to get the redeemer address.
         (address redeemer, , , , , ) = abi.decode(
             tbtcRedemptionData,
             (address, bytes20, bytes32, uint32, uint64, bytes)
         );
         if (redeemer != owner) revert RedeemerNotOwner(redeemer, owner);
+
+        uint256 tbtcAmount = stbtc.redeem(shares, address(this), owner);
+
+        // slither-disable-next-line reentrancy-events
+        emit RedemptionRequested(owner, shares, tbtcAmount);
 
         if (
             !tbtcToken.approveAndCall(tbtcVault, tbtcAmount, tbtcRedemptionData)
