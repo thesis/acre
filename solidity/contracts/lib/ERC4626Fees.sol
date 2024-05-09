@@ -84,6 +84,13 @@ abstract contract ERC4626Fees is ERC4626Upgradeable {
         }
     }
 
+    /// @dev Calculate the maximum amount of assets that can be withdrawn
+    ///      by an account including fees. See {IERC4626-maxWithdraw}.
+    function _maxWithdraw(address account) internal view returns (uint256) {
+        uint256 maxAssets = super.maxWithdraw(account);
+        return maxAssets - _feeOnTotal(maxAssets, _exitFeeBasisPoints());
+    }
+
     // === Fee configuration ===
 
     // slither-disable-next-line dead-code
