@@ -173,7 +173,10 @@ describe("BitcoinRedeemer", () => {
                   .approveAndCall(
                     await bitcoinRedeemer.getAddress(),
                     to1e18(1),
-                    tbtcRedemptionData.redemptionData,
+                    tbtcRedemptionData.redemptionData.replace(
+                      depositor1.address.toLowerCase().slice(2),
+                      thirdParty.address.toLowerCase().slice(2),
+                    ),
                   ),
               )
                 .to.be.revertedWithCustomError(
