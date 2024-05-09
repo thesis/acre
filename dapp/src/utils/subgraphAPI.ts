@@ -1,19 +1,7 @@
 import axios from "axios"
 import { Activity, ActivityDataResponse } from "#/types"
 
-const {
-  VITE_SUBGRAPH_LOCALHOST_URL,
-  VITE_SUBGRAPH_DEVELOPMENT_URL,
-  VITE_SUBGRAPH_PRODUCTION_URL,
-} = import.meta.env
-
-const ACRE_SUBGRAPH_URL = (() => {
-  if (import.meta.env.PROD) return VITE_SUBGRAPH_PRODUCTION_URL
-
-  if (VITE_SUBGRAPH_LOCALHOST_URL) return VITE_SUBGRAPH_LOCALHOST_URL
-
-  return VITE_SUBGRAPH_DEVELOPMENT_URL
-})()
+const ACRE_SUBGRAPH_URL = import.meta.env.VITE_ACRE_SUBGRAPH_URL
 
 const mapToActivity = (activityData: ActivityDataResponse): Activity => {
   const { bitcoinTransactionId: txHash, amountToDeposit, events } = activityData
