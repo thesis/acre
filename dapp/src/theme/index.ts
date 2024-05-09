@@ -45,9 +45,6 @@ const defaultTheme = {
   zIndices,
   semanticTokens,
   styles,
-  breakpoints: {
-    "2.5xl": "100.5rem", // 1608px
-  },
   components: {
     Alert: alertTheme,
     Button: buttonTheme,
