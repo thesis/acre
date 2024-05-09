@@ -1,6 +1,7 @@
 import React from "react"
 import {
-  useModalFlowContext,
+  useActionFlowStatus,
+  useActionFlowType,
   useRequestBitcoinAccount,
   useRequestEthereumAccount,
   useTransactionContext,
@@ -23,7 +24,8 @@ export default function ModalContentWrapper({
   const { btcAccount, ethAccount } = useWalletContext()
   const { requestAccount: requestBitcoinAccount } = useRequestBitcoinAccount()
   const { requestAccount: requestEthereumAccount } = useRequestEthereumAccount()
-  const { type, status } = useModalFlowContext()
+  const status = useActionFlowStatus()
+  const type = useActionFlowType()
   const { tokenAmount } = useTransactionContext()
 
   if (!btcAccount || !isSupportedBTCAddressType(btcAccount.address))

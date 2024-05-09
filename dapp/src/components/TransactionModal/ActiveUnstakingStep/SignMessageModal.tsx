@@ -1,21 +1,20 @@
 import React, { useCallback } from "react"
-import { useExecuteFunction, useModalFlowContext } from "#/hooks"
+import { useExecuteFunction } from "#/hooks"
 import { PROCESS_STATUSES } from "#/types"
 import { Button, ModalBody, ModalFooter, ModalHeader } from "@chakra-ui/react"
 import { TextMd } from "#/components/shared/Typography"
 import { logPromiseFailure } from "#/utils"
+import { setStatus } from "#/store/action-flow"
 
 export default function SignMessageModal() {
-  const { setStatus } = useModalFlowContext()
-
   const onSignMessageSuccess = useCallback(() => {
     setStatus(PROCESS_STATUSES.SUCCEEDED)
-  }, [setStatus])
+  }, [])
 
   // TODO: After a failed attempt, we should display the message
   const onSignMessageError = useCallback(() => {
     setStatus(PROCESS_STATUSES.FAILED)
-  }, [setStatus])
+  }, [])
 
   const handleSignMessage = useExecuteFunction(
     // TODO: Use a correct function from the SDK
@@ -31,7 +30,7 @@ export default function SignMessageModal() {
     setTimeout(() => {
       logPromiseFailure(handleSignMessage())
     }, 5000)
-  }, [setStatus, handleSignMessage])
+  }, [handleSignMessage])
 
   return (
     <>

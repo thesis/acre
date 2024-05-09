@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react"
+import React, { useEffect, useMemo } from "react"
 import {
   ModalFlowContext,
   ModalFlowContextValue,
@@ -6,13 +6,12 @@ import {
   TransactionContextProvider,
 } from "#/contexts"
 import { useSidebar } from "#/hooks"
-import { ActionFlowType, PROCESS_STATUSES, ProcessStatus } from "#/types"
+import { ActionFlowType } from "#/types"
 import { ModalCloseButton } from "@chakra-ui/react"
+import { resetState, setType } from "#/store/action-flow"
 import ModalBase from "../shared/ModalBase"
 import ModalContentWrapper from "./ModalContentWrapper"
 import { ActiveFlowStep } from "./ActiveFlowStep"
-
-const DEFAULT_ACTIVE_STEP = 1
 
 type TransactionModalProps = {
   type: ActionFlowType
@@ -27,17 +26,9 @@ export default function TransactionModal({
 }: TransactionModalProps) {
   const { onOpen: openSideBar, onClose: closeSidebar } = useSidebar()
 
-  const [activeStep, setActiveStep] = useState(DEFAULT_ACTIVE_STEP)
-  const [status, setStatus] = useState<ProcessStatus>(PROCESS_STATUSES.IDLE)
-
-  const handleGoNext = useCallback(() => {
-    setActiveStep((prevStep) => prevStep + 1)
-  }, [])
-
-  const resetState = useCallback(() => {
-    setActiveStep(DEFAULT_ACTIVE_STEP)
-    setStatus(PROCESS_STATUSES.IDLE)
-  }, [setStatus])
+  useEffect(() => {
+    setType(type)
+  }, [type])
 
   useEffect(() => {
     let timeout: NodeJS.Timeout
@@ -49,18 +40,13 @@ export default function TransactionModal({
       timeout = setTimeout(resetState, 100)
     }
     return () => clearTimeout(timeout)
-  }, [isOpen, resetState, openSideBar, closeSidebar])
+  }, [isOpen, openSideBar, closeSidebar])
 
   const contextValue: ModalFlowContextValue = useMemo<ModalFlowContextValue>(
     () => ({
-      type,
-      activeStep,
-      status,
-      setStatus,
       onClose,
-      goNext: handleGoNext,
     }),
-    [type, activeStep, status, onClose, handleGoNext],
+    [onClose],
   )
 
   return (
