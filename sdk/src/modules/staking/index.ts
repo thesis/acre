@@ -1,8 +1,11 @@
-import { ChainIdentifier, TBTC } from "@keep-network/tbtc-v2.ts"
-import { AcreContracts, DepositorProxy, DepositFees } from "../../lib/contracts"
+import { ChainIdentifier } from "@keep-network/tbtc-v2.ts"
+import { AcreContracts, DepositFees } from "../../lib/contracts"
 import { ChainEIP712Signer } from "../../lib/eip712-signer"
 import { StakeInitialization } from "./stake-initialization"
 import { fromSatoshi, toSatoshi } from "../../lib/utils"
+import Tbtc from "../tbtc"
+
+export { DepositReceipt } from "../tbtc"
 
 /**
  * Represents all total deposit fees grouped by network.
@@ -28,14 +31,14 @@ class StakingModule {
   readonly #messageSigner: ChainEIP712Signer
 
   /**
-   * tBTC SDK.
+   * tBTC Module.
    */
-  readonly #tbtc: TBTC
+  readonly #tbtc: Tbtc
 
   constructor(
     _contracts: AcreContracts,
     _messageSigner: ChainEIP712Signer,
-    _tbtc: TBTC,
+    _tbtc: Tbtc,
   ) {
     this.#contracts = _contracts
     this.#messageSigner = _messageSigner
@@ -49,19 +52,17 @@ class StakingModule {
    *                               funds.
    * @param staker The address to which the stBTC shares will be minted.
    * @param referral Data used for referral program.
-   * @param depositorProxy Depositor proxy used to initiate the deposit.
    * @returns Object represents the staking process.
    */
   async initializeStake(
     bitcoinRecoveryAddress: string,
-    staker: ChainIdentifier,
+    staker: ChainIdentifier, // TODO: We should resolve the address with OrangeKit SDK
     referral: number,
-    depositorProxy?: DepositorProxy,
   ) {
-    const deposit = await this.#tbtc.deposits.initiateDepositWithProxy(
+    const tbtcDeposit = await this.#tbtc.initiateDeposit(
+      staker,
       bitcoinRecoveryAddress,
-      depositorProxy ?? this.#contracts.bitcoinDepositor,
-      this.#contracts.bitcoinDepositor.encodeExtraData(staker, referral),
+      referral,
     )
 
     return new StakeInitialization(
@@ -69,7 +70,7 @@ class StakingModule {
       this.#messageSigner,
       bitcoinRecoveryAddress,
       staker,
-      deposit,
+      tbtcDeposit,
     )
   }
 

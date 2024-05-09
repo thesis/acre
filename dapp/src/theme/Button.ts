@@ -8,12 +8,12 @@ export const buttonTheme: ComponentSingleStyleConfig = {
   sizes: {
     md: {
       fontSize: "sm",
-      py: "0.5rem",
+      py: 2,
       borderRadius: "md",
     },
     lg: {
       fontSize: "md",
-      py: "1rem",
+      py: 4,
       borderRadius: "lg",
     },
   },

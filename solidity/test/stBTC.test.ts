@@ -1554,6 +1554,14 @@ describe("stBTC", () => {
         })
       })
 
+      context("when a new dispatcher is the same as the old one", () => {
+        it("should revert", async () => {
+          await expect(
+            stbtc.connect(governance).updateDispatcher(mezoAllocator),
+          ).to.be.revertedWithCustomError(stbtc, "SameDispatcher")
+        })
+      })
+
       context("when a new dispatcher is non-zero address", () => {
         let newDispatcher: string
         let stbtcAddress: string
@@ -1613,6 +1621,14 @@ describe("stBTC", () => {
           await expect(
             stbtc.connect(governance).updateTreasury(ZeroAddress),
           ).to.be.revertedWithCustomError(stbtc, "ZeroAddress")
+        })
+      })
+
+      context("when a new treasury is same as the old one", () => {
+        it("should revert", async () => {
+          await expect(
+            stbtc.connect(governance).updateTreasury(treasury),
+          ).to.be.revertedWithCustomError(stbtc, "SameTreasury")
         })
       })
 
@@ -1691,6 +1707,16 @@ describe("stBTC", () => {
             await expect(tx)
               .to.emit(stbtc, "Paused")
               .withArgs(pauseAdmin.address)
+          })
+        })
+
+        context("when updating pause admin to the same address", () => {
+          beforeAfterSnapshotWrapper()
+
+          it("should revert", async () => {
+            await expect(
+              stbtc.connect(governance).updatePauseAdmin(pauseAdmin.address),
+            ).to.be.revertedWithCustomError(stbtc, "SamePauseAdmin")
           })
         })
       })
@@ -1793,30 +1819,72 @@ describe("stBTC", () => {
       beforeAfterSnapshotWrapper()
 
       before(async () => {
+        await tbtc.mint(depositor1.address, amount)
+        await tbtc.connect(depositor1).approve(await stbtc.getAddress(), amount)
+        await stbtc.connect(depositor1).deposit(amount, depositor1)
         await stbtc.connect(pauseAdmin).pause()
       })
 
       it("should pause deposits", async () => {
-        await expect(
-          stbtc.connect(depositor1).deposit(amount, depositor1),
-        ).to.be.revertedWithCustomError(stbtc, "EnforcedPause")
+        await expect(stbtc.connect(depositor1).deposit(amount, depositor1))
+          .to.be.revertedWithCustomError(stbtc, "ERC4626ExceededMaxDeposit")
+          .withArgs(depositor1.address, amount, 0)
       })
 
       it("should pause minting", async () => {
-        await expect(
-          stbtc.connect(depositor1).mint(amount, depositor1),
-        ).to.be.revertedWithCustomError(stbtc, "EnforcedPause")
+        await expect(stbtc.connect(depositor1).mint(amount, depositor1))
+          .to.be.revertedWithCustomError(stbtc, "ERC4626ExceededMaxMint")
+          .withArgs(depositor1.address, amount, 0)
       })
 
       it("should pause withdrawals", async () => {
         await expect(
-          stbtc.connect(depositor1).withdraw(amount, depositor1, depositor1),
-        ).to.be.revertedWithCustomError(stbtc, "EnforcedPause")
+          stbtc.connect(depositor1).withdraw(to1e18(1), depositor1, depositor1),
+        )
+          .to.be.revertedWithCustomError(stbtc, "ERC4626ExceededMaxWithdraw")
+          .withArgs(depositor1.address, to1e18(1), 0)
       })
 
       it("should pause redemptions", async () => {
         await expect(
-          stbtc.connect(depositor1).redeem(amount, depositor1, depositor1),
+          stbtc.connect(depositor1).redeem(to1e18(1), depositor1, depositor1),
+        )
+          .to.be.revertedWithCustomError(stbtc, "ERC4626ExceededMaxRedeem")
+          .withArgs(depositor1.address, to1e18(1), 0)
+      })
+
+      it("should return 0 when calling maxDeposit", async () => {
+        expect(await stbtc.maxDeposit(depositor1)).to.be.eq(0)
+      })
+
+      it("should return 0 when calling maxMint", async () => {
+        expect(await stbtc.maxMint(depositor1)).to.be.eq(0)
+      })
+
+      it("should return 0 when calling maxRedeem", async () => {
+        expect(await stbtc.maxRedeem(depositor1)).to.be.eq(0)
+      })
+
+      it("should return 0 when calling maxWithdraw", async () => {
+        expect(await stbtc.maxWithdraw(depositor1)).to.be.eq(0)
+      })
+
+      it("should pause transfers", async () => {
+        await expect(
+          stbtc.connect(depositor1).transfer(depositor2, amount),
+        ).to.be.revertedWithCustomError(stbtc, "EnforcedPause")
+      })
+
+      it("should pause transfersFrom", async () => {
+        await expect(
+          stbtc
+            .connect(depositor1)
+            .approve(depositor2.address, amount)
+            .then(() =>
+              stbtc
+                .connect(depositor2)
+                .transferFrom(depositor1, depositor2, amount),
+            ),
         ).to.be.revertedWithCustomError(stbtc, "EnforcedPause")
       })
     })

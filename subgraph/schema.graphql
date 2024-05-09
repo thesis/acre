@@ -1,106 +1,46 @@
-type BridgingCompleted @entity(immutable: true) {
-  id: Bytes!
-  depositKey: BigInt! # uint256
-  caller: Bytes! # address
-  referral: Int! # uint16
-  bridgedAmount: BigInt! # uint256
-  depositorFee: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+enum EventType {
+  Initialized
+  Finalized
 }
 
-type DepositFinalized @entity(immutable: true) {
-  id: Bytes!
-  depositKey: BigInt! # uint256
-  tbtcAmount: BigInt! # uint256
-  finalizedAt: BigInt! # uint32
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+interface ActivityData @key(fields: "id") {
+  id: ID!
+  depositOwner: DepositOwner!
+  events: [Event!]
+  bitcoinTransactionId: String
 }
 
-type DepositInitialized @entity(immutable: true) {
-  id: Bytes!
-  depositKey: BigInt! # uint256
-  initializedAt: BigInt! # uint32
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+type DepositOwner @entity {
+  # Id is the ethereum address of the account.
+  id: ID!
+  activities: [ActivityData!] @derivedFrom(field: "depositOwner")
 }
 
-type DepositorFeeDivisorUpdated @entity(immutable: true) {
-  id: Bytes!
-  depositorFeeDivisor: BigInt! # uint64
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+type Deposit implements ActivityData @entity {
+  id: ID!
+  depositOwner: DepositOwner!
+  events: [Event!] @derivedFrom(field: "activity")
+  initialDepositAmount: BigInt!
+  bridgedAmount: BigInt
+  depositorFee: BigInt
+  amountToDeposit: BigInt
+  referral: Int
+  bitcoinTransactionId: String
 }
 
-type OwnershipTransferStarted @entity(immutable: true) {
-  id: Bytes!
-  previousOwner: Bytes! # address
-  newOwner: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+type Withdraw implements ActivityData @entity {
+  id: ID!
+  depositOwner: DepositOwner!
+  events: [Event!] @derivedFrom(field: "activity")
+  # TODO: amount field will be updated when working on withdraw 
+  amount: BigInt
+  bitcoinTransactionId: String
 }
 
-type OwnershipTransferred @entity(immutable: true) {
-  id: Bytes!
-  previousOwner: Bytes! # address
-  newOwner: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type StakeRequestCancelledFromQueue @entity(immutable: true) {
-  id: Bytes!
-  depositKey: BigInt! # uint256
-  staker: Bytes! # address
-  amountToStake: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type StakeRequestFinalized @entity(immutable: true) {
-  id: Bytes!
-  depositKey: BigInt! # uint256
-  caller: Bytes! # address
-  stakedAmount: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type StakeRequestFinalizedFromQueue @entity(immutable: true) {
-  id: Bytes!
-  depositKey: BigInt! # uint256
-  caller: Bytes! # address
-  stakedAmount: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type StakeRequestInitialized @entity(immutable: true) {
-  id: Bytes!
-  depositKey: BigInt! # uint256
-  caller: Bytes! # address
-  staker: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type StakeRequestQueued @entity(immutable: true) {
-  id: Bytes!
-  depositKey: BigInt! # uint256
-  caller: Bytes! # address
-  queuedAmount: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+type Event @entity {
+  # Id is the transaction hash.
+  id: ID!
+  timestamp: BigInt!
+  activity: ActivityData
+  type: EventType!
 }
