@@ -1,6 +1,7 @@
 import React from "react"
 import { ChakraProvider } from "@chakra-ui/react"
 import { Provider as ReduxProvider } from "react-redux"
+import { RouterProvider } from "react-router-dom"
 import { AcreSdkProvider } from "./acre-react/contexts"
 import GlobalStyles from "./components/GlobalStyles"
 import {
@@ -10,7 +11,7 @@ import {
   WalletContextProvider,
 } from "./contexts"
 import { useInitApp } from "./hooks"
-import { Router } from "./router"
+import { router } from "./router"
 import { store } from "./store"
 import theme from "./theme"
 
@@ -20,7 +21,7 @@ function DApp() {
   return (
     <>
       <GlobalStyles />
-      <Router />
+      <RouterProvider router={router} />
     </>
   )
 }
