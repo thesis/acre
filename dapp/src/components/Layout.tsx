@@ -1,9 +1,10 @@
-import React, { useState } from "react"
+import React from "react"
 import { AnimatePresence, motion, Variants } from "framer-motion"
+import { useState } from "react"
 import { useLocation, useOutlet } from "react-router-dom"
-import Header from "../Header"
-import DocsDrawer from "../DocsDrawer"
-import Sidebar from "../Sidebar"
+import DocsDrawer from "./DocsDrawer"
+import Header from "./Header"
+import Sidebar from "./Sidebar"
 
 const wrapperVariants: Variants = {
   in: { opacity: 0, y: 48 },
