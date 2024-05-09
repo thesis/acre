@@ -1,5 +1,4 @@
 import { BitcoinTxHash, EthereumAddress, Hex } from "@keep-network/tbtc-v2.ts"
-import { BigNumber } from "@ethersproject/bignumber"
 import type { ChainIdentifier } from "../../src/lib/contracts"
 
 import type { DepositReceipt } from "../../src/modules/tbtc"
@@ -50,13 +49,11 @@ const revealTestData: SaveRevealRequest = {
 const fundingUtxo: {
   transactionHash: BitcoinTxHash
   outputIndex: number
-  value: BigNumber
 } = {
   transactionHash: BitcoinTxHash.from(
     "2f952bdc206bf51bb745b967cb7166149becada878d3191ffe341155ebcd4883",
   ),
   outputIndex: 1,
-  value: BigNumber.from(3933200),
 }
 
 export { depositTestData, receiptTestData, revealTestData, fundingUtxo }
