@@ -12,9 +12,10 @@ import { TextMd } from "#/components/shared/Typography"
 import {
   CountdownTimer,
   LiveTag,
+  SeasonCountdownSectionBackground,
 } from "#/components/shared/SeasonCountdownSection"
 
-type CurrentSeasonCardProps = CardProps & {
+type CurrentSeasonCardProps = Omit<CardProps, "position" | "pos"> & {
   heading: React.ReactNode
   timestamp: number
   totalJoined?: number
@@ -25,13 +26,14 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
   const { heading, timestamp, totalJoined, tvl, ...restProps } = props
   return (
     <Card
-      bg="brand.400"
+      bg="transparent"
       borderWidth={0}
       gap={4}
       rounded="xl"
       px={5}
       py={4}
       w="full"
+      position="relative"
       {...restProps}
     >
       <LiveTag fontSize="sm" px={3} py={1} gap={2} />
@@ -71,7 +73,11 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
           )}
         </Flex>
       </CardBody>
-      {/* TODO: Add `Background` component when merged */}
+      <SeasonCountdownSectionBackground
+        position="absolute"
+        inset={0}
+        zIndex={-1}
+      />
     </Card>
   )
 }
