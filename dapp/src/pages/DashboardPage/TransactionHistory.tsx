@@ -21,6 +21,8 @@ import { TextMd, TextSm } from "#/components/shared/Typography"
 import { IconArrowUpRight } from "@tabler/icons-react"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import emptyStateIlustration from "#/assets/images/empty-state.png"
+import { ArrowUpRightAnimatedIcon } from "#/assets/icons/animated"
+import { motion } from "framer-motion"
 
 // TODO: Fix `Pagination` container height transition
 
@@ -56,6 +58,9 @@ export default function TransactionHistory(props: TransactionHistoryProps) {
               (pageData as typeof data).map(
                 ({ date, type, amount, address, url }) => (
                   <Card
+                    as={motion.div}
+                    initial={false}
+                    whileHover="animate"
                     key={url}
                     role="group"
                     variant="elevated"
@@ -85,7 +90,7 @@ export default function TransactionHistory(props: TransactionHistoryProps) {
 
                       <IconButton
                         as={Link}
-                        icon={<Icon boxSize={4} as={IconArrowUpRight} />}
+                        icon={<ArrowUpRightAnimatedIcon top={1} />}
                         aria-label="View transaction details"
                         href={url}
                         variant="ghost"
