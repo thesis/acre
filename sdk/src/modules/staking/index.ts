@@ -60,7 +60,10 @@ class StakingModule {
    *        be used for emergency recovery of the deposited funds. If
    *        `undefined` the bitcoin address from bitcoin provider is used as
    *        bitcoin recovery address - note that an address returned by bitcoin
-   *        provider must then be `P2WPKH` or `P2PKH`.
+   *        provider must then be `P2WPKH` or `P2PKH`. This property is
+   *        available to let the consumer use `P2SH-P2WPKH` as the deposit owner
+   *        and another tBTC-supported type (`P2WPKH`, `P2PKH`) address as the
+   *        tBTC Bridge recovery address.
    * @returns Object represents the deposit process.
    */
   async initializeStake(referral: number, bitcoinRecoveryAddress?: string) {
