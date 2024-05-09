@@ -13,7 +13,7 @@ import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 abstract contract ERC4626Fees is ERC4626Upgradeable {
     using Math for uint256;
 
-    uint256 private constant _BASIS_POINT_SCALE = 1e4;
+    uint256 internal constant _BASIS_POINT_SCALE = 1e4;
 
     // === Overrides ===
 
@@ -82,6 +82,13 @@ abstract contract ERC4626Fees is ERC4626Upgradeable {
         if (fee > 0 && recipient != address(this)) {
             SafeERC20.safeTransfer(IERC20(asset()), recipient, fee);
         }
+    }
+
+    /// @dev Calculate the maximum amount of assets that can be withdrawn
+    ///      by an account including fees. See {IERC4626-maxWithdraw}.
+    function _maxWithdraw(address account) internal view returns (uint256) {
+        uint256 maxAssets = super.maxWithdraw(account);
+        return maxAssets - _feeOnTotal(maxAssets, _exitFeeBasisPoints());
     }
 
     // === Fee configuration ===
