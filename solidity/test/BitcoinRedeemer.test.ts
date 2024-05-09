@@ -105,7 +105,7 @@ describe("BitcoinRedeemer", () => {
               depositor1.address,
               encodeBytes32String(""),
             ),
-        ).to.be.revertedWithCustomError(bitcoinRedeemer, "UnsupportedToken")
+        ).to.be.revertedWithCustomError(bitcoinRedeemer, "CallerNotAllowed")
       })
     })
 

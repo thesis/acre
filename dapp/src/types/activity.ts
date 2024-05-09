@@ -12,3 +12,10 @@ export type ActivityInfo = {
   txHash: string
   status: ActivityInfoStatus
 }
+
+export type Activity = {
+  txHash: string
+  amount: bigint
+  type: "deposit" | "withdraw"
+  status: "completed" | "pending"
+}

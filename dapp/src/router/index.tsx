@@ -1,16 +1,29 @@
 import React from "react"
-import { createBrowserRouter } from "react-router-dom"
-import OverviewPage from "#/pages/OverviewPage"
+import Layout from "#/components/Layout"
 import ActivityPage from "#/pages/ActivityPage"
+import DashboardPage from "#/pages/DashboardPage"
+import LandingPage from "#/pages/LandingPage"
+import { createBrowserRouter } from "react-router-dom"
 import { routerPath } from "./path"
 
 export const router = createBrowserRouter([
   {
-    path: routerPath.home,
-    element: <OverviewPage />,
-  },
-  {
-    path: `${routerPath.activity}/:activityId`,
-    element: <ActivityPage />,
+    path: "/",
+    element: <Layout />,
+    children: [
+      {
+        index: true,
+        path: routerPath.home,
+        element: <LandingPage />,
+      },
+      {
+        path: routerPath.dashboard,
+        element: <DashboardPage />,
+      },
+      {
+        path: `${routerPath.activity}/:activityId`,
+        element: <ActivityPage />,
+      },
+    ],
   },
 ])

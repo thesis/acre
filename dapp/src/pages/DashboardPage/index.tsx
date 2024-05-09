@@ -9,7 +9,7 @@ import TransactionHistory from "./TransactionHistory"
 import { DocsCard } from "./DocsCard"
 import { ActivityCarousel } from "./ActivityCarousel"
 
-export default function OverviewPage() {
+export default function DashboardPage() {
   return (
     <Flex direction="column" p={6}>
       <HStack pb={3.5}>
