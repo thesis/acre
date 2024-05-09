@@ -58,7 +58,7 @@ contract BitcoinRedeemer is Ownable2StepUpgradeable, IReceiveApproval {
     /// Attempted to call redeemSharesAndUnmint with unexpected tBTC token owner.
     error UnexpectedTbtcTokenOwner();
 
-    /// Reverts if the redeemer address is zero.
+    /// Reverts if the redeemer is not the deposit owner.
     error RedeemerNotOwner(address redeemer, address owner);
 
     /// Reverts when approveAndCall to tBTC contract fails.
