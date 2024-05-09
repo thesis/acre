@@ -1,35 +1,38 @@
 import React from "react"
-import { StackProps, Stack, Box } from "@chakra-ui/react"
+import { StackProps, Stack, Box, useToken } from "@chakra-ui/react"
 import { AnimatePresence, Transition, Variants, motion } from "framer-motion"
 import { useSize } from "@chakra-ui/react-use-size"
 import { usePagination } from "./PaginationContext"
 
 const transition: Transition = {
   type: "spring",
-  duration: 0.75,
+  stiffness: 120,
+  damping: 16,
+  mass: 0.85,
 }
 
 const variants: Variants = {
-  enter: (direction: "left" | "right") => ({
-    x: direction === "right" ? "120%" : "-120%",
+  enter: ({ direction, spacing }) => ({
+    x: `calc((100% + ${spacing}) * ${direction === "right" ? 1 : -1})`,
     transition,
   }),
   center: {
     x: 0,
     transition,
   },
-  exit: (direction: "left" | "right") => ({
-    x: direction === "left" ? "120%" : "-120%",
+  exit: ({ direction, spacing }) => ({
+    x: `calc((100% + ${spacing}) * ${direction === "left" ? 1 : -1})`,
     transition,
   }),
 }
 
 type PaginationPageProps = Omit<StackProps, "children"> & {
   children: (pageData: unknown[]) => React.ReactNode
+  pageSpacing?: number | string
 }
 
 function PaginationPage(props: PaginationPageProps) {
-  const { children, ...restProps } = props
+  const { children, pageSpacing = 0, ...restProps } = props
   const { page, pageData } = usePagination()
 
   const ref = React.useRef<HTMLDivElement>(null)
@@ -41,14 +44,19 @@ function PaginationPage(props: PaginationPageProps) {
   }, [page])
 
   const direction = page < previousPage.current ? "left" : "right"
+  const spacing = useToken("space", pageSpacing, "20%")
 
   return (
     <Box as={motion.div} layout animate={{ height, transition }}>
       <Box ref={ref}>
-        <AnimatePresence mode="popLayout" custom={direction} initial={false}>
+        <AnimatePresence
+          mode="popLayout"
+          custom={{ direction, spacing }}
+          initial={false}
+        >
           <Stack
             as={motion.div}
-            custom={direction}
+            custom={{ direction, spacing }}
             key={page}
             variants={variants}
             animate="center"

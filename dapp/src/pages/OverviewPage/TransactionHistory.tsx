@@ -50,7 +50,7 @@ export default function TransactionHistory(props: TransactionHistoryProps) {
         </VStack>
       ) : (
         <Pagination data={data} pageSize={10}>
-          <PaginationPage direction="column" spacing={2}>
+          <PaginationPage direction="column" spacing={2} pageSpacing={6}>
             {(pageData) =>
               // TODO: Fix type assertion of `pageData`
               (pageData as typeof data).map(
@@ -102,7 +102,15 @@ export default function TransactionHistory(props: TransactionHistoryProps) {
             }
           </PaginationPage>
 
-          <HStack spacing={2}>
+          <HStack
+            spacing={2}
+            m={-5}
+            mt={-6}
+            p={5}
+            pt={6}
+            bgGradient="linear(to-b, transparent, gold.200 20%)"
+            zIndex={2}
+          >
             <HStack spacing={2}>
               <PaginationButton mode="previous" />
               <PaginationButton mode="next" />
