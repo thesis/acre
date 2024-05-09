@@ -6,11 +6,13 @@ import {
   CardHeader,
   CardProps,
   Flex,
-  Tag,
 } from "@chakra-ui/react"
 import { getNumberWithSeparator } from "#/utils"
 import { TextMd } from "#/components/shared/Typography"
-import { CountdownTimer } from "#/components/shared/SeasonCountdownSection"
+import {
+  CountdownTimer,
+  LiveTag,
+} from "#/components/shared/SeasonCountdownSection"
 
 type CurrentSeasonCardProps = CardProps & {
   heading: React.ReactNode
@@ -29,9 +31,10 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
       rounded="xl"
       px={5}
       py={4}
+      w="full"
       {...restProps}
     >
-      <Tag>Live</Tag>
+      <LiveTag fontSize="sm" px={3} py={1} gap={2} />
 
       <CardHeader
         p={0}
@@ -39,7 +42,7 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
         fontSize="2xl"
         lineHeight={1}
         fontWeight="bold"
-        letterSpacing="-0.03rem" // -0.48px
+        letterSpacing="-2%"
       >
         {heading}
       </CardHeader>
