@@ -14,6 +14,7 @@ function withBaseModal<T extends BaseModalProps>(
         isOpen
         onClose={closeModal}
         scrollBehavior="inside"
+        closeOnOverlayClick={false}
         size={MODAL_BASE_SIZE}
       >
         <ModalOverlay mt="header_height" />
