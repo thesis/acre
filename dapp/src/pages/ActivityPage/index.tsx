@@ -3,6 +3,7 @@ import { Flex, Link as ChakraLink, Icon } from "@chakra-ui/react"
 
 import { Link as ReactRouterLink } from "react-router-dom"
 import { useSidebar } from "#/hooks"
+import { routerPath } from "#/router/path"
 import { ArrowLeft } from "#/assets/icons"
 import ActivityDetails from "./ActivityDetails"
 import { ActivityBar } from "./ActivityBar"
@@ -17,7 +18,7 @@ export default function ActivityPage() {
 
   return (
     <Flex direction="column" gap={4} p={6}>
-      <ChakraLink as={ReactRouterLink} to="/">
+      <ChakraLink as={ReactRouterLink} to={routerPath.dashboard}>
         <Icon
           as={ArrowLeft}
           boxSize={8}
