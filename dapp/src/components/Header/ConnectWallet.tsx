@@ -1,9 +1,9 @@
 import React from "react"
 import { Button, HStack, Icon, Tooltip } from "@chakra-ui/react"
-import { useWallet } from "#/hooks"
+import { useIsHomeRouteActive, useWallet, useWalletContext } from "#/hooks"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import { TextMd } from "#/components/shared/Typography"
-import { BitcoinIcon, EthereumIcon } from "#/assets/icons"
+import { BitcoinIcon } from "#/assets/icons"
 import { Account } from "@ledgerhq/wallet-api-client"
 import { CURRENCY_ID_BITCOIN } from "#/constants"
 import {
@@ -11,6 +11,12 @@ import {
   logPromiseFailure,
   truncateAddress,
 } from "#/utils"
+import { AnimatePresence, motion, Variants } from "framer-motion"
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0, y: -48 },
+  visible: { opacity: 1, y: 0 },
+}
 
 const getCustomDataByAccount = (
   account?: Account,
@@ -28,53 +34,54 @@ const getCustomDataByAccount = (
 export default function ConnectWallet() {
   const {
     bitcoin: { account: btcAccount, requestAccount: requestBitcoinAccount },
-    ethereum: { account: ethAccount, requestAccount: requestEthereumAccount },
   } = useWallet()
+  // TODO: Move `isConnected` to useWallet hook
+  const { isConnected } = useWalletContext()
 
   const customDataBtcAccount = getCustomDataByAccount(btcAccount)
-  const customDataEthAccount = getCustomDataByAccount(ethAccount)
+
+  const isHomeRoute = useIsHomeRouteActive()
 
   const handleConnectBitcoinAccount = () => {
     logPromiseFailure(requestBitcoinAccount())
   }
 
-  const handleConnectEthereumAccount = () => {
-    logPromiseFailure(requestEthereumAccount())
-  }
-
   return (
-    <HStack spacing={4}>
-      <HStack display={{ base: "none", md: "flex" }}>
-        <TextMd color="grey.500">Balance</TextMd>
-        <CurrencyBalance
-          currency="bitcoin"
-          amount={btcAccount?.balance.toString()}
-        />
-      </HStack>
-      <Tooltip
-        label="Currently, we support only Legacy or Native SegWit addresses. Please try connecting another address."
-        placement="top"
-        isDisabled={
-          !(btcAccount && !isSupportedBTCAddressType(btcAccount.address))
-        }
-      >
-        <Button
-          variant="card"
-          colorScheme={customDataBtcAccount.colorScheme}
-          leftIcon={<Icon as={BitcoinIcon} boxSize={6} />}
-          onClick={handleConnectBitcoinAccount}
+    <AnimatePresence initial={false}>
+      {(isConnected || !isHomeRoute) && (
+        <HStack
+          as={motion.div}
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          exit="hidden"
+          spacing={4}
         >
-          {customDataBtcAccount.text}
-        </Button>
-      </Tooltip>
-      <Button
-        variant="card"
-        colorScheme={customDataEthAccount.colorScheme}
-        leftIcon={<Icon as={EthereumIcon} boxSize={6} />}
-        onClick={handleConnectEthereumAccount}
-      >
-        {customDataEthAccount.text}
-      </Button>
-    </HStack>
+          <HStack display={{ base: "none", md: "flex" }}>
+            <TextMd color="grey.500">Balance</TextMd>
+            <CurrencyBalance
+              currency="bitcoin"
+              amount={btcAccount?.balance.toString()}
+            />
+          </HStack>
+          <Tooltip
+            label="Currently, we support only Legacy or Native SegWit addresses. Please try connecting another address."
+            placement="top"
+            isDisabled={
+              !(btcAccount && !isSupportedBTCAddressType(btcAccount.address))
+            }
+          >
+            <Button
+              variant="card"
+              colorScheme={customDataBtcAccount.colorScheme}
+              leftIcon={<Icon as={BitcoinIcon} boxSize={6} />}
+              onClick={handleConnectBitcoinAccount}
+            >
+              {customDataBtcAccount.text}
+            </Button>
+          </Tooltip>
+        </HStack>
+      )}
+    </AnimatePresence>
   )
 }
