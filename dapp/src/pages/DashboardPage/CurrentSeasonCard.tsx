@@ -14,12 +14,14 @@ import {
   LiveTag,
   SeasonCountdownSectionBackground,
 } from "#/components/shared/SeasonCountdownSection"
+import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
+import { AmountType } from "#/types"
 
 type CurrentSeasonCardProps = Omit<CardProps, "position" | "pos"> & {
   heading: React.ReactNode
   timestamp: number
   totalJoined?: number
-  tvl?: number
+  tvl?: AmountType
 }
 
 export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
@@ -63,12 +65,16 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
               </TextMd>
             </TextMd>
           )}
-          {tvl && (
-            <TextMd fontWeight="medium">
+          {!!tvl && (
+            <TextMd display="flex" fontWeight="medium">
               TVL&nbsp;
-              <TextMd as="span" fontWeight="bold">
-                {getNumberWithSeparator(tvl)} BTC
-              </TextMd>
+              <CurrencyBalance
+                as="span"
+                amount={tvl}
+                currency="bitcoin"
+                fontSize="md"
+                fontWeight="bold"
+              />
             </TextMd>
           )}
         </Flex>
