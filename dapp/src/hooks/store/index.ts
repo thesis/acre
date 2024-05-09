@@ -6,3 +6,5 @@ export * from "./useMinDepositAmount"
 export * from "./useActionFlowType"
 export * from "./useActionFlowStatus"
 export * from "./useActionFlowActiveStep"
+// TODO: Rename when the old hook is deleted.
+export { useActivities as useActivitiesNEW } from "./useActivities"
