@@ -67,7 +67,8 @@ class StakingModule {
    * @returns Object represents the deposit process.
    */
   async initializeStake(referral: number, bitcoinRecoveryAddress?: string) {
-    const depositor = await this.#bitcoinProvider.getAddress()
+    const depositorOwnerBitcoinAddress =
+      await this.#bitcoinProvider.getAddress()
 
     // TODO: If we want to handle other chains we should create the wrapper for
     // OrangeKit SDK to return `ChainIdentifier` from `predictAddress` fn. Or we
@@ -75,12 +76,13 @@ class StakingModule {
     // and `lib`. Currently we support only `Ethereum` so here we force to
     // `EthereumAddress`.
     const depositOwnerChainAddress = EthereumAddress.from(
-      await this.#orangeKit.predictAddress(depositor),
+      await this.#orangeKit.predictAddress(depositorOwnerBitcoinAddress),
     )
 
     // tBTC-v2 SDK will handle Bitcoin address validation and throw an error if
     // address is not supported.
-    const finalBitcoinRecoveryAddress = bitcoinRecoveryAddress ?? depositor
+    const finalBitcoinRecoveryAddress =
+      bitcoinRecoveryAddress ?? depositorOwnerBitcoinAddress
 
     const tbtcDeposit = await this.#tbtc.initiateDeposit(
       depositOwnerChainAddress,
