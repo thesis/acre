@@ -18,7 +18,7 @@ import { TextMd } from "#/components/shared/Typography"
 import { CardAlert } from "#/components/shared/alerts"
 import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
 
-const DELAY = ONE_SEC_IN_MILLISECONDS * 3
+const DELAY = ONE_SEC_IN_MILLISECONDS * 2
 const TOAST_ID = TOAST_IDS.DEPOSIT_TRANSACTION_ERROR
 const TOAST = TOASTS[TOAST_ID]
 
