@@ -4,10 +4,8 @@ import { WalletContext } from "#/contexts"
 import { UseRequestAccountReturn } from "#/types"
 import { CURRENCY_ID_BITCOIN } from "#/constants"
 import { useWalletApiReactTransport } from "./useWalletApiReactTransport"
-import { useAppDispatch } from "./store/useAppDispatch"
 
 export function useRequestBitcoinAccount(): UseRequestAccountReturn {
-  const dispatch = useAppDispatch()
   const { setBtcAccount } = useContext(WalletContext)
   const { account, requestAccount } = useRequestAccount()
   const { walletApiReactTransport } = useWalletApiReactTransport()
@@ -16,7 +14,7 @@ export function useRequestBitcoinAccount(): UseRequestAccountReturn {
     if (account) {
       setBtcAccount(account)
     }
-  }, [account, dispatch, setBtcAccount])
+  }, [account, setBtcAccount])
 
   const requestBitcoinAccount = useCallback(async () => {
     walletApiReactTransport.connect()
