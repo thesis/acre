@@ -8,10 +8,10 @@ import { TextMd } from "#/components/shared/Typography"
 import {
   SeasonCountdownSection,
   HeroSection,
+  CardButton,
+  ContentCard,
+  BenefitCard,
 } from "#/pages/LandingPage/components"
-import BenefitCard from "./BenefitCard"
-import ContentCard from "./ContentCard"
-import CardButton from "./CardButton"
 
 export default function LandingPage() {
   return (
