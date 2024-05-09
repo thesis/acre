@@ -334,7 +334,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         if (paused()) {
             return 0;
         }
-        return _maxWithdraw(owner);
+        return super.maxWithdraw(owner);
     }
 
     /// @dev Returns the maximum amount of Vault shares that can be redeemed from
