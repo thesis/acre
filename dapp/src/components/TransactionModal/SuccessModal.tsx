@@ -9,7 +9,7 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { LoadingSpinnerSuccessIcon } from "#/assets/icons"
-import { useModalFlowContext } from "#/hooks"
+import { useModal } from "#/hooks"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import { ACTION_FLOW_TYPES, ActionFlowType, TokenAmount } from "#/types"
 import { TextMd } from "../shared/Typography"
@@ -67,7 +67,7 @@ type SuccessModalProps = {
 }
 
 export default function SuccessModal({ type, tokenAmount }: SuccessModalProps) {
-  const { onClose } = useModalFlowContext()
+  const { closeModal } = useModal()
 
   const { header, footer, renderBody } = CONTENT[type]
 
@@ -81,7 +81,7 @@ export default function SuccessModal({ type, tokenAmount }: SuccessModalProps) {
         </VStack>
       </ModalBody>
       <ModalFooter pt={0}>
-        <Button size="lg" width="100%" variant="outline" onClick={onClose}>
+        <Button size="lg" width="100%" variant="outline" onClick={closeModal}>
           Go to dashboard
         </Button>
         <HStack spacing={2}>

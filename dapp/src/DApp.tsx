@@ -17,6 +17,7 @@ import Sidebar from "./components/Sidebar"
 import DocsDrawer from "./components/DocsDrawer"
 import GlobalStyles from "./components/GlobalStyles"
 import { router } from "./router"
+import ModalRoot from "./components/ModalRoot"
 
 function DApp() {
   useInitApp()
@@ -29,6 +30,7 @@ function DApp() {
       </Box>
       <Sidebar />
       <DocsDrawer />
+      <ModalRoot />
     </>
   )
 }

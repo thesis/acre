@@ -1,29 +1,18 @@
-import React, { useEffect, useMemo } from "react"
-import {
-  ModalFlowContext,
-  ModalFlowContextValue,
-  StakeFlowProvider,
-  TransactionContextProvider,
-} from "#/contexts"
+import React, { useEffect } from "react"
+import { StakeFlowProvider, TransactionContextProvider } from "#/contexts"
 import { useSidebar } from "#/hooks"
-import { ActionFlowType } from "#/types"
+import { ActionFlowType, BaseModalProps } from "#/types"
 import { ModalCloseButton } from "@chakra-ui/react"
-import { resetState, setType } from "#/store/action-flow"
-import ModalBase from "../shared/ModalBase"
+import { setType } from "#/store/action-flow"
 import ModalContentWrapper from "./ModalContentWrapper"
 import { ActiveFlowStep } from "./ActiveFlowStep"
+import withBaseModal from "../ModalRoot/withBaseModal"
 
 type TransactionModalProps = {
   type: ActionFlowType
-  isOpen: boolean
-  onClose: () => void
-}
+} & BaseModalProps
 
-export default function TransactionModal({
-  type,
-  isOpen,
-  onClose,
-}: TransactionModalProps) {
+function TransactionModalBase({ type }: TransactionModalProps) {
   const { onOpen: openSideBar, onClose: closeSidebar } = useSidebar()
 
   useEffect(() => {
@@ -31,36 +20,21 @@ export default function TransactionModal({
   }, [type])
 
   useEffect(() => {
-    let timeout: NodeJS.Timeout
-
-    if (isOpen) {
-      openSideBar()
-    } else {
-      closeSidebar()
-      timeout = setTimeout(resetState, 100)
-    }
-    return () => clearTimeout(timeout)
-  }, [isOpen, openSideBar, closeSidebar])
-
-  const contextValue: ModalFlowContextValue = useMemo<ModalFlowContextValue>(
-    () => ({
-      onClose,
-    }),
-    [onClose],
-  )
+    openSideBar()
+    return () => closeSidebar()
+  }, [closeSidebar, openSideBar])
 
   return (
-    <ModalBase isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false}>
-      <TransactionContextProvider>
-        <ModalFlowContext.Provider value={contextValue}>
-          <StakeFlowProvider>
-            <ModalContentWrapper>
-              <ModalCloseButton />
-              <ActiveFlowStep />
-            </ModalContentWrapper>
-          </StakeFlowProvider>
-        </ModalFlowContext.Provider>
-      </TransactionContextProvider>
-    </ModalBase>
+    <TransactionContextProvider>
+      <StakeFlowProvider>
+        <ModalContentWrapper>
+          <ModalCloseButton />
+          <ActiveFlowStep />
+        </ModalContentWrapper>
+      </StakeFlowProvider>
+    </TransactionContextProvider>
   )
 }
+
+const TransactionModal = withBaseModal(TransactionModalBase)
+export default TransactionModal

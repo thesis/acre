@@ -1,9 +1,5 @@
 import React, { ReactElement, useEffect } from "react"
-import {
-  useModalFlowContext,
-  useActionFlowActiveStep,
-  useActionFlowType,
-} from "#/hooks"
+import { useActionFlowActiveStep, useActionFlowType, useModal } from "#/hooks"
 import {
   ACTION_FLOW_STEPS_TYPES,
   ActionFlowType,
@@ -22,7 +18,7 @@ const FLOW: Record<ActionFlowType, (activeStep: number) => ReactElement> = {
 }
 
 export function ActiveFlowStep() {
-  const { onClose } = useModalFlowContext()
+  const { closeModal } = useModal()
   const activeStep = useActionFlowActiveStep()
   const type = useActionFlowType()
 
@@ -30,9 +26,9 @@ export function ActiveFlowStep() {
 
   useEffect(() => {
     if (activeStep > numberOfSteps) {
-      onClose()
+      closeModal()
     }
-  }, [activeStep, numberOfSteps, onClose])
+  }, [activeStep, closeModal, numberOfSteps])
 
   return FLOW[type](activeStep)
 }
