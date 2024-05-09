@@ -2,7 +2,6 @@ import ethers, { Contract, ZeroAddress, getAddress } from "ethers"
 import {
   EthereumBitcoinDepositor,
   EthereumAddress,
-  Hex,
   EthereumSigner,
   DepositFees,
 } from "../../../src"
@@ -25,6 +24,7 @@ const testData = {
 describe("BitcoinDepositor", () => {
   const spyOnEthersDataSlice = jest.spyOn(ethers, "dataSlice")
   const spyOnEthersContract = jest.spyOn(ethers, "Contract")
+  const signer = {} as EthereumSigner
 
   const vaultAddress = EthereumAddress.from(
     ethers.Wallet.createRandom().address,
@@ -45,6 +45,7 @@ describe("BitcoinDepositor", () => {
       .fn()
       .mockResolvedValue(testData.depositorFeeDivisor),
     minDepositAmount: jest.fn().mockImplementation(() => minDepositAmount),
+    runner: signer,
   }
 
   let depositor: EthereumBitcoinDepositor
@@ -62,7 +63,7 @@ describe("BitcoinDepositor", () => {
 
     depositor = new EthereumBitcoinDepositor(
       {
-        signer: {} as EthereumSigner,
+        signer,
         address: depositorAddress.identifierHex,
       },
       "sepolia",
@@ -82,122 +83,6 @@ describe("BitcoinDepositor", () => {
       const address = await depositor.getTbtcVaultChainIdentifier()
 
       expect(address.equals(vaultAddress)).toBeTruthy()
-    })
-  })
-
-  describe("revealDeposit", () => {
-    const depositOwner = EthereumAddress.from(
-      "0x000055d85E80A49B5930C4a77975d44f012D86C1",
-    )
-    const bitcoinFundingTransaction = {
-      version: Hex.from("00000000"),
-      inputs: Hex.from("11111111"),
-      outputs: Hex.from("22222222"),
-      locktime: Hex.from("33333333"),
-    }
-    const depositReveal = {
-      fundingOutputIndex: 2,
-      walletPublicKeyHash: Hex.from("8db50eb52063ea9d98b3eac91489a90f738986f6"),
-      refundPublicKeyHash: Hex.from("28e081f285138ccbe389c1eb8985716230129f89"),
-      blindingFactor: Hex.from("f9f0c90d00039523"),
-      refundLocktime: Hex.from("60bcea61"),
-      depositor: depositOwner,
-    }
-    describe("when extra data is defined", () => {
-      const extraData = {
-        depositOwner,
-        referral: 6851,
-        hex: Hex.from(
-          "0x000055d85e80a49b5930c4a77975d44f012d86c11ac300000000000000000000",
-        ),
-      }
-
-      const depositWithExtraData = {
-        ...depositReveal,
-        extraData: extraData.hex,
-      }
-
-      const { referral } = extraData
-
-      const mockedTx = Hex.from(
-        "0483fe6a05f245bccc7b10085f3c4d282d87ca42f27437d077acfd75e91183a0",
-      )
-      let result: Hex
-
-      beforeAll(async () => {
-        mockedContractInstance.initializeDeposit.mockReturnValue({
-          hash: mockedTx.toPrefixedString(),
-        })
-
-        const { fundingOutputIndex, ...restDepositData } = depositWithExtraData
-
-        result = await depositor.revealDeposit(
-          bitcoinFundingTransaction,
-          fundingOutputIndex,
-          restDepositData,
-        )
-      })
-
-      it("should get the vault address", () => {
-        expect(mockedContractInstance.tbtcVault).toHaveBeenCalled()
-      })
-
-      it("should decode extra data", () => {
-        expect(spyOnEthersDataSlice).toHaveBeenNthCalledWith(
-          1,
-          extraData.hex.toPrefixedString(),
-          0,
-          20,
-        )
-        expect(spyOnEthersDataSlice).toHaveBeenNthCalledWith(
-          2,
-          extraData.hex.toPrefixedString(),
-          20,
-          22,
-        )
-      })
-
-      it("should initialize deposit", () => {
-        const btcTxInfo = {
-          version: bitcoinFundingTransaction.version.toPrefixedString(),
-          inputVector: bitcoinFundingTransaction.inputs.toPrefixedString(),
-          outputVector: bitcoinFundingTransaction.outputs.toPrefixedString(),
-          locktime: bitcoinFundingTransaction.locktime.toPrefixedString(),
-        }
-
-        const revealInfo = {
-          fundingOutputIndex: depositReveal.fundingOutputIndex,
-          blindingFactor: depositReveal.blindingFactor.toPrefixedString(),
-          walletPubKeyHash:
-            depositReveal.walletPublicKeyHash.toPrefixedString(),
-          refundPubKeyHash:
-            depositReveal.refundPublicKeyHash.toPrefixedString(),
-          refundLocktime: depositReveal.refundLocktime.toPrefixedString(),
-          vault: `0x${vaultAddress.identifierHex}`,
-        }
-
-        expect(mockedContractInstance.initializeDeposit).toHaveBeenCalledWith(
-          btcTxInfo,
-          revealInfo,
-          `0x${depositOwner.identifierHex}`,
-          referral,
-        )
-        expect(result.toPrefixedString()).toBe(mockedTx.toPrefixedString())
-      })
-    })
-
-    describe("when extra data not defined", () => {
-      it("should throw an error", async () => {
-        const { fundingOutputIndex, ...restDepositData } = depositReveal
-
-        await expect(
-          depositor.revealDeposit(
-            bitcoinFundingTransaction,
-            fundingOutputIndex,
-            restDepositData,
-          ),
-        ).rejects.toThrow("Invalid extra data")
-      })
     })
   })
 
@@ -268,9 +153,9 @@ describe("BitcoinDepositor", () => {
     )
   })
 
-  describe("estimateDepositFees", () => {
+  describe("calculateDepositFee", () => {
     const mockedBridgeContractInstance = {
-      depositsParameters: jest
+      depositParameters: jest
         .fn()
         .mockResolvedValue(testData.depositParameters),
     }
@@ -337,13 +222,16 @@ describe("BitcoinDepositor", () => {
         expect(Contract).toHaveBeenNthCalledWith(
           1,
           `0x${bridgeAddress.identifierHex}`,
-          ["function depositsParameters()"],
+          [
+            "function depositParameters() view returns (uint64 depositDustThreshold, uint64 depositTreasuryFeeDivisor, uint64 depositTxMaxFee, uint32 depositRevealAheadPeriod)",
+          ],
+          mockedContractInstance.runner,
         )
       })
 
       it("should get the deposit parameters from chain", () => {
         expect(
-          mockedBridgeContractInstance.depositsParameters,
+          mockedBridgeContractInstance.depositParameters,
         ).toHaveBeenCalled()
       })
 
@@ -351,11 +239,12 @@ describe("BitcoinDepositor", () => {
         expect(mockedContractInstance.tbtcVault).toHaveBeenCalled()
       })
 
-      it("should create the ethers Contract instance of the Bridge contract", () => {
+      it("should create the ethers Contract instance of the tBTC Vault contract", () => {
         expect(Contract).toHaveBeenNthCalledWith(
           2,
           `0x${vaultAddress.identifierHex}`,
-          ["function optimisticMintingFeeDivisor()"],
+          ["function optimisticMintingFeeDivisor() view returns (uint32)"],
+          mockedContractInstance.runner,
         )
       })
 
@@ -381,7 +270,7 @@ describe("BitcoinDepositor", () => {
         mockedContractInstance.bridge.mockClear()
         mockedContractInstance.tbtcVault.mockClear()
         mockedContractInstance.depositorFeeDivisor.mockClear()
-        mockedBridgeContractInstance.depositsParameters.mockClear()
+        mockedBridgeContractInstance.depositParameters.mockClear()
         mockedVaultContractInstance.optimisticMintingFeeDivisor.mockClear()
 
         result2 = await depositor.calculateDepositFee(amountToStake)
@@ -390,7 +279,7 @@ describe("BitcoinDepositor", () => {
       it("should get the deposit parameters from cache", () => {
         expect(mockedContractInstance.bridge).toHaveBeenCalledTimes(0)
         expect(
-          mockedBridgeContractInstance.depositsParameters,
+          mockedBridgeContractInstance.depositParameters,
         ).toHaveBeenCalledTimes(0)
       })
 

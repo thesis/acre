@@ -15,10 +15,9 @@ import {
   ChainIdentifier,
   DecodedExtraData,
   BitcoinDepositor,
-  DepositReceipt,
   DepositFees,
 } from "../contracts"
-import { BitcoinRawTxVectors } from "../bitcoin"
+
 import { EthereumAddress } from "./address"
 import {
   EthersContractConfig,
@@ -89,33 +88,9 @@ class EthereumBitcoinDepositor
     return EthereumAddress.from(vault)
   }
 
-  /**
-   * @see {BitcoinDepositor#revealDeposit}
-   */
-  async revealDeposit(
-    depositTx: BitcoinRawTxVectors,
-    depositOutputIndex: number,
-    deposit: DepositReceipt,
-  ): Promise<Hex> {
-    const { fundingTx, reveal, extraData } = packRevealDepositParameters(
-      depositTx,
-      depositOutputIndex,
-      deposit,
-      await this.getTbtcVaultChainIdentifier(),
-    )
-
-    if (!extraData) throw new Error("Invalid extra data")
-
-    const { depositOwner, referral } = this.decodeExtraData(extraData)
-
-    const tx = await this.instance.initializeDeposit(
-      fundingTx,
-      reveal,
-      `0x${depositOwner.identifierHex}`,
-      referral,
-    )
-
-    return Hex.from(tx.hash)
+  // eslint-disable-next-line class-methods-use-this
+  revealDeposit(): Promise<Hex> {
+    throw new Error("Unsupported")
   }
 
   /**
@@ -208,21 +183,28 @@ class EthereumBitcoinDepositor
     }
 
     const bridgeAddress = await this.instance.bridge()
-    const bridge = new Contract(bridgeAddress, [
-      "function depositsParameters()",
-    ])
-    const depositsParameters =
-      (await bridge.depositsParameters()) as TbtcDepositParameters
+    const bridge = new Contract(
+      bridgeAddress,
+      [
+        "function depositParameters() view returns (uint64 depositDustThreshold, uint64 depositTreasuryFeeDivisor, uint64 depositTxMaxFee, uint32 depositRevealAheadPeriod)",
+      ],
+      this.instance.runner,
+    )
+    const { depositTreasuryFeeDivisor, depositTxMaxFee } =
+      (await bridge.depositParameters()) as TbtcDepositParameters
 
     const vaultAddress = await this.getTbtcVaultChainIdentifier()
-    const vault = new Contract(`0x${vaultAddress.identifierHex}`, [
-      "function optimisticMintingFeeDivisor()",
-    ])
+    const vault = new Contract(
+      `0x${vaultAddress.identifierHex}`,
+      ["function optimisticMintingFeeDivisor() view returns (uint32)"],
+      this.instance.runner,
+    )
     const optimisticMintingFeeDivisor =
       (await vault.optimisticMintingFeeDivisor()) as bigint
 
     this.#cache.tbtcBridgeMintingParameters = {
-      ...depositsParameters,
+      depositTreasuryFeeDivisor,
+      depositTxMaxFee,
       optimisticMintingFeeDivisor,
     }
     return this.#cache.tbtcBridgeMintingParameters

@@ -1554,6 +1554,14 @@ describe("stBTC", () => {
         })
       })
 
+      context("when a new dispatcher is the same as the old one", () => {
+        it("should revert", async () => {
+          await expect(
+            stbtc.connect(governance).updateDispatcher(mezoAllocator),
+          ).to.be.revertedWithCustomError(stbtc, "SameDispatcher")
+        })
+      })
+
       context("when a new dispatcher is non-zero address", () => {
         let newDispatcher: string
         let stbtcAddress: string
@@ -1613,6 +1621,14 @@ describe("stBTC", () => {
           await expect(
             stbtc.connect(governance).updateTreasury(ZeroAddress),
           ).to.be.revertedWithCustomError(stbtc, "ZeroAddress")
+        })
+      })
+
+      context("when a new treasury is same as the old one", () => {
+        it("should revert", async () => {
+          await expect(
+            stbtc.connect(governance).updateTreasury(treasury),
+          ).to.be.revertedWithCustomError(stbtc, "SameTreasury")
         })
       })
 
@@ -1691,6 +1707,16 @@ describe("stBTC", () => {
             await expect(tx)
               .to.emit(stbtc, "Paused")
               .withArgs(pauseAdmin.address)
+          })
+        })
+
+        context("when updating pause admin to the same address", () => {
+          beforeAfterSnapshotWrapper()
+
+          it("should revert", async () => {
+            await expect(
+              stbtc.connect(governance).updatePauseAdmin(pauseAdmin.address),
+            ).to.be.revertedWithCustomError(stbtc, "SamePauseAdmin")
           })
         })
       })
@@ -1793,30 +1819,72 @@ describe("stBTC", () => {
       beforeAfterSnapshotWrapper()
 
       before(async () => {
+        await tbtc.mint(depositor1.address, amount)
+        await tbtc.connect(depositor1).approve(await stbtc.getAddress(), amount)
+        await stbtc.connect(depositor1).deposit(amount, depositor1)
         await stbtc.connect(pauseAdmin).pause()
       })
 
       it("should pause deposits", async () => {
-        await expect(
-          stbtc.connect(depositor1).deposit(amount, depositor1),
-        ).to.be.revertedWithCustomError(stbtc, "EnforcedPause")
+        await expect(stbtc.connect(depositor1).deposit(amount, depositor1))
+          .to.be.revertedWithCustomError(stbtc, "ERC4626ExceededMaxDeposit")
+          .withArgs(depositor1.address, amount, 0)
       })
 
       it("should pause minting", async () => {
-        await expect(
-          stbtc.connect(depositor1).mint(amount, depositor1),
-        ).to.be.revertedWithCustomError(stbtc, "EnforcedPause")
+        await expect(stbtc.connect(depositor1).mint(amount, depositor1))
+          .to.be.revertedWithCustomError(stbtc, "ERC4626ExceededMaxMint")
+          .withArgs(depositor1.address, amount, 0)
       })
 
       it("should pause withdrawals", async () => {
         await expect(
-          stbtc.connect(depositor1).withdraw(amount, depositor1, depositor1),
-        ).to.be.revertedWithCustomError(stbtc, "EnforcedPause")
+          stbtc.connect(depositor1).withdraw(to1e18(1), depositor1, depositor1),
+        )
+          .to.be.revertedWithCustomError(stbtc, "ERC4626ExceededMaxWithdraw")
+          .withArgs(depositor1.address, to1e18(1), 0)
       })
 
       it("should pause redemptions", async () => {
         await expect(
-          stbtc.connect(depositor1).redeem(amount, depositor1, depositor1),
+          stbtc.connect(depositor1).redeem(to1e18(1), depositor1, depositor1),
+        )
+          .to.be.revertedWithCustomError(stbtc, "ERC4626ExceededMaxRedeem")
+          .withArgs(depositor1.address, to1e18(1), 0)
+      })
+
+      it("should return 0 when calling maxDeposit", async () => {
+        expect(await stbtc.maxDeposit(depositor1)).to.be.eq(0)
+      })
+
+      it("should return 0 when calling maxMint", async () => {
+        expect(await stbtc.maxMint(depositor1)).to.be.eq(0)
+      })
+
+      it("should return 0 when calling maxRedeem", async () => {
+        expect(await stbtc.maxRedeem(depositor1)).to.be.eq(0)
+      })
+
+      it("should return 0 when calling maxWithdraw", async () => {
+        expect(await stbtc.maxWithdraw(depositor1)).to.be.eq(0)
+      })
+
+      it("should pause transfers", async () => {
+        await expect(
+          stbtc.connect(depositor1).transfer(depositor2, amount),
+        ).to.be.revertedWithCustomError(stbtc, "EnforcedPause")
+      })
+
+      it("should pause transfersFrom", async () => {
+        await expect(
+          stbtc
+            .connect(depositor1)
+            .approve(depositor2.address, amount)
+            .then(() =>
+              stbtc
+                .connect(depositor2)
+                .transferFrom(depositor1, depositor2, amount),
+            ),
         ).to.be.revertedWithCustomError(stbtc, "EnforcedPause")
       })
     })
@@ -1934,6 +2002,152 @@ describe("stBTC", () => {
         await expect(
           stbtc.connect(depositor1).updateExitFeeBasisPoints(100n),
         ).to.be.revertedWithCustomError(stbtc, "OwnableUnauthorizedAccount")
+      })
+    })
+  })
+
+  describe("totalAssets", () => {
+    beforeAfterSnapshotWrapper()
+
+    const donation = to1e18(1)
+    const firstDeposit = to1e18(2)
+    const secondDeposit = to1e18(3)
+
+    context("when there are no deposits", () => {
+      it("should return 0", async () => {
+        expect(await stbtc.totalAssets()).to.be.eq(0)
+      })
+    })
+
+    context("when there are deposits", () => {
+      context("when there is a first deposit made", () => {
+        beforeAfterSnapshotWrapper()
+
+        before(async () => {
+          await tbtc.mint(depositor1.address, firstDeposit)
+          await tbtc
+            .connect(depositor1)
+            .approve(await stbtc.getAddress(), firstDeposit)
+          await stbtc
+            .connect(depositor1)
+            .deposit(firstDeposit, depositor1.address)
+        })
+
+        it("should return the total assets", async () => {
+          const expectedAssets =
+            firstDeposit - feeOnTotal(firstDeposit, entryFeeBasisPoints)
+          expect(await stbtc.totalAssets()).to.be.eq(expectedAssets)
+        })
+
+        it("should be equal to tBTC balance of the contract", async () => {
+          expect(await stbtc.totalAssets()).to.be.eq(
+            await tbtc.balanceOf(await stbtc.getAddress()),
+          )
+        })
+      })
+
+      context("when there are two deposits made", () => {
+        beforeAfterSnapshotWrapper()
+
+        before(async () => {
+          await tbtc.mint(depositor1.address, firstDeposit + secondDeposit)
+          await tbtc
+            .connect(depositor1)
+            .approve(await stbtc.getAddress(), firstDeposit + secondDeposit)
+          await stbtc
+            .connect(depositor1)
+            .deposit(firstDeposit, depositor1.address)
+          await stbtc
+            .connect(depositor1)
+            .deposit(secondDeposit, depositor1.address)
+        })
+
+        it("should return the total assets", async () => {
+          const expectedAssetsFirstDeposit =
+            firstDeposit - feeOnTotal(firstDeposit, entryFeeBasisPoints)
+          const expectedAssetsSecondDeposit =
+            secondDeposit - feeOnTotal(secondDeposit, entryFeeBasisPoints)
+          expect(await stbtc.totalAssets()).to.be.eq(
+            expectedAssetsFirstDeposit + expectedAssetsSecondDeposit,
+          )
+        })
+      })
+
+      context("when the funds were allocated after deposits", () => {
+        beforeAfterSnapshotWrapper()
+
+        before(async () => {
+          await tbtc.mint(depositor1.address, firstDeposit + secondDeposit)
+          await tbtc
+            .connect(depositor1)
+            .approve(await stbtc.getAddress(), firstDeposit + secondDeposit)
+          await stbtc
+            .connect(depositor1)
+            .deposit(firstDeposit, depositor1.address)
+          await stbtc
+            .connect(depositor1)
+            .deposit(secondDeposit, depositor1.address)
+          await mezoAllocator.connect(maintainer).allocate()
+        })
+
+        it("should return the total assets", async () => {
+          const deposits = firstDeposit + secondDeposit
+          const expectedAssets =
+            deposits - feeOnTotal(deposits, entryFeeBasisPoints)
+          expect(await stbtc.totalAssets()).to.be.eq(expectedAssets)
+        })
+      })
+
+      context("when there is a donation made", () => {
+        beforeAfterSnapshotWrapper()
+
+        let totalAssetsBeforeDonation: bigint
+
+        before(async () => {
+          await tbtc.mint(depositor1.address, firstDeposit)
+          await tbtc
+            .connect(depositor1)
+            .approve(await stbtc.getAddress(), firstDeposit)
+          await stbtc
+            .connect(depositor1)
+            .deposit(firstDeposit, depositor1.address)
+          totalAssetsBeforeDonation = await stbtc.totalAssets()
+          await tbtc.mint(await stbtc.getAddress(), donation)
+        })
+
+        it("should return the total assets", async () => {
+          expect(await stbtc.totalAssets()).to.be.eq(
+            totalAssetsBeforeDonation + donation,
+          )
+        })
+      })
+
+      context("when there was a withdrawal", () => {
+        beforeAfterSnapshotWrapper()
+
+        let totalAssetsBeforeWithdrawal: bigint
+
+        before(async () => {
+          await tbtc.mint(depositor1.address, firstDeposit)
+          await tbtc
+            .connect(depositor1)
+            .approve(await stbtc.getAddress(), firstDeposit)
+          await stbtc
+            .connect(depositor1)
+            .deposit(firstDeposit, depositor1.address)
+          totalAssetsBeforeWithdrawal = await stbtc.totalAssets()
+          await stbtc
+            .connect(depositor1)
+            .withdraw(to1e18(1), depositor1, depositor1)
+        })
+
+        it("should return the total assets", async () => {
+          const actualWithdrawnAssets =
+            to1e18(1) + feeOnRaw(to1e18(1), exitFeeBasisPoints)
+          expect(await stbtc.totalAssets()).to.be.eq(
+            totalAssetsBeforeWithdrawal - actualWithdrawnAssets,
+          )
+        })
       })
     })
   })

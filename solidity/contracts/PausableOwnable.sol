@@ -35,6 +35,10 @@ abstract contract PausableOwnable is
     ///         mechanism.
     error PausableUnauthorizedAccount(address account);
 
+    /// @notice Reverts when the new pause admin address is the same as the
+    ///         current pause admin address.
+    error SamePauseAdmin();
+
     /// @notice Reverts if called by any account other than the pause admin
     ///         or the contract owner.
     modifier onlyPauseAdminOrOwner() {
@@ -94,6 +98,9 @@ abstract contract PausableOwnable is
     function updatePauseAdmin(address newPauseAdmin) external onlyOwner {
         if (newPauseAdmin == address(0)) {
             revert ZeroAddress();
+        }
+        if (newPauseAdmin == pauseAdmin) {
+            revert SamePauseAdmin();
         }
 
         emit PauseAdminUpdated(newPauseAdmin, pauseAdmin);

@@ -24,6 +24,24 @@ To run the test execute:
 $ pnpm test
 ```
 
+### Integration testing
+
+To run the integration tests follow these steps:
+
+- Define `MAINNET_RPC_URL` environment variable pointing to Ethereum Mainnet RPC URL.
+
+- Run the Hardhat Node locally forking Mainnet:
+
+```
+$ pnpm run node:forking
+```
+
+- Once the local node is running you can execute the integration tests:
+
+```
+$ pnpm test:integration
+```
+
 ### Deploying
 
 We deploy our contracts with
