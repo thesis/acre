@@ -10,6 +10,7 @@ import {
 } from "@chakra-ui/react"
 import { getNumberWithSeparator } from "#/utils"
 import { TextMd } from "#/components/shared/Typography"
+import { CountdownTimer } from "#/components/shared/SeasonCountdownSection"
 
 type CurrentSeasonCardProps = CardProps & {
   heading: React.ReactNode
@@ -45,8 +46,7 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
 
       <CardBody p={0} display="contents">
         <Box>
-          {/* TODO: Add `CountdownTimer` component when merged */}
-          {timestamp}
+          <CountdownTimer size="sm" timestamp={timestamp} />
         </Box>
 
         <Flex align="baseline" justify="space-between" color="white">
