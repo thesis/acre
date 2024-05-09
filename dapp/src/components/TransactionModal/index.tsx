@@ -1,9 +1,9 @@
 import React, { useEffect } from "react"
 import { StakeFlowProvider, TransactionContextProvider } from "#/contexts"
-import { useSidebar } from "#/hooks"
+import { useAppDispatch, useSidebar } from "#/hooks"
 import { ActionFlowType, BaseModalProps } from "#/types"
 import { ModalCloseButton } from "@chakra-ui/react"
-import { setType } from "#/store/action-flow"
+import { resetState, setType } from "#/store/action-flow"
 import ModalContentWrapper from "./ModalContentWrapper"
 import { ActiveFlowStep } from "./ActiveFlowStep"
 import withBaseModal from "../ModalRoot/withBaseModal"
@@ -14,10 +14,11 @@ type TransactionModalProps = {
 
 function TransactionModalBase({ type }: TransactionModalProps) {
   const { onOpen: openSideBar, onClose: closeSidebar } = useSidebar()
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
-    setType(type)
-  }, [type])
+    dispatch(setType(type))
+  }, [dispatch, type])
 
   useEffect(() => {
     openSideBar()
