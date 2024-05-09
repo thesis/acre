@@ -74,6 +74,9 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     /// Reverts if the address is disallowed.
     error DisallowedAddress();
 
+    /// Reverts if the fee basis points exceed the maximum value.
+    error ExceedsMaxFeeBasisPoints();
+
     /// Reverts if the treasury address is the same.
     error SameTreasury();
 
@@ -160,6 +163,9 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     function updateEntryFeeBasisPoints(
         uint256 newEntryFeeBasisPoints
     ) external onlyOwner {
+        if (newEntryFeeBasisPoints > _BASIS_POINT_SCALE) {
+            revert ExceedsMaxFeeBasisPoints();
+        }
         entryFeeBasisPoints = newEntryFeeBasisPoints;
 
         emit EntryFeeBasisPointsUpdated(newEntryFeeBasisPoints);
@@ -170,16 +176,12 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     function updateExitFeeBasisPoints(
         uint256 newExitFeeBasisPoints
     ) external onlyOwner {
+        if (newExitFeeBasisPoints > _BASIS_POINT_SCALE) {
+            revert ExceedsMaxFeeBasisPoints();
+        }
         exitFeeBasisPoints = newExitFeeBasisPoints;
 
         emit ExitFeeBasisPointsUpdated(newExitFeeBasisPoints);
-    }
-
-    /// @notice Returns the total amount of assets held by the vault across all
-    ///         allocations and this contract.
-    function totalAssets() public view override returns (uint256) {
-        return
-            IERC20(asset()).balanceOf(address(this)) + dispatcher.totalAssets();
     }
 
     /// @notice Calls `receiveApproval` function on spender previously approving
@@ -293,6 +295,13 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         }
 
         return super.redeem(shares, receiver, owner);
+    }
+
+    /// @notice Returns the total amount of assets held by the vault across all
+    ///         allocations and this contract.
+    function totalAssets() public view override returns (uint256) {
+        return
+            IERC20(asset()).balanceOf(address(this)) + dispatcher.totalAssets();
     }
 
     /// @dev Returns the maximum amount of the underlying asset that can be
