@@ -4,18 +4,21 @@ import PageLayoutSidebar from "./PageLayoutSidebar"
 
 type PageLayoutProps = Omit<GridProps, "children"> & {
   children: React.ReactNode
-  leftSidebar: React.ReactNode
-  rightSidebar: React.ReactNode
+  leftSidebar?: React.ReactNode
+  rightSidebar?: React.ReactNode
 }
 
 function PageLayout(props: PageLayoutProps) {
   const { children, leftSidebar, rightSidebar, ...restProps } = props
-  const isSidebarPropsInvalid = [leftSidebar, rightSidebar].some(
-    (value) => !React.isValidElement(value) || value.type !== PageLayoutSidebar,
-  )
+  const isSidebarPropsInvalid = [leftSidebar, rightSidebar]
+    .filter(Boolean)
+    .some(
+      (value) =>
+        !React.isValidElement(value) || value.type !== PageLayoutSidebar,
+    )
 
   if (isSidebarPropsInvalid) {
-    throw new Error("Sidebars must be wrapped with `PageLayout.Sidebar`.")
+    throw new Error("Sidebar content must be wrapped with `PageLayoutSidebar`.")
   }
 
   return (
