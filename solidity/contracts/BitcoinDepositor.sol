@@ -95,6 +95,7 @@ contract BitcoinDepositor is AbstractTBTCDepositor, Ownable2StepUpgradeable {
     ///      event emitted in the same transaction.
     /// @param depositKey Deposit key identifying the deposit.
     /// @param caller Address that finalized the deposit.
+    /// @param referral Data used for referral program.
     /// @param initialAmount Amount of funding transaction.
     /// @param bridgedAmount Amount of tBTC tokens that was bridged by the tBTC bridge.
     /// @param depositorFee Depositor fee amount.

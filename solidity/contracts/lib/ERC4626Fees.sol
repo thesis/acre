@@ -17,6 +17,15 @@ abstract contract ERC4626Fees is ERC4626Upgradeable {
 
     // === Overrides ===
 
+    /// @dev Calculate the maximum amount of assets that can be withdrawn
+    ///      by an account including fees. See {IERC4626-maxWithdraw}.
+    function maxWithdraw(
+        address account
+    ) public view virtual override returns (uint256) {
+        uint256 maxAssets = super.maxWithdraw(account);
+        return maxAssets - _feeOnTotal(maxAssets, _exitFeeBasisPoints());
+    }
+
     /// @dev Preview taking an entry fee on deposit. See {IERC4626-previewDeposit}.
     function previewDeposit(
         uint256 assets
@@ -82,13 +91,6 @@ abstract contract ERC4626Fees is ERC4626Upgradeable {
         if (fee > 0 && recipient != address(this)) {
             SafeERC20.safeTransfer(IERC20(asset()), recipient, fee);
         }
-    }
-
-    /// @dev Calculate the maximum amount of assets that can be withdrawn
-    ///      by an account including fees. See {IERC4626-maxWithdraw}.
-    function _maxWithdraw(address account) internal view returns (uint256) {
-        uint256 maxAssets = super.maxWithdraw(account);
-        return maxAssets - _feeOnTotal(maxAssets, _exitFeeBasisPoints());
     }
 
     // === Fee configuration ===
