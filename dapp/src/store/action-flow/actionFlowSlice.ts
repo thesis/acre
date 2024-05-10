@@ -17,6 +17,7 @@ const initialState: ActionFlowState = {
   type: "stake",
   activeStep: 1,
   status: PROCESS_STATUSES.IDLE,
+  tokenAmount: undefined,
 }
 
 export const actionFlowSlice = createSlice({
@@ -42,6 +43,7 @@ export const actionFlowSlice = createSlice({
       state.type = initialState.type
       state.activeStep = initialState.activeStep
       state.status = initialState.status
+      state.tokenAmount = initialState.tokenAmount
     },
   },
 })
