@@ -2,4 +2,5 @@
 
 pragma solidity 0.8.24;
 
+/// @notice Reverts if a checked address is zero. Used by various contracts.
 error ZeroAddress();

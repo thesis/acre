@@ -5,6 +5,7 @@ interface ImportMetaEnv {
   readonly VITE_ETH_HOSTNAME_HTTP: string
   readonly VITE_REFERRAL: number
   readonly VITE_TBTC_API_ENDPOINT: string
+  readonly VITE_ACRE_SUBGRAPH_URL: string
 }
 
 interface ImportMeta {
