@@ -19,11 +19,11 @@ const FORM_DATA: Record<
     ) => React.ReactNode
   }
 > = {
-  stake: {
+  [ACTION_FLOW_TYPES.STAKE]: {
     header: "Deposit",
     FormComponent: StakeFormModal,
   },
-  unstake: {
+  [ACTION_FLOW_TYPES.UNSTAKE]: {
     header: "Withdraw",
     FormComponent: UnstakeFormModal,
   },
