@@ -4,9 +4,9 @@ import { useAppDispatch, useStakeFlowContext, useWalletContext } from "#/hooks"
 import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { logPromiseFailure } from "#/utils"
+import { setTokenAmount } from "#/store/action-flow"
 import StakeFormModal from "./ActiveStakingStep/StakeFormModal"
 import UnstakeFormModal from "./ActiveUnstakingStep/UnstakeFormModal"
-import { setTokenAmount } from "#/store/action-flow"
 
 const FORM_DATA: Record<
   ActionFlowType,
