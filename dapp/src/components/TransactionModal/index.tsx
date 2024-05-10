@@ -20,6 +20,13 @@ function TransactionModalBase({ type }: TransactionModalProps) {
     dispatch(setType(type))
   }, [dispatch, type])
 
+  // eslint-disable-next-line arrow-body-style
+  useEffect(() => {
+    return () => {
+      dispatch(resetState())
+    }
+  }, [dispatch])
+
   useEffect(() => {
     openSideBar()
     return () => closeSidebar()
