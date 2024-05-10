@@ -1,15 +1,12 @@
 import React, { useCallback, useState } from "react"
 import { Box, ModalBody, ModalCloseButton, ModalHeader } from "@chakra-ui/react"
-import {
-  useStakeFlowContext,
-  useTransactionContext,
-  useWalletContext,
-} from "#/hooks"
+import { useAppDispatch, useStakeFlowContext, useWalletContext } from "#/hooks"
 import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { logPromiseFailure } from "#/utils"
 import StakeFormModal from "./ActiveStakingStep/StakeFormModal"
 import UnstakeFormModal from "./ActiveUnstakingStep/UnstakeFormModal"
+import { setTokenAmount } from "#/store/action-flow"
 
 const FORM_DATA: Record<
   ActionFlowType,
@@ -34,8 +31,8 @@ const FORM_DATA: Record<
 
 function ActionFormModal({ type }: { type: ActionFlowType }) {
   const { btcAccount, ethAccount } = useWalletContext()
-  const { setTokenAmount } = useTransactionContext()
   const { initStake } = useStakeFlowContext()
+  const dispatch = useAppDispatch()
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -59,14 +56,14 @@ function ActionFormModal({ type }: { type: ActionFlowType }) {
         // TODO: Init unstake flow
         if (type === ACTION_FLOW_TYPES.STAKE) await handleInitStake()
 
-        setTokenAmount({ amount: values.amount, currency: "bitcoin" })
+        dispatch(setTokenAmount({ amount: values.amount, currency: "bitcoin" }))
       } catch (error) {
         console.error(error)
       } finally {
         setIsLoading(false)
       }
     },
-    [handleInitStake, setTokenAmount, type],
+    [dispatch, handleInitStake, type],
   )
 
   const handleSubmitFormWrapper = useCallback(

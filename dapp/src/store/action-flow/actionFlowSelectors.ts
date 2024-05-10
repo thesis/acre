@@ -1,4 +1,4 @@
-import { ActionFlowType, ProcessStatus } from "#/types"
+import { ActionFlowType, ProcessStatus, TokenAmount } from "#/types"
 import { RootState } from ".."
 
 export const selectActionFlowType = (state: RootState): ActionFlowType =>
@@ -9,3 +9,7 @@ export const selectActionFlowActiveStep = (state: RootState): number =>
 
 export const selectActionFlowStatus = (state: RootState): ProcessStatus =>
   state.actionFlow.status
+
+export const selectActionFlowTokenAmount = (
+  state: RootState,
+): TokenAmount | undefined => state.actionFlow.tokenAmount

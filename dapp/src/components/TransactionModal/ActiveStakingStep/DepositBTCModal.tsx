@@ -1,11 +1,11 @@
 import React, { useCallback } from "react"
 import {
+  useActionFlowTokenAmount,
   useDepositBTCTransaction,
   useDepositTelemetry,
   useExecuteFunction,
   useStakeFlowContext,
   useToast,
-  useTransactionContext,
   useWalletContext,
 } from "#/hooks"
 import { logPromiseFailure } from "#/utils"
@@ -24,7 +24,7 @@ const TOAST = TOASTS[TOAST_ID]
 
 export default function DepositBTCModal() {
   const { ethAccount } = useWalletContext()
-  const { tokenAmount } = useTransactionContext()
+  const tokenAmount = useActionFlowTokenAmount()
   const { btcAddress, depositReceipt, stake } = useStakeFlowContext()
   const depositTelemetry = useDepositTelemetry()
   const { closeToast, openToast } = useToast()

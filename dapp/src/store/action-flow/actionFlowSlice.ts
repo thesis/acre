@@ -1,10 +1,16 @@
-import { ActionFlowType, PROCESS_STATUSES, ProcessStatus } from "#/types"
+import {
+  ActionFlowType,
+  PROCESS_STATUSES,
+  ProcessStatus,
+  TokenAmount,
+} from "#/types"
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 
 type ActionFlowState = {
   type: ActionFlowType
   activeStep: number
   status: ProcessStatus
+  tokenAmount?: TokenAmount
 }
 
 const initialState: ActionFlowState = {
@@ -26,6 +32,9 @@ export const actionFlowSlice = createSlice({
     setStatus(state, action: PayloadAction<ProcessStatus>) {
       state.status = action.payload
     },
+    setTokenAmount(state, action: PayloadAction<TokenAmount | undefined>) {
+      state.tokenAmount = action.payload
+    },
     goNextStep(state) {
       state.activeStep += 1
     },
@@ -37,5 +46,5 @@ export const actionFlowSlice = createSlice({
   },
 })
 
-export const { setType, setStatus, goNextStep, resetState } =
+export const { setType, setStatus, setTokenAmount, goNextStep, resetState } =
   actionFlowSlice.actions

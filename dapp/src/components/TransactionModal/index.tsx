@@ -1,5 +1,5 @@
 import React, { useEffect } from "react"
-import { StakeFlowProvider, TransactionContextProvider } from "#/contexts"
+import { StakeFlowProvider } from "#/contexts"
 import { useAppDispatch, useSidebar } from "#/hooks"
 import { ActionFlowType, BaseModalProps } from "#/types"
 import { ModalCloseButton } from "@chakra-ui/react"
@@ -33,14 +33,12 @@ function TransactionModalBase({ type }: TransactionModalProps) {
   }, [closeSidebar, openSideBar])
 
   return (
-    <TransactionContextProvider>
-      <StakeFlowProvider>
-        <ModalContentWrapper>
-          <ModalCloseButton />
-          <ActiveFlowStep />
-        </ModalContentWrapper>
-      </StakeFlowProvider>
-    </TransactionContextProvider>
+    <StakeFlowProvider>
+      <ModalContentWrapper>
+        <ModalCloseButton />
+        <ActiveFlowStep />
+      </ModalContentWrapper>
+    </StakeFlowProvider>
   )
 }
 
