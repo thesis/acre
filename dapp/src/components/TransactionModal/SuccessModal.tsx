@@ -1,6 +1,5 @@
 import React from "react"
 import {
-  Box,
   Button,
   HStack,
   ModalBody,
@@ -28,7 +27,7 @@ const CONTENT: Record<
     header: "Deposit received",
     renderBody: (tokenAmount) => (
       <>
-        <Box>
+        <VStack spacing={0}>
           <CurrencyBalanceWithConversion
             from={{
               currency: tokenAmount.currency,
@@ -42,7 +41,7 @@ const CONTENT: Record<
               fontWeight: "semibold",
             }}
           />
-        </Box>
+        </VStack>
         {/* TODO: Use correct tx hash and update styles */}
         <BlockExplorerLink id="" type="transaction" chain="bitcoin" mt={2} />
       </>
