@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 /* solhint-disable func-name-mixedcase */
-pragma solidity 0.8.21;
+pragma solidity 0.8.24;
 
 import {BitcoinDepositor} from "../BitcoinDepositor.sol";
 import {MockBridge, MockTBTCVault} from "@keep-network/tbtc-v2/contracts/test/TestTBTCDepositor.sol";
