@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-pragma solidity ^0.8.21;
+pragma solidity 0.8.24;
 
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
@@ -353,21 +353,6 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     /// @return Assets amount.
     function assetsBalanceOf(address account) public view returns (uint256) {
         return convertToAssets(balanceOf(account));
-    }
-
-    /// @dev Transfers a `value` amount of tokens from `from` to `to`, or
-    ///      alternatively mints (or burns) if `from` (or `to`) is the zero
-    ///      address. All customizations to transfers, mints, and burns should
-    ///      be done by overriding this function.
-    /// @param from Sender of tokens.
-    /// @param to Receiver of tokens.
-    /// @param value Amount of tokens to transfer.
-    function _update(
-        address from,
-        address to,
-        uint256 value
-    ) internal override whenNotPaused {
-        super._update(from, to, value);
     }
 
     /// @return Returns entry fee basis point used in deposits.
