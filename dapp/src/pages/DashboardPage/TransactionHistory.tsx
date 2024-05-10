@@ -40,7 +40,7 @@ export default function TransactionHistory(props: TransactionHistoryProps) {
   const { data = [], ...restProps } = props
 
   return (
-    <VStack spacing={6} {...restProps}>
+    <VStack spacing={6} w="full" {...restProps}>
       <TextMd fontWeight="bold" w="full">
         Transactions
       </TextMd>
