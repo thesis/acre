@@ -52,7 +52,7 @@ contract BitcoinRedeemer is Ownable2StepUpgradeable, IReceiveApproval {
     /// Attempted to call receiveApproval with empty data.
     error EmptyExtraData();
 
-    /// Attempted to call redeemSharesAndUnmint with unexpected tBTC token owner.
+    /// Attempted to call _redeemSharesAndUnmint with unexpected tBTC token owner.
     error UnexpectedTbtcTokenOwner();
 
     /// Reverts if the redeemer is not the deposit owner.
@@ -111,7 +111,7 @@ contract BitcoinRedeemer is Ownable2StepUpgradeable, IReceiveApproval {
         if (msg.sender != address(stbtc)) revert CallerNotAllowed(msg.sender);
         if (extraData.length == 0) revert EmptyExtraData();
 
-        redeemSharesAndUnmint(from, amount, extraData);
+        _redeemSharesAndUnmint(from, amount, extraData);
     }
 
     /// @notice Updates TBTCVault contract address.
@@ -151,7 +151,7 @@ contract BitcoinRedeemer is Ownable2StepUpgradeable, IReceiveApproval {
     /// @param tbtcRedemptionData Additional data required for the tBTC redemption.
     ///        See `redemptionData` parameter description of `Bridge.requestRedemption`
     ///        function.
-    function redeemSharesAndUnmint(
+    function _redeemSharesAndUnmint(
         address owner,
         uint256 shares,
         bytes calldata tbtcRedemptionData
