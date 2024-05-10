@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-pragma solidity ^0.8.21;
+pragma solidity 0.8.24;
 
 /// @title Interface of TBTC token contract.
 /// @notice This interface defines functions of TBTC token contract used by Acre
