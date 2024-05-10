@@ -442,7 +442,16 @@ describe("BitcoinRedeemer", () => {
         })
       })
 
-      context("when a new treasury is an allowed address", () => {
+      context("when a new tbtc vault is not tBTC token owner", () => {
+        it("should revert", async () => {
+          const newTbtcVault = await ethers.Wallet.createRandom().getAddress()
+          await expect(
+            bitcoinRedeemer.connect(governance).updateTbtcVault(newTbtcVault),
+          ).to.be.revertedWithCustomError(bitcoinRedeemer, "NotTbtcTokenOwner")
+        })
+      })
+
+      context("when a new tbtc vault is an allowed address", () => {
         let oldTbtcVault: string
         let newTbtcVault: string
         let tx: ContractTransactionResponse
@@ -450,6 +459,7 @@ describe("BitcoinRedeemer", () => {
         before(async () => {
           oldTbtcVault = await bitcoinRedeemer.tbtcVault()
           newTbtcVault = await ethers.Wallet.createRandom().getAddress()
+          await tbtc.setOwner(newTbtcVault)
 
           tx = await bitcoinRedeemer
             .connect(governance)
