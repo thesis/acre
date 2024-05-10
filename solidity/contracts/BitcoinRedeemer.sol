@@ -61,6 +61,9 @@ contract BitcoinRedeemer is Ownable2StepUpgradeable, IReceiveApproval {
     /// Reverts when approveAndCall to tBTC contract fails.
     error ApproveAndCallFailed();
 
+    /// Reverts if the new TBTCVault contract is not tBTC token owner.
+    error NotTbtcTokenOwner();
+
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
@@ -116,6 +119,10 @@ contract BitcoinRedeemer is Ownable2StepUpgradeable, IReceiveApproval {
     function updateTbtcVault(address newTbtcVault) external onlyOwner {
         if (newTbtcVault == address(0)) {
             revert ZeroAddress();
+        }
+
+        if (newTbtcVault != tbtcToken.owner()) {
+            revert NotTbtcTokenOwner();
         }
 
         emit TbtcVaultUpdated(tbtcVault, newTbtcVault);
