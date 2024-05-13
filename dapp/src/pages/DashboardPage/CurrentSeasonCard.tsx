@@ -1,12 +1,5 @@
 import React from "react"
-import {
-  Box,
-  Card,
-  CardBody,
-  CardHeader,
-  CardProps,
-  Flex,
-} from "@chakra-ui/react"
+import { Card, CardBody, CardHeader, CardProps, Flex } from "@chakra-ui/react"
 import { numberToLocaleString } from "#/utils"
 import { TextMd } from "#/components/shared/Typography"
 import {
@@ -52,9 +45,7 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
       </CardHeader>
 
       <CardBody p={0} display="contents">
-        <Box>
-          <CountdownTimer size="sm" timestamp={timestamp} />
-        </Box>
+        <CountdownTimer size="sm" timestamp={timestamp} />
 
         <Flex align="baseline" justify="space-between" color="white">
           {totalJoined && (
