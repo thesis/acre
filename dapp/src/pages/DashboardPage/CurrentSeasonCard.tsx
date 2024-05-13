@@ -24,7 +24,6 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
       bg="transparent"
       borderWidth={0}
       gap={4}
-      rounded="xl"
       px={5}
       py={4}
       w="full"
