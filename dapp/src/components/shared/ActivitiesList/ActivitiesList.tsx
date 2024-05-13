@@ -19,13 +19,6 @@ type ActivitiesListProps = ListProps & {
 function ActivitiesList(props: ActivitiesListProps) {
   const { items, ...restProps } = props
 
-  const areItemsIdsUnique =
-    new Set(items.map((item) => item.id)).size === items.length
-
-  if (!areItemsIdsUnique) {
-    throw new Error("Items identifiers must be unique")
-  }
-
   const [dismissedItemIds, setDismissedItemIds] = React.useState<string[]>([])
 
   const handleItemDismiss = (id: string) => {
