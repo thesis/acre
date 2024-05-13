@@ -206,7 +206,3 @@ export const addLeadingZero = (num: number): string =>
 
 export const getPercentValue = (value: number, maxValue: number) =>
   (value * 100) / maxValue
-
-export function getNumberWithSeparator(number: number, separator = ",") {
-  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, separator)
-}

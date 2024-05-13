@@ -7,7 +7,7 @@ import {
   CardProps,
   Flex,
 } from "@chakra-ui/react"
-import { getNumberWithSeparator } from "#/utils"
+import { numberToLocaleString } from "#/utils"
 import { TextMd } from "#/components/shared/Typography"
 import {
   CountdownTimer,
@@ -61,7 +61,7 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
             <TextMd fontWeight="medium">
               Total joined&nbsp;
               <TextMd as="span" fontWeight="bold">
-                {getNumberWithSeparator(totalJoined)}
+                {numberToLocaleString(totalJoined)}
               </TextMd>
             </TextMd>
           )}
