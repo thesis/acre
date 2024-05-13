@@ -34,6 +34,7 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
       <LiveTag fontSize="sm" px={3} py={1} gap={2} />
 
       <CardHeader
+        as="p"
         p={0}
         color="gold.100"
         fontSize="2xl"
