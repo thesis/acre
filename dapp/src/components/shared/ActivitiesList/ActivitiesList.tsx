@@ -1,9 +1,9 @@
-import React from "react"
 import { List, ListItem, ListProps } from "@chakra-ui/react"
-import { AnimatePresence, motion, Variants } from "framer-motion"
-import StakingActivitiesListItem, {
-  StakingActivitiesListItemType,
-} from "./StakingActivitiesListItem"
+import { AnimatePresence, Variants, motion } from "framer-motion"
+import React from "react"
+import ActivitiesListItem, {
+  ActivitiesListItemType,
+} from "./ActivitiesListItem"
 
 const MotionList = motion(List)
 const MotionListItem = motion(ListItem)
@@ -13,10 +13,10 @@ const listItemVariants: Variants = {
   dismissed: { opacity: 0, x: -48 },
 }
 
-type StakingActivitiesListProps = ListProps & {
-  items: StakingActivitiesListItemType[]
+type ActivitiesListProps = ListProps & {
+  items: ActivitiesListItemType[]
 }
-function StakingActivitiesList(props: StakingActivitiesListProps) {
+function ActivitiesList(props: ActivitiesListProps) {
   const { items, ...restProps } = props
 
   const areItemsIdsUnique =
@@ -47,7 +47,7 @@ function StakingActivitiesList(props: StakingActivitiesListProps) {
               pb={2}
               _last={{ pb: 0 }}
             >
-              <StakingActivitiesListItem
+              <ActivitiesListItem
                 {...item}
                 handleDismiss={() => handleItemDismiss(item.id)}
               />
@@ -59,4 +59,4 @@ function StakingActivitiesList(props: StakingActivitiesListProps) {
   )
 }
 
-export default StakingActivitiesList
+export default ActivitiesList

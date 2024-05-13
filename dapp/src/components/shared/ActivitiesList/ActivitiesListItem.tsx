@@ -1,4 +1,5 @@
 import React from "react"
+import { LoadingSpinnerSuccessIcon } from "#/assets/icons"
 import { AmountType } from "#/types"
 import {
   Alert,
@@ -12,12 +13,11 @@ import {
   VStack,
   VisuallyHidden,
 } from "@chakra-ui/react"
-import { LoadingSpinnerSuccessIcon } from "#/assets/icons"
 import ButtonLink from "../ButtonLink"
 import { CurrencyBalance } from "../CurrencyBalance"
 import Spinner from "../Spinner"
 
-export type StakingActivitiesListItemType = {
+export type ActivitiesListItemType = {
   id: string
   amount: AmountType
   status: "pending" | "success"
@@ -26,12 +26,12 @@ export type StakingActivitiesListItemType = {
   isUnstaking?: boolean
 }
 
-type StakingActivitiesListItemProps = Omit<AlertProps, "status"> &
-  StakingActivitiesListItemType & {
+type ActivitiesListItemProps = Omit<AlertProps, "status"> &
+  ActivitiesListItemType & {
     handleDismiss?: () => void
   }
 
-function StakingActivitiesListItem(props: StakingActivitiesListItemProps) {
+function ActivitiesListItem(props: ActivitiesListItemProps) {
   const {
     amount,
     estimatedTime,
@@ -105,4 +105,4 @@ function StakingActivitiesListItem(props: StakingActivitiesListItemProps) {
   )
 }
 
-export default StakingActivitiesListItem
+export default ActivitiesListItem
