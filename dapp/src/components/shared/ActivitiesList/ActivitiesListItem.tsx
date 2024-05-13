@@ -22,7 +22,7 @@ export type ActivitiesListItemType = {
   amount: AmountType
   status: "pending" | "success"
   transactionUrl?: string
-  estimatedTime?: number
+  // estimatedTime?: number             // TODO: To implement. Estimated activity time is not in scope of MVP.
   isUnstaking?: boolean
 }
 
@@ -34,7 +34,7 @@ type ActivitiesListItemProps = Omit<AlertProps, "status"> &
 function ActivitiesListItem(props: ActivitiesListItemProps) {
   const {
     amount,
-    estimatedTime,
+    // estimatedTime,
     status,
     transactionUrl,
     isUnstaking = false,
@@ -60,14 +60,7 @@ function ActivitiesListItem(props: ActivitiesListItemProps) {
           <CurrencyBalance amount={amount} currency="bitcoin" />
         </HStack>
         <HStack justify="space-between" as={AlertDescription}>
-          {status === "pending" && estimatedTime ? (
-            <>
-              <Text as="span">Est. time remaining</Text>
-              <Text as="span" fontWeight="bold">
-                {new Date(estimatedTime).getHours()}h
-              </Text>
-            </>
-          ) : (
+          {status === "success" ? (
             <Button
               variant="link"
               fontSize="sm"
@@ -76,6 +69,14 @@ function ActivitiesListItem(props: ActivitiesListItemProps) {
             >
               Ok, dismiss
             </Button>
+          ) : (
+            // eslint-disable-next-line react/jsx-no-useless-fragment
+            <>
+              {/* <Text as="span">Est. time remaining</Text>
+              <Text as="span" fontWeight="bold">
+                {new Date(estimatedTime).getHours()}h
+              </Text> */}
+            </>
           )}
         </HStack>
       </VStack>

@@ -76,6 +76,7 @@ const processContainerStyles = defineStyle({
   borderWidth: 1,
   borderColor: "gold.100",
   shadow: "none",
+  alignItems: "flex-start",
 })
 
 const processIconStyles = defineStyle({
