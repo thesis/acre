@@ -40,7 +40,7 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
         fontSize="2xl"
         lineHeight={1}
         fontWeight="bold"
-        letterSpacing="-2%"
+        letterSpacing="-0.03rem" // -0.48px
       >
         {heading}
       </CardHeader>
