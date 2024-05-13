@@ -1,9 +1,8 @@
+import React from "react"
 import { List, ListItem, ListProps } from "@chakra-ui/react"
 import { AnimatePresence, Variants, motion } from "framer-motion"
-import React from "react"
-import ActivitiesListItem, {
-  ActivitiesListItemType,
-} from "./ActivitiesListItem"
+import { useActivitiesNEW as useActivities } from "#/hooks"
+import ActivitiesListItem from "./ActivitiesListItem"
 
 const MotionList = motion(List)
 const MotionListItem = motion(ListItem)
@@ -13,26 +12,25 @@ const listItemVariants: Variants = {
   dismissed: { opacity: 0, x: -48 },
 }
 
-type ActivitiesListProps = ListProps & {
-  items: ActivitiesListItemType[]
-}
-function ActivitiesList(props: ActivitiesListProps) {
-  const { items, ...restProps } = props
+function ActivitiesList(props: ListProps) {
+  const activities = useActivities()
 
-  const [dismissedItemIds, setDismissedItemIds] = React.useState<string[]>([])
+  const [dismissedActivities, setDismissedActivities] = React.useState<
+    string[]
+  >([])
 
-  const handleItemDismiss = (id: string) => {
-    setDismissedItemIds((prev) => [...prev, id])
+  const handleItemDismiss = (txHash: string) => {
+    setDismissedActivities((prev) => [...prev, txHash])
   }
 
   return (
-    <MotionList pos="relative" {...restProps}>
-      {items.map((item) => (
+    <MotionList pos="relative" {...props}>
+      {activities.map((item) => (
         <AnimatePresence mode="popLayout">
-          {!dismissedItemIds.includes(item.id) && (
+          {!dismissedActivities.includes(item.txHash) && (
             <MotionListItem
               layout="position"
-              key={item.id}
+              key={item.txHash}
               variants={listItemVariants}
               initial={false}
               animate="mounted"
@@ -42,7 +40,7 @@ function ActivitiesList(props: ActivitiesListProps) {
             >
               <ActivitiesListItem
                 {...item}
-                handleDismiss={() => handleItemDismiss(item.id)}
+                handleDismiss={() => handleItemDismiss(item.txHash)}
               />
             </MotionListItem>
           )}

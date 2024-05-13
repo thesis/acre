@@ -1,6 +1,6 @@
 import React from "react"
 import { LoadingSpinnerSuccessIcon } from "#/assets/icons"
-import { AmountType } from "#/types"
+import { Activity as ActivityType } from "#/types"
 import {
   Alert,
   AlertDescription,
@@ -16,51 +16,35 @@ import {
 import ButtonLink from "../ButtonLink"
 import { CurrencyBalance } from "../CurrencyBalance"
 import Spinner from "../Spinner"
-
-export type ActivitiesListItemType = {
-  id: string
-  amount: AmountType
-  status: "pending" | "success"
-  transactionUrl?: string
-  // estimatedTime?: number             // TODO: To implement. Estimated activity time is not in scope of MVP.
-  isUnstaking?: boolean
-}
+import BlockExplorerLink from "../BlockExplorerLink"
 
 type ActivitiesListItemProps = Omit<AlertProps, "status"> &
-  ActivitiesListItemType & {
+  ActivityType & {
     handleDismiss?: () => void
   }
 
 function ActivitiesListItem(props: ActivitiesListItemProps) {
-  const {
-    amount,
-    // estimatedTime,
-    status,
-    transactionUrl,
-    isUnstaking = false,
-    handleDismiss,
-    ...restProps
-  } = props
+  const { amount, status, txHash, type, handleDismiss, ...restProps } = props
 
   return (
     <Alert as={HStack} variant="process" {...restProps}>
       <AlertIcon
         color="brand.400"
-        as={status === "success" ? LoadingSpinnerSuccessIcon : Spinner}
+        as={status === "completed" ? LoadingSpinnerSuccessIcon : Spinner}
       />
 
       <VStack flex={1} spacing={0} align="stretch">
         <HStack justify="space-between" as={AlertTitle}>
           <Text as="span">
-            {status === "success"
-              ? `${isUnstaking ? "Unstaking" : "Staking"} completed`
-              : `${isUnstaking ? "Unstaking" : "Staking"}...`}
+            {status === "completed"
+              ? `${type === "withdraw" ? "Unstaking" : "Staking"} completed`
+              : `${type === "withdraw" ? "Unstaking" : "Staking"}...`}
           </Text>
 
           <CurrencyBalance amount={amount} currency="bitcoin" />
         </HStack>
         <HStack justify="space-between" as={AlertDescription}>
-          {status === "success" ? (
+          {status === "completed" ? (
             <Button
               variant="link"
               fontSize="sm"
@@ -70,6 +54,7 @@ function ActivitiesListItem(props: ActivitiesListItemProps) {
               Ok, dismiss
             </Button>
           ) : (
+            // TODO: To implement. Estimated activity time is not in scope of MVP.
             // eslint-disable-next-line react/jsx-no-useless-fragment
             <>
               {/* <Text as="span">Est. time remaining</Text>
@@ -81,15 +66,16 @@ function ActivitiesListItem(props: ActivitiesListItemProps) {
         </HStack>
       </VStack>
 
-      {transactionUrl && (
+      {txHash && (
         <ButtonLink
+          as={BlockExplorerLink}
+          id={txHash}
           display="flex"
           my={-4}
           ml={6}
           mr={-6}
           h="auto"
           alignSelf="stretch"
-          href={transactionUrl}
           variant="unstyled"
           borderLeftWidth={1}
           borderColor="inherit"
