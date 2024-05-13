@@ -1,13 +1,18 @@
 import { createMultiStyleConfigHelpers, defineStyle } from "@chakra-ui/react"
 
-const PARTS = ["balance", "symbol"]
+const PARTS = ["container", "balance", "symbol"]
 
-const baseStyleBalance = defineStyle({
+const baseStyleContainer = defineStyle(({ symbolPosition }) => ({
+  display: "flex",
+  flexDir: symbolPosition === "prefix" ? "row-reverse" : "row",
+}))
+
+const baseStyleBalance = defineStyle(({ symbolPosition }) => ({
   fontWeight: "bold",
   fontSize: "md",
   lineHeight: "md",
-  mr: 1,
-})
+  [symbolPosition === "prefix" ? "ml" : "mr"]: "0.5ch", // dynamic value based on font size
+}))
 
 const baseStyleSymbol = defineStyle({
   fontSize: "md",
@@ -16,10 +21,11 @@ const baseStyleSymbol = defineStyle({
 
 const multiStyleConfig = createMultiStyleConfigHelpers(PARTS)
 
-const baseStyle = multiStyleConfig.definePartsStyle({
-  balance: baseStyleBalance,
+const baseStyle = multiStyleConfig.definePartsStyle((props) => ({
+  container: baseStyleContainer(props),
+  balance: baseStyleBalance(props),
   symbol: baseStyleSymbol,
-})
+}))
 
 const variantGreaterBalanceXl = multiStyleConfig.definePartsStyle({
   balance: {
@@ -114,6 +120,17 @@ const size4Xl = multiStyleConfig.definePartsStyle({
   },
 })
 
+const size6Xl = multiStyleConfig.definePartsStyle({
+  balance: {
+    fontSize: "6xl",
+    lineHeight: "6xl",
+  },
+  symbol: {
+    fontSize: "6xl",
+    lineHeight: "6xl",
+  },
+})
+
 const sizes = {
   xs: sizeXs,
   sm: sizeSm,
@@ -121,6 +138,7 @@ const sizes = {
   lg: sizeLg,
   xl: sizeXl,
   "4xl": size4Xl,
+  "6xl": size6Xl,
 }
 
 export const currencyBalanceTheme = multiStyleConfig.defineMultiStyleConfig({
