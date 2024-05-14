@@ -4,9 +4,8 @@ import {
 } from "@ledgerhq/wallet-api-client"
 import { addressFromExtPubKey } from "@swan-bitcoin/xpub-lib"
 import { BitcoinProvider } from "./provider"
-import { BitcoinNetwork } from "../network"
 
-type Network = Exclude<BitcoinNetwork, BitcoinNetwork.Unknown>
+type Network = "mainnet" | "testnet"
 
 /**
  * Ledger Live Wallet API Bitcoin Provider.
@@ -28,8 +27,7 @@ export default class LedgerLiveWalletApiBitcoinProvider
 
     const walletApiClient = new WalletAPIClient(windowMessageTransport)
 
-    const currency =
-      network === BitcoinNetwork.Mainnet ? "bitcoin" : "bitcoin_testnet"
+    const currency = network === "mainnet" ? "bitcoin" : "bitcoin_testnet"
 
     const accounts = await walletApiClient.account.list({
       currencyIds: [currency],
