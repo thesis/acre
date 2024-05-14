@@ -22,7 +22,7 @@ import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import emptyStateIlustration from "#/assets/images/empty-state.png"
 import { ArrowUpRightAnimatedIcon } from "#/assets/icons/animated"
 import { motion } from "framer-motion"
-import { displayBlockTimestamp } from "#/utils"
+import { displayBlockTimestamp, truncateAddress } from "#/utils"
 
 // TODO: Fix `Pagination` container height transition
 
@@ -84,7 +84,7 @@ export default function TransactionHistory(props: TransactionHistoryProps) {
                           />
                         </Box>
                         <TextSm color="grey.500" flexBasis="50%">
-                          {address}
+                          {truncateAddress(address)}
                         </TextSm>
                       </HStack>
 
