@@ -8,17 +8,18 @@ import {
   SeasonCountdownSectionBackground,
 } from "#/components/shared/SeasonCountdownSection"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
-import { AmountType } from "#/types"
+import { SEASON_DUE_TIMESTAMP } from "#/constants"
 
 type CurrentSeasonCardProps = StackProps & {
-  heading: React.ReactNode
-  timestamp: number
-  totalJoined?: number
-  tvl?: AmountType
+  showSeasonStats?: boolean
 }
 
 export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
-  const { heading, timestamp, totalJoined, tvl, ...restProps } = props
+  const { showSeasonStats = true, ...restProps } = props
+
+  const totalJoined = 3045 // TODO: fetch from API
+  const tvl = 144500000000 // TODO: fetch from API
+
   return (
     <VStack
       spacing={4}
@@ -38,21 +39,21 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
         lineHeight={1}
         letterSpacing="-0.03rem" // -0.48px
       >
-        {heading}
+        Season 1 <br />
+        Pre-launch staking
       </Heading>
 
-      <CountdownTimer size="sm" timestamp={timestamp} />
+      <CountdownTimer size="sm" timestamp={SEASON_DUE_TIMESTAMP} />
 
-      <Flex align="baseline" justify="space-between" color="white">
-        {totalJoined && (
+      {showSeasonStats && (
+        <Flex align="baseline" justify="space-between" color="white">
           <TextMd fontWeight="medium">
             Total joined&nbsp;
             <TextMd as="span" fontWeight="bold">
               {numberToLocaleString(totalJoined)}
             </TextMd>
           </TextMd>
-        )}
-        {!!tvl && (
+
           <TextMd display="flex" fontWeight="medium">
             TVL&nbsp;
             <CurrencyBalance
@@ -63,8 +64,8 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
               fontWeight="bold"
             />
           </TextMd>
-        )}
-      </Flex>
+        </Flex>
+      )}
 
       <SeasonCountdownSectionBackground
         position="absolute"
