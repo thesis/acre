@@ -20,15 +20,15 @@ class Acre {
   public readonly staking: StakingModule
 
   constructor(
-    _contracts: AcreContracts,
-    _bitcoinProvider: BitcoinProvider,
-    _orangeKit: OrangeKitSdk,
-    _tbtc: Tbtc,
+    contracts: AcreContracts,
+    bitcoinProvider: BitcoinProvider,
+    orangeKit: OrangeKitSdk,
+    tbtc: Tbtc,
   ) {
-    this.contracts = _contracts
-    this.#tbtc = _tbtc
-    this.#orangeKit = _orangeKit
-    this.#bitcoinProvider = _bitcoinProvider
+    this.contracts = contracts
+    this.#tbtc = tbtc
+    this.#orangeKit = orangeKit
+    this.#bitcoinProvider = bitcoinProvider
     this.staking = new StakingModule(
       this.contracts,
       this.#bitcoinProvider,
