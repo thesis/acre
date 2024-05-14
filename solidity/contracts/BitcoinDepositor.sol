@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-pragma solidity ^0.8.21;
+pragma solidity 0.8.24;
 
 import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -95,6 +95,7 @@ contract BitcoinDepositor is AbstractTBTCDepositor, Ownable2StepUpgradeable {
     ///      event emitted in the same transaction.
     /// @param depositKey Deposit key identifying the deposit.
     /// @param caller Address that finalized the deposit.
+    /// @param referral Data used for referral program.
     /// @param initialAmount Amount of funding transaction.
     /// @param bridgedAmount Amount of tBTC tokens that was bridged by the tBTC bridge.
     /// @param depositorFee Depositor fee amount.
