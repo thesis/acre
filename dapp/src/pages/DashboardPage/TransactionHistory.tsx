@@ -18,17 +18,17 @@ import {
   PaginationStatus,
 } from "#/components/shared/Pagination"
 import { TextMd, TextSm } from "#/components/shared/Typography"
-import { IconArrowUpRight } from "@tabler/icons-react"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import emptyStateIlustration from "#/assets/images/empty-state.png"
 import { ArrowUpRightAnimatedIcon } from "#/assets/icons/animated"
 import { motion } from "framer-motion"
+import { displayBlockTimestamp } from "#/utils"
 
 // TODO: Fix `Pagination` container height transition
 
 type TransactionHistoryProps = StackProps & {
   data?: {
-    date: string
+    date: number
     type: string
     amount: string
     address: string
@@ -68,7 +68,7 @@ export default function TransactionHistory(props: TransactionHistoryProps) {
                   >
                     <CardBody as={HStack} spacing={0} p={4}>
                       <TextSm color="grey.500" flex={1}>
-                        {date}
+                        {displayBlockTimestamp(date)}
                       </TextSm>
 
                       <HStack flexBasis="72%" spacing={0}>
