@@ -8,6 +8,9 @@ import { BitcoinNetwork } from "../network"
 
 type Network = Exclude<BitcoinNetwork, BitcoinNetwork.Unknown>
 
+/**
+ * Ledger Live Wallet API Bitcoin Provider.
+ */
 export default class LedgerLiveWalletApiBitcoinProvider
   implements BitcoinProvider
 {
@@ -56,6 +59,16 @@ export default class LedgerLiveWalletApiBitcoinProvider
     this.#network = _network
   }
 
+  /**
+   * In the Ledger Live Wallet API the address is "renewed" each time funds are
+   * received in order to allow some privacy. But to get the same depositor
+   * owner Ethereum address we must always get the same Bitcoin address so we
+   * must rely on the extended public key.
+   *
+   * @returns Always the same bitcoin address based on the extended public key
+   *          (an address under the `m/x'/0'/0'/0/0` derivation path) even the
+   *          address has been "renewed" by the Ledger Live Wallet API.
+   */
   async getAddress(): Promise<string> {
     const xpub = await this.#walletApiClient.bitcoin.getXPub(this.#accountId)
 
