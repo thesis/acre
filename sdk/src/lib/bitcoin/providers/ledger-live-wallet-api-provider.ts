@@ -2,7 +2,7 @@ import {
   WalletAPIClient,
   WindowMessageTransport,
 } from "@ledgerhq/wallet-api-client"
-import { addressFromExtPubKey } from "@swan-bitcoin/xpub-lib"
+import { addressFromExtPubKey, Purpose } from "@swan-bitcoin/xpub-lib"
 import { BitcoinProvider } from "./provider"
 
 type Network = "mainnet" | "testnet"
@@ -73,6 +73,9 @@ export default class LedgerLiveWalletApiBitcoinProvider
 
     const { address } = addressFromExtPubKey({
       extPubKey: xpub,
+      change: 0,
+      keyIndex: 0,
+      purpose: Purpose.P2PKH,
       network: this.#network,
     })
 
