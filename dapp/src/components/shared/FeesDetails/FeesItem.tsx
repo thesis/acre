@@ -6,22 +6,16 @@ import { CurrencyBalanceWithConversion } from "../CurrencyBalanceWithConversion"
 type FeesDetailsItemAmountItemProps = ComponentProps<
   typeof CurrencyBalanceWithConversion
 > &
-  Pick<FeesDetailsItemProps, "label" | "sublabel" | "tooltip">
+  Pick<FeesDetailsItemProps, "label" | "tooltip">
 
 function FeesDetailsAmountItem({
   label,
-  sublabel,
   tooltip,
   from,
   to,
 }: FeesDetailsItemAmountItemProps) {
   return (
-    <FeesDetailsItem
-      label={label}
-      sublabel={sublabel}
-      tooltip={tooltip}
-      alignItems="start"
-    >
+    <FeesDetailsItem label={label} tooltip={tooltip} alignItems="start">
       <Flex flexDirection="column" alignItems="end">
         <CurrencyBalanceWithConversion
           from={{

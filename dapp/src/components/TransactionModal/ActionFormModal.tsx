@@ -1,34 +1,41 @@
-import React, { useCallback, useState } from "react"
+import React, { ReactNode, useCallback, useState } from "react"
+import { Box, ModalBody, ModalCloseButton, ModalHeader } from "@chakra-ui/react"
 import {
-  ModalBody,
-  Tabs,
-  TabList,
-  Tab,
-  TabPanels,
-  TabPanel,
-  ModalCloseButton,
-} from "@chakra-ui/react"
-import {
-  useModalFlowContext,
   useStakeFlowContext,
   useTransactionContext,
   useWalletContext,
 } from "#/hooks"
-import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
+import { ACTION_FLOW_TYPES, ActionFlowType, BaseFormProps } from "#/types"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { logPromiseFailure } from "#/utils"
 import StakeFormModal from "./ActiveStakingStep/StakeFormModal"
 import UnstakeFormModal from "./ActiveUnstakingStep/UnstakeFormModal"
 
-const TABS = Object.values(ACTION_FLOW_TYPES)
+const FORM_DATA: Record<
+  ActionFlowType,
+  {
+    heading: string
+    renderComponent: (props: BaseFormProps<TokenAmountFormValues>) => ReactNode
+  }
+> = {
+  stake: {
+    heading: "Deposit",
+    renderComponent: StakeFormModal,
+  },
+  unstake: {
+    heading: "Withdraw",
+    renderComponent: UnstakeFormModal,
+  },
+}
 
-function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
+function ActionFormModal({ type }: { type: ActionFlowType }) {
   const { btcAccount, ethAccount } = useWalletContext()
-  const { type, setType } = useModalFlowContext()
   const { setTokenAmount } = useTransactionContext()
   const { initStake } = useStakeFlowContext()
 
   const [isLoading, setIsLoading] = useState(false)
+
+  const { heading, renderComponent } = FORM_DATA[type]
 
   const handleInitStake = useCallback(async () => {
     const btcAddress = btcAccount?.address
@@ -67,34 +74,13 @@ function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
   return (
     <>
       {!isLoading && <ModalCloseButton />}
+      <ModalHeader>{heading}</ModalHeader>
       <ModalBody>
-        <Tabs
-          w="100%"
-          variant="underline"
-          defaultIndex={TABS.indexOf(defaultType)}
-        >
-          <TabList pb={6}>
-            {TABS.map((actionFlowType) => (
-              <Tab
-                key={actionFlowType}
-                w="50%"
-                pb={4}
-                onClick={() => setType(actionFlowType)}
-                isDisabled={actionFlowType !== type && isLoading}
-              >
-                {actionFlowType}
-              </Tab>
-            ))}
-          </TabList>
-          <TabPanels>
-            <TabPanel>
-              <StakeFormModal onSubmitForm={handleSubmitFormWrapper} />
-            </TabPanel>
-            <TabPanel>
-              <UnstakeFormModal onSubmitForm={handleSubmitFormWrapper} />
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
+        <Box w="100%">
+          {renderComponent({
+            onSubmitForm: handleSubmitFormWrapper,
+          })}
+        </Box>
       </ModalBody>
     </>
   )
