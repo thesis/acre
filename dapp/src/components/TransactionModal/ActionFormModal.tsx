@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react"
+import React, { ReactNode, useCallback, useState } from "react"
 import { Box, ModalBody, ModalCloseButton, ModalHeader } from "@chakra-ui/react"
 import {
   useStakeFlowContext,
@@ -14,21 +14,21 @@ import UnstakeFormModal from "./ActiveUnstakingStep/UnstakeFormModal"
 const FORM_DATA: Record<
   ActionFlowType,
   {
-    header: string
-    FormComponent: (
+    heading: string
+    renderComponent: (
       props: React.ComponentProps<
         typeof StakeFormModal | typeof UnstakeFormModal
       >,
-    ) => React.ReactNode
+    ) => ReactNode
   }
 > = {
   stake: {
-    header: "Deposit",
-    FormComponent: StakeFormModal,
+    heading: "Deposit",
+    renderComponent: StakeFormModal,
   },
   unstake: {
-    header: "Withdraw",
-    FormComponent: UnstakeFormModal,
+    heading: "Withdraw",
+    renderComponent: UnstakeFormModal,
   },
 }
 
@@ -39,7 +39,7 @@ function ActionFormModal({ type }: { type: ActionFlowType }) {
 
   const [isLoading, setIsLoading] = useState(false)
 
-  const { header, FormComponent } = FORM_DATA[type]
+  const { heading, renderComponent } = FORM_DATA[type]
 
   const handleInitStake = useCallback(async () => {
     const btcAddress = btcAccount?.address
@@ -78,10 +78,10 @@ function ActionFormModal({ type }: { type: ActionFlowType }) {
   return (
     <>
       {!isLoading && <ModalCloseButton />}
-      <ModalHeader>{header}</ModalHeader>
+      <ModalHeader>{heading}</ModalHeader>
       <ModalBody>
         <Box w="100%">
-          <FormComponent onSubmitForm={handleSubmitFormWrapper} />
+          {renderComponent({ onSubmitForm: handleSubmitFormWrapper })}
         </Box>
       </ModalBody>
     </>
