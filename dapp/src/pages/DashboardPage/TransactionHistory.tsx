@@ -6,7 +6,6 @@ import {
   Card,
   CardBody,
   IconButton,
-  Icon,
   Link,
   Box,
   Image,
@@ -23,8 +22,6 @@ import emptyStateIlustration from "#/assets/images/empty-state.png"
 import { ArrowUpRightAnimatedIcon } from "#/assets/icons/animated"
 import { motion } from "framer-motion"
 import { displayBlockTimestamp, truncateAddress } from "#/utils"
-
-// TODO: Fix `Pagination` container height transition
 
 type TransactionHistoryData = {
   date: number
