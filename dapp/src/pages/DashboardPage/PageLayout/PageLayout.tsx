@@ -1,25 +1,8 @@
 import React from "react"
-import { Grid, GridProps, Box } from "@chakra-ui/react"
-import PageLayoutSidebar from "./PageLayoutSidebar"
+import { Grid, GridProps } from "@chakra-ui/react"
 
-type PageLayoutProps = Omit<GridProps, "children"> & {
-  children: React.ReactNode
-  leftSidebar?: React.ReactNode
-  rightSidebar?: React.ReactNode
-}
-
-function PageLayout(props: PageLayoutProps) {
-  const { children, leftSidebar, rightSidebar, ...restProps } = props
-  const isSidebarPropsInvalid = [leftSidebar, rightSidebar]
-    .filter(Boolean)
-    .some(
-      (value) =>
-        !React.isValidElement(value) || value.type !== PageLayoutSidebar,
-    )
-
-  if (isSidebarPropsInvalid) {
-    throw new Error("Sidebar content must be wrapped with `PageLayoutSidebar`.")
-  }
+function PageLayout(props: GridProps) {
+  const { children, ...restProps } = props
 
   return (
     <Grid
@@ -36,17 +19,7 @@ function PageLayout(props: PageLayoutProps) {
       }}
       {...restProps}
     >
-      <Box
-        gridArea={{
-          xl: "1 / 1 / 3 / 2",
-          "2.5xl": "1 / 2 / -1 / 3",
-          base: "1 / 1 / -1 / -1",
-        }}
-      >
-        {children}
-      </Box>
-      {leftSidebar}
-      {rightSidebar}
+      {children}
     </Grid>
   )
 }
