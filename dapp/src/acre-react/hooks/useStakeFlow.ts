@@ -45,7 +45,7 @@ export function useStakeFlow(): UseStakeFlowReturn {
   const signMessage = useCallback(async () => {
     if (!stakeFlow) throw new Error("Initialize stake first")
 
-    await stakeFlow.signMessage()
+    await Promise.resolve(stakeFlow.signMessage())
   }, [stakeFlow])
 
   const stake = useCallback(async () => {

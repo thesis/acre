@@ -1,6 +1,5 @@
-import React from "react"
+import React, { useState } from "react"
 import { AnimatePresence, motion, Variants } from "framer-motion"
-import { useState } from "react"
 import { useLocation, useOutlet } from "react-router-dom"
 import DocsDrawer from "./DocsDrawer"
 import Header from "./Header"
