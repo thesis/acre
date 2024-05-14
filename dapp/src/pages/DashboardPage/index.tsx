@@ -1,5 +1,5 @@
 import React from "react"
-import { useWallet } from "#/hooks"
+import { useEstimatedBTCBalance } from "#/hooks"
 import { Icon, Image, VStack } from "@chakra-ui/react"
 import gamificationPlaceholderImage from "#/assets/images/gamification-placeholder.svg"
 import { AcreLogo } from "#/assets/icons"
@@ -12,8 +12,7 @@ import { CurrentSeasonCard } from "./CurrentSeasonCard"
 // TODO: Remove placeholder image and replace with actual gamification content
 
 export default function DashboardPage() {
-  const { bitcoin } = useWallet()
-  const bitcoinWalletBalance = bitcoin.account?.balance.toString() ?? "0"
+  const bitcoinWalletBalance = useEstimatedBTCBalance()
 
   return (
     <PageLayout>
