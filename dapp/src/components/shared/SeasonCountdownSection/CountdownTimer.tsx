@@ -14,6 +14,49 @@ import { AnimatePresence, motion } from "framer-motion"
 
 type SizeType = "sm" | "md"
 
+const sizeStyles = {
+  digit: {
+    sm: {
+      px: 1,
+      w: 6,
+      py: 1,
+      rounded: "base",
+    },
+    md: {
+      px: 5,
+      w: 14,
+      py: 4,
+      rounded: "xl",
+    },
+  },
+
+  segment: {
+    sm: {
+      fontSize: "sm",
+      lineHeight: 5,
+    },
+    md: {
+      fontSize: "2xl",
+      lineHeight: 8,
+    },
+  },
+
+  segmentWrapper: {
+    sm: {
+      gap: "px",
+    },
+    md: {
+      gap: 2,
+    },
+  },
+
+  segmentSeparator: {
+    md: {
+      content: '":"',
+    },
+  },
+}
+
 type CountdownTimerDigitProps = Omit<BoxProps, "children"> & {
   children: number
   size: SizeType
@@ -23,10 +66,7 @@ function CountdownTimerDigit(props: CountdownTimerDigitProps) {
   return (
     <Box
       as={motion.div}
-      px={size === "sm" ? 1 : 5}
-      w={size === "sm" ? 6 : 14}
-      py={size === "sm" ? 1 : 4}
-      rounded={size === "sm" ? "base" : "xl"}
+      sx={sizeStyles.digit[size]}
       color="gold.200"
       bg="grey.700"
       overflow="hidden"
@@ -73,11 +113,10 @@ function CountdownTimerSegment(props: CountdownTimerSegmentProps) {
   const { label, value, size, ...restProps } = props
   return (
     <HStack
+      sx={sizeStyles.segment[size]}
       spacing={2}
       alignItems="baseline"
       color="gold.200"
-      fontSize={size === "sm" ? "sm" : "2xl"}
-      lineHeight={size === "sm" ? 5 : 8}
       fontWeight="bold"
       _notLast={{
         _after: {
@@ -87,7 +126,7 @@ function CountdownTimerSegment(props: CountdownTimerSegmentProps) {
     >
       <Grid
         templateColumns="repeat(2, 1fr)"
-        gap={size === "sm" ? "px" : 2}
+        sx={sizeStyles.segmentWrapper[size]}
         {...restProps}
       >
         <CountdownTimerDigit size={size}>{value[0]}</CountdownTimerDigit>

@@ -25,7 +25,7 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
       px={5}
       py={4}
       w="full"
-      align="start"
+      align="stretch"
       position="relative"
       {...restProps}
     >
