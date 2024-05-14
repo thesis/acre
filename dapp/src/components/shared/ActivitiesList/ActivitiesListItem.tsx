@@ -1,5 +1,5 @@
 import React from "react"
-import { LoadingSpinnerSuccessIcon } from "#/assets/icons"
+import { ArrowUpRight, LoadingSpinnerSuccessIcon } from "#/assets/icons"
 import { Activity as ActivityType } from "#/types"
 import {
   Alert,
@@ -13,7 +13,6 @@ import {
   VStack,
   VisuallyHidden,
 } from "@chakra-ui/react"
-import ButtonLink from "../ButtonLink"
 import { CurrencyBalance } from "../CurrencyBalance"
 import Spinner from "../Spinner"
 import BlockExplorerLink from "../BlockExplorerLink"
@@ -67,26 +66,25 @@ function ActivitiesListItem(props: ActivitiesListItemProps) {
       </VStack>
 
       {txHash && (
-        <ButtonLink
-          as={BlockExplorerLink}
+        <BlockExplorerLink
           id={txHash}
+          chain="bitcoin"
+          type="transaction"
           display="flex"
           my={-4}
           ml={6}
           mr={-6}
           h="auto"
           alignSelf="stretch"
-          variant="unstyled"
           borderLeftWidth={1}
           borderColor="inherit"
           rounded={0}
           px={4}
           py={5}
-          iconSpacing={0}
-          iconColor="grey.500"
         >
+          <ArrowUpRight color="gray.500" boxSize={4} alignSelf="center" />
           <VisuallyHidden>View transaction details</VisuallyHidden>
-        </ButtonLink>
+        </BlockExplorerLink>
       )}
     </Alert>
   )
