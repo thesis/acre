@@ -1,7 +1,7 @@
 import React from "react"
 import { TextProps } from "@chakra-ui/react"
+import { usePagination } from "../../../contexts/PaginationContext"
 import { TextSm } from "../Typography"
-import { usePagination } from "./PaginationContext"
 
 type PaginationStatusProps = TextProps & {
   dataLabel?: string

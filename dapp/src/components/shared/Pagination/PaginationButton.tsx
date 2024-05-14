@@ -1,7 +1,7 @@
 import React from "react"
 import { Icon, IconButton, IconButtonProps } from "@chakra-ui/react"
 import { IconArrowLeft, IconArrowRight } from "@tabler/icons-react"
-import { usePagination } from "./PaginationContext"
+import { usePagination } from "#/contexts"
 
 type PaginationButtonProps = Omit<IconButtonProps, "aria-label" | "icon"> & {
   mode: "previous" | "next"

@@ -1,6 +1,6 @@
 import React from "react"
+import { PaginationContext } from "#/contexts"
 import { StackProps, VStack } from "@chakra-ui/react"
-import { PaginationContext } from "./PaginationContext"
 
 export type PaginationProps<T> = Omit<StackProps, "as"> & {
   data: T[]

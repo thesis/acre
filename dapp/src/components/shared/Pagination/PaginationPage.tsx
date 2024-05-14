@@ -1,8 +1,8 @@
 import React from "react"
-import { StackProps, Stack, Box, useToken } from "@chakra-ui/react"
-import { AnimatePresence, Transition, Variants, motion } from "framer-motion"
+import { Box, Stack, StackProps, useToken } from "@chakra-ui/react"
 import { useSize } from "@chakra-ui/react-use-size"
-import { usePagination } from "./PaginationContext"
+import { AnimatePresence, Transition, Variants, motion } from "framer-motion"
+import { usePagination } from "#/contexts"
 
 const transition: Transition = {
   type: "spring",
