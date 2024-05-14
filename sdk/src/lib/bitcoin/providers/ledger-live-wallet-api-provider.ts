@@ -64,8 +64,9 @@ export default class LedgerLiveWalletApiBitcoinProvider
    * must rely on the extended public key.
    *
    * @returns Always the same bitcoin address based on the extended public key
-   *          (an address under the `m/x'/0'/0'/0/0` derivation path) even the
-   *          address has been "renewed" by the Ledger Live Wallet API.
+   *          (an address under the `m/purpose'/0'/accountId'/0/0` derivation
+   *          path) even the address has been "renewed" by the Ledger Live
+   *          Wallet API.
    */
   async getAddress(): Promise<string> {
     const xpub = await this.#walletApiClient.bitcoin.getXPub(this.#accountId)
