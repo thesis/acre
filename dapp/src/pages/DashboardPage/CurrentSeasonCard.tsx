@@ -21,8 +21,6 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
   const { heading, timestamp, totalJoined, tvl, ...restProps } = props
   return (
     <VStack
-      bg="transparent"
-      borderWidth={0}
       spacing={4}
       px={5}
       py={4}
