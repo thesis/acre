@@ -26,12 +26,12 @@ const variants: Variants = {
   }),
 }
 
-type PaginationPageProps = Omit<StackProps, "children"> & {
-  children: (pageData: unknown[]) => React.ReactNode
+type PaginationPageProps<T> = Omit<StackProps, "children"> & {
+  children: (pageData: T[]) => React.ReactNode
   pageSpacing?: number | string
 }
 
-function PaginationPage(props: PaginationPageProps) {
+function PaginationPage<T>(props: PaginationPageProps<T>) {
   const { children, pageSpacing = 0, ...restProps } = props
   const { page, pageData } = usePagination()
 

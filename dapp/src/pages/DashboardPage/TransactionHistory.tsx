@@ -26,14 +26,16 @@ import { displayBlockTimestamp, truncateAddress } from "#/utils"
 
 // TODO: Fix `Pagination` container height transition
 
+type TransactionHistoryData = {
+  date: number
+  type: string
+  amount: string
+  address: string
+  url: string
+}[]
+
 type TransactionHistoryProps = StackProps & {
-  data?: {
-    date: number
-    type: string
-    amount: string
-    address: string
-    url: string
-  }[]
+  data?: TransactionHistoryData
 }
 
 export default function TransactionHistory(props: TransactionHistoryProps) {
@@ -53,57 +55,55 @@ export default function TransactionHistory(props: TransactionHistoryProps) {
       ) : (
         <Pagination data={data} pageSize={10}>
           <PaginationPage direction="column" spacing={2} pageSpacing={6}>
-            {(pageData) =>
+            {(pageData: TransactionHistoryData) =>
               // TODO: Fix type assertion of `pageData`
-              (pageData as typeof data).map(
-                ({ date, type, amount, address, url }) => (
-                  <Card
-                    as={motion.div}
-                    initial={false}
-                    whileHover="animate"
-                    key={url}
-                    role="group"
-                    variant="elevated"
-                    colorScheme="gold"
-                  >
-                    <CardBody as={HStack} spacing={0} p={4}>
-                      <TextSm color="grey.500" flex={1}>
-                        {displayBlockTimestamp(date)}
+              pageData.map(({ date, type, amount, address, url }) => (
+                <Card
+                  as={motion.div}
+                  initial={false}
+                  whileHover="animate"
+                  key={url}
+                  role="group"
+                  variant="elevated"
+                  colorScheme="gold"
+                >
+                  <CardBody as={HStack} spacing={0} p={4}>
+                    <TextSm color="grey.500" flex={1}>
+                      {displayBlockTimestamp(date)}
+                    </TextSm>
+
+                    <HStack flexBasis="72%" spacing={0}>
+                      <TextSm color="grey.700" flex={1} fontWeight="medium">
+                        {type}
                       </TextSm>
+                      <Box flex={1}>
+                        <CurrencyBalance
+                          color="grey.700"
+                          fontWeight="bold"
+                          amount={amount}
+                          currency="bitcoin"
+                        />
+                      </Box>
+                      <TextSm color="grey.500" flexBasis="50%">
+                        {truncateAddress(address)}
+                      </TextSm>
+                    </HStack>
 
-                      <HStack flexBasis="72%" spacing={0}>
-                        <TextSm color="grey.700" flex={1} fontWeight="medium">
-                          {type}
-                        </TextSm>
-                        <Box flex={1}>
-                          <CurrencyBalance
-                            color="grey.700"
-                            fontWeight="bold"
-                            amount={amount}
-                            currency="bitcoin"
-                          />
-                        </Box>
-                        <TextSm color="grey.500" flexBasis="50%">
-                          {truncateAddress(address)}
-                        </TextSm>
-                      </HStack>
-
-                      <IconButton
-                        as={Link}
-                        icon={<ArrowUpRightAnimatedIcon top={1} />}
-                        aria-label="View transaction details"
-                        href={url}
-                        variant="ghost"
-                        color="grey.300"
-                        _groupHover={{ color: "brand.400" }}
-                        pl={6}
-                        pr={4}
-                        m={-4}
-                      />
-                    </CardBody>
-                  </Card>
-                ),
-              )
+                    <IconButton
+                      as={Link}
+                      icon={<ArrowUpRightAnimatedIcon top={1} />}
+                      aria-label="View transaction details"
+                      href={url}
+                      variant="ghost"
+                      color="grey.300"
+                      _groupHover={{ color: "brand.400" }}
+                      pl={6}
+                      pr={4}
+                      m={-4}
+                    />
+                  </CardBody>
+                </Card>
+              ))
             }
           </PaginationPage>
 
