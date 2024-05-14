@@ -16,6 +16,7 @@ import IconTag from "#/components/shared/IconTag"
 import { BoostArrowIcon } from "#/assets/icons"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import { AmountType } from "#/types"
+import { ActivitiesList } from "#/components/shared/ActivitiesList"
 
 const buttonStyles: ButtonProps = {
   size: "lg",
@@ -87,6 +88,8 @@ export default function DashboardCard(props: DashboardCardProps) {
             Withdraw
           </Button>
         </HStack>
+
+        <ActivitiesList />
       </CardBody>
     </Card>
   )
