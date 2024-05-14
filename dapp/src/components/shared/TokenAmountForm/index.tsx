@@ -1,14 +1,15 @@
 import { FormikErrors, withFormik } from "formik"
 import { getErrorsObj, validateTokenAmount } from "#/utils"
+import { BaseFormProps } from "#/types"
 import TokenAmountFormBase, {
   TokenAmountFormBaseProps,
   TokenAmountFormValues,
 } from "./TokenAmountFormBase"
 
 type TokenAmountFormProps = {
-  onSubmitForm: (values: TokenAmountFormValues) => void
   minTokenAmount: bigint
-} & TokenAmountFormBaseProps
+} & TokenAmountFormBaseProps &
+  BaseFormProps<TokenAmountFormValues>
 
 const TokenAmountForm = withFormik<TokenAmountFormProps, TokenAmountFormValues>(
   {

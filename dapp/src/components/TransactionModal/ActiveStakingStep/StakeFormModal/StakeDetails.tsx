@@ -50,7 +50,6 @@ function StakeDetails({
       />
       <FeesDetailsAmountItem
         label="Fees"
-        sublabel="How are fees calculated?"
         // TODO: Add `Bitcoin Network fee` (funding transaction fee selected by
         // the user) and figure out how to estimate this fee.
         tooltip={

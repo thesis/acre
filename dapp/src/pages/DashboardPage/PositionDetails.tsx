@@ -62,9 +62,15 @@ export default function PositionDetails(props: CardProps) {
           Unstake
         </Button>
       </CardFooter>
+      {/* TODO: Simplify the logic of opening modals */}
       <TransactionModal
-        isOpen={!!actionFlowType}
-        defaultType={actionFlowType}
+        isOpen={actionFlowType === "stake"}
+        type="stake"
+        onClose={handleCloseTransactionModal}
+      />
+      <TransactionModal
+        isOpen={actionFlowType === "unstake"}
+        type="unstake"
         onClose={handleCloseTransactionModal}
       />
     </Card>
