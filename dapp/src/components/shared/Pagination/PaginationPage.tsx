@@ -64,7 +64,7 @@ function PaginationPage<T>(props: PaginationPageProps<T>) {
             exit="exit"
             {...restProps}
           >
-            {children(pageData)}
+            {children(pageData as T[])}
           </Stack>
         </AnimatePresence>
       </Box>
