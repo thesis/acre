@@ -14,9 +14,9 @@ function PageLayoutColumn(props: PageLayoutColumnProps) {
       gridArea={
         isMain
           ? {
-              xl: "1 / 1 / 3 / 2",
-              "2.5xl": "1 / 2 / -1 / 3",
               base: "1 / 1 / -1 / -1",
+              lg: "1 / 1 / 3 / 2",
+              xl: "1 / 2 / -1 / 3",
             }
           : undefined
       }

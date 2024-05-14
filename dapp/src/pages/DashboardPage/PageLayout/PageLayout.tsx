@@ -13,9 +13,8 @@ function PageLayout(props: GridProps) {
       gridTemplateColumns={{
         base: "1fr",
         md: "repeat(2, 1fr)",
-        xl: "0.76fr auto",
-        "2.5xl":
-          "minmax(358px, 0.25fr) minmax(748px, 1fr) minmax(358px, 0.25fr)",
+        lg: "1fr 0.5fr",
+        xl: "minmax(358px, auto) 1fr minmax(358px, auto)",
       }}
       {...restProps}
     >

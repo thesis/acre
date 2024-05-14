@@ -31,6 +31,7 @@ export default function DashboardPage() {
           <TextMd>Coming soon...</TextMd>
         </VStack>
         <Image
+          width="full"
           zIndex={-1}
           position="absolute"
           inset={0}

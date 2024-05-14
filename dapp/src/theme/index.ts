@@ -45,9 +45,6 @@ const defaultTheme = {
   zIndices,
   semanticTokens,
   styles,
-  breakpoints: {
-    "2.5xl": "100.5rem", // 1608px
-  },
   space: {
     13: "3.25rem",
     15: "3.75rem",
