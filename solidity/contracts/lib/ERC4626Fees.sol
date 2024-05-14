@@ -2,7 +2,7 @@
 
 // Inspired by https://docs.openzeppelin.com/contracts/5.x/erc4626#fees
 
-pragma solidity ^0.8.21;
+pragma solidity 0.8.24;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ERC4626Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC4626Upgradeable.sol";
@@ -16,6 +16,15 @@ abstract contract ERC4626Fees is ERC4626Upgradeable {
     uint256 internal constant _BASIS_POINT_SCALE = 1e4;
 
     // === Overrides ===
+
+    /// @dev Calculate the maximum amount of assets that can be withdrawn
+    ///      by an account including fees. See {IERC4626-maxWithdraw}.
+    function maxWithdraw(
+        address account
+    ) public view virtual override returns (uint256) {
+        uint256 maxAssets = super.maxWithdraw(account);
+        return maxAssets - _feeOnTotal(maxAssets, _exitFeeBasisPoints());
+    }
 
     /// @dev Preview taking an entry fee on deposit. See {IERC4626-previewDeposit}.
     function previewDeposit(
@@ -82,13 +91,6 @@ abstract contract ERC4626Fees is ERC4626Upgradeable {
         if (fee > 0 && recipient != address(this)) {
             SafeERC20.safeTransfer(IERC20(asset()), recipient, fee);
         }
-    }
-
-    /// @dev Calculate the maximum amount of assets that can be withdrawn
-    ///      by an account including fees. See {IERC4626-maxWithdraw}.
-    function _maxWithdraw(address account) internal view returns (uint256) {
-        uint256 maxAssets = super.maxWithdraw(account);
-        return maxAssets - _feeOnTotal(maxAssets, _exitFeeBasisPoints());
     }
 
     // === Fee configuration ===

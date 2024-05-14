@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-pragma solidity ^0.8.21;
+pragma solidity 0.8.24;
 
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
@@ -334,7 +334,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         if (paused()) {
             return 0;
         }
-        return _maxWithdraw(owner);
+        return super.maxWithdraw(owner);
     }
 
     /// @dev Returns the maximum amount of Vault shares that can be redeemed from
@@ -347,27 +347,14 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         return super.maxRedeem(owner);
     }
 
-    /// @notice Returns value of assets that would be exchanged for the amount of
-    ///         shares owned by the `account`.
-    /// @param account Owner of shares.
-    /// @return Assets amount.
+    /// @notice Returns the number of assets that corresponds to the amount of
+    ///         shares held by the specified account.
+    /// @dev    This function is used to convert shares to assets position for
+    ///         the given account. It does not take fees into account.
+    /// @param account The owner of the shares.
+    /// @return The amount of assets.
     function assetsBalanceOf(address account) public view returns (uint256) {
         return convertToAssets(balanceOf(account));
-    }
-
-    /// @dev Transfers a `value` amount of tokens from `from` to `to`, or
-    ///      alternatively mints (or burns) if `from` (or `to`) is the zero
-    ///      address. All customizations to transfers, mints, and burns should
-    ///      be done by overriding this function.
-    /// @param from Sender of tokens.
-    /// @param to Receiver of tokens.
-    /// @param value Amount of tokens to transfer.
-    function _update(
-        address from,
-        address to,
-        uint256 value
-    ) internal override whenNotPaused {
-        super._update(from, to, value);
     }
 
     /// @return Returns entry fee basis point used in deposits.
