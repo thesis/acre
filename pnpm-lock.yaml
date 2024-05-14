@@ -145,7 +145,7 @@ importers:
         specifier: 1.0.0-beta.9
         version: 1.0.0-beta.9
       '@swan-bitcoin/xpub-lib':
-        specifier: ^0.1.5
+        specifier: 0.1.5
         version: 0.1.5
       ethers:
         specifier: ^6.10.0
