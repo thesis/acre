@@ -5,7 +5,7 @@ import {
   useTransactionContext,
   useWalletContext,
 } from "#/hooks"
-import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
+import { ACTION_FLOW_TYPES, ActionFlowType, BaseFormProps } from "#/types"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { logPromiseFailure } from "#/utils"
 import StakeFormModal from "./ActiveStakingStep/StakeFormModal"
@@ -15,11 +15,7 @@ const FORM_DATA: Record<
   ActionFlowType,
   {
     heading: string
-    renderComponent: (
-      props: React.ComponentProps<
-        typeof StakeFormModal | typeof UnstakeFormModal
-      >,
-    ) => ReactNode
+    renderComponent: (props: BaseFormProps<TokenAmountFormValues>) => ReactNode
   }
 > = {
   stake: {
@@ -81,7 +77,9 @@ function ActionFormModal({ type }: { type: ActionFlowType }) {
       <ModalHeader>{heading}</ModalHeader>
       <ModalBody>
         <Box w="100%">
-          {renderComponent({ onSubmitForm: handleSubmitFormWrapper })}
+          {renderComponent({
+            onSubmitForm: handleSubmitFormWrapper,
+          })}
         </Box>
       </ModalBody>
     </>
