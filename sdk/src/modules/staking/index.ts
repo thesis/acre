@@ -75,7 +75,7 @@ class StakingModule {
     // can create `EVMChainIdentifier` class and use it as a type in `modules`
     // and `lib`. Currently we support only `Ethereum` so here we force to
     // `EthereumAddress`.
-    const depositOwnerChainAddress = EthereumAddress.from(
+    const depositOwnerEvmAddress = EthereumAddress.from(
       await this.#orangeKit.predictAddress(depositorOwnerBitcoinAddress),
     )
 
@@ -85,7 +85,7 @@ class StakingModule {
       bitcoinRecoveryAddress ?? depositorOwnerBitcoinAddress
 
     const tbtcDeposit = await this.#tbtc.initiateDeposit(
-      depositOwnerChainAddress,
+      depositOwnerEvmAddress,
       finalBitcoinRecoveryAddress,
       referral,
     )
@@ -94,7 +94,7 @@ class StakingModule {
       this.#contracts,
       this.#bitcoinProvider,
       finalBitcoinRecoveryAddress,
-      depositOwnerChainAddress,
+      depositOwnerEvmAddress,
       tbtcDeposit,
     )
   }
