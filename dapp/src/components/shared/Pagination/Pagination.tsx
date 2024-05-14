@@ -13,10 +13,12 @@ function Pagination<T>(props: PaginationProps<T>) {
 
   const [page, setPage] = React.useState(defaultPage)
 
-  const pageData = React.useMemo(
-    () => data.slice(page * pageSize, page * pageSize + pageSize),
-    [data, page, pageSize],
-  )
+  const pageData = React.useMemo(() => {
+    const startIndex = page * pageSize
+    const endIndex = startIndex + pageSize
+
+    return data.slice(startIndex, endIndex)
+  }, [data, page, pageSize])
 
   const contextValue = React.useMemo(
     () => ({
