@@ -29,6 +29,7 @@ export function CurrencyBalance({
   balanceFontWeight = "bold",
   symbolFontWeight = "bold",
   symbolPosition = "suffix",
+  as,
   ...textProps
 }: CurrencyBalanceProps) {
   const styles = useMultiStyleConfig("CurrencyBalance", {
@@ -53,7 +54,7 @@ export function CurrencyBalance({
   }, [amount, decimals, desiredDecimals, shouldBeFormatted])
 
   return (
-    <Box __css={styles.container}>
+    <Box as={as} __css={styles.container}>
       <Box
         as="span"
         fontWeight={balanceFontWeight}
