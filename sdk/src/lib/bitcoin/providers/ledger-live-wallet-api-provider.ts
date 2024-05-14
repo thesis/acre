@@ -8,7 +8,9 @@ import { BitcoinNetwork } from "../network"
 
 type Network = Exclude<BitcoinNetwork, BitcoinNetwork.Unknown>
 
-class LedgerLiveWalletApiBitcoinProvider implements BitcoinProvider {
+export default class LedgerLiveWalletApiBitcoinProvider
+  implements BitcoinProvider
+{
   readonly #walletApiClient: WalletAPIClient
 
   readonly #windowMessageTransport: WindowMessageTransport
@@ -65,6 +67,3 @@ class LedgerLiveWalletApiBitcoinProvider implements BitcoinProvider {
     return address
   }
 }
-
-// eslint-disable-next-line import/prefer-default-export
-export { LedgerLiveWalletApiBitcoinProvider }

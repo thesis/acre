@@ -1,2 +1,2 @@
 export * from "./provider"
-export * from "./ledger-live-wallet-api-provider"
+export { default as LedgerLiveWalletApiBitcoinProvider } from "./ledger-live-wallet-api-provider"
