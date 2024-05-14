@@ -3,6 +3,7 @@ import { useWallet } from "#/hooks"
 import { PageLayout, PageLayoutColumn } from "./PageLayout"
 import DashboardCard from "./DashboardCard"
 import GrantedSeasonPassCard from "./GrantedSeasonPassCard"
+import { CurrentSeasonCard } from "./CurrentSeasonCard"
 
 export default function DashboardPage() {
   const { bitcoin } = useWallet()
@@ -15,7 +16,8 @@ export default function DashboardPage() {
       </PageLayoutColumn>
 
       <PageLayoutColumn>
-        <GrantedSeasonPassCard heading="Season 2. Pre-launch staking" />
+        <CurrentSeasonCard />
+        <GrantedSeasonPassCard />
       </PageLayoutColumn>
     </PageLayout>
   )

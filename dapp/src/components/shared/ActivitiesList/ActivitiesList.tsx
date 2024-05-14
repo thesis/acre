@@ -23,7 +23,7 @@ function ActivitiesList(props: ListProps) {
     setDismissedActivities((prev) => [...prev, txHash])
   }
 
-  return (
+  return activities.length > 0 ? (
     <MotionList pos="relative" {...props}>
       {activities.map((item) => (
         <AnimatePresence mode="popLayout">
@@ -47,7 +47,7 @@ function ActivitiesList(props: ListProps) {
         </AnimatePresence>
       ))}
     </MotionList>
-  )
+  ) : null
 }
 
 export default ActivitiesList
