@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-pragma solidity ^0.8.21;
+pragma solidity 0.8.24;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -238,9 +238,10 @@ contract MezoAllocatorV2 is IDispatcher, Ownable2StepUpgradeable {
         emit MaintainerRemoved(maintainerToRemove);
     }
 
-    /// @notice Returns the total amount of tBTC allocated to MezoPortal.
+    /// @notice Returns the total amount of tBTC allocated to MezoPortal including
+    ///         the amount that is currently hold by this contract.
     function totalAssets() external view returns (uint256) {
-        return depositBalance;
+        return depositBalance + tbtc.balanceOf(address(this));
     }
 
     /// @notice Returns the list of maintainers.

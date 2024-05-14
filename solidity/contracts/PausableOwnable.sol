@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-pragma solidity ^0.8.21;
+pragma solidity 0.8.24;
 
 import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
@@ -34,6 +34,10 @@ abstract contract PausableOwnable is
     /// @notice Reverts when an unauthorized account triggers the emergency stop
     ///         mechanism.
     error PausableUnauthorizedAccount(address account);
+
+    /// @notice Reverts when the new pause admin address is the same as the
+    ///         current pause admin address.
+    error SamePauseAdmin();
 
     /// @notice Reverts if called by any account other than the pause admin
     ///         or the contract owner.
@@ -94,6 +98,9 @@ abstract contract PausableOwnable is
     function updatePauseAdmin(address newPauseAdmin) external onlyOwner {
         if (newPauseAdmin == address(0)) {
             revert ZeroAddress();
+        }
+        if (newPauseAdmin == pauseAdmin) {
+            revert SamePauseAdmin();
         }
 
         emit PauseAdminUpdated(newPauseAdmin, pauseAdmin);

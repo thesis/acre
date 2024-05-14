@@ -14,7 +14,6 @@
     "test": "jest --verbose"
   },
   "devDependencies": {
-    "@ethersproject/bignumber": "^5.7.0",
     "@thesis-co/eslint-config": "github:thesis/eslint-config#7b9bc8c",
     "@types/jest": "^29.5.11",
     "@types/node": "^20.9.4",

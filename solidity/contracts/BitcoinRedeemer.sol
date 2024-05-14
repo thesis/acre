@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-pragma solidity ^0.8.21;
+pragma solidity 0.8.24;
 
 import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 
@@ -46,20 +46,23 @@ contract BitcoinRedeemer is Ownable2StepUpgradeable, IReceiveApproval {
     /// Reverts if the TBTCVault address is zero.
     error TbtcVaultZeroAddress();
 
-    /// Attempted to call receiveApproval for not supported token.
-    error UnsupportedToken(address token);
-
     /// Attempted to call receiveApproval by supported token.
     error CallerNotAllowed(address caller);
 
     /// Attempted to call receiveApproval with empty data.
     error EmptyExtraData();
 
-    /// Attempted to call redeemSharesAndUnmint with unexpected tBTC token owner.
+    /// Attempted to call _redeemSharesAndUnmint with unexpected tBTC token owner.
     error UnexpectedTbtcTokenOwner();
+
+    /// Reverts if the redeemer is not the deposit owner.
+    error RedeemerNotOwner(address redeemer, address owner);
 
     /// Reverts when approveAndCall to tBTC contract fails.
     error ApproveAndCallFailed();
+
+    /// Reverts if the new TBTCVault contract is not tBTC token owner.
+    error NotTbtcTokenOwner();
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -96,21 +99,19 @@ contract BitcoinRedeemer is Ownable2StepUpgradeable, IReceiveApproval {
     /// @notice Redeems shares for tBTC and requests bridging to Bitcoin.
     /// @param from Shares token holder executing redemption.
     /// @param amount Amount of shares to redeem.
-    /// @param token stBTC token address.
     /// @param extraData Redemption data in a format expected from
     ///        `redemptionData` parameter of Bridge's `receiveBalanceApproval`
     ///        function.
     function receiveApproval(
         address from,
         uint256 amount,
-        address token,
+        address,
         bytes calldata extraData
     ) external {
-        if (token != address(stbtc)) revert UnsupportedToken(token);
-        if (msg.sender != token) revert CallerNotAllowed(msg.sender);
+        if (msg.sender != address(stbtc)) revert CallerNotAllowed(msg.sender);
         if (extraData.length == 0) revert EmptyExtraData();
 
-        redeemSharesAndUnmint(from, amount, extraData);
+        _redeemSharesAndUnmint(from, amount, extraData);
     }
 
     /// @notice Updates TBTCVault contract address.
@@ -118,6 +119,10 @@ contract BitcoinRedeemer is Ownable2StepUpgradeable, IReceiveApproval {
     function updateTbtcVault(address newTbtcVault) external onlyOwner {
         if (newTbtcVault == address(0)) {
             revert ZeroAddress();
+        }
+
+        if (newTbtcVault != tbtcToken.owner()) {
+            revert NotTbtcTokenOwner();
         }
 
         emit TbtcVaultUpdated(tbtcVault, newTbtcVault);
@@ -146,13 +151,20 @@ contract BitcoinRedeemer is Ownable2StepUpgradeable, IReceiveApproval {
     /// @param tbtcRedemptionData Additional data required for the tBTC redemption.
     ///        See `redemptionData` parameter description of `Bridge.requestRedemption`
     ///        function.
-    function redeemSharesAndUnmint(
+    function _redeemSharesAndUnmint(
         address owner,
         uint256 shares,
         bytes calldata tbtcRedemptionData
     ) internal {
         // TBTC Token contract owner resolves to the TBTCVault contract.
         if (tbtcToken.owner() != tbtcVault) revert UnexpectedTbtcTokenOwner();
+
+        // Decode the redemption data to get the redeemer address.
+        (address redeemer, , , , , ) = abi.decode(
+            tbtcRedemptionData,
+            (address, bytes20, bytes32, uint32, uint64, bytes)
+        );
+        if (redeemer != owner) revert RedeemerNotOwner(redeemer, owner);
 
         uint256 tbtcAmount = stbtc.redeem(shares, address(this), owner);
 
