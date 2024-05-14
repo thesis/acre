@@ -4,7 +4,7 @@ import { AcreContracts } from "./lib/contracts"
 import { EthereumNetwork, getEthereumContracts } from "./lib/ethereum"
 import { StakingModule } from "./modules/staking"
 import Tbtc from "./modules/tbtc"
-import { VoidSignerCompatibleWithEthersV5 } from "./lib/utils"
+import { VoidSigner } from "./lib/utils"
 import { BitcoinProvider, BitcoinNetwork } from "./lib/bitcoin"
 import { getChainIdByNetwork } from "./lib/ethereum/network"
 
@@ -89,10 +89,7 @@ class Acre {
       await bitcoinProvider.getAddress(),
     )
 
-    const signer = new VoidSignerCompatibleWithEthersV5(
-      ethereumAddress,
-      provider,
-    )
+    const signer = new VoidSigner(ethereumAddress, provider)
 
     const contracts = getEthereumContracts(signer, evmNetwork)
 
