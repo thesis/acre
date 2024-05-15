@@ -11,7 +11,7 @@ import { IEthereumSignerCompatibleWithEthersV5 as EthereumSignerCompatibleWithEt
  * Represents the tBTC module.
  */
 export default class Tbtc {
-  readonly #tbtcApi: TbtcApi
+  public readonly tbtcApi: TbtcApi
 
   readonly #tbtcSdk: TbtcSdk
 
@@ -22,7 +22,7 @@ export default class Tbtc {
     tbtcSdk: TbtcSdk,
     bitcoinDepositor: BitcoinDepositor,
   ) {
-    this.#tbtcApi = tbtcApi
+    this.tbtcApi = tbtcApi
     this.#tbtcSdk = tbtcSdk
     this.#bitcoinDepositor = bitcoinDepositor
   }
@@ -105,10 +105,10 @@ export default class Tbtc {
       application: "acre",
     }
 
-    const revealSaved: boolean = await this.#tbtcApi.saveReveal(revealData)
+    const revealSaved: boolean = await this.tbtcApi.saveReveal(revealData)
     if (!revealSaved)
       throw new Error("Reveal not saved properly in the database")
 
-    return new Deposit(this.#tbtcApi, tbtcDeposit, revealData)
+    return new Deposit(this.tbtcApi, tbtcDeposit, revealData)
   }
 }
