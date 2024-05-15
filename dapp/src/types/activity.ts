@@ -1,3 +1,4 @@
+import { DepositStatus } from "@acre-btc/sdk"
 import { CurrencyType } from "./currency"
 
 // TODO: Update type when subgraph's ready
@@ -16,6 +17,5 @@ export type ActivityInfo = {
 export type Activity = {
   txHash: string
   amount: bigint
-  type: "deposit" | "withdraw"
-  status: "completed" | "pending"
+  status: DepositStatus
 }
