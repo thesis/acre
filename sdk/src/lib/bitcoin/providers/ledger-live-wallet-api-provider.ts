@@ -17,6 +17,9 @@ export default class LedgerLiveWalletApiBitcoinProvider
 {
   readonly #walletApiClient: WalletAPIClient
 
+  // TODO: Currently this variable is not used but we should probably close the
+  // connection once the operation is finished. We will handle it in a separate
+  // PR.
   readonly #windowMessageTransport: WindowMessageTransport
 
   readonly #account: Account
