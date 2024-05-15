@@ -1,25 +1,26 @@
 import React, { useCallback, useState } from "react"
 import {
+  useAppDispatch,
   useExecuteFunction,
-  useModalFlowContext,
   useStakeFlowContext,
 } from "#/hooks"
 import { PROCESS_STATUSES } from "#/types"
 import { logPromiseFailure } from "#/utils"
+import { setStatus } from "#/store/action-flow"
 import ServerErrorModal from "./ServerErrorModal"
 import RetryModal from "./RetryModal"
 import LoadingModal from "../../LoadingModal"
 
 export default function StakingErrorModal() {
-  const { setStatus } = useModalFlowContext()
   const { stake } = useStakeFlowContext()
+  const dispatch = useAppDispatch()
 
   const [isLoading, setIsLoading] = useState(false)
   const [isServerError, setIsServerError] = useState(false)
 
   const onStakeBTCSuccess = useCallback(
-    () => setStatus(PROCESS_STATUSES.SUCCEEDED),
-    [setStatus],
+    () => dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED)),
+    [dispatch],
   )
 
   const onStakeBTCError = useCallback(() => setIsServerError(true), [])

@@ -1,43 +1,44 @@
-import React, { useCallback, useState } from "react"
+import React, { useCallback } from "react"
 import {
+  useActionFlowTokenAmount,
+  useAppDispatch,
   useDepositBTCTransaction,
   useDepositTelemetry,
   useExecuteFunction,
-  useModalFlowContext,
   useStakeFlowContext,
   useToast,
-  useTransactionContext,
   useWalletContext,
 } from "#/hooks"
-import { TextMd } from "#/components/shared/Typography"
 import { logPromiseFailure } from "#/utils"
 import { PROCESS_STATUSES } from "#/types"
-import { CardAlert } from "#/components/shared/alerts"
 import { TOASTS, TOAST_IDS } from "#/types/toast"
-import StakingStepsModalContent from "./StakingStepsModalContent"
+import { ModalBody, ModalHeader, Highlight, useTimeout } from "@chakra-ui/react"
+import Spinner from "#/components/shared/Spinner"
+import { TextMd } from "#/components/shared/Typography"
+import { CardAlert } from "#/components/shared/alerts"
+import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
+import { setStatus } from "#/store/action-flow"
 
+const DELAY = ONE_SEC_IN_MILLISECONDS
 const TOAST_ID = TOAST_IDS.DEPOSIT_TRANSACTION_ERROR
 const TOAST = TOASTS[TOAST_ID]
 
 export default function DepositBTCModal() {
   const { ethAccount } = useWalletContext()
-  const { tokenAmount } = useTransactionContext()
-  const { setStatus } = useModalFlowContext()
+  const tokenAmount = useActionFlowTokenAmount()
   const { btcAddress, depositReceipt, stake } = useStakeFlowContext()
   const depositTelemetry = useDepositTelemetry()
   const { closeToast, openToast } = useToast()
-
-  const [isLoading, setIsLoading] = useState(false)
-  const [buttonText, setButtonText] = useState("Deposit BTC")
+  const dispatch = useAppDispatch()
 
   const onStakeBTCSuccess = useCallback(
-    () => setStatus(PROCESS_STATUSES.SUCCEEDED),
-    [setStatus],
+    () => dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED)),
+    [dispatch],
   )
 
   const onStakeBTCError = useCallback(() => {
-    setStatus(PROCESS_STATUSES.FAILED)
-  }, [setStatus])
+    dispatch(setStatus(PROCESS_STATUSES.FAILED))
+  }, [dispatch])
 
   const handleStake = useExecuteFunction(
     stake,
@@ -47,17 +48,16 @@ export default function DepositBTCModal() {
 
   const onDepositBTCSuccess = useCallback(() => {
     closeToast(TOAST_ID)
-    setStatus(PROCESS_STATUSES.LOADING)
+    dispatch(setStatus(PROCESS_STATUSES.LOADING))
 
     logPromiseFailure(handleStake())
-  }, [closeToast, setStatus, handleStake])
+  }, [closeToast, dispatch, handleStake])
 
   const showError = useCallback(() => {
     openToast({
       id: TOAST_ID,
       render: TOAST,
     })
-    setButtonText("Try again")
   }, [openToast])
 
   const onDepositBTCError = useCallback(() => showError(), [showError])
@@ -71,13 +71,11 @@ export default function DepositBTCModal() {
     if (!tokenAmount?.amount || !btcAddress || !depositReceipt || !ethAccount)
       return
 
-    setIsLoading(true)
     const response = await depositTelemetry(
       depositReceipt,
       btcAddress,
       ethAccount.address,
     )
-    setIsLoading(false)
 
     if (response.verificationStatus === "valid") {
       logPromiseFailure(sendBitcoinTransaction(tokenAmount?.amount, btcAddress))
@@ -98,18 +96,23 @@ export default function DepositBTCModal() {
     logPromiseFailure(handledDepositBTC())
   }, [handledDepositBTC])
 
+  useTimeout(handledDepositBTCWrapper, DELAY)
+
   return (
-    <StakingStepsModalContent
-      buttonText={buttonText}
-      activeStep={1}
-      isLoading={isLoading}
-      onClick={handledDepositBTCWrapper}
-    >
-      <CardAlert status="error">
-        <TextMd>
-          Make a Bitcoin transaction to deposit and stake your BTC.
-        </TextMd>
-      </CardAlert>
-    </StakingStepsModalContent>
+    <>
+      <ModalHeader>Waiting transaction...</ModalHeader>
+      <ModalBody>
+        <Spinner size="xl" />
+        <TextMd>Please complete the transaction in your wallet.</TextMd>
+        <CardAlert>
+          <TextMd>
+            <Highlight query="Rewards" styles={{ fontWeight: "bold" }}>
+              You will receive your Rewards once the deposit transaction is
+              completed.
+            </Highlight>
+          </TextMd>
+        </CardAlert>
+      </ModalBody>
+    </>
   )
 }

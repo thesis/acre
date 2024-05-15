@@ -36,7 +36,7 @@ export default function MissingAccountModal({
     <>
       <ModalCloseButton />
       <ModalHeader>{name} account not installed</ModalHeader>
-      <ModalBody pt={4}>
+      <ModalBody pt={2}>
         <IconWrapper icon={CableWithPlugIcon} boxSize={32} color="brand.400">
           <Icon as={icon} boxSize={14} />
         </IconWrapper>
@@ -53,7 +53,7 @@ export default function MissingAccountModal({
           </TextMd>
         </CardAlert>
       </ModalBody>
-      <ModalFooter mt={4}>
+      <ModalFooter>
         <Button size="lg" width="100%" onClick={handleClick}>
           Connect account
         </Button>

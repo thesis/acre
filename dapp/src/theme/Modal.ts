@@ -2,7 +2,6 @@ import { modalAnatomy as parts } from "@chakra-ui/anatomy"
 import { createMultiStyleConfigHelpers, defineStyle } from "@chakra-ui/react"
 
 const baseStyleDialog = defineStyle({
-  p: 4,
   borderWidth: "var(--chakra-space-modal_borderWidth)",
   boxShadow: "none",
   borderColor: "white",
@@ -31,11 +30,13 @@ const baseStyleOverlay = defineStyle({
 })
 
 const baseStyleHeader = defineStyle({
-  textAlign: "center",
+  textAlign: "left",
   fontSize: "lg",
   lineHeight: "lg",
   fontWeight: "bold",
-  py: 6,
+  pt: 10,
+  px: 10,
+  pb: 8,
 })
 
 const baseStyleBody = defineStyle({
@@ -45,11 +46,16 @@ const baseStyleBody = defineStyle({
   flexDirection: "column",
   alignItems: "center",
   gap: 6,
+  pt: 0,
+  px: 8,
+  pb: 10,
 })
 
 const baseStyleFooter = defineStyle({
   flexDirection: "column",
   gap: 6,
+  px: 8,
+  pb: 10,
 })
 
 const multiStyleConfig = createMultiStyleConfigHelpers(parts.keys)
