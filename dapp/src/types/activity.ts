@@ -18,4 +18,5 @@ export type Activity = {
   txHash: string
   amount: bigint
   status: DepositStatus
+  type?: "deposit" | "withdraw"
 }

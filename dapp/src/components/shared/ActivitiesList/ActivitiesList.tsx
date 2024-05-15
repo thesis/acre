@@ -26,7 +26,7 @@ function ActivitiesList(props: ListProps) {
   return activities.length > 0 ? (
     <MotionList pos="relative" {...props}>
       {activities.map((item) => (
-        <AnimatePresence mode="popLayout">
+        <AnimatePresence mode="popLayout" key={item.txHash}>
           {!dismissedActivities.includes(item.txHash) && (
             <MotionListItem
               layout="position"
