@@ -3,6 +3,7 @@ export * from "./lib/contracts"
 export * from "./lib/eip712-signer"
 export * from "./lib/ethereum"
 export * from "./lib/utils"
+export { DepositStatus } from "./lib/api/TbtcApi"
 
 export * from "./modules/staking"
 
