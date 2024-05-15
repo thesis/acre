@@ -5,6 +5,8 @@ import { StakeInitialization } from "./stake-initialization"
 import { fromSatoshi, toSatoshi } from "../../lib/utils"
 import Tbtc from "../tbtc"
 import { BitcoinProvider } from "../../lib/bitcoin/providers"
+import AcreSubgraphApi from "../../lib/api/AcreSubgraphApi"
+import { DepositStatus } from "../../lib/api/TbtcApi"
 
 export { DepositReceipt } from "../tbtc"
 
@@ -41,16 +43,20 @@ class StakingModule {
    */
   readonly #orangeKit: OrangeKitSdk
 
+  readonly #acreSubgraphApi: AcreSubgraphApi
+
   constructor(
     _contracts: AcreContracts,
     _bitcoinProvider: BitcoinProvider,
     _orangeKit: OrangeKitSdk,
     _tbtc: Tbtc,
+    acreSubgraphApi: AcreSubgraphApi,
   ) {
     this.#contracts = _contracts
     this.#bitcoinProvider = _bitcoinProvider
     this.#tbtc = _tbtc
     this.#orangeKit = _orangeKit
+    this.#acreSubgraphApi = acreSubgraphApi
   }
 
   /**
@@ -155,6 +161,48 @@ class StakingModule {
   async minDepositAmount() {
     const value = await this.#contracts.bitcoinDepositor.minDepositAmount()
     return toSatoshi(value)
+  }
+
+  async getDeposits(): Promise<
+    {
+      id: string
+      txHash: string
+      amount: bigint
+      status: DepositStatus
+    }[]
+  > {
+    const bitcoinAddress = await this.#bitcoinProvider.getAddress()
+
+    const depositOwnerEvmAddress = EthereumAddress.from(
+      await this.#orangeKit.predictAddress(bitcoinAddress),
+    )
+
+    const subgraphData = await this.#acreSubgraphApi.getDepositsByOwner(
+      depositOwnerEvmAddress,
+    )
+
+    const initializedOrFinalizedDepositsMap = new Map(
+      subgraphData.map((data) => [data.depositKey, data]),
+    )
+
+    const tbtcData = await this.#tbtc.tbtcApi.getDepositsByOwner(
+      depositOwnerEvmAddress,
+    )
+
+    return tbtcData.map((deposit) => {
+      const depositFromSubgraph = initializedOrFinalizedDepositsMap.get(
+        deposit.depositKey,
+      )
+
+      const amount = depositFromSubgraph?.amount ?? deposit.initialAmount
+
+      return {
+        id: deposit.depositKey,
+        txHash: deposit.txHash,
+        amount,
+        status: deposit.status,
+      }
+    })
   }
 }
 
