@@ -1,10 +1,10 @@
-import React from "react"
+import React, { useState } from "react"
 import { AnimatePresence, motion, Variants } from "framer-motion"
-import { useState } from "react"
 import { useLocation, useOutlet } from "react-router-dom"
 import DocsDrawer from "./DocsDrawer"
 import Header from "./Header"
 import Sidebar from "./Sidebar"
+import ModalRoot from "./ModalRoot"
 
 const wrapperVariants: Variants = {
   in: { opacity: 0, y: 48 },
@@ -39,6 +39,7 @@ function Layout() {
       </AnimatePresence>
       <Sidebar />
       <DocsDrawer />
+      <ModalRoot />
     </>
   )
 }

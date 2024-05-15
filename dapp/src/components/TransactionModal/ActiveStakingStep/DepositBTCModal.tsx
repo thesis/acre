@@ -1,12 +1,12 @@
 import React, { useCallback } from "react"
 import {
+  useActionFlowTokenAmount,
+  useAppDispatch,
   useDepositBTCTransaction,
   useDepositTelemetry,
   useExecuteFunction,
-  useModalFlowContext,
   useStakeFlowContext,
   useToast,
-  useTransactionContext,
   useWalletContext,
 } from "#/hooks"
 import { logPromiseFailure } from "#/utils"
@@ -17,27 +17,28 @@ import Spinner from "#/components/shared/Spinner"
 import { TextMd } from "#/components/shared/Typography"
 import { CardAlert } from "#/components/shared/alerts"
 import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
+import { setStatus } from "#/store/action-flow"
 
-const DELAY = ONE_SEC_IN_MILLISECONDS * 2
+const DELAY = ONE_SEC_IN_MILLISECONDS
 const TOAST_ID = TOAST_IDS.DEPOSIT_TRANSACTION_ERROR
 const TOAST = TOASTS[TOAST_ID]
 
 export default function DepositBTCModal() {
   const { ethAccount } = useWalletContext()
-  const { tokenAmount } = useTransactionContext()
-  const { setStatus } = useModalFlowContext()
+  const tokenAmount = useActionFlowTokenAmount()
   const { btcAddress, depositReceipt, stake } = useStakeFlowContext()
   const depositTelemetry = useDepositTelemetry()
   const { closeToast, openToast } = useToast()
+  const dispatch = useAppDispatch()
 
   const onStakeBTCSuccess = useCallback(
-    () => setStatus(PROCESS_STATUSES.SUCCEEDED),
-    [setStatus],
+    () => dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED)),
+    [dispatch],
   )
 
   const onStakeBTCError = useCallback(() => {
-    setStatus(PROCESS_STATUSES.FAILED)
-  }, [setStatus])
+    dispatch(setStatus(PROCESS_STATUSES.FAILED))
+  }, [dispatch])
 
   const handleStake = useExecuteFunction(
     stake,
@@ -47,10 +48,10 @@ export default function DepositBTCModal() {
 
   const onDepositBTCSuccess = useCallback(() => {
     closeToast(TOAST_ID)
-    setStatus(PROCESS_STATUSES.LOADING)
+    dispatch(setStatus(PROCESS_STATUSES.LOADING))
 
     logPromiseFailure(handleStake())
-  }, [closeToast, setStatus, handleStake])
+  }, [closeToast, dispatch, handleStake])
 
   const showError = useCallback(() => {
     openToast({

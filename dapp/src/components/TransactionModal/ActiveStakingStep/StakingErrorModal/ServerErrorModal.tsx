@@ -15,7 +15,7 @@ import { CableWithPlugIcon, Info } from "#/assets/icons"
 import { TextMd } from "#/components/shared/Typography"
 import { EXTERNAL_HREF } from "#/constants"
 import IconWrapper from "#/components/shared/IconWrapper"
-import { MODAL_BASE_SIZE } from "#/components/shared/ModalBase"
+import { MODAL_BASE_SIZE } from "#/components/ModalRoot/withBaseModal"
 import {
   IconBrandDiscordFilled,
   IconReload,

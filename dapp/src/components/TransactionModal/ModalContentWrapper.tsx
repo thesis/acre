@@ -1,9 +1,10 @@
 import React from "react"
 import {
-  useModalFlowContext,
+  useActionFlowStatus,
+  useActionFlowTokenAmount,
+  useActionFlowType,
   useRequestBitcoinAccount,
   useRequestEthereumAccount,
-  useTransactionContext,
   useWalletContext,
 } from "#/hooks"
 import { BitcoinIcon, EthereumIcon } from "#/assets/icons"
@@ -23,8 +24,9 @@ export default function ModalContentWrapper({
   const { btcAccount, ethAccount } = useWalletContext()
   const { requestAccount: requestBitcoinAccount } = useRequestBitcoinAccount()
   const { requestAccount: requestEthereumAccount } = useRequestEthereumAccount()
-  const { type, status } = useModalFlowContext()
-  const { tokenAmount } = useTransactionContext()
+  const status = useActionFlowStatus()
+  const type = useActionFlowType()
+  const tokenAmount = useActionFlowTokenAmount()
 
   if (!btcAccount || !isSupportedBTCAddressType(btcAccount.address))
     return (
