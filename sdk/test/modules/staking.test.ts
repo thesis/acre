@@ -15,6 +15,7 @@ import { MockOrangeKitSdk } from "../utils/mock-orangekit"
 import { MockTbtc } from "../utils/mock-tbtc"
 import { DepositReceipt } from "../../src/modules/tbtc"
 import { MockBitcoinProvider } from "../utils/mock-bitcoin-provider"
+import AcreSubgraphApi from "../../src/lib/api/AcreSubgraphApi"
 
 const stakingModuleData: {
   initializeDeposit: {
@@ -118,6 +119,7 @@ describe("Staking", () => {
     // 'MockOrangeKitSdk' but required in type 'OrangeKitSdk'.
     orangeKit,
     tbtc,
+    {} as AcreSubgraphApi,
   )
 
   describe("initializeStake", () => {
