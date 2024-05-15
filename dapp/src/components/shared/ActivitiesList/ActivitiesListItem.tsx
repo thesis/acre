@@ -13,6 +13,7 @@ import {
   VStack,
   VisuallyHidden,
 } from "@chakra-ui/react"
+import { DepositStatus } from "@acre-btc/sdk"
 import { CurrencyBalance } from "../CurrencyBalance"
 import Spinner from "../Spinner"
 import BlockExplorerLink from "../BlockExplorerLink"
@@ -25,17 +26,19 @@ type ActivitiesListItemProps = Omit<AlertProps, "status"> &
 function ActivitiesListItem(props: ActivitiesListItemProps) {
   const { amount, status, txHash, type, handleDismiss, ...restProps } = props
 
+  const isCompleted = status === DepositStatus.Finalized
+
   return (
     <Alert as={HStack} variant="process" {...restProps}>
       <AlertIcon
         color="brand.400"
-        as={status === "completed" ? LoadingSpinnerSuccessIcon : Spinner}
+        as={isCompleted ? LoadingSpinnerSuccessIcon : Spinner}
       />
 
       <VStack flex={1} spacing={0} align="stretch">
         <HStack justify="space-between" as={AlertTitle}>
           <Text as="span">
-            {status === "completed"
+            {isCompleted
               ? `${type === "withdraw" ? "Unstaking" : "Staking"} completed`
               : `${type === "withdraw" ? "Unstaking" : "Staking"}...`}
           </Text>
@@ -43,7 +46,7 @@ function ActivitiesListItem(props: ActivitiesListItemProps) {
           <CurrencyBalance amount={amount} currency="bitcoin" />
         </HStack>
         <HStack justify="space-between" as={AlertDescription}>
-          {status === "completed" ? (
+          {isCompleted ? (
             <Button
               variant="link"
               fontSize="sm"
