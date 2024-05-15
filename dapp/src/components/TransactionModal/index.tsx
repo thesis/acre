@@ -1,109 +1,46 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react"
-import {
-  ModalFlowContext,
-  ModalFlowContextValue,
-  StakeFlowProvider,
-  TransactionContextProvider,
-} from "#/contexts"
-import { useSidebar } from "#/hooks"
-import {
-  ACTION_FLOW_TYPES,
-  ActionFlowType,
-  PROCESS_STATUSES,
-  ProcessStatus,
-} from "#/types"
+import React, { useEffect } from "react"
+import { StakeFlowProvider } from "#/contexts"
+import { useAppDispatch, useSidebar } from "#/hooks"
+import { ActionFlowType, BaseModalProps } from "#/types"
 import { ModalCloseButton } from "@chakra-ui/react"
-import ModalBase from "../shared/ModalBase"
+import { resetState, setType } from "#/store/action-flow"
 import ModalContentWrapper from "./ModalContentWrapper"
 import { ActiveFlowStep } from "./ActiveFlowStep"
-
-const DEFAULT_ACTIVE_STEP = 1
+import withBaseModal from "../ModalRoot/withBaseModal"
 
 type TransactionModalProps = {
-  isOpen: boolean
-  defaultType?: ActionFlowType
-  onClose: () => void
-}
+  type: ActionFlowType
+} & BaseModalProps
 
-export default function TransactionModal({
-  isOpen,
-  defaultType = ACTION_FLOW_TYPES.STAKE,
-  onClose,
-}: TransactionModalProps) {
+function TransactionModalBase({ type }: TransactionModalProps) {
   const { onOpen: openSideBar, onClose: closeSidebar } = useSidebar()
-
-  const [type, setType] = useState(defaultType)
-  const [activeStep, setActiveStep] = useState(DEFAULT_ACTIVE_STEP)
-  const [status, setStatus] = useState<ProcessStatus>(PROCESS_STATUSES.IDLE)
-
-  const handleResume = useCallback(() => {
-    setStatus(PROCESS_STATUSES.PENDING)
-  }, [])
-
-  const handleGoNext = useCallback(() => {
-    setActiveStep((prevStep) => prevStep + 1)
-  }, [])
-
-  const handleClose = useCallback(() => {
-    if (status === PROCESS_STATUSES.PENDING) {
-      setStatus(PROCESS_STATUSES.PAUSED)
-    } else {
-      onClose()
-    }
-  }, [onClose, status])
-
-  const resetState = useCallback(() => {
-    setType(defaultType)
-    setActiveStep(DEFAULT_ACTIVE_STEP)
-    setStatus(PROCESS_STATUSES.IDLE)
-  }, [defaultType, setStatus])
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
-    setType(defaultType)
-  }, [defaultType])
+    dispatch(setType(type))
+  }, [dispatch, type])
+
+  // eslint-disable-next-line arrow-body-style
+  useEffect(() => {
+    return () => {
+      dispatch(resetState())
+    }
+  }, [dispatch])
 
   useEffect(() => {
-    let timeout: NodeJS.Timeout
-
-    if (isOpen) {
-      openSideBar()
-    } else {
-      closeSidebar()
-      timeout = setTimeout(resetState, 100)
-    }
-    return () => clearTimeout(timeout)
-  }, [isOpen, resetState, openSideBar, closeSidebar])
-
-  const contextValue: ModalFlowContextValue = useMemo<ModalFlowContextValue>(
-    () => ({
-      type,
-      activeStep,
-      status,
-      setType,
-      setStatus,
-      onClose: handleClose,
-      onResume: handleResume,
-      goNext: handleGoNext,
-    }),
-    [type, activeStep, status, handleClose, handleResume, handleGoNext],
-  )
+    openSideBar()
+    return () => closeSidebar()
+  }, [closeSidebar, openSideBar])
 
   return (
-    <ModalBase
-      isOpen={isOpen}
-      onClose={handleClose}
-      closeOnOverlayClick={false}
-    >
-      <TransactionContextProvider>
-        <ModalFlowContext.Provider value={contextValue}>
-          <StakeFlowProvider>
-            <ModalContentWrapper defaultType={defaultType}>
-              <ModalCloseButton />
-              <ActiveFlowStep />
-            </ModalContentWrapper>
-          </StakeFlowProvider>
-        </ModalFlowContext.Provider>
-      </TransactionContextProvider>
-    </ModalBase>
+    <StakeFlowProvider>
+      <ModalContentWrapper>
+        <ModalCloseButton />
+        <ActiveFlowStep />
+      </ModalContentWrapper>
+    </StakeFlowProvider>
   )
 }
+
+const TransactionModal = withBaseModal(TransactionModalBase)
+export default TransactionModal

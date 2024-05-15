@@ -1,7 +1,6 @@
 import { useInitDataFromSdk, useInitializeAcreSdk } from "./sdk"
 import { useSentry } from "./sentry"
 import { useFetchBTCPriceUSD } from "./useFetchBTCPriceUSD"
-import { useInitGlobalToasts } from "./toasts/useInitGlobalToasts"
 import { useInitDataFromSubgraph } from "./subgraph"
 
 export function useInitApp() {
@@ -10,7 +9,8 @@ export function useInitApp() {
   useSentry()
   useInitializeAcreSdk()
   useFetchBTCPriceUSD()
-  useInitGlobalToasts()
+  // Let's hide this logic and remove it when we no longer need it.
+  // useInitGlobalToasts()
 
   useInitDataFromSdk()
   useInitDataFromSubgraph()
