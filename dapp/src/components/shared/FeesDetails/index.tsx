@@ -4,7 +4,7 @@ import { TextMd, TextSm } from "../Typography"
 
 export type FeesDetailsItemProps = {
   label: string
-  sublabel: string
+  sublabel?: string
   value?: string
   tooltip: React.ReactElement
   children?: React.ReactNode

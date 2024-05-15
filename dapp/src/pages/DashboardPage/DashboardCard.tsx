@@ -15,7 +15,8 @@ import { TextMd } from "#/components/shared/Typography"
 import IconTag from "#/components/shared/IconTag"
 import { BoostArrowIcon } from "#/assets/icons"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
-import { AmountType } from "#/types"
+import { AmountType, MODAL_TYPES } from "#/types"
+import { useModal } from "#/hooks"
 
 const buttonStyles: ButtonProps = {
   size: "lg",
@@ -34,6 +35,9 @@ type DashboardCardProps = CardProps & {
 
 export default function DashboardCard(props: DashboardCardProps) {
   const { bitcoinAmount, positionPercentage, ...restProps } = props
+
+  const { openModal } = useModal()
+
   return (
     <Card px={5} py={10} gap={10} {...restProps}>
       <CardHeader p={0} textAlign="center">
@@ -82,7 +86,12 @@ export default function DashboardCard(props: DashboardCardProps) {
         </VStack>
 
         <HStack w="full" justify="center" spacing={2}>
-          <Button {...buttonStyles}>Deposit More</Button>
+          <Button
+            {...buttonStyles}
+            onClick={() => openModal(MODAL_TYPES.STAKE, { type: "stake" })}
+          >
+            Deposit More
+          </Button>
           <Button variant="outline" {...buttonStyles}>
             Withdraw
           </Button>

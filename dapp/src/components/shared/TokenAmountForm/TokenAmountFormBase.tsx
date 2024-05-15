@@ -22,6 +22,7 @@ export type TokenAmountFormBaseProps = {
   tokenBalance: bigint
   tokenBalanceInputPlaceholder: string
   currency: CurrencyType
+  fiatCurrency?: CurrencyType
   children?: React.ReactNode
 }
 
@@ -29,6 +30,7 @@ export default function TokenAmountFormBase({
   formId,
   tokenBalance,
   currency,
+  fiatCurrency,
   tokenBalanceInputPlaceholder,
   children,
   ...formikProps
@@ -40,6 +42,7 @@ export default function TokenAmountFormBase({
         tokenBalance={tokenBalance}
         placeholder={tokenBalanceInputPlaceholder}
         currency={currency}
+        fiatCurrency={fiatCurrency}
       />
       {children}
     </Form>
