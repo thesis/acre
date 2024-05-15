@@ -23,7 +23,7 @@ import UnstakeFormModal from "./ActiveUnstakingStep/UnstakeFormModal"
 const TABS = Object.values(ACTION_FLOW_TYPES)
 
 function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
-  const { btcAccount, ethAccount } = useWalletContext()
+  const { btcAccount } = useWalletContext()
   const { type, setType } = useModalFlowContext()
   const { setTokenAmount } = useTransactionContext()
   const { initStake } = useStakeFlowContext()
@@ -32,12 +32,11 @@ function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
 
   const handleInitStake = useCallback(async () => {
     const btcAddress = btcAccount?.address
-    const ethAddress = ethAccount?.address
 
-    if (btcAddress && ethAddress) {
-      await initStake(btcAddress, ethAddress)
+    if (btcAddress) {
+      await initStake(btcAddress)
     }
-  }, [btcAccount?.address, ethAccount?.address, initStake])
+  }, [btcAccount?.address, initStake])
 
   const handleSubmitForm = useCallback(
     async (values: TokenAmountFormValues) => {

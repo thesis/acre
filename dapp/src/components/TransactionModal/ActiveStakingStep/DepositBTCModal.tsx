@@ -75,7 +75,7 @@ export default function DepositBTCModal() {
     const response = await depositTelemetry(
       depositReceipt,
       btcAddress,
-      ethAccount.address,
+      ethAccount,
     )
     setIsLoading(false)
 

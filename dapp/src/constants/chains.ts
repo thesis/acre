@@ -1,5 +1,13 @@
 import { Chain } from "#/types"
-import { EthereumNetwork, BitcoinNetwork } from "@acre-btc/sdk"
+import {
+  EthereumNetwork,
+  BitcoinNetwork as AcreSDKBitcoinNetwork,
+} from "@acre-btc/sdk"
+
+export type BitcoinNetwork = Exclude<
+  AcreSDKBitcoinNetwork,
+  AcreSDKBitcoinNetwork.Unknown
+>
 
 export const BLOCK_EXPLORER: Record<Chain, { title: string; url: string }> = {
   ethereum: { title: "Etherscan", url: "https://etherscan.io" },
@@ -11,5 +19,5 @@ export const ETHEREUM_NETWORK: EthereumNetwork =
 
 export const BITCOIN_NETWORK: BitcoinNetwork =
   import.meta.env.VITE_USE_TESTNET === "true"
-    ? BitcoinNetwork.Testnet
-    : BitcoinNetwork.Mainnet
+    ? AcreSDKBitcoinNetwork.Testnet
+    : AcreSDKBitcoinNetwork.Mainnet

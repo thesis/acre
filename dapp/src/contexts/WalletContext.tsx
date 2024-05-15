@@ -4,8 +4,8 @@ import React, { createContext, useEffect, useMemo, useState } from "react"
 type WalletContextValue = {
   btcAccount: Account | undefined
   setBtcAccount: React.Dispatch<React.SetStateAction<Account | undefined>>
-  ethAccount: Account | undefined
-  setEthAccount: React.Dispatch<React.SetStateAction<Account | undefined>>
+  ethAccount: string | undefined
+  setEthAccount: React.Dispatch<React.SetStateAction<string | undefined>>
   isConnected: boolean
 }
 
@@ -23,7 +23,7 @@ export function WalletContextProvider({
   children: React.ReactNode
 }): React.ReactElement {
   const [btcAccount, setBtcAccount] = useState<Account | undefined>(undefined)
-  const [ethAccount, setEthAccount] = useState<Account | undefined>(undefined)
+  const [ethAccount, setEthAccount] = useState<string | undefined>(undefined)
   const [isConnected, setIsConnected] = useState<boolean>(false)
 
   useEffect(() => {

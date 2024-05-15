@@ -2,11 +2,10 @@ import React from "react"
 import {
   useModalFlowContext,
   useRequestBitcoinAccount,
-  useRequestEthereumAccount,
   useTransactionContext,
   useWalletContext,
 } from "#/hooks"
-import { BitcoinIcon, EthereumIcon } from "#/assets/icons"
+import { BitcoinIcon } from "#/assets/icons"
 import { ActionFlowType, PROCESS_STATUSES } from "#/types"
 import { isSupportedBTCAddressType } from "#/utils"
 import ActionFormModal from "./ActionFormModal"
@@ -23,9 +22,8 @@ export default function ModalContentWrapper({
   defaultType: ActionFlowType
   children: React.ReactNode
 }) {
-  const { btcAccount, ethAccount } = useWalletContext()
+  const { btcAccount } = useWalletContext()
   const { requestAccount: requestBitcoinAccount } = useRequestBitcoinAccount()
-  const { requestAccount: requestEthereumAccount } = useRequestEthereumAccount()
   const { type, status, onClose, onResume } = useModalFlowContext()
   const { tokenAmount } = useTransactionContext()
 
@@ -35,15 +33,6 @@ export default function ModalContentWrapper({
         currency="bitcoin"
         icon={BitcoinIcon}
         requestAccount={requestBitcoinAccount}
-      />
-    )
-
-  if (!ethAccount)
-    return (
-      <MissingAccountModal
-        currency="ethereum"
-        icon={EthereumIcon}
-        requestAccount={requestEthereumAccount}
       />
     )
 
