@@ -1,8 +1,10 @@
 import {
+  Account,
   WalletAPIClient,
   WindowMessageTransport,
 } from "@ledgerhq/wallet-api-client"
 import { addressFromExtPubKey, Purpose } from "@swan-bitcoin/xpub-lib"
+import { BitcoinAddressHelper } from "@orangekit/sdk"
 import { BitcoinProvider } from "./provider"
 
 type Network = "mainnet" | "testnet"
@@ -17,7 +19,7 @@ export default class LedgerLiveWalletApiBitcoinProvider
 
   readonly #windowMessageTransport: WindowMessageTransport
 
-  readonly #accountId: string
+  readonly #account: Account
 
   readonly #network: Network
 
@@ -38,7 +40,7 @@ export default class LedgerLiveWalletApiBitcoinProvider
     if (!account) throw new Error("Account not found")
 
     return new LedgerLiveWalletApiBitcoinProvider(
-      accountId,
+      account,
       windowMessageTransport,
       walletApiClient,
       network,
@@ -46,15 +48,15 @@ export default class LedgerLiveWalletApiBitcoinProvider
   }
 
   private constructor(
-    _accountId: string,
-    _windowMessageTransport: WindowMessageTransport,
-    _walletApiClient: WalletAPIClient,
-    _network: Network,
+    account: Account,
+    windowMessageTransport: WindowMessageTransport,
+    walletApiClient: WalletAPIClient,
+    network: Network,
   ) {
-    this.#windowMessageTransport = _windowMessageTransport
-    this.#walletApiClient = _walletApiClient
-    this.#accountId = _accountId
-    this.#network = _network
+    this.#windowMessageTransport = windowMessageTransport
+    this.#walletApiClient = walletApiClient
+    this.#account = account
+    this.#network = network
   }
 
   /**
@@ -69,13 +71,24 @@ export default class LedgerLiveWalletApiBitcoinProvider
    *          Wallet API.
    */
   async getAddress(): Promise<string> {
-    const xpub = await this.#walletApiClient.bitcoin.getXPub(this.#accountId)
+    const bitcoinAddress = this.#account.address
+    let purpose: Purpose | undefined
+
+    if (BitcoinAddressHelper.isP2PKHAddress(bitcoinAddress)) {
+      purpose = Purpose.P2PKH
+    } else if (BitcoinAddressHelper.isP2WPKHAddress(bitcoinAddress)) {
+      purpose = Purpose.P2WPKH
+    } else {
+      throw new Error("Unsupported Bitcoin address type")
+    }
+
+    const xpub = await this.#walletApiClient.bitcoin.getXPub(this.#account.id)
 
     const { address } = addressFromExtPubKey({
       extPubKey: xpub,
       change: 0,
       keyIndex: 0,
-      purpose: Purpose.P2PKH,
+      purpose,
       network: this.#network,
     })
 
