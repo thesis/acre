@@ -5,10 +5,9 @@ import {
   VStack,
   Card,
   CardBody,
-  IconButton,
-  Link,
   Box,
   Image,
+  VisuallyHidden,
 } from "@chakra-ui/react"
 import {
   Pagination,
@@ -22,6 +21,9 @@ import emptyStateIlustration from "#/assets/images/empty-state.png"
 import { ArrowUpRightAnimatedIcon } from "#/assets/icons/animated"
 import { motion } from "framer-motion"
 import { displayBlockTimestamp, truncateAddress } from "#/utils"
+import { useActivitiesNEW as useActivities } from "#/hooks"
+import { Activity } from "#/types"
+import BlockExplorerLink from "#/components/shared/BlockExplorerLink"
 
 type TransactionHistoryData = {
   date: number
@@ -36,37 +38,41 @@ type TransactionHistoryProps = StackProps & {
 }
 
 export default function TransactionHistory(props: TransactionHistoryProps) {
-  const { data = [], ...restProps } = props
+  const activities = useActivities()
+
+  const completedActivities = React.useMemo(
+    () => activities.filter(({ status }) => status === "completed"),
+    [activities],
+  )
 
   return (
-    <VStack spacing={6} w="full" {...restProps}>
+    <VStack spacing={6} w="full" {...props}>
       <TextMd fontWeight="bold" w="full">
         Transactions
       </TextMd>
 
-      {data.length === 0 ? (
+      {completedActivities.length === 0 ? (
         <VStack>
           <Image src={emptyStateIlustration} alt="" opacity={0.3} />
           <TextMd color="grey.400">You have no transactions yet!</TextMd>
         </VStack>
       ) : (
-        <Pagination data={data} pageSize={10}>
+        <Pagination data={completedActivities} pageSize={10}>
           <PaginationPage direction="column" spacing={2} pageSpacing={6}>
-            {(pageData: TransactionHistoryData) =>
-              // TODO: Fix type assertion of `pageData`
-              pageData.map(({ date, type, amount, address, url }) => (
+            {(pageData: Activity[]) =>
+              pageData.map(({ id, timestamp, type, txHash, amount }) => (
                 <Card
                   as={motion.div}
                   initial={false}
                   whileHover="animate"
-                  key={url}
+                  key={id}
                   role="group"
                   variant="elevated"
                   colorScheme="gold"
                 >
                   <CardBody as={HStack} spacing={0} p={4}>
                     <TextSm color="grey.500" flex={1}>
-                      {displayBlockTimestamp(date)}
+                      {displayBlockTimestamp(timestamp)}
                     </TextSm>
 
                     <HStack flexBasis="72%" spacing={0}>
@@ -82,22 +88,24 @@ export default function TransactionHistory(props: TransactionHistoryProps) {
                         />
                       </Box>
                       <TextSm color="grey.500" flexBasis="50%">
-                        {truncateAddress(address)}
+                        {truncateAddress(txHash)}
                       </TextSm>
                     </HStack>
 
-                    <IconButton
-                      as={Link}
-                      icon={<ArrowUpRightAnimatedIcon top={1} />}
-                      aria-label="View transaction details"
-                      href={url}
+                    <BlockExplorerLink
+                      id={txHash}
+                      chain="bitcoin"
+                      type="transaction"
                       variant="ghost"
                       color="grey.300"
                       _groupHover={{ color: "brand.400" }}
                       pl={6}
                       pr={4}
                       m={-4}
-                    />
+                    >
+                      <ArrowUpRightAnimatedIcon />
+                      <VisuallyHidden>View transaction details</VisuallyHidden>
+                    </BlockExplorerLink>
                   </CardBody>
                 </Card>
               ))

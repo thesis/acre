@@ -2,5 +2,5 @@ export type ActivityDataResponse = {
   id: string
   bitcoinTransactionId: string
   amountToDeposit: string
-  events: { type: "Initialized" | "Finalized" }[]
+  events: { timestamp: string; type: "Initialized" | "Finalized" }[]
 }

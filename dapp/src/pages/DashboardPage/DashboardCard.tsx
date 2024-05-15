@@ -17,6 +17,7 @@ import { BoostArrowIcon } from "#/assets/icons"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import { AmountType, MODAL_TYPES } from "#/types"
 import { useModal } from "#/hooks"
+import TransactionHistory from "./TransactionHistory"
 
 const buttonStyles: ButtonProps = {
   size: "lg",
@@ -96,6 +97,8 @@ export default function DashboardCard(props: DashboardCardProps) {
             Withdraw
           </Button>
         </HStack>
+
+        <TransactionHistory />
       </CardBody>
     </Card>
   )
