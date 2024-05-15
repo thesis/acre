@@ -41,8 +41,10 @@ export default function RetryModal({ retry }: { retry: () => void }) {
 
   return (
     <>
-      <ModalHeader color="red.400">Oops! There was an error.</ModalHeader>
-      <ModalBody gap={10} pt={4}>
+      <ModalHeader color="red.400" textAlign="center">
+        Oops! There was an error.
+      </ModalHeader>
+      <ModalBody gap={10} pt={2} pb={6}>
         <IconWrapper icon={CableWithPlugIcon} boxSize={32} color="red.400">
           <Icon as={IconX} color="red.400" boxSize={14} strokeWidth={1} />
         </IconWrapper>
@@ -66,7 +68,7 @@ export default function RetryModal({ retry }: { retry: () => void }) {
           <Box />
         </HStack>
       </ModalBody>
-      <ModalFooter mt={4}>
+      <ModalFooter pt={0} pb={8}>
         <Button size="lg" width="100%" onClick={retry}>
           Retry
         </Button>

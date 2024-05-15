@@ -1,42 +1,41 @@
-import React, { useCallback, useState } from "react"
-import {
-  ModalBody,
-  Tabs,
-  TabList,
-  Tab,
-  TabPanels,
-  TabPanel,
-  ModalCloseButton,
-} from "@chakra-ui/react"
-import {
-  useModalFlowContext,
-  useStakeFlowContext,
-  useTransactionContext,
-  useWalletContext,
-} from "#/hooks"
-import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
+import React, { ReactNode, useCallback, useState } from "react"
+import { Box, ModalBody, ModalCloseButton, ModalHeader } from "@chakra-ui/react"
+import { useAppDispatch, useStakeFlowContext } from "#/hooks"
+import { ACTION_FLOW_TYPES, ActionFlowType, BaseFormProps } from "#/types"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { logPromiseFailure } from "#/utils"
+import { setTokenAmount } from "#/store/action-flow"
 import StakeFormModal from "./ActiveStakingStep/StakeFormModal"
 import UnstakeFormModal from "./ActiveUnstakingStep/UnstakeFormModal"
 
-const TABS = Object.values(ACTION_FLOW_TYPES)
+const FORM_DATA: Record<
+  ActionFlowType,
+  {
+    heading: string
+    renderComponent: (props: BaseFormProps<TokenAmountFormValues>) => ReactNode
+  }
+> = {
+  stake: {
+    heading: "Deposit",
+    renderComponent: StakeFormModal,
+  },
+  unstake: {
+    heading: "Withdraw",
+    renderComponent: UnstakeFormModal,
+  },
+}
 
-function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
-  const { btcAccount } = useWalletContext()
-  const { type, setType } = useModalFlowContext()
-  const { setTokenAmount } = useTransactionContext()
+function ActionFormModal({ type }: { type: ActionFlowType }) {
   const { initStake } = useStakeFlowContext()
+  const dispatch = useAppDispatch()
 
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleInitStake = useCallback(async () => {
-    const btcAddress = btcAccount?.address
+  const { heading, renderComponent } = FORM_DATA[type]
 
-    if (btcAddress) {
-      await initStake(btcAddress)
-    }
-  }, [btcAccount?.address, initStake])
+  const handleInitStake = useCallback(async () => {
+    await initStake()
+  }, [initStake])
 
   const handleSubmitForm = useCallback(
     async (values: TokenAmountFormValues) => {
@@ -47,14 +46,14 @@ function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
         // TODO: Init unstake flow
         if (type === ACTION_FLOW_TYPES.STAKE) await handleInitStake()
 
-        setTokenAmount({ amount: values.amount, currency: "bitcoin" })
+        dispatch(setTokenAmount({ amount: values.amount, currency: "bitcoin" }))
       } catch (error) {
         console.error(error)
       } finally {
         setIsLoading(false)
       }
     },
-    [handleInitStake, setTokenAmount, type],
+    [dispatch, handleInitStake, type],
   )
 
   const handleSubmitFormWrapper = useCallback(
@@ -66,34 +65,13 @@ function ActionFormModal({ defaultType }: { defaultType: ActionFlowType }) {
   return (
     <>
       {!isLoading && <ModalCloseButton />}
+      <ModalHeader>{heading}</ModalHeader>
       <ModalBody>
-        <Tabs
-          w="100%"
-          variant="underline"
-          defaultIndex={TABS.indexOf(defaultType)}
-        >
-          <TabList pb={6}>
-            {TABS.map((actionFlowType) => (
-              <Tab
-                key={actionFlowType}
-                w="50%"
-                pb={4}
-                onClick={() => setType(actionFlowType)}
-                isDisabled={actionFlowType !== type && isLoading}
-              >
-                {actionFlowType}
-              </Tab>
-            ))}
-          </TabList>
-          <TabPanels>
-            <TabPanel>
-              <StakeFormModal onSubmitForm={handleSubmitFormWrapper} />
-            </TabPanel>
-            <TabPanel>
-              <UnstakeFormModal onSubmitForm={handleSubmitFormWrapper} />
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
+        <Box w="100%">
+          {renderComponent({
+            onSubmitForm: handleSubmitFormWrapper,
+          })}
+        </Box>
       </ModalBody>
     </>
   )

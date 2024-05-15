@@ -133,5 +133,12 @@ export const buttonTheme: ComponentSingleStyleConfig = {
         pointerEvents: "none",
       },
     },
+    link: {
+      bg: "initial",
+      color: "inherit",
+      p: 0,
+      textDecoration: "underline",
+      fontWeight: "medium",
+    },
   },
 }
