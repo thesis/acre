@@ -24,7 +24,7 @@ export const walletSlice = createSlice({
       )
       const newActivitiesIds = new Set(Object.keys(newActivitiesByIds))
 
-      const updatedActivities = Object.values(
+      const updatedActivitiesByIds = Object.values(
         state.activities,
       ).reduce<ActivitiesByIds>((acc, activity) => {
         if (!newActivitiesIds.has(activity.id)) {
@@ -33,7 +33,10 @@ export const walletSlice = createSlice({
         return acc
       }, {})
 
-      state.activities = Object.assign(updatedActivities, newActivitiesByIds)
+      state.activities = Object.assign(
+        updatedActivitiesByIds,
+        newActivitiesByIds,
+      )
     },
     deleteActivity(state, action: PayloadAction<string>) {
       const activityId = action.payload
