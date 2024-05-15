@@ -1,7 +1,7 @@
 import React from "react"
 import { TextProps } from "@chakra-ui/react"
 import { getPaginationState } from "#/components/TransactionHistory/Table/utils"
-import { usePagination } from "../../../contexts/PaginationContext"
+import { usePagination } from "#/hooks"
 import { TextSm } from "../Typography"
 
 type PaginationStatusProps = TextProps & {
