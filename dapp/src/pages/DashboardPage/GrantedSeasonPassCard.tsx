@@ -10,19 +10,11 @@ import {
 import { IconDiscountCheckFilled, IconLock } from "@tabler/icons-react"
 import { TextMd } from "#/components/shared/Typography"
 
-type GrantedSeasonPassCardProps = CardProps & {
-  heading: string
-}
-
-export default function GrantedSeasonPassCard(
-  props: GrantedSeasonPassCardProps,
-) {
-  const { heading, ...restProps } = props
-
+export default function GrantedSeasonPassCard(props: CardProps) {
   return (
-    <Card size="md" px={5} py={4} gap={4} {...restProps}>
+    <Card size="md" px={5} py={4} gap={4} {...props}>
       <CardHeader as={HStack} spacing={1} alignItems="normal" p={0}>
-        <TextMd fontWeight="bold">{heading}</TextMd>
+        <TextMd fontWeight="bold">Season 2. Pre-launch staking</TextMd>
         <Icon as={IconLock} boxSize={5} />
       </CardHeader>
       <CardBody
