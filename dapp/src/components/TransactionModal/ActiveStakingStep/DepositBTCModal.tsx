@@ -1,6 +1,7 @@
 import React, { useCallback } from "react"
 import {
   useActionFlowTokenAmount,
+  useAppDispatch,
   useDepositBTCTransaction,
   useDepositTelemetry,
   useExecuteFunction,
@@ -28,15 +29,16 @@ export default function DepositBTCModal() {
   const { btcAddress, depositReceipt, stake } = useStakeFlowContext()
   const depositTelemetry = useDepositTelemetry()
   const { closeToast, openToast } = useToast()
+  const dispatch = useAppDispatch()
 
   const onStakeBTCSuccess = useCallback(
-    () => setStatus(PROCESS_STATUSES.SUCCEEDED),
-    [],
+    () => dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED)),
+    [dispatch],
   )
 
   const onStakeBTCError = useCallback(() => {
-    setStatus(PROCESS_STATUSES.FAILED)
-  }, [])
+    dispatch(setStatus(PROCESS_STATUSES.FAILED))
+  }, [dispatch])
 
   const handleStake = useExecuteFunction(
     stake,
@@ -46,10 +48,10 @@ export default function DepositBTCModal() {
 
   const onDepositBTCSuccess = useCallback(() => {
     closeToast(TOAST_ID)
-    setStatus(PROCESS_STATUSES.LOADING)
+    dispatch(setStatus(PROCESS_STATUSES.LOADING))
 
     logPromiseFailure(handleStake())
-  }, [closeToast, handleStake])
+  }, [closeToast, dispatch, handleStake])
 
   const showError = useCallback(() => {
     openToast({

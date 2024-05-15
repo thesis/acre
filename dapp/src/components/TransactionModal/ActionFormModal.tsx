@@ -1,7 +1,7 @@
-import React, { useCallback, useState } from "react"
+import React, { ReactNode, useCallback, useState } from "react"
 import { Box, ModalBody, ModalCloseButton, ModalHeader } from "@chakra-ui/react"
 import { useAppDispatch, useStakeFlowContext, useWalletContext } from "#/hooks"
-import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
+import { ACTION_FLOW_TYPES, ActionFlowType, BaseFormProps } from "#/types"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { logPromiseFailure } from "#/utils"
 import { setTokenAmount } from "#/store/action-flow"
@@ -11,21 +11,17 @@ import UnstakeFormModal from "./ActiveUnstakingStep/UnstakeFormModal"
 const FORM_DATA: Record<
   ActionFlowType,
   {
-    header: string
-    FormComponent: (
-      props: React.ComponentProps<
-        typeof StakeFormModal | typeof UnstakeFormModal
-      >,
-    ) => React.ReactNode
+    heading: string
+    renderComponent: (props: BaseFormProps<TokenAmountFormValues>) => ReactNode
   }
 > = {
   [ACTION_FLOW_TYPES.STAKE]: {
-    header: "Deposit",
-    FormComponent: StakeFormModal,
+    heading: "Deposit",
+    renderComponent: StakeFormModal,
   },
   [ACTION_FLOW_TYPES.UNSTAKE]: {
-    header: "Withdraw",
-    FormComponent: UnstakeFormModal,
+    heading: "Withdraw",
+    renderComponent: UnstakeFormModal,
   },
 }
 
@@ -36,7 +32,7 @@ function ActionFormModal({ type }: { type: ActionFlowType }) {
 
   const [isLoading, setIsLoading] = useState(false)
 
-  const { header, FormComponent } = FORM_DATA[type]
+  const { heading, renderComponent } = FORM_DATA[type]
 
   const handleInitStake = useCallback(async () => {
     const btcAddress = btcAccount?.address
@@ -75,10 +71,12 @@ function ActionFormModal({ type }: { type: ActionFlowType }) {
   return (
     <>
       {!isLoading && <ModalCloseButton />}
-      <ModalHeader>{header}</ModalHeader>
+      <ModalHeader>{heading}</ModalHeader>
       <ModalBody>
         <Box w="100%">
-          <FormComponent onSubmitForm={handleSubmitFormWrapper} />
+          {renderComponent({
+            onSubmitForm: handleSubmitFormWrapper,
+          })}
         </Box>
       </ModalBody>
     </>

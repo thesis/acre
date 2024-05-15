@@ -6,6 +6,7 @@ import { TextMd, TextSm } from "#/components/shared/Typography"
 import Spinner from "#/components/shared/Spinner"
 import { FormSubmitButton } from "#/components/shared/Form"
 import { useMinDepositAmount } from "#/hooks"
+import { BaseFormProps } from "#/types"
 import UnstakeDetails from "./UnstakeDetails"
 
 // TODO: Use a position amount
@@ -13,9 +14,7 @@ const MOCK_POSITION_AMOUNT = BigInt("2398567898")
 
 function UnstakeFormModal({
   onSubmitForm,
-}: {
-  onSubmitForm: (values: TokenAmountFormValues) => void
-}) {
+}: BaseFormProps<TokenAmountFormValues>) {
   const minDepositAmount = useMinDepositAmount()
 
   return (

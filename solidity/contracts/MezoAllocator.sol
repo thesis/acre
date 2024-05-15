@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-pragma solidity ^0.8.21;
+pragma solidity 0.8.24;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -205,7 +205,7 @@ contract MezoAllocator is IDispatcher, Ownable2StepUpgradeable {
         tbtc.safeTransfer(address(stbtc), tbtc.balanceOf(address(this)));
     }
 
-    /// @notice Updates the maintainer address.
+    /// @notice Adds a new maintainer address.
     /// @param maintainerToAdd Address of the new maintainer.
     function addMaintainer(address maintainerToAdd) external onlyOwner {
         if (maintainerToAdd == address(0)) {

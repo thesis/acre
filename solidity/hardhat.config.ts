@@ -32,7 +32,7 @@ const config: HardhatUserConfig = {
   solidity: {
     compilers: [
       {
-        version: "0.8.21",
+        version: "0.8.24",
         settings: {
           optimizer: {
             enabled: true,
@@ -51,7 +51,7 @@ const config: HardhatUserConfig = {
     hardhat: {
       forking:
         process.env.FORKING === "true"
-          ? { url: MAINNET_RPC_URL, blockNumber: 19680873 }
+          ? { url: MAINNET_RPC_URL, blockNumber: 19813880 }
           : undefined,
     },
     integration: {
