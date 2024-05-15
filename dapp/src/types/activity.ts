@@ -21,3 +21,7 @@ export type Activity = {
   type: "deposit" | "withdraw"
   status: "completed" | "pending"
 }
+
+export type ActivitiesByIds = {
+  [id: string]: Activity
+}
