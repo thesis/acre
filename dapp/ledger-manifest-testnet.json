@@ -23,7 +23,8 @@
     "account.list",
     "message.sign",
     "transaction.sign",
-    "transaction.signAndBroadcast"
+    "transaction.signAndBroadcast",
+    "bitcoin.getXPub"
   ],
   "domains": ["http://*"],
   "type": "walletApp"
