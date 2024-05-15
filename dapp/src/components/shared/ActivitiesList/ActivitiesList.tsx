@@ -1,7 +1,10 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { List, ListItem, ListProps } from "@chakra-ui/react"
 import { AnimatePresence, Variants, motion } from "framer-motion"
-import { useActivitiesNEW as useActivities } from "#/hooks"
+import { useActivitiesNEW as useActivities, useAppDispatch } from "#/hooks"
+import { deleteActivity } from "#/store/wallet"
+import { useActivitiesIds } from "#/hooks/store"
+import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import ActivitiesListItem from "./ActivitiesListItem"
 
 const MotionList = motion(List)
@@ -13,21 +16,32 @@ const listItemVariants: Variants = {
 }
 
 function ActivitiesList(props: ListProps) {
+  const dispatch = useAppDispatch()
   const activities = useActivities()
+  const activitiesIds = useActivitiesIds()
 
-  const [dismissedActivities, setDismissedActivities] = React.useState<
-    string[]
-  >([])
+  const [allActivities, setAllActivities] = React.useState(activities)
 
-  const handleItemDismiss = (txHash: string) => {
-    setDismissedActivities((prev) => [...prev, txHash])
-  }
+  useEffect(() => {
+    setTimeout(() => {
+      setAllActivities(activities)
+    }, ONE_SEC_IN_MILLISECONDS)
+  }, [activities])
 
-  return activities.length > 0 ? (
+  const handleItemDismiss = React.useCallback(
+    (activityId: string) => {
+      dispatch(deleteActivity(activityId))
+    },
+    [dispatch],
+  )
+
+  if (allActivities.length === 0) return null
+
+  return (
     <MotionList pos="relative" {...props}>
-      {activities.map((item) => (
-        <AnimatePresence mode="popLayout">
-          {!dismissedActivities.includes(item.txHash) && (
+      {allActivities.map((item) => (
+        <AnimatePresence mode="popLayout" key={item.id}>
+          {activitiesIds.includes(item.id) && (
             <MotionListItem
               layout="position"
               key={item.txHash}
@@ -40,14 +54,14 @@ function ActivitiesList(props: ListProps) {
             >
               <ActivitiesListItem
                 {...item}
-                handleDismiss={() => handleItemDismiss(item.txHash)}
+                handleDismiss={() => handleItemDismiss(item.id)}
               />
             </MotionListItem>
           )}
         </AnimatePresence>
       ))}
     </MotionList>
-  ) : null
+  )
 }
 
 export default ActivitiesList
