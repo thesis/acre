@@ -6,7 +6,11 @@ import {
   defineStyle,
 } from "@chakra-ui/react"
 
-const baseStyleDialog = defineStyle({
+const multiStyleConfig = createMultiStyleConfigHelpers(parts.keys)
+
+// Base styles
+
+const baseContainerStyles = defineStyle({
   px: 5,
   borderRadius: "xl",
   textAlign: "left",
@@ -15,16 +19,16 @@ const baseStyleDialog = defineStyle({
   boxShadow: "0px 8px 12px 0px var(--chakra-colors-opacity-black-15)",
 })
 
-const baseStyleIcon = defineStyle({
+const baseIconStyles = defineStyle({
   mr: 2,
 })
 
-const multiStyleConfig = createMultiStyleConfigHelpers(parts.keys)
-
 const baseStyle = multiStyleConfig.definePartsStyle({
-  container: baseStyleDialog,
-  icon: baseStyleIcon,
+  container: baseContainerStyles,
+  icon: baseIconStyles,
 })
+
+// Status styles
 
 const statusInfo = multiStyleConfig.definePartsStyle({
   container: {
@@ -57,12 +61,53 @@ const statusStyles = (props: StyleFunctionProps) => {
   return styleMap[status as string] || {}
 }
 
+// Subtle variant styles
+
 const variantSubtle = multiStyleConfig.definePartsStyle((props) =>
   statusStyles(props),
 )
 
+// Process variant styles
+
+const processContainerStyles = defineStyle({
+  px: 6,
+  py: 4,
+  bg: "gold.300",
+  borderWidth: 1,
+  borderColor: "gold.100",
+  shadow: "none",
+  alignItems: "flex-start",
+})
+
+const processIconStyles = defineStyle({
+  mr: 4,
+  w: 12,
+  h: 12,
+})
+
+const processTitleStyles = defineStyle({
+  color: "grey.700",
+  fontWeight: "bold",
+  m: 0,
+})
+
+const processDescriptionStyles = defineStyle({
+  color: "grey.500",
+  fontWeight: "medium",
+})
+
+const processVariant = multiStyleConfig.definePartsStyle({
+  container: processContainerStyles,
+  icon: processIconStyles,
+  title: processTitleStyles,
+  description: processDescriptionStyles,
+})
+
+// Theme definition
+
 const variants = {
   subtle: variantSubtle,
+  process: processVariant,
 }
 
 export const alertTheme = multiStyleConfig.defineMultiStyleConfig({

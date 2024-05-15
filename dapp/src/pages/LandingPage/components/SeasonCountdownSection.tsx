@@ -6,8 +6,7 @@ import {
   SeasonCountdownSectionBackground,
   CountdownTimer,
 } from "#/components/shared/SeasonCountdownSection"
-
-const SEASON_DUE_TIMESTAMP = new Date(2024, 5, 9).getTime() / 1000
+import { SEASON_DUE_TIMESTAMP } from "#/constants"
 
 export default function SeasonCountdownSection() {
   return (

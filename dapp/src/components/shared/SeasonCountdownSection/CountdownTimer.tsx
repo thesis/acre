@@ -1,33 +1,76 @@
-import React, { useMemo } from "react"
+import React from "react"
 import { useCountdown } from "#/hooks"
+import { Tuple } from "#/types"
 import {
-  BoxProps,
-  HStack,
-  Grid,
   Box,
+  BoxProps,
+  Grid,
+  HStack,
+  StackProps,
   Text,
   TextProps,
-  StackProps,
 } from "@chakra-ui/react"
 import { AnimatePresence, motion } from "framer-motion"
-import { Tuple } from "#/types"
 
-const MotionBox = motion(Box)
+type SizeType = "sm" | "md"
+
+const sizeStyles = {
+  digit: {
+    sm: {
+      px: 1,
+      w: 6,
+      py: 1,
+      rounded: "base",
+    },
+    md: {
+      px: 5,
+      w: 14,
+      py: 4,
+      rounded: "xl",
+    },
+  },
+
+  segment: {
+    sm: {
+      fontSize: "sm",
+      lineHeight: 5,
+    },
+    md: {
+      fontSize: "2xl",
+      lineHeight: 8,
+    },
+  },
+
+  segmentWrapper: {
+    sm: {
+      gap: "px",
+    },
+    md: {
+      gap: 2,
+    },
+  },
+
+  segmentSeparator: {
+    md: {
+      content: '":"',
+    },
+  },
+}
 
 type CountdownTimerDigitProps = Omit<BoxProps, "children"> & {
   children: number
+  size: SizeType
 }
 function CountdownTimerDigit(props: CountdownTimerDigitProps) {
-  const { children, ...restProps } = props
+  const { children, size, ...restProps } = props
   return (
-    <MotionBox
-      px={5}
-      w={14}
-      py={4}
-      rounded="xl"
+    <Box
+      as={motion.div}
+      sx={sizeStyles.digit[size]}
       color="gold.200"
       bg="grey.700"
       overflow="hidden"
+      textAlign="center"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, transition: { staggerChildren: 0.1 } }}
       {...restProps}
@@ -43,7 +86,7 @@ function CountdownTimerDigit(props: CountdownTimerDigitProps) {
           {children}
         </motion.div>
       </AnimatePresence>
-    </MotionBox>
+    </Box>
   )
 }
 
@@ -64,26 +107,33 @@ function CountdownTimerSegmentLabel(props: TextProps) {
 type CountdownTimerSegmentProps = Omit<BoxProps, "children"> & {
   label: string
   value: Tuple<number>
+  size: SizeType
 }
 function CountdownTimerSegment(props: CountdownTimerSegmentProps) {
-  const { label, value, ...restProps } = props
+  const { label, value, size, ...restProps } = props
   return (
     <HStack
+      sx={sizeStyles.segment[size]}
       spacing={2}
       alignItems="baseline"
       color="gold.200"
-      fontSize="2xl"
       fontWeight="bold"
       _notLast={{
         _after: {
-          content: '":"',
+          content: size === "md" ? '":"' : undefined,
         },
       }}
     >
-      <Grid templateColumns="repeat(2, 1fr)" gap={2} {...restProps}>
-        <CountdownTimerDigit>{value[0]}</CountdownTimerDigit>
-        <CountdownTimerDigit>{value[1]}</CountdownTimerDigit>
-        <CountdownTimerSegmentLabel>{label}</CountdownTimerSegmentLabel>
+      <Grid
+        templateColumns="repeat(2, 1fr)"
+        sx={sizeStyles.segmentWrapper[size]}
+        {...restProps}
+      >
+        <CountdownTimerDigit size={size}>{value[0]}</CountdownTimerDigit>
+        <CountdownTimerDigit size={size}>{value[1]}</CountdownTimerDigit>
+        {size === "md" && (
+          <CountdownTimerSegmentLabel>{label}</CountdownTimerSegmentLabel>
+        )}
       </Grid>
     </HStack>
   )
@@ -91,12 +141,13 @@ function CountdownTimerSegment(props: CountdownTimerSegmentProps) {
 
 type CountdownTimerProps = Omit<StackProps, "children"> & {
   timestamp: number
+  size?: SizeType
 }
 export function CountdownTimer(props: CountdownTimerProps) {
-  const { timestamp, ...restProps } = props
+  const { timestamp, size = "md", ...restProps } = props
   const countdown = useCountdown(timestamp)
 
-  const parsedCountdown = useMemo(
+  const parsedCountdown = React.useMemo(
     () =>
       Object.entries(countdown).reduce<[string, Tuple<number>][]>(
         (accumulator, currentValue) => {
@@ -120,7 +171,12 @@ export function CountdownTimer(props: CountdownTimerProps) {
   return (
     <HStack spacing={2} userSelect="none" {...restProps}>
       {parsedCountdown.map(([label, value]) => (
-        <CountdownTimerSegment key={label} label={label} value={value} />
+        <CountdownTimerSegment
+          key={label}
+          label={label}
+          value={value}
+          size={size}
+        />
       ))}
     </HStack>
   )

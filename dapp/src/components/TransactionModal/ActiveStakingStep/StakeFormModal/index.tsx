@@ -3,13 +3,12 @@ import TokenAmountForm from "#/components/shared/TokenAmountForm"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { useMinDepositAmount, useWalletContext } from "#/hooks"
 import { FormSubmitButton } from "#/components/shared/Form"
+import { BaseFormProps } from "#/types"
 import StakeDetails from "./StakeDetails"
 
 function StakeFormModal({
   onSubmitForm,
-}: {
-  onSubmitForm: (values: TokenAmountFormValues) => void
-}) {
+}: BaseFormProps<TokenAmountFormValues>) {
   const minDepositAmount = useMinDepositAmount()
   const { btcAccount } = useWalletContext()
   const tokenBalance = BigInt(btcAccount?.balance.toString() ?? "0")
