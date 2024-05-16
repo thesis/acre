@@ -15,11 +15,11 @@ const FORM_DATA: Record<
     renderComponent: (props: BaseFormProps<TokenAmountFormValues>) => ReactNode
   }
 > = {
-  stake: {
+  [ACTION_FLOW_TYPES.STAKE]: {
     heading: "Deposit",
     renderComponent: StakeFormModal,
   },
-  unstake: {
+  [ACTION_FLOW_TYPES.UNSTAKE]: {
     heading: "Withdraw",
     renderComponent: UnstakeFormModal,
   },

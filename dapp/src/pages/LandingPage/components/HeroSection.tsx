@@ -1,10 +1,10 @@
 import React from "react"
 import { Button, Heading, VStack, Text } from "@chakra-ui/react"
-import { useModal } from "#/hooks"
-import { MODAL_TYPES } from "#/types"
+import { useTransactionModal } from "#/hooks"
+import { ACTION_FLOW_TYPES } from "#/types"
 
 export default function HeroSection() {
-  const { openModal } = useModal()
+  const openTransactionModal = useTransactionModal(ACTION_FLOW_TYPES.STAKE)
 
   return (
     <VStack spacing={0} mt={13} mb={20} align="center" textAlign="center">
@@ -29,7 +29,7 @@ export default function HeroSection() {
         fontWeight="bold"
         lineHeight={6}
         h="auto"
-        onClick={() => openModal(MODAL_TYPES.STAKE, { type: "stake" })}
+        onClick={openTransactionModal}
       >
         Deposit BTC
       </Button>
