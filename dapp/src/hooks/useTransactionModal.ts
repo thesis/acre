@@ -1,12 +1,13 @@
 import { ActionFlowType, MODAL_TYPES } from "#/types"
 import { useCallback, useEffect } from "react"
 import { logPromiseFailure } from "#/utils"
+import { ZeroAddress } from "ethers"
 import { useModal } from "./useModal"
 import { useWalletContext } from "./useWalletContext"
 import { useRequestBitcoinAccount } from "./useRequestBitcoinAccount"
 
 export function useTransactionModal(type: ActionFlowType) {
-  const { btcAccount } = useWalletContext()
+  const { btcAccount, setEthAccount } = useWalletContext()
   const { account, requestAccount } = useRequestBitcoinAccount()
   const { openModal } = useModal()
 
@@ -24,11 +25,18 @@ export function useTransactionModal(type: ActionFlowType) {
     }
   }, [account, handleOpenModal, openModal, type])
 
+  const handleRequestAccount = useCallback(async () => {
+    await requestAccount()
+    // TODO: Temporary solution - we do not need the eth account and we
+    // want to create the Acre SDK w/o passing the Ethereum Account.
+    setEthAccount(ZeroAddress)
+  }, [requestAccount, setEthAccount])
+
   return useCallback(() => {
     if (btcAccount) {
       handleOpenModal()
     } else {
-      logPromiseFailure(requestAccount())
+      logPromiseFailure(handleRequestAccount())
     }
-  }, [btcAccount, handleOpenModal, requestAccount])
+  }, [btcAccount, handleOpenModal, handleRequestAccount])
 }
