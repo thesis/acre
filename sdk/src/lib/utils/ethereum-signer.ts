@@ -1,10 +1,10 @@
-import { VoidSigner as EthersVoidSigner } from "ethers"
+import { VoidSigner as EthersVoidSigner, Signer } from "ethers"
 
 /**
  * This abstract signer interface that defines necessary methods to be
  * compatible with ethers v5 signer which is used in tBTC-v2.ts SDK.
  */
-export interface IEthereumSignerCompatibleWithEthersV5 {
+export interface IEthereumSignerCompatibleWithEthersV5 extends Signer {
   /**
    * @dev Required by ethers v5.
    */

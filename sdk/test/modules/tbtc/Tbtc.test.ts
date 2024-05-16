@@ -4,7 +4,8 @@ import {
   Deposit as TbtcSdkDeposit,
 } from "@keep-network/tbtc-v2.ts"
 
-import { IEthereumSignerCompatibleWithEthersV5 } from "../../../src"
+import { ZeroAddress, Provider } from "ethers"
+import { IEthereumSignerCompatibleWithEthersV5, VoidSigner } from "../../../src"
 import Deposit from "../../../src/modules/tbtc/Deposit"
 import TbtcApi from "../../../src/lib/api/TbtcApi"
 
@@ -24,9 +25,11 @@ jest.mock("@keep-network/tbtc-v2.ts", (): object => ({
   ...jest.requireActual("@keep-network/tbtc-v2.ts"),
 }))
 
-class MockEthereumSignerCompatibleWithEthersV5
-  implements IEthereumSignerCompatibleWithEthersV5
-{
+class MockEthereumSignerCompatibleWithEthersV5 extends VoidSigner {
+  constructor() {
+    super(ZeroAddress, {} as Provider)
+  }
+
   getAddress = jest.fn()
 
   connect = jest.fn()
