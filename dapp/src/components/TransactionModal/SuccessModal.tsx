@@ -2,6 +2,7 @@ import React from "react"
 import {
   Button,
   HStack,
+  Icon,
   ModalBody,
   ModalFooter,
   ModalHeader,
@@ -13,6 +14,7 @@ import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalan
 import { ACTION_FLOW_TYPES, ActionFlowType, TokenAmount } from "#/types"
 import { useNavigate } from "react-router-dom"
 import { routerPath } from "#/router/path"
+import { IconArrowUpRight } from "@tabler/icons-react"
 import { TextMd } from "../shared/Typography"
 import Spinner from "../shared/Spinner"
 import BlockExplorerLink from "../shared/BlockExplorerLink"
@@ -21,13 +23,13 @@ const CONTENT: Record<
   ActionFlowType,
   {
     header: string
-    renderBody: (tokenAmount: TokenAmount) => React.ReactNode
+    renderBody: (tokenAmount: TokenAmount, txHash: string) => React.ReactNode
     footer: string
   }
 > = {
   [ACTION_FLOW_TYPES.STAKE]: {
     header: "Deposit received",
-    renderBody: (tokenAmount) => (
+    renderBody: (tokenAmount, txHash) => (
       <>
         <VStack spacing={0}>
           <CurrencyBalanceWithConversion
@@ -44,8 +46,18 @@ const CONTENT: Record<
             }}
           />
         </VStack>
-        {/* TODO: Use correct tx hash and update styles */}
-        <BlockExplorerLink id="" type="transaction" chain="bitcoin" mt={2} />
+        {/* TODO: Update styles */}
+        <BlockExplorerLink
+          id={txHash}
+          type="transaction"
+          chain="bitcoin"
+          mt={2}
+        >
+          <HStack gap={1}>
+            <TextMd fontWeight="semibold">View on Mempool</TextMd>
+            <Icon as={IconArrowUpRight} color="brand.400" boxSize={5} />
+          </HStack>
+        </BlockExplorerLink>
       </>
     ),
     footer: "The staking will continue in the background",
@@ -65,9 +77,14 @@ const CONTENT: Record<
 type SuccessModalProps = {
   type: ActionFlowType
   tokenAmount: TokenAmount
+  txHash: string
 }
 
-export default function SuccessModal({ type, tokenAmount }: SuccessModalProps) {
+export default function SuccessModal({
+  type,
+  tokenAmount,
+  txHash,
+}: SuccessModalProps) {
   const { closeModal } = useModal()
   const navigate = useNavigate()
 
@@ -79,7 +96,7 @@ export default function SuccessModal({ type, tokenAmount }: SuccessModalProps) {
       <ModalBody gap={10}>
         <VStack gap={4}>
           <LoadingSpinnerSuccessIcon boxSize={20} />
-          {renderBody(tokenAmount)}
+          {renderBody(tokenAmount, txHash)}
         </VStack>
       </ModalBody>
       <ModalFooter pt={0}>

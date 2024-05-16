@@ -13,3 +13,6 @@ export const selectActionFlowStatus = (state: RootState): ProcessStatus =>
 export const selectActionFlowTokenAmount = (
   state: RootState,
 ): TokenAmount | undefined => state.actionFlow.tokenAmount
+
+export const selectActionFlowTxHash = (state: RootState): string | undefined =>
+  state.actionFlow.txHash
