@@ -27,7 +27,7 @@ class StakingModule {
   readonly #contracts: AcreContracts
 
   /**
-   * Typed structured data signer.
+   * Bitcoin provider to communicate with the wallet.
    */
   readonly #bitcoinProvider: BitcoinProvider
 
