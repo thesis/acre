@@ -85,11 +85,11 @@ class Acre {
 
     // TODO: Should we store this address in context so that we do not to
     // recalculate it when necessary?
-    const ethereumAddress = await orangeKit.predictAddress(
+    const depositOwnerEvmAddress = await orangeKit.predictAddress(
       await bitcoinProvider.getAddress(),
     )
 
-    const signer = new VoidSigner(ethereumAddress, provider)
+    const signer = new VoidSigner(depositOwnerEvmAddress, provider)
 
     const contracts = getEthereumContracts(signer, evmNetwork)
 
