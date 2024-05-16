@@ -11,6 +11,8 @@ import { LoadingSpinnerSuccessIcon } from "#/assets/icons"
 import { useModal } from "#/hooks"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import { ACTION_FLOW_TYPES, ActionFlowType, TokenAmount } from "#/types"
+import { useNavigate } from "react-router-dom"
+import { routerPath } from "#/router/path"
 import { TextMd } from "../shared/Typography"
 import Spinner from "../shared/Spinner"
 import BlockExplorerLink from "../shared/BlockExplorerLink"
@@ -67,6 +69,7 @@ type SuccessModalProps = {
 
 export default function SuccessModal({ type, tokenAmount }: SuccessModalProps) {
   const { closeModal } = useModal()
+  const navigate = useNavigate()
 
   const { header, footer, renderBody } = CONTENT[type]
 
@@ -80,7 +83,15 @@ export default function SuccessModal({ type, tokenAmount }: SuccessModalProps) {
         </VStack>
       </ModalBody>
       <ModalFooter pt={0}>
-        <Button size="lg" width="100%" variant="outline" onClick={closeModal}>
+        <Button
+          size="lg"
+          width="100%"
+          variant="outline"
+          onClick={() => {
+            closeModal()
+            navigate(routerPath.dashboard)
+          }}
+        >
           Go to dashboard
         </Button>
         <HStack spacing={2}>
