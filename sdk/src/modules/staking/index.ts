@@ -185,9 +185,7 @@ class StakingModule {
       subgraphData.map((data) => [data.depositKey, data]),
     )
 
-    const tbtcData = await this.#tbtc.tbtcApi.getDepositsByOwner(
-      depositOwnerEvmAddress,
-    )
+    const tbtcData = await this.#tbtc.getDepositsByOwner(depositOwnerEvmAddress)
 
     return tbtcData.map((deposit) => {
       const depositFromSubgraph = initializedOrFinalizedDepositsMap.get(

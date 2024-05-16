@@ -3,11 +3,12 @@ import {
   BitcoinTxOutpoint,
   ChainIdentifier,
 } from "@keep-network/tbtc-v2.ts"
-import { ethers } from "ethers"
 import HttpApi from "./HttpApi"
-import { Hex } from "../utils"
 
-type Deposit<NumberType = string> = {
+/**
+ * Represents the Deposit entity returned by the tBTC API.
+ */
+type Deposit = {
   id: string
   depositKey: string
   createdAt: number
@@ -24,7 +25,7 @@ type Deposit<NumberType = string> = {
   referral: number
   status: DepositStatus
   txHash: string
-  initialAmount: NumberType
+  initialAmount: string
 }
 
 /**
@@ -78,9 +79,11 @@ export default class TbtcApi extends HttpApi {
     }
   }
 
-  async getDepositsByOwner(
-    depositOwner: ChainIdentifier,
-  ): Promise<Deposit<bigint>[]> {
+  /**
+   * @param depositOwner Depositor as EVM-chain identifier.
+   * @returns All owner deposits, including queued deposits.
+   */
+  async getDepositsByOwner(depositOwner: ChainIdentifier): Promise<Deposit[]> {
     const response = await this.getRequest(
       `deposits/${depositOwner.identifierHex}`,
     )
@@ -89,17 +92,7 @@ export default class TbtcApi extends HttpApi {
 
     const responseData = (await response.json()) as Deposit[]
 
-    return responseData.map((deposit) => ({
-      ...deposit,
-      initialAmount: BigInt(deposit.initialAmount),
-      depositKey: ethers.solidityPackedKeccak256(
-        ["bytes32", "uint32"],
-        [
-          Hex.from(deposit.txHash).reverse().toPrefixedString(),
-          deposit.outputIndex,
-        ],
-      ),
-    }))
+    return responseData
   }
 }
 
