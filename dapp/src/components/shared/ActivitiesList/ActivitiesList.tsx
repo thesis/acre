@@ -28,12 +28,9 @@ function ActivitiesList(props: ListProps) {
     }, ONE_SEC_IN_MILLISECONDS)
   }, [activities])
 
-  const handleItemDismiss = React.useCallback(
-    (activityId: string) => {
-      dispatch(deleteActivity(activityId))
-    },
-    [dispatch],
-  )
+  const handleItemDismiss = (activityId: string) => {
+    dispatch(deleteActivity(activityId))
+  }
 
   if (allActivities.length === 0) return null
 
