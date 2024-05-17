@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react"
+import React from "react"
 import {
   Button,
   CardBody,
@@ -9,23 +9,16 @@ import {
 } from "@chakra-ui/react"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import { TextMd } from "#/components/shared/Typography"
-import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
-import TransactionModal from "#/components/TransactionModal"
+import { ACTION_FLOW_TYPES } from "#/types"
 import { useEstimatedBTCBalance } from "#/hooks/store"
 import { LiquidStakingTokenPopover } from "#/components/LiquidStakingTokenPopover"
-import { useSize } from "#/hooks"
+import { useSize, useTransactionModal } from "#/hooks"
 
 export default function PositionDetails(props: CardProps) {
   const estimatedBtcBalance = useEstimatedBTCBalance()
   const { ref, size } = useSize()
-
-  const [actionFlowType, setActionFlowType] = useState<
-    ActionFlowType | undefined
-  >(undefined)
-
-  const handleCloseTransactionModal = useCallback(() => {
-    setActionFlowType(undefined)
-  }, [])
+  const openDepositModal = useTransactionModal(ACTION_FLOW_TYPES.STAKE)
+  const openWithdrawModal = useTransactionModal(ACTION_FLOW_TYPES.UNSTAKE)
 
   return (
     <Card ref={ref} {...props}>
@@ -48,25 +41,13 @@ export default function PositionDetails(props: CardProps) {
         />
       </CardBody>
       <CardFooter flexDirection="column" gap={2}>
-        <Button
-          size="lg"
-          onClick={() => setActionFlowType(ACTION_FLOW_TYPES.STAKE)}
-        >
+        <Button size="lg" onClick={openDepositModal}>
           Stake
         </Button>
-        <Button
-          size="lg"
-          variant="outline"
-          onClick={() => setActionFlowType(ACTION_FLOW_TYPES.UNSTAKE)}
-        >
+        <Button size="lg" variant="outline" onClick={openWithdrawModal}>
           Unstake
         </Button>
       </CardFooter>
-      <TransactionModal
-        isOpen={!!actionFlowType}
-        defaultType={actionFlowType}
-        onClose={handleCloseTransactionModal}
-      />
     </Card>
   )
 }

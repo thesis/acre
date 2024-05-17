@@ -19,6 +19,7 @@ import {
 } from "#/utils"
 import { CurrencyType } from "#/types"
 import { IconInfoCircle } from "@tabler/icons-react"
+import { useCurrencyConversion } from "#/hooks"
 import NumberFormatInput, {
   NumberFormatInputValues,
 } from "../NumberFormatInput"
@@ -58,18 +59,25 @@ function HelperErrorText({
 }
 
 type FiatCurrencyBalanceProps = {
-  fiatAmount?: string
-  fiatCurrency?: CurrencyType
+  amount: bigint
+  currency: CurrencyType
+  fiatCurrency: CurrencyType
 }
 
 function FiatCurrencyBalance({
-  fiatAmount,
+  amount,
+  currency,
   fiatCurrency,
 }: FiatCurrencyBalanceProps) {
   const styles = useMultiStyleConfig("Form")
   const { fontWeight } = styles.helperText
 
-  if (fiatAmount && fiatCurrency) {
+  const fiatAmount = useCurrencyConversion({
+    from: { amount, currency },
+    to: { currency: fiatCurrency },
+  })
+
+  if (fiatAmount !== undefined) {
     return (
       <CurrencyBalance
         currency={fiatCurrency}
@@ -90,10 +98,10 @@ export type TokenBalanceInputProps = {
   tokenBalance: bigint
   placeholder?: string
   size?: "lg" | "md"
+  fiatCurrency?: CurrencyType
   setAmount: (value?: bigint) => void
 } & InputProps &
-  HelperErrorTextProps &
-  FiatCurrencyBalanceProps
+  HelperErrorTextProps
 
 export default function TokenBalanceInput({
   amount,
@@ -105,7 +113,6 @@ export default function TokenBalanceInput({
   errorMsgText,
   helperText,
   hasError = false,
-  fiatAmount,
   fiatCurrency,
   ...inputProps
 }: TokenBalanceInputProps) {
@@ -117,6 +124,8 @@ export default function TokenBalanceInput({
   const handleValueChange = (value: string) => {
     valueRef.current = value ? userAmountToBigInt(value, decimals) : undefined
   }
+
+  const showConversionBalance = amount !== undefined && !!fiatCurrency
 
   return (
     <FormControl isInvalid={hasError} isDisabled={inputProps.isDisabled}>
@@ -163,10 +172,11 @@ export default function TokenBalanceInput({
         errorMsgText={errorMsgText}
         hasError={hasError}
       />
-      {!hasError && !helperText && (
+      {!hasError && !helperText && showConversionBalance && (
         <FormHelperText>
           <FiatCurrencyBalance
-            fiatAmount={fiatAmount}
+            amount={amount}
+            currency={currency}
             fiatCurrency={fiatCurrency}
           />
         </FormHelperText>
