@@ -1,24 +1,22 @@
-import { useCallback, useEffect } from "react"
-import { logPromiseFailure, subgraphAPI } from "#/utils"
+import { useCallback } from "react"
 import { setActivities, setTransactions } from "#/store/wallet"
-import { useInterval } from "@chakra-ui/react"
-import { ONE_MINUTE_IN_SECONDS, ONE_SEC_IN_MILLISECONDS } from "#/constants"
+import { logPromiseFailure, subgraphAPI } from "#/utils"
 import { useAppDispatch } from "../store/useAppDispatch"
 import { useWalletContext } from "../useWalletContext"
 
-const INTERVAL_TIME = ONE_SEC_IN_MILLISECONDS * ONE_MINUTE_IN_SECONDS * 30
 // TODO: Use the correct function from SDK
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const calculateEthAddress = (btcAddress: string) =>
   "0x45e2e415989477ea5450e440405f6ac858019e6b"
 
-export function useFetchActivities() {
+export function useFetchDeposits() {
   const dispatch = useAppDispatch()
   const { btcAccount } = useWalletContext()
 
-  const fetchActivities = useCallback(async () => {
+  const fetchDeposits = useCallback(async () => {
     if (!btcAccount) return
 
+    // TODO: Use function from the SDK.
     const ethAddress = calculateEthAddress(btcAccount.address)
     const result = await subgraphAPI.fetchActivityData(ethAddress)
     const activities = result.filter(({ status }) => status !== "completed")
@@ -27,16 +25,5 @@ export function useFetchActivities() {
     dispatch(setActivities(activities))
   }, [btcAccount, dispatch])
 
-  const handleFetchActivities = useCallback(
-    () => logPromiseFailure(fetchActivities()),
-    [fetchActivities],
-  )
-
-  useEffect(() => {
-    if (!btcAccount) return
-
-    handleFetchActivities()
-  }, [btcAccount, dispatch, handleFetchActivities])
-
-  useInterval(handleFetchActivities, INTERVAL_TIME)
+  return useCallback(() => logPromiseFailure(fetchDeposits()), [fetchDeposits])
 }
