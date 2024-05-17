@@ -5,6 +5,7 @@ import {
   selectModalType,
 } from "#/store/modal"
 import { ModalProps, ModalType } from "#/types"
+import { useCallback } from "react"
 import { useAppDispatch } from "./store/useAppDispatch"
 import { useAppSelector } from "./store/useAppSelector"
 
@@ -13,10 +14,14 @@ export function useModal() {
   const modalProps = useAppSelector(selectModalProps)
   const dispatch = useAppDispatch()
 
-  const handleOpenModal = (type: ModalType, props?: ModalProps) =>
-    dispatch(openModal({ modalType: type, props }))
+  const handleOpenModal = useCallback(
+    (type: ModalType, props?: ModalProps) => {
+      dispatch(openModal({ modalType: type, props }))
+    },
+    [dispatch],
+  )
 
-  const handleCloseModal = () => dispatch(closeModal())
+  const handleCloseModal = useCallback(() => dispatch(closeModal()), [dispatch])
 
   return {
     modalType,
