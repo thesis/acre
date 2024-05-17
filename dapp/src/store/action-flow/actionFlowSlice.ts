@@ -1,4 +1,5 @@
 import {
+  ACTION_FLOW_TYPES,
   ActionFlowType,
   PROCESS_STATUSES,
   ProcessStatus,
@@ -14,7 +15,7 @@ type ActionFlowState = {
 }
 
 const initialState: ActionFlowState = {
-  type: "stake",
+  type: ACTION_FLOW_TYPES.STAKE,
   activeStep: 1,
   status: PROCESS_STATUSES.IDLE,
   tokenAmount: undefined,
