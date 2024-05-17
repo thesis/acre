@@ -10,4 +10,3 @@ export * from "./useActionFlowTokenAmount"
 // TODO: Rename when the old hook is deleted.
 export { useActivities as useActivitiesNEW } from "./useActivities"
 export * from "./useTransactions"
-export * from "./useActivitiesIds"

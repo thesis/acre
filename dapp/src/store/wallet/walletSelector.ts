@@ -7,10 +7,5 @@ export const selectActivities = createSelector(
   (activities) => Object.values(activities),
 )
 
-export const selectActivitiesIds = createSelector(
-  (state: RootState) => state.wallet.activities,
-  (activities) => Object.keys(activities),
-)
-
 export const selectTransactions = (state: RootState): Activity[] =>
   state.wallet.transactions
