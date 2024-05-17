@@ -22,7 +22,7 @@ export function useTransactionModal(type: ActionFlowType) {
     if (account) {
       handleOpenModal()
     }
-  }, [account, handleOpenModal, openModal, type])
+  }, [account, handleOpenModal])
 
   return useCallback(() => {
     if (btcAccount) {
