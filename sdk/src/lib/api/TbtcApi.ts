@@ -87,6 +87,7 @@ export default class TbtcApi extends HttpApi {
     const response = await this.getRequest(
       `deposits/${depositOwner.identifierHex}`,
     )
+
     if (!response.ok)
       throw new Error(`Failed to fetch deposits: ${response.status}`)
 
