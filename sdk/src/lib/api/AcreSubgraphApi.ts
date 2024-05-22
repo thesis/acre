@@ -17,7 +17,8 @@ type DepositDataResponse = {
 type Deposit = {
   depositKey: string
   txHash: string
-  amount: bigint
+  initialAmount: bigint
+  amountToDeposit: bigint
   status: DepositStatus
 }
 
@@ -70,7 +71,8 @@ export default class AcreSubgraphApi extends HttpApi {
       return {
         depositKey: id,
         txHash,
-        amount: BigInt(amountToDeposit ?? initialDepositAmount),
+        initialAmount: BigInt(initialDepositAmount),
+        amountToDeposit: BigInt(amountToDeposit ?? 0),
         type: "deposit",
         status,
       }

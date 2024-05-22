@@ -193,7 +193,7 @@ class StakingModule {
       )
 
       const amount = toSatoshi(
-        depositFromSubgraph?.amount ?? deposit.initialAmount,
+        depositFromSubgraph?.initialAmount ?? deposit.initialAmount,
       )
 
       return {
