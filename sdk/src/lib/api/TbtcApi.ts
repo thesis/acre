@@ -10,7 +10,6 @@ import HttpApi from "./HttpApi"
  */
 type Deposit = {
   id: string
-  depositKey: string
   createdAt: number
   outputIndex: number
   owner: string
