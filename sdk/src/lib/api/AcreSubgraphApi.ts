@@ -2,27 +2,79 @@ import { ChainIdentifier } from "@keep-network/tbtc-v2.ts"
 import HttpApi from "./HttpApi"
 import { DepositStatus } from "./TbtcApi"
 
+/**
+ * Represents the response data returned form the Acre Subgraph from query that
+ * finds all deposits for a given depositor.
+ */
 type DepositDataResponse = {
   data: {
     deposits: {
+      /**
+       * Unique deposit identifier represented as
+       * `keccak256(bitcoinFundingTxHash | fundingOutputIndex)`.
+       */
       id: string
+      /**
+       * Bitcoin transaction hash (or transaction ID) in the same byte order as
+       * used by the Bitcoin block explorers.
+       */
       bitcoinTransactionId: string
+      /**
+       * Amount of tBTC tokens deposited to stBTC vault - it's equal to
+       * `bridgedAmount - depositorFee` (without the stBTC deposit fee).
+       */
       amountToDeposit: string
+      /**
+       * Amount of Bitcoin funding transaction.
+       */
       initialDepositAmount: string
+      /**
+       * Events associated with a given deposit.
+       */
       events: { type: "Initialized" | "Finalized" }[]
     }[]
   }
 }
 
+/**
+ * Represents the formatted deposit.
+ */
 type Deposit = {
+  /**
+   * Unique deposit identifier represented as `keccak256(bitcoinFundingTxHash |
+   * fundingOutputIndex)`.
+   */
   depositKey: string
+  /**
+   * Bitcoin transaction hash (or transaction ID) in the same byte order as used
+   * by the Bitcoin block explorers.
+   */
   txHash: string
+  /**
+   * Amount of Bitcoin funding transaction.
+   */
   initialAmount: bigint
+  /**
+   * Amount of tBTC tokens deposited to stBTC vault - it's equal to
+   * `bridgedAmount - depositorFee` (without the stBTC deposit fee).
+   */
   amountToDeposit: bigint
+  /**
+   * Status of the deposit.
+   */
   status: DepositStatus
 }
 
+/**
+ * Class for integration with Acre Subgraph.
+ */
 export default class AcreSubgraphApi extends HttpApi {
+  /**
+   * @param depositOwnerId The deposit owner id as EVM-chain identifier.
+   * @returns All deposits for a given depositor. Returns only initialized or
+   *          finalized deposits that exist on-chain. They do not included
+   *          queued deposits stored by the tBTC API.
+   */
   async getDepositsByOwner(
     depositOwnerId: ChainIdentifier,
   ): Promise<Deposit[]> {

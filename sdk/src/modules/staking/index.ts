@@ -20,6 +20,30 @@ export type DepositFee = {
 }
 
 /**
+ * Represents the deposit data.
+ */
+export type Deposit = {
+  /**
+   * Unique deposit identifier represented as
+   * `keccak256(bitcoinFundingTxHash | fundingOutputIndex)`.
+   */
+  id: string
+  /**
+   * Bitcoin transaction hash (or transaction ID) in the same byte order as
+   * used by the Bitcoin block explorers.
+   */
+  txHash: string
+  /**
+   * Amount of Bitcoin funding transaction.
+   */
+  amount: bigint
+  /**
+   * Status of the deposit
+   */
+  status: DepositStatus
+}
+
+/**
  * Module exposing features related to the staking.
  */
 class StakingModule {
@@ -43,6 +67,9 @@ class StakingModule {
    */
   readonly #orangeKit: OrangeKitSdk
 
+  /**
+   * Acre subgraph api.
+   */
   readonly #acreSubgraphApi: AcreSubgraphApi
 
   constructor(
@@ -163,14 +190,12 @@ class StakingModule {
     return toSatoshi(value)
   }
 
-  async getDeposits(): Promise<
-    {
-      id: string
-      txHash: string
-      amount: bigint
-      status: DepositStatus
-    }[]
-  > {
+  /**
+   * @returns All deposits associated with the Bitcoin address that returns the
+   *          Bitcoin Provider. They include all deposits: queued, initialized
+   *          and finalized.
+   */
+  async getDeposits(): Promise<Deposit[]> {
     const bitcoinAddress = await this.#bitcoinProvider.getAddress()
 
     const depositOwnerEvmAddress = EthereumAddress.from(
