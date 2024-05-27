@@ -1,6 +1,6 @@
 export const ACTION_FLOW_TYPES = {
-  STAKE: "stake",
-  UNSTAKE: "unstake",
+  STAKE: "STAKE",
+  UNSTAKE: "UNSTAKE",
 } as const
 
 export type ActionFlowType =

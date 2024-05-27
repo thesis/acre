@@ -22,5 +22,5 @@ export function useRequestBitcoinAccount(): UseRequestAccountReturn {
     walletApiReactTransport.disconnect()
   }, [requestAccount, walletApiReactTransport])
 
-  return { requestAccount: requestBitcoinAccount }
+  return { account, requestAccount: requestBitcoinAccount }
 }
