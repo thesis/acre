@@ -19,9 +19,8 @@ export function useFetchDeposits() {
     // TODO: Use function from the SDK.
     const ethAddress = calculateEthAddress(btcAccount.address)
     const result = await subgraphAPI.fetchActivityData(ethAddress)
-    const activities = result.filter(({ status }) => status !== "completed")
 
-    dispatch(setActivities(activities))
+    dispatch(setActivities(result))
   }, [btcAccount, dispatch])
 
   return useCallback(() => logPromiseFailure(fetchDeposits()), [fetchDeposits])
