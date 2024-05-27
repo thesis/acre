@@ -1,5 +1,5 @@
 import { useCallback } from "react"
-import { setActivities, setTransactions } from "#/store/wallet"
+import { setActivities } from "#/store/wallet"
 import { logPromiseFailure, subgraphAPI } from "#/utils"
 import { useAppDispatch } from "../store/useAppDispatch"
 import { useWalletContext } from "../useWalletContext"
@@ -21,7 +21,6 @@ export function useFetchDeposits() {
     const result = await subgraphAPI.fetchActivityData(ethAddress)
     const activities = result.filter(({ status }) => status !== "completed")
 
-    dispatch(setTransactions(result))
     dispatch(setActivities(activities))
   }, [btcAccount, dispatch])
 

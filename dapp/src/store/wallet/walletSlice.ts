@@ -1,49 +1,56 @@
 import { ActivitiesByIds, Activity } from "#/types"
+import { isActivityCompleted } from "#/utils"
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 
 type WalletState = {
-  activities: ActivitiesByIds
-  transactions: Activity[]
+  latestActivities: ActivitiesByIds
+  activities: Activity[]
 }
 
 const initialState: WalletState = {
-  activities: {},
-  transactions: [],
+  latestActivities: {},
+  activities: [],
 }
 
 export const walletSlice = createSlice({
   name: "wallet",
   initialState,
   reducers: {
-    setTransactions(state, action: PayloadAction<Activity[]>) {
-      state.transactions = action.payload
-    },
     setActivities(state, action: PayloadAction<Activity[]>) {
-      const newActivitiesByIds = Object.fromEntries(
-        action.payload.map((activity) => [activity.id, activity]),
-      )
-      const newActivitiesIds = new Set(Object.keys(newActivitiesByIds))
+      const allActivities = action.payload
 
+      const pendingActivities = allActivities.reduce<[string, Activity][]>(
+        (acc, activity) => {
+          if (!isActivityCompleted(activity)) acc.push([activity.id, activity])
+
+          return acc
+        },
+        [],
+      )
+      const pendingActivitiesByIds = Object.fromEntries(pendingActivities)
+      const pendingActivitiesIds = Object.keys(pendingActivities)
+
+      const { latestActivities } = state
       const updatedActivitiesByIds = Object.values(
-        state.activities,
+        latestActivities,
       ).reduce<ActivitiesByIds>((acc, activity) => {
-        if (!newActivitiesIds.has(activity.id)) {
+        if (!pendingActivitiesIds.includes(activity.id))
           acc[activity.id] = { ...activity, status: "completed" }
-        }
+
         return acc
       }, {})
 
-      state.activities = Object.assign(
+      state.activities = allActivities
+      state.latestActivities = Object.assign(
         updatedActivitiesByIds,
-        newActivitiesByIds,
+        pendingActivitiesByIds,
       )
     },
-    deleteActivity(state, action: PayloadAction<string>) {
+    deleteLatestActivity(state, action: PayloadAction<string>) {
       const activityId = action.payload
-      delete state.activities[activityId]
+      delete state.latestActivities[activityId]
     },
   },
 })
 
-export const { setTransactions, setActivities, deleteActivity } =
-  walletSlice.actions
+export const { setActivities, deleteLatestActivity } = walletSlice.actions
