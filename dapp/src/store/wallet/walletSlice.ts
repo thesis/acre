@@ -2,7 +2,7 @@ import { ActivitiesByIds, Activity } from "#/types"
 import { isActivityCompleted } from "#/utils"
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 
-type WalletState = {
+export type WalletState = {
   latestActivities: ActivitiesByIds
   activities: Activity[]
 }
@@ -54,3 +54,4 @@ export const walletSlice = createSlice({
 })
 
 export const { setActivities, deleteLatestActivity } = walletSlice.actions
+export default walletSlice.reducer
