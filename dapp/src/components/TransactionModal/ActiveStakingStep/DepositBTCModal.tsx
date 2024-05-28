@@ -5,6 +5,7 @@ import {
   useDepositBTCTransaction,
   useDepositTelemetry,
   useExecuteFunction,
+  useFetchDeposits,
   useStakeFlowContext,
   useToast,
   useWalletContext,
@@ -30,11 +31,12 @@ export default function DepositBTCModal() {
   const depositTelemetry = useDepositTelemetry()
   const { closeToast, openToast } = useToast()
   const dispatch = useAppDispatch()
+  const fetchDeposits = useFetchDeposits()
 
-  const onStakeBTCSuccess = useCallback(
-    () => dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED)),
-    [dispatch],
-  )
+  const onStakeBTCSuccess = useCallback(() => {
+    fetchDeposits()
+    dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED))
+  }, [dispatch, fetchDeposits])
 
   const onStakeBTCError = useCallback(() => {
     dispatch(setStatus(PROCESS_STATUSES.FAILED))

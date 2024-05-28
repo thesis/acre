@@ -2,6 +2,7 @@ import React, { useCallback, useState } from "react"
 import {
   useAppDispatch,
   useExecuteFunction,
+  useFetchDeposits,
   useStakeFlowContext,
 } from "#/hooks"
 import { PROCESS_STATUSES } from "#/types"
@@ -14,14 +15,15 @@ import LoadingModal from "../../LoadingModal"
 export default function StakingErrorModal() {
   const { stake } = useStakeFlowContext()
   const dispatch = useAppDispatch()
+  const fetchDeposits = useFetchDeposits()
 
   const [isLoading, setIsLoading] = useState(false)
   const [isServerError, setIsServerError] = useState(false)
 
-  const onStakeBTCSuccess = useCallback(
-    () => dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED)),
-    [dispatch],
-  )
+  const onStakeBTCSuccess = useCallback(() => {
+    fetchDeposits()
+    dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED))
+  }, [dispatch, fetchDeposits])
 
   const onStakeBTCError = useCallback(() => setIsServerError(true), [])
 

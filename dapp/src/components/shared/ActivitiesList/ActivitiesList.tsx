@@ -1,7 +1,8 @@
 import React from "react"
 import { List, ListItem, ListProps } from "@chakra-ui/react"
 import { AnimatePresence, Variants, motion } from "framer-motion"
-import { useActivitiesNEW as useActivities } from "#/hooks"
+import { useAppDispatch, useLatestActivities } from "#/hooks"
+import { deleteLatestActivity } from "#/store/wallet"
 import ActivitiesListItem from "./ActivitiesListItem"
 
 const MotionList = motion(List)
@@ -13,41 +14,38 @@ const listItemVariants: Variants = {
 }
 
 function ActivitiesList(props: ListProps) {
-  const activities = useActivities()
+  const dispatch = useAppDispatch()
+  const latestActivities = useLatestActivities()
 
-  const [dismissedActivities, setDismissedActivities] = React.useState<
-    string[]
-  >([])
-
-  const handleItemDismiss = (txHash: string) => {
-    setDismissedActivities((prev) => [...prev, txHash])
+  const handleItemDismiss = (activityId: string) => {
+    dispatch(deleteLatestActivity(activityId))
   }
 
-  return activities.length > 0 ? (
+  if (latestActivities.length === 0) return null
+
+  return (
     <MotionList pos="relative" {...props}>
-      {activities.map((item) => (
-        <AnimatePresence mode="popLayout">
-          {!dismissedActivities.includes(item.txHash) && (
-            <MotionListItem
-              layout="position"
-              key={item.txHash}
-              variants={listItemVariants}
-              initial={false}
-              animate="mounted"
-              exit="dismissed"
-              pb={2}
-              _last={{ pb: 0 }}
-            >
-              <ActivitiesListItem
-                {...item}
-                handleDismiss={() => handleItemDismiss(item.txHash)}
-              />
-            </MotionListItem>
-          )}
-        </AnimatePresence>
-      ))}
+      <AnimatePresence mode="popLayout">
+        {latestActivities.map((item) => (
+          <MotionListItem
+            key={item.id}
+            layout="position"
+            variants={listItemVariants}
+            initial={false}
+            animate="mounted"
+            exit="dismissed"
+            pb={2}
+            _last={{ pb: 0 }}
+          >
+            <ActivitiesListItem
+              {...item}
+              handleDismiss={() => handleItemDismiss(item.id)}
+            />
+          </MotionListItem>
+        ))}
+      </AnimatePresence>
     </MotionList>
-  ) : null
+  )
 }
 
 export default ActivitiesList
