@@ -9,15 +9,16 @@ import {
 } from "@chakra-ui/react"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import { TextMd } from "#/components/shared/Typography"
-import { MODAL_TYPES } from "#/types"
+import { ACTION_FLOW_TYPES } from "#/types"
 import { useEstimatedBTCBalance } from "#/hooks/store"
 import { LiquidStakingTokenPopover } from "#/components/LiquidStakingTokenPopover"
-import { useModal, useSize } from "#/hooks"
+import { useSize, useTransactionModal } from "#/hooks"
 
 export default function PositionDetails(props: CardProps) {
   const estimatedBtcBalance = useEstimatedBTCBalance()
   const { ref, size } = useSize()
-  const { openModal } = useModal()
+  const openDepositModal = useTransactionModal(ACTION_FLOW_TYPES.STAKE)
+  const openWithdrawModal = useTransactionModal(ACTION_FLOW_TYPES.UNSTAKE)
 
   return (
     <Card ref={ref} {...props}>
@@ -40,17 +41,10 @@ export default function PositionDetails(props: CardProps) {
         />
       </CardBody>
       <CardFooter flexDirection="column" gap={2}>
-        <Button
-          size="lg"
-          onClick={() => openModal(MODAL_TYPES.STAKE, { type: "stake" })}
-        >
+        <Button size="lg" onClick={openDepositModal}>
           Stake
         </Button>
-        <Button
-          size="lg"
-          variant="outline"
-          onClick={() => openModal(MODAL_TYPES.UNSTAKE, { type: "unstake" })}
-        >
+        <Button size="lg" variant="outline" onClick={openWithdrawModal}>
           Unstake
         </Button>
       </CardFooter>

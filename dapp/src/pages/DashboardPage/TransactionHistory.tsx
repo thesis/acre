@@ -19,13 +19,13 @@ import { TextMd, TextSm } from "#/components/shared/Typography"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import emptyStateIlustration from "#/assets/images/empty-state.png"
 import { displayBlockTimestamp } from "#/utils"
-import { useActivitiesNEW as useActivities } from "#/hooks"
+import { useActivities } from "#/hooks"
 import { Activity } from "#/types"
 import BlockExplorerLink from "#/components/shared/BlockExplorerLink"
 import { IconArrowUpRight } from "@tabler/icons-react"
 
 export default function TransactionHistory(props: StackProps) {
-  const activities = useActivities()
+  const { activities } = useActivities()
 
   const completedActivities = React.useMemo(
     () => activities.filter(({ status }) => status === "completed"),

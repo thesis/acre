@@ -44,7 +44,7 @@ async function fetchActivityData(account: string): Promise<Activity[]> {
               id
               bitcoinTransactionId
               events {
-                timestamp
+                timestamp,
                 type
               }
               ... on Deposit {

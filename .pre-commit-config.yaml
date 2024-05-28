@@ -5,7 +5,7 @@ repos:
       - id: root-lint
         name: "lint root"
         entry: /usr/bin/env bash -c "npm run format"
-        exclude: (^solidity/|^dapp/|^website/|^subgraph/)
+        exclude: (^solidity/|^dapp/|^subgraph/)
         language: script
         description: "Checks code according to the package's linter configuration"
       # Solidity
@@ -42,21 +42,6 @@ repos:
         name: "lint dapp json/yaml"
         entry: /usr/bin/env bash -c "npm --prefix ./dapp/ run lint:config"
         files: ^dapp/
-        types_or: [json, yaml]
-        language: script
-        description: "Checks JSON/YAML code according to the package's linter configuration"
-      # Website
-      - id: website-lint-js
-        name: "lint website ts/js"
-        entry: /usr/bin/env bash -c "npm --prefix ./website/ run lint:js"
-        files: ^website/
-        types_or: [ts, tsx, javascript, jsx]
-        language: script
-        description: "Checks TS/JS code according to the package's linter configuration"
-      - id: website-lint-config
-        name: "lint website json/yaml"
-        entry: /usr/bin/env bash -c "npm --prefix ./website/ run lint:config"
-        files: ^website/
         types_or: [json, yaml]
         language: script
         description: "Checks JSON/YAML code according to the package's linter configuration"

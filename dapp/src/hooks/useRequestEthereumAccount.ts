@@ -22,5 +22,5 @@ export function useRequestEthereumAccount(): UseRequestAccountReturn {
     walletApiReactTransport.disconnect()
   }, [requestAccount, walletApiReactTransport])
 
-  return { requestAccount: requestEthereumAccount }
+  return { account, requestAccount: requestEthereumAccount }
 }

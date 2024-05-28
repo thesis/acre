@@ -1,7 +1,6 @@
 # Packages that have own prettier configuration.
 solidity/
 dapp/
-website/
 sdk/
 subgraph/
 

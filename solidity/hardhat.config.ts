@@ -106,7 +106,7 @@ const config: HardhatUserConfig = {
     },
     maintainer: {
       default: 4,
-      sepolia: 0, // TODO: updated to the actual address once available
+      sepolia: "0x5CD05b073Ed2d01991A46cd55dA5D10a63B1E2CA",
       mainnet: "", // TODO: updated to the actual address once available
       integration: 0, // TODO: update to the same value as mainnet
     },
