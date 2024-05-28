@@ -17,8 +17,8 @@ import {
 } from "#/components/shared/Pagination"
 import { TextMd, TextSm } from "#/components/shared/Typography"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
-import emptyStateIllustration from "#/assets/images/empty-state.png"
-import { displayBlockTimestamp, truncateAddress } from "#/utils"
+import emptyStateIlustration from "#/assets/images/empty-state.png"
+import { displayBlockTimestamp } from "#/utils"
 import { useActivitiesNEW as useActivities } from "#/hooks"
 import { Activity } from "#/types"
 import BlockExplorerLink from "#/components/shared/BlockExplorerLink"
@@ -40,7 +40,7 @@ export default function TransactionHistory(props: StackProps) {
 
       {completedActivities.length === 0 ? (
         <VStack>
-          <Image src={emptyStateIllustration} alt="" opacity={0.3} />
+          <Image src={emptyStateIlustration} alt="" opacity={0.3} />
           <TextMd color="grey.400">You have no transactions yet!</TextMd>
         </VStack>
       ) : (
@@ -59,7 +59,7 @@ export default function TransactionHistory(props: StackProps) {
                       {displayBlockTimestamp(timestamp)}
                     </TextSm>
 
-                    <HStack flexBasis="72%">
+                    <HStack flexBasis="60%">
                       <TextSm
                         color="grey.700"
                         flex={1}
@@ -68,6 +68,7 @@ export default function TransactionHistory(props: StackProps) {
                       >
                         {type}
                       </TextSm>
+
                       <Box flex={1}>
                         <CurrencyBalance
                           color="grey.700"
@@ -76,9 +77,6 @@ export default function TransactionHistory(props: StackProps) {
                           currency="bitcoin"
                         />
                       </Box>
-                      <TextSm color="grey.500" flexBasis="50%">
-                        {truncateAddress(txHash)}
-                      </TextSm>
                     </HStack>
 
                     <BlockExplorerLink
