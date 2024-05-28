@@ -40,7 +40,7 @@ export default function DashboardCard(props: DashboardCardProps) {
   const { openModal } = useModal()
 
   return (
-    <Card px={5} py={10} gap={10} {...restProps}>
+    <Card px={5} py={10} gap={10} overflow="hidden" {...restProps}>
       <CardHeader p={0} textAlign="center">
         <TextMd fontWeight="bold">
           My position

@@ -18,26 +18,13 @@ import {
 import { TextMd, TextSm } from "#/components/shared/Typography"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import emptyStateIlustration from "#/assets/images/empty-state.png"
-import { ArrowUpRightAnimatedIcon } from "#/assets/icons/animated"
-import { motion } from "framer-motion"
 import { displayBlockTimestamp, truncateAddress } from "#/utils"
 import { useActivitiesNEW as useActivities } from "#/hooks"
 import { Activity } from "#/types"
 import BlockExplorerLink from "#/components/shared/BlockExplorerLink"
+import { IconArrowUpRight } from "@tabler/icons-react"
 
-type TransactionHistoryData = {
-  date: number
-  type: string
-  amount: string
-  address: string
-  url: string
-}[]
-
-type TransactionHistoryProps = StackProps & {
-  data?: TransactionHistoryData
-}
-
-export default function TransactionHistory(props: TransactionHistoryProps) {
+export default function TransactionHistory(props: StackProps) {
   const activities = useActivities()
 
   const completedActivities = React.useMemo(
@@ -62,21 +49,23 @@ export default function TransactionHistory(props: TransactionHistoryProps) {
             {(pageData: Activity[]) =>
               pageData.map(({ id, timestamp, type, txHash, amount }) => (
                 <Card
-                  as={motion.div}
-                  initial={false}
-                  whileHover="animate"
                   key={id}
                   role="group"
                   variant="elevated"
                   colorScheme="gold"
                 >
-                  <CardBody as={HStack} spacing={0} p={4}>
+                  <CardBody as={HStack} spacing={3} p={4}>
                     <TextSm color="grey.500" flex={1}>
                       {displayBlockTimestamp(timestamp)}
                     </TextSm>
 
-                    <HStack flexBasis="72%" spacing={0}>
-                      <TextSm color="grey.700" flex={1} fontWeight="medium">
+                    <HStack flexBasis="72%">
+                      <TextSm
+                        color="grey.700"
+                        flex={1}
+                        fontWeight="medium"
+                        textTransform="capitalize"
+                      >
                         {type}
                       </TextSm>
                       <Box flex={1}>
@@ -101,9 +90,11 @@ export default function TransactionHistory(props: TransactionHistoryProps) {
                       _groupHover={{ color: "brand.400" }}
                       pl={6}
                       pr={4}
-                      m={-4}
+                      py={5}
+                      mx={-4}
+                      my={-5}
                     >
-                      <ArrowUpRightAnimatedIcon />
+                      <IconArrowUpRight size={16} />
                       <VisuallyHidden>View transaction details</VisuallyHidden>
                     </BlockExplorerLink>
                   </CardBody>
@@ -114,8 +105,9 @@ export default function TransactionHistory(props: TransactionHistoryProps) {
 
           <HStack
             spacing={2}
-            m={-5}
+            mx={-5}
             mt={-6}
+            mb={-10}
             p={5}
             pt={6}
             bgGradient="linear(to-b, transparent, gold.200 20%)"
