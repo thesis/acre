@@ -67,6 +67,7 @@ export default function TransactionHistory(props: StackProps) {
                       <Box flex={1}>
                         <CurrencyBalance
                           color="grey.700"
+                          size="sm"
                           fontWeight="bold"
                           amount={amount}
                           currency="bitcoin"
