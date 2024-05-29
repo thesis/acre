@@ -41,21 +41,24 @@ class Acre {
     network: BitcoinNetwork,
     bitcoinProvider: BitcoinProvider,
     tbtcApiUrl: string,
-    evmRpcUrl: string,
+    ethereumRpcUrl: string,
   ) {
-    const evmNetwork: EthereumNetwork =
+    const ethereumNetwork: EthereumNetwork =
       network === BitcoinNetwork.Testnet ? "sepolia" : "mainnet"
-    const evmChainId = getChainIdByNetwork(evmNetwork)
-    const provider = getDefaultProvider(evmRpcUrl)
+    const ethereumChainId = getChainIdByNetwork(ethereumNetwork)
+    const ethersProvider = getDefaultProvider(ethereumRpcUrl)
 
-    const providerChainId = (await provider.getNetwork()).chainId
-    if (evmChainId !== providerChainId) {
+    const providerChainId = (await ethersProvider.getNetwork()).chainId
+    if (ethereumChainId !== providerChainId) {
       throw new Error(
-        `Invalid RPC node chain id. Provider chain id: ${providerChainId}; expected chain id: ${evmChainId}`,
+        `Invalid RPC node chain id. Provider chain id: ${providerChainId}; expected chain id: ${ethereumChainId}`,
       )
     }
 
-    const orangeKit = await OrangeKitSdk.init(Number(evmChainId), evmRpcUrl)
+    const orangeKit = await OrangeKitSdk.init(
+      Number(ethereumChainId),
+      ethereumRpcUrl,
+    )
 
     // TODO: Should we store this address in context so that we do not to
     // recalculate it when necessary?
@@ -63,13 +66,13 @@ class Acre {
       await bitcoinProvider.getAddress(),
     )
 
-    const signer = new VoidSigner(depositOwnerEvmAddress, provider)
+    const signer = new VoidSigner(depositOwnerEvmAddress, ethersProvider)
 
-    const contracts = getEthereumContracts(signer, evmNetwork)
+    const contracts = getEthereumContracts(signer, ethereumNetwork)
 
     const tbtc = await Tbtc.initialize(
       signer,
-      evmNetwork,
+      ethereumNetwork,
       tbtcApiUrl,
       contracts.bitcoinDepositor,
     )
