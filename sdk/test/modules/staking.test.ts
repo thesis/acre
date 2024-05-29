@@ -476,6 +476,7 @@ describe("Staking", () => {
         amountToDeposit: BigInt("536361040000000"),
         type: "deposit",
         status: DepositStatus.Finalized,
+        timestamp: 1715807188,
       },
       tbtc: {
         depositKey:
@@ -484,6 +485,7 @@ describe("Staking", () => {
           "6bca75ba55334c25064e7bf5333a3b39ed5bb73fb17e73ea9e55e6294e3fbf65",
         initialAmount: BigInt("1040000000000000"),
         status: DepositStatus.Finalized,
+        timestamp: 1715807188,
       },
     }
 
@@ -495,6 +497,7 @@ describe("Staking", () => {
       outputIndex: 0,
       initialAmount: BigInt("1050000000000000"),
       status: DepositStatus.Queued,
+      timestamp: 1715851724,
     }
 
     const spyOnSubgraphGetDeposits = jest
@@ -507,12 +510,14 @@ describe("Staking", () => {
         txHash: queuedDeposit.txHash,
         amount: 105000n,
         status: DepositStatus.Queued,
+        timestamp: 1715851724,
       },
       {
         id: finalizedDeposit.subgraph.depositKey,
         txHash: finalizedDeposit.subgraph.txHash,
         amount: 104000n,
         status: DepositStatus.Finalized,
+        timestamp: 1715807188,
       },
     ]
 

@@ -38,9 +38,13 @@ export type Deposit = {
    */
   amount: bigint
   /**
-   * Status of the deposit
+   * Status of the deposit.
    */
   status: DepositStatus
+  /**
+   * Timestamp when the deposit was initialized.
+   */
+  timestamp: number
 }
 
 /**
@@ -226,6 +230,7 @@ class StakingModule {
         txHash: deposit.txHash,
         amount,
         status: deposit.status,
+        timestamp: deposit.timestamp,
       }
     })
   }

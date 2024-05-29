@@ -31,7 +31,7 @@ type DepositDataResponse = {
       /**
        * Events associated with a given deposit.
        */
-      events: { type: "Initialized" | "Finalized" }[]
+      events: { type: "Initialized" | "Finalized"; timestamp: string }[]
     }[]
   }
 }
@@ -63,6 +63,10 @@ type Deposit = {
    * Status of the deposit.
    */
   status: DepositStatus
+  /**
+   * Timestamp when the deposit was initialized.
+   */
+  timestamp: number
 }
 
 /**
@@ -86,8 +90,9 @@ export default class AcreSubgraphApi extends HttpApi {
             id
             bitcoinTransactionId
             initialDepositAmount
-            events {
-                type
+            events(orderBy: timestamp, orderDirection: asc) {
+              timestamp
+              type
             }
             amountToDeposit
         }
@@ -120,6 +125,8 @@ export default class AcreSubgraphApi extends HttpApi {
         ? DepositStatus.Finalized
         : DepositStatus.Initialized
 
+      const timestamp = parseInt(events[0].timestamp, 10)
+
       return {
         depositKey: id,
         txHash,
@@ -127,6 +134,7 @@ export default class AcreSubgraphApi extends HttpApi {
         amountToDeposit: BigInt(amountToDeposit ?? 0),
         type: "deposit",
         status,
+        timestamp,
       }
     })
   }

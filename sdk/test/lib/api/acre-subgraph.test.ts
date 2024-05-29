@@ -13,6 +13,7 @@ const subgraphData = {
         initialDepositAmount: "1200000000000000",
         events: [
           {
+            timestamp: "1714058004",
             type: "Initialized",
           },
         ],
@@ -25,10 +26,12 @@ const subgraphData = {
         initialDepositAmount: "1040000000000000",
         events: [
           {
-            type: "Finalized",
+            timestamp: "1715856144",
+            type: "Initialized",
           },
           {
-            type: "Initialized",
+            timestamp: "1715860572",
+            type: "Finalized",
           },
         ],
         amountToDeposit: "536361040000000",
@@ -46,6 +49,7 @@ const expectedDepositData = [
     amountToDeposit: BigInt(0),
     type: "deposit",
     status: DepositStatus.Initialized,
+    timestamp: 1714058004,
   },
   {
     depositKey:
@@ -55,6 +59,7 @@ const expectedDepositData = [
     amountToDeposit: BigInt("536361040000000"),
     type: "deposit",
     status: DepositStatus.Finalized,
+    timestamp: 1715856144,
   },
 ]
 
@@ -87,8 +92,9 @@ describe("Acre Subgraph API", () => {
             id
             bitcoinTransactionId
             initialDepositAmount
-            events {
-                type
+            events(orderBy: timestamp, orderDirection: asc) {
+              timestamp
+              type
             }
             amountToDeposit
         }
