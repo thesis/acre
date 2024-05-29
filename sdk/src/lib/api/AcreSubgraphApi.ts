@@ -69,6 +69,24 @@ type Deposit = {
   timestamp: number
 }
 
+export function buildGetDepositsByOwnerQuery(owner: ChainIdentifier) {
+  return `
+  query {
+    deposits(
+          where: {depositOwner_: {id: "0x${owner.identifierHex}"}}
+      ) {
+          id
+          bitcoinTransactionId
+          initialDepositAmount
+          events(orderBy: timestamp, orderDirection: asc) {
+            timestamp
+            type
+          }
+          amountToDeposit
+      }
+  }`
+}
+
 /**
  * Class for integration with Acre Subgraph.
  */
@@ -82,21 +100,7 @@ export default class AcreSubgraphApi extends HttpApi {
   async getDepositsByOwner(
     depositOwnerId: ChainIdentifier,
   ): Promise<Deposit[]> {
-    const query = `
-    query {
-      deposits(
-            where: {depositOwner_: {id: "0x${depositOwnerId.identifierHex}"}}
-        ) {
-            id
-            bitcoinTransactionId
-            initialDepositAmount
-            events(orderBy: timestamp, orderDirection: asc) {
-              timestamp
-              type
-            }
-            amountToDeposit
-        }
-    }`
+    const query = buildGetDepositsByOwnerQuery(depositOwnerId)
     const response = await this.postRequest(
       "",
       { query },

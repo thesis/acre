@@ -1,6 +1,6 @@
 import { EthereumAddress } from "@keep-network/tbtc-v2.ts"
 import { ethers } from "ethers"
-import AcreSubgraphApi from "../../../src/lib/api/AcreSubgraphApi"
+import AcreSubgraphApi, { buildGetDepositsByOwnerQuery } from "../../../src/lib/api/AcreSubgraphApi"
 import { DepositStatus } from "../../../src/lib/api/TbtcApi"
 
 const subgraphData = {
@@ -84,21 +84,7 @@ describe("Acre Subgraph API", () => {
       .spyOn(global, "URL")
       .mockReturnValueOnce(mockedURLObject)
 
-    const query = `
-    query {
-      deposits(
-            where: {depositOwner_: {id: "0x${depositOwnerId.identifierHex}"}}
-        ) {
-            id
-            bitcoinTransactionId
-            initialDepositAmount
-            events(orderBy: timestamp, orderDirection: asc) {
-              timestamp
-              type
-            }
-            amountToDeposit
-        }
-    }`
+    const query = buildGetDepositsByOwnerQuery(depositOwnerId)
 
     let result: Awaited<ReturnType<AcreSubgraphApi["getDepositsByOwner"]>>
 
