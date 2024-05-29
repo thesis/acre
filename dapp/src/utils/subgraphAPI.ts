@@ -14,6 +14,7 @@ const mapToActivity = (activityData: ActivityDataResponse): Activity => {
   const status = events.some(({ type }) => type === "Finalized")
     ? "completed"
     : "pending"
+
   const timestamp = parseInt(events[0].timestamp, 10)
 
   return {
