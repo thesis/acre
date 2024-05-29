@@ -1,6 +1,6 @@
 import React from "react"
 import { ArrowUpRight } from "#/assets/icons"
-import { Box, Icon } from "@chakra-ui/react"
+import { Box, BoxProps, Icon } from "@chakra-ui/react"
 import { Variants, motion } from "framer-motion"
 import { chakraUnitToPx } from "#/theme/utils"
 
@@ -34,18 +34,15 @@ const arrowBottomVariants: Variants = {
   }),
 }
 
-type ArrowUpRightAnimatedIconProps = {
+type ArrowUpRightAnimatedIconProps = BoxProps & {
   boxSize?: number
-  color?: string
 }
 
-export function ArrowUpRightAnimatedIcon({
-  boxSize = 4,
-  color = "brand.400",
-}: ArrowUpRightAnimatedIconProps) {
+export function ArrowUpRightAnimatedIcon(props: ArrowUpRightAnimatedIconProps) {
+  const { boxSize = 4, color = "inherit", ...restProps } = props
   const boxSizePx = chakraUnitToPx(boxSize)
   return (
-    <Box pos="relative" boxSize={boxSize} overflow="hidden">
+    <Box pos="relative" boxSize={boxSize} overflow="hidden" {...restProps}>
       {[
         { id: "arrow-up", variants: arrowUpVariants },
         { id: "arrow-bottom", variants: arrowBottomVariants },

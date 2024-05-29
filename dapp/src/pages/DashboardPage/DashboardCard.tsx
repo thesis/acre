@@ -1,23 +1,23 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react"
-import {
-  Button,
-  CardHeader,
-  CardBody,
-  Card,
-  CardProps,
-  Tag,
-  HStack,
-  VStack,
-  ButtonProps,
-} from "@chakra-ui/react"
-import { TextMd } from "#/components/shared/Typography"
-import IconTag from "#/components/shared/IconTag"
 import { BoostArrowIcon } from "#/assets/icons"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
-import { ACTION_FLOW_TYPES, AmountType } from "#/types"
-import { ActivitiesList } from "#/components/shared/ActivitiesList"
+import IconTag from "#/components/shared/IconTag"
+import { TextMd } from "#/components/shared/Typography"
 import { useTransactionModal } from "#/hooks"
+import { ACTION_FLOW_TYPES, AmountType } from "#/types"
+import {
+  Button,
+  ButtonProps,
+  Card,
+  CardBody,
+  CardHeader,
+  CardProps,
+  HStack,
+  Tag,
+  VStack,
+} from "@chakra-ui/react"
+import { ActivitiesList } from "#/components/shared/ActivitiesList"
+import TransactionHistory from "./TransactionHistory"
 
 const buttonStyles: ButtonProps = {
   size: "lg",
@@ -40,7 +40,7 @@ export default function DashboardCard(props: DashboardCardProps) {
   const openDepositModal = useTransactionModal(ACTION_FLOW_TYPES.STAKE)
 
   return (
-    <Card px={5} py={10} gap={10} {...restProps}>
+    <Card px={5} py={10} gap={10} overflow="hidden" {...restProps}>
       <CardHeader p={0} textAlign="center">
         <TextMd fontWeight="bold">
           My position
@@ -96,6 +96,7 @@ export default function DashboardCard(props: DashboardCardProps) {
         </HStack>
 
         <ActivitiesList />
+        <TransactionHistory />
       </CardBody>
     </Card>
   )
