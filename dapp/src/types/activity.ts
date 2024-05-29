@@ -1,4 +1,3 @@
-import { DepositStatus } from "@acre-btc/sdk"
 import { CurrencyType } from "./currency"
 
 // TODO: Update type when subgraph's ready

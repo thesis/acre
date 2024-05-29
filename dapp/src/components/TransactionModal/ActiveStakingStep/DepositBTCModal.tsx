@@ -34,7 +34,7 @@ export default function DepositBTCModal() {
   const fetchDeposits = useFetchDeposits()
 
   const onStakeBTCSuccess = useCallback(() => {
-    fetchDeposits()
+    logPromiseFailure(fetchDeposits())
     dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED))
   }, [dispatch, fetchDeposits])
 

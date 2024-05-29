@@ -1,6 +1,8 @@
 import { EthereumAddress } from "@keep-network/tbtc-v2.ts"
 import { ethers } from "ethers"
-import AcreSubgraphApi, { buildGetDepositsByOwnerQuery } from "../../../src/lib/api/AcreSubgraphApi"
+import AcreSubgraphApi, {
+  buildGetDepositsByOwnerQuery,
+} from "../../../src/lib/api/AcreSubgraphApi"
 import { DepositStatus } from "../../../src/lib/api/TbtcApi"
 
 const subgraphData = {
