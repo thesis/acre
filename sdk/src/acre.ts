@@ -1,54 +1,83 @@
+import { OrangeKitSdk } from "@orangekit/sdk"
+import { getDefaultProvider } from "ethers"
 import { AcreContracts } from "./lib/contracts"
-import { ChainEIP712Signer } from "./lib/eip712-signer"
-import {
-  EthereumEIP712Signer,
-  EthereumNetwork,
-  getEthereumContracts,
-} from "./lib/ethereum"
+import { EthereumNetwork, getEthereumContracts } from "./lib/ethereum"
 import { StakingModule } from "./modules/staking"
 import Tbtc from "./modules/tbtc"
-import { EthereumSignerCompatibleWithEthersV5 } from "./lib/utils"
+import { VoidSigner } from "./lib/utils"
+import { BitcoinProvider, BitcoinNetwork } from "./lib/bitcoin"
+import { getChainIdByNetwork } from "./lib/ethereum/network"
 
 class Acre {
   readonly #tbtc: Tbtc
 
-  readonly #messageSigner: ChainEIP712Signer
+  readonly #orangeKit: OrangeKitSdk
+
+  readonly #bitcoinProvider: BitcoinProvider
 
   public readonly contracts: AcreContracts
 
   public readonly staking: StakingModule
 
-  constructor(
-    _contracts: AcreContracts,
-    _messageSigner: ChainEIP712Signer,
-    _tbtc: Tbtc,
+  private constructor(
+    contracts: AcreContracts,
+    bitcoinProvider: BitcoinProvider,
+    orangeKit: OrangeKitSdk,
+    tbtc: Tbtc,
   ) {
-    this.contracts = _contracts
-    this.#tbtc = _tbtc
-    this.#messageSigner = _messageSigner
+    this.contracts = contracts
+    this.#tbtc = tbtc
+    this.#orangeKit = orangeKit
+    this.#bitcoinProvider = bitcoinProvider
     this.staking = new StakingModule(
       this.contracts,
-      this.#messageSigner,
+      this.#bitcoinProvider,
+      this.#orangeKit,
       this.#tbtc,
     )
   }
 
-  static async initializeEthereum(
-    signer: EthereumSignerCompatibleWithEthersV5,
-    network: EthereumNetwork,
+  static async initialize(
+    network: BitcoinNetwork,
+    bitcoinProvider: BitcoinProvider,
     tbtcApiUrl: string,
-  ): Promise<Acre> {
-    const contracts = getEthereumContracts(signer, network)
-    const messages = new EthereumEIP712Signer(signer)
+    ethereumRpcUrl: string,
+  ) {
+    const ethereumNetwork: EthereumNetwork =
+      network === BitcoinNetwork.Testnet ? "sepolia" : "mainnet"
+    const ethereumChainId = getChainIdByNetwork(ethereumNetwork)
+    const ethersProvider = getDefaultProvider(ethereumRpcUrl)
+
+    const providerChainId = (await ethersProvider.getNetwork()).chainId
+    if (ethereumChainId !== providerChainId) {
+      throw new Error(
+        `Invalid RPC node chain id. Provider chain id: ${providerChainId}; expected chain id: ${ethereumChainId}`,
+      )
+    }
+
+    const orangeKit = await OrangeKitSdk.init(
+      Number(ethereumChainId),
+      ethereumRpcUrl,
+    )
+
+    // TODO: Should we store this address in context so that we do not to
+    // recalculate it when necessary?
+    const depositOwnerEvmAddress = await orangeKit.predictAddress(
+      await bitcoinProvider.getAddress(),
+    )
+
+    const signer = new VoidSigner(depositOwnerEvmAddress, ethersProvider)
+
+    const contracts = getEthereumContracts(signer, ethereumNetwork)
 
     const tbtc = await Tbtc.initialize(
       signer,
-      network,
+      ethereumNetwork,
       tbtcApiUrl,
       contracts.bitcoinDepositor,
     )
 
-    return new Acre(contracts, messages, tbtc)
+    return new Acre(contracts, bitcoinProvider, orangeKit, tbtc)
   }
 }
 

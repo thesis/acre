@@ -1,13 +1,28 @@
-import { AbstractSigner } from "ethers"
+import { VoidSigner as EthersVoidSigner, Signer } from "ethers"
 
 /**
- * This abstract signer adds necessary methods to be compatible with ethers v5
- * signer which is used in tBTC-v2.ts SDK.
+ * This abstract signer interface that defines necessary methods to be
+ * compatible with ethers v5 signer which is used in tBTC-v2.ts SDK.
  */
-abstract class EthereumSignerCompatibleWithEthersV5 extends AbstractSigner {
+export interface IEthereumSignerCompatibleWithEthersV5 extends Signer {
   /**
    * @dev Required by ethers v5.
    */
+  readonly _isSigner: boolean
+
+  // eslint-disable-next-line no-underscore-dangle
+  _checkProvider(): void
+
+  /**
+   * @dev Required by ethers v5.
+   */
+  getChainId(): Promise<number>
+}
+
+export class VoidSigner
+  extends EthersVoidSigner
+  implements IEthereumSignerCompatibleWithEthersV5
+{
   readonly _isSigner: boolean = true
 
   // eslint-disable-next-line no-underscore-dangle
@@ -15,9 +30,6 @@ abstract class EthereumSignerCompatibleWithEthersV5 extends AbstractSigner {
     if (!this.provider) throw new Error("Provider not available")
   }
 
-  /**
-   * @dev Required by ethers v5.
-   */
   async getChainId(): Promise<number> {
     // eslint-disable-next-line no-underscore-dangle
     this._checkProvider()
@@ -27,6 +39,3 @@ abstract class EthereumSignerCompatibleWithEthersV5 extends AbstractSigner {
     return Number(network.chainId)
   }
 }
-
-// eslint-disable-next-line import/prefer-default-export
-export { EthereumSignerCompatibleWithEthersV5 }

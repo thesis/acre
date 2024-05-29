@@ -4,7 +4,8 @@ import {
   Deposit as TbtcSdkDeposit,
 } from "@keep-network/tbtc-v2.ts"
 
-import { EthereumSignerCompatibleWithEthersV5 } from "../../../src"
+import { ZeroAddress, Provider } from "ethers"
+import { IEthereumSignerCompatibleWithEthersV5, VoidSigner } from "../../../src"
 import Deposit from "../../../src/modules/tbtc/Deposit"
 import TbtcApi from "../../../src/lib/api/TbtcApi"
 
@@ -17,13 +18,18 @@ import {
 import { MockAcreContracts } from "../../utils/mock-acre-contracts"
 
 import { MockTbtcSdk } from "../../utils/mock-tbtc-sdk"
+import { getChainIdByNetwork } from "../../../src/lib/ethereum/network"
 
 jest.mock("@keep-network/tbtc-v2.ts", (): object => ({
   TbtcSdk: jest.fn(),
   ...jest.requireActual("@keep-network/tbtc-v2.ts"),
 }))
 
-class MockEthereumSignerCompatibleWithEthersV5 extends EthereumSignerCompatibleWithEthersV5 {
+class MockEthereumSignerCompatibleWithEthersV5 extends VoidSigner {
+  constructor() {
+    super(ZeroAddress, {} as Provider)
+  }
+
   getAddress = jest.fn()
 
   connect = jest.fn()
@@ -33,6 +39,12 @@ class MockEthereumSignerCompatibleWithEthersV5 extends EthereumSignerCompatibleW
   signMessage = jest.fn()
 
   signTypedData = jest.fn()
+
+  _isSigner: boolean = true
+
+  _checkProvider = jest.fn()
+
+  getChainId = jest.fn().mockResolvedValue(getChainIdByNetwork("sepolia"))
 }
 
 describe("Tbtc", () => {
@@ -43,7 +55,7 @@ describe("Tbtc", () => {
   const { bitcoinDepositor } = new MockAcreContracts()
 
   describe("initialize", () => {
-    const mockedSigner: EthereumSignerCompatibleWithEthersV5 =
+    const mockedSigner: IEthereumSignerCompatibleWithEthersV5 =
       new MockEthereumSignerCompatibleWithEthersV5()
 
     describe("when network is mainnet", () => {

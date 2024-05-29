@@ -1,16 +1,11 @@
 import { useCallback, useState } from "react"
-import {
-  StakeInitialization,
-  EthereumAddress,
-  DepositReceipt,
-} from "@acre-btc/sdk"
+import { StakeInitialization, DepositReceipt } from "@acre-btc/sdk"
 import { useAcreContext } from "./useAcreContext"
 
 export type UseStakeFlowReturn = {
   initStake: (
-    bitcoinRecoveryAddress: string,
-    ethereumAddress: string,
     referral: number,
+    bitcoinRecoveryAddress?: string,
   ) => Promise<void>
   btcAddress?: string
   depositReceipt?: DepositReceipt
@@ -30,17 +25,12 @@ export function useStakeFlow(): UseStakeFlowReturn {
   >(undefined)
 
   const initStake = useCallback(
-    async (
-      bitcoinRecoveryAddress: string,
-      ethereumAddress: string,
-      referral: number,
-    ) => {
+    async (referral: number, bitcoinRecoveryAddress?: string) => {
       if (!acre || !isInitialized) throw new Error("Acre SDK not defined")
 
       const initializedStakeFlow = await acre.staking.initializeStake(
-        bitcoinRecoveryAddress,
-        EthereumAddress.from(ethereumAddress),
         referral,
+        bitcoinRecoveryAddress,
       )
 
       const btcDepositAddress = await initializedStakeFlow.getBitcoinAddress()
@@ -58,7 +48,7 @@ export function useStakeFlow(): UseStakeFlowReturn {
   const signMessage = useCallback(async () => {
     if (!stakeFlow) throw new Error("Initialize stake first")
 
-    await stakeFlow.signMessage()
+    await Promise.resolve(stakeFlow.signMessage())
   }, [stakeFlow])
 
   const stake = useCallback(async () => {

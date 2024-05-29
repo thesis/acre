@@ -1,2 +1,6 @@
-// eslint-disable-next-line import/prefer-default-export
-export { BitcoinNetwork } from "@keep-network/tbtc-v2.ts"
+enum BitcoinNetwork {
+  Mainnet = "mainnet",
+  Testnet = "testnet",
+}
+
+export default BitcoinNetwork

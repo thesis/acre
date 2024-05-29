@@ -6,21 +6,17 @@ import { useToast } from "./useToast"
 import { useWallet } from "../useWallet"
 import { useTimeout } from "../useTimeout"
 
-const { BITCOIN_WALLET_ERROR, ETHEREUM_WALLET_ERROR } = TOAST_IDS
+const { BITCOIN_WALLET_ERROR } = TOAST_IDS
 
 const WALLET_ERROR_TOAST_ID = {
   bitcoin: {
     id: BITCOIN_WALLET_ERROR,
     Component: TOASTS[BITCOIN_WALLET_ERROR],
   },
-  ethereum: {
-    id: ETHEREUM_WALLET_ERROR,
-    Component: TOASTS[ETHEREUM_WALLET_ERROR],
-  },
 }
 
 export function useShowWalletErrorToast(
-  type: "bitcoin" | "ethereum",
+  type: "bitcoin",
   delay = ONE_SEC_IN_MILLISECONDS,
 ) {
   const {

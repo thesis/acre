@@ -82,7 +82,7 @@ export default function DepositBTCModal() {
     const response = await depositTelemetry(
       depositReceipt,
       btcAddress,
-      ethAccount.address,
+      ethAccount,
     )
 
     if (response.verificationStatus === "valid") {

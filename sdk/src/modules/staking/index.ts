@@ -1,9 +1,10 @@
-import { ChainIdentifier } from "@keep-network/tbtc-v2.ts"
+import { ChainIdentifier, EthereumAddress } from "@keep-network/tbtc-v2.ts"
+import { OrangeKitSdk } from "@orangekit/sdk"
 import { AcreContracts, DepositFees } from "../../lib/contracts"
-import { ChainEIP712Signer } from "../../lib/eip712-signer"
 import { StakeInitialization } from "./stake-initialization"
 import { fromSatoshi, toSatoshi } from "../../lib/utils"
 import Tbtc from "../tbtc"
+import { BitcoinProvider } from "../../lib/bitcoin/providers"
 
 export { DepositReceipt } from "../tbtc"
 
@@ -26,50 +27,73 @@ class StakingModule {
   readonly #contracts: AcreContracts
 
   /**
-   * Typed structured data signer.
+   * Bitcoin provider to communicate with the wallet.
    */
-  readonly #messageSigner: ChainEIP712Signer
+  readonly #bitcoinProvider: BitcoinProvider
 
   /**
    * tBTC Module.
    */
   readonly #tbtc: Tbtc
 
+  /**
+   * OrangeKit SDK.
+   */
+  readonly #orangeKit: OrangeKitSdk
+
   constructor(
     _contracts: AcreContracts,
-    _messageSigner: ChainEIP712Signer,
+    _bitcoinProvider: BitcoinProvider,
+    _orangeKit: OrangeKitSdk,
     _tbtc: Tbtc,
   ) {
     this.#contracts = _contracts
-    this.#messageSigner = _messageSigner
+    this.#bitcoinProvider = _bitcoinProvider
     this.#tbtc = _tbtc
+    this.#orangeKit = _orangeKit
   }
 
   /**
-   * Initializes the Acre staking process.
-   * @param bitcoinRecoveryAddress P2PKH or P2WPKH Bitcoin address that can be
-   *                               used for emergency recovery of the deposited
-   *                               funds.
-   * @param staker The address to which the stBTC shares will be minted.
+   * Initializes the Acre deposit process.
    * @param referral Data used for referral program.
-   * @returns Object represents the staking process.
+   * @param bitcoinRecoveryAddress `P2PKH` or `P2WPKH` Bitcoin address that can
+   *        be used for emergency recovery of the deposited funds. If
+   *        `undefined` the bitcoin address from bitcoin provider is used as
+   *        bitcoin recovery address - note that an address returned by bitcoin
+   *        provider must then be `P2WPKH` or `P2PKH`. This property is
+   *        available to let the consumer use `P2SH-P2WPKH` as the deposit owner
+   *        and another tBTC-supported type (`P2WPKH`, `P2PKH`) address as the
+   *        tBTC Bridge recovery address.
+   * @returns Object represents the deposit process.
    */
-  async initializeStake(
-    bitcoinRecoveryAddress: string,
-    staker: ChainIdentifier, // TODO: We should resolve the address with OrangeKit SDK
-    referral: number,
-  ) {
+  async initializeStake(referral: number, bitcoinRecoveryAddress?: string) {
+    const depositOwnerBitcoinAddress = await this.#bitcoinProvider.getAddress()
+
+    // TODO: If we want to handle other chains we should create the wrapper for
+    // OrangeKit SDK to return `ChainIdentifier` from `predictAddress` fn. Or we
+    // can create `EVMChainIdentifier` class and use it as a type in `modules`
+    // and `lib`. Currently we support only `Ethereum` so here we force to
+    // `EthereumAddress`.
+    const depositOwnerEvmAddress = EthereumAddress.from(
+      await this.#orangeKit.predictAddress(depositOwnerBitcoinAddress),
+    )
+
+    // tBTC-v2 SDK will handle Bitcoin address validation and throw an error if
+    // address is not supported.
+    const finalBitcoinRecoveryAddress =
+      bitcoinRecoveryAddress ?? depositOwnerBitcoinAddress
+
     const tbtcDeposit = await this.#tbtc.initiateDeposit(
-      staker,
-      bitcoinRecoveryAddress,
+      depositOwnerEvmAddress,
+      finalBitcoinRecoveryAddress,
       referral,
     )
 
     return new StakeInitialization(
       this.#contracts,
-      this.#messageSigner,
-      bitcoinRecoveryAddress,
-      staker,
+      this.#bitcoinProvider,
+      finalBitcoinRecoveryAddress,
+      depositOwnerEvmAddress,
       tbtcDeposit,
     )
   }
