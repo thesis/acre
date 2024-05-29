@@ -12,7 +12,8 @@
     "lint:js": "eslint .",
     "lint:js:fix": "eslint . --fix",
     "lint:config": "prettier -c '**/*.@(json|yaml|toml)'",
-    "lint:config:fix": "prettier -w '**/*.@(json|yaml|toml)'"
+    "lint:config:fix": "prettier -w '**/*.@(json|yaml|toml)'",
+    "test": "vitest"
   },
   "dependencies": {
     "@acre-btc/sdk": "workspace:*",
@@ -52,6 +53,7 @@
     "prettier": "^3.1.0",
     "typescript": "^5.3.2",
     "vite": "^5.0.2",
-    "vite-plugin-node-polyfills": "^0.19.0"
+    "vite-plugin-node-polyfills": "^0.19.0",
+    "vitest": "^1.6.0"
   }
 }
