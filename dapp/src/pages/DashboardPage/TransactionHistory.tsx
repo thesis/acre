@@ -22,11 +22,10 @@ import { displayBlockTimestamp } from "#/utils"
 import { Activity } from "#/types"
 import BlockExplorerLink from "#/components/shared/BlockExplorerLink"
 import { IconArrowUpRight } from "@tabler/icons-react"
-import { selectCompletedActivities } from "#/store/wallet"
-import { useAppSelector } from "#/hooks"
+import { useCompletedActivities } from "#/hooks"
 
 export default function TransactionHistory(props: StackProps) {
-  const completedActivities = useAppSelector(selectCompletedActivities)
+  const completedActivities = useCompletedActivities()
 
   return (
     <VStack spacing={6} w="full" {...props}>
@@ -51,7 +50,7 @@ export default function TransactionHistory(props: StackProps) {
                   colorScheme="gold"
                 >
                   <CardBody as={HStack} spacing={3} p={4}>
-                    <TextSm color="grey.500" flex={1}>
+                    <TextSm color="grey.500" flex={1} fontWeight="medium">
                       {displayBlockTimestamp(timestamp)}
                     </TextSm>
 
@@ -59,7 +58,7 @@ export default function TransactionHistory(props: StackProps) {
                       <TextSm
                         color="grey.700"
                         flex={1}
-                        fontWeight="medium"
+                        fontWeight="semibold"
                         textTransform="capitalize"
                       >
                         {type}
