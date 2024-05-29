@@ -7,6 +7,7 @@ import Tbtc from "./modules/tbtc"
 import { VoidSigner } from "./lib/utils"
 import { BitcoinProvider, BitcoinNetwork } from "./lib/bitcoin"
 import { getChainIdByNetwork } from "./lib/ethereum/network"
+import AcreSubgraphApi from "./lib/api/AcreSubgraphApi"
 
 class Acre {
   readonly #tbtc: Tbtc
@@ -19,21 +20,26 @@ class Acre {
 
   public readonly staking: StakingModule
 
+  readonly #acreSubgraph: AcreSubgraphApi
+
   private constructor(
     contracts: AcreContracts,
     bitcoinProvider: BitcoinProvider,
     orangeKit: OrangeKitSdk,
     tbtc: Tbtc,
+    acreSubgraphApi: AcreSubgraphApi,
   ) {
     this.contracts = contracts
     this.#tbtc = tbtc
     this.#orangeKit = orangeKit
+    this.#acreSubgraph = acreSubgraphApi
     this.#bitcoinProvider = bitcoinProvider
     this.staking = new StakingModule(
       this.contracts,
       this.#bitcoinProvider,
       this.#orangeKit,
       this.#tbtc,
+      this.#acreSubgraph,
     )
   }
 
@@ -76,8 +82,12 @@ class Acre {
       tbtcApiUrl,
       contracts.bitcoinDepositor,
     )
+    const subgraph = new AcreSubgraphApi(
+      // TODO: Set correct url based on the network
+      "https://api.studio.thegraph.com/query/73600/acre/version/latest",
+    )
 
-    return new Acre(contracts, bitcoinProvider, orangeKit, tbtc)
+    return new Acre(contracts, bitcoinProvider, orangeKit, tbtc, subgraph)
   }
 }
 

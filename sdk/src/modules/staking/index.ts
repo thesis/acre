@@ -5,6 +5,8 @@ import { StakeInitialization } from "./stake-initialization"
 import { fromSatoshi, toSatoshi } from "../../lib/utils"
 import Tbtc from "../tbtc"
 import { BitcoinProvider } from "../../lib/bitcoin/providers"
+import AcreSubgraphApi from "../../lib/api/AcreSubgraphApi"
+import { DepositStatus } from "../../lib/api/TbtcApi"
 
 export { DepositReceipt } from "../tbtc"
 
@@ -15,6 +17,34 @@ export type DepositFee = {
   tbtc: bigint
   acre: bigint
   total: bigint
+}
+
+/**
+ * Represents the deposit data.
+ */
+export type Deposit = {
+  /**
+   * Unique deposit identifier represented as
+   * `keccak256(bitcoinFundingTxHash | fundingOutputIndex)`.
+   */
+  id: string
+  /**
+   * Bitcoin transaction hash (or transaction ID) in the same byte order as
+   * used by the Bitcoin block explorers.
+   */
+  txHash: string
+  /**
+   * Amount of Bitcoin funding transaction.
+   */
+  amount: bigint
+  /**
+   * Status of the deposit.
+   */
+  status: DepositStatus
+  /**
+   * Timestamp when the deposit was initialized.
+   */
+  timestamp: number
 }
 
 /**
@@ -41,16 +71,23 @@ class StakingModule {
    */
   readonly #orangeKit: OrangeKitSdk
 
+  /**
+   * Acre subgraph api.
+   */
+  readonly #acreSubgraphApi: AcreSubgraphApi
+
   constructor(
     _contracts: AcreContracts,
     _bitcoinProvider: BitcoinProvider,
     _orangeKit: OrangeKitSdk,
     _tbtc: Tbtc,
+    acreSubgraphApi: AcreSubgraphApi,
   ) {
     this.#contracts = _contracts
     this.#bitcoinProvider = _bitcoinProvider
     this.#tbtc = _tbtc
     this.#orangeKit = _orangeKit
+    this.#acreSubgraphApi = acreSubgraphApi
   }
 
   /**
@@ -154,6 +191,47 @@ class StakingModule {
   async minDepositAmount() {
     const value = await this.#contracts.bitcoinDepositor.minDepositAmount()
     return toSatoshi(value)
+  }
+
+  /**
+   * @returns All deposits associated with the Bitcoin address that returns the
+   *          Bitcoin Provider. They include all deposits: queued, initialized
+   *          and finalized.
+   */
+  async getDeposits(): Promise<Deposit[]> {
+    const bitcoinAddress = await this.#bitcoinProvider.getAddress()
+
+    const depositOwnerEvmAddress = EthereumAddress.from(
+      await this.#orangeKit.predictAddress(bitcoinAddress),
+    )
+
+    const subgraphData = await this.#acreSubgraphApi.getDepositsByOwner(
+      depositOwnerEvmAddress,
+    )
+
+    const initializedOrFinalizedDepositsMap = new Map(
+      subgraphData.map((data) => [data.depositKey, data]),
+    )
+
+    const tbtcData = await this.#tbtc.getDepositsByOwner(depositOwnerEvmAddress)
+
+    return tbtcData.map((deposit) => {
+      const depositFromSubgraph = initializedOrFinalizedDepositsMap.get(
+        deposit.depositKey,
+      )
+
+      const amount = toSatoshi(
+        depositFromSubgraph?.initialAmount ?? deposit.initialAmount,
+      )
+
+      return {
+        id: deposit.depositKey,
+        txHash: deposit.txHash,
+        amount,
+        status: deposit.status,
+        timestamp: deposit.timestamp,
+      }
+    })
   }
 }
 

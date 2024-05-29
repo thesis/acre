@@ -143,9 +143,9 @@ class StakeInitialization {
    * @returns Transaction hash of the stake initiation transaction.
    */
   async stake(options = { retries: 5, backoffStepMs: 5_000 }): Promise<string> {
-    if (!this.#signedMessage) {
-      throw new Error("Sign message first")
-    }
+    // if (!this.#signedMessage) {
+    //   throw new Error("Sign message first")
+    // }
 
     await this.#tbtcDeposit.waitForFunding(options)
 
