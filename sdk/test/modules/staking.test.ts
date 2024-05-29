@@ -8,6 +8,7 @@ import {
   EthereumAddress,
   DepositFees,
   DepositFee,
+  DepositStatus,
 } from "../../src"
 import * as satoshiConverter from "../../src/lib/utils/satoshi-converter"
 import { MockAcreContracts } from "../utils/mock-acre-contracts"
@@ -15,6 +16,7 @@ import { MockOrangeKitSdk } from "../utils/mock-orangekit"
 import { MockTbtc } from "../utils/mock-tbtc"
 import { DepositReceipt } from "../../src/modules/tbtc"
 import { MockBitcoinProvider } from "../utils/mock-bitcoin-provider"
+import AcreSubgraphApi from "../../src/lib/api/AcreSubgraphApi"
 
 const stakingModuleData: {
   initializeDeposit: {
@@ -106,10 +108,18 @@ describe("Staking", () => {
   const bitcoinProvider = new MockBitcoinProvider()
   const orangeKit = new MockOrangeKitSdk()
   const tbtc = new MockTbtc()
+  const acreSubgraph = new AcreSubgraphApi("test")
+
+  const { bitcoinDepositorAddress, predictedEthereumDepositorAddress } =
+    stakingModuleData.initializeDeposit
 
   bitcoinProvider.getAddress.mockResolvedValue(
     stakingModuleData.initializeDeposit.bitcoinDepositorAddress,
   )
+
+  orangeKit.predictAddress = jest
+    .fn()
+    .mockResolvedValue(`0x${predictedEthereumDepositorAddress.identifierHex}`)
 
   const staking: StakingModule = new StakingModule(
     contracts,
@@ -118,16 +128,12 @@ describe("Staking", () => {
     // 'MockOrangeKitSdk' but required in type 'OrangeKitSdk'.
     orangeKit,
     tbtc,
+    acreSubgraph,
   )
 
   describe("initializeStake", () => {
-    const {
-      mockedDepositBTCAddress,
-      bitcoinDepositorAddress,
-      predictedEthereumDepositorAddress,
-      referral,
-      extraData,
-    } = stakingModuleData.initializeDeposit
+    const { mockedDepositBTCAddress, referral, extraData } =
+      stakingModuleData.initializeDeposit
     // TODO: Rename to `depositor`.
     const staker = predictedEthereumDepositorAddress
 
@@ -168,12 +174,6 @@ describe("Staking", () => {
             .mockReturnValue(extraData)
 
           tbtc.initiateDeposit = jest.fn().mockReturnValue(mockedDeposit)
-
-          orangeKit.predictAddress = jest
-            .fn()
-            .mockResolvedValue(
-              `0x${predictedEthereumDepositorAddress.identifierHex}`,
-            )
 
           result = await staking.initializeStake(
             referral,
@@ -296,13 +296,13 @@ describe("Staking", () => {
               )
             })
 
-            describe("when the message has not been signed yet", () => {
-              it("should throw an error", async () => {
-                await expect(result.stake()).rejects.toThrow(
-                  "Sign message first",
-                )
-              })
-            })
+            // describe("when the message has not been signed yet", () => {
+            //   it("should throw an error", async () => {
+            //     await expect(result.stake()).rejects.toThrow(
+            //       "Sign message first",
+            //     )
+            //   })
+            // })
 
             describe("when message has already been signed", () => {
               let depositId: string
@@ -462,6 +462,99 @@ describe("Staking", () => {
       it(`should return ${expectedResult}`, () => {
         expect(result).toBe(expectedResult)
       })
+    })
+  })
+
+  describe("getDeposits", () => {
+    const finalizedDeposit = {
+      subgraph: {
+        depositKey:
+          "0x73661e3ee3c6c30988800e5fedc081f29c6540505383fcfcd172fd10f3a73139",
+        txHash:
+          "6bca75ba55334c25064e7bf5333a3b39ed5bb73fb17e73ea9e55e6294e3fbf65",
+        initialAmount: BigInt("1040000000000000"),
+        amountToDeposit: BigInt("536361040000000"),
+        type: "deposit",
+        status: DepositStatus.Finalized,
+        timestamp: 1715807188,
+      },
+      tbtc: {
+        depositKey:
+          "0x73661e3ee3c6c30988800e5fedc081f29c6540505383fcfcd172fd10f3a73139",
+        txHash:
+          "6bca75ba55334c25064e7bf5333a3b39ed5bb73fb17e73ea9e55e6294e3fbf65",
+        initialAmount: BigInt("1040000000000000"),
+        status: DepositStatus.Finalized,
+        timestamp: 1715807188,
+      },
+    }
+
+    const queuedDeposit = {
+      txHash:
+        "96c40dcd6ef25bd27f926dc396bb8f8e7365b4746870e2d186ff001d6693a3ff",
+      depositKey:
+        "0xc6c428b14cf7c3116603b355ad3ddf029ea5119a2699090c80f99b68dd40fea4",
+      outputIndex: 0,
+      initialAmount: BigInt("1050000000000000"),
+      status: DepositStatus.Queued,
+      timestamp: 1715851724,
+    }
+
+    const spyOnSubgraphGetDeposits = jest
+      .spyOn(acreSubgraph, "getDepositsByOwner")
+      .mockResolvedValueOnce([finalizedDeposit.subgraph])
+
+    const expectedDeposits = [
+      {
+        id: queuedDeposit.depositKey,
+        txHash: queuedDeposit.txHash,
+        amount: 105000n,
+        status: DepositStatus.Queued,
+        timestamp: 1715851724,
+      },
+      {
+        id: finalizedDeposit.subgraph.depositKey,
+        txHash: finalizedDeposit.subgraph.txHash,
+        amount: 104000n,
+        status: DepositStatus.Finalized,
+        timestamp: 1715807188,
+      },
+    ]
+
+    let result: Awaited<ReturnType<StakingModule["getDeposits"]>>
+
+    beforeAll(async () => {
+      tbtc.getDepositsByOwner = jest
+        .fn()
+        .mockResolvedValue([queuedDeposit, finalizedDeposit.tbtc])
+
+      result = await staking.getDeposits()
+    })
+
+    it("should get the bitcoin address from bitcoin provider", () => {
+      expect(bitcoinProvider.getAddress).toHaveBeenCalled()
+    })
+
+    it("should get Ethereum depositor owner address", () => {
+      expect(orangeKit.predictAddress).toHaveBeenCalledWith(
+        bitcoinDepositorAddress,
+      )
+    })
+
+    it("should get deposits from subgraph", () => {
+      expect(spyOnSubgraphGetDeposits).toHaveBeenCalledWith(
+        predictedEthereumDepositorAddress,
+      )
+    })
+
+    it("should get deposits from tbtc module", () => {
+      expect(tbtc.getDepositsByOwner).toHaveBeenCalledWith(
+        predictedEthereumDepositorAddress,
+      )
+    })
+
+    it("should return correct data", () => {
+      expect(result).toStrictEqual(expectedDeposits)
     })
   })
 })

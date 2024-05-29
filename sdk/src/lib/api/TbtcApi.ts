@@ -1,5 +1,31 @@
-import { BitcoinTxHash, BitcoinTxOutpoint } from "@keep-network/tbtc-v2.ts"
+import {
+  BitcoinTxHash,
+  BitcoinTxOutpoint,
+  ChainIdentifier,
+} from "@keep-network/tbtc-v2.ts"
 import HttpApi from "./HttpApi"
+
+/**
+ * Represents the Deposit entity returned by the tBTC API.
+ */
+type Deposit = {
+  id: string
+  createdAt: number
+  outputIndex: number
+  owner: string
+  receipt: {
+    blindingFactor: string
+    depositor: string
+    extraData: string
+    refundLocktime: string
+    refundPublicKeyHash: string
+    walletPublicKeyHash: string
+  }
+  referral: number
+  status: DepositStatus
+  txHash: string
+  initialAmount: string
+}
 
 /**
  * Represents a class for integration with tBTC API.
@@ -50,6 +76,23 @@ export default class TbtcApi extends HttpApi {
         outputIndex: responseData.outputIndex,
       },
     }
+  }
+
+  /**
+   * @param depositOwner Depositor as EVM-chain identifier.
+   * @returns All owner deposits, including queued deposits.
+   */
+  async getDepositsByOwner(depositOwner: ChainIdentifier): Promise<Deposit[]> {
+    const response = await this.getRequest(
+      `deposits/${depositOwner.identifierHex}`,
+    )
+
+    if (!response.ok)
+      throw new Error(`Failed to fetch deposits: ${response.status}`)
+
+    const responseData = (await response.json()) as Deposit[]
+
+    return responseData
   }
 }
 

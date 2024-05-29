@@ -21,7 +21,7 @@ export default function StakingErrorModal() {
   const [isServerError, setIsServerError] = useState(false)
 
   const onStakeBTCSuccess = useCallback(() => {
-    fetchDeposits()
+    logPromiseFailure(fetchDeposits())
     dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED))
   }, [dispatch, fetchDeposits])
 

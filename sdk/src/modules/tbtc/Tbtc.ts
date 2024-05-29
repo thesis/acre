@@ -1,11 +1,15 @@
 import { ChainIdentifier, TBTC as TbtcSdk } from "@keep-network/tbtc-v2.ts"
 
-import TbtcApi from "../../lib/api/TbtcApi"
+import { ethers } from "ethers"
+import TbtcApi, { DepositStatus } from "../../lib/api/TbtcApi"
 import { BitcoinDepositor } from "../../lib/contracts"
 import { EthereumNetwork } from "../../lib/ethereum"
+import {
+  Hex,
+  IEthereumSignerCompatibleWithEthersV5 as EthereumSignerCompatibleWithEthersV5,
+} from "../../lib/utils"
 
 import Deposit from "./Deposit"
-import { IEthereumSignerCompatibleWithEthersV5 as EthereumSignerCompatibleWithEthersV5 } from "../../lib/utils"
 
 /**
  * Represents the tBTC module.
@@ -110,5 +114,35 @@ export default class Tbtc {
       throw new Error("Reveal not saved properly in the database")
 
     return new Deposit(this.#tbtcApi, tbtcDeposit, revealData)
+  }
+
+  /**
+   * @param depositOwner Depositor as EVM-chain identifier.
+   * @returns All owner deposits, including queued deposits.
+   */
+  async getDepositsByOwner(depositOwner: ChainIdentifier): Promise<
+    {
+      txHash: string
+      depositKey: string
+      initialAmount: bigint
+      status: DepositStatus
+      timestamp: number
+    }[]
+  > {
+    const deposits = await this.#tbtcApi.getDepositsByOwner(depositOwner)
+
+    return deposits.map((deposit) => ({
+      status: deposit.status,
+      initialAmount: BigInt(deposit.initialAmount),
+      depositKey: ethers.solidityPackedKeccak256(
+        ["bytes32", "uint32"],
+        [
+          Hex.from(deposit.txHash).reverse().toPrefixedString(),
+          deposit.outputIndex,
+        ],
+      ),
+      txHash: deposit.txHash,
+      timestamp: deposit.createdAt,
+    }))
   }
 }
