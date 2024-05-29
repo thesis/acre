@@ -7,5 +7,6 @@ export * from "./useActionFlowType"
 export * from "./useActionFlowStatus"
 export * from "./useActionFlowActiveStep"
 export * from "./useActionFlowTokenAmount"
-// TODO: Rename when the old hook is deleted.
-export { useActivities as useActivitiesNEW } from "./useActivities"
+export * from "./useActionFlowTxHash"
+export * from "./useCompletedActivities"
+export * from "./useLatestActivities"

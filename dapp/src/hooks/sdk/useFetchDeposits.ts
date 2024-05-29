@@ -1,24 +1,27 @@
 import { useCallback } from "react"
-import { subgraphAPI } from "#/utils"
 import { setActivities } from "#/store/wallet"
+import { logPromiseFailure, subgraphAPI } from "#/utils"
 import { useAppDispatch } from "../store/useAppDispatch"
 import { useWalletContext } from "../useWalletContext"
 
 // TODO: Use the correct function from SDK
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const calculateEthAddress = (btcAddress: string) =>
-  "0x4c9e39e5ff458a811708c03aea21b8327118cf13"
+  "0x45e2e415989477ea5450e440405f6ac858019e6b"
 
-export function useFetchActivities() {
+export function useFetchDeposits() {
   const dispatch = useAppDispatch()
   const { btcAccount } = useWalletContext()
 
-  return useCallback(async () => {
+  const fetchDeposits = useCallback(async () => {
     if (!btcAccount) return
 
+    // TODO: Use function from the SDK.
     const ethAddress = calculateEthAddress(btcAccount.address)
     const result = await subgraphAPI.fetchActivityData(ethAddress)
 
     dispatch(setActivities(result))
   }, [btcAccount, dispatch])
+
+  return useCallback(() => logPromiseFailure(fetchDeposits()), [fetchDeposits])
 }

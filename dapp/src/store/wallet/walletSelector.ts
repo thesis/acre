@@ -1,5 +1,17 @@
-import { Activity } from "#/types"
+import { createSelector } from "@reduxjs/toolkit"
+import { isActivityCompleted, sortActivitiesByTimestamp } from "#/utils"
 import { RootState } from ".."
 
-export const selectActivities = (state: RootState): Activity[] =>
-  state.wallet.activities
+export const selectLatestActivities = createSelector(
+  (state: RootState) => state.wallet.latestActivities,
+  (latestActivities) =>
+    sortActivitiesByTimestamp(Object.values(latestActivities)),
+)
+
+export const selectCompletedActivities = createSelector(
+  (state: RootState) => state.wallet.activities,
+  (activities) =>
+    sortActivitiesByTimestamp(
+      activities.filter((activity) => isActivityCompleted(activity)),
+    ),
+)

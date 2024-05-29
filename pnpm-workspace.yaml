@@ -1,6 +1,5 @@
 packages:
   - solidity/
   - dapp/
-  - website/
   - sdk/
   - subgraph/

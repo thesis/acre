@@ -4,14 +4,23 @@ import { Activity, ActivityDataResponse } from "#/types"
 const ACRE_SUBGRAPH_URL = import.meta.env.VITE_ACRE_SUBGRAPH_URL
 
 const mapToActivity = (activityData: ActivityDataResponse): Activity => {
-  const { bitcoinTransactionId: txHash, amountToDeposit, events } = activityData
+  const {
+    id,
+    bitcoinTransactionId: txHash,
+    amountToDeposit,
+    events,
+  } = activityData
 
   const status = events.some(({ type }) => type === "Finalized")
     ? "completed"
     : "pending"
 
+  const timestamp = parseInt(events[0].timestamp, 10)
+
   return {
+    id,
     txHash,
+    timestamp,
     amount: BigInt(amountToDeposit),
     type: "deposit",
     status,
@@ -35,6 +44,7 @@ async function fetchActivityData(account: string): Promise<Activity[]> {
               id
               bitcoinTransactionId
               events {
+                timestamp,
                 type
               }
               ... on Deposit {

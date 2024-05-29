@@ -1,10 +1,11 @@
-import React, { useCallback } from "react"
+import React, { useCallback, useEffect } from "react"
 import {
   useActionFlowTokenAmount,
   useAppDispatch,
   useDepositBTCTransaction,
   useDepositTelemetry,
   useExecuteFunction,
+  useFetchDeposits,
   useStakeFlowContext,
   useToast,
 } from "#/hooks"
@@ -16,7 +17,7 @@ import Spinner from "#/components/shared/Spinner"
 import { TextMd } from "#/components/shared/Typography"
 import { CardAlert } from "#/components/shared/alerts"
 import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
-import { setStatus } from "#/store/action-flow"
+import { setStatus, setTxHash } from "#/store/action-flow"
 
 const DELAY = ONE_SEC_IN_MILLISECONDS
 const TOAST_ID = TOAST_IDS.DEPOSIT_TRANSACTION_ERROR
@@ -28,11 +29,12 @@ export default function DepositBTCModal() {
   const depositTelemetry = useDepositTelemetry()
   const { closeToast, openToast } = useToast()
   const dispatch = useAppDispatch()
+  const fetchDeposits = useFetchDeposits()
 
-  const onStakeBTCSuccess = useCallback(
-    () => dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED)),
-    [dispatch],
-  )
+  const onStakeBTCSuccess = useCallback(() => {
+    fetchDeposits()
+    dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED))
+  }, [dispatch, fetchDeposits])
 
   const onStakeBTCError = useCallback(() => {
     dispatch(setStatus(PROCESS_STATUSES.FAILED))
@@ -60,10 +62,16 @@ export default function DepositBTCModal() {
 
   const onDepositBTCError = useCallback(() => showError(), [showError])
 
-  const { sendBitcoinTransaction } = useDepositBTCTransaction(
+  const { sendBitcoinTransaction, transactionHash } = useDepositBTCTransaction(
     onDepositBTCSuccess,
     onDepositBTCError,
   )
+
+  useEffect(() => {
+    if (transactionHash) {
+      dispatch(setTxHash(transactionHash))
+    }
+  }, [dispatch, transactionHash])
 
   const handledDepositBTC = useCallback(async () => {
     if (!tokenAmount?.amount || !btcAddress || !depositReceipt) return

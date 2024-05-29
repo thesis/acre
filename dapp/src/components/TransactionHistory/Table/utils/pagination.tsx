@@ -19,6 +19,7 @@ export const PAGINATION_BUTTONS = [
   },
 ]
 
+// TODO: move to top level `utils` directory
 export const getPaginationState = (
   pageIndex: number,
   pageSize: number,

@@ -14,8 +14,14 @@ export type ActivityInfo = {
 }
 
 export type Activity = {
+  id: string
+  timestamp: number
   txHash: string
   amount: bigint
   type: "deposit" | "withdraw"
   status: "completed" | "pending"
+}
+
+export type ActivitiesByIds = {
+  [id: string]: Activity
 }
