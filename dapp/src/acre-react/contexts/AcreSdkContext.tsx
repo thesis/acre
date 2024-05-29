@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react"
-import { Acre, BitcoinNetwork } from "@acre-btc/sdk"
+import { Acre } from "@acre-btc/sdk"
 import { BitcoinProvider } from "@acre-btc/sdk/dist/src/lib/bitcoin/providers"
 import { BITCOIN_NETWORK } from "#/constants"
 
@@ -24,21 +24,12 @@ export function AcreSdkProvider({ children }: { children: React.ReactNode }) {
 
   const init = useCallback<AcreSdkContextValue["init"]>(
     async (bitcoinProvider: BitcoinProvider) => {
-      let sdk: Acre
-
-      if (BITCOIN_NETWORK === BitcoinNetwork.Mainnet) {
-        sdk = await Acre.initializeMainnet(
-          bitcoinProvider,
-          TBTC_API_ENDPOINT,
-          ETH_RPC_URL,
-        )
-      } else {
-        sdk = await Acre.initializeTestnet(
-          bitcoinProvider,
-          TBTC_API_ENDPOINT,
-          ETH_RPC_URL,
-        )
-      }
+      const sdk: Acre = await Acre.initialize(
+        BITCOIN_NETWORK,
+        bitcoinProvider,
+        TBTC_API_ENDPOINT,
+        ETH_RPC_URL,
+      )
 
       setAcre(sdk)
       setIsInitialized(true)

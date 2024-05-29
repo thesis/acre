@@ -19,7 +19,7 @@ class Acre {
 
   public readonly staking: StakingModule
 
-  constructor(
+  private constructor(
     contracts: AcreContracts,
     bitcoinProvider: BitcoinProvider,
     orangeKit: OrangeKitSdk,
@@ -37,42 +37,16 @@ class Acre {
     )
   }
 
-  static async initializeMainnet(
-    bitcoinProvider: BitcoinProvider,
-    tbtcApiUrl: string,
-    evmRpcUrl: string,
-  ) {
-    return Acre.#initialize(
-      BitcoinNetwork.Mainnet,
-      bitcoinProvider,
-      tbtcApiUrl,
-      evmRpcUrl,
-    )
-  }
-
-  static async initializeTestnet(
-    bitcoinProvider: BitcoinProvider,
-    tbtcApiUrl: string,
-    evmRpcUrl: string,
-  ) {
-    return Acre.#initialize(
-      BitcoinNetwork.Testnet,
-      bitcoinProvider,
-      tbtcApiUrl,
-      evmRpcUrl,
-    )
-  }
-
-  static async #initialize(
+  static async initialize(
     network: BitcoinNetwork,
     bitcoinProvider: BitcoinProvider,
     tbtcApiUrl: string,
-    rpcUrl: string,
+    evmRpcUrl: string,
   ) {
     const evmNetwork: EthereumNetwork =
       network === BitcoinNetwork.Testnet ? "sepolia" : "mainnet"
     const evmChainId = getChainIdByNetwork(evmNetwork)
-    const provider = getDefaultProvider(rpcUrl)
+    const provider = getDefaultProvider(evmRpcUrl)
 
     const providerChainId = (await provider.getNetwork()).chainId
     if (evmChainId !== providerChainId) {
@@ -81,7 +55,7 @@ class Acre {
       )
     }
 
-    const orangeKit = await OrangeKitSdk.init(Number(evmChainId), rpcUrl)
+    const orangeKit = await OrangeKitSdk.init(Number(evmChainId), evmRpcUrl)
 
     // TODO: Should we store this address in context so that we do not to
     // recalculate it when necessary?
