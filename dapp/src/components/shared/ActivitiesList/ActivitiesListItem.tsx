@@ -13,7 +13,6 @@ import {
   VStack,
   VisuallyHidden,
 } from "@chakra-ui/react"
-import { DepositStatus } from "@acre-btc/sdk"
 import { CurrencyBalance } from "../CurrencyBalance"
 import Spinner from "../Spinner"
 import BlockExplorerLink from "../BlockExplorerLink"
@@ -26,7 +25,7 @@ type ActivitiesListItemProps = Omit<AlertProps, "status"> &
 function ActivitiesListItem(props: ActivitiesListItemProps) {
   const { amount, status, txHash, type, handleDismiss, ...restProps } = props
 
-  const isCompleted = status === DepositStatus.Finalized
+  const isCompleted = status === "completed"
 
   return (
     <Alert as={HStack} variant="process" {...restProps}>
