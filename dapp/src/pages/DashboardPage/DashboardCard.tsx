@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+import React from "react"
 import { BoostArrowIcon } from "#/assets/icons"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import IconTag from "#/components/shared/IconTag"
@@ -16,6 +16,7 @@ import {
   Tag,
   VStack,
 } from "@chakra-ui/react"
+import { ActivitiesList } from "#/components/shared/ActivitiesList"
 import TransactionHistory from "./TransactionHistory"
 
 const buttonStyles: ButtonProps = {
@@ -94,6 +95,7 @@ export default function DashboardCard(props: DashboardCardProps) {
           </Button>
         </HStack>
 
+        <ActivitiesList />
         <TransactionHistory />
       </CardBody>
     </Card>
