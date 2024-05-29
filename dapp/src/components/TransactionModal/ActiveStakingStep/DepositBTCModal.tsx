@@ -8,7 +8,6 @@ import {
   useFetchDeposits,
   useStakeFlowContext,
   useToast,
-  useWalletContext,
 } from "#/hooks"
 import { logPromiseFailure } from "#/utils"
 import { PROCESS_STATUSES } from "#/types"
@@ -25,7 +24,6 @@ const TOAST_ID = TOAST_IDS.DEPOSIT_TRANSACTION_ERROR
 const TOAST = TOASTS[TOAST_ID]
 
 export default function DepositBTCModal() {
-  const { ethAccount } = useWalletContext()
   const tokenAmount = useActionFlowTokenAmount()
   const { btcAddress, depositReceipt, stake } = useStakeFlowContext()
   const depositTelemetry = useDepositTelemetry()
@@ -76,14 +74,9 @@ export default function DepositBTCModal() {
   }, [dispatch, transactionHash])
 
   const handledDepositBTC = useCallback(async () => {
-    if (!tokenAmount?.amount || !btcAddress || !depositReceipt || !ethAccount)
-      return
+    if (!tokenAmount?.amount || !btcAddress || !depositReceipt) return
 
-    const response = await depositTelemetry(
-      depositReceipt,
-      btcAddress,
-      ethAccount,
-    )
+    const response = await depositTelemetry(depositReceipt, btcAddress)
 
     if (response.verificationStatus === "valid") {
       logPromiseFailure(sendBitcoinTransaction(tokenAmount?.amount, btcAddress))
@@ -94,7 +87,6 @@ export default function DepositBTCModal() {
     btcAddress,
     depositReceipt,
     depositTelemetry,
-    ethAccount,
     sendBitcoinTransaction,
     showError,
     tokenAmount?.amount,

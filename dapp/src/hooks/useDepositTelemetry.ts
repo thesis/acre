@@ -8,11 +8,7 @@ export function useDepositTelemetry() {
   const captureMessage = useCaptureMessage()
 
   return useCallback(
-    async (
-      deposit: DepositReceipt,
-      depositAddress: string,
-      ethAddress: string,
-    ) => {
+    async (deposit: DepositReceipt, depositAddress: string) => {
       const { status, response } = await verifyDepositAddress(
         deposit,
         depositAddress,
@@ -43,7 +39,6 @@ export function useDepositTelemetry() {
           verificationResponse: response,
         },
         {
-          ethAddress,
           ...verificationStatus,
         },
       )
