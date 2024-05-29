@@ -17,7 +17,7 @@ import {
 } from "#/components/shared/Pagination"
 import { TextMd, TextSm } from "#/components/shared/Typography"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
-import emptyStateIlustration from "#/assets/images/empty-state.png"
+import emptyStateIllustration from "#/assets/images/empty-state.png"
 import { displayBlockTimestamp } from "#/utils"
 import { Activity } from "#/types"
 import BlockExplorerLink from "#/components/shared/BlockExplorerLink"
@@ -35,7 +35,7 @@ export default function TransactionHistory(props: StackProps) {
 
       {completedActivities.length === 0 ? (
         <VStack>
-          <Image src={emptyStateIlustration} alt="" opacity={0.3} />
+          <Image src={emptyStateIllustration} alt="" opacity={0.3} />
           <TextMd color="grey.400">You have no transactions yet!</TextMd>
         </VStack>
       ) : (
