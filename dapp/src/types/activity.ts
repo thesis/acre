@@ -19,8 +19,8 @@ export type Activity = {
   timestamp: number
   txHash: string
   amount: bigint
-  status: DepositStatus
-  type?: "deposit" | "withdraw"
+  status: Exclude<ActivityInfoStatus, "syncing">
+  type: "deposit" | "withdraw"
 }
 
 export type ActivitiesByIds = {
