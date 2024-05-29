@@ -1,3 +1,5 @@
+// TODO: This is just a temporary interface that should be replaced by the
+// `OrangeKitBitcoinWalletProvider` from the `orangekit` library.
 /**
  * Interface for communication with Bitcoin Wallet.
  */
