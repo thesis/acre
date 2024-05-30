@@ -7,38 +7,37 @@ import {
   VStack,
   Image,
   Box,
+  ImageProps,
 } from "@chakra-ui/react"
 import { H5, TextLg, TextMd, TextSm } from "#/components/shared/Typography"
-import boostCardIcon from "#/assets/images/rewards-boost.svg"
-import mysteryCardIcon from "#/assets/images/mystery-box.svg"
-import keyCardIcon from "#/assets/images/season-key.svg"
 import { useModal } from "#/hooks"
 import confettiGif from "#/assets/gifs/confetti.gif"
+import { REWARD_BOOST, SEASON_KEY, MYSTERY_BOX } from "#/constants"
 import withBaseModal from "./ModalRoot/withBaseModal"
 
-const BENEFITS = [
+const BENEFITS: { name: string; description: string; props: ImageProps }[] = [
   {
-    label: "Rewards Boost",
-    description: "Boosts your APY when Acre fully launches",
+    name: REWARD_BOOST.name,
+    description: REWARD_BOOST.description,
     props: {
-      src: boostCardIcon,
+      src: REWARD_BOOST.imageSrc,
       top: "22%",
       maxW: 28,
     },
   },
   {
-    label: "All Seasons Access Key",
-    description: "First dibs access to upcoming seasons",
+    name: SEASON_KEY.name,
+    description: SEASON_KEY.description,
     props: {
-      src: keyCardIcon,
+      src: SEASON_KEY.imageSrc,
       maxW: 32,
     },
   },
   {
-    label: "Season 1 Mystery Box",
-    description: "A surprise gift for the early birds",
+    name: MYSTERY_BOX.name,
+    description: MYSTERY_BOX.description,
     props: {
-      src: mysteryCardIcon,
+      src: MYSTERY_BOX.imageSrc,
       maxW: 28,
       top: "33%",
     },
@@ -47,7 +46,6 @@ const BENEFITS = [
 
 function WelcomeModalBase() {
   const { closeModal } = useModal()
-
   const handleCloseModal = () => {
     closeModal()
   }
@@ -68,7 +66,7 @@ function WelcomeModalBase() {
         justifyContent="center"
         alignItems="flex-start"
       >
-        {BENEFITS.map(({ label, description, props }) => (
+        {BENEFITS.map(({ name, description, props }) => (
           <VStack w="13.25rem">
             <Box
               w="100%"
@@ -83,7 +81,7 @@ function WelcomeModalBase() {
             />
             <Image position="absolute" {...props} />
             <TextLg fontWeight="bold" color="grey.700">
-              {label}
+              {name}
             </TextLg>
             <TextSm px={1} color="grey.600">
               {description}
