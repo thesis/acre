@@ -69,4 +69,15 @@ const baseStyle = multiStyleConfig.definePartsStyle({
   footer: baseStyleFooter,
 })
 
-export const modalTheme = multiStyleConfig.defineMultiStyleConfig({ baseStyle })
+const sizeXl = multiStyleConfig.definePartsStyle({
+  dialog: { maxW: "46.75rem" },
+})
+
+const sizes = {
+  xl: sizeXl,
+}
+
+export const modalTheme = multiStyleConfig.defineMultiStyleConfig({
+  baseStyle,
+  sizes,
+})
