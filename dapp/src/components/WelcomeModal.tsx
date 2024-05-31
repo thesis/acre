@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react"
 import { H5, TextLg, TextMd, TextSm } from "#/components/shared/Typography"
 import { useModal } from "#/hooks"
-import confettiGif from "#/assets/gifs/confetti.gif"
+import confettiWebp from "#/assets/webps/confetti.webp"
 import { BENEFITS } from "#/constants"
 import withBaseModal from "./ModalRoot/withBaseModal"
 
@@ -48,7 +48,7 @@ function WelcomeModalBase() {
               h="7.5rem" // 120px
               border="1px solid white"
               borderRadius="xl"
-              bgImage={confettiGif}
+              bgImage={confettiWebp}
               bgSize="cover"
               bgBlendMode="multiply"
               bgColor="gold.200"
