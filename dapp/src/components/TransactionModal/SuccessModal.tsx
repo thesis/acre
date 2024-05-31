@@ -1,4 +1,4 @@
-import React from "react"
+import React, { ReactNode } from "react"
 import {
   Button,
   HStack,
@@ -9,9 +9,13 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { LoadingSpinnerSuccessIcon } from "#/assets/icons"
-import { useModal } from "#/hooks"
+import {
+  useActionFlowTokenAmount,
+  useActionFlowTxHash,
+  useModal,
+} from "#/hooks"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
-import { ACTION_FLOW_TYPES, ActionFlowType, TokenAmount } from "#/types"
+import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
 import { useNavigate } from "react-router-dom"
 import { routerPath } from "#/router/path"
 import { IconArrowUpRight } from "@tabler/icons-react"
@@ -19,18 +23,13 @@ import { TextMd } from "../shared/Typography"
 import Spinner from "../shared/Spinner"
 import BlockExplorerLink from "../shared/BlockExplorerLink"
 
-const CONTENT: Record<
-  ActionFlowType,
-  {
-    header: string
-    renderBody: (tokenAmount: TokenAmount, txHash: string) => React.ReactNode
-    footer: string
-  }
-> = {
-  [ACTION_FLOW_TYPES.STAKE]: {
-    header: "Deposit received",
-    renderBody: (tokenAmount, txHash) => (
-      <>
+function StakeContent() {
+  const tokenAmount = useActionFlowTokenAmount()
+  const txHash = useActionFlowTxHash()
+
+  return (
+    <>
+      {tokenAmount && (
         <VStack spacing={0}>
           <CurrencyBalanceWithConversion
             from={{
@@ -46,7 +45,9 @@ const CONTENT: Record<
             }}
           />
         </VStack>
-        {/* TODO: Update styles */}
+      )}
+      {/* TODO: Update styles */}
+      {txHash && (
         <BlockExplorerLink
           id={txHash}
           type="transaction"
@@ -58,45 +59,53 @@ const CONTENT: Record<
             <Icon as={IconArrowUpRight} color="brand.400" boxSize={5} />
           </HStack>
         </BlockExplorerLink>
-      </>
-    ),
+      )}
+    </>
+  )
+}
+
+function UnstakeContent() {
+  return (
+    <TextMd>
+      You’ll receive your funds once the unstaking process is completed. Follow
+      the progress in your dashboard.
+    </TextMd>
+  )
+}
+
+const CONTENT: Record<
+  ActionFlowType,
+  {
+    heading: string
+    footer: string
+    renderComponent: () => ReactNode
+  }
+> = {
+  [ACTION_FLOW_TYPES.STAKE]: {
+    heading: "Deposit received",
+    renderComponent: StakeContent,
     footer: "The staking will continue in the background",
   },
   [ACTION_FLOW_TYPES.UNSTAKE]: {
-    header: "Withdrawal initiated",
-    renderBody: () => (
-      <TextMd>
-        You’ll receive your funds once the unstaking process is completed.
-        Follow the progress in your dashboard.
-      </TextMd>
-    ),
+    heading: "Withdrawal initiated",
+    renderComponent: UnstakeContent,
     footer: "The unstaking will continue in the background",
   },
 }
 
-type SuccessModalProps = {
-  type: ActionFlowType
-  tokenAmount: TokenAmount
-  txHash: string
-}
-
-export default function SuccessModal({
-  type,
-  tokenAmount,
-  txHash,
-}: SuccessModalProps) {
+export default function SuccessModal({ type }: { type: ActionFlowType }) {
   const { closeModal } = useModal()
   const navigate = useNavigate()
 
-  const { header, footer, renderBody } = CONTENT[type]
+  const { heading, footer, renderComponent } = CONTENT[type]
 
   return (
     <>
-      <ModalHeader>{header}</ModalHeader>
+      <ModalHeader>{heading}</ModalHeader>
       <ModalBody gap={10}>
         <VStack gap={4}>
           <LoadingSpinnerSuccessIcon boxSize={20} />
-          {renderBody(tokenAmount, txHash)}
+          {renderComponent()}
         </VStack>
       </ModalBody>
       <ModalFooter pt={0}>
