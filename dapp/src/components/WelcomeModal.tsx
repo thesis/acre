@@ -70,10 +70,11 @@ function WelcomeModalBase() {
         alignItems="flex-start"
       >
         {BENEFITS.map(({ name, description, props }) => (
+          //  13.25rem -> 212px
           <VStack key={name} w="13.25rem">
             <Box
               w="100%"
-              h="7.5rem"
+              h="7.5rem" // 120px
               border="1px solid white"
               borderRadius="xl"
               bgImage={confettiGif}
@@ -95,7 +96,7 @@ function WelcomeModalBase() {
       <ModalFooter>
         <Button
           size="lg"
-          w="13.25rem"
+          w="13.25rem" // 212px
           fontWeight="bold"
           onClick={handleCloseModal}
         >
