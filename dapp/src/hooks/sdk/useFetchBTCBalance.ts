@@ -15,7 +15,7 @@ export function useFetchBTCBalance() {
     const getBtcBalance = async () => {
       if (!isInitialized || !ethAccount || !acre) return
 
-      const chainIdentifier = EthereumAddress.from(ethAccount.address)
+      const chainIdentifier = EthereumAddress.from(ethAccount)
       const sharesBalance = await acre.staking.sharesBalance(chainIdentifier)
       const estimatedBitcoinBalance =
         await acre.staking.estimatedBitcoinBalance(chainIdentifier)

@@ -1,3 +1,4 @@
 export * from "./transaction"
-export * from "./network"
+export { default as BitcoinNetwork } from "./network"
 export * from "./address"
+export * from "./providers"

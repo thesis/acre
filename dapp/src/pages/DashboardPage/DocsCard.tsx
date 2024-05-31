@@ -23,7 +23,7 @@ export function DocsCard(props: CardProps) {
       {...props}
     >
       <HStack mb={5}>
-        <ArrowUpRightAnimatedIcon />
+        <ArrowUpRightAnimatedIcon color="brand.400" />
         <TextSm fontWeight="semibold">Documentation</TextSm>
       </HStack>
       <TextSm>Everything you need to know about our contracts.</TextSm>

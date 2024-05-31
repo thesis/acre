@@ -1,6 +1,6 @@
 import React, { ReactNode, useCallback, useState } from "react"
 import { Box, ModalBody, ModalCloseButton, ModalHeader } from "@chakra-ui/react"
-import { useAppDispatch, useStakeFlowContext, useWalletContext } from "#/hooks"
+import { useAppDispatch, useStakeFlowContext } from "#/hooks"
 import { ACTION_FLOW_TYPES, ActionFlowType, BaseFormProps } from "#/types"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { logPromiseFailure } from "#/utils"
@@ -26,7 +26,6 @@ const FORM_DATA: Record<
 }
 
 function ActionFormModal({ type }: { type: ActionFlowType }) {
-  const { btcAccount, ethAccount } = useWalletContext()
   const { initStake } = useStakeFlowContext()
   const dispatch = useAppDispatch()
 
@@ -35,13 +34,8 @@ function ActionFormModal({ type }: { type: ActionFlowType }) {
   const { heading, renderComponent } = FORM_DATA[type]
 
   const handleInitStake = useCallback(async () => {
-    const btcAddress = btcAccount?.address
-    const ethAddress = ethAccount?.address
-
-    if (btcAddress && ethAddress) {
-      await initStake(btcAddress, ethAddress)
-    }
-  }, [btcAccount?.address, ethAccount?.address, initStake])
+    await initStake()
+  }, [initStake])
 
   const handleSubmitForm = useCallback(
     async (values: TokenAmountFormValues) => {

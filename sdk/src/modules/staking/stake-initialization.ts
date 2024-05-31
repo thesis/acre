@@ -3,13 +3,13 @@ import TbtcDeposit from "../tbtc/Deposit"
 import type { DepositReceipt } from "."
 
 import {
-  ChainEIP712Signer,
   ChainSignedMessage,
   Domain,
   Message,
   Types,
 } from "../../lib/eip712-signer"
 import { AcreContracts, ChainIdentifier } from "../../lib/contracts"
+import { BitcoinProvider } from "../../lib/bitcoin/providers"
 
 /**
  * Represents an instance of the staking flow. Staking flow requires a few steps
@@ -22,9 +22,9 @@ class StakeInitialization {
   readonly #contracts: AcreContracts
 
   /**
-   * Typed structured data signer.
+   * Bitcoin wallet provider.
    */
-  readonly #messageSigner: ChainEIP712Signer
+  readonly #bitcoinProvider: BitcoinProvider
 
   /**
    * Component representing an instance of the tBTC deposit process.
@@ -51,13 +51,13 @@ class StakeInitialization {
 
   constructor(
     _contracts: AcreContracts,
-    _messageSigner: ChainEIP712Signer,
+    _bitcoinProvider: BitcoinProvider,
     _bitcoinRecoveryAddress: string,
     _staker: ChainIdentifier,
     _tbtcDeposit: TbtcDeposit,
   ) {
     this.#contracts = _contracts
-    this.#messageSigner = _messageSigner
+    this.#bitcoinProvider = _bitcoinProvider
     this.#staker = _staker
     this.#bitcoinRecoveryAddress = _bitcoinRecoveryAddress
     this.#tbtcDeposit = _tbtcDeposit
@@ -85,18 +85,19 @@ class StakeInitialization {
    * @dev Use this function as a second step of the staking flow. Signed message
    *      is required to stake BTC.
    */
-  async signMessage() {
-    const { domain, types, message } = this.#getStakeMessageTypedData()
+  signMessage() {
+    // TODO: Add `signMessage` to the `BitcoinProvider` and use it.
+    // const { domain, types, message } = this.#getStakeMessageTypedData()
 
-    const signedMessage = await this.#messageSigner.sign(domain, types, message)
+    // const signedMessage = await this.#messageSigner.sign(domain, types, message)
 
-    const addressFromSignature = signedMessage.verify()
+    // const addressFromSignature = signedMessage.verify()
 
-    if (!this.#staker.equals(addressFromSignature)) {
-      throw new Error("Invalid staker address")
-    }
+    // if (!this.#staker.equals(addressFromSignature)) {
+    //   throw new Error("Invalid staker address")
+    // }
 
-    this.#signedMessage = signedMessage
+    this.#signedMessage = {} as ChainSignedMessage
   }
 
   /**
@@ -142,9 +143,9 @@ class StakeInitialization {
    * @returns Transaction hash of the stake initiation transaction.
    */
   async stake(options = { retries: 5, backoffStepMs: 5_000 }): Promise<string> {
-    if (!this.#signedMessage) {
-      throw new Error("Sign message first")
-    }
+    // if (!this.#signedMessage) {
+    //   throw new Error("Sign message first")
+    // }
 
     await this.#tbtcDeposit.waitForFunding(options)
 

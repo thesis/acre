@@ -10,8 +10,7 @@
     "rootDirs": ["src", "test"],
     "esModuleInterop": true,
     "moduleResolution": "Bundler",
-    "resolveJsonModule": true,
-    "skipLibCheck": true
+    "resolveJsonModule": true
   },
-  "include": ["src", "test", "jest.config.js"]
+  "include": ["src", "test", "src/typings.d.ts", "jest.config.js"]
 }

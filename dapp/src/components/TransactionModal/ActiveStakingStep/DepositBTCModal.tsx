@@ -1,4 +1,4 @@
-import React, { useCallback } from "react"
+import React, { useCallback, useEffect } from "react"
 import {
   useActionFlowTokenAmount,
   useAppDispatch,
@@ -8,7 +8,6 @@ import {
   useFetchDeposits,
   useStakeFlowContext,
   useToast,
-  useWalletContext,
 } from "#/hooks"
 import { logPromiseFailure } from "#/utils"
 import { PROCESS_STATUSES } from "#/types"
@@ -18,14 +17,13 @@ import Spinner from "#/components/shared/Spinner"
 import { TextMd } from "#/components/shared/Typography"
 import { CardAlert } from "#/components/shared/alerts"
 import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
-import { setStatus } from "#/store/action-flow"
+import { setStatus, setTxHash } from "#/store/action-flow"
 
 const DELAY = ONE_SEC_IN_MILLISECONDS
 const TOAST_ID = TOAST_IDS.DEPOSIT_TRANSACTION_ERROR
 const TOAST = TOASTS[TOAST_ID]
 
 export default function DepositBTCModal() {
-  const { ethAccount } = useWalletContext()
   const tokenAmount = useActionFlowTokenAmount()
   const { btcAddress, depositReceipt, stake } = useStakeFlowContext()
   const depositTelemetry = useDepositTelemetry()
@@ -34,7 +32,7 @@ export default function DepositBTCModal() {
   const fetchDeposits = useFetchDeposits()
 
   const onStakeBTCSuccess = useCallback(() => {
-    fetchDeposits()
+    logPromiseFailure(fetchDeposits())
     dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED))
   }, [dispatch, fetchDeposits])
 
@@ -64,20 +62,21 @@ export default function DepositBTCModal() {
 
   const onDepositBTCError = useCallback(() => showError(), [showError])
 
-  const { sendBitcoinTransaction } = useDepositBTCTransaction(
+  const { sendBitcoinTransaction, transactionHash } = useDepositBTCTransaction(
     onDepositBTCSuccess,
     onDepositBTCError,
   )
 
-  const handledDepositBTC = useCallback(async () => {
-    if (!tokenAmount?.amount || !btcAddress || !depositReceipt || !ethAccount)
-      return
+  useEffect(() => {
+    if (transactionHash) {
+      dispatch(setTxHash(transactionHash))
+    }
+  }, [dispatch, transactionHash])
 
-    const response = await depositTelemetry(
-      depositReceipt,
-      btcAddress,
-      ethAccount.address,
-    )
+  const handledDepositBTC = useCallback(async () => {
+    if (!tokenAmount?.amount || !btcAddress || !depositReceipt) return
+
+    const response = await depositTelemetry(depositReceipt, btcAddress)
 
     if (response.verificationStatus === "valid") {
       logPromiseFailure(sendBitcoinTransaction(tokenAmount?.amount, btcAddress))
@@ -88,7 +87,6 @@ export default function DepositBTCModal() {
     btcAddress,
     depositReceipt,
     depositTelemetry,
-    ethAccount,
     sendBitcoinTransaction,
     showError,
     tokenAmount?.amount,

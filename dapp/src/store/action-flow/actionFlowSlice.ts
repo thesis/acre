@@ -12,6 +12,7 @@ type ActionFlowState = {
   activeStep: number
   status: ProcessStatus
   tokenAmount?: TokenAmount
+  txHash?: string
 }
 
 const initialState: ActionFlowState = {
@@ -19,6 +20,7 @@ const initialState: ActionFlowState = {
   activeStep: 1,
   status: PROCESS_STATUSES.IDLE,
   tokenAmount: undefined,
+  txHash: undefined,
 }
 
 export const actionFlowSlice = createSlice({
@@ -37,6 +39,9 @@ export const actionFlowSlice = createSlice({
     setTokenAmount(state, action: PayloadAction<TokenAmount | undefined>) {
       state.tokenAmount = action.payload
     },
+    setTxHash(state, action: PayloadAction<string | undefined>) {
+      state.txHash = action.payload
+    },
     goNextStep(state) {
       state.activeStep += 1
     },
@@ -45,9 +50,16 @@ export const actionFlowSlice = createSlice({
       state.activeStep = initialState.activeStep
       state.status = initialState.status
       state.tokenAmount = initialState.tokenAmount
+      state.txHash = initialState.txHash
     },
   },
 })
 
-export const { setType, setStatus, setTokenAmount, goNextStep, resetState } =
-  actionFlowSlice.actions
+export const {
+  setType,
+  setStatus,
+  setTokenAmount,
+  setTxHash,
+  goNextStep,
+  resetState,
+} = actionFlowSlice.actions

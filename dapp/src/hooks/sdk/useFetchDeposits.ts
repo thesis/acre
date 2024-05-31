@@ -1,27 +1,26 @@
 import { useCallback } from "react"
 import { setActivities } from "#/store/wallet"
-import { logPromiseFailure, subgraphAPI } from "#/utils"
+import { useAcreContext } from "#/acre-react/hooks"
+import { Activity } from "#/types"
+import { DepositStatus } from "@acre-btc/sdk"
 import { useAppDispatch } from "../store/useAppDispatch"
-import { useWalletContext } from "../useWalletContext"
-
-// TODO: Use the correct function from SDK
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const calculateEthAddress = (btcAddress: string) =>
-  "0x45e2e415989477ea5450e440405f6ac858019e6b"
 
 export function useFetchDeposits() {
   const dispatch = useAppDispatch()
-  const { btcAccount } = useWalletContext()
+  const { acre } = useAcreContext()
 
-  const fetchDeposits = useCallback(async () => {
-    if (!btcAccount) return
+  return useCallback(async () => {
+    if (!acre) return
 
-    // TODO: Use function from the SDK.
-    const ethAddress = calculateEthAddress(btcAccount.address)
-    const result = await subgraphAPI.fetchActivityData(ethAddress)
+    const result: Activity[] = (await acre.staking.getDeposits()).map(
+      (deposit) => ({
+        ...deposit,
+        status:
+          deposit.status === DepositStatus.Finalized ? "completed" : "pending",
+        type: "deposit",
+      }),
+    )
 
     dispatch(setActivities(result))
-  }, [btcAccount, dispatch])
-
-  return useCallback(() => logPromiseFailure(fetchDeposits()), [fetchDeposits])
+  }, [acre, dispatch])
 }
