@@ -7,42 +7,12 @@ import {
   VStack,
   Image,
   Box,
-  ImageProps,
 } from "@chakra-ui/react"
 import { H5, TextLg, TextMd, TextSm } from "#/components/shared/Typography"
 import { useModal } from "#/hooks"
 import confettiGif from "#/assets/gifs/confetti.gif"
-import { REWARD_BOOST, SEASON_KEY, MYSTERY_BOX } from "#/constants"
+import { BENEFITS } from "#/constants"
 import withBaseModal from "./ModalRoot/withBaseModal"
-
-const BENEFITS: { name: string; description: string; props: ImageProps }[] = [
-  {
-    name: REWARD_BOOST.name,
-    description: REWARD_BOOST.description,
-    props: {
-      src: REWARD_BOOST.imageSrc,
-      top: "22%",
-      maxW: 28,
-    },
-  },
-  {
-    name: SEASON_KEY.name,
-    description: SEASON_KEY.description,
-    props: {
-      src: SEASON_KEY.imageSrc,
-      maxW: 32,
-    },
-  },
-  {
-    name: MYSTERY_BOX.name,
-    description: MYSTERY_BOX.description,
-    props: {
-      src: MYSTERY_BOX.imageSrc,
-      maxW: 28,
-      top: "33%",
-    },
-  },
-]
 
 function WelcomeModalBase() {
   const { closeModal } = useModal()
@@ -68,8 +38,9 @@ function WelcomeModalBase() {
         gap={4}
         justifyContent="center"
         alignItems="flex-start"
+        overflow="visible"
       >
-        {BENEFITS.map(({ name, description, props }) => (
+        {BENEFITS.map(({ name, description, imageSrc }) => (
           //  13.25rem -> 212px
           <VStack key={name} w="13.25rem">
             <Box
@@ -81,9 +52,15 @@ function WelcomeModalBase() {
               bgSize="cover"
               bgBlendMode="multiply"
               bgColor="gold.200"
-              position="relative"
-            />
-            <Image position="absolute" {...props} />
+              display="flex"
+              alignItems="flex-end"
+            >
+              <Image
+                src={imageSrc}
+                maxW="7.5rem" // 120px
+                mx="auto"
+              />
+            </Box>
             <TextLg fontWeight="bold" color="grey.700">
               {name}
             </TextLg>
