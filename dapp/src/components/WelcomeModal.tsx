@@ -52,13 +52,16 @@ function WelcomeModalBase() {
 
   return (
     <>
-      <ModalHeader>
-        <VStack gap={3}>
-          <H5 color="brand.400" fontWeight="semibold">
-            Welcome to your dashboard!
-          </H5>
-          <TextMd color="grey.600">It is time to stack up the rewards!</TextMd>
-        </VStack>
+      <ModalHeader
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        gap={3}
+      >
+        <H5 color="brand.400" fontWeight="semibold">
+          Welcome to your dashboard!
+        </H5>
+        <TextMd color="grey.600">It is time to stack up the rewards!</TextMd>
       </ModalHeader>
       <ModalBody
         flexDirection="row"
