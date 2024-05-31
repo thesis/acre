@@ -67,7 +67,7 @@ function WelcomeModalBase() {
         alignItems="flex-start"
       >
         {BENEFITS.map(({ name, description, props }) => (
-          <VStack w="13.25rem">
+          <VStack key={name} w="13.25rem">
             <Box
               w="100%"
               h="7.5rem"
