@@ -21,10 +21,10 @@ const BUTTONS = [
 ]
 
 const BENEFITS = [
-  { name: `1x ${REWARD_BOOST.name}`, src: rewardsBoostArrowImage },
-  { name: `1x ${MYSTERY_BOX.name}`, src: MYSTERY_BOX.imageSrc },
-  { name: "1x Season Key", src: SEASON_KEY.imageSrc },
-]
+  { ...REWARD_BOOST, imageSrc: rewardsBoostArrowImage },
+  MYSTERY_BOX,
+  SEASON_KEY,
+].map((benefit) => ({ ...benefit, name: `1x ${benefit.name}` }))
 
 export default function Sidebar() {
   const { isOpen } = useSidebar()
@@ -42,7 +42,7 @@ export default function Sidebar() {
         <TextSm fontWeight="bold">Rewards you’ll unlock</TextSm>
 
         <Flex mt={2} mb={7} flexDir="column" gap={2}>
-          {BENEFITS.map(({ name, src }) => (
+          {BENEFITS.map(({ name, imageSrc }) => (
             <Card
               key={name}
               bg="gold.300"
@@ -58,7 +58,7 @@ export default function Sidebar() {
                 px={4}
               >
                 <TextSm fontWeight="semibold">{name}</TextSm>
-                <Image src={src} boxSize="3.75rem" />
+                <Image src={imageSrc} boxSize="3.75rem" />
               </CardBody>
             </Card>
           ))}
