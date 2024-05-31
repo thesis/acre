@@ -10,9 +10,9 @@ function UnstakeDetails({ currency }: { currency: CurrencyType }) {
   const details = useTransactionDetails(value ?? 0n)
 
   return (
-    <List spacing={3} mt={10}>
+    <List spacing={3}>
       <TransactionDetailsAmountItem
-        label="Amount to be unstaked from the pool"
+        label="Withdraw from pool"
         from={{
           currency,
           amount: details?.btcAmount,
@@ -35,7 +35,7 @@ function UnstakeDetails({ currency }: { currency: CurrencyType }) {
         }}
       /> */}
       <TransactionDetailsAmountItem
-        label="Approximately unstaked tokens"
+        label="You will receive"
         from={{
           currency,
           amount: details?.estimatedAmount,

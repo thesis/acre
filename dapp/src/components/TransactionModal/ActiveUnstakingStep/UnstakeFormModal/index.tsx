@@ -1,52 +1,47 @@
 import React from "react"
-import { Card, CardBody, Flex, HStack } from "@chakra-ui/react"
+import { Flex, Highlight } from "@chakra-ui/react"
 import TokenAmountForm from "#/components/shared/TokenAmountForm"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
-import { TextMd, TextSm } from "#/components/shared/Typography"
-import Spinner from "#/components/shared/Spinner"
+import { TextMd } from "#/components/shared/Typography"
 import { FormSubmitButton } from "#/components/shared/Form"
-import { useMinDepositAmount } from "#/hooks"
 import { BaseFormProps } from "#/types"
+import { CardAlert } from "#/components/shared/alerts"
+import { MINIMUM_WITHDRAW_AMOUNT } from "#/constants"
+import { useEstimatedBTCBalance } from "#/hooks"
+import { formatSatoshiAmount } from "#/utils"
 import UnstakeDetails from "./UnstakeDetails"
-
-// TODO: Use a position amount
-const MOCK_POSITION_AMOUNT = BigInt("2398567898")
 
 function UnstakeFormModal({
   onSubmitForm,
 }: BaseFormProps<TokenAmountFormValues>) {
-  const minDepositAmount = useMinDepositAmount()
+  const balance = useEstimatedBTCBalance()
+  const minimumBalanceText = `${formatSatoshiAmount(
+    MINIMUM_WITHDRAW_AMOUNT,
+  )} BTC `
 
   return (
     <TokenAmountForm
       tokenBalanceInputPlaceholder="BTC"
       currency="bitcoin"
-      tokenBalance={MOCK_POSITION_AMOUNT}
-      minTokenAmount={minDepositAmount}
+      fiatCurrency="usd"
+      tokenBalance={balance}
+      minTokenAmount={MINIMUM_WITHDRAW_AMOUNT}
       onSubmitForm={onSubmitForm}
     >
-      <Flex flexDirection="column" gap={10}>
+      <Flex flexDirection="column" gap={10} mt={4}>
+        <CardAlert>
+          <TextMd>
+            <Highlight
+              query={minimumBalanceText}
+              styles={{ fontWeight: "bold" }}
+            >
+              {`A minimum balance of ${minimumBalanceText} is required to keep all rewards active.`}
+            </Highlight>
+          </TextMd>
+        </CardAlert>
         <UnstakeDetails currency="bitcoin" />
-        <Card textAlign="start">
-          <CardBody py={4} px={5}>
-            <HStack justifyContent="space-between">
-              <TextMd fontWeight="bold">Next batch starts in...</TextMd>
-              <HStack>
-                {/* TODO: Use a correct time for batch */}
-                <TextMd fontWeight="bold" color="brand.400">
-                  23h 34m left
-                </TextMd>
-                <Spinner />
-              </HStack>
-            </HStack>
-            <TextSm mt={4}>
-              Extra informative text. Maximize your earnings by using tBTC to
-              deposit and redeem BTC in DeFi!
-            </TextSm>
-          </CardBody>
-        </Card>
       </Flex>
-      <FormSubmitButton mt={10}>Unstake</FormSubmitButton>
+      <FormSubmitButton mt={10}>Withdraw</FormSubmitButton>
     </TokenAmountForm>
   )
 }
