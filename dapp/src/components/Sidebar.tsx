@@ -44,7 +44,7 @@ export default function Sidebar() {
       __css={styles.sidebarContainer}
     >
       <Box __css={styles.sidebar}>
-        {featureFlags.SUPPORT_GAMIFICATION && (
+        {featureFlags.GAMIFICATION_ENABLED && (
           <>
             <TextSm fontWeight="bold">Rewards you’ll unlock</TextSm>
             <Flex mt={2} mb={7} flexDir="column" gap={2}>

@@ -103,7 +103,7 @@ export default function SuccessModal({
     closeModal()
     navigate(routerPath.dashboard)
 
-    if (featureFlags.SUPPORT_GAMIFICATION) {
+    if (featureFlags.GAMIFICATION_ENABLED) {
       // TODO: Temporary solution - Showing the welcome window should be done
       // only once a season for new users. "New" can also refer to users who,
       // in the past, may have deposited but withdrew their funds, losing their rewards.

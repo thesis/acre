@@ -1,6 +1,6 @@
-const SUPPORT_GAMIFICATION =
-  import.meta.env.VITE_FEATURE_FLAG_SUPPORT_GAMIFICATION === "true"
+const GAMIFICATION_ENABLED =
+  import.meta.env.VITE_FEATURE_FLAG_GAMIFICATION_ENABLED === "true"
 
 export const featureFlags = {
-  SUPPORT_GAMIFICATION,
+  GAMIFICATION_ENABLED,
 }
