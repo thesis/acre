@@ -40,6 +40,7 @@ export default function Sidebar() {
       __css={styles.sidebarContainer}
     >
       <Box __css={styles.sidebar}>
+        {/* TODO: Update the component when logic of losing rewards is ready */}
         <TextSm fontWeight="bold">Rewards you’ll unlock</TextSm>
 
         <Flex mt={2} mb={7} flexDir="column" gap={2}>
