@@ -6,6 +6,7 @@ interface ImportMetaEnv {
   readonly VITE_REFERRAL: number
   readonly VITE_TBTC_API_ENDPOINT: string
   readonly VITE_TBTC_API_ENDPOINT: string
+  readonly VITE_FEATURE_FLAG_SUPPORT_GAMIFICATION: string
 }
 
 interface ImportMeta {
