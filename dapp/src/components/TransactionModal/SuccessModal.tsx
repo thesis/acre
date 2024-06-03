@@ -13,12 +13,15 @@ import {
   useActionFlowTokenAmount,
   useActionFlowTxHash,
   useModal,
+  useAllActivitiesCount,
+  useFetchDeposits,
 } from "#/hooks"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
-import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
+import { ACTION_FLOW_TYPES, ActionFlowType, MODAL_TYPES } from "#/types"
 import { useNavigate } from "react-router-dom"
 import { routerPath } from "#/router/path"
 import { IconArrowUpRight } from "@tabler/icons-react"
+import { logPromiseFailure } from "#/utils"
 import { TextMd } from "../shared/Typography"
 import Spinner from "../shared/Spinner"
 import BlockExplorerLink from "../shared/BlockExplorerLink"
@@ -93,11 +96,32 @@ const CONTENT: Record<
   },
 }
 
-export default function SuccessModal({ type }: { type: ActionFlowType }) {
-  const { closeModal } = useModal()
+type SuccessModalProps = {
+  type: ActionFlowType
+}
+
+export default function SuccessModal({ type }: SuccessModalProps) {
+  const { closeModal, openModal } = useModal()
+  const fetchDeposits = useFetchDeposits()
   const navigate = useNavigate()
+  const allActivitiesCount = useAllActivitiesCount()
 
   const { heading, footer, renderComponent } = CONTENT[type]
+
+  const handleCloseModal = () => {
+    closeModal()
+    navigate(routerPath.dashboard)
+
+    // TODO: Temporary solution - Showing the welcome window should be done
+    // only once a season for new users. "New" can also refer to users who,
+    // in the past, may have deposited but withdrew their funds, losing their rewards.
+    // By making a new deposit, they will get their rewards back.
+    if (allActivitiesCount === 0) {
+      openModal(MODAL_TYPES.WELCOME)
+    }
+
+    logPromiseFailure(fetchDeposits())
+  }
 
   return (
     <>
@@ -113,10 +137,7 @@ export default function SuccessModal({ type }: { type: ActionFlowType }) {
           size="lg"
           width="100%"
           variant="outline"
-          onClick={() => {
-            closeModal()
-            navigate(routerPath.dashboard)
-          }}
+          onClick={handleCloseModal}
         >
           Go to dashboard
         </Button>
