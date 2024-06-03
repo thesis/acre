@@ -21,6 +21,7 @@ import { useNavigate } from "react-router-dom"
 import { routerPath } from "#/router/path"
 import { IconArrowUpRight } from "@tabler/icons-react"
 import { logPromiseFailure } from "#/utils"
+import { featureFlags } from "#/constants"
 import { TextMd } from "../shared/Typography"
 import Spinner from "../shared/Spinner"
 import BlockExplorerLink from "../shared/BlockExplorerLink"
@@ -102,12 +103,14 @@ export default function SuccessModal({
     closeModal()
     navigate(routerPath.dashboard)
 
-    // TODO: Temporary solution - Showing the welcome window should be done
-    // only once a season for new users. "New" can also refer to users who,
-    // in the past, may have deposited but withdrew their funds, losing their rewards.
-    // By making a new deposit, they will get their rewards back.
-    if (allActivitiesCount === 0) {
-      openModal(MODAL_TYPES.WELCOME)
+    if (featureFlags.SUPPORT_GAMIFICATION) {
+      // TODO: Temporary solution - Showing the welcome window should be done
+      // only once a season for new users. "New" can also refer to users who,
+      // in the past, may have deposited but withdrew their funds, losing their rewards.
+      // By making a new deposit, they will get their rewards back.
+      if (allActivitiesCount === 0) {
+        openModal(MODAL_TYPES.WELCOME)
+      }
     }
 
     logPromiseFailure(fetchDeposits())

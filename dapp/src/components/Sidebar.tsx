@@ -8,7 +8,12 @@ import {
   Image,
 } from "@chakra-ui/react"
 import { useSidebar, useDocsDrawer } from "#/hooks"
-import { MYSTERY_BOX, REWARD_BOOST, SEASON_KEY } from "#/constants"
+import {
+  MYSTERY_BOX,
+  REWARD_BOOST,
+  SEASON_KEY,
+  featureFlags,
+} from "#/constants"
 import { rewardsBoostArrowImage } from "#/assets/images/benefits"
 import ButtonLink from "./shared/ButtonLink"
 import { TextSm } from "./shared/Typography"
@@ -39,30 +44,33 @@ export default function Sidebar() {
       __css={styles.sidebarContainer}
     >
       <Box __css={styles.sidebar}>
-        <TextSm fontWeight="bold">Rewards you’ll unlock</TextSm>
-
-        <Flex mt={2} mb={7} flexDir="column" gap={2}>
-          {BENEFITS.map(({ name, imageSrc }) => (
-            <Card
-              key={name}
-              bg="gold.300"
-              borderWidth="1px"
-              borderColor="white"
-            >
-              <CardBody
-                display="flex"
-                flexDirection="row"
-                justifyContent="space-between"
-                alignItems="center"
-                py={0}
-                px={4}
-              >
-                <TextSm fontWeight="semibold">{name}</TextSm>
-                <Image src={imageSrc} boxSize="3.75rem" />
-              </CardBody>
-            </Card>
-          ))}
-        </Flex>
+        {featureFlags.SUPPORT_GAMIFICATION && (
+          <>
+            <TextSm fontWeight="bold">Rewards you’ll unlock</TextSm>
+            <Flex mt={2} mb={7} flexDir="column" gap={2}>
+              {BENEFITS.map(({ name, imageSrc }) => (
+                <Card
+                  key={name}
+                  bg="gold.300"
+                  borderWidth="1px"
+                  borderColor="white"
+                >
+                  <CardBody
+                    display="flex"
+                    flexDirection="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    py={0}
+                    px={4}
+                  >
+                    <TextSm fontWeight="semibold">{name}</TextSm>
+                    <Image src={imageSrc} boxSize="3.75rem" />
+                  </CardBody>
+                </Card>
+              ))}
+            </Flex>
+          </>
+        )}
 
         {BUTTONS.map(({ label, variant, colorScheme }) => (
           <ButtonLink
