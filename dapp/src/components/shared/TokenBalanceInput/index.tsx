@@ -125,8 +125,6 @@ export default function TokenBalanceInput({
     valueRef.current = value ? userAmountToBigInt(value, decimals) : undefined
   }
 
-  const showConversionBalance = amount !== undefined && !!fiatCurrency
-
   return (
     <FormControl isInvalid={hasError} isDisabled={inputProps.isDisabled}>
       <FormLabel htmlFor={inputProps.name} size={size}>
@@ -172,10 +170,10 @@ export default function TokenBalanceInput({
         errorMsgText={errorMsgText}
         hasError={hasError}
       />
-      {!hasError && !helperText && showConversionBalance && (
+      {!hasError && !helperText && !!fiatCurrency && (
         <FormHelperText>
           <FiatCurrencyBalance
-            amount={amount}
+            amount={amount ?? 0n}
             currency={currency}
             fiatCurrency={fiatCurrency}
           />
