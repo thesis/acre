@@ -56,6 +56,7 @@ export default function BenefitCard(props: IconCardProps) {
           my={-5}
           w="full"
           maxW="12.5rem" // 200px
+          minW="9rem" // 144px
           position="relative"
         >
           <Image
