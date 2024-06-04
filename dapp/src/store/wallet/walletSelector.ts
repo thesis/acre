@@ -15,3 +15,8 @@ export const selectCompletedActivities = createSelector(
       activities.filter((activity) => isActivityCompleted(activity)),
     ),
 )
+
+export const selectAllActivitiesCount = createSelector(
+  (state: RootState) => state.wallet.activities,
+  (activities) => activities.length,
+)
