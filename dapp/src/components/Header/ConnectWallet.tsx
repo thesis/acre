@@ -44,6 +44,11 @@ export default function ConnectWallet() {
     logPromiseFailure(requestBitcoinAccount())
   }
 
+  const isAccountSupported = React.useMemo(
+    () => !(btcAccount && !isSupportedBTCAddressType(btcAccount.address)),
+    [btcAccount],
+  )
+
   return (
     <AnimatePresence initial={false}>
       {isConnected ? (
@@ -55,19 +60,27 @@ export default function ConnectWallet() {
           exit="hidden"
           spacing={4}
         >
-          <HStack display={{ base: "none", md: "flex" }}>
-            <TextMd color="grey.500">Balance</TextMd>
-            <CurrencyBalance
-              currency="bitcoin"
-              amount={btcAccount?.balance.toString()}
-            />
-          </HStack>
+          {isAccountSupported && (
+            <HStack display={{ base: "none", md: "flex" }}>
+              <TextMd color="grey.500">Balance</TextMd>
+              <CurrencyBalance
+                currency="bitcoin"
+                amount={btcAccount?.balance.toString()}
+              />
+            </HStack>
+          )}
           <Tooltip
-            label="Currently, we support only Legacy or Native SegWit addresses. Please try connecting another address."
-            placement="top"
-            isDisabled={
-              !(btcAccount && !isSupportedBTCAddressType(btcAccount.address))
+            fontSize="xs"
+            label={
+              isAccountSupported
+                ? "Choose account"
+                : "Click to choose account. Legacy or Native Segwit only."
             }
+            maxW="11.25rem" // 180px
+            textAlign="center"
+            color="gold.200"
+            px={2}
+            py={1}
           >
             <Button
               variant="card"
