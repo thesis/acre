@@ -1,6 +1,6 @@
 import React from "react"
 import { Button, HStack, Icon, Tooltip } from "@chakra-ui/react"
-import { useIsHomeRouteActive, useWallet, useWalletContext } from "#/hooks"
+import { useWallet, useWalletContext } from "#/hooks"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import { TextMd } from "#/components/shared/Typography"
 import { BitcoinIcon } from "#/assets/icons"
@@ -15,7 +15,7 @@ import { AnimatePresence, motion, Variants } from "framer-motion"
 
 const containerVariants: Variants = {
   hidden: { opacity: 0, y: -48 },
-  visible: { opacity: 1, y: 0 },
+  visible: { opacity: 1, y: 0, transition: { delay: 0.125 } },
 }
 
 const getCustomDataByAccount = (
@@ -40,15 +40,13 @@ export default function ConnectWallet() {
 
   const customDataBtcAccount = getCustomDataByAccount(btcAccount)
 
-  const isHomeRoute = useIsHomeRouteActive()
-
   const handleConnectBitcoinAccount = () => {
     logPromiseFailure(requestBitcoinAccount())
   }
 
   return (
     <AnimatePresence initial={false}>
-      {(isConnected || !isHomeRoute) && (
+      {isConnected ? (
         <HStack
           as={motion.div}
           variants={containerVariants}
@@ -73,14 +71,26 @@ export default function ConnectWallet() {
           >
             <Button
               variant="card"
+              iconSpacing={3}
+              pl={2}
               colorScheme={customDataBtcAccount.colorScheme}
-              leftIcon={<Icon as={BitcoinIcon} boxSize={6} />}
+              leftIcon={<Icon as={BitcoinIcon} boxSize={6} color="brand.400" />}
               onClick={handleConnectBitcoinAccount}
             >
-              {customDataBtcAccount.text}
+              <TextMd>{customDataBtcAccount.text}</TextMd>
             </Button>
           </Tooltip>
         </HStack>
+      ) : (
+        <Button
+          variant="ghost"
+          iconSpacing={3}
+          pl={2}
+          leftIcon={<Icon as={BitcoinIcon} boxSize={6} color="brand.400" />}
+          onClick={handleConnectBitcoinAccount}
+        >
+          <TextMd>Choose account</TextMd>
+        </Button>
       )}
     </AnimatePresence>
   )
