@@ -79,8 +79,6 @@ export default function DepositBTCModal() {
     } else {
       showError()
     }
-
-    await sendBitcoinTransaction(tokenAmount?.amount, btcAddress)
   }, [
     btcAddress,
     depositReceipt,
