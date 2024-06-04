@@ -26,7 +26,15 @@ function WithdrawWarning({
 
   if (isMinimumBalanceExceeded) {
     return (
-      <CardAlert status="error">
+      // TODO: Update global styles for the Alert component
+      // Previously, we distinguished more types of alerts.
+      // The following styles should be moved to global styles and unneeded parts removed.
+      <CardAlert
+        status="error"
+        bgColor="red.100"
+        borderColor="red.400"
+        colorIcon="red.400"
+      >
         <TextMd pr={5}>
           <Highlight query={minimumBalanceText} styles={{ fontWeight: "bold" }}>
             {`The new balance is below the required minimum of ${minimumBalanceText}. Withdrawing  your funds will result in the loss of your current rewards.`}
