@@ -3,7 +3,7 @@ import { useWalletContext } from "./useWalletContext"
 import { useRequestBitcoinAccount } from "./useRequestBitcoinAccount"
 
 export function useWallet() {
-  const { btcAccount, ethAccount } = useWalletContext()
+  const { btcAccount } = useWalletContext()
   const { requestAccount: requestBitcoinAccount } = useRequestBitcoinAccount()
 
   return useMemo(
@@ -14,8 +14,7 @@ export function useWallet() {
           await requestBitcoinAccount()
         },
       },
-      ethereum: { account: ethAccount },
     }),
-    [btcAccount, ethAccount, requestBitcoinAccount],
+    [btcAccount, requestBitcoinAccount],
   )
 }

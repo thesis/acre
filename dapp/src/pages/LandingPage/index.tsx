@@ -1,9 +1,6 @@
 import React from "react"
 import { Flex, VStack, Image } from "@chakra-ui/react"
-import boostCardIcon from "#/assets/images/rewards-boost.svg"
-import mysteryCardIcon from "#/assets/images/mystery-box.svg"
-import keyCardIcon from "#/assets/images/season-key.svg"
-import { EXTERNAL_HREF, PARTNER_LOGOS } from "#/constants"
+import { BENEFITS, EXTERNAL_HREF, PARTNER_LOGOS } from "#/constants"
 import { TextMd } from "#/components/shared/Typography"
 import {
   SeasonCountdownSection,
@@ -33,30 +30,16 @@ export default function LandingPage() {
           mb={12}
           w="full"
         >
-          <BenefitCard
-            flex={1}
-            header="Rewards Boost"
-            icon={{ src: boostCardIcon }}
-          >
-            <TextMd>Boosts your APY when</TextMd>
-            <TextMd>Acre fully launches</TextMd>
-          </BenefitCard>
-          <BenefitCard
-            flex={1}
-            header="Mystery Box"
-            icon={{ src: mysteryCardIcon }}
-          >
-            <TextMd>Grants you a random</TextMd>
-            <TextMd>reward gift.</TextMd>
-          </BenefitCard>
-          <BenefitCard
-            flex={1}
-            header="All Seasons Key"
-            icon={{ src: keyCardIcon }}
-          >
-            <TextMd>Grants access to all</TextMd>
-            <TextMd>upcoming seasons</TextMd>
-          </BenefitCard>
+          {BENEFITS.map(({ name, description, imageSrc }) => (
+            <BenefitCard
+              key={name}
+              flex={1}
+              header={name}
+              icon={{ src: imageSrc }}
+            >
+              <TextMd>{description}</TextMd>
+            </BenefitCard>
+          ))}
         </Flex>
         {/* 
         TODO: Bring back when TVL, user count and/or how-it-works diagram are available

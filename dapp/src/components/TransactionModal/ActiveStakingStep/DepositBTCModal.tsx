@@ -3,11 +3,10 @@ import {
   useActionFlowTokenAmount,
   useAppDispatch,
   useDepositBTCTransaction,
-  useDepositTelemetry,
   useExecuteFunction,
-  useFetchDeposits,
   useStakeFlowContext,
   useToast,
+  useVerifyDepositAddress,
 } from "#/hooks"
 import { logPromiseFailure } from "#/utils"
 import { PROCESS_STATUSES } from "#/types"
@@ -26,15 +25,13 @@ const TOAST = TOASTS[TOAST_ID]
 export default function DepositBTCModal() {
   const tokenAmount = useActionFlowTokenAmount()
   const { btcAddress, depositReceipt, stake } = useStakeFlowContext()
-  const depositTelemetry = useDepositTelemetry()
+  const verifyDepositAddress = useVerifyDepositAddress()
   const { closeToast, openToast } = useToast()
   const dispatch = useAppDispatch()
-  const fetchDeposits = useFetchDeposits()
 
   const onStakeBTCSuccess = useCallback(() => {
-    logPromiseFailure(fetchDeposits())
     dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED))
-  }, [dispatch, fetchDeposits])
+  }, [dispatch])
 
   const onStakeBTCError = useCallback(() => {
     dispatch(setStatus(PROCESS_STATUSES.FAILED))
@@ -75,20 +72,19 @@ export default function DepositBTCModal() {
 
   const handledDepositBTC = useCallback(async () => {
     if (!tokenAmount?.amount || !btcAddress || !depositReceipt) return
+    const status = await verifyDepositAddress(depositReceipt, btcAddress)
 
-    const response = await depositTelemetry(depositReceipt, btcAddress)
-
-    if (response.verificationStatus === "valid") {
-      logPromiseFailure(sendBitcoinTransaction(tokenAmount?.amount, btcAddress))
+    if (status === "valid") {
+      await sendBitcoinTransaction(tokenAmount?.amount, btcAddress)
     } else {
       showError()
     }
   }, [
     btcAddress,
     depositReceipt,
-    depositTelemetry,
-    sendBitcoinTransaction,
     showError,
+    verifyDepositAddress,
+    sendBitcoinTransaction,
     tokenAmount?.amount,
   ])
 

@@ -8,9 +8,8 @@ import {
   Image,
 } from "@chakra-ui/react"
 import { useSidebar, useDocsDrawer } from "#/hooks"
-import rewardsBoostArrow from "#/assets/images/rewards-boost-arrow.svg"
-import mysteryBoxIcon from "#/assets/images/mystery-box.svg"
-import seasonKeyIcon from "#/assets/images/season-key.svg"
+import { MYSTERY_BOX, REWARD_BOOST, SEASON_KEY } from "#/constants"
+import { rewardsBoostArrowImage } from "#/assets/images/benefits"
 import ButtonLink from "./shared/ButtonLink"
 import { TextSm } from "./shared/Typography"
 
@@ -22,10 +21,10 @@ const BUTTONS = [
 ]
 
 const BENEFITS = [
-  { label: "1x Rewards Boost", iconSrc: rewardsBoostArrow },
-  { label: "1x Mystery Box", iconSrc: mysteryBoxIcon },
-  { label: "1x Season Key", iconSrc: seasonKeyIcon },
-]
+  { ...REWARD_BOOST, imageSrc: rewardsBoostArrowImage },
+  MYSTERY_BOX,
+  SEASON_KEY,
+].map((benefit) => ({ ...benefit, name: `1x ${benefit.name}` }))
 
 export default function Sidebar() {
   const { isOpen } = useSidebar()
@@ -43,9 +42,9 @@ export default function Sidebar() {
         <TextSm fontWeight="bold">Rewards you’ll unlock</TextSm>
 
         <Flex mt={2} mb={7} flexDir="column" gap={2}>
-          {BENEFITS.map(({ label, iconSrc }) => (
+          {BENEFITS.map(({ name, imageSrc }) => (
             <Card
-              key={label}
+              key={name}
               bg="gold.300"
               borderWidth="1px"
               borderColor="white"
@@ -58,8 +57,8 @@ export default function Sidebar() {
                 py={0}
                 px={4}
               >
-                <TextSm fontWeight="semibold">{label}</TextSm>
-                <Image src={iconSrc} boxSize="3.75rem" />
+                <TextSm fontWeight="semibold">{name}</TextSm>
+                <Image src={imageSrc} boxSize="3.75rem" />
               </CardBody>
             </Card>
           ))}
