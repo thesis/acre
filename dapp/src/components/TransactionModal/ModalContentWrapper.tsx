@@ -15,6 +15,7 @@ import ErrorModal from "./ErrorModal"
 import LoadingModal from "./LoadingModal"
 import MissingAccountModal from "./MissingAccountModal"
 import SuccessModal from "./SuccessModal"
+import UnsupportedAccountModal from "./UnsupportedAccountModal"
 
 export default function ModalContentWrapper({
   children,
@@ -28,11 +29,19 @@ export default function ModalContentWrapper({
   const tokenAmount = useActionFlowTokenAmount()
   const txHash = useActionFlowTxHash()
 
-  if (!btcAccount || !isSupportedBTCAddressType(btcAccount.address))
+  if (!btcAccount)
     return (
       <MissingAccountModal
         currency="bitcoin"
         icon={BitcoinIcon}
+        requestAccount={requestBitcoinAccount}
+      />
+    )
+
+  if (!isSupportedBTCAddressType(btcAccount.address))
+    return (
+      <UnsupportedAccountModal
+        account={btcAccount}
         requestAccount={requestBitcoinAccount}
       />
     )
