@@ -4,6 +4,7 @@ import TransactionDetailsAmountItem from "#/components/shared/TransactionDetails
 import { useTokenAmountFormValue } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { useTransactionDetails } from "#/hooks"
 import { CurrencyType } from "#/types"
+import { featureFlags } from "#/constants"
 import WithdrawWarning from "./WithdrawWarning"
 
 function UnstakeDetails({
@@ -18,8 +19,9 @@ function UnstakeDetails({
 
   return (
     <Flex flexDirection="column" gap={10} mt={4}>
-      {/* TODO: Hide the component behind the feature flag */}
-      <WithdrawWarning balance={balance} currency={currency} amount={value} />
+      {featureFlags.GAMIFICATION_ENABLED && (
+        <WithdrawWarning balance={balance} currency={currency} amount={value} />
+      )}
       <List spacing={3}>
         <TransactionDetailsAmountItem
           label="Withdraw from pool"
