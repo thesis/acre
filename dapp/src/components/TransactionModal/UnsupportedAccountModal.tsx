@@ -1,9 +1,7 @@
 import React from "react"
 import {
-  Box,
   Button,
   HStack,
-  Icon,
   ModalBody,
   ModalCloseButton,
   ModalFooter,
