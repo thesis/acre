@@ -1,12 +1,17 @@
-import { ChainIdentifier, EthereumAddress } from "@keep-network/tbtc-v2.ts"
 import { OrangeKitSdk } from "@orangekit/sdk"
-import { AcreContracts, DepositFees } from "../../lib/contracts"
+import {
+  AcreContracts,
+  DepositFees,
+  ChainIdentifier,
+} from "../../lib/contracts"
 import { StakeInitialization } from "./stake-initialization"
 import { fromSatoshi, toSatoshi } from "../../lib/utils"
 import Tbtc from "../tbtc"
 import { BitcoinProvider } from "../../lib/bitcoin/providers"
 import AcreSubgraphApi from "../../lib/api/AcreSubgraphApi"
 import { DepositStatus } from "../../lib/api/TbtcApi"
+import AcreIdentifierResolver from "../../lib/identifier-resolver"
+import { Acre } from "../../acre"
 
 export { DepositReceipt } from "../tbtc"
 
@@ -111,9 +116,11 @@ class StakingModule {
     // can create `EVMChainIdentifier` class and use it as a type in `modules`
     // and `lib`. Currently we support only `Ethereum` so here we force to
     // `EthereumAddress`.
-    const depositOwnerEvmAddress = EthereumAddress.from(
-      await this.#orangeKit.predictAddress(depositOwnerBitcoinAddress),
-    )
+    const depositOwnerEvmAddress =
+      await AcreIdentifierResolver.toAcreIdentifier(
+        this.#bitcoinProvider,
+        this.#orangeKit,
+      )
 
     // tBTC-v2 SDK will handle Bitcoin address validation and throw an error if
     // address is not supported.
@@ -136,19 +143,27 @@ class StakingModule {
   }
 
   /**
-   * @param identifier The generic chain identifier.
    * @returns Value of the basis for calculating final BTC balance.
    */
-  sharesBalance(identifier: ChainIdentifier) {
-    return this.#contracts.stBTC.balanceOf(identifier)
+  async sharesBalance() {
+    return this.#contracts.stBTC.balanceOf(
+      await AcreIdentifierResolver.toAcreIdentifier(
+        this.#bitcoinProvider,
+        this.#orangeKit,
+      ),
+    )
   }
 
   /**
-   * @param identifier The generic chain identifier.
    * @returns Maximum withdraw value.
    */
-  estimatedBitcoinBalance(identifier: ChainIdentifier) {
-    return this.#contracts.stBTC.assetsBalanceOf(identifier)
+  async estimatedBitcoinBalance() {
+    return this.#contracts.stBTC.assetsBalanceOf(
+      await AcreIdentifierResolver.toAcreIdentifier(
+        this.#bitcoinProvider,
+        this.#orangeKit,
+      ),
+    )
   }
 
   /**
@@ -199,11 +214,11 @@ class StakingModule {
    *          and finalized.
    */
   async getDeposits(): Promise<Deposit[]> {
-    const bitcoinAddress = await this.#bitcoinProvider.getAddress()
-
-    const depositOwnerEvmAddress = EthereumAddress.from(
-      await this.#orangeKit.predictAddress(bitcoinAddress),
-    )
+    const depositOwnerEvmAddress =
+      await AcreIdentifierResolver.toAcreIdentifier(
+        this.#bitcoinProvider,
+        this.#orangeKit,
+      )
 
     const subgraphData = await this.#acreSubgraphApi.getDepositsByOwner(
       depositOwnerEvmAddress,

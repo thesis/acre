@@ -1,5 +1,6 @@
 import { BitcoinTxHash } from "@keep-network/tbtc-v2.ts"
 import { ethers } from "ethers"
+import { OrangeKitSdk } from "@orangekit/sdk"
 import {
   AcreContracts,
   StakingModule,
@@ -9,6 +10,8 @@ import {
   DepositFees,
   DepositFee,
   DepositStatus,
+  ChainIdentifier,
+  BitcoinProvider,
 } from "../../src"
 import * as satoshiConverter from "../../src/lib/utils/satoshi-converter"
 import { MockAcreContracts } from "../utils/mock-acre-contracts"
@@ -17,6 +20,7 @@ import { MockTbtc } from "../utils/mock-tbtc"
 import { DepositReceipt } from "../../src/modules/tbtc"
 import { MockBitcoinProvider } from "../utils/mock-bitcoin-provider"
 import AcreSubgraphApi from "../../src/lib/api/AcreSubgraphApi"
+import AcreIdentifierResolver from "../../src/lib/identifier-resolver"
 
 const stakingModuleData: {
   initializeDeposit: {
@@ -337,11 +341,26 @@ describe("Staking", () => {
     const depositor = EthereumAddress.from(ethers.Wallet.createRandom().address)
 
     const expectedResult = 4294967295n
+    let spyOnAcreIdentifierResolver: jest.SpyInstance<
+      Promise<ChainIdentifier>,
+      [bitcoinProvider: BitcoinProvider, orangeKit: OrangeKitSdk]
+    >
+
     let result: bigint
 
     beforeAll(async () => {
       contracts.stBTC.balanceOf = jest.fn().mockResolvedValue(expectedResult)
-      result = await staking.sharesBalance(depositor)
+      spyOnAcreIdentifierResolver = jest
+        .spyOn(AcreIdentifierResolver, "toAcreIdentifier")
+        .mockResolvedValueOnce(depositor)
+      result = await staking.sharesBalance()
+    })
+
+    it("should resolve the acre identifier", () => {
+      expect(spyOnAcreIdentifierResolver).toHaveBeenCalledWith(
+        bitcoinProvider,
+        orangeKit,
+      )
     })
 
     it("should get balance of stBTC", () => {
@@ -357,11 +376,27 @@ describe("Staking", () => {
     const expectedResult = 4294967295n
     const depositor = EthereumAddress.from(ethers.Wallet.createRandom().address)
     let result: bigint
+    let spyOnAcreIdentifierResolver: jest.SpyInstance<
+      Promise<ChainIdentifier>,
+      [bitcoinProvider: BitcoinProvider, orangeKit: OrangeKitSdk]
+    >
+
     beforeAll(async () => {
       contracts.stBTC.assetsBalanceOf = jest
         .fn()
         .mockResolvedValue(expectedResult)
-      result = await staking.estimatedBitcoinBalance(depositor)
+      spyOnAcreIdentifierResolver = jest
+        .spyOn(AcreIdentifierResolver, "toAcreIdentifier")
+        .mockResolvedValueOnce(depositor)
+
+      result = await staking.estimatedBitcoinBalance()
+    })
+
+    it("should resolve the acre identifier", () => {
+      expect(spyOnAcreIdentifierResolver).toHaveBeenCalledWith(
+        bitcoinProvider,
+        orangeKit,
+      )
     })
 
     it("should get staker's balance of tBTC tokens in vault ", () => {

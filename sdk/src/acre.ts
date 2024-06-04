@@ -8,6 +8,7 @@ import { VoidSigner } from "./lib/utils"
 import { BitcoinProvider, BitcoinNetwork } from "./lib/bitcoin"
 import { getChainIdByNetwork } from "./lib/ethereum/network"
 import AcreSubgraphApi from "./lib/api/AcreSubgraphApi"
+import AcreIdentifierResolver from "./lib/identifier-resolver"
 
 class Acre {
   readonly #tbtc: Tbtc
@@ -66,13 +67,13 @@ class Acre {
       ethereumRpcUrl,
     )
 
-    // TODO: Should we store this address in context so that we do not to
-    // recalculate it when necessary?
-    const depositOwnerEvmAddress = await orangeKit.predictAddress(
-      await bitcoinProvider.getAddress(),
-    )
+    const depositOwnerEvmAddress =
+      await AcreIdentifierResolver.toAcreIdentifier(bitcoinProvider, orangeKit)
 
-    const signer = new VoidSigner(depositOwnerEvmAddress, ethersProvider)
+    const signer = new VoidSigner(
+      depositOwnerEvmAddress.identifierHex,
+      ethersProvider,
+    )
 
     const contracts = getEthereumContracts(signer, ethereumNetwork)
 
