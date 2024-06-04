@@ -3,19 +3,19 @@ import { EthereumAddress } from "@acre-btc/sdk"
 import { useAcreContext } from "#/acre-react/hooks"
 import { logPromiseFailure } from "#/utils"
 import { setEstimatedBtcBalance, setSharesBalance } from "#/store/btc"
-import { useWalletContext } from "../useWalletContext"
+import { ZeroAddress } from "ethers"
 import { useAppDispatch } from "../store/useAppDispatch"
 
 export function useFetchBTCBalance() {
   const { acre, isInitialized } = useAcreContext()
-  const { ethAccount } = useWalletContext()
   const dispatch = useAppDispatch()
 
   useEffect(() => {
     const getBtcBalance = async () => {
-      if (!isInitialized || !ethAccount || !acre) return
+      if (!isInitialized || !acre) return
 
-      const chainIdentifier = EthereumAddress.from(ethAccount)
+      // TODO: We should pass the Bitcoin address here once we update the SDK.
+      const chainIdentifier = EthereumAddress.from(ZeroAddress)
       const sharesBalance = await acre.staking.sharesBalance(chainIdentifier)
       const estimatedBitcoinBalance =
         await acre.staking.estimatedBitcoinBalance(chainIdentifier)
@@ -24,5 +24,5 @@ export function useFetchBTCBalance() {
       dispatch(setEstimatedBtcBalance(estimatedBitcoinBalance))
     }
     logPromiseFailure(getBtcBalance())
-  }, [acre, isInitialized, ethAccount, dispatch])
+  }, [acre, isInitialized, dispatch])
 }
