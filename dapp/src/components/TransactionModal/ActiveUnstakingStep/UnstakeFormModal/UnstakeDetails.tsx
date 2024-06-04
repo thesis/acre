@@ -18,6 +18,7 @@ function UnstakeDetails({
 
   return (
     <Flex flexDirection="column" gap={10} mt={4}>
+      {/* TODO: Hide the component behind the feature flag */}
       <WithdrawWarning balance={balance} currency={currency} amount={value} />
       <List spacing={3}>
         <TransactionDetailsAmountItem
