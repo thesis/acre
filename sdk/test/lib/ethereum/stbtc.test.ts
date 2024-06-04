@@ -1,6 +1,6 @@
 import ethers, { Contract } from "ethers"
 import { EthereumStBTC } from "../../../src/lib/ethereum/stbtc"
-import { EthereumAddress, EthereumSigner } from "../../../src"
+import { EthereumAddress, EthereumSigner } from "../../../src/lib/ethereum"
 
 jest.mock("ethers", (): object => ({
   Contract: jest.fn(),

@@ -1,6 +1,7 @@
 import { MockBitcoinProvider } from "../utils/mock-bitcoin-provider"
 import { MockOrangeKitSdk } from "../utils/mock-orangekit"
-import { ChainIdentifier, EthereumAddress } from "../../src"
+import { EthereumAddress } from "../../src/lib/ethereum"
+import { ChainIdentifier } from "../../src/lib/contracts/chain-identifier"
 import AcreIdentifierResolver from "../../src/lib/identifier-resolver"
 
 describe("AcreIdentifierResolver", () => {

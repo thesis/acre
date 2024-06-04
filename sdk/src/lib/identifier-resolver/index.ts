@@ -1,5 +1,5 @@
 import { OrangeKitSdk } from "@orangekit/sdk"
-import { EthereumAddress } from "@keep-network/tbtc-v2.ts"
+import { EthereumAddress } from "../ethereum"
 import { BitcoinProvider } from "../bitcoin"
 import { ChainIdentifier } from "../contracts"
 

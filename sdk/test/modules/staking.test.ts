@@ -6,13 +6,13 @@ import {
   StakingModule,
   Hex,
   StakeInitialization,
-  EthereumAddress,
   DepositFees,
   DepositFee,
   DepositStatus,
   ChainIdentifier,
   BitcoinProvider,
 } from "../../src"
+import { EthereumAddress } from "../../src/lib/ethereum"
 import * as satoshiConverter from "../../src/lib/utils/satoshi-converter"
 import { MockAcreContracts } from "../utils/mock-acre-contracts"
 import { MockOrangeKitSdk } from "../utils/mock-orangekit"
