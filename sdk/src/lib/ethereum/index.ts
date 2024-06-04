@@ -4,7 +4,6 @@ import { EthereumBitcoinDepositor } from "./bitcoin-depositor"
 import { EthereumNetwork } from "./network"
 import { EthereumStBTC } from "./stbtc"
 
-export * from "./eip712-signer"
 export * from "./bitcoin-depositor"
 export * from "./address"
 export { EthereumSigner }

@@ -1,17 +1,12 @@
 import { OrangeKitSdk } from "@orangekit/sdk"
-import {
-  AcreContracts,
-  DepositFees,
-  ChainIdentifier,
-} from "../../lib/contracts"
-import { StakeInitialization } from "./stake-initialization"
+import { AcreContracts, DepositFees } from "../../lib/contracts"
+import StakeInitialization from "./stake-initialization"
 import { fromSatoshi, toSatoshi } from "../../lib/utils"
 import Tbtc from "../tbtc"
 import { BitcoinProvider } from "../../lib/bitcoin/providers"
 import AcreSubgraphApi from "../../lib/api/AcreSubgraphApi"
 import { DepositStatus } from "../../lib/api/TbtcApi"
 import AcreIdentifierResolver from "../../lib/identifier-resolver"
-import { Acre } from "../../acre"
 
 export { DepositReceipt } from "../tbtc"
 
@@ -82,16 +77,16 @@ class StakingModule {
   readonly #acreSubgraphApi: AcreSubgraphApi
 
   constructor(
-    _contracts: AcreContracts,
-    _bitcoinProvider: BitcoinProvider,
-    _orangeKit: OrangeKitSdk,
-    _tbtc: Tbtc,
+    contracts: AcreContracts,
+    bitcoinProvider: BitcoinProvider,
+    orangeKit: OrangeKitSdk,
+    tbtc: Tbtc,
     acreSubgraphApi: AcreSubgraphApi,
   ) {
-    this.#contracts = _contracts
-    this.#bitcoinProvider = _bitcoinProvider
-    this.#tbtc = _tbtc
-    this.#orangeKit = _orangeKit
+    this.#contracts = contracts
+    this.#bitcoinProvider = bitcoinProvider
+    this.#tbtc = tbtc
+    this.#orangeKit = orangeKit
     this.#acreSubgraphApi = acreSubgraphApi
   }
 
@@ -133,13 +128,7 @@ class StakingModule {
       referral,
     )
 
-    return new StakeInitialization(
-      this.#contracts,
-      this.#bitcoinProvider,
-      finalBitcoinRecoveryAddress,
-      depositOwnerEvmAddress,
-      tbtcDeposit,
-    )
+    return new StakeInitialization(tbtcDeposit)
   }
 
   /**

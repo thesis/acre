@@ -232,67 +232,6 @@ describe("Staking", () => {
             })
           })
 
-          // describe("signMessage", () => {
-          //   describe("when signing by valid staker", () => {
-          //     const depositorAddress = ethers.Wallet.createRandom().address
-
-          //     beforeEach(async () => {
-          //       mockedSignedMessage.verify.mockReturnValue(
-          //         predictedEthereumDepositorAddress,
-          //       )
-          //       contracts.bitcoinDepositor.getChainIdentifier = jest
-          //         .fn()
-          //         .mockReturnValue(EthereumAddress.from(depositorAddress))
-
-          //       await result.signMessage()
-          //     })
-
-          //     it("should sign message", () => {
-          //       expect(messageSigner.sign).toHaveBeenCalledWith(
-          //         {
-          //           name: "BitcoinDepositor",
-          //           version: "1",
-          //           verifyingContract:
-          //             contracts.bitcoinDepositor.getChainIdentifier(),
-          //         },
-          //         {
-          //           Stake: [
-          //             { name: "ethereumStakerAddress", type: "address" },
-          //             { name: "bitcoinRecoveryAddress", type: "string" },
-          //           ],
-          //         },
-          //         {
-          //           ethereumStakerAddress:
-          //             predictedEthereumDepositorAddress.identifierHex,
-          //           bitcoinRecoveryAddress: bitcoinDepositorAddress,
-          //         },
-          //       )
-          //     })
-
-          //     it("should verify signed message", () => {
-          //       expect(mockedSignedMessage.verify).toHaveBeenCalled()
-          //     })
-          //   })
-
-          //   describe("when signing by invalid staker", () => {
-          //     const invalidStaker = EthereumAddress.from(
-          //       ethers.Wallet.createRandom().address,
-          //     )
-
-          //     beforeEach(() => {
-          //       mockedSignedMessage.verify = jest
-          //         .fn()
-          //         .mockResolvedValue(invalidStaker)
-          //     })
-
-          //     it("should throw an error", async () => {
-          //       await expect(result.signMessage()).rejects.toThrow(
-          //         "Invalid staker address",
-          //       )
-          //     })
-          //   })
-          // })
-
           describe("stake", () => {
             beforeAll(() => {
               mockedSignedMessage.verify.mockReturnValue(
@@ -300,36 +239,24 @@ describe("Staking", () => {
               )
             })
 
-            // describe("when the message has not been signed yet", () => {
-            //   it("should throw an error", async () => {
-            //     await expect(result.stake()).rejects.toThrow(
-            //       "Sign message first",
-            //     )
-            //   })
-            // })
+            let depositId: string
 
-            describe("when message has already been signed", () => {
-              let depositId: string
+            beforeAll(async () => {
+              mockedDeposit.waitForFunding.mockResolvedValue(undefined)
 
-              beforeAll(async () => {
-                mockedDeposit.waitForFunding.mockResolvedValue(undefined)
+              depositId = await result.stake()
+            })
 
-                result.signMessage()
+            it("should wait for funding", () => {
+              expect(mockedDeposit.waitForFunding).toHaveBeenCalled()
+            })
 
-                depositId = await result.stake()
-              })
+            it("should create the deposit", () => {
+              expect(mockedDeposit.createDeposit).toHaveBeenCalled()
+            })
 
-              it("should wait for funding", () => {
-                expect(mockedDeposit.waitForFunding).toHaveBeenCalled()
-              })
-
-              it("should create the deposit", () => {
-                expect(mockedDeposit.createDeposit).toHaveBeenCalled()
-              })
-
-              it("should return deposit id", () => {
-                expect(depositId).toBe(mockedDepositId)
-              })
+            it("should return deposit id", () => {
+              expect(depositId).toBe(mockedDepositId)
             })
           })
         })
