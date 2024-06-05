@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 import { useWalletContext } from "./useWalletContext"
-import { useRequestBitcoinAccount } from "./useRequestBitcoinAccount"
+import { useRequestBitcoinAccount } from "./ledger-live/useRequestBitcoinAccount"
 
 export function useWallet() {
   const { btcAccount } = useWalletContext()

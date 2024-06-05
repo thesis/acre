@@ -2,7 +2,7 @@ import { useCallback, useEffect } from "react"
 import { useSignAndBroadcastTransaction } from "@ledgerhq/wallet-api-client-react"
 import { RawBitcoinTransaction } from "@ledgerhq/wallet-api-client"
 import { OnErrorCallback, OnSuccessCallback } from "#/types"
-import { useWalletContext } from "./useWalletContext"
+import { useWalletContext } from "../useWalletContext"
 import { useWalletApiReactTransport } from "./useWalletApiReactTransport"
 
 type UseSendBitcoinTransactionState = {

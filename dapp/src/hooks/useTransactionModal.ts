@@ -3,7 +3,7 @@ import { useCallback, useEffect } from "react"
 import { logPromiseFailure } from "#/utils"
 import { useModal } from "./useModal"
 import { useWalletContext } from "./useWalletContext"
-import { useRequestBitcoinAccount } from "./useRequestBitcoinAccount"
+import { useRequestBitcoinAccount } from "./ledger-live/useRequestBitcoinAccount"
 
 export function useTransactionModal(type: ActionFlowType) {
   const { btcAccount } = useWalletContext()
