@@ -1,5 +1,6 @@
 import React from "react"
 import {
+  Box,
   Button,
   HStack,
   ModalBody,
@@ -44,40 +45,39 @@ export default function UnsupportedAccountModal({
               rotate={12}
             />
 
-            <HStack spacing={5} flex={1}>
-              <VStack alignItems="start" spacing={0} flex={1}>
-                <TextSm
-                  fontWeight="bold"
-                  color="grey.700"
-                  whiteSpace="nowrap"
-                  textOverflow="ellipsis"
-                  overflow="hidden"
-                  maxW={56}
-                >
-                  {account.name}
-                </TextSm>
-                <CurrencyBalance
-                  fontSize="sm"
-                  lineHeight={5}
-                  fontWeight="medium"
-                  color="grey.500"
-                  amount={account.balance.toString()}
-                  currency="bitcoin"
-                />
-              </VStack>
-
+            <Box flex={1} overflow="hidden">
               <TextSm
-                px={3}
-                py={2}
-                rounded="1.125rem" // 18px
-                color="red.400"
-                borderWidth="1px"
-                borderColor="red.200"
+                fontWeight="bold"
+                color="grey.700"
                 whiteSpace="nowrap"
+                textOverflow="ellipsis"
+                overflow="hidden"
               >
-                Segwit
+                {account.name}
               </TextSm>
-            </HStack>
+              <CurrencyBalance
+                fontSize="sm"
+                lineHeight={5}
+                fontWeight="medium"
+                color="grey.500"
+                amount={account.balance.toString()}
+                currency="bitcoin"
+              />
+            </Box>
+
+            <TextSm
+              as="span"
+              ml={5}
+              px={3}
+              py={2}
+              rounded="1.125rem" // 18px
+              color="red.400"
+              borderWidth="1px"
+              borderColor="red.200"
+              whiteSpace="nowrap"
+            >
+              Unsupported
+            </TextSm>
           </ErrorAlert>
         )}
 
