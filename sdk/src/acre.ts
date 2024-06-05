@@ -2,7 +2,7 @@ import { OrangeKitSdk } from "@orangekit/sdk"
 import { getDefaultProvider } from "ethers"
 import { AcreContracts } from "./lib/contracts"
 import { EthereumNetwork, getEthereumContracts } from "./lib/ethereum"
-import { StakingModule } from "./modules/staking"
+import Account from "./modules/account"
 import Tbtc from "./modules/tbtc"
 import { VoidSigner } from "./lib/utils"
 import { BitcoinProvider, BitcoinNetwork } from "./lib/bitcoin"
@@ -19,7 +19,7 @@ class Acre {
 
   public readonly contracts: AcreContracts
 
-  public readonly staking: StakingModule
+  public readonly account: Account
 
   readonly #acreSubgraph: AcreSubgraphApi
 
@@ -29,19 +29,14 @@ class Acre {
     orangeKit: OrangeKitSdk,
     tbtc: Tbtc,
     acreSubgraphApi: AcreSubgraphApi,
+    account: Account,
   ) {
     this.contracts = contracts
     this.#tbtc = tbtc
     this.#orangeKit = orangeKit
     this.#acreSubgraph = acreSubgraphApi
     this.#bitcoinProvider = bitcoinProvider
-    this.staking = new StakingModule(
-      this.contracts,
-      this.#bitcoinProvider,
-      this.#orangeKit,
-      this.#tbtc,
-      this.#acreSubgraph,
-    )
+    this.account = account
   }
 
   static async initialize(
@@ -88,7 +83,22 @@ class Acre {
       "https://api.studio.thegraph.com/query/73600/acre/version/latest",
     )
 
-    return new Acre(contracts, bitcoinProvider, orangeKit, tbtc, subgraph)
+    const account = await Account.initialize(
+      contracts,
+      bitcoinProvider,
+      orangeKit,
+      tbtc,
+      subgraph,
+    )
+
+    return new Acre(
+      contracts,
+      bitcoinProvider,
+      orangeKit,
+      tbtc,
+      subgraph,
+      account,
+    )
   }
 }
 
