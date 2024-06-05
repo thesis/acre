@@ -12,7 +12,7 @@ type BlockExplorerLinkProps = {
 function BlockExplorerLink({
   id,
   type,
-  chain = "ethereum",
+  chain = "bitcoin",
   children,
   ...restProps
 }: BlockExplorerLinkProps) {
