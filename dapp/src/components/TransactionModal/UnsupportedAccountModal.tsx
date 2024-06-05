@@ -82,8 +82,8 @@ export default function UnsupportedAccountModal({
         <TextMd
           maxW="25rem" // 400px
         >
-          We currently support <b>Legacy</b> and <b>Native Segwit</b> accounts
-          only.
+          We currently support <strong>Legacy</strong> and{" "}
+          <strong>Native Segwit</strong> accounts only.
         </TextMd>
       </ModalBody>
 
