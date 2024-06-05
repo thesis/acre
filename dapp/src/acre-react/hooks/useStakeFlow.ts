@@ -9,7 +9,6 @@ export type UseStakeFlowReturn = {
   ) => Promise<void>
   btcAddress?: string
   depositReceipt?: DepositReceipt
-  signMessage: () => Promise<void>
   stake: () => Promise<void>
 }
 
@@ -45,12 +44,6 @@ export function useStakeFlow(): UseStakeFlowReturn {
     [isInitialized, acre],
   )
 
-  const signMessage = useCallback(async () => {
-    if (!stakeFlow) throw new Error("Initialize stake first")
-
-    await Promise.resolve(stakeFlow.signMessage())
-  }, [stakeFlow])
-
   const stake = useCallback(async () => {
     if (!stakeFlow) throw new Error("Initialize stake first")
     // The current waiting time for repeat transactions is very long.
@@ -62,7 +55,6 @@ export function useStakeFlow(): UseStakeFlowReturn {
     initStake,
     btcAddress,
     depositReceipt,
-    signMessage,
     stake,
   }
 }

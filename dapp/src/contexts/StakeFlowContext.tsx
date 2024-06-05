@@ -12,7 +12,6 @@ type StakeFlowContextValue = Omit<UseStakeFlowReturn, "initStake"> & {
 
 export const StakeFlowContext = React.createContext<StakeFlowContextValue>({
   initStake: async () => {},
-  signMessage: async () => {},
   stake: async () => {},
 })
 
@@ -20,7 +19,6 @@ export function StakeFlowProvider({ children }: { children: React.ReactNode }) {
   const { acre } = useAcreContext()
   const {
     initStake: acreInitStake,
-    signMessage,
     btcAddress,
     depositReceipt,
     stake,
@@ -35,12 +33,11 @@ export function StakeFlowProvider({ children }: { children: React.ReactNode }) {
   const context = useMemo(
     () => ({
       initStake,
-      signMessage,
       btcAddress,
       depositReceipt,
       stake,
     }),
-    [initStake, signMessage, btcAddress, depositReceipt, stake],
+    [initStake, btcAddress, depositReceipt, stake],
   )
 
   return (
