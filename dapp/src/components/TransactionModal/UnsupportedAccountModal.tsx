@@ -65,7 +65,7 @@ export default function UnsupportedAccountModal({
               />
             </Box>
 
-            <TextSm
+            <TextSm // TODO: Display specific account type when possible
               as="span"
               ml={5}
               px={3}
