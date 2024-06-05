@@ -1,6 +1,7 @@
 import { Partner } from "#/types"
 import { useMemo, useCallback } from "react"
 import { isOfTypePartners } from "#/utils"
+import { EXTERNAL_HREF } from "#/constants"
 import { useLocalStorage } from "./useLocalStorage"
 
 export function usePartner() {
@@ -15,6 +16,9 @@ export function usePartner() {
 
     if (detectedPartner && isOfTypePartners(detectedPartner)) {
       setPartner(detectedPartner)
+    } else {
+      // TODO: Temporary solution - Update when designs for dApp are ready
+      window.open(EXTERNAL_HREF.ACRE, "_self")
     }
   }, [setPartner])
 
