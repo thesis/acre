@@ -2,12 +2,10 @@ import React from "react"
 import {
   Box,
   Button,
-  HStack,
   ModalBody,
   ModalCloseButton,
   ModalFooter,
   ModalHeader,
-  VStack,
 } from "@chakra-ui/react"
 import { TextMd, TextSm } from "#/components/shared/Typography"
 import { logPromiseFailure } from "#/utils"
