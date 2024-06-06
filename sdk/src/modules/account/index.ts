@@ -1,10 +1,9 @@
-import { AcreContracts } from "../../lib/contracts"
+import { AcreContracts, ChainIdentifier } from "../../lib/contracts"
 import StakeInitialization from "../staking"
 import { toSatoshi } from "../../lib/utils"
 import Tbtc from "../tbtc"
 import AcreSubgraphApi from "../../lib/api/AcreSubgraphApi"
 import { DepositStatus } from "../../lib/api/TbtcApi"
-import { AcreAccountIdentifier } from "../../lib/identifier-resolver"
 
 export { DepositReceipt } from "../tbtc"
 
@@ -57,19 +56,19 @@ export default class Account {
 
   readonly #bitcoinAddress: string
 
-  readonly #acreIdentifier: AcreAccountIdentifier
+  readonly #ethereumAddress: ChainIdentifier
 
   constructor(
     contracts: AcreContracts,
     tbtc: Tbtc,
     acreSubgraphApi: AcreSubgraphApi,
-    account: { bitcoinAddress: string; acreIdentifier: AcreAccountIdentifier },
+    account: { bitcoinAddress: string; ethereumAddress: ChainIdentifier },
   ) {
     this.#contracts = contracts
     this.#tbtc = tbtc
     this.#acreSubgraphApi = acreSubgraphApi
     this.#bitcoinAddress = account.bitcoinAddress
-    this.#acreIdentifier = account.acreIdentifier
+    this.#ethereumAddress = account.ethereumAddress
   }
 
   /**
@@ -92,7 +91,7 @@ export default class Account {
       bitcoinRecoveryAddress ?? this.#bitcoinAddress
 
     const tbtcDeposit = await this.#tbtc.initiateDeposit(
-      this.#acreIdentifier,
+      this.#ethereumAddress,
       finalBitcoinRecoveryAddress,
       referral,
     )
@@ -104,14 +103,14 @@ export default class Account {
    * @returns Value of the basis for calculating final BTC balance.
    */
   async sharesBalance() {
-    return this.#contracts.stBTC.balanceOf(this.#acreIdentifier)
+    return this.#contracts.stBTC.balanceOf(this.#ethereumAddress)
   }
 
   /**
    * @returns Maximum withdraw value.
    */
   async estimatedBitcoinBalance() {
-    return this.#contracts.stBTC.assetsBalanceOf(this.#acreIdentifier)
+    return this.#contracts.stBTC.assetsBalanceOf(this.#ethereumAddress)
   }
 
   /**
@@ -121,14 +120,14 @@ export default class Account {
    */
   async getDeposits(): Promise<Deposit[]> {
     const subgraphData = await this.#acreSubgraphApi.getDepositsByOwner(
-      this.#acreIdentifier,
+      this.#ethereumAddress,
     )
 
     const initializedOrFinalizedDepositsMap = new Map(
       subgraphData.map((data) => [data.depositKey, data]),
     )
 
-    const tbtcData = await this.#tbtc.getDepositsByOwner(this.#acreIdentifier)
+    const tbtcData = await this.#tbtc.getDepositsByOwner(this.#ethereumAddress)
 
     return tbtcData.map((deposit) => {
       const depositFromSubgraph = initializedOrFinalizedDepositsMap.get(

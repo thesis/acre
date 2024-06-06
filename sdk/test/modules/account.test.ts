@@ -74,7 +74,7 @@ describe("Account", () => {
 
   const account: Account = new Account(contracts, tbtc, acreSubgraph, {
     bitcoinAddress: bitcoinDepositorAddress,
-    acreIdentifier: predictedEthereumDepositorAddress,
+    ethereumAddress: predictedEthereumDepositorAddress,
   })
 
   describe("initializeStake", () => {
