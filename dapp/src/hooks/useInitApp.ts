@@ -7,9 +7,6 @@ export function useInitApp() {
   // useDetectThemeMode()
   useSentry()
   useInitializeAcreSdk()
-  useFetchBTCPriceUSD()
-  // Let's hide this logic and remove it when we no longer need it.
-  // useInitGlobalToasts()
-
   useInitDataFromSdk()
+  useFetchBTCPriceUSD()
 }

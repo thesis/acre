@@ -5,26 +5,20 @@ import {
   useDepositBTCTransaction,
   useExecuteFunction,
   useStakeFlowContext,
-  useToast,
   useVerifyDepositAddress,
 } from "#/hooks"
 import { logPromiseFailure } from "#/utils"
 import { PROCESS_STATUSES } from "#/types"
-import { TOASTS, TOAST_IDS } from "#/types/toast"
 import { Highlight } from "@chakra-ui/react"
 import { TextMd } from "#/components/shared/Typography"
 import { CardAlert } from "#/components/shared/alerts"
 import { setStatus, setTxHash } from "#/store/action-flow"
 import TriggerTransactionModal from "../TriggerTransactionModal"
 
-const TOAST_ID = TOAST_IDS.DEPOSIT_TRANSACTION_ERROR
-const TOAST = TOASTS[TOAST_ID]
-
 export default function DepositBTCModal() {
   const tokenAmount = useActionFlowTokenAmount()
   const { btcAddress, depositReceipt, stake } = useStakeFlowContext()
   const verifyDepositAddress = useVerifyDepositAddress()
-  const { closeToast, openToast } = useToast()
   const dispatch = useAppDispatch()
 
   const onStakeBTCSuccess = useCallback(() => {
@@ -42,18 +36,13 @@ export default function DepositBTCModal() {
   )
 
   const onDepositBTCSuccess = useCallback(() => {
-    closeToast(TOAST_ID)
     dispatch(setStatus(PROCESS_STATUSES.LOADING))
 
     logPromiseFailure(handleStake())
-  }, [closeToast, dispatch, handleStake])
+  }, [dispatch, handleStake])
 
-  const showError = useCallback(() => {
-    openToast({
-      id: TOAST_ID,
-      render: TOAST,
-    })
-  }, [openToast])
+  // TODO: Handle when the function fails
+  const showError = useCallback(() => {}, [])
 
   const onDepositBTCError = useCallback(() => showError(), [showError])
 
