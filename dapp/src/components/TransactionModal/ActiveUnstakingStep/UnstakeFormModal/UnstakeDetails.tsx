@@ -6,8 +6,8 @@ import { useTransactionDetails } from "#/hooks"
 import { CurrencyType } from "#/types"
 
 function UnstakeDetails({ currency }: { currency: CurrencyType }) {
-  const value = useTokenAmountFormValue()
-  const details = useTransactionDetails(value ?? 0n)
+  const value = useTokenAmountFormValue() ?? 0n
+  const details = useTransactionDetails(value)
 
   return (
     <List spacing={3} mt={10}>
@@ -15,7 +15,7 @@ function UnstakeDetails({ currency }: { currency: CurrencyType }) {
         label="Amount to be unstaked from the pool"
         from={{
           currency,
-          amount: details?.btcAmount,
+          amount: details.amount,
         }}
         to={{
           currency: "usd",
@@ -38,7 +38,7 @@ function UnstakeDetails({ currency }: { currency: CurrencyType }) {
         label="Approximately unstaked tokens"
         from={{
           currency,
-          amount: details?.estimatedAmount,
+          amount: details.estimatedAmount,
         }}
         to={{
           currency: "usd",
