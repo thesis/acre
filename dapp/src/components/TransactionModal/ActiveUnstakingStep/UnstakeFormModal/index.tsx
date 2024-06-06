@@ -3,13 +3,15 @@ import TokenAmountForm from "#/components/shared/TokenAmountForm"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { FormSubmitButton } from "#/components/shared/Form"
 import { BaseFormProps } from "#/types"
-import { useEstimatedBTCBalance } from "#/hooks"
+import { useEstimatedBTCBalance, useMinDepositAmount } from "#/hooks"
 import UnstakeDetails from "./UnstakeDetails"
 
 function UnstakeFormModal({
   onSubmitForm,
 }: BaseFormProps<TokenAmountFormValues>) {
   const balance = useEstimatedBTCBalance()
+  // TODO: Use the right value from SDK when the logic for the withdraw will be ready
+  const minTokenAmount = useMinDepositAmount()
 
   return (
     <TokenAmountForm
@@ -17,7 +19,7 @@ function UnstakeFormModal({
       currency="bitcoin"
       fiatCurrency="usd"
       tokenBalance={balance}
-      minTokenAmount={0n}
+      minTokenAmount={minTokenAmount}
       onSubmitForm={onSubmitForm}
     >
       <UnstakeDetails balance={balance ?? 0n} currency="bitcoin" />
