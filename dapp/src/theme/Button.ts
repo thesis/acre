@@ -15,6 +15,7 @@ export const buttonTheme: ComponentSingleStyleConfig = {
       fontSize: "md",
       py: 4,
       borderRadius: "lg",
+      h: 14,
     },
   },
   variants: {
