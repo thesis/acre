@@ -9,7 +9,7 @@
   "manifestVersion": "2",
   "branch": "stable",
   "categories": ["staking"],
-  "currencies": ["bitcoin", "bitcoin_testnet", "ethereum", "ethereum_sepolia"],
+  "currencies": ["bitcoin", "bitcoin_testnet"],
   "content": {
     "shortDescription": {
       "en": "Bitcoin Liquid Staking"

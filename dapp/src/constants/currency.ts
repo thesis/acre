@@ -14,13 +14,6 @@ export const STBTC: Currency = {
   symbol: "stBTC",
 }
 
-export const ETHEREUM: Currency = {
-  name: "Ethereum",
-  symbol: "ETH",
-  decimals: 18,
-  desiredDecimals: 2,
-}
-
 export const USD: Currency = {
   name: "United States Dollar",
   symbol: "USD",
@@ -33,7 +26,6 @@ export const CURRENCY_ID_BITCOIN =
 
 export const CURRENCIES_BY_TYPE: Record<CurrencyType, Currency> = {
   bitcoin: BITCOIN,
-  ethereum: ETHEREUM,
   usd: USD,
   stbtc: STBTC,
 }

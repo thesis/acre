@@ -1,6 +1,5 @@
 import { extendTheme } from "@chakra-ui/react"
 import { buttonTheme } from "./Button"
-import { switchTheme } from "./Switch"
 import {
   colors,
   fonts,
@@ -18,20 +17,14 @@ import { sidebarTheme } from "./Sidebar"
 import { currencyBalanceTheme } from "./CurrencyBalance"
 import { tokenBalanceInputTheme } from "./TokenBalanceInput"
 import { inputTheme } from "./Input"
-import { stepperTheme } from "./Stepper"
 import { alertTheme } from "./Alert"
 import { formTheme } from "./Form"
 import { formLabelTheme } from "./FormLabel"
 import { formErrorTheme } from "./FormError"
-import { tabsTheme } from "./Tabs"
 import { tagTheme } from "./Tag"
 import { spinnerTheme } from "./Spinner"
-import { tableTheme } from "./Table"
-import { currencyIconTheme } from "./CurrencyIcon"
-import { statusInfoTheme } from "./StatusInfo"
 import { linkTheme } from "./Link"
 import { skeletonTheme } from "./Skeleton"
-import { popoverTheme } from "./Popover"
 import { closeButtonTheme } from "./CloseButton"
 
 const defaultTheme = {
@@ -64,18 +57,11 @@ const defaultTheme = {
     Input: inputTheme,
     Link: linkTheme,
     Modal: modalTheme,
-    Popover: popoverTheme,
     Sidebar: sidebarTheme,
     Spinner: spinnerTheme,
-    Stepper: stepperTheme,
-    Switch: switchTheme,
-    Tabs: tabsTheme,
     Tag: tagTheme,
     TokenBalanceInput: tokenBalanceInputTheme,
     Tooltip: tooltipTheme,
-    Table: tableTheme,
-    CurrencyIcon: currencyIconTheme,
-    StatusInfo: statusInfoTheme,
     Skeleton: skeletonTheme,
   },
 }
