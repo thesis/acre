@@ -22,7 +22,7 @@ function UnstakeFormModal({
       minTokenAmount={minTokenAmount}
       onSubmitForm={onSubmitForm}
     >
-      <UnstakeDetails balance={balance ?? 0n} currency="bitcoin" />
+      <UnstakeDetails balance={balance} currency="bitcoin" />
       <FormSubmitButton mt={10}>Withdraw</FormSubmitButton>
     </TokenAmountForm>
   )
