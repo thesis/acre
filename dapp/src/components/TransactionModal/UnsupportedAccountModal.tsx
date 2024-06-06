@@ -6,6 +6,7 @@ import {
   ModalCloseButton,
   ModalFooter,
   ModalHeader,
+  Tag,
 } from "@chakra-ui/react"
 import { TextMd, TextSm } from "#/components/shared/Typography"
 import { logPromiseFailure } from "#/utils"
@@ -63,19 +64,18 @@ export default function UnsupportedAccountModal({
               />
             </Box>
 
-            <TextSm // TODO: Display specific account type when possible
-              as="span"
+            <Tag // TODO: Display specific account type when possible
               ml={5}
               px={3}
               py={2}
               rounded="1.125rem" // 18px
+              bg="transparent"
               color="red.400"
-              borderWidth="1px"
               borderColor="red.200"
               whiteSpace="nowrap"
             >
               Unsupported
-            </TextSm>
+            </Tag>
           </ErrorAlert>
         )}
 
