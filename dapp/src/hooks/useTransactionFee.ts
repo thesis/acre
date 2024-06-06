@@ -21,7 +21,7 @@ export function useTransactionFee(amount?: bigint) {
     } else {
       const getEstimatedDepositFee = async () => {
         if (!acre) return
-        const fee = await acre.account.estimateDepositFee(amount)
+        const fee = await acre.protocol.estimateDepositFee(amount)
 
         setDepositFee(fee)
       }

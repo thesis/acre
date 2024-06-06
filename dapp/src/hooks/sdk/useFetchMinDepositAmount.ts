@@ -12,7 +12,7 @@ export function useFetchMinDepositAmount() {
     if (!isInitialized || !acre) return
 
     const fetchMinDepositAmount = async () => {
-      const minDepositAmount = await acre.account.minDepositAmount()
+      const minDepositAmount = await acre.protocol.minDepositAmount()
 
       dispatch(setMinDepositAmount(minDepositAmount))
     }

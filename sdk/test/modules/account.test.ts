@@ -3,13 +3,10 @@ import {
   AcreContracts,
   Hex,
   Account,
-  DepositFees,
-  DepositFee,
   DepositStatus,
   StakeInitialization,
 } from "../../src"
 import { EthereumAddress } from "../../src/lib/ethereum"
-import * as satoshiConverter from "../../src/lib/utils/satoshi-converter"
 import { MockAcreContracts } from "../utils/mock-acre-contracts"
 import { MockTbtc } from "../utils/mock-tbtc"
 import { DepositReceipt } from "../../src/modules/tbtc"
@@ -22,13 +19,6 @@ const stakingModuleData: {
     mockedDepositBTCAddress: string
     bitcoinDepositorAddress: string
     predictedEthereumDepositorAddress: EthereumAddress
-  }
-  estimateDepositFees: {
-    amount: bigint
-    amountIn1e18: bigint
-    mockedDepositFees: DepositFees
-    stBTCDepositFee: bigint
-    expectedDepositFeesInSatoshi: DepositFee
   }
 } = {
   initializeDeposit: {
@@ -43,32 +33,6 @@ const stakingModuleData: {
     predictedEthereumDepositorAddress: EthereumAddress.from(
       "0x9996baD9C879B1643Ac921454815F93BadA090AB",
     ),
-  },
-  estimateDepositFees: {
-    amount: 10_000_000n, // 0.1 BTC,
-    // 0.1 tBTC in 1e18 precision.
-    amountIn1e18: 100000000000000000n,
-    mockedDepositFees: {
-      tbtc: {
-        // 0.00005 tBTC in 1e18 precision.
-        treasuryFee: 50000000000000n,
-        // 0.001 tBTC in 1e18 precision.
-        depositTxMaxFee: 1000000000000000n,
-        // 0.0001999 tBTC in 1e18 precision.
-        optimisticMintingFee: 199900000000000n,
-      },
-      acre: {
-        // 0.0001 tBTC in 1e18 precision.
-        bitcoinDepositorFee: 100000000000000n,
-      },
-    },
-    // 0.001 in 1e18 precison
-    stBTCDepositFee: 1000000000000000n,
-    expectedDepositFeesInSatoshi: {
-      tbtc: 124990n,
-      acre: 110000n,
-      total: 234990n,
-    },
   },
 }
 
@@ -273,98 +237,6 @@ describe("Account", () => {
 
     it("should return maximum withdraw value", () => {
       expect(result).toEqual(expectedResult)
-    })
-  })
-
-  describe("estimateDepositFees", () => {
-    const {
-      estimateDepositFees: {
-        amount,
-        amountIn1e18,
-        mockedDepositFees,
-        expectedDepositFeesInSatoshi,
-        stBTCDepositFee,
-      },
-    } = stakingModuleData
-
-    let result: DepositFee
-    const spyOnToSatoshi = jest.spyOn(satoshiConverter, "toSatoshi")
-    const spyOnFromSatoshi = jest.spyOn(satoshiConverter, "fromSatoshi")
-
-    beforeAll(async () => {
-      contracts.bitcoinDepositor.calculateDepositFee = jest
-        .fn()
-        .mockResolvedValue(mockedDepositFees)
-
-      contracts.stBTC.calculateDepositFee = jest
-        .fn()
-        .mockResolvedValue(stBTCDepositFee)
-
-      result = await account.estimateDepositFee(amount)
-    })
-
-    it("should convert provided amount from satoshi to token precision", () => {
-      expect(spyOnFromSatoshi).toHaveBeenNthCalledWith(1, amount)
-    })
-
-    it("should get the deposit fees from Acre Bitcoin Depositor contract handle", () => {
-      expect(
-        contracts.bitcoinDepositor.calculateDepositFee,
-      ).toHaveBeenCalledWith(amountIn1e18)
-    })
-
-    it("should get the stBTC deposit fee", () => {
-      expect(contracts.stBTC.calculateDepositFee).toHaveBeenCalledWith(
-        amountIn1e18,
-      )
-    })
-
-    it("should convert tBTC network fees to satoshi", () => {
-      const {
-        tbtc: { depositTxMaxFee, treasuryFee, optimisticMintingFee },
-      } = mockedDepositFees
-      const totalTbtcFees = depositTxMaxFee + treasuryFee + optimisticMintingFee
-
-      expect(spyOnToSatoshi).toHaveBeenNthCalledWith(1, totalTbtcFees)
-    })
-
-    it("should convert Acre network fees to satoshi", () => {
-      const {
-        acre: { bitcoinDepositorFee },
-      } = mockedDepositFees
-      const totalAcreFees = bitcoinDepositorFee
-
-      expect(spyOnToSatoshi).toHaveBeenNthCalledWith(2, totalAcreFees)
-    })
-
-    it("should return the deposit fees in satoshi precision", () => {
-      expect(result).toMatchObject(expectedDepositFeesInSatoshi)
-    })
-  })
-
-  describe("minDepositAmount", () => {
-    describe("should return minimum deposit amount", () => {
-      const spyOnToSatoshi = jest.spyOn(satoshiConverter, "toSatoshi")
-      const mockedResult = BigInt(0.015 * 1e18)
-      // The returned result should be in satoshi precision
-      const expectedResult = BigInt(0.015 * 1e8)
-      let result: bigint
-
-      beforeAll(async () => {
-        contracts.bitcoinDepositor.minDepositAmount = jest
-          .fn()
-          .mockResolvedValue(mockedResult)
-        result = await account.minDepositAmount()
-      })
-
-      it("should convert value to 1e8 satoshi precision", () => {
-        expect(spyOnToSatoshi).toHaveBeenCalledWith(mockedResult)
-        expect(spyOnToSatoshi).toHaveReturnedWith(expectedResult)
-      })
-
-      it(`should return ${expectedResult}`, () => {
-        expect(result).toBe(expectedResult)
-      })
     })
   })
 

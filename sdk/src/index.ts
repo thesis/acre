@@ -8,4 +8,7 @@ export { default as Account } from "./modules/account"
 
 export { default as StakeInitialization } from "./modules/staking"
 
+export { default as Protocol } from "./modules/protocol"
+export * from "./modules/protocol"
+
 export * from "./acre"

@@ -9,6 +9,7 @@ import { BitcoinProvider, BitcoinNetwork } from "./lib/bitcoin"
 import { getChainIdByNetwork } from "./lib/ethereum/network"
 import AcreSubgraphApi from "./lib/api/AcreSubgraphApi"
 import AcreIdentifierResolver from "./lib/identifier-resolver"
+import Protocol from "./modules/protocol"
 
 class Acre {
   readonly #tbtc: Tbtc
@@ -17,11 +18,13 @@ class Acre {
 
   readonly #bitcoinProvider: BitcoinProvider
 
+  readonly #acreSubgraph: AcreSubgraphApi
+
   public readonly contracts: AcreContracts
 
   public readonly account: Account
 
-  readonly #acreSubgraph: AcreSubgraphApi
+  public readonly protocol: Protocol
 
   private constructor(
     contracts: AcreContracts,
@@ -30,6 +33,7 @@ class Acre {
     tbtc: Tbtc,
     acreSubgraphApi: AcreSubgraphApi,
     account: Account,
+    protocol: Protocol,
   ) {
     this.contracts = contracts
     this.#tbtc = tbtc
@@ -37,6 +41,7 @@ class Acre {
     this.#acreSubgraph = acreSubgraphApi
     this.#bitcoinProvider = bitcoinProvider
     this.account = account
+    this.protocol = protocol
   }
 
   static async initialize(
@@ -84,6 +89,7 @@ class Acre {
       bitcoinAddress: associatedBitcoinAddress,
       acreIdentifier,
     })
+    const protocol = new Protocol(contracts)
 
     return new Acre(
       contracts,
@@ -92,6 +98,7 @@ class Acre {
       tbtc,
       subgraph,
       account,
+      protocol,
     )
   }
 }
