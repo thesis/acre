@@ -7,13 +7,11 @@ import {
   useRequestBitcoinAccount,
   useWalletContext,
 } from "#/hooks"
-import { BitcoinIcon } from "#/assets/icons"
 import { PROCESS_STATUSES } from "#/types"
 import { isSupportedBTCAddressType } from "#/utils"
 import ActionFormModal from "./ActionFormModal"
 import ErrorModal from "./ErrorModal"
 import LoadingModal from "./LoadingModal"
-import MissingAccountModal from "./MissingAccountModal"
 import SuccessModal from "./SuccessModal"
 import UnsupportedAccountModal from "./UnsupportedAccountModal"
 
@@ -29,16 +27,7 @@ export default function ModalContentWrapper({
   const tokenAmount = useActionFlowTokenAmount()
   const txHash = useActionFlowTxHash()
 
-  if (!btcAccount)
-    return (
-      <MissingAccountModal
-        currency="bitcoin"
-        icon={BitcoinIcon}
-        requestAccount={requestBitcoinAccount}
-      />
-    )
-
-  if (!isSupportedBTCAddressType(btcAccount.address))
+  if (btcAccount && !isSupportedBTCAddressType(btcAccount.address))
     return (
       <UnsupportedAccountModal
         account={btcAccount}
