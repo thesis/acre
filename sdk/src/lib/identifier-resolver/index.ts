@@ -3,24 +3,33 @@ import { EthereumAddress } from "../ethereum"
 import { BitcoinProvider } from "../bitcoin"
 import { ChainIdentifier } from "../contracts"
 
-type AcreUserIdentifier = ChainIdentifier
+export type AcreAccountIdentifier = ChainIdentifier
 
 type BitcoinAddress = string
 
-type AcreIdentifierCache = Map<BitcoinAddress, AcreUserIdentifier>
+type AcreIdentifierCache = Map<BitcoinAddress, AcreAccountIdentifier>
 
-const cache: AcreIdentifierCache = new Map()
+const cache: AcreIdentifierCache = new Map<
+  BitcoinAddress,
+  AcreAccountIdentifier
+>()
 
 async function toAcreIdentifier(
   bitcoinProvider: BitcoinProvider,
   orangeKit: OrangeKitSdk,
-): Promise<AcreUserIdentifier> {
+): Promise<{
+  identifier: AcreAccountIdentifier
+  associatedBitcoinAddress: BitcoinAddress
+}> {
   const bitcoinAddress = await bitcoinProvider.getAddress()
 
   const cachedIdentifier = cache.get(bitcoinAddress)
 
   if (cachedIdentifier) {
-    return cachedIdentifier
+    return {
+      identifier: cachedIdentifier,
+      associatedBitcoinAddress: bitcoinAddress,
+    }
   }
 
   const identifier = EthereumAddress.from(
@@ -29,7 +38,7 @@ async function toAcreIdentifier(
 
   cache.set(bitcoinAddress, identifier)
 
-  return identifier
+  return { identifier, associatedBitcoinAddress: bitcoinAddress }
 }
 
 const AcreIdentifierResolver = {

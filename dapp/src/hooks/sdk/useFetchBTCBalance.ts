@@ -12,9 +12,9 @@ export function useFetchBTCBalance() {
     const getBtcBalance = async () => {
       if (!isInitialized || !acre) return
 
-      const sharesBalance = await acre.staking.sharesBalance()
+      const sharesBalance = await acre.account.sharesBalance()
       const estimatedBitcoinBalance =
-        await acre.staking.estimatedBitcoinBalance()
+        await acre.account.estimatedBitcoinBalance()
 
       dispatch(setSharesBalance(sharesBalance))
       dispatch(setEstimatedBtcBalance(estimatedBitcoinBalance))

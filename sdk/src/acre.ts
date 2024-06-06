@@ -62,13 +62,10 @@ class Acre {
       ethereumRpcUrl,
     )
 
-    const depositOwnerEvmAddress =
+    const { identifier: acreIdentifier, associatedBitcoinAddress } =
       await AcreIdentifierResolver.toAcreIdentifier(bitcoinProvider, orangeKit)
 
-    const signer = new VoidSigner(
-      depositOwnerEvmAddress.identifierHex,
-      ethersProvider,
-    )
+    const signer = new VoidSigner(acreIdentifier.identifierHex, ethersProvider)
 
     const contracts = getEthereumContracts(signer, ethereumNetwork)
 
@@ -83,13 +80,10 @@ class Acre {
       "https://api.studio.thegraph.com/query/73600/acre/version/latest",
     )
 
-    const account = await Account.initialize(
-      contracts,
-      bitcoinProvider,
-      orangeKit,
-      tbtc,
-      subgraph,
-    )
+    const account = new Account(contracts, tbtc, subgraph, {
+      bitcoinAddress: associatedBitcoinAddress,
+      acreIdentifier,
+    })
 
     return new Acre(
       contracts,

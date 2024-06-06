@@ -11,10 +11,8 @@ import {
 import { EthereumAddress } from "../../src/lib/ethereum"
 import * as satoshiConverter from "../../src/lib/utils/satoshi-converter"
 import { MockAcreContracts } from "../utils/mock-acre-contracts"
-import { MockOrangeKitSdk } from "../utils/mock-orangekit"
 import { MockTbtc } from "../utils/mock-tbtc"
 import { DepositReceipt } from "../../src/modules/tbtc"
-import { MockBitcoinProvider } from "../utils/mock-bitcoin-provider"
 import AcreSubgraphApi from "../../src/lib/api/AcreSubgraphApi"
 
 const stakingModuleData: {
@@ -104,34 +102,15 @@ const stakingInitializationData: {
 
 describe("Account", () => {
   const contracts: AcreContracts = new MockAcreContracts()
-  const bitcoinProvider = new MockBitcoinProvider()
-  const orangeKit = new MockOrangeKitSdk()
   const tbtc = new MockTbtc()
   const acreSubgraph = new AcreSubgraphApi("test")
 
   const { bitcoinDepositorAddress, predictedEthereumDepositorAddress } =
     stakingModuleData.initializeDeposit
 
-  bitcoinProvider.getAddress.mockResolvedValue(
-    stakingModuleData.initializeDeposit.bitcoinDepositorAddress,
-  )
-
-  orangeKit.predictAddress = jest
-    .fn()
-    .mockResolvedValue(`0x${predictedEthereumDepositorAddress.identifierHex}`)
-
-  let account: Account
-
-  beforeEach(async () => {
-    account = await Account.initialize(
-      contracts,
-      bitcoinProvider,
-      // @ts-expect-error Error: Property '#private' is missing in type
-      // 'MockOrangeKitSdk' but required in type 'OrangeKitSdk'.
-      orangeKit,
-      tbtc,
-      acreSubgraph,
-    )
+  const account: Account = new Account(contracts, tbtc, acreSubgraph, {
+    bitcoinAddress: bitcoinDepositorAddress,
+    acreIdentifier: predictedEthereumDepositorAddress,
   })
 
   describe("initializeStake", () => {
@@ -181,16 +160,6 @@ describe("Account", () => {
           result = await account.initializeStake(
             referral,
             bitcoinRecoveryAddress,
-          )
-        })
-
-        it("should get the bitcoin address from bitcoin provider", () => {
-          expect(bitcoinProvider.getAddress).toHaveBeenCalled()
-        })
-
-        it("should get Ethereum depositor owner address", () => {
-          expect(orangeKit.predictAddress).toHaveBeenCalledWith(
-            bitcoinDepositorAddress,
           )
         })
 
@@ -463,16 +432,6 @@ describe("Account", () => {
         .mockResolvedValue([queuedDeposit, finalizedDeposit.tbtc])
 
       result = await account.getDeposits()
-    })
-
-    it("should get the bitcoin address from bitcoin provider", () => {
-      expect(bitcoinProvider.getAddress).toHaveBeenCalled()
-    })
-
-    it("should get Ethereum depositor owner address", () => {
-      expect(orangeKit.predictAddress).toHaveBeenCalledWith(
-        bitcoinDepositorAddress,
-      )
     })
 
     it("should get deposits from subgraph", () => {

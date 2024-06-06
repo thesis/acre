@@ -1,17 +1,10 @@
-import { OrangeKitSdk } from "@orangekit/sdk"
-import {
-  AcreContracts,
-  DepositFees,
-  ChainIdentifier,
-} from "../../lib/contracts"
+import { AcreContracts, DepositFees } from "../../lib/contracts"
 import StakeInitialization from "../staking"
 import { fromSatoshi, toSatoshi } from "../../lib/utils"
 import Tbtc from "../tbtc"
-import { BitcoinProvider } from "../../lib/bitcoin/providers"
 import AcreSubgraphApi from "../../lib/api/AcreSubgraphApi"
 import { DepositStatus } from "../../lib/api/TbtcApi"
-
-import { EthereumAddress } from "../../lib/ethereum"
+import { AcreAccountIdentifier } from "../../lib/identifier-resolver"
 
 export { DepositReceipt } from "../tbtc"
 
@@ -52,8 +45,6 @@ export type Deposit = {
   timestamp: number
 }
 
-type AcreAccountIdentifier = ChainIdentifier
-
 /**
  * Module exposing features related to the account.
  */
@@ -77,40 +68,17 @@ export default class Account {
 
   readonly #acreIdentifier: AcreAccountIdentifier
 
-  static async initialize(
-    contracts: AcreContracts,
-    bitcoinProvider: BitcoinProvider,
-    orangeKit: OrangeKitSdk,
-    tbtc: Tbtc,
-    acreSubgraphApi: AcreSubgraphApi,
-  ) {
-    const bitcoinAddress = await bitcoinProvider.getAddress()
-
-    const identifier = EthereumAddress.from(
-      await orangeKit.predictAddress(bitcoinAddress),
-    )
-
-    return new Account(
-      contracts,
-      tbtc,
-      acreSubgraphApi,
-      bitcoinAddress,
-      identifier,
-    )
-  }
-
-  private constructor(
+  constructor(
     contracts: AcreContracts,
     tbtc: Tbtc,
     acreSubgraphApi: AcreSubgraphApi,
-    bitcoinAddress: string,
-    acreIdentifier: AcreAccountIdentifier,
+    account: { bitcoinAddress: string; acreIdentifier: AcreAccountIdentifier },
   ) {
     this.#contracts = contracts
     this.#tbtc = tbtc
     this.#acreSubgraphApi = acreSubgraphApi
-    this.#bitcoinAddress = bitcoinAddress
-    this.#acreIdentifier = acreIdentifier
+    this.#bitcoinAddress = account.bitcoinAddress
+    this.#acreIdentifier = account.acreIdentifier
   }
 
   /**

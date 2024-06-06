@@ -1,7 +1,6 @@
 import { MockBitcoinProvider } from "../utils/mock-bitcoin-provider"
 import { MockOrangeKitSdk } from "../utils/mock-orangekit"
 import { EthereumAddress } from "../../src/lib/ethereum"
-import { ChainIdentifier } from "../../src/lib/contracts/chain-identifier"
 import AcreIdentifierResolver from "../../src/lib/identifier-resolver"
 
 describe("AcreIdentifierResolver", () => {
@@ -14,7 +13,9 @@ describe("AcreIdentifierResolver", () => {
       const identifier = EthereumAddress.from(
         "0x766C69E751460070b160aF93Cbec51ccd77ff4A2",
       )
-      let result: ChainIdentifier
+      let result: Awaited<
+        ReturnType<typeof AcreIdentifierResolver.toAcreIdentifier>
+      >
 
       beforeAll(async () => {
         bitcoinProvider.getAddress.mockResolvedValue(bitcoinAddress)
@@ -43,7 +44,8 @@ describe("AcreIdentifierResolver", () => {
       })
 
       it("should return the correct identifier", () => {
-        expect(result.equals(identifier)).toBeTruthy()
+        expect(result.identifier.equals(identifier)).toBeTruthy()
+        expect(result.associatedBitcoinAddress).toBe(bitcoinAddress)
       })
     })
 
@@ -52,7 +54,9 @@ describe("AcreIdentifierResolver", () => {
       const identifier = EthereumAddress.from(
         "0x8fC860a219A401BCe1Fb97EB510Efb35f59c8211",
       )
-      let result: ChainIdentifier
+      let result: Awaited<
+        ReturnType<typeof AcreIdentifierResolver.toAcreIdentifier>
+      >
 
       beforeAll(async () => {
         bitcoinProvider.getAddress.mockResolvedValue(bitcoinAddress)
@@ -83,8 +87,9 @@ describe("AcreIdentifierResolver", () => {
         expect(orangeKit.predictAddress).toHaveReturnedTimes(1)
       })
 
-      it("should return the identifier from cache", () => {
-        expect(result.equals(identifier)).toBeTruthy()
+      it("should return the correct identifier", () => {
+        expect(result.identifier.equals(identifier)).toBeTruthy()
+        expect(result.associatedBitcoinAddress).toBe(bitcoinAddress)
       })
     })
   })
