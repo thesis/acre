@@ -1,28 +1,40 @@
 import React from "react"
-import { List } from "@chakra-ui/react"
+import { Flex, List } from "@chakra-ui/react"
 import TransactionDetailsAmountItem from "#/components/shared/TransactionDetails/AmountItem"
-import { useTokenAmountFormValue } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
+import { useTokenAmountFormMeta } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { useTransactionDetails } from "#/hooks"
 import { CurrencyType } from "#/types"
+import { featureFlags } from "#/constants"
+import WithdrawWarning from "./WithdrawWarning"
 
-function UnstakeDetails({ currency }: { currency: CurrencyType }) {
-  const value = useTokenAmountFormValue()
-  const details = useTransactionDetails(value ?? 0n)
+function UnstakeDetails({
+  balance,
+  currency,
+}: {
+  balance: bigint
+  currency: CurrencyType
+}) {
+  const value = useTokenAmountFormMeta()?.value ?? 0n
+  const details = useTransactionDetails(value)
 
   return (
-    <List spacing={3} mt={10}>
-      <TransactionDetailsAmountItem
-        label="Amount to be unstaked from the pool"
-        from={{
-          currency,
-          amount: details?.btcAmount,
-        }}
-        to={{
-          currency: "usd",
-        }}
-      />
-      {/* TODO: Uncomment when unstaking fees are ready.  */}
-      {/* <FeesDetailsAmountItem
+    <Flex flexDirection="column" gap={10} mt={4}>
+      {featureFlags.GAMIFICATION_ENABLED && (
+        <WithdrawWarning balance={balance} currency={currency} />
+      )}
+      <List spacing={3}>
+        <TransactionDetailsAmountItem
+          label="Withdraw from pool"
+          from={{
+            currency,
+            amount: details?.btcAmount,
+          }}
+          to={{
+            currency: "usd",
+          }}
+        />
+        {/* TODO: Uncomment when unstaking fees are ready.  */}
+        {/* <FeesDetailsAmountItem
         label="Fees"
         sublabel="How are fees calculated?"
         tooltip={<FeesTooltip fees={{}} />}
@@ -34,17 +46,18 @@ function UnstakeDetails({ currency }: { currency: CurrencyType }) {
           currency: "usd",
         }}
       /> */}
-      <TransactionDetailsAmountItem
-        label="Approximately unstaked tokens"
-        from={{
-          currency,
-          amount: details?.estimatedAmount,
-        }}
-        to={{
-          currency: "usd",
-        }}
-      />
-    </List>
+        <TransactionDetailsAmountItem
+          label="You will receive"
+          from={{
+            currency,
+            amount: details?.estimatedAmount,
+          }}
+          to={{
+            currency: "usd",
+          }}
+        />
+      </List>
+    </Flex>
   )
 }
 

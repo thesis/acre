@@ -2,7 +2,6 @@ import React from "react"
 import {
   useActionFlowStatus,
   useActionFlowTokenAmount,
-  useActionFlowTxHash,
   useActionFlowType,
   useRequestBitcoinAccount,
   useWalletContext,
@@ -26,7 +25,6 @@ export default function ModalContentWrapper({
   const status = useActionFlowStatus()
   const type = useActionFlowType()
   const tokenAmount = useActionFlowTokenAmount()
-  const txHash = useActionFlowTxHash()
 
   if (!btcAccount || !isSupportedBTCAddressType(btcAccount.address))
     return (
@@ -41,10 +39,7 @@ export default function ModalContentWrapper({
 
   if (status === PROCESS_STATUSES.LOADING) return <LoadingModal />
 
-  if (status === PROCESS_STATUSES.SUCCEEDED && txHash)
-    return (
-      <SuccessModal type={type} tokenAmount={tokenAmount} txHash={txHash} />
-    )
+  if (status === PROCESS_STATUSES.SUCCEEDED) return <SuccessModal type={type} />
 
   if (status === PROCESS_STATUSES.FAILED) return <ErrorModal type={type} />
 
