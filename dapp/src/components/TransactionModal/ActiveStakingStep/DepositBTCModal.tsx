@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect } from "react"
 import {
+  useActionFlowPause,
   useActionFlowTokenAmount,
   useAppDispatch,
   useDepositBTCTransaction,
@@ -8,7 +9,7 @@ import {
   useVerifyDepositAddress,
 } from "#/hooks"
 import { logPromiseFailure } from "#/utils"
-import { PROCESS_STATUSES } from "#/types"
+import { PROCESS_STATUSES, TransactionError } from "#/types"
 import { ModalBody, ModalHeader, Highlight, useTimeout } from "@chakra-ui/react"
 import Spinner from "#/components/shared/Spinner"
 import { TextMd } from "#/components/shared/Typography"
@@ -23,6 +24,7 @@ export default function DepositBTCModal() {
   const { btcAddress, depositReceipt, stake } = useStakeFlowContext()
   const verifyDepositAddress = useVerifyDepositAddress()
   const dispatch = useAppDispatch()
+  const { handlePause } = useActionFlowPause()
 
   const onStakeBTCSuccess = useCallback(() => {
     dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED))
@@ -45,9 +47,21 @@ export default function DepositBTCModal() {
   }, [dispatch, handleStake])
 
   // TODO: Handle when the function fails
-  const showError = useCallback(() => {}, [])
+  const showError = useCallback((error?: TransactionError) => {
+    console.error(error)
+  }, [])
 
-  const onDepositBTCError = useCallback(() => showError(), [showError])
+  const onDepositBTCError = useCallback(
+    (error: TransactionError) => {
+      // TODO: Find a better way to distinguish between error types
+      const isInterrupted =
+        error?.message && error.message.includes("interrupted")
+      if (isInterrupted) handlePause()
+
+      showError(error)
+    },
+    [showError, handlePause],
+  )
 
   const { sendBitcoinTransaction, transactionHash } = useDepositBTCTransaction(
     onDepositBTCSuccess,
