@@ -60,7 +60,7 @@ export default class Protocol {
   /**
    * @returns Minimum deposit amount in 1e8 satoshi precision.
    */
-  async minDepositAmount() {
+  async minimumDepositAmount() {
     const value = await this.#contracts.bitcoinDepositor.minDepositAmount()
     return toSatoshi(value)
   }

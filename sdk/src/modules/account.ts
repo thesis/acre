@@ -100,7 +100,8 @@ export default class Account {
   }
 
   /**
-   * @returns Value of the basis for calculating final BTC balance.
+   * @returns Value of the basis for calculating final BTC balance in 1e18
+   *          precision.
    */
   async sharesBalance() {
     return this.#contracts.stBTC.balanceOf(this.#ethereumAddress)
