@@ -1,8 +1,19 @@
 import React from "react"
 import { TextProps } from "@chakra-ui/react"
-import { getPaginationState } from "#/components/TransactionHistory/Table/utils"
 import { usePagination } from "#/hooks"
 import { TextSm } from "../Typography"
+
+// TODO: move to top level `utils` directory
+const getPaginationState = (
+  pageIndex: number,
+  pageSize: number,
+  rowCount: number,
+) => {
+  const rowMin = pageIndex * pageSize + 1
+  const rowMax = Math.min((pageIndex + 1) * pageSize, rowCount)
+
+  return { rowMin, rowMax }
+}
 
 type PaginationStatusProps = TextProps & {
   dataLabel?: string

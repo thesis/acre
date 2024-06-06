@@ -1,6 +1,5 @@
 import React from "react"
 import Layout from "#/components/Layout"
-import ActivityPage from "#/pages/ActivityPage"
 import DashboardPage from "#/pages/DashboardPage"
 import LandingPage from "#/pages/LandingPage"
 import { createBrowserRouter } from "react-router-dom"
@@ -19,10 +18,6 @@ export const router = createBrowserRouter([
       {
         path: routerPath.dashboard,
         element: <DashboardPage />,
-      },
-      {
-        path: `${routerPath.activity}/:activityId`,
-        element: <ActivityPage />,
       },
     ],
   },

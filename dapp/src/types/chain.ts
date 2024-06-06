@@ -1,3 +1,3 @@
-export type Chain = "bitcoin" | "ethereum"
+export type Chain = "bitcoin"
 
 export type ExplorerDataType = "transaction"

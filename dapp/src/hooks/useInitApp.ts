@@ -9,9 +9,6 @@ export function useInitApp() {
   useSentry()
   useDetectPartner()
   useInitializeAcreSdk()
-  useFetchBTCPriceUSD()
-  // Let's hide this logic and remove it when we no longer need it.
-  // useInitGlobalToasts()
-
   useInitDataFromSdk()
+  useFetchBTCPriceUSD()
 }
