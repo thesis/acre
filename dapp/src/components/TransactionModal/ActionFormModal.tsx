@@ -12,16 +12,16 @@ const FORM_DATA: Record<
   ActionFlowType,
   {
     heading: string
-    renderComponent: (props: BaseFormProps<TokenAmountFormValues>) => ReactNode
+    FormComponent: (props: BaseFormProps<TokenAmountFormValues>) => ReactNode
   }
 > = {
   [ACTION_FLOW_TYPES.STAKE]: {
     heading: "Deposit",
-    renderComponent: StakeFormModal,
+    FormComponent: StakeFormModal,
   },
   [ACTION_FLOW_TYPES.UNSTAKE]: {
     heading: "Withdraw",
-    renderComponent: UnstakeFormModal,
+    FormComponent: UnstakeFormModal,
   },
 }
 
@@ -31,7 +31,7 @@ function ActionFormModal({ type }: { type: ActionFlowType }) {
 
   const [isLoading, setIsLoading] = useState(false)
 
-  const { heading, renderComponent } = FORM_DATA[type]
+  const { heading, FormComponent } = FORM_DATA[type]
 
   const handleInitStake = useCallback(async () => {
     await initStake()
@@ -68,9 +68,7 @@ function ActionFormModal({ type }: { type: ActionFlowType }) {
       <ModalHeader>{heading}</ModalHeader>
       <ModalBody>
         <Box w="100%">
-          {renderComponent({
-            onSubmitForm: handleSubmitFormWrapper,
-          })}
+          <FormComponent onSubmitForm={handleSubmitFormWrapper} />
         </Box>
       </ModalBody>
     </>
