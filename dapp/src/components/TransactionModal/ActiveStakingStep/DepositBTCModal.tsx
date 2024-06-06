@@ -9,7 +9,7 @@ import {
   useVerifyDepositAddress,
 } from "#/hooks"
 import { logPromiseFailure } from "#/utils"
-import { PROCESS_STATUSES, TransactionError } from "#/types"
+import { OnErrorCallback, PROCESS_STATUSES, TransactionError } from "#/types"
 import { ModalBody, ModalHeader, Highlight, useTimeout } from "@chakra-ui/react"
 import Spinner from "#/components/shared/Spinner"
 import { TextMd } from "#/components/shared/Typography"
@@ -54,8 +54,7 @@ export default function DepositBTCModal() {
   const onDepositBTCError = useCallback(
     (error: TransactionError) => {
       // TODO: Find a better way to distinguish between error types
-      const isInterrupted =
-        error?.message && error.message.includes("interrupted")
+      const isInterrupted = error.message?.includes("interrupted")
       if (isInterrupted) handlePause()
 
       showError(error)
@@ -65,7 +64,7 @@ export default function DepositBTCModal() {
 
   const { sendBitcoinTransaction, transactionHash } = useDepositBTCTransaction(
     onDepositBTCSuccess,
-    onDepositBTCError,
+    onDepositBTCError as OnErrorCallback,
   )
 
   useEffect(() => {
