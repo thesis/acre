@@ -2,7 +2,7 @@ import React from "react"
 import { List } from "@chakra-ui/react"
 import TransactionDetailsAmountItem from "#/components/shared/TransactionDetails/AmountItem"
 import FeesDetailsAmountItem from "#/components/shared/FeesDetails/FeesItem"
-import { useTokenAmountFormValue } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
+import { useTokenAmountFormMeta } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { FeesTooltip } from "#/components/TransactionModal/FeesTooltip"
 import { useTransactionDetails } from "#/hooks"
 import { CurrencyType, DepositFee } from "#/types"
@@ -28,7 +28,7 @@ function StakeDetails({
   minTokenAmount: bigint
   maxTokenAmount: bigint
 }) {
-  const value = useTokenAmountFormValue() ?? 0n
+  const value = useTokenAmountFormMeta()?.value ?? 0n
   const isMaximumValueExceeded = value > maxTokenAmount
   const isMinimumValueFulfilled = value >= minTokenAmount
   // Let's not calculate the details of the transaction when the value is not valid.

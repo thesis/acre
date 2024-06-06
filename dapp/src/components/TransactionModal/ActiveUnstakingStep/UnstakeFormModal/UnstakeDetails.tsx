@@ -1,7 +1,7 @@
 import React from "react"
 import { Flex, List } from "@chakra-ui/react"
 import TransactionDetailsAmountItem from "#/components/shared/TransactionDetails/AmountItem"
-import { useTokenAmountFormValue } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
+import { useTokenAmountFormMeta } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { useTransactionDetails } from "#/hooks"
 import { CurrencyType } from "#/types"
 import { featureFlags } from "#/constants"
@@ -14,13 +14,13 @@ function UnstakeDetails({
   balance: bigint
   currency: CurrencyType
 }) {
-  const value = useTokenAmountFormValue() ?? 0n
+  const value = useTokenAmountFormMeta()?.value ?? 0n
   const details = useTransactionDetails(value)
 
   return (
     <Flex flexDirection="column" gap={10} mt={4}>
       {featureFlags.GAMIFICATION_ENABLED && (
-        <WithdrawWarning balance={balance} currency={currency} amount={value} />
+        <WithdrawWarning balance={balance} currency={currency} />
       )}
       <List spacing={3}>
         <TransactionDetailsAmountItem
