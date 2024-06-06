@@ -111,10 +111,12 @@ export default class Account {
   }
 
   /**
-   * @returns Maximum withdraw value.
+   * @returns Maximum withdraw value in 1e8 satoshi precision.
    */
   async estimatedBitcoinBalance() {
-    return this.#contracts.stBTC.assetsBalanceOf(this.#ethereumAddress)
+    return toSatoshi(
+      await this.#contracts.stBTC.assetsBalanceOf(this.#ethereumAddress),
+    )
   }
 
   /**

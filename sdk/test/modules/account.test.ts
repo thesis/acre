@@ -11,6 +11,7 @@ import { MockAcreContracts } from "../utils/mock-acre-contracts"
 import { MockTbtc } from "../utils/mock-tbtc"
 import { DepositReceipt } from "../../src/modules/tbtc"
 import AcreSubgraphApi from "../../src/lib/api/AcreSubgraphApi"
+import * as satoshiConverter from "../../src/lib/utils/satoshi-converter"
 
 const stakingModuleData: {
   initializeDeposit: {
@@ -219,20 +220,27 @@ describe("Account", () => {
   })
 
   describe("estimatedBitcoinBalance", () => {
-    const expectedResult = 4294967295n
+    const mockedAssetsBalance = 1234567891230000000n
+    const expectedResult = 123456789n
     const depositor = predictedEthereumDepositorAddress
+    const spyOnToSatoshi = jest.spyOn(satoshiConverter, "toSatoshi")
+
     let result: bigint
 
     beforeAll(async () => {
       contracts.stBTC.assetsBalanceOf = jest
         .fn()
-        .mockResolvedValue(expectedResult)
+        .mockResolvedValue(mockedAssetsBalance)
 
       result = await account.estimatedBitcoinBalance()
     })
 
     it("should get staker's balance of tBTC tokens in vault", () => {
       expect(contracts.stBTC.assetsBalanceOf).toHaveBeenCalledWith(depositor)
+    })
+
+    it("should convert to satoshi", () => {
+      expect(spyOnToSatoshi).toHaveBeenCalledWith(mockedAssetsBalance)
     })
 
     it("should return maximum withdraw value", () => {

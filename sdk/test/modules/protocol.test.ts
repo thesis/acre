@@ -1,4 +1,4 @@
-import Protocol from "./protocol"
+import Protocol from "../../src/modules/protocol"
 import { AcreContracts, DepositFee } from "../../src"
 import * as satoshiConverter from "../../src/lib/utils/satoshi-converter"
 import { MockAcreContracts } from "../utils/mock-acre-contracts"
@@ -49,7 +49,7 @@ describe("Protocol", () => {
       contracts.bitcoinDepositor.minDepositAmount = jest
         .fn()
         .mockResolvedValue(mockedResult)
-      result = await protocol.minDepositAmount()
+      result = await protocol.minimumDepositAmount()
     })
 
     it("should convert value to 1e8 satoshi precision", () => {
