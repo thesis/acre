@@ -30,16 +30,10 @@ export default function ResumeModal() {
         <TextMd>Are your sure you want to cancel?</TextMd>
       </ModalBody>
       <ModalFooter flexDirection="column" gap={2}>
-        <Button size="lg" h={14} width="100%" onClick={handleResume}>
+        <Button size="lg" width="100%" onClick={handleResume}>
           Resume deposit
         </Button>
-        <Button
-          size="lg"
-          h={14}
-          width="100%"
-          variant="outline"
-          onClick={closeModal}
-        >
+        <Button size="lg" width="100%" variant="outline" onClick={closeModal}>
           Yes, cancel
         </Button>
       </ModalFooter>
