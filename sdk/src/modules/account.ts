@@ -84,7 +84,10 @@ export default class Account {
    *        tBTC Bridge recovery address.
    * @returns Object represents the deposit process.
    */
-  async initializeStake(referral: number, bitcoinRecoveryAddress?: string) {
+  async initializeStake(
+    referral: number,
+    bitcoinRecoveryAddress?: string,
+  ): Promise<StakeInitialization> {
     // tBTC-v2 SDK will handle Bitcoin address validation and throw an error if
     // address is not supported.
     const finalBitcoinRecoveryAddress =
