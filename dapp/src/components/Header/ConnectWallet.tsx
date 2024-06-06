@@ -83,6 +83,8 @@ export default function ConnectWallet() {
             py={1}
           >
             <Button
+              size="lg"
+              fontWeight="medium"
               variant="card"
               iconSpacing={3}
               pl={2}
@@ -90,19 +92,21 @@ export default function ConnectWallet() {
               leftIcon={<Icon as={BitcoinIcon} boxSize={6} color="brand.400" />}
               onClick={handleConnectBitcoinAccount}
             >
-              <TextMd>{customDataBtcAccount.text}</TextMd>
+              {customDataBtcAccount.text}
             </Button>
           </Tooltip>
         </HStack>
       ) : (
         <Button
+          size="lg"
+          fontWeight="medium"
           variant="ghost"
           iconSpacing={3}
           pl={2}
           leftIcon={<Icon as={BitcoinIcon} boxSize={6} color="brand.400" />}
           onClick={handleConnectBitcoinAccount}
         >
-          <TextMd>Choose account</TextMd>
+          Choose account
         </Button>
       )}
     </AnimatePresence>
