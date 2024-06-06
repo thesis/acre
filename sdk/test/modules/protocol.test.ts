@@ -1,4 +1,4 @@
-import Protocol from "../../src/modules/protocol"
+import Protocol from "./protocol"
 import { AcreContracts, DepositFee } from "../../src"
 import * as satoshiConverter from "../../src/lib/utils/satoshi-converter"
 import { MockAcreContracts } from "../utils/mock-acre-contracts"

@@ -1,5 +1,5 @@
-import { AcreContracts, DepositFees } from "../../lib/contracts"
-import { fromSatoshi, toSatoshi } from "../../lib/utils"
+import { AcreContracts, DepositFees } from "../lib/contracts"
+import { fromSatoshi, toSatoshi } from "../lib/utils"
 
 /**
  * Represents all total deposit fees grouped by network.

@@ -1,6 +1,6 @@
-import TbtcDeposit from "../tbtc/Deposit"
+import TbtcDeposit from "./tbtc/Deposit"
 
-import type { DepositReceipt } from "../account"
+import type { DepositReceipt } from "./account"
 
 /**
  * Represents an instance of the staking flow. Staking flow requires a few steps

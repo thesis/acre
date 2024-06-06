@@ -1,11 +1,11 @@
-import { AcreContracts, ChainIdentifier } from "../../lib/contracts"
-import StakeInitialization from "../staking"
-import { toSatoshi } from "../../lib/utils"
-import Tbtc from "../tbtc"
-import AcreSubgraphApi from "../../lib/api/AcreSubgraphApi"
-import { DepositStatus } from "../../lib/api/TbtcApi"
+import { AcreContracts, ChainIdentifier } from "../lib/contracts"
+import StakeInitialization from "./staking"
+import { toSatoshi } from "../lib/utils"
+import Tbtc from "./tbtc"
+import AcreSubgraphApi from "../lib/api/AcreSubgraphApi"
+import { DepositStatus } from "../lib/api/TbtcApi"
 
-export { DepositReceipt } from "../tbtc"
+export { DepositReceipt } from "./tbtc"
 
 /**
  * Represents the deposit data.
