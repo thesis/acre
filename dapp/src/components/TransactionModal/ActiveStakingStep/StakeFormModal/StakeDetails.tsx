@@ -2,7 +2,7 @@ import React from "react"
 import { List } from "@chakra-ui/react"
 import TransactionDetailsAmountItem from "#/components/shared/TransactionDetails/AmountItem"
 import FeesDetailsAmountItem from "#/components/shared/FeesDetails/FeesItem"
-import { useTokenAmountFormValue } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
+import { useTokenAmountFormMeta } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { FeesTooltip } from "#/components/TransactionModal/FeesTooltip"
 import { useTransactionDetails } from "#/hooks"
 import { CurrencyType, DepositFee } from "#/types"
@@ -19,7 +19,7 @@ const mapDepositFeeToLabel = (feeId: keyof DepositFee) => {
 }
 
 function StakeDetails({ currency }: { currency: CurrencyType }) {
-  const value = useTokenAmountFormValue() ?? 0n
+  const value = useTokenAmountFormMeta()?.value ?? 0n
   const details = useTransactionDetails(value)
   const { total, ...restFees } = details.transactionFee
 

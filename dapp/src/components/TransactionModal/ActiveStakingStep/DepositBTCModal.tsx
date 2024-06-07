@@ -9,14 +9,11 @@ import {
 } from "#/hooks"
 import { logPromiseFailure } from "#/utils"
 import { PROCESS_STATUSES } from "#/types"
-import { ModalBody, ModalHeader, Highlight, useTimeout } from "@chakra-ui/react"
-import Spinner from "#/components/shared/Spinner"
+import { Highlight } from "@chakra-ui/react"
 import { TextMd } from "#/components/shared/Typography"
 import { CardAlert } from "#/components/shared/alerts"
-import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import { setStatus, setTxHash } from "#/store/action-flow"
-
-const DELAY = ONE_SEC_IN_MILLISECONDS
+import TriggerTransactionModal from "../TriggerTransactionModal"
 
 export default function DepositBTCModal() {
   const tokenAmount = useActionFlowTokenAmount()
@@ -82,23 +79,16 @@ export default function DepositBTCModal() {
     logPromiseFailure(handledDepositBTC())
   }, [handledDepositBTC])
 
-  useTimeout(handledDepositBTCWrapper, DELAY)
-
   return (
-    <>
-      <ModalHeader>Waiting transaction...</ModalHeader>
-      <ModalBody>
-        <Spinner size="xl" />
-        <TextMd>Please complete the transaction in your wallet.</TextMd>
-        <CardAlert>
-          <TextMd>
-            <Highlight query="Rewards" styles={{ fontWeight: "bold" }}>
-              You will receive your Rewards once the deposit transaction is
-              completed.
-            </Highlight>
-          </TextMd>
-        </CardAlert>
-      </ModalBody>
-    </>
+    <TriggerTransactionModal callback={handledDepositBTCWrapper}>
+      <CardAlert>
+        <TextMd>
+          <Highlight query="Rewards" styles={{ fontWeight: "bold" }}>
+            You will receive your Rewards once the deposit transaction is
+            completed.
+          </Highlight>
+        </TextMd>
+      </CardAlert>
+    </TriggerTransactionModal>
   )
 }
