@@ -73,7 +73,7 @@ export const formatTokenAmount = (
 }
 
 export const formatSatoshiAmount = (
-  amount: number | string,
+  amount: number | string | bigint,
   desiredDecimals = 2,
 ) => formatTokenAmount(amount, 8, desiredDecimals)
 

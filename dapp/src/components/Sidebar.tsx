@@ -46,6 +46,7 @@ export default function Sidebar() {
       <Box __css={styles.sidebar}>
         {featureFlags.GAMIFICATION_ENABLED && (
           <>
+            {/* TODO: Update the component when logic of losing rewards is ready */}
             <TextSm fontWeight="bold">Rewards you’ll unlock</TextSm>
             <Flex mt={2} mb={7} flexDir="column" gap={2}>
               {BENEFITS.map(({ name, imageSrc }) => (

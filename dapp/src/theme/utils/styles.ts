@@ -1,7 +1,5 @@
 import { StyleFunctionProps, defineStyle } from "@chakra-ui/react"
 import { mode } from "@chakra-ui/theme-tools"
-import { semanticTokens } from "./semanticTokens"
-import { zIndices } from "./zIndices"
 
 const bodyStyle = defineStyle((props: StyleFunctionProps) => ({
   // TODO: Update when the dark theme is ready
@@ -9,17 +7,7 @@ const bodyStyle = defineStyle((props: StyleFunctionProps) => ({
   color: mode("grey.700", "grey.700")(props),
 }))
 
-const toastManagerTopStyle = defineStyle({
-  marginTop: `${semanticTokens.space.toast_container_shift} !important`,
-  // To set the correct z-index value for the toast component,
-  // we need to override it in the global styles
-  // More info:
-  // https://github.com/chakra-ui/chakra-ui/issues/7505
-  zIndex: `${zIndices.toast} !important`,
-})
-
 const globalStyle = (props: StyleFunctionProps) => ({
-  "#chakra-toast-manager-top": toastManagerTopStyle,
   body: bodyStyle(props),
 })
 

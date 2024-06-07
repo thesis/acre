@@ -9,12 +9,12 @@ export type TokenAmountFormValues = {
   [TOKEN_AMOUNT_FIELD_NAME]?: bigint
 }
 
-export const useTokenAmountFormValue = () => {
-  const [, { value }] = useField<
+export const useTokenAmountFormMeta = () => {
+  const [, meta] = useField<
     TokenAmountFormValues[typeof TOKEN_AMOUNT_FIELD_NAME]
   >(TOKEN_AMOUNT_FIELD_NAME)
 
-  return value
+  return meta
 }
 
 export type TokenAmountFormBaseProps = {

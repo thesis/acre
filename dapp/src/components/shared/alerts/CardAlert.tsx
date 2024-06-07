@@ -18,7 +18,8 @@ export function CardAlert({
     <Alert
       bg="gold.200"
       maxWidth="100%"
-      border="1px solid white"
+      border="1px solid"
+      borderColor="gold.300"
       boxShadow="none"
       status="info"
       color="grey.700"
