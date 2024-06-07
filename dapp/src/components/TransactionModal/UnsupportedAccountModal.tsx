@@ -55,8 +55,7 @@ export default function UnsupportedAccountModal({
                 {account.name}
               </TextSm>
               <CurrencyBalance
-                fontSize="sm"
-                lineHeight={5}
+                size="sm"
                 fontWeight="medium"
                 color="grey.500"
                 amount={account.balance.toString()}
