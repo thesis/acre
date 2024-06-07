@@ -5,7 +5,10 @@ import { MINIMUM_BALANCE } from "#/constants"
 import { formatSatoshiAmount, getCurrencyByType } from "#/utils"
 import { CardAlert } from "#/components/shared/alerts"
 import { TextMd } from "#/components/shared/Typography"
-import { useTokenAmountFormMeta } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
+import {
+  useTokenAmountFormValue,
+  useTokenAmountIsValid,
+} from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 
 function WithdrawWarning({
   balance,
@@ -14,8 +17,8 @@ function WithdrawWarning({
   balance: bigint
   currency: CurrencyType
 }) {
-  const { touched, error, value } = useTokenAmountFormMeta()
-  const hasError = !!error
+  const value = useTokenAmountFormValue()
+  const isValid = useTokenAmountIsValid()
   const amount = value ?? 0n
 
   const { symbol } = getCurrencyByType(currency)
@@ -27,7 +30,7 @@ function WithdrawWarning({
   const newBalance = balance - amount
   const isMinimumBalanceExceeded = newBalance < MINIMUM_BALANCE
 
-  if (isMinimumBalanceExceeded && !hasError && touched) {
+  if (isMinimumBalanceExceeded && isValid) {
     return (
       // TODO: Update global styles for the Alert component
       // Previously, we distinguished more types of alerts.

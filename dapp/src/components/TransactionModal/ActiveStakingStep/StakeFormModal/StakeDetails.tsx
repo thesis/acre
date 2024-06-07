@@ -2,7 +2,10 @@ import React from "react"
 import { List } from "@chakra-ui/react"
 import TransactionDetailsAmountItem from "#/components/shared/TransactionDetails/AmountItem"
 import FeesDetailsAmountItem from "#/components/shared/FeesDetails/FeesItem"
-import { useTokenAmountFormMeta } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
+import {
+  useTokenAmountFormValue,
+  useTokenAmountIsValid,
+} from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { FeesTooltip } from "#/components/TransactionModal/FeesTooltip"
 import { useTransactionDetails } from "#/hooks"
 import { CurrencyType, DepositFee } from "#/types"
@@ -19,8 +22,11 @@ const mapDepositFeeToLabel = (feeId: keyof DepositFee) => {
 }
 
 function StakeDetails({ currency }: { currency: CurrencyType }) {
-  const value = useTokenAmountFormMeta()?.value ?? 0n
-  const details = useTransactionDetails(value)
+  const value = useTokenAmountFormValue()
+  const isValid = useTokenAmountIsValid()
+  // Let's not calculate the details of the transaction when the value is not valid.
+  const amount = isValid ? value : 0n
+  const details = useTransactionDetails(amount)
   const { total, ...restFees } = details.transactionFee
 
   return (
