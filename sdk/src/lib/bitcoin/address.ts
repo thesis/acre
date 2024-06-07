@@ -4,6 +4,8 @@ import {
   BitcoinScriptUtils,
 } from "@keep-network/tbtc-v2.ts"
 
+export type BitcoinAddress = string
+
 /**
  * Checks if the address is of type P2PKH or P2WPKH.
  * @param address The address to be checked.

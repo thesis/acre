@@ -1,11 +1,7 @@
 import { OrangeKitSdk } from "@orangekit/sdk"
 import { getDefaultProvider } from "ethers"
 import { AcreContracts } from "./lib/contracts"
-import {
-  EthereumAddress,
-  EthereumNetwork,
-  getEthereumContracts,
-} from "./lib/ethereum"
+import { EthereumNetwork, getEthereumContracts } from "./lib/ethereum"
 import Account from "./modules/account"
 import Tbtc from "./modules/tbtc"
 import { VoidSigner } from "./lib/utils"
@@ -71,14 +67,12 @@ class Acre {
     )
 
     const accountBitcoinAddress = await bitcoinProvider.getAddress()
-    const accountEthereumAddress = EthereumAddress.from(
-      await orangeKit.predictAddress(accountBitcoinAddress),
+    const accountEthereumAddress = await orangeKit.predictAddress(
+      accountBitcoinAddress,
     )
+    const accountPublicKey = await bitcoinProvider.getPublicKey()
 
-    const signer = new VoidSigner(
-      accountEthereumAddress.identifierHex,
-      ethersProvider,
-    )
+    const signer = new VoidSigner(accountEthereumAddress, ethersProvider)
 
     const contracts = getEthereumContracts(signer, ethereumNetwork)
 
@@ -88,15 +82,18 @@ class Acre {
       tbtcApiUrl,
       contracts.bitcoinDepositor,
     )
+
     const subgraph = new AcreSubgraphApi(
       // TODO: Set correct url based on the network
       "https://api.studio.thegraph.com/query/73600/acre/version/latest",
     )
 
-    const account = new Account(contracts, tbtc, subgraph, {
+    const account = new Account(contracts, tbtc, subgraph, orangeKit, {
       bitcoinAddress: accountBitcoinAddress,
       ethereumAddress: accountEthereumAddress,
+      publicKey: accountPublicKey,
     })
+
     const protocol = new Protocol(contracts)
 
     return new Acre(

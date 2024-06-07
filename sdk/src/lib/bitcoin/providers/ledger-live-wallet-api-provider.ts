@@ -97,4 +97,9 @@ export default class LedgerLiveWalletApiBitcoinProvider
 
     return address
   }
+
+  // eslint-disable-next-line @typescript-eslint/require-await, class-methods-use-this
+  async getPublicKey(): Promise<string> {
+    throw new Error("Method not implemented.")
+  }
 }

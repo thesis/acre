@@ -18,11 +18,17 @@ class EthereumStBTC
 {
   readonly #BASIS_POINT_SCALE = BigInt(1e4)
 
+  readonly #bitcoinRedeemerContractAddress: string
+
   #cache: {
     entryFeeBasisPoints?: bigint
   } = { entryFeeBasisPoints: undefined }
 
-  constructor(config: EthersContractConfig, network: EthereumNetwork) {
+  constructor(
+    config: EthersContractConfig,
+    network: EthereumNetwork,
+    bitcoinRedeemerContractAddress: string,
+  ) {
     let artifact: EthersContractDeployment
 
     switch (network) {
@@ -35,6 +41,15 @@ class EthereumStBTC
     }
 
     super(config, artifact)
+
+    this.#bitcoinRedeemerContractAddress = bitcoinRedeemerContractAddress
+  }
+
+  /**
+   * @see {StBTC#previewRedeem}
+   */
+  previewRedeem(sharesAmount: bigint): Promise<bigint> {
+    return this.instance.previewRedeem(sharesAmount)
   }
 
   /**
@@ -54,11 +69,11 @@ class EthereumStBTC
   /**
    * @see {StBTC#calculateDepositFee}
    */
-  async calculateDepositFee(amount: bigint): Promise<bigint> {
+  async calculateDepositFee(tbtcAmount: bigint): Promise<bigint> {
     const entryFeeBasisPoints = await this.#getEntryFeeBasisPoints()
 
     return (
-      (amount * entryFeeBasisPoints) /
+      (tbtcAmount * entryFeeBasisPoints) /
       (entryFeeBasisPoints + this.#BASIS_POINT_SCALE)
     )
   }
@@ -71,6 +86,17 @@ class EthereumStBTC
     this.#cache.entryFeeBasisPoints = await this.instance.entryFeeBasisPoints()
 
     return this.#cache.entryFeeBasisPoints
+  }
+
+  encodeRedeemToBitcoinFunctionData(
+    sharesAmount: bigint,
+    tbtcRedemptionData: string,
+  ): string {
+    return this.instance.interface.encodeFunctionData("approveAndCall", [
+      this.#bitcoinRedeemerContractAddress,
+      sharesAmount,
+      tbtcRedemptionData,
+    ])
   }
 }
 

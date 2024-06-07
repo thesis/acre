@@ -14,4 +14,5 @@ export interface BitcoinProvider {
    * @returns Bitcoin address selected by the user.
    */
   getAddress(): Promise<string>
+  getPublicKey(): Promise<string>
 }

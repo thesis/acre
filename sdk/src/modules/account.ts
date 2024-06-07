@@ -1,14 +1,15 @@
-import { AcreContracts, ChainIdentifier } from "../lib/contracts"
+import { OrangeKitSdk } from "@orangekit/sdk"
+import { AcreContracts } from "../lib/contracts"
 import StakeInitialization from "./staking"
 import { toSatoshi } from "../lib/utils"
 import Tbtc from "./tbtc"
 import AcreSubgraphApi from "../lib/api/AcreSubgraphApi"
 import { DepositStatus } from "../lib/api/TbtcApi"
-
-export { DepositReceipt } from "./tbtc"
+import WithdrawalService from "./withdrawal-service"
+import { EthereumAddress } from "../lib/ethereum"
 
 /**
- * Represents the deposit data.
+ * Represents the deposit data
  */
 export type Deposit = {
   /**
@@ -56,19 +57,32 @@ export default class Account {
 
   readonly #bitcoinAddress: string
 
-  readonly #ethereumAddress: ChainIdentifier
+  readonly #ethereumAddress: EthereumAddress
+
+  readonly #withdrawalService: WithdrawalService
 
   constructor(
     contracts: AcreContracts,
     tbtc: Tbtc,
     acreSubgraphApi: AcreSubgraphApi,
-    account: { bitcoinAddress: string; ethereumAddress: ChainIdentifier },
+    orangeKit: OrangeKitSdk,
+    accountData: {
+      bitcoinAddress: string
+      ethereumAddress: string
+      publicKey: string
+    },
   ) {
     this.#contracts = contracts
     this.#tbtc = tbtc
     this.#acreSubgraphApi = acreSubgraphApi
-    this.#bitcoinAddress = account.bitcoinAddress
-    this.#ethereumAddress = account.ethereumAddress
+    this.#bitcoinAddress = accountData.bitcoinAddress
+    this.#ethereumAddress = EthereumAddress.from(accountData.ethereumAddress)
+    this.#withdrawalService = new WithdrawalService(
+      contracts,
+      tbtc,
+      orangeKit,
+      accountData,
+    )
   }
 
   /**
@@ -100,6 +114,23 @@ export default class Account {
     )
 
     return new StakeInitialization(tbtcDeposit)
+  }
+
+  /**
+   * Initializes the withdrawal process.
+   * @param referral Data used for referral program.
+
+   * @returns Object represents the deposit process.
+   */
+  async initializeWithdrawal(
+    sharesAmount: bigint,
+    bitcoinSignMessageFn: (message: string) => Promise<string>,
+  ) {
+    return this.#withdrawalService.initiateWithdrawal(
+      this.#bitcoinAddress,
+      sharesAmount,
+      bitcoinSignMessageFn,
+    )
   }
 
   /**
