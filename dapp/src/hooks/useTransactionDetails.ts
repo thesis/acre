@@ -15,6 +15,7 @@ const initialTransactionDetails = {
 }
 
 export function useTransactionDetails(amount: bigint | undefined) {
+  // TODO: Temporary solution - Let's update when withdrawal fees are defined
   const transactionFee = useTransactionFee(amount)
   const [details, setDetails] = useState<UseTransactionDetailsResult>(
     initialTransactionDetails,
