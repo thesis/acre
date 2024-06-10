@@ -1,13 +1,11 @@
 import React from "react"
 import { Flex, VStack, Image } from "@chakra-ui/react"
-import { BENEFITS, EXTERNAL_HREF, PARTNER_LOGOS } from "#/constants"
-import { TextMd } from "#/components/shared/Typography"
+import { EXTERNAL_HREF, PARTNER_LOGOS } from "#/constants"
 import {
   SeasonCountdownSection,
   HeroSection,
   CardButton,
   ContentCard,
-  BenefitCard,
 } from "#/pages/LandingPage/components"
 
 export default function LandingPage() {
