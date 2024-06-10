@@ -4,9 +4,10 @@ import { Box, VStack, Heading, Text } from "@chakra-ui/react"
 import {
   LiveTag,
   SeasonCountdownSectionBackground,
-  CountdownTimer,
 } from "#/components/shared/SeasonCountdownSection"
-import { SEASON_DUE_TIMESTAMP } from "#/constants"
+import ProgressBar from "#/components/ProgressBar"
+import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
+import { TextXl } from "#/components/shared/Typography"
 
 export default function SeasonCountdownSection() {
   return (
@@ -27,7 +28,25 @@ export default function SeasonCountdownSection() {
           Season 1 users that stake bitcoin before Acre launches earn the <br />
           highest rewards and first access to upcoming Seasons.
         </Text>
-        <CountdownTimer timestamp={SEASON_DUE_TIMESTAMP} />
+        <ProgressBar
+          size="2xl"
+          value={29}
+          maxW="50rem" // 800px
+        >
+          <CurrencyBalance
+            amount={24572000000} // TODO: replace with value
+            currency="bitcoin"
+            variant="greater-balance-xl"
+            symbolFontWeight="black"
+            // TODO: adjust symbol font size
+          />
+        </ProgressBar>
+        <TextXl mt={2}>
+          Season 1 cap{" "}
+          <Box as="strong" ml={2}>
+            2000,00 BTC
+          </Box>
+        </TextXl>
       </VStack>
       <SeasonCountdownSectionBackground
         pos="absolute"

@@ -3,12 +3,11 @@ import { StackProps, Flex, VStack, Heading } from "@chakra-ui/react"
 import { numberToLocaleString } from "#/utils"
 import { TextMd } from "#/components/shared/Typography"
 import {
-  CountdownTimer,
   LiveTag,
   SeasonCountdownSectionBackground,
 } from "#/components/shared/SeasonCountdownSection"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
-import { SEASON_DUE_TIMESTAMP } from "#/constants"
+import ProgressBar from "#/components/ProgressBar"
 
 type CurrentSeasonCardProps = StackProps & {
   showSeasonStats?: boolean
@@ -43,7 +42,13 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
         Pre-launch staking
       </Heading>
 
-      <CountdownTimer size="sm" timestamp={SEASON_DUE_TIMESTAMP} />
+      <ProgressBar value={50}>
+        <CurrencyBalance
+          amount={499000000} // TODO: replace with value
+          currency="bitcoin"
+          variant="greater-balance-lg"
+        />
+      </ProgressBar>
 
       {showSeasonStats && (
         <Flex align="baseline" justify="space-between" color="white">
