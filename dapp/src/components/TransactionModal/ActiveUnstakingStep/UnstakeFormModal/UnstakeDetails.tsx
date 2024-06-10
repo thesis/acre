@@ -1,10 +1,7 @@
 import React from "react"
 import { Flex, List } from "@chakra-ui/react"
 import TransactionDetailsAmountItem from "#/components/shared/TransactionDetails/AmountItem"
-import {
-  useTokenAmountFormValue,
-  useTokenAmountIsValid,
-} from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
+import { useTokenAmountField } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { useTransactionDetails } from "#/hooks"
 import { CurrencyType } from "#/types"
 import { featureFlags } from "#/constants"
@@ -17,8 +14,7 @@ function UnstakeDetails({
   balance: bigint
   currency: CurrencyType
 }) {
-  const value = useTokenAmountFormValue()
-  const isValid = useTokenAmountIsValid()
+  const { value, isValid } = useTokenAmountField()
   // Let's not calculate the details of the transaction when the value is not valid.
   const amount = isValid ? value : 0n
   const details = useTransactionDetails(amount)

@@ -5,10 +5,7 @@ import { MINIMUM_BALANCE } from "#/constants"
 import { formatSatoshiAmount, getCurrencyByType } from "#/utils"
 import { CardAlert } from "#/components/shared/alerts"
 import { TextMd } from "#/components/shared/Typography"
-import {
-  useTokenAmountFormValue,
-  useTokenAmountIsValid,
-} from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
+import { useTokenAmountField } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 
 function WithdrawWarning({
   balance,
@@ -17,8 +14,7 @@ function WithdrawWarning({
   balance: bigint
   currency: CurrencyType
 }) {
-  const value = useTokenAmountFormValue()
-  const isValid = useTokenAmountIsValid()
+  const { value, isValid } = useTokenAmountField()
   const amount = value ?? 0n
 
   const { symbol } = getCurrencyByType(currency)

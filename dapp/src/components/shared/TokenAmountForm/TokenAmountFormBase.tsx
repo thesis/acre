@@ -9,22 +9,15 @@ export type TokenAmountFormValues = {
   [TOKEN_AMOUNT_FIELD_NAME]?: bigint
 }
 
-export const useTokenAmountIsValid = () => {
+export const useTokenAmountField = () => {
   const [, { error, touched, value }] = useField<
     TokenAmountFormValues[typeof TOKEN_AMOUNT_FIELD_NAME]
   >(TOKEN_AMOUNT_FIELD_NAME)
 
   const hasError = !!error
+  const isValid = !hasError && touched && value
 
-  return !hasError && touched && value
-}
-
-export const useTokenAmountFormValue = () => {
-  const [, { value }] = useField<
-    TokenAmountFormValues[typeof TOKEN_AMOUNT_FIELD_NAME]
-  >(TOKEN_AMOUNT_FIELD_NAME)
-
-  return value
+  return { value, isValid }
 }
 
 export type TokenAmountFormBaseProps = {
