@@ -76,7 +76,7 @@ class Acre {
     )
 
     const signer = new VoidSigner(
-      accountEthereumAddress.identifierHex,
+      `0x${accountEthereumAddress.identifierHex}`,
       ethersProvider,
     )
 
