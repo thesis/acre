@@ -27,7 +27,7 @@ export function SeasonCountdownSectionBackground(props: BoxProps) {
   const foregroundParallax = useTransform(
     smoothScrollYProgress,
     [0, 1],
-    ["25%", "65%"],
+    ["45%", "65%"],
   )
   const time = useTime()
   // Seed value is wrapped to prevent infinite increment causing potential memory leaks

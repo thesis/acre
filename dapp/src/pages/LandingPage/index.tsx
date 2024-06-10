@@ -23,24 +23,6 @@ export default function LandingPage() {
         mx="auto"
         align="stretch"
       >
-        <Flex
-          flexDirection={{ base: "column", xl: "row" }}
-          gap={5}
-          align="stretch"
-          mb={12}
-          w="full"
-        >
-          {BENEFITS.map(({ name, description, imageSrc }) => (
-            <BenefitCard
-              key={name}
-              flex={1}
-              header={name}
-              icon={{ src: imageSrc }}
-            >
-              <TextMd>{description}</TextMd>
-            </BenefitCard>
-          ))}
-        </Flex>
         {/* 
         TODO: Bring back when TVL, user count and/or how-it-works diagram are available
 
