@@ -1,4 +1,3 @@
-import React from "react"
 import {
   useActionFlowStatus,
   useActionFlowTokenAmount,
@@ -8,11 +7,12 @@ import {
 } from "#/hooks"
 import { PROCESS_STATUSES } from "#/types"
 import { isSupportedBTCAddressType } from "#/utils"
+import React from "react"
 import ActionFormModal from "./ActionFormModal"
 import ErrorModal from "./ErrorModal"
 import LoadingModal from "./LoadingModal"
 import SuccessModal from "./SuccessModal"
-import UnsupportedAccountModal from "./UnsupportedAccountModal"
+import UnsupportedBitcoinAddressModal from "./UnsupportedBitcoinAddressModal"
 
 export default function ModalContentWrapper({
   children,
@@ -27,7 +27,7 @@ export default function ModalContentWrapper({
 
   if (btcAccount && !isSupportedBTCAddressType(btcAccount.address))
     return (
-      <UnsupportedAccountModal
+      <UnsupportedBitcoinAddressModal
         account={btcAccount}
         requestAccount={requestBitcoinAccount}
       />
