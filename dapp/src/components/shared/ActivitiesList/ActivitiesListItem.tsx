@@ -28,7 +28,8 @@ function ActivitiesListItem(props: ActivitiesListItemProps) {
   const isCompleted = status === "completed"
 
   return (
-    <Alert as={HStack} variant="process" {...restProps}>
+    // TODO: Change component, it should not be `Alert` component
+    <Alert as={HStack} variant="loading" {...restProps}>
       <AlertIcon
         color="brand.400"
         as={isCompleted ? LoadingSpinnerSuccessIcon : Spinner}

@@ -1,7 +1,10 @@
 import React from "react"
 import {
+  Alert,
+  AlertIcon,
   Box,
   Button,
+  Icon,
   ModalBody,
   ModalCloseButton,
   ModalFooter,
@@ -12,7 +15,7 @@ import { TextMd, TextSm } from "#/components/shared/Typography"
 import { logPromiseFailure } from "#/utils"
 import { UseRequestAccountReturn } from "#/types"
 import { BitcoinIcon } from "#/assets/icons"
-import { ErrorAlert, ErrorAlertIcon } from "../shared/alerts"
+import { IconX as ErrorIcon } from "@tabler/icons-react"
 import { CurrencyBalance } from "../shared/CurrencyBalance"
 
 type UnsupportedAccountModalProps = UseRequestAccountReturn
@@ -34,15 +37,29 @@ export default function UnsupportedAccountModal({
 
       <ModalBody>
         {account && (
-          <ErrorAlert>
-            <ErrorAlertIcon
-              as={BitcoinIcon}
-              color="grey.700"
-              bg="gold.200"
-              rounded="full"
-              transform="auto"
-              rotate={12}
-            />
+          <Alert status="error" variant="subtle">
+            <Box position="relative" mr={5}>
+              <Icon
+                as={BitcoinIcon}
+                boxSize={12}
+                transform="auto"
+                rotate={8}
+                bg="gold.200"
+                rounded="full"
+              />
+              <Icon
+                as={ErrorIcon}
+                position="absolute"
+                bottom={1}
+                right={-1.5}
+                bg="red.400"
+                color="white"
+                rounded="full"
+                p={0.5}
+                boxSize={5}
+                mr={0}
+              />
+            </Box>
 
             <Box flex={1} overflow="hidden">
               <TextSm
@@ -75,7 +92,7 @@ export default function UnsupportedAccountModal({
             >
               Unsupported
             </Tag>
-          </ErrorAlert>
+          </Alert>
         )}
 
         <TextMd
