@@ -24,13 +24,6 @@ export default class Protocol {
   }
 
   /**
-   * @returns Total Bitcoin amount under protocol management in 1e8 satoshi precision.
-   */
-  async totalAssets() {
-    return toSatoshi(await this.#contracts.stBTC.totalAssets())
-  }
-
-  /**
    * Estimates the deposit fee based on the provided amount.
    * @param amount Amount to deposit in satoshi.
    * @returns Deposit fee grouped by tBTC and Acre networks in 1e8 satoshi
