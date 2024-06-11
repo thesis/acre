@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { DepositFee } from "#/types"
 import { useAppDispatch } from "./store"
 
-const initialDepositFee = {
+export const initialDepositFee = {
   tbtc: 0n,
   acre: 0n,
   total: 0n,

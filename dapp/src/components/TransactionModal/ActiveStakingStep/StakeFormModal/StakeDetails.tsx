@@ -2,11 +2,10 @@ import React from "react"
 import { List } from "@chakra-ui/react"
 import TransactionDetailsAmountItem from "#/components/shared/TransactionDetails/AmountItem"
 import FeesDetailsAmountItem from "#/components/shared/FeesDetails/FeesItem"
-import { useTokenAmountFormMeta } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
+import { useTokenAmountField } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { FeesTooltip } from "#/components/TransactionModal/FeesTooltip"
 import { useTransactionDetails } from "#/hooks"
 import { CurrencyType, DepositFee } from "#/types"
-import { useTransactionFee } from "#/hooks/useTransactionFee"
 
 const mapDepositFeeToLabel = (feeId: keyof DepositFee) => {
   switch (feeId) {
@@ -19,22 +18,12 @@ const mapDepositFeeToLabel = (feeId: keyof DepositFee) => {
   }
 }
 
-function StakeDetails({
-  currency,
-  minTokenAmount,
-  maxTokenAmount,
-}: {
-  currency: CurrencyType
-  minTokenAmount: bigint
-  maxTokenAmount: bigint
-}) {
-  const value = useTokenAmountFormMeta()?.value ?? 0n
-  const isMaximumValueExceeded = value > maxTokenAmount
-  const isMinimumValueFulfilled = value >= minTokenAmount
+function StakeDetails({ currency }: { currency: CurrencyType }) {
+  const { value, isValid } = useTokenAmountField()
   // Let's not calculate the details of the transaction when the value is not valid.
-  const amount = !isMaximumValueExceeded && isMinimumValueFulfilled ? value : 0n
+  const amount = isValid ? value : 0n
   const details = useTransactionDetails(amount)
-  const { total, ...restFees } = useTransactionFee(amount)
+  const { total, ...restFees } = details.transactionFee
 
   return (
     <List spacing={3} mt={10}>
@@ -42,7 +31,7 @@ function StakeDetails({
         label="Amount to be staked"
         from={{
           currency,
-          amount: details?.btcAmount,
+          amount: details.amount,
         }}
         to={{
           currency: "usd",
@@ -67,7 +56,7 @@ function StakeDetails({
         label="Approximately staked tokens"
         from={{
           currency,
-          amount: details?.estimatedAmount,
+          amount: details.estimatedAmount,
         }}
         to={{
           currency: "usd",
