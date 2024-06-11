@@ -3,8 +3,8 @@ import {
   EthereumBitcoinDepositor,
   EthereumAddress,
   EthereumSigner,
-  DepositFees,
-} from "../../../src"
+} from "../../../src/lib/ethereum"
+import { DepositFees } from "../../../src"
 import { extraDataValidTestData } from "./data"
 
 jest.mock("ethers", (): object => ({
