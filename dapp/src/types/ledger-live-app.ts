@@ -8,3 +8,9 @@ export type UseRequestAccountReturn = {
   account: Account | null
   requestAccount: (...params: RequestAccountParams) => Promise<void>
 }
+
+export type LedgerLiveError = {
+  message?: string
+  name?: string
+  stack?: string
+}

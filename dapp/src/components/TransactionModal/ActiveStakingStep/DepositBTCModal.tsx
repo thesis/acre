@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect } from "react"
 import {
+  useActionFlowPause,
   useActionFlowTokenAmount,
   useAppDispatch,
   useDepositBTCTransaction,
@@ -7,8 +8,8 @@ import {
   useStakeFlowContext,
   useVerifyDepositAddress,
 } from "#/hooks"
-import { logPromiseFailure } from "#/utils"
-import { PROCESS_STATUSES } from "#/types"
+import { isLedgerLiveError, logPromiseFailure } from "#/utils"
+import { PROCESS_STATUSES, LedgerLiveError } from "#/types"
 import { Highlight } from "@chakra-ui/react"
 import { TextMd } from "#/components/shared/Typography"
 import { CardAlert } from "#/components/shared/alerts"
@@ -20,6 +21,7 @@ export default function DepositBTCModal() {
   const { btcAddress, depositReceipt, stake } = useStakeFlowContext()
   const verifyDepositAddress = useVerifyDepositAddress()
   const dispatch = useAppDispatch()
+  const { handlePause } = useActionFlowPause()
 
   const onStakeBTCSuccess = useCallback(() => {
     dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED))
@@ -42,9 +44,22 @@ export default function DepositBTCModal() {
   }, [dispatch, handleStake])
 
   // TODO: Handle when the function fails
-  const showError = useCallback(() => {}, [])
+  const showError = useCallback((error?: LedgerLiveError) => {
+    console.error(error)
+  }, [])
 
-  const onDepositBTCError = useCallback(() => showError(), [showError])
+  const onDepositBTCError = useCallback(
+    (error: unknown) => {
+      if (!isLedgerLiveError(error)) return
+
+      const isInterrupted =
+        error.message && error.message.includes("Signature interrupted by user")
+      if (isInterrupted) handlePause()
+
+      showError(error)
+    },
+    [showError, handlePause],
+  )
 
   const { sendBitcoinTransaction, transactionHash } = useDepositBTCTransaction(
     onDepositBTCSuccess,
