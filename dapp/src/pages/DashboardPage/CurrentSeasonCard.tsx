@@ -33,13 +33,13 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
 
       <Heading
         as="p"
-        color="gold.100"
+        color="grey.700"
         fontSize="2xl"
         lineHeight={1}
         letterSpacing="-0.03rem" // -0.48px
       >
         Season 1 <br />
-        Pre-launch staking
+        Staking is live!
       </Heading>
 
       <ProgressBar value={50}>
