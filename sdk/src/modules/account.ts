@@ -103,15 +103,15 @@ export default class Account {
   }
 
   /**
-   * @returns Value of the basis for calculating final BTC balance in 1e18
-   *          precision.
+   * @returns Balance of the account's stBTC shares (in 1e18 precision).
    */
   async sharesBalance() {
     return this.#contracts.stBTC.balanceOf(this.#ethereumAddress)
   }
 
   /**
-   * @returns Maximum withdraw value in 1e8 satoshi precision.
+   * @returns Balance of Bitcoin position in Acre estimated based on the
+   *          account's stBTC shares (in 1e8 satoshi precision).
    */
   async estimatedBitcoinBalance() {
     return toSatoshi(
@@ -120,9 +120,8 @@ export default class Account {
   }
 
   /**
-   * @returns All deposits associated with the Bitcoin address that returns the
-   *          Bitcoin Provider. They include all deposits: queued, initialized
-   *          and finalized.
+   * @returns All deposits associated with the account. They include all
+   *          deposits: queued, initialized and finalized.
    */
   async getDeposits(): Promise<Deposit[]> {
     const subgraphData = await this.#acreSubgraphApi.getDepositsByOwner(

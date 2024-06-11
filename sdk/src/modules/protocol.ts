@@ -34,7 +34,7 @@ export default class Protocol {
   /**
    * Estimates the deposit fee based on the provided amount.
    * @param amount Amount to deposit in satoshi.
-   * @returns Deposit fee grouped by tBTC and Acre networks in 1e8 satoshi
+   * @returns Deposit fee grouped by tBTC and Acre protocols in 1e8 satoshi
    *          precision and total deposit fee value.
    */
   async estimateDepositFee(amount: bigint): Promise<DepositFee> {

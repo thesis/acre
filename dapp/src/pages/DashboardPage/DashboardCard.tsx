@@ -38,6 +38,7 @@ export default function DashboardCard(props: DashboardCardProps) {
   const { bitcoinAmount, positionPercentage, ...restProps } = props
 
   const openDepositModal = useTransactionModal(ACTION_FLOW_TYPES.STAKE)
+  const openWithdrawModal = useTransactionModal(ACTION_FLOW_TYPES.UNSTAKE)
 
   return (
     <Card px={5} py={10} gap={10} overflow="hidden" {...restProps}>
@@ -90,7 +91,11 @@ export default function DashboardCard(props: DashboardCardProps) {
           <Button {...buttonStyles} onClick={openDepositModal}>
             Deposit More
           </Button>
-          <Button variant="outline" {...buttonStyles}>
+          <Button
+            variant="outline"
+            {...buttonStyles}
+            onClick={openWithdrawModal}
+          >
             Withdraw
           </Button>
         </HStack>

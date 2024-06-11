@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect } from "react"
 import {
+  useActionFlowPause,
   useActionFlowTokenAmount,
   useAppDispatch,
   useDepositBTCTransaction,
@@ -7,22 +8,20 @@ import {
   useStakeFlowContext,
   useVerifyDepositAddress,
 } from "#/hooks"
-import { logPromiseFailure } from "#/utils"
-import { PROCESS_STATUSES } from "#/types"
-import { ModalBody, ModalHeader, Highlight, useTimeout } from "@chakra-ui/react"
-import Spinner from "#/components/shared/Spinner"
+import { isLedgerLiveError, logPromiseFailure } from "#/utils"
+import { PROCESS_STATUSES, LedgerLiveError } from "#/types"
+import { Highlight } from "@chakra-ui/react"
 import { TextMd } from "#/components/shared/Typography"
 import { CardAlert } from "#/components/shared/alerts"
-import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import { setStatus, setTxHash } from "#/store/action-flow"
-
-const DELAY = ONE_SEC_IN_MILLISECONDS
+import TriggerTransactionModal from "../TriggerTransactionModal"
 
 export default function DepositBTCModal() {
   const tokenAmount = useActionFlowTokenAmount()
   const { btcAddress, depositReceipt, stake } = useStakeFlowContext()
   const verifyDepositAddress = useVerifyDepositAddress()
   const dispatch = useAppDispatch()
+  const { handlePause } = useActionFlowPause()
 
   const onStakeBTCSuccess = useCallback(() => {
     dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED))
@@ -45,9 +44,22 @@ export default function DepositBTCModal() {
   }, [dispatch, handleStake])
 
   // TODO: Handle when the function fails
-  const showError = useCallback(() => {}, [])
+  const showError = useCallback((error?: LedgerLiveError) => {
+    console.error(error)
+  }, [])
 
-  const onDepositBTCError = useCallback(() => showError(), [showError])
+  const onDepositBTCError = useCallback(
+    (error: unknown) => {
+      if (!isLedgerLiveError(error)) return
+
+      const isInterrupted =
+        error.message && error.message.includes("Signature interrupted by user")
+      if (isInterrupted) handlePause()
+
+      showError(error)
+    },
+    [showError, handlePause],
+  )
 
   const { sendBitcoinTransaction, transactionHash } = useDepositBTCTransaction(
     onDepositBTCSuccess,
@@ -82,23 +94,16 @@ export default function DepositBTCModal() {
     logPromiseFailure(handledDepositBTC())
   }, [handledDepositBTC])
 
-  useTimeout(handledDepositBTCWrapper, DELAY)
-
   return (
-    <>
-      <ModalHeader>Waiting transaction...</ModalHeader>
-      <ModalBody>
-        <Spinner size="xl" />
-        <TextMd>Please complete the transaction in your wallet.</TextMd>
-        <CardAlert>
-          <TextMd>
-            <Highlight query="Rewards" styles={{ fontWeight: "bold" }}>
-              You will receive your Rewards once the deposit transaction is
-              completed.
-            </Highlight>
-          </TextMd>
-        </CardAlert>
-      </ModalBody>
-    </>
+    <TriggerTransactionModal callback={handledDepositBTCWrapper}>
+      <CardAlert>
+        <TextMd>
+          <Highlight query="Rewards" styles={{ fontWeight: "bold" }}>
+            You will receive your Rewards once the deposit transaction is
+            completed.
+          </Highlight>
+        </TextMd>
+      </CardAlert>
+    </TriggerTransactionModal>
   )
 }
