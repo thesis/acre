@@ -22,6 +22,8 @@ export const PROCESS_STATUSES = {
   LOADING: "LOADING",
   FAILED: "FAILED",
   SUCCEEDED: "SUCCEEDED",
+  PAUSED: "PAUSED",
+  PENDING: "PENDING",
 } as const
 
 export type ProcessStatus =

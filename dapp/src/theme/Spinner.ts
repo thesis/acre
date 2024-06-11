@@ -13,8 +13,14 @@ const sizeXl = defineStyle({
   height: 16,
 })
 
+const size2Xl = defineStyle({
+  width: 20,
+  height: 20,
+})
+
 const sizes = {
   xl: sizeXl,
+  "2xl": size2Xl,
 }
 
 export const spinnerTheme = defineStyleConfig({ baseStyle, sizes })
