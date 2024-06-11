@@ -1,8 +1,6 @@
 import React, { useRef } from "react"
 import { Box, BoxProps } from "@chakra-ui/react"
 import { useSize } from "@chakra-ui/react-use-size"
-import seasonCountdownBackground from "#/assets/images/season-countdown-section-background.png"
-import seasonCountdownForeground from "#/assets/images/season-countdown-section-foreground.png"
 import {
   MotionValue,
   motion,
@@ -12,8 +10,10 @@ import {
   useTime,
   wrap,
 } from "framer-motion"
+import seasonBackground from "#/assets/images/season-section-background.png"
+import seasonForeground from "#/assets/images/season-section-foreground.png"
 
-export function SeasonCountdownSectionBackground(props: BoxProps) {
+export function SeasonSectionBackground(props: BoxProps) {
   const containerRef = useRef(null)
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -97,14 +97,14 @@ export function SeasonCountdownSectionBackground(props: BoxProps) {
       <Box as="g" mixBlendMode="overlay">
         <Box
           as="image"
-          href={seasonCountdownBackground}
+          href={seasonBackground}
           style={{ width: size?.width }}
           h="full"
           preserveAspectRatio="xMinYMin slice"
         />
         <Box
           as={motion.image}
-          href={seasonCountdownForeground}
+          href={seasonForeground}
           w="full"
           y={foregroundParallax}
           preserveAspectRatio="xMinYMin slice"

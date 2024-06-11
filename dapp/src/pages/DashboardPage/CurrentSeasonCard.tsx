@@ -2,12 +2,10 @@ import React from "react"
 import { StackProps, Flex, VStack, Heading } from "@chakra-ui/react"
 import { numberToLocaleString } from "#/utils"
 import { TextMd } from "#/components/shared/Typography"
-import {
-  LiveTag,
-  SeasonCountdownSectionBackground,
-} from "#/components/shared/SeasonCountdownSection"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import ProgressBar from "#/components/ProgressBar"
+import { SeasonSectionBackground } from "#/components/shared/SeasonSectionBackground"
+import { LiveTag } from "#/components/shared/LiveTag"
 
 type CurrentSeasonCardProps = StackProps & {
   showSeasonStats?: boolean
@@ -72,11 +70,7 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
         </Flex>
       )}
 
-      <SeasonCountdownSectionBackground
-        position="absolute"
-        inset={0}
-        zIndex={-1}
-      />
+      <SeasonSectionBackground position="absolute" inset={0} zIndex={-1} />
     </VStack>
   )
 }

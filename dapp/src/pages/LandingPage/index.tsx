@@ -2,7 +2,7 @@ import React from "react"
 import { Flex, VStack, Image } from "@chakra-ui/react"
 import { EXTERNAL_HREF, PARTNER_LOGOS } from "#/constants"
 import {
-  SeasonCountdownSection,
+  CurrentSeasonSection,
   HeroSection,
   CardButton,
   ContentCard,
@@ -12,7 +12,7 @@ export default function LandingPage() {
   return (
     <Flex w="full" flexFlow="column" px={10} pb={10}>
       <HeroSection />
-      <SeasonCountdownSection />
+      <CurrentSeasonSection />
       <VStack
         spacing={4}
         w="full"

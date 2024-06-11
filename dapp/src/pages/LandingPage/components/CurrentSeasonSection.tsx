@@ -1,17 +1,14 @@
 import React from "react"
 import { Box, VStack, Heading, Flex } from "@chakra-ui/react"
-
-import {
-  LiveTag,
-  SeasonCountdownSectionBackground,
-} from "#/components/shared/SeasonCountdownSection"
 import ProgressBar from "#/components/ProgressBar"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import { TextLg, TextMd, TextXl } from "#/components/shared/Typography"
 import { BENEFITS, SEASON_CAP } from "#/constants"
+import { LiveTag } from "#/components/shared/LiveTag"
+import { SeasonSectionBackground } from "#/components/shared/SeasonSectionBackground"
 import BenefitCard from "./BenefitCard"
 
-export default function SeasonCountdownSection() {
+export default function CurrentSeasonSection() {
   return (
     <Box position="relative" mb={5}>
       <VStack
@@ -104,7 +101,7 @@ export default function SeasonCountdownSection() {
         </Flex>
       </VStack>
 
-      <SeasonCountdownSectionBackground
+      <SeasonSectionBackground
         pos="absolute"
         top={0}
         left="50%"
