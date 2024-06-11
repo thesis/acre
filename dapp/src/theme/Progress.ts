@@ -52,6 +52,7 @@ const filledStyle = defineStyle((props) => {
 const baseStyleLabel = defineStyle({
   color: "gold.200",
   display: "flex",
+  alignItems: "baseline",
   justifyContent: "space-between",
 })
 
