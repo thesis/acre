@@ -8,8 +8,8 @@ import {
   useStakeFlowContext,
   useVerifyDepositAddress,
 } from "#/hooks"
-import { logPromiseFailure } from "#/utils"
-import { OnErrorCallback, PROCESS_STATUSES, TransactionError } from "#/types"
+import { isLedgerLiveError, logPromiseFailure } from "#/utils"
+import { PROCESS_STATUSES, LedgerLiveError } from "#/types"
 import { ModalBody, ModalHeader, Highlight, useTimeout } from "@chakra-ui/react"
 import Spinner from "#/components/shared/Spinner"
 import { TextMd } from "#/components/shared/Typography"
@@ -47,14 +47,16 @@ export default function DepositBTCModal() {
   }, [dispatch, handleStake])
 
   // TODO: Handle when the function fails
-  const showError = useCallback((error?: TransactionError) => {
+  const showError = useCallback((error?: LedgerLiveError) => {
     console.error(error)
   }, [])
 
   const onDepositBTCError = useCallback(
-    (error: TransactionError) => {
-      // TODO: Find a better way to distinguish between error types
-      const isInterrupted = error.message?.includes("interrupted")
+    (error: unknown) => {
+      if (!isLedgerLiveError(error)) return
+
+      const isInterrupted =
+        error.message && error.message.includes("Signature interrupted by user")
       if (isInterrupted) handlePause()
 
       showError(error)
@@ -64,7 +66,7 @@ export default function DepositBTCModal() {
 
   const { sendBitcoinTransaction, transactionHash } = useDepositBTCTransaction(
     onDepositBTCSuccess,
-    onDepositBTCError as OnErrorCallback,
+    onDepositBTCError,
   )
 
   useEffect(() => {

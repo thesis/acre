@@ -9,7 +9,7 @@ export type UseRequestAccountReturn = {
   requestAccount: (...params: RequestAccountParams) => Promise<void>
 }
 
-export type TransactionError = {
+export type LedgerLiveError = {
   message?: string
   name?: string
   stack?: string
