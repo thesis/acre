@@ -12,6 +12,7 @@ describe("stbtc", () => {
   const staker = EthereumAddress.from(ethers.Wallet.createRandom().address)
 
   const mockedContractInstance = {
+    totalAssets: jest.fn(),
     balanceOf: jest.fn(),
     assetsBalanceOf: jest.fn(),
     entryFeeBasisPoints: jest.fn(),
@@ -30,6 +31,24 @@ describe("stbtc", () => {
       },
       "sepolia",
     )
+  })
+
+  describe("totalAssets", () => {
+    const expectedResult = 48218274102123n
+    let result: bigint
+
+    beforeAll(async () => {
+      mockedContractInstance.totalAssets.mockResolvedValue(expectedResult)
+      result = await stbtc.totalAssets()
+    })
+
+    it("should call ethers contract instance", () => {
+      expect(mockedContractInstance.totalAssets).toHaveBeenCalled()
+    })
+
+    it("should return total tBTC amount under stBTC contract management", () => {
+      expect(result).toEqual(expectedResult)
+    })
   })
 
   describe("balanceOf", () => {
