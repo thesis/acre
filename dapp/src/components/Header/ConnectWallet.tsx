@@ -83,7 +83,6 @@ export default function ConnectWallet() {
             py={1}
           >
             <Button
-              size="lg"
               fontWeight="medium"
               variant="card"
               iconSpacing={3}
@@ -98,7 +97,6 @@ export default function ConnectWallet() {
         </HStack>
       ) : (
         <Button
-          size="lg"
           fontWeight="medium"
           variant="ghost"
           iconSpacing={3}
