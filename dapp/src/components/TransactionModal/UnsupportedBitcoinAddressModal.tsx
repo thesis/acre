@@ -87,7 +87,7 @@ export default function UnsupportedAccountModal({
       </ModalBody>
 
       <ModalFooter pt={0}>
-        <Button size="lg" width="100%" h={14} onClick={handleClick}>
+        <Button size="lg" width="100%" onClick={handleClick}>
           Connect account
         </Button>
       </ModalFooter>
