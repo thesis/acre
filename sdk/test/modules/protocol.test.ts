@@ -37,7 +37,30 @@ describe("Protocol", () => {
   const protocol = new Protocol(contracts)
   const spyOnToSatoshi = jest.spyOn(satoshiConverter, "toSatoshi")
 
-  describe("minDepositAmount", () => {
+  describe("totalAssets", () => {
+    const mockedResult = BigInt(123.456 * 1e18)
+    // The returned result should be in satoshi precision
+    const expectedResult = BigInt(123.456 * 1e8)
+
+    let result: bigint
+
+    beforeAll(async () => {
+      spyOnToSatoshi.mockClear()
+      contracts.stBTC.totalAssets = jest.fn().mockResolvedValue(mockedResult)
+      result = await protocol.totalAssets()
+    })
+
+    it("should convert value to 1e8 satoshi precision", () => {
+      expect(spyOnToSatoshi).toHaveBeenCalledWith(mockedResult)
+      expect(spyOnToSatoshi).toHaveReturnedWith(expectedResult)
+    })
+
+    it("should return correct value", () => {
+      expect(result).toBe(expectedResult)
+    })
+  })
+
+  describe("minimumDepositAmount", () => {
     const mockedResult = BigInt(0.015 * 1e18)
     // The returned result should be in satoshi precision
     const expectedResult = BigInt(0.015 * 1e8)
