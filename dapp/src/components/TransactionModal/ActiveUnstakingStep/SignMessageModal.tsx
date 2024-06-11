@@ -1,14 +1,14 @@
 import React, { useCallback } from "react"
-import { useAppDispatch, useExecuteFunction } from "#/hooks"
+import { useAppDispatch, useExecuteFunction, useModal } from "#/hooks"
 import { PROCESS_STATUSES } from "#/types"
-import { Button, ModalBody, ModalFooter, ModalHeader } from "@chakra-ui/react"
-import { TextMd } from "#/components/shared/Typography"
+import { Button } from "@chakra-ui/react"
 import { logPromiseFailure } from "#/utils"
 import { setStatus } from "#/store/action-flow"
+import TriggerTransactionModal from "../TriggerTransactionModal"
 
 export default function SignMessageModal() {
   const dispatch = useAppDispatch()
-
+  const { closeModal } = useModal()
   const onSignMessageSuccess = useCallback(() => {
     dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED))
   }, [dispatch])
@@ -35,19 +35,10 @@ export default function SignMessageModal() {
   }, [dispatch, handleSignMessage])
 
   return (
-    <>
-      <ModalHeader>Sign message</ModalHeader>
-      <ModalBody textAlign="start" alignItems="start" py={0} gap={10}>
-        <TextMd color="grey.500">
-          You will sign a gas-free Ethereum message to indicate the address
-          where you&apos;d like to get your stBTC liquid staking token.
-        </TextMd>
-      </ModalBody>
-      <ModalFooter pt={10}>
-        <Button size="lg" width="100%" onClick={handleSignMessageWrapper}>
-          Continue
-        </Button>
-      </ModalFooter>
-    </>
+    <TriggerTransactionModal callback={handleSignMessageWrapper}>
+      <Button size="lg" width="100%" variant="outline" onClick={closeModal}>
+        Cancel
+      </Button>
+    </TriggerTransactionModal>
   )
 }

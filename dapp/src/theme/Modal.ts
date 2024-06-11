@@ -73,8 +73,13 @@ const sizeXl = multiStyleConfig.definePartsStyle({
   dialog: { maxW: "46.75rem" },
 })
 
+const sizeLg = multiStyleConfig.definePartsStyle({
+  dialog: { w: "30rem" },
+})
+
 const sizes = {
   xl: sizeXl,
+  lg: sizeLg,
 }
 
 export const modalTheme = multiStyleConfig.defineMultiStyleConfig({
