@@ -8,7 +8,7 @@ import {
 import ProgressBar from "#/components/ProgressBar"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import { TextLg, TextMd, TextXl } from "#/components/shared/Typography"
-import { BENEFITS } from "#/constants"
+import { BENEFITS, SEASON_CAP } from "#/constants"
 import BenefitCard from "./BenefitCard"
 
 export default function SeasonCountdownSection() {
@@ -74,13 +74,13 @@ export default function SeasonCountdownSection() {
         </ProgressBar>
 
         <TextXl
+          display="flex"
+          whiteSpace="pre"
           mt={2}
           mb="7.5rem" // 120px
         >
           Season 1 cap{" "}
-          <Box as="strong" ml={2}>
-            2000,00 BTC
-          </Box>
+          <CurrencyBalance size="xl" amount={SEASON_CAP} currency="bitcoin" />
         </TextXl>
 
         <Flex
