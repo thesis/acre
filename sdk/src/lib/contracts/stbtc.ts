@@ -2,7 +2,8 @@ import { ChainIdentifier } from "./chain-identifier"
 
 export interface StBTC {
   /**
-   * @returns Total tBTC amount under stBTC contract management in 1e18 precision.
+   * @returns Total tBTC amount under stBTC contract management in 1e18
+   *          precision.
    */
   totalAssets(): Promise<bigint>
 

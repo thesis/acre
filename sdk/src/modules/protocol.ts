@@ -24,7 +24,8 @@ export default class Protocol {
   }
 
   /**
-   * @returns Total Bitcoin amount under protocol management in 1e8 satoshi precision.
+   * @returns Total Bitcoin amount under protocol management in 1e8 satoshi
+   *          precision.
    */
   async totalAssets() {
     return toSatoshi(await this.#contracts.stBTC.totalAssets())

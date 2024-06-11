@@ -33,7 +33,7 @@ describe("stbtc", () => {
     )
   })
 
-  describe("assetsBalanceOf", () => {
+  describe("totalAssets", () => {
     const expectedResult = 48218274102123n
     let result: bigint
 
@@ -46,7 +46,7 @@ describe("stbtc", () => {
       expect(mockedContractInstance.totalAssets).toHaveBeenCalled()
     })
 
-    it("should return value of assets that would be exchanged for the amount of shares owned by the staker ", () => {
+    it("should return total tBTC amount under stBTC contract management", () => {
       expect(result).toEqual(expectedResult)
     })
   })
