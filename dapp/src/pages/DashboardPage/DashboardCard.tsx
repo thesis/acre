@@ -1,7 +1,5 @@
 import React from "react"
-import { BoostArrowIcon } from "#/assets/icons"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
-import IconTag from "#/components/shared/IconTag"
 import { TextMd } from "#/components/shared/Typography"
 import { useTransactionModal } from "#/hooks"
 import { ACTION_FLOW_TYPES, AmountType } from "#/types"
@@ -83,8 +81,6 @@ export default function DashboardCard(props: DashboardCardProps) {
               }}
             />
           </VStack>
-
-          <IconTag icon={BoostArrowIcon}>Rewards Boost</IconTag>
         </VStack>
 
         <HStack w="full" justify="center" spacing={2}>
