@@ -1,11 +1,11 @@
 import { BitcoinProvider } from "@acre-btc/sdk"
 import { useMemo } from "react"
-import { useOrangeKitConnector } from "./useOrangeKitConnector"
+import { useConnector } from "./useConnector"
 
-type UseOrangeKitProviderReturn = BitcoinProvider | undefined
+type UseBitcoinProviderReturn = BitcoinProvider | undefined
 
-export function useOrangeKitProvider(): UseOrangeKitProviderReturn {
-  const connector = useOrangeKitConnector()
+export function useBitcoinProvider(): UseBitcoinProviderReturn {
+  const connector = useConnector()
 
   // TODO: Temporary solution - Use provider form connector
   return useMemo(() => {

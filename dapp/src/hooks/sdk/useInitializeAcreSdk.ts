@@ -2,11 +2,11 @@ import { useEffect } from "react"
 import { logPromiseFailure } from "#/utils"
 import { useAcreContext } from "#/acre-react/hooks"
 import { BitcoinProvider } from "@acre-btc/sdk"
-import { useOrangeKitProvider } from "../useOrangeKitProvider"
+import { useBitcoinProvider } from "../orangeKit/useBitcoinProvider"
 
 export function useInitializeAcreSdk() {
   const { init } = useAcreContext()
-  const bitcoinProvider = useOrangeKitProvider()
+  const bitcoinProvider = useBitcoinProvider()
 
   useEffect(() => {
     if (!bitcoinProvider) return

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { OnErrorCallback, OnSuccessCallback } from "#/types"
 import { useWallet } from "./useWallet"
-import { useOrangeKitConnector } from "./useOrangeKitConnector"
+import { useConnector } from "./orangeKit/useConnector"
 
 type SendBitcoinTransactionParams = Parameters<
   (recipient: string, amount: bigint) => void
@@ -18,7 +18,7 @@ export function useDepositBTCTransaction(
   onSuccess?: OnSuccessCallback,
   onError?: OnErrorCallback,
 ): UseDepositBTCTransactionReturn {
-  const connector = useOrangeKitConnector()
+  const connector = useConnector()
   const { address } = useWallet()
 
   const [transactionHash, setTransactionHash] = useState<string | undefined>(
