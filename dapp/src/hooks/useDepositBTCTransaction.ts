@@ -1,35 +1,29 @@
-import { useCallback, useEffect } from "react"
-import { useSignAndBroadcastTransaction } from "@ledgerhq/wallet-api-client-react"
-import { RawBitcoinTransaction } from "@ledgerhq/wallet-api-client"
+import { useCallback, useEffect, useState } from "react"
 import { OnErrorCallback, OnSuccessCallback } from "#/types"
-import { useWalletContext } from "./useWalletContext"
-import { useWalletApiReactTransport } from "./useWalletApiReactTransport"
-
-type UseSendBitcoinTransactionState = {
-  pending: boolean
-  transactionHash: string | null
-  error: unknown
-}
+import { useWallet } from "./useWallet"
+import { useOrangeKitConnector } from "./useOrangeKitConnector"
 
 type SendBitcoinTransactionParams = Parameters<
-  (amount: bigint, recipient: string) => void
+  (recipient: string, amount: bigint) => void
 >
 
 type UseDepositBTCTransactionReturn = {
+  transactionHash?: string
   sendBitcoinTransaction: (
     ...params: SendBitcoinTransactionParams
   ) => Promise<void>
-} & UseSendBitcoinTransactionState
+}
 
 export function useDepositBTCTransaction(
   onSuccess?: OnSuccessCallback,
   onError?: OnErrorCallback,
 ): UseDepositBTCTransactionReturn {
-  const { btcAccount } = useWalletContext()
-  const { walletApiReactTransport } = useWalletApiReactTransport()
+  const connector = useOrangeKitConnector()
+  const { address } = useWallet()
 
-  const { signAndBroadcastTransaction, transactionHash, error, ...rest } =
-    useSignAndBroadcastTransaction()
+  const [transactionHash, setTransactionHash] = useState<string | undefined>(
+    undefined,
+  )
 
   useEffect(() => {
     if (transactionHash && onSuccess) {
@@ -37,46 +31,35 @@ export function useDepositBTCTransaction(
     }
   }, [onSuccess, transactionHash])
 
-  useEffect(() => {
-    if (error && onError) {
-      onError(error)
-    }
-  }, [onError, error])
-
   const sendBitcoinTransaction = useCallback(
-    async (amount: bigint, recipient: string) => {
-      if (!btcAccount) {
+    async (recipient: string, amount: bigint) => {
+      if (!address) {
         throw new Error("Bitcoin account was not connected.")
       }
 
-      const bitcoinTransaction: RawBitcoinTransaction = {
-        family: "bitcoin",
-        amount: amount.toString(),
-        recipient,
+      if (!connector) {
+        throw new Error("Connector was not defined.")
       }
+
+      const client = await connector.getClient()
+
       try {
-        walletApiReactTransport.connect()
-        // @ts-expect-error We do not want to install external bignumber.js lib so
-        // here we use bigint. The Ledger Wallet Api just converts the bignumber.js
-        // object to string so we can pass bigint. See:
-        // https://github.com/LedgerHQ/wallet-api/blob/main/packages/core/src/families/bitcoin/serializer.ts#L13
-        await signAndBroadcastTransaction(btcAccount.id, bitcoinTransaction)
-        walletApiReactTransport.disconnect()
-      } catch (e) {
+        // TODO: Temporary solution - The `sendBitcoin` function accepts amount as number
+        const satoshis = +amount.toString()
+
+        // @ts-expect-error adjust types to handle bitcoin wallet wrappers
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment
+        const txhash: string = await client?.sendBitcoin(recipient, satoshis)
+        setTransactionHash(txhash)
+      } catch (error) {
         if (onError) {
           onError(error)
         }
-        console.error(e)
+        console.error(error)
       }
     },
-    [
-      btcAccount,
-      error,
-      onError,
-      signAndBroadcastTransaction,
-      walletApiReactTransport,
-    ],
+    [address, connector, onError],
   )
 
-  return { ...rest, sendBitcoinTransaction, transactionHash, error }
+  return { sendBitcoinTransaction, transactionHash }
 }

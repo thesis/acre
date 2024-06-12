@@ -77,7 +77,7 @@ export default function DepositBTCModal() {
     const status = await verifyDepositAddress(depositReceipt, btcAddress)
 
     if (status === "valid") {
-      await sendBitcoinTransaction(tokenAmount?.amount, btcAddress)
+      await sendBitcoinTransaction(btcAddress, tokenAmount?.amount)
     } else {
       showError()
     }
