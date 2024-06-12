@@ -1,7 +1,7 @@
 import { OrangeKitSdk } from "@orangekit/sdk"
 import { AcreContracts } from "../lib/contracts"
 import StakeInitialization from "./staking"
-import { toSatoshi } from "../lib/utils"
+import { fromSatoshi, toSatoshi } from "../lib/utils"
 import Tbtc from "./tbtc"
 import AcreSubgraphApi from "../lib/api/AcreSubgraphApi"
 import { DepositStatus } from "../lib/api/TbtcApi"
@@ -118,17 +118,17 @@ export default class Account {
 
   /**
    * Initializes the withdrawal process.
-   * @param referral Data used for referral program.
+   * @param amount Bitcoin amount to withdraw in 1e8 satoshi precision.
 
-   * @returns Object represents the deposit process.
+   * @returns Hash of the transaction that initiated the withdrawal.
    */
   async initializeWithdrawal(
-    sharesAmount: bigint,
+    amount: bigint,
     bitcoinSignMessageFn: (message: string) => Promise<string>,
-  ) {
+  ): Promise<string> {
     return this.#withdrawalService.initiateWithdrawal(
       this.#bitcoinAddress,
-      sharesAmount,
+      fromSatoshi(amount),
       bitcoinSignMessageFn,
     )
   }

@@ -73,6 +73,10 @@ class EthereumStBTC
     return this.instance.assetsBalanceOf(`0x${identifier.identifierHex}`)
   }
 
+  convertToShares(amount: bigint): Promise<bigint> {
+    return this.instance.convertToShares(amount)
+  }
+
   /**
    * @see {StBTC#calculateDepositFee}
    */

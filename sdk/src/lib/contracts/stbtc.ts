@@ -43,4 +43,6 @@ export interface StBTC {
     stbtcAmount: bigint,
     tbtcRedemptionData: string,
   ): string
+
+  convertToShares(amount: bigint): Promise<bigint>
 }

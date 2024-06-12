@@ -35,6 +35,20 @@ export default class WithdrawalService {
 
   async initiateWithdrawal(
     destinationBitcoinAddress: string,
+    tbtcAmount: bigint,
+    bitcoinSignMessageFn: (message: string) => Promise<string>,
+  ): Promise<string> {
+    const sharesAmount = await this.#contracts.stBTC.convertToShares(tbtcAmount)
+
+    return this.initiateRedemption(
+      destinationBitcoinAddress,
+      sharesAmount,
+      bitcoinSignMessageFn,
+    )
+  }
+
+  async initiateRedemption(
+    destinationBitcoinAddress: string,
     sharesAmount: bigint,
     bitcoinSignMessageFn: (message: string) => Promise<string>,
   ): Promise<string> {
@@ -61,7 +75,6 @@ export default class WithdrawalService {
         bitcoinSignMessageFn,
       )
 
-      // TODO: CHANGE RESULT
       return transactionHash
     }
 
