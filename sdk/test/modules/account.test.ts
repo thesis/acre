@@ -1,22 +1,17 @@
 import { BitcoinTxHash } from "@keep-network/tbtc-v2.ts"
-import { ethers } from "ethers"
 import {
   AcreContracts,
-  StakingModule,
   Hex,
-  StakeInitialization,
-  EthereumAddress,
-  DepositFees,
-  DepositFee,
+  Account,
   DepositStatus,
+  StakeInitialization,
 } from "../../src"
-import * as satoshiConverter from "../../src/lib/utils/satoshi-converter"
+import { EthereumAddress } from "../../src/lib/ethereum"
 import { MockAcreContracts } from "../utils/mock-acre-contracts"
-import { MockOrangeKitSdk } from "../utils/mock-orangekit"
 import { MockTbtc } from "../utils/mock-tbtc"
 import { DepositReceipt } from "../../src/modules/tbtc"
-import { MockBitcoinProvider } from "../utils/mock-bitcoin-provider"
 import AcreSubgraphApi from "../../src/lib/api/AcreSubgraphApi"
+import * as satoshiConverter from "../../src/lib/utils/satoshi-converter"
 
 const stakingModuleData: {
   initializeDeposit: {
@@ -25,13 +20,6 @@ const stakingModuleData: {
     mockedDepositBTCAddress: string
     bitcoinDepositorAddress: string
     predictedEthereumDepositorAddress: EthereumAddress
-  }
-  estimateDepositFees: {
-    amount: bigint
-    amountIn1e18: bigint
-    mockedDepositFees: DepositFees
-    stBTCDepositFee: bigint
-    expectedDepositFeesInSatoshi: DepositFee
   }
 } = {
   initializeDeposit: {
@@ -46,32 +34,6 @@ const stakingModuleData: {
     predictedEthereumDepositorAddress: EthereumAddress.from(
       "0x9996baD9C879B1643Ac921454815F93BadA090AB",
     ),
-  },
-  estimateDepositFees: {
-    amount: 10_000_000n, // 0.1 BTC,
-    // 0.1 tBTC in 1e18 precision.
-    amountIn1e18: 100000000000000000n,
-    mockedDepositFees: {
-      tbtc: {
-        // 0.00005 tBTC in 1e18 precision.
-        treasuryFee: 50000000000000n,
-        // 0.001 tBTC in 1e18 precision.
-        depositTxMaxFee: 1000000000000000n,
-        // 0.0001999 tBTC in 1e18 precision.
-        optimisticMintingFee: 199900000000000n,
-      },
-      acre: {
-        // 0.0001 tBTC in 1e18 precision.
-        bitcoinDepositorFee: 100000000000000n,
-      },
-    },
-    // 0.001 in 1e18 precison
-    stBTCDepositFee: 1000000000000000n,
-    expectedDepositFeesInSatoshi: {
-      tbtc: 124990n,
-      acre: 110000n,
-      total: 234990n,
-    },
   },
 }
 
@@ -103,33 +65,18 @@ const stakingInitializationData: {
   },
 }
 
-describe("Staking", () => {
+describe("Account", () => {
   const contracts: AcreContracts = new MockAcreContracts()
-  const bitcoinProvider = new MockBitcoinProvider()
-  const orangeKit = new MockOrangeKitSdk()
   const tbtc = new MockTbtc()
   const acreSubgraph = new AcreSubgraphApi("test")
 
   const { bitcoinDepositorAddress, predictedEthereumDepositorAddress } =
     stakingModuleData.initializeDeposit
 
-  bitcoinProvider.getAddress.mockResolvedValue(
-    stakingModuleData.initializeDeposit.bitcoinDepositorAddress,
-  )
-
-  orangeKit.predictAddress = jest
-    .fn()
-    .mockResolvedValue(`0x${predictedEthereumDepositorAddress.identifierHex}`)
-
-  const staking: StakingModule = new StakingModule(
-    contracts,
-    bitcoinProvider,
-    // @ts-expect-error Error: Property '#private' is missing in type
-    // 'MockOrangeKitSdk' but required in type 'OrangeKitSdk'.
-    orangeKit,
-    tbtc,
-    acreSubgraph,
-  )
+  const account: Account = new Account(contracts, tbtc, acreSubgraph, {
+    bitcoinAddress: bitcoinDepositorAddress,
+    ethereumAddress: predictedEthereumDepositorAddress,
+  })
 
   describe("initializeStake", () => {
     const { mockedDepositBTCAddress, referral, extraData } =
@@ -175,19 +122,9 @@ describe("Staking", () => {
 
           tbtc.initiateDeposit = jest.fn().mockReturnValue(mockedDeposit)
 
-          result = await staking.initializeStake(
+          result = await account.initializeStake(
             referral,
             bitcoinRecoveryAddress,
-          )
-        })
-
-        it("should get the bitcoin address from bitcoin provider", () => {
-          expect(bitcoinProvider.getAddress).toHaveBeenCalled()
-        })
-
-        it("should get Ethereum depositor owner address", () => {
-          expect(orangeKit.predictAddress).toHaveBeenCalledWith(
-            bitcoinDepositorAddress,
           )
         })
 
@@ -261,14 +198,16 @@ describe("Staking", () => {
   })
 
   describe("sharesBalance", () => {
-    const depositor = EthereumAddress.from(ethers.Wallet.createRandom().address)
+    const depositor = predictedEthereumDepositorAddress
 
     const expectedResult = 4294967295n
+
     let result: bigint
 
     beforeAll(async () => {
       contracts.stBTC.balanceOf = jest.fn().mockResolvedValue(expectedResult)
-      result = await staking.sharesBalance(depositor)
+
+      result = await account.sharesBalance()
     })
 
     it("should get balance of stBTC", () => {
@@ -281,114 +220,31 @@ describe("Staking", () => {
   })
 
   describe("estimatedBitcoinBalance", () => {
-    const expectedResult = 4294967295n
-    const depositor = EthereumAddress.from(ethers.Wallet.createRandom().address)
+    const mockedAssetsBalance = 1234567891230000000n
+    const expectedResult = 123456789n
+    const depositor = predictedEthereumDepositorAddress
+    const spyOnToSatoshi = jest.spyOn(satoshiConverter, "toSatoshi")
+
     let result: bigint
+
     beforeAll(async () => {
       contracts.stBTC.assetsBalanceOf = jest
         .fn()
-        .mockResolvedValue(expectedResult)
-      result = await staking.estimatedBitcoinBalance(depositor)
+        .mockResolvedValue(mockedAssetsBalance)
+
+      result = await account.estimatedBitcoinBalance()
     })
 
-    it("should get staker's balance of tBTC tokens in vault ", () => {
+    it("should get staker's balance of tBTC tokens in vault", () => {
       expect(contracts.stBTC.assetsBalanceOf).toHaveBeenCalledWith(depositor)
+    })
+
+    it("should convert to satoshi", () => {
+      expect(spyOnToSatoshi).toHaveBeenCalledWith(mockedAssetsBalance)
     })
 
     it("should return maximum withdraw value", () => {
       expect(result).toEqual(expectedResult)
-    })
-  })
-
-  describe("estimateDepositFees", () => {
-    const {
-      estimateDepositFees: {
-        amount,
-        amountIn1e18,
-        mockedDepositFees,
-        expectedDepositFeesInSatoshi,
-        stBTCDepositFee,
-      },
-    } = stakingModuleData
-
-    let result: DepositFee
-    const spyOnToSatoshi = jest.spyOn(satoshiConverter, "toSatoshi")
-    const spyOnFromSatoshi = jest.spyOn(satoshiConverter, "fromSatoshi")
-
-    beforeAll(async () => {
-      contracts.bitcoinDepositor.calculateDepositFee = jest
-        .fn()
-        .mockResolvedValue(mockedDepositFees)
-
-      contracts.stBTC.calculateDepositFee = jest
-        .fn()
-        .mockResolvedValue(stBTCDepositFee)
-
-      result = await staking.estimateDepositFee(amount)
-    })
-
-    it("should convert provided amount from satoshi to token precision", () => {
-      expect(spyOnFromSatoshi).toHaveBeenNthCalledWith(1, amount)
-    })
-
-    it("should get the deposit fees from Acre Bitcoin Depositor contract handle", () => {
-      expect(
-        contracts.bitcoinDepositor.calculateDepositFee,
-      ).toHaveBeenCalledWith(amountIn1e18)
-    })
-
-    it("should get the stBTC deposit fee", () => {
-      expect(contracts.stBTC.calculateDepositFee).toHaveBeenCalledWith(
-        amountIn1e18,
-      )
-    })
-
-    it("should convert tBTC network fees to satoshi", () => {
-      const {
-        tbtc: { depositTxMaxFee, treasuryFee, optimisticMintingFee },
-      } = mockedDepositFees
-      const totalTbtcFees = depositTxMaxFee + treasuryFee + optimisticMintingFee
-
-      expect(spyOnToSatoshi).toHaveBeenNthCalledWith(1, totalTbtcFees)
-    })
-
-    it("should convert Acre network fees to satoshi", () => {
-      const {
-        acre: { bitcoinDepositorFee },
-      } = mockedDepositFees
-      const totalAcreFees = bitcoinDepositorFee
-
-      expect(spyOnToSatoshi).toHaveBeenNthCalledWith(2, totalAcreFees)
-    })
-
-    it("should return the deposit fees in satoshi precision", () => {
-      expect(result).toMatchObject(expectedDepositFeesInSatoshi)
-    })
-  })
-
-  describe("minDepositAmount", () => {
-    describe("should return minimum deposit amount", () => {
-      const spyOnToSatoshi = jest.spyOn(satoshiConverter, "toSatoshi")
-      const mockedResult = BigInt(0.015 * 1e18)
-      // The returned result should be in satoshi precision
-      const expectedResult = BigInt(0.015 * 1e8)
-      let result: bigint
-
-      beforeAll(async () => {
-        contracts.bitcoinDepositor.minDepositAmount = jest
-          .fn()
-          .mockResolvedValue(mockedResult)
-        result = await staking.minDepositAmount()
-      })
-
-      it("should convert value to 1e8 satoshi precision", () => {
-        expect(spyOnToSatoshi).toHaveBeenCalledWith(mockedResult)
-        expect(spyOnToSatoshi).toHaveReturnedWith(expectedResult)
-      })
-
-      it(`should return ${expectedResult}`, () => {
-        expect(result).toBe(expectedResult)
-      })
     })
   })
 
@@ -448,24 +304,14 @@ describe("Staking", () => {
       },
     ]
 
-    let result: Awaited<ReturnType<StakingModule["getDeposits"]>>
+    let result: Awaited<ReturnType<Account["getDeposits"]>>
 
     beforeAll(async () => {
       tbtc.getDepositsByOwner = jest
         .fn()
         .mockResolvedValue([queuedDeposit, finalizedDeposit.tbtc])
 
-      result = await staking.getDeposits()
-    })
-
-    it("should get the bitcoin address from bitcoin provider", () => {
-      expect(bitcoinProvider.getAddress).toHaveBeenCalled()
-    })
-
-    it("should get Ethereum depositor owner address", () => {
-      expect(orangeKit.predictAddress).toHaveBeenCalledWith(
-        bitcoinDepositorAddress,
-      )
+      result = await account.getDeposits()
     })
 
     it("should get deposits from subgraph", () => {

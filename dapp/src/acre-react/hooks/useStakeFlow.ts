@@ -27,7 +27,7 @@ export function useStakeFlow(): UseStakeFlowReturn {
     async (referral: number, bitcoinRecoveryAddress?: string) => {
       if (!acre || !isInitialized) throw new Error("Acre SDK not defined")
 
-      const initializedStakeFlow = await acre.staking.initializeStake(
+      const initializedStakeFlow = await acre.account.initializeStake(
         referral,
         bitcoinRecoveryAddress,
       )

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { DepositFee } from "#/types"
 import { useAppDispatch } from "./store"
 
-const initialDepositFee = {
+export const initialDepositFee = {
   tbtc: 0n,
   acre: 0n,
   total: 0n,
@@ -21,7 +21,7 @@ export function useTransactionFee(amount?: bigint) {
     } else {
       const getEstimatedDepositFee = async () => {
         if (!acre) return
-        const fee = await acre.staking.estimateDepositFee(amount)
+        const fee = await acre.protocol.estimateDepositFee(amount)
 
         setDepositFee(fee)
       }

@@ -1,7 +1,7 @@
 import React from "react"
 import { Flex, List } from "@chakra-ui/react"
 import TransactionDetailsAmountItem from "#/components/shared/TransactionDetails/AmountItem"
-import { useTokenAmountFormMeta } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
+import { useTokenAmountField } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { useTransactionDetails } from "#/hooks"
 import { CurrencyType } from "#/types"
 import { featureFlags } from "#/constants"
@@ -14,8 +14,10 @@ function UnstakeDetails({
   balance: bigint
   currency: CurrencyType
 }) {
-  const value = useTokenAmountFormMeta()?.value ?? 0n
-  const details = useTransactionDetails(value)
+  const { value, isValid } = useTokenAmountField()
+  // Let's not calculate the details of the transaction when the value is not valid.
+  const amount = isValid ? value : 0n
+  const details = useTransactionDetails(amount)
 
   return (
     <Flex flexDirection="column" gap={10} mt={4}>
@@ -27,7 +29,7 @@ function UnstakeDetails({
           label="Withdraw from pool"
           from={{
             currency,
-            amount: details?.btcAmount,
+            amount: details.amount,
           }}
           to={{
             currency: "usd",
@@ -50,7 +52,7 @@ function UnstakeDetails({
           label="You will receive"
           from={{
             currency,
-            amount: details?.estimatedAmount,
+            amount: details.estimatedAmount,
           }}
           to={{
             currency: "usd",
