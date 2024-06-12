@@ -7,6 +7,12 @@ export interface StBTC {
   getAddress(): ChainIdentifier
 
   /**
+   * @returns Total tBTC amount under stBTC contract management in 1e18
+   *          precision.
+   */
+  totalAssets(): Promise<bigint>
+
+  /**
    * @param identifier The generic chain identifier.
    * @returns Value of the basis for calculating final BTC balance.
    */

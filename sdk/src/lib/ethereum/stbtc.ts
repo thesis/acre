@@ -53,6 +53,13 @@ class EthereumStBTC
   }
 
   /**
+   * @see {StBTC#totalAssets}
+   */
+  totalAssets(): Promise<bigint> {
+    return this.instance.totalAssets()
+  }
+
+  /**
    * @see {StBTC#balanceOf}
    */
   balanceOf(identifier: ChainIdentifier): Promise<bigint> {

@@ -1,30 +1,39 @@
 import { useEffect, useState } from "react"
+import { DepositFee } from "#/types"
+import { initialDepositFee, useTransactionFee } from "./useTransactionFee"
 
 type UseTransactionDetailsResult = {
-  btcAmount: string
-  protocolFee: string
-  estimatedAmount: string
+  amount: bigint
+  transactionFee: DepositFee
+  estimatedAmount: bigint
+}
+
+const initialTransactionDetails = {
+  amount: 0n,
+  transactionFee: initialDepositFee,
+  estimatedAmount: 0n,
 }
 
 export function useTransactionDetails(amount: bigint | undefined) {
-  const [details, setDetails] = useState<
-    UseTransactionDetailsResult | undefined
-  >(undefined)
+  // TODO: Temporary solution - Let's update when withdrawal fees are defined
+  const transactionFee = useTransactionFee(amount)
+  const [details, setDetails] = useState<UseTransactionDetailsResult>(
+    initialTransactionDetails,
+  )
 
   useEffect(() => {
     if (!amount) {
-      setDetails(undefined)
+      setDetails(initialTransactionDetails)
     } else {
-      const protocolFee = amount / 10000n
-      const estimatedAmount = amount - protocolFee
+      const estimatedAmount = amount - transactionFee.total
 
       setDetails({
-        btcAmount: amount.toString(),
-        protocolFee: protocolFee.toString(),
-        estimatedAmount: estimatedAmount.toString(),
+        amount,
+        transactionFee,
+        estimatedAmount,
       })
     }
-  }, [amount])
+  }, [amount, transactionFee])
 
   return details
 }

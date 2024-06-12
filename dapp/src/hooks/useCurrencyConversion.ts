@@ -26,8 +26,9 @@ export function useCurrencyConversion({
   const price = useAppSelector(
     isBtcUsdConversion(from, to) ? selectBtcUsdPrice : () => undefined,
   )
+
   const conversionAmount = useMemo(() => {
-    if (!from.amount || !price) return undefined
+    if (from.amount === undefined || !price) return undefined
 
     const { amount, currency } = from
     const { decimals, desiredDecimals } = CURRENCIES_BY_TYPE[currency]
