@@ -81,6 +81,8 @@ export default function DashboardCard(props: DashboardCardProps) {
               }}
             />
           </VStack>
+          {/* TODO: Bring back when implementing gamification */}
+          {/* <IconTag icon={BoostArrowIcon}>Rewards Boost</IconTag> */}
         </VStack>
 
         <HStack w="full" justify="center" spacing={2}>
