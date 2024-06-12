@@ -3,14 +3,14 @@ import { BITCOIN_NETWORK } from "#/constants"
 import { logPromiseFailure } from "#/utils"
 import { useAcreContext } from "#/acre-react/hooks"
 import { LedgerLiveWalletApiBitcoinProvider } from "@acre-btc/sdk/dist/src/lib/bitcoin/providers"
-import { useWalletContext } from "../useWalletContext"
+import { useWallet } from "../useWallet"
 
 export function useInitializeAcreSdk() {
-  const { btcAccount } = useWalletContext()
+  const { address } = useWallet()
   const { init } = useAcreContext()
 
   useEffect(() => {
-    if (!btcAccount?.id) return
+    if (!address) return
 
     const initSDK = async (bitcoinAccountId: string) => {
       const bitcoinProvider = await LedgerLiveWalletApiBitcoinProvider.init(
@@ -19,6 +19,6 @@ export function useInitializeAcreSdk() {
       )
       await init(bitcoinProvider)
     }
-    logPromiseFailure(initSDK(btcAccount.id))
-  }, [btcAccount?.id, init])
+    logPromiseFailure(initSDK(address))
+  }, [address, init])
 }

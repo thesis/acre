@@ -1,25 +1,22 @@
-import { useCallback, useMemo } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { Connector, useAccount, useChainId, useConnect } from "wagmi"
-import { Account } from "@ledgerhq/wallet-api-client"
-import { useWalletContext } from "./useWalletContext"
-import { useRequestBitcoinAccount } from "./useRequestBitcoinAccount"
+import { logPromiseFailure } from "#/utils"
 
 type UseWalletReturn = {
   isConnected: boolean
+  address?: string
+  balance: bigint
   onConnect: (connector: Connector) => void
-  bitcoin: {
-    account: Account | undefined
-    requestAccount: () => Promise<void>
-  }
 }
 
 export function useWallet(): UseWalletReturn {
-  const { btcAccount } = useWalletContext()
-  const { requestAccount: requestBitcoinAccount } = useRequestBitcoinAccount()
-
   const chainId = useChainId()
-  const { isConnected } = useAccount()
+  const { isConnected, connector: accountConnector } = useAccount()
   const { connect } = useConnect()
+
+  const [address, setAddress] = useState<string | undefined>(undefined)
+  // TODO: Temporary solution - Fetch BTC balance
+  const [balance] = useState<bigint>(0n)
 
   const onConnect = useCallback(
     (connector: Connector) => {
@@ -28,17 +25,29 @@ export function useWallet(): UseWalletReturn {
     [connect, chainId],
   )
 
+  useEffect(() => {
+    const fetchBitcoinAddress = async () => {
+      if (accountConnector && accountConnector.type === "orangekit") {
+        const btcAddress =
+          // @ts-expect-error adjust types to handle bitcoin wallet wrappers
+          (await accountConnector?.getBitcoinAddress()) as string
+
+        setAddress(btcAddress)
+      } else {
+        setAddress(undefined)
+      }
+    }
+
+    logPromiseFailure(fetchBitcoinAddress())
+  }, [accountConnector])
+
   return useMemo(
     () => ({
       isConnected,
+      address,
+      balance,
       onConnect,
-      bitcoin: {
-        account: btcAccount,
-        requestAccount: async () => {
-          await requestBitcoinAccount()
-        },
-      },
     }),
-    [btcAccount, isConnected, onConnect, requestBitcoinAccount],
+    [address, balance, isConnected, onConnect],
   )
 }
