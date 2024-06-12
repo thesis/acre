@@ -1,5 +1,9 @@
 import { LedgerLiveError } from "#/types"
 
+export function getType(arg: unknown): string {
+  return Object.prototype.toString.call(arg).slice("[object ".length, -1)
+}
+
 export function isObject(
   arg: unknown,
 ): arg is Record<string | number | symbol, unknown> {
@@ -7,7 +11,11 @@ export function isObject(
 }
 
 export function isString(arg: unknown): arg is string {
-  return typeof arg === "string"
+  return getType(arg) === "String"
+}
+
+export function isNumber(arg: unknown): arg is number {
+  return getType(arg) === "Number"
 }
 
 export function isLedgerLiveError(arg: unknown): arg is LedgerLiveError {
