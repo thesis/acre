@@ -1,13 +1,37 @@
-import { useMemo } from "react"
+import { useCallback, useMemo } from "react"
+import { Connector, useAccount, useChainId, useConnect } from "wagmi"
+import { Account } from "@ledgerhq/wallet-api-client"
 import { useWalletContext } from "./useWalletContext"
 import { useRequestBitcoinAccount } from "./useRequestBitcoinAccount"
 
-export function useWallet() {
+type UseWalletReturn = {
+  isConnected: boolean
+  onConnect: (connector: Connector) => void
+  bitcoin: {
+    account: Account | undefined
+    requestAccount: () => Promise<void>
+  }
+}
+
+export function useWallet(): UseWalletReturn {
   const { btcAccount } = useWalletContext()
   const { requestAccount: requestBitcoinAccount } = useRequestBitcoinAccount()
 
+  const chainId = useChainId()
+  const { isConnected } = useAccount()
+  const { connect } = useConnect()
+
+  const onConnect = useCallback(
+    (connector: Connector) => {
+      connect({ connector, chainId })
+    },
+    [connect, chainId],
+  )
+
   return useMemo(
     () => ({
+      isConnected,
+      onConnect,
       bitcoin: {
         account: btcAccount,
         requestAccount: async () => {
@@ -15,6 +39,6 @@ export function useWallet() {
         },
       },
     }),
-    [btcAccount, requestBitcoinAccount],
+    [btcAccount, isConnected, onConnect, requestBitcoinAccount],
   )
 }

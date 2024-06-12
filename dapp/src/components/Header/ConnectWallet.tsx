@@ -1,17 +1,14 @@
 import React from "react"
 import { Button, HStack, Icon, Tooltip } from "@chakra-ui/react"
-import { useIsHomeRouteActive, useWallet, useWalletContext } from "#/hooks"
+import { useIsHomeRouteActive, useModal, useWallet } from "#/hooks"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import { TextMd } from "#/components/shared/Typography"
 import { BitcoinIcon } from "#/assets/icons"
 import { Account } from "@ledgerhq/wallet-api-client"
 import { CURRENCY_ID_BITCOIN } from "#/constants"
-import {
-  isSupportedBTCAddressType,
-  logPromiseFailure,
-  truncateAddress,
-} from "#/utils"
+import { isSupportedBTCAddressType, truncateAddress } from "#/utils"
 import { AnimatePresence, motion, Variants } from "framer-motion"
+import { MODAL_TYPES } from "#/types"
 
 const containerVariants: Variants = {
   hidden: { opacity: 0, y: -48 },
@@ -33,18 +30,14 @@ const getCustomDataByAccount = (
 
 export default function ConnectWallet() {
   const {
-    bitcoin: { account: btcAccount, requestAccount: requestBitcoinAccount },
+    isConnected,
+    bitcoin: { account: btcAccount },
   } = useWallet()
-  // TODO: Move `isConnected` to useWallet hook
-  const { isConnected } = useWalletContext()
+  const { openModal } = useModal()
 
   const customDataBtcAccount = getCustomDataByAccount(btcAccount)
 
   const isHomeRoute = useIsHomeRouteActive()
-
-  const handleConnectBitcoinAccount = () => {
-    logPromiseFailure(requestBitcoinAccount())
-  }
 
   return (
     <AnimatePresence initial={false}>
@@ -75,7 +68,7 @@ export default function ConnectWallet() {
               variant="card"
               colorScheme={customDataBtcAccount.colorScheme}
               leftIcon={<Icon as={BitcoinIcon} boxSize={6} />}
-              onClick={handleConnectBitcoinAccount}
+              onClick={() => openModal(MODAL_TYPES.CONNECT_WALLET)}
             >
               {customDataBtcAccount.text}
             </Button>
