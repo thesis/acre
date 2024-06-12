@@ -1,5 +1,5 @@
 import { http, createConfig, CreateConnectorFn } from "wagmi"
-import { mainnet, sepolia } from "wagmi/chains"
+import { Chain, mainnet, sepolia } from "wagmi/chains"
 import {
   getOrangeKitUnisatConnector,
   getOrangeKitOKXConnector,
@@ -7,13 +7,20 @@ import {
 
 const { VITE_ETH_HOSTNAME_HTTP, VITE_GELATO_RELAY_API_KEY, VITE_USE_TESTNET } =
   import.meta.env
-const CHAIN_ID = VITE_USE_TESTNET === "true" ? sepolia.id : mainnet.id
+const isTestnet = VITE_USE_TESTNET === "true"
 
+const CHAIN_ID = isTestnet ? sepolia.id : mainnet.id
+
+const chains: [Chain, ...Chain[]] = isTestnet ? [sepolia] : [mainnet]
 const connectorConfig = {
   rpcUrl: VITE_ETH_HOSTNAME_HTTP,
   chainId: CHAIN_ID,
   relayApiKey: VITE_GELATO_RELAY_API_KEY,
 }
+const transports = chains.reduce(
+  (acc, { id }) => ({ ...acc, [id]: http() }),
+  {},
+)
 
 const orangeKitUnisatConnector = getOrangeKitUnisatConnector(connectorConfig)
 const orangeKitOKXConnector = getOrangeKitOKXConnector(connectorConfig)
@@ -24,13 +31,10 @@ const connectors = [
 ] as unknown as CreateConnectorFn[]
 
 const wagmiConfig = createConfig({
-  chains: [mainnet, sepolia],
+  chains,
   multiInjectedProviderDiscovery: false,
   connectors,
-  transports: {
-    [mainnet.id]: http(),
-    [sepolia.id]: http(),
-  },
+  transports,
 })
 
 export default wagmiConfig
