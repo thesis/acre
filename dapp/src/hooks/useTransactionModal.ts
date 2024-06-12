@@ -12,8 +12,8 @@ export function useTransactionModal(type: ActionFlowType) {
   }, [openModal, type])
 
   const handleConnectWalletModal = useCallback(() => {
-    openModal(MODAL_TYPES.CONNECT_WALLET)
-  }, [openModal])
+    openModal(MODAL_TYPES.CONNECT_WALLET, { onSuccess: handleTransactionModal })
+  }, [handleTransactionModal, openModal])
 
   return useCallback(() => {
     if (isConnected) {
