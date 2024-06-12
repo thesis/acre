@@ -6,9 +6,12 @@ import { TextLg, TextMd, TextXl } from "#/components/shared/Typography"
 import { BENEFITS, SEASON_CAP } from "#/constants"
 import { LiveTag } from "#/components/shared/LiveTag"
 import { SeasonSectionBackground } from "#/components/shared/SeasonSectionBackground"
+import { useSeasonProgress } from "#/hooks"
 import BenefitCard from "./BenefitCard"
 
 export default function CurrentSeasonSection() {
+  const { progress, totalAssets } = useSeasonProgress()
+
   return (
     <Box position="relative" mb={5}>
       <VStack
@@ -58,11 +61,11 @@ export default function CurrentSeasonSection() {
 
         <ProgressBar
           size="2xl"
-          value={29}
+          value={progress}
           maxW="50rem" // 800px
         >
           <CurrencyBalance
-            amount={24572000000} // TODO: replace with value
+            amount={totalAssets}
             currency="bitcoin"
             variant="greater-balance-xl"
             symbolFontWeight="black"

@@ -6,6 +6,7 @@ import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import ProgressBar from "#/components/ProgressBar"
 import { SeasonSectionBackground } from "#/components/shared/SeasonSectionBackground"
 import { LiveTag } from "#/components/shared/LiveTag"
+import { useSeasonProgress } from "#/hooks"
 
 type CurrentSeasonCardProps = StackProps & {
   showSeasonStats?: boolean
@@ -16,6 +17,7 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
 
   const totalJoined = 3045 // TODO: fetch from API
   const tvl = 144500000000 // TODO: fetch from API
+  const { progress, totalAssets } = useSeasonProgress()
 
   return (
     <VStack
@@ -40,9 +42,9 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
         Staking is live!
       </Heading>
 
-      <ProgressBar value={50}>
+      <ProgressBar value={progress}>
         <CurrencyBalance
-          amount={499000000} // TODO: replace with value
+          amount={totalAssets}
           currency="bitcoin"
           variant="greater-balance-lg"
         />
