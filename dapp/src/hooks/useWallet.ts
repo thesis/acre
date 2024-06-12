@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { Connector, useAccount, useChainId, useConnect } from "wagmi"
 import { logPromiseFailure } from "#/utils"
-import { useOrangeKitConnector } from "./useOrangeKitConnector"
+import { useConnector } from "./orangeKit"
 
 type UseWalletReturn = {
   isConnected: boolean
@@ -14,23 +14,23 @@ export function useWallet(): UseWalletReturn {
   const chainId = useChainId()
   const { isConnected } = useAccount()
   const { connect } = useConnect()
-  const accountConnector = useOrangeKitConnector()
+  const connector = useConnector()
 
   const [address, setAddress] = useState<string | undefined>(undefined)
   // TODO: Temporary solution - Fetch BTC balance
   const [balance] = useState<bigint>(0n)
 
   const onConnect = useCallback(
-    (connector: Connector) => {
-      connect({ connector, chainId })
+    (selectedConnector: Connector) => {
+      connect({ connector: selectedConnector, chainId })
     },
     [connect, chainId],
   )
 
   useEffect(() => {
     const fetchBitcoinAddress = async () => {
-      if (accountConnector) {
-        const btcAddress = await accountConnector.getBitcoinAddress()
+      if (connector) {
+        const btcAddress = await connector.getBitcoinAddress()
 
         setAddress(btcAddress)
       } else {
@@ -39,7 +39,7 @@ export function useWallet(): UseWalletReturn {
     }
 
     logPromiseFailure(fetchBitcoinAddress())
-  }, [accountConnector])
+  }, [connector])
 
   return useMemo(
     () => ({
