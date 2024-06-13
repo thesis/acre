@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React from "react"
 import {
   Button,
   ModalBody,
@@ -8,14 +8,18 @@ import {
 } from "@chakra-ui/react"
 import { useModal, useWallet } from "#/hooks"
 import { useConnectors } from "wagmi"
-import { BaseModalProps, OnSuccessCallback } from "#/types"
+import { BaseModalProps, OnErrorCallback, OnSuccessCallback } from "#/types"
 import withBaseModal from "./ModalRoot/withBaseModal"
 
 type ConnectWalletModalBaseProps = BaseModalProps & {
   onSuccess?: OnSuccessCallback
+  onError?: OnErrorCallback
 }
 
-function ConnectWalletModalBase({ onSuccess }: ConnectWalletModalBaseProps) {
+function ConnectWalletModalBase({
+  onSuccess,
+  onError,
+}: ConnectWalletModalBaseProps) {
   const connectors = useConnectors()
   const { isConnected, onConnect, onDisconnect } = useWallet()
   const { closeModal } = useModal()
@@ -24,6 +28,13 @@ function ConnectWalletModalBase({ onSuccess }: ConnectWalletModalBaseProps) {
     closeModal()
 
     if (onSuccess) onSuccess()
+  }
+
+  const onConnectWalletError = (error: unknown) => {
+    // TODO: Handle when the wallet connection fails
+    console.error(error)
+
+    if (onError) onError(error)
   }
 
   return (
@@ -38,7 +49,12 @@ function ConnectWalletModalBase({ onSuccess }: ConnectWalletModalBaseProps) {
             {connectors.map((connector) => (
               <Button
                 key={connector.id}
-                onClick={() => onConnect(connector, onConnectWalletSuccess)}
+                onClick={() =>
+                  onConnect(connector, {
+                    onSuccess: onConnectWalletSuccess,
+                    onError: onConnectWalletError,
+                  })
+                }
               >
                 {connector.name}
               </Button>
