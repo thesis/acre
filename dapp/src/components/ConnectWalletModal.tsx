@@ -8,14 +8,14 @@ import {
 } from "@chakra-ui/react"
 import { useModal, useWallet } from "#/hooks"
 import { useConnectors } from "wagmi"
-import { OnSuccessCallback } from "#/types"
+import { BaseModalProps, OnSuccessCallback } from "#/types"
 import withBaseModal from "./ModalRoot/withBaseModal"
 
-function ConnectWalletModalBase({
-  onSuccess,
-}: {
+type ConnectWalletModalBaseProps = BaseModalProps & {
   onSuccess?: OnSuccessCallback
-}) {
+}
+
+function ConnectWalletModalBase({ onSuccess }: ConnectWalletModalBaseProps) {
   const connectors = useConnectors()
   const { address, onConnect } = useWallet()
   const { closeModal } = useModal()
