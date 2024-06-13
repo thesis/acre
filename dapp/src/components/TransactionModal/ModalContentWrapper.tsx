@@ -1,4 +1,3 @@
-import React from "react"
 import {
   useActionFlowStatus,
   useActionFlowTokenAmount,
@@ -6,15 +5,15 @@ import {
   useRequestBitcoinAccount,
   useWallet,
 } from "#/hooks"
-import { BitcoinIcon } from "#/assets/icons"
 import { PROCESS_STATUSES } from "#/types"
 import { isSupportedBTCAddressType } from "#/utils"
+import React from "react"
 import ActionFormModal from "./ActionFormModal"
 import ErrorModal from "./ErrorModal"
 import LoadingModal from "./LoadingModal"
-import MissingAccountModal from "./MissingAccountModal"
-import SuccessModal from "./SuccessModal"
 import ResumeModal from "./ResumeModal"
+import SuccessModal from "./SuccessModal"
+import UnsupportedBitcoinAddressModal from "./UnsupportedBitcoinAddressModal"
 
 export default function ModalContentWrapper({
   children,
@@ -22,16 +21,16 @@ export default function ModalContentWrapper({
   children: React.ReactNode
 }) {
   const { address } = useWallet()
-  const { requestAccount: requestBitcoinAccount } = useRequestBitcoinAccount()
+  const { account, requestAccount: requestBitcoinAccount } =
+    useRequestBitcoinAccount()
   const status = useActionFlowStatus()
   const type = useActionFlowType()
   const tokenAmount = useActionFlowTokenAmount()
 
   if (!address || !isSupportedBTCAddressType(address))
     return (
-      <MissingAccountModal
-        currency="bitcoin"
-        icon={BitcoinIcon}
+      <UnsupportedBitcoinAddressModal
+        account={account}
         requestAccount={requestBitcoinAccount}
       />
     )
