@@ -17,29 +17,34 @@ type ConnectWalletModalBaseProps = BaseModalProps & {
 
 function ConnectWalletModalBase({ onSuccess }: ConnectWalletModalBaseProps) {
   const connectors = useConnectors()
-  const { address, onConnect } = useWallet()
+  const { isConnected, onConnect, onDisconnect } = useWallet()
   const { closeModal } = useModal()
 
-  useEffect(() => {
-    if (!address) return
-
+  const onConnectWalletSuccess = () => {
     closeModal()
 
     if (onSuccess) onSuccess()
-  }, [address, closeModal, onSuccess])
+  }
 
   return (
     <>
       <ModalCloseButton />
       <ModalHeader>Connect a Wallet</ModalHeader>
       <ModalBody>
-        <VStack>
-          {connectors.map((connector) => (
-            <Button key={connector.id} onClick={() => onConnect(connector)}>
-              {connector.name}
-            </Button>
-          ))}
-        </VStack>
+        {isConnected ? (
+          <Button onClick={onDisconnect}>Disconnect</Button>
+        ) : (
+          <VStack>
+            {connectors.map((connector) => (
+              <Button
+                key={connector.id}
+                onClick={() => onConnect(connector, onConnectWalletSuccess)}
+              >
+                {connector.name}
+              </Button>
+            ))}
+          </VStack>
+        )}
       </ModalBody>
     </>
   )

@@ -1,19 +1,28 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { Connector, useAccount, useChainId, useConnect } from "wagmi"
+import {
+  Connector,
+  useAccount,
+  useChainId,
+  useConnect,
+  useDisconnect,
+} from "wagmi"
 import { logPromiseFailure } from "#/utils"
+import { OnSuccessCallback } from "#/types"
 import { useConnector } from "./orangeKit"
 
 type UseWalletReturn = {
   isConnected: boolean
   address?: string
   balance: bigint
-  onConnect: (connector: Connector) => void
+  onConnect: (connector: Connector, onSuccess?: OnSuccessCallback) => void
+  onDisconnect: () => void
 }
 
 export function useWallet(): UseWalletReturn {
   const chainId = useChainId()
   const { isConnected } = useAccount()
   const { connect } = useConnect()
+  const { disconnect } = useDisconnect()
   const connector = useConnector()
 
   const [address, setAddress] = useState<string | undefined>(undefined)
@@ -21,11 +30,16 @@ export function useWallet(): UseWalletReturn {
   const [balance] = useState<bigint>(0n)
 
   const onConnect = useCallback(
-    (selectedConnector: Connector) => {
-      connect({ connector: selectedConnector, chainId })
+    (selectedConnector: Connector, onSuccess?: OnSuccessCallback) => {
+      connect({ connector: selectedConnector, chainId }, { onSuccess })
     },
     [connect, chainId],
   )
+
+  const onDisconnect = useCallback(() => {
+    disconnect()
+    // TODO: Reset redux state
+  }, [disconnect])
 
   useEffect(() => {
     const fetchBitcoinAddress = async () => {
@@ -47,7 +61,8 @@ export function useWallet(): UseWalletReturn {
       address,
       balance,
       onConnect,
+      onDisconnect,
     }),
-    [address, balance, isConnected, onConnect],
+    [address, balance, isConnected, onConnect, onDisconnect],
   )
 }
