@@ -24,6 +24,7 @@
     "@ledgerhq/wallet-api-client-react": "^1.3.0",
     "@orangekit/react": "1.0.0-beta.16",
     "@reduxjs/toolkit": "^2.2.0",
+    "@safe-global/safe-core-sdk-types": "^5.0.1",
     "@sentry/react": "^7.98.0",
     "@sentry/types": "^7.102.0",
     "@tabler/icons-react": "^3.1.0",

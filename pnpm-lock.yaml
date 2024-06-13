@@ -44,6 +44,9 @@ importers:
       '@reduxjs/toolkit':
         specifier: ^2.2.0
         version: 2.2.1(react-redux@9.1.0)(react@18.2.0)
+      '@safe-global/safe-core-sdk-types':
+        specifier: ^5.0.1
+        version: 5.0.1(typescript@5.3.2)
       '@sentry/react':
         specifier: ^7.98.0
         version: 7.98.0(react@18.2.0)
@@ -6142,6 +6145,7 @@ packages:
     dependencies:
       is-glob: 4.0.3
       micromatch: 4.0.5
+      napi-wasm: 1.1.0
     dev: false
     bundledDependencies:
       - napi-wasm
@@ -6956,6 +6960,15 @@ packages:
       ethers: 5.4.0
     dependencies:
       ethers: 6.12.1
+    dev: false
+
+  /@safe-global/safe-core-sdk-types@5.0.1(typescript@5.3.2):
+    resolution: {integrity: sha512-xIlHZ9kaAIwEhR0OY0i2scdcQyrc0tDJ+eZZ04lhvg81cgYLY1Z5wfJQqazR2plPT1Hz0A9C79jYdUVvzoF/tw==}
+    dependencies:
+      abitype: 1.0.2(typescript@5.3.2)
+    transitivePeerDependencies:
+      - typescript
+      - zod
     dev: false
 
   /@safe-global/safe-deployments@1.36.0:
@@ -8125,7 +8138,7 @@ packages:
       '@metamask/sdk': 0.14.3(@types/react@18.2.38)(react-dom@18.2.0)(react-native@0.74.2)(react@18.2.0)
       '@safe-global/safe-apps-provider': 0.18.1(typescript@5.3.2)
       '@safe-global/safe-apps-sdk': 8.1.0(typescript@5.3.2)
-      '@wagmi/core': 2.6.9(@types/react@18.2.38)(react@18.2.0)(typescript@5.3.2)(viem@2.13.8)
+      '@wagmi/core': 2.6.9(@types/react@18.2.38)(react@18.2.0)(typescript@5.3.2)(viem@2.8.16)
       '@walletconnect/ethereum-provider': 2.11.2(@types/react@18.2.38)(react@18.2.0)
       '@walletconnect/modal': 2.6.2(@types/react@18.2.38)(react@18.2.0)
       typescript: 5.3.2
@@ -8231,7 +8244,7 @@ packages:
       - zod
     dev: false
 
-  /@wagmi/core@2.6.9(@types/react@18.2.38)(react@18.2.0)(typescript@5.3.2)(viem@2.13.8):
+  /@wagmi/core@2.6.9(@types/react@18.2.38)(react@18.2.0)(typescript@5.3.2)(viem@2.8.16):
     resolution: {integrity: sha512-AbNbHK+m60mfMTds0flv5YYJGp+JSz8O8ikzX+T7MdemFrYA9tZr6G+iSEnf+JLtcgiaCgQqUwac/WmmTkDiMA==}
     peerDependencies:
       '@tanstack/query-core': '>=5.0.0'
@@ -8246,7 +8259,7 @@ packages:
       eventemitter3: 5.0.1
       mipd: 0.0.5(typescript@5.3.2)
       typescript: 5.3.2
-      viem: 2.13.8(typescript@5.3.2)
+      viem: 2.8.16(typescript@5.3.2)
       zustand: 4.4.1(@types/react@18.2.38)(react@18.2.0)
     transitivePeerDependencies:
       - '@types/react'
@@ -8950,6 +8963,20 @@ packages:
 
   /abitype@1.0.0(typescript@5.3.2):
     resolution: {integrity: sha512-NMeMah//6bJ56H5XRj8QCV4AwuW6hB6zqz2LnhhLdcWVQOsXki6/Pn3APeqxCma62nXIcmZWdu1DlHWS74umVQ==}
+    peerDependencies:
+      typescript: '>=5.0.4'
+      zod: ^3 >=3.22.0
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+      zod:
+        optional: true
+    dependencies:
+      typescript: 5.3.2
+    dev: false
+
+  /abitype@1.0.2(typescript@5.3.2):
+    resolution: {integrity: sha512-aFt4k2H+eiAKy/zxtnORa9iIb10BMBeWL18l8v4+QuwYEBXPxxjSB1bFZCzQmKPoj8m7j68K705l3uY+E2gAjg==}
     peerDependencies:
       typescript: '>=5.0.4'
       zod: ^3 >=3.22.0
@@ -16631,6 +16658,10 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
+  /napi-wasm@1.1.0:
+    resolution: {integrity: sha512-lHwIAJbmLSjF9VDRm9GoVOy9AGp3aIvkjv+Kvz9h16QR3uSVYH78PNQUnT2U4X53mhlnV2M7wrhibQ3GHicDmg==}
+    dev: false
+
   /native-abort-controller@1.0.4(abort-controller@3.0.0):
     resolution: {integrity: sha512-zp8yev7nxczDJMoP6pDxyD20IU0T22eX8VwN2ztDccKvSZhRaV33yP1BGwKSZfXuqWUzsXopVFjBdau9OOAwMQ==}
     peerDependencies:
@@ -20796,7 +20827,7 @@ packages:
     dependencies:
       '@tanstack/react-query': 5.40.1(react@18.2.0)
       '@wagmi/connectors': 4.1.18(@types/react@18.2.38)(@wagmi/core@2.6.9)(react-dom@18.2.0)(react-native@0.74.2)(react@18.2.0)(typescript@5.3.2)(viem@2.8.16)
-      '@wagmi/core': 2.6.9(@types/react@18.2.38)(react@18.2.0)(typescript@5.3.2)(viem@2.13.8)
+      '@wagmi/core': 2.6.9(@types/react@18.2.38)(react@18.2.0)(typescript@5.3.2)(viem@2.8.16)
       react: 18.2.0
       typescript: 5.3.2
       use-sync-external-store: 1.2.0(react@18.2.0)
