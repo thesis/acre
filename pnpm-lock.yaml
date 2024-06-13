@@ -142,8 +142,8 @@ importers:
         specifier: workspace:*
         version: link:../solidity
       '@keep-network/tbtc-v2.ts':
-        specifier: 2.4.0-dev.3
-        version: 2.4.0-dev.3(@keep-network/keep-core@1.8.1-dev.0)
+        specifier: 2.5.0-dev.3
+        version: 2.5.0-dev.3(@keep-network/keep-core@1.8.1-dev.0)
       '@ledgerhq/wallet-api-client':
         specifier: ^1.5.0
         version: 1.5.0
@@ -4578,19 +4578,6 @@ packages:
     resolution: {integrity: sha512-KlpY9BbasyLvYXSS7dsJktgRChu/yjdFLOX8ldGA/pltLicCm/l0F4oqxL8wSws9XD12vq9x0B5qzPygVLB2TQ==}
     dev: false
 
-  /@keep-network/ecdsa@2.1.0-dev.17(@keep-network/keep-core@1.8.1-dev.0):
-    resolution: {integrity: sha512-48zLogWDObqf3uGffDd8N2iP7m3rBinF+tAl7DidY/87eqWNydhpbO4j1H5i9vZ+Axi6nOQcuvpLlS7p9pjOFw==}
-    engines: {node: '>= 14.0.0'}
-    dependencies:
-      '@keep-network/random-beacon': 2.1.0-dev.17(@keep-network/keep-core@1.8.1-dev.0)
-      '@keep-network/sortition-pools': 2.0.0
-      '@openzeppelin/contracts': 4.9.5
-      '@openzeppelin/contracts-upgradeable': 4.9.5
-      '@threshold-network/solidity-contracts': 1.3.0-dev.11(@keep-network/keep-core@1.8.1-dev.0)
-    transitivePeerDependencies:
-      - '@keep-network/keep-core'
-    dev: false
-
   /@keep-network/ecdsa@2.1.0-dev.19(@keep-network/keep-core@1.8.1-dev.0):
     resolution: {integrity: sha512-cyqRqK/sOqyaXZWY/O9ij6EINQuJ+bHLMiuufOFyP5YCj4GCuNqOcCytGAZPT+mED/0J/xn0vm+fgiCBq/uJkQ==}
     engines: {node: '>= 14.0.0'}
@@ -4659,18 +4646,6 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@keep-network/random-beacon@2.1.0-dev.17(@keep-network/keep-core@1.8.1-dev.0):
-    resolution: {integrity: sha512-alfd2sHdMrX15qKzM4zwkZ3l/CXboLoeos4l3WvChW978VJIwUPm2ZIXd8tNTaHlykQ57eSSX7esaLfIjeO3Kg==}
-    engines: {node: '>= 14.0.0'}
-    dependencies:
-      '@keep-network/sortition-pools': 2.0.0
-      '@openzeppelin/contracts': 4.7.3
-      '@thesis/solidity-contracts': github.com/thesis/solidity-contracts/4985bcf
-      '@threshold-network/solidity-contracts': 1.3.0-dev.8(@keep-network/keep-core@1.8.1-dev.0)
-    transitivePeerDependencies:
-      - '@keep-network/keep-core'
-    dev: false
-
   /@keep-network/random-beacon@2.1.0-dev.18(@keep-network/keep-core@1.8.1-dev.0):
     resolution: {integrity: sha512-UrVq///+jqOLQ5k8/aFvD1ZUMvVe49iS81U8mDoi9A005FiQzKUK9QFKv3Z0h6joG4prF/hlABRTEQ1UA7tgRA==}
     engines: {node: '>= 14.0.0'}
@@ -4696,13 +4671,13 @@ packages:
       '@thesis/solidity-contracts': github.com/thesis/solidity-contracts/4985bcf
     dev: false
 
-  /@keep-network/tbtc-v2.ts@2.4.0-dev.3(@keep-network/keep-core@1.8.1-dev.0):
-    resolution: {integrity: sha512-oqHmgl9dJcFjmda41Xq9w+RFqvqTxAJjrxmyjvXADibs1zZ3DRXcxVuvpLYBx0ThQjd7ShSBql9GRNUtSGu5pw==}
+  /@keep-network/tbtc-v2.ts@2.5.0-dev.3(@keep-network/keep-core@1.8.1-dev.0):
+    resolution: {integrity: sha512-ODY4w6nGspU9cl2Oh1OXZj8/soiJqRoLQBnSRVtF0rwUT3L5YsYik0gxfxe9NwNTDUbxmkUdcreAk3eQ37YxBg==}
     engines: {node: '>=16'}
     dependencies:
       '@bitcoinerlab/secp256k1': 1.0.5
-      '@keep-network/ecdsa': 2.1.0-dev.17(@keep-network/keep-core@1.8.1-dev.0)
-      '@keep-network/tbtc-v2': 1.6.0-dev.14(@keep-network/keep-core@1.8.1-dev.0)
+      '@keep-network/ecdsa': 2.1.0-dev.19(@keep-network/keep-core@1.8.1-dev.0)
+      '@keep-network/tbtc-v2': 1.7.0-dev.4(@keep-network/keep-core@1.8.1-dev.0)
       '@ledgerhq/wallet-api-client': 1.5.0
       bignumber.js: 9.1.2
       bitcoinjs-lib: 6.1.5
@@ -4711,26 +4686,8 @@ packages:
       electrum-client-js: github.com/keep-network/electrum-client-js/cc83823cfe54c1961027c0e2f7efbdbf667b3dfb
       ethers: 5.7.2
       p-timeout: 4.1.0
+      url-parse: 1.5.10
       wif: 2.0.6
-    transitivePeerDependencies:
-      - '@keep-network/keep-core'
-      - bufferutil
-      - encoding
-      - supports-color
-      - utf-8-validate
-    dev: false
-
-  /@keep-network/tbtc-v2@1.6.0-dev.14(@keep-network/keep-core@1.8.1-dev.0):
-    resolution: {integrity: sha512-opUFWtQ3tSPCG0z9FcsOVTp4ATA+XyL2nQK9GgJ6BRfVv3RAYKM9Z97NFcAE9bjcbfwvYKg8P64YY680e9XFvA==}
-    engines: {node: '>= 14.0.0'}
-    dependencies:
-      '@keep-network/bitcoin-spv-sol': 3.4.0-solc-0.8
-      '@keep-network/ecdsa': 2.1.0-dev.17(@keep-network/keep-core@1.8.1-dev.0)
-      '@keep-network/random-beacon': 2.1.0-dev.17(@keep-network/keep-core@1.8.1-dev.0)
-      '@keep-network/tbtc': 1.1.2-dev.1
-      '@openzeppelin/contracts': 4.9.5
-      '@openzeppelin/contracts-upgradeable': 4.9.5
-      '@thesis/solidity-contracts': github.com/thesis/solidity-contracts/4985bcf
     transitivePeerDependencies:
       - '@keep-network/keep-core'
       - bufferutil
@@ -7478,17 +7435,6 @@ packages:
 
   /@threshold-network/solidity-contracts@1.3.0-dev.12(@keep-network/keep-core@1.8.1-dev.0):
     resolution: {integrity: sha512-06EF583uEwko3ik7qjnMOg+sJ+Vb7YWkqag4a9xZq8Mmy8rifpmLjnfDKCVGeKbUis3uI++pTGC9U/EfvVOrlQ==}
-    peerDependencies:
-      '@keep-network/keep-core': '>1.8.1-dev <1.8.1-goerli'
-    dependencies:
-      '@keep-network/keep-core': 1.8.1-dev.0
-      '@openzeppelin/contracts': 4.5.0
-      '@openzeppelin/contracts-upgradeable': 4.5.2
-      '@thesis/solidity-contracts': github.com/thesis/solidity-contracts/4985bcf
-    dev: false
-
-  /@threshold-network/solidity-contracts@1.3.0-dev.8(@keep-network/keep-core@1.8.1-dev.0):
-    resolution: {integrity: sha512-s6SFZyf1xXgOdMK1zYnjsURnVz7Xxzf0z/34vH+hDg8n/G8L0jPR6Iz4laWSSL2y1P3ffFAFTUMvwfJMJitfVw==}
     peerDependencies:
       '@keep-network/keep-core': '>1.8.1-dev <1.8.1-goerli'
     dependencies:
@@ -13425,7 +13371,6 @@ packages:
 
   /glob@7.1.3:
     resolution: {integrity: sha512-vcfuiIxogLV4DlGBHIUOwI0IbrJ8HWPc4MU7HzviGeNho/UJDfi6B5p3sHeWIQ0KGIU0Jpxi5ZHxemQfLkkAwQ==}
-    deprecated: Glob versions prior to v9 are no longer supported
     dependencies:
       fs.realpath: 1.0.0
       inflight: 1.0.6
@@ -17855,6 +17800,10 @@ packages:
     deprecated: The querystring API is considered Legacy. new code should use the URLSearchParams API instead.
     dev: false
 
+  /querystringify@2.2.0:
+    resolution: {integrity: sha512-FIqgj2EUvTa7R50u0rGsyTftzjYmv/a3hO345bZNrqabNqjtgiDMgmo4mkUjd+nzU5oF3dClKqFIPUKybUyqoQ==}
+    dev: false
+
   /queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
 
@@ -18461,6 +18410,10 @@ packages:
 
   /require-main-filename@2.0.0:
     resolution: {integrity: sha512-NKN5kMDylKuldxYLSUfrbo5Tuzh4hd+2E8NPPX02mZtn1VuREQToYe/ZdlJy+J3uCpfaiGF05e7B8W0iXbQHmg==}
+    dev: false
+
+  /requires-port@1.0.0:
+    resolution: {integrity: sha512-KigOCHcocU3XODJxsu8i/j8T9tzT4adHiecwORRQ0ZZFcp7ahwXuRU1m+yuO90C5ZUyGeGfocHDI14M3L3yDAQ==}
     dev: false
 
   /reselect@5.1.0:
@@ -20416,6 +20369,13 @@ packages:
     engines: {node: '>=4'}
     dependencies:
       prepend-http: 2.0.0
+    dev: false
+
+  /url-parse@1.5.10:
+    resolution: {integrity: sha512-WypcfiRhfeUP9vvF0j6rw0J3hrWrw6iZv3+22h6iRMJ/8z1Tj6XfLP4DsUix5MhMPnXpiHDoKyoZ/bdCkwBCiQ==}
+    dependencies:
+      querystringify: 2.2.0
+      requires-port: 1.0.0
     dev: false
 
   /url-set-query@1.0.0:
