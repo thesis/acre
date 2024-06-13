@@ -12,7 +12,7 @@ export function useFetchDeposits() {
   return useCallback(async () => {
     if (!acre) return
 
-    const result: Activity[] = (await acre.staking.getDeposits()).map(
+    const result: Activity[] = (await acre.account.getDeposits()).map(
       (deposit) => ({
         ...deposit,
         status:

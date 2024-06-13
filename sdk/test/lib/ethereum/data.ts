@@ -1,4 +1,4 @@
-import { EthereumAddress } from "../../../src"
+import { EthereumAddress } from "../../../src/lib/ethereum"
 
 // eslint-disable-next-line import/prefer-default-export
 export const extraDataValidTestData: {
