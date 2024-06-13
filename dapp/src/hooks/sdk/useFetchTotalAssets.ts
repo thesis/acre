@@ -12,7 +12,7 @@ export function useFetchTotalAssets() {
     if (!isInitialized || !acre) return
 
     const fetchTotalAssets = async () => {
-      const totalAssets = await acre.contracts.stBTC.totalAssets()
+      const totalAssets = await acre.protocol.totalAssets()
 
       dispatch(setTotalAssets(totalAssets))
     }
