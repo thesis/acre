@@ -1,4 +1,8 @@
-import { ChainIdentifier, TBTC as TbtcSdk } from "@keep-network/tbtc-v2.ts"
+import {
+  ChainIdentifier,
+  TBTC as TbtcSdk,
+  RedeemerProxy,
+} from "@keep-network/tbtc-v2.ts"
 
 import { ethers } from "ethers"
 import TbtcApi, { DepositStatus } from "../../lib/api/TbtcApi"
@@ -144,5 +148,20 @@ export default class Tbtc {
       txHash: deposit.txHash,
       timestamp: deposit.createdAt,
     }))
+  }
+
+  async initiateRedemption(
+    destinationBitcoinAddress: string,
+    tbtcAmount: number,
+    redeemer: RedeemerProxy,
+  ): Promise<string> {
+    const { targetChainTxHash } =
+      await this.#tbtcSdk.redemptions.requestRedemptionWithProxy(
+        destinationBitcoinAddress,
+        tbtcAmount,
+        redeemer,
+      )
+
+    return targetChainTxHash.toPrefixedString()
   }
 }

@@ -1,9 +1,13 @@
+import { RedeemerProxy } from "@keep-network/tbtc-v2.ts"
+import { OrangeKitSdk } from "@orangekit/sdk"
 import { AcreContracts, ChainIdentifier } from "../lib/contracts"
 import StakeInitialization from "./staking"
 import { toSatoshi } from "../lib/utils"
 import Tbtc from "./tbtc"
 import AcreSubgraphApi from "../lib/api/AcreSubgraphApi"
 import { DepositStatus } from "../lib/api/TbtcApi"
+import OrangeKitTbtcRedeemerProxy from "../lib/redeemer-proxy"
+import { BitcoinProvider } from "../lib/bitcoin"
 
 export { DepositReceipt } from "./tbtc"
 
@@ -58,17 +62,25 @@ export default class Account {
 
   readonly #ethereumAddress: ChainIdentifier
 
+  readonly #bitcoinProvider: BitcoinProvider
+
+  readonly #orangeKitSdk: OrangeKitSdk
+
   constructor(
     contracts: AcreContracts,
     tbtc: Tbtc,
     acreSubgraphApi: AcreSubgraphApi,
     account: { bitcoinAddress: string; ethereumAddress: ChainIdentifier },
+    bitcoinProvider: BitcoinProvider,
+    orangeKitSdk: OrangeKitSdk,
   ) {
     this.#contracts = contracts
     this.#tbtc = tbtc
     this.#acreSubgraphApi = acreSubgraphApi
     this.#bitcoinAddress = account.bitcoinAddress
     this.#ethereumAddress = account.ethereumAddress
+    this.#bitcoinProvider = bitcoinProvider
+    this.#orangeKitSdk = orangeKitSdk
   }
 
   /**
@@ -151,5 +163,29 @@ export default class Account {
         timestamp: deposit.timestamp,
       }
     })
+  }
+
+  async initializeWithdrawal(btcAmount: bigint): Promise<string> {
+    // TODO: Recalculate BTC to stBTC shares.
+    const shares = btcAmount - 1n
+
+    const redeemerProxy = OrangeKitTbtcRedeemerProxy.init(
+      this.#contracts,
+      this.#orangeKitSdk,
+      {
+        bitcoinAddress: this.#bitcoinAddress,
+        ethereumAddress: this.#ethereumAddress,
+        // TODO: use public key here.
+        publicKey: "",
+      },
+      this.#bitcoinProvider,
+      shares,
+    )
+
+    return this.#tbtc.initiateRedemption(
+      this.#bitcoinAddress,
+      Number(shares),
+      redeemerProxy,
+    )
   }
 }
