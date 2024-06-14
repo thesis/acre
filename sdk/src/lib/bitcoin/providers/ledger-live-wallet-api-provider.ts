@@ -97,4 +97,9 @@ export default class LedgerLiveWalletApiBitcoinProvider
 
     return address
   }
+
+  // eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars
+  signMessage(message: string): Promise<string> {
+    throw new Error("Method not implemented.")
+  }
 }
