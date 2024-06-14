@@ -9,7 +9,7 @@ import {
   useVerifyDepositAddress,
 } from "#/hooks"
 import { eip1193, logPromiseFailure } from "#/utils"
-import { EIP1193_ERROR_CODES, PROCESS_STATUSES } from "#/types"
+import { PROCESS_STATUSES } from "#/types"
 import { Highlight } from "@chakra-ui/react"
 import { TextMd } from "#/components/shared/Typography"
 import { CardAlert } from "#/components/shared/alerts"
@@ -50,11 +50,9 @@ export default function DepositBTCModal() {
 
   const onDepositBTCError = useCallback(
     (error: unknown) => {
-      if (!eip1193.isEIP1193Error(error)) return
-      const { code } = EIP1193_ERROR_CODES.userRejectedRequest
-      const isInterrupted = error.code === code
-
-      if (isInterrupted) handlePause()
+      if (eip1193.didUserRejectRequest(error)) {
+        handlePause()
+      }
 
       showError(error)
     },
