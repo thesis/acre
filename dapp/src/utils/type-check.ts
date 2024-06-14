@@ -1,5 +1,3 @@
-import { LedgerLiveError } from "#/types"
-
 export function getType(arg: unknown): string {
   return Object.prototype.toString.call(arg).slice("[object ".length, -1)
 }
@@ -16,8 +14,4 @@ export function isString(arg: unknown): arg is string {
 
 export function isNumber(arg: unknown): arg is number {
   return getType(arg) === "Number"
-}
-
-export function isLedgerLiveError(arg: unknown): arg is LedgerLiveError {
-  return isObject(arg) && arg.name === "Error" && isString(arg.message)
 }

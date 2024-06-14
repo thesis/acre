@@ -1,4 +1,3 @@
-export * from "./WalletContext"
 export * from "./WalletApiReactTransportProvider"
 export * from "./LedgerWalletAPIProvider"
 export * from "./DocsDrawerContext"

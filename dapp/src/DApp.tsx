@@ -10,7 +10,6 @@ import {
   DocsDrawerContextProvider,
   LedgerWalletAPIProvider,
   SidebarContextProvider,
-  WalletContextProvider,
 } from "./contexts"
 import { useInitApp } from "./hooks"
 import { router } from "./router"
@@ -35,19 +34,17 @@ function DAppProviders() {
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
         <LedgerWalletAPIProvider>
-          <WalletContextProvider>
-            <AcreSdkProvider>
-              <DocsDrawerContextProvider>
-                <SidebarContextProvider>
-                  <ReduxProvider store={store}>
-                    <ChakraProvider theme={theme}>
-                      <DApp />
-                    </ChakraProvider>
-                  </ReduxProvider>
-                </SidebarContextProvider>
-              </DocsDrawerContextProvider>
-            </AcreSdkProvider>
-          </WalletContextProvider>
+          <AcreSdkProvider>
+            <DocsDrawerContextProvider>
+              <SidebarContextProvider>
+                <ReduxProvider store={store}>
+                  <ChakraProvider theme={theme}>
+                    <DApp />
+                  </ChakraProvider>
+                </ReduxProvider>
+              </SidebarContextProvider>
+            </DocsDrawerContextProvider>
+          </AcreSdkProvider>
         </LedgerWalletAPIProvider>
       </QueryClientProvider>
     </WagmiProvider>
