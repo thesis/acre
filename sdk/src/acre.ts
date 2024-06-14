@@ -1,13 +1,18 @@
 import { OrangeKitSdk } from "@orangekit/sdk"
 import { getDefaultProvider } from "ethers"
 import { AcreContracts } from "./lib/contracts"
-import { EthereumNetwork, getEthereumContracts } from "./lib/ethereum"
-import { StakingModule } from "./modules/staking"
+import {
+  EthereumAddress,
+  EthereumNetwork,
+  getEthereumContracts,
+} from "./lib/ethereum"
+import Account from "./modules/account"
 import Tbtc from "./modules/tbtc"
 import { VoidSigner } from "./lib/utils"
 import { BitcoinProvider, BitcoinNetwork } from "./lib/bitcoin"
 import { getChainIdByNetwork } from "./lib/ethereum/network"
 import AcreSubgraphApi from "./lib/api/AcreSubgraphApi"
+import Protocol from "./modules/protocol"
 
 class Acre {
   readonly #tbtc: Tbtc
@@ -16,11 +21,13 @@ class Acre {
 
   readonly #bitcoinProvider: BitcoinProvider
 
+  readonly #acreSubgraph: AcreSubgraphApi
+
   public readonly contracts: AcreContracts
 
-  public readonly staking: StakingModule
+  public readonly account: Account
 
-  readonly #acreSubgraph: AcreSubgraphApi
+  public readonly protocol: Protocol
 
   private constructor(
     contracts: AcreContracts,
@@ -28,19 +35,16 @@ class Acre {
     orangeKit: OrangeKitSdk,
     tbtc: Tbtc,
     acreSubgraphApi: AcreSubgraphApi,
+    account: Account,
+    protocol: Protocol,
   ) {
     this.contracts = contracts
     this.#tbtc = tbtc
     this.#orangeKit = orangeKit
     this.#acreSubgraph = acreSubgraphApi
     this.#bitcoinProvider = bitcoinProvider
-    this.staking = new StakingModule(
-      this.contracts,
-      this.#bitcoinProvider,
-      this.#orangeKit,
-      this.#tbtc,
-      this.#acreSubgraph,
-    )
+    this.account = account
+    this.protocol = protocol
   }
 
   static async initialize(
@@ -66,13 +70,15 @@ class Acre {
       ethereumRpcUrl,
     )
 
-    // TODO: Should we store this address in context so that we do not to
-    // recalculate it when necessary?
-    const depositOwnerEvmAddress = await orangeKit.predictAddress(
-      await bitcoinProvider.getAddress(),
+    const accountBitcoinAddress = await bitcoinProvider.getAddress()
+    const accountEthereumAddress = EthereumAddress.from(
+      await orangeKit.predictAddress(accountBitcoinAddress),
     )
 
-    const signer = new VoidSigner(depositOwnerEvmAddress, ethersProvider)
+    const signer = new VoidSigner(
+      `0x${accountEthereumAddress.identifierHex}`,
+      ethersProvider,
+    )
 
     const contracts = getEthereumContracts(signer, ethereumNetwork)
 
@@ -87,7 +93,21 @@ class Acre {
       "https://api.studio.thegraph.com/query/73600/acre/version/latest",
     )
 
-    return new Acre(contracts, bitcoinProvider, orangeKit, tbtc, subgraph)
+    const account = new Account(contracts, tbtc, subgraph, {
+      bitcoinAddress: accountBitcoinAddress,
+      ethereumAddress: accountEthereumAddress,
+    })
+    const protocol = new Protocol(contracts)
+
+    return new Acre(
+      contracts,
+      bitcoinProvider,
+      orangeKit,
+      tbtc,
+      subgraph,
+      account,
+      protocol,
+    )
   }
 }
 
