@@ -85,6 +85,9 @@ class EthereumStBTC
     return this.#cache.entryFeeBasisPoints
   }
 
+  /**
+   * @see {StBTC#encodeApproveAndCallFunctionData}
+   */
   encodeApproveAndCallFunctionData(
     spender: ChainIdentifier,
     amount: bigint,
@@ -97,6 +100,20 @@ class EthereumStBTC
     ])
 
     return Hex.from(data)
+  }
+
+  /**
+   * @see {StBTC#previewRedeem}
+   */
+  previewRedeem(amount: bigint): Promise<bigint> {
+    return this.instance.previewRedeem(amount)
+  }
+
+  /**
+   * @see {StBTC#convertToShares}
+   */
+  convertToShares(amount: bigint): Promise<bigint> {
+    return this.instance.convertToShares(amount)
   }
 }
 

@@ -1,7 +1,7 @@
 import { OrangeKitSdk } from "@orangekit/sdk"
 import { AcreContracts, ChainIdentifier } from "../lib/contracts"
 import StakeInitialization from "./staking"
-import { toSatoshi } from "../lib/utils"
+import { fromSatoshi, toSatoshi } from "../lib/utils"
 import Tbtc from "./tbtc"
 import AcreSubgraphApi from "../lib/api/AcreSubgraphApi"
 import { DepositStatus } from "../lib/api/TbtcApi"
@@ -172,8 +172,10 @@ export default class Account {
   }
 
   async initializeWithdrawal(btcAmount: bigint): Promise<string> {
-    // TODO: Recalculate BTC to stBTC shares.
-    const shares = btcAmount - 1n
+    const tbtcAmount = fromSatoshi(btcAmount)
+    const shares = await this.#contracts.stBTC.convertToShares(tbtcAmount)
+    // Including fees.
+    const redeemedShares = await this.#contracts.stBTC.previewRedeem(shares)
 
     const redeemerProxy = OrangeKitTbtcRedeemerProxy.init(
       this.#contracts,
@@ -189,7 +191,7 @@ export default class Account {
 
     return this.#tbtc.initiateRedemption(
       this.#bitcoinAddress,
-      Number(shares),
+      redeemedShares,
       redeemerProxy,
     )
   }

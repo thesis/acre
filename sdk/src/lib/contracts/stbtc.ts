@@ -38,4 +38,17 @@ export interface StBTC {
     amount: bigint,
     extraData: Hex,
   ): Hex
+
+  /**
+   * Calculates the amount of tBTC that will be redeemed for the given amount
+   * of stBTC shares.
+   * @param amount Amount of stBTC shares to redeem.
+   */
+  previewRedeem(amount: bigint): Promise<bigint>
+
+  /**
+   * Converts the tBTC amount to stBTC shares.
+   * @param amount Amount of tBTC.
+   */
+  convertToShares(amount: bigint): Promise<bigint>
 }

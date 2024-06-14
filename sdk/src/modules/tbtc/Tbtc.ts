@@ -152,7 +152,7 @@ export default class Tbtc {
 
   async initiateRedemption(
     destinationBitcoinAddress: string,
-    tbtcAmount: number,
+    tbtcAmount: bigint,
     redeemer: RedeemerProxy,
   ): Promise<string> {
     const { targetChainTxHash } =
