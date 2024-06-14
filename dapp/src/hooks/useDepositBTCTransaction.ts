@@ -44,8 +44,7 @@ export function useDepositBTCTransaction(
       const client = await connector.getClient()
 
       try {
-        // TODO: Temporary solution - The `sendBitcoin` function accepts amount as number
-        const satoshis = +amount.toString()
+        const satoshis = Number(amount)
 
         // @ts-expect-error adjust types to handle bitcoin wallet wrappers
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment
