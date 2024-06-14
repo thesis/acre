@@ -1,4 +1,4 @@
-import React from "react"
+import React, { ComponentProps } from "react"
 import {
   Box,
   Card,
@@ -7,8 +7,9 @@ import {
   useMultiStyleConfig,
   Image,
 } from "@chakra-ui/react"
-import { useSidebar, useDocsDrawer } from "#/hooks"
+import { useSidebar } from "#/hooks"
 import {
+  EXTERNAL_HREF,
   MYSTERY_BOX,
   REWARD_BOOST,
   SEASON_KEY,
@@ -18,11 +19,25 @@ import { rewardsBoostArrowImage } from "#/assets/images/benefits"
 import ButtonLink from "./shared/ButtonLink"
 import { TextSm } from "./shared/Typography"
 
-const BUTTONS = [
-  { label: "Docs", variant: "solid" },
-  { label: "FAQ", colorScheme: "gold" },
-  { label: "Token Contract", colorScheme: "gold" },
-  { label: "Bridge Contract", colorScheme: "gold" },
+const BUTTONS: Partial<ComponentProps<typeof ButtonLink>>[] = [
+  {
+    children: "Docs",
+    variant: "solid",
+    href: EXTERNAL_HREF.DOCS,
+    isExternal: true,
+  },
+  {
+    children: "FAQ",
+    colorScheme: "gold",
+    href: EXTERNAL_HREF.FAQ,
+    isExternal: true,
+  },
+  {
+    children: "Contracts",
+    colorScheme: "gold",
+    href: EXTERNAL_HREF.CONTRACTS,
+    isExternal: true,
+  },
 ]
 
 const BENEFITS = [
@@ -33,7 +48,8 @@ const BENEFITS = [
 
 export default function Sidebar() {
   const { isOpen } = useSidebar()
-  const { onOpen: openDocsDrawer } = useDocsDrawer()
+  // TODO Bring back when dApp embedded docs are ready
+  // const { onOpen: openDocsDrawer } = useDocsDrawer()
   const styles = useMultiStyleConfig("Sidebar")
 
   return (
@@ -73,15 +89,12 @@ export default function Sidebar() {
           </>
         )}
 
-        {BUTTONS.map(({ label, variant, colorScheme }) => (
+        {BUTTONS.map((buttonProps) => (
           <ButtonLink
-            key={label}
-            onClick={openDocsDrawer}
-            variant={variant}
-            colorScheme={colorScheme}
-          >
-            {label}
-          </ButtonLink>
+            key={buttonProps.href}
+            // onClick={openDocsDrawer}
+            {...buttonProps}
+          />
         ))}
       </Box>
     </Box>

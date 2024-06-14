@@ -1,7 +1,6 @@
 export * from "./Info"
 export * from "./ArrowUpRight"
 export * from "./AcreLogo"
-export * from "./BTC"
 export * from "./Pause"
 export * from "./LoadingSpinnerSuccessIcon"
 export * from "./BitcoinIcon"
