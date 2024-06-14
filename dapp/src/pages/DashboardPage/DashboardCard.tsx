@@ -15,6 +15,9 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { ActivitiesList } from "#/components/shared/ActivitiesList"
+import { featureFlags } from "#/constants"
+import { BoostArrowIcon } from "#/assets/icons"
+import IconTag from "#/components/shared/IconTag"
 import TransactionHistory from "./TransactionHistory"
 
 const buttonStyles: ButtonProps = {
@@ -81,8 +84,9 @@ export default function DashboardCard(props: DashboardCardProps) {
               }}
             />
           </VStack>
-          {/* TODO: Bring back when implementing gamification */}
-          {/* <IconTag icon={BoostArrowIcon}>Rewards Boost</IconTag> */}
+          {featureFlags.GAMIFICATION_ENABLED && (
+            <IconTag icon={BoostArrowIcon}>Rewards Boost</IconTag>
+          )}
         </VStack>
 
         <HStack w="full" justify="center" spacing={2}>
