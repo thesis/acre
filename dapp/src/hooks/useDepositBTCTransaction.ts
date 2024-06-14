@@ -48,7 +48,7 @@ export function useDepositBTCTransaction(
 
         // @ts-expect-error adjust types to handle bitcoin wallet wrappers
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment
-        const txhash: string = await client?.sendBitcoin(recipient, satoshis)
+        const txhash: string = await client.sendBitcoin(recipient, satoshis)
         setTransactionHash(txhash)
       } catch (error) {
         if (onError) {
