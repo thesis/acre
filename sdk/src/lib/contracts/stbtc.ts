@@ -1,6 +1,12 @@
+import { Hex } from "../utils"
 import { ChainIdentifier } from "./chain-identifier"
 
 export interface StBTC {
+  /**
+   * @returns The chain-specific identifier of this contract.
+   */
+  getChainIdentifier(): ChainIdentifier
+
   /**
    * @returns Total tBTC amount under stBTC contract management in 1e18
    *          precision.
@@ -26,4 +32,10 @@ export interface StBTC {
    * @returns Deposit fee.
    */
   calculateDepositFee(amount: bigint): Promise<bigint>
+
+  encodeApproveAndCallFunctionData(
+    spender: ChainIdentifier,
+    amount: bigint,
+    extraData: Hex,
+  ): Hex
 }
