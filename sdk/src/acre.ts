@@ -1,4 +1,4 @@
-import { OrangeKitSdk } from "@orangekit/sdk"
+import { GelatoTransactionSender, OrangeKitSdk } from "@orangekit/sdk"
 import { getDefaultProvider } from "ethers"
 import { AcreContracts } from "./lib/contracts"
 import {
@@ -13,6 +13,10 @@ import { BitcoinProvider, BitcoinNetwork } from "./lib/bitcoin"
 import { getChainIdByNetwork } from "./lib/ethereum/network"
 import AcreSubgraphApi from "./lib/api/AcreSubgraphApi"
 import Protocol from "./modules/protocol"
+
+// TODO: Should we hide this API key in SDK impl or should it be passed by the
+// consumer?
+const GELATO_API_KEY = ""
 
 class Acre {
   readonly #tbtc: Tbtc
@@ -68,9 +72,11 @@ class Acre {
     const orangeKit = await OrangeKitSdk.init(
       Number(ethereumChainId),
       ethereumRpcUrl,
+      new GelatoTransactionSender(GELATO_API_KEY),
     )
 
     const accountBitcoinAddress = await bitcoinProvider.getAddress()
+    const accountBitcoinPublicKey = await bitcoinProvider.getPublicKey()
     const accountEthereumAddress = EthereumAddress.from(
       await orangeKit.predictAddress(accountBitcoinAddress),
     )
@@ -93,10 +99,18 @@ class Acre {
       "https://api.studio.thegraph.com/query/73600/acre/version/latest",
     )
 
-    const account = new Account(contracts, tbtc, subgraph, {
-      bitcoinAddress: accountBitcoinAddress,
-      ethereumAddress: accountEthereumAddress,
-    })
+    const account = new Account(
+      contracts,
+      tbtc,
+      subgraph,
+      {
+        bitcoinAddress: accountBitcoinAddress,
+        ethereumAddress: accountEthereumAddress,
+        bitcoinPublicKey: accountBitcoinPublicKey,
+      },
+      bitcoinProvider,
+      orangeKit,
+    )
     const protocol = new Protocol(contracts)
 
     return new Acre(

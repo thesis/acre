@@ -102,4 +102,9 @@ export default class LedgerLiveWalletApiBitcoinProvider
   signMessage(message: string): Promise<string> {
     throw new Error("Method not implemented.")
   }
+
+  // eslint-disable-next-line class-methods-use-this
+  getPublicKey(): Promise<string> {
+    throw new Error("Method not implemented.")
+  }
 }

@@ -16,4 +16,6 @@ export interface BitcoinProvider {
   getAddress(): Promise<string>
 
   signMessage(message: string): Promise<string>
+
+  getPublicKey(): Promise<string>
 }

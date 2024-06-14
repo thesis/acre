@@ -1,4 +1,3 @@
-import { RedeemerProxy } from "@keep-network/tbtc-v2.ts"
 import { OrangeKitSdk } from "@orangekit/sdk"
 import { AcreContracts, ChainIdentifier } from "../lib/contracts"
 import StakeInitialization from "./staking"
@@ -62,6 +61,8 @@ export default class Account {
 
   readonly #ethereumAddress: ChainIdentifier
 
+  readonly #bitcoinPublicKey: string
+
   readonly #bitcoinProvider: BitcoinProvider
 
   readonly #orangeKitSdk: OrangeKitSdk
@@ -70,7 +71,11 @@ export default class Account {
     contracts: AcreContracts,
     tbtc: Tbtc,
     acreSubgraphApi: AcreSubgraphApi,
-    account: { bitcoinAddress: string; ethereumAddress: ChainIdentifier },
+    account: {
+      bitcoinAddress: string
+      bitcoinPublicKey: string
+      ethereumAddress: ChainIdentifier
+    },
     bitcoinProvider: BitcoinProvider,
     orangeKitSdk: OrangeKitSdk,
   ) {
@@ -81,6 +86,7 @@ export default class Account {
     this.#ethereumAddress = account.ethereumAddress
     this.#bitcoinProvider = bitcoinProvider
     this.#orangeKitSdk = orangeKitSdk
+    this.#bitcoinPublicKey = account.bitcoinPublicKey
   }
 
   /**
@@ -175,8 +181,7 @@ export default class Account {
       {
         bitcoinAddress: this.#bitcoinAddress,
         ethereumAddress: this.#ethereumAddress,
-        // TODO: use public key here.
-        publicKey: "",
+        publicKey: this.#bitcoinPublicKey,
       },
       this.#bitcoinProvider,
       shares,
