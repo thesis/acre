@@ -79,7 +79,12 @@ export default function CurrentSeasonSection() {
           mb="7.5rem" // 120px
         >
           Season 1 cap{" "}
-          <CurrencyBalance size="xl" amount={SEASON_CAP} currency="bitcoin" />
+          <CurrencyBalance
+            as="span"
+            size="xl"
+            amount={SEASON_CAP}
+            currency="bitcoin"
+          />
         </TextXl>
 
         <Flex
