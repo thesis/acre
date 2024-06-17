@@ -34,4 +34,15 @@ export class MockOrangeKitSdk implements OrangeKitSdk {
   ): Promise<ContractTransaction> {
     return Promise.resolve({} as ContractTransaction)
   }
+
+  sendTransaction(
+    to: string,
+    value: string,
+    data: string,
+    bitcoinAddress: string,
+    publicKey: string,
+    bitcoinSignMessageFn: (message: string) => Promise<string>,
+  ): Promise<string> {
+    return Promise.resolve("0x0")
+  }
 }
