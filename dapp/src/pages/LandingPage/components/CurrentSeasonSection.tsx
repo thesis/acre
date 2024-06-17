@@ -1,8 +1,8 @@
 import React from "react"
-import { Box, VStack, Heading, Flex } from "@chakra-ui/react"
+import { Box, VStack, Flex } from "@chakra-ui/react"
 import ProgressBar from "#/components/shared/ProgressBar"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
-import { TextLg, TextMd, TextXl } from "#/components/shared/Typography"
+import { H3, TextLg, TextMd, TextXl } from "#/components/shared/Typography"
 import { BENEFITS, SEASON_CAP } from "#/constants"
 import { LiveTag } from "#/components/shared/LiveTag"
 import { SeasonSectionBackground } from "#/components/shared/SeasonSectionBackground"
@@ -47,9 +47,9 @@ export default function CurrentSeasonSection() {
           }}
         />
 
-        <Heading fontSize="5xl" fontWeight="bold" mb={2}>
+        <H3 as="h2" mb={2}>
           Season 1. Staking is live!
-        </Heading>
+        </H3>
 
         <TextLg
           fontWeight="medium"
