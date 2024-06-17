@@ -1,5 +1,4 @@
 import {
-  mysteryBoxImage,
   rewardsBoostImage,
   seasonKeyImage,
   bibosBeehiveImage,
@@ -21,12 +20,6 @@ export const SEASON_KEY: BenefitDetails = {
   name: "All Seasons Key",
   description: "First dibs access to upcoming seasons",
   imageSrc: seasonKeyImage,
-}
-
-export const MYSTERY_BOX: BenefitDetails = {
-  name: "Mystery Box",
-  description: "A surprise gift for the early birds",
-  imageSrc: mysteryBoxImage,
 }
 
 export const BIBOS_BEEHIVE: BenefitDetails = {

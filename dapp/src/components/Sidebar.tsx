@@ -8,12 +8,7 @@ import {
   Image,
 } from "@chakra-ui/react"
 import { useSidebar, useDocsDrawer } from "#/hooks"
-import {
-  MYSTERY_BOX,
-  REWARD_BOOST,
-  SEASON_KEY,
-  featureFlags,
-} from "#/constants"
+import { REWARD_BOOST, SEASON_KEY, featureFlags } from "#/constants"
 import { rewardsBoostArrowImage } from "#/assets/images/benefits"
 import ButtonLink from "./shared/ButtonLink"
 import { TextSm } from "./shared/Typography"
@@ -27,7 +22,6 @@ const BUTTONS = [
 
 const BENEFITS = [
   { ...REWARD_BOOST, imageSrc: rewardsBoostArrowImage },
-  MYSTERY_BOX,
   SEASON_KEY,
 ].map((benefit) => ({ ...benefit, name: `1x ${benefit.name}` }))
 
