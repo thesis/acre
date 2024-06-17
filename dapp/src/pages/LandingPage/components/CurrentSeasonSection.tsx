@@ -52,7 +52,6 @@ export default function CurrentSeasonSection() {
         </H3>
 
         <TextLg
-          fontWeight="medium"
           mb="5.5rem" // 88px
         >
           Season 1 stakers will harvest Mezo points and get priority access to
