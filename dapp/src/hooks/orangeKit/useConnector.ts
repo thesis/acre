@@ -1,21 +1,17 @@
-import { WithRequired } from "#/types"
 import { useMemo } from "react"
-import { Connector, useAccount } from "wagmi"
-import { OrangeKitBitcoinWalletProvider } from "@orangekit/react/dist/src/wallet/bitcoin-wallet-provider"
+import { useAccount } from "wagmi"
+import { CreateOrangeKitConnectorFn } from "@orangekit/react/dist/src/wallet/connector"
 
-// TODO: We need to export the OrangeKitWagmiConnector type.
-type OrangeKitWagmiConnector = WithRequired<Connector, "getClient"> & {
-  getBitcoinAddress: () => Promise<string>
-  getBitcoinProvider: () => OrangeKitBitcoinWalletProvider
-}
-type UseConnectorReturn = OrangeKitWagmiConnector | undefined
+type OrangeKitConnector = ReturnType<CreateOrangeKitConnectorFn>
+
+type UseConnectorReturn = OrangeKitConnector | undefined
 
 export function useConnector(): UseConnectorReturn {
   const { connector } = useAccount()
 
   return useMemo(() => {
     if (connector?.type === "orangekit")
-      return connector as OrangeKitWagmiConnector
+      return connector as unknown as OrangeKitConnector
 
     return undefined
   }, [connector])

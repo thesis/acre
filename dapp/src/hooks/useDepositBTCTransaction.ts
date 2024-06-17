@@ -41,9 +41,10 @@ export function useDepositBTCTransaction(
         throw new Error("Connector was not defined.")
       }
 
-      const client = await connector.getClient()
-
       try {
+        // @ts-expect-error adjust types to handle bitcoin wallet wrappers
+        const client = await connector.getClient()
+
         const satoshis = Number(amount)
 
         // @ts-expect-error adjust types to handle bitcoin wallet wrappers
