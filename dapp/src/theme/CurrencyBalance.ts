@@ -28,7 +28,7 @@ const baseStyle = multiStyleConfig.definePartsStyle((props) => ({
   symbol: baseStyleSymbol,
 }))
 
-const variantGreaterBalanceLg = multiStyleConfig.definePartsStyle({
+const variantGreaterBalanceMd = multiStyleConfig.definePartsStyle({
   balance: {
     fontSize: "lg",
     lineHeight: "lg",
@@ -62,7 +62,7 @@ const variantGreaterBalanceXxl = multiStyleConfig.definePartsStyle({
 })
 
 const variants = {
-  "greater-balance-lg": variantGreaterBalanceLg,
+  "greater-balance-md": variantGreaterBalanceMd,
   "greater-balance-xl": variantGreaterBalanceXl,
   "greater-balance-xxl": variantGreaterBalanceXxl,
 }

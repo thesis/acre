@@ -46,7 +46,7 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
         <CurrencyBalance
           amount={totalAssets}
           currency="bitcoin"
-          variant="greater-balance-lg"
+          variant="greater-balance-md"
         />
       </ProgressBar>
 

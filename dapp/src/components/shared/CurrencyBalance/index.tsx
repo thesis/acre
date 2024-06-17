@@ -14,7 +14,7 @@ export type CurrencyBalanceProps = {
   desiredDecimals?: number
   size?: string
   variant?:
-    | "greater-balance-lg"
+    | "greater-balance-md"
     | "greater-balance-xl"
     | "greater-balance-xxl"
     | "unstyled"
