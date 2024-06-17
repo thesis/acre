@@ -65,6 +65,7 @@ const baseStyleTrack = defineStyle({
 const baseStyleFilledTrack = defineStyle((props) => ({
   ...filledStyle(props),
   rounded: "inherit",
+  inset: 0,
 }))
 
 const baseStyle = multiStyleConfig.definePartsStyle((props) => ({
