@@ -9,7 +9,7 @@ import { keyframes } from "@chakra-ui/react"
 const multiStyleConfig = createMultiStyleConfigHelpers(parts.keys)
 
 const filledStyle = defineStyle((props) => {
-  const { colorScheme: color, theme, isIndeterminate, hasStripe } = props
+  const { colorScheme: color, isIndeterminate, hasStripe } = props
 
   const bgColor = `${color}.400`
   const stripeColor = "rgba(255, 255, 255, 0.1)"
@@ -19,7 +19,7 @@ const filledStyle = defineStyle((props) => {
   `
 
   const addStripe = (!isIndeterminate && hasStripe) as boolean
-  const stripeStyle = addStripe && {
+  const style = {
     bgColor,
     bgImage: `repeating-linear-gradient(
       105deg,
@@ -32,21 +32,24 @@ const filledStyle = defineStyle((props) => {
     animation: `${stripesAnimation} 2s linear infinite`,
   }
 
-  const indeterminateStyle = isIndeterminate
-    ? {
-        bgImage: `linear-gradient(
+  return addStripe ? style : {}
+})
+
+const indeterminateStyle = defineStyle((props) => {
+  const { colorScheme: color, theme, isIndeterminate } = props
+
+  const bgColor = `${color}.400`
+
+  const style = {
+    bgImage: `linear-gradient(
           to right,
           transparent 0%,
           ${getColorVar(theme, bgColor)} 50%,
           transparent 100%
         )`,
-      }
-    : { bgColor }
-
-  return {
-    ...stripeStyle,
-    ...indeterminateStyle,
   }
+
+  return isIndeterminate ? style : { bgColor }
 })
 
 const baseStyleLabel = defineStyle({
@@ -64,6 +67,7 @@ const baseStyleTrack = defineStyle({
 
 const baseStyleFilledTrack = defineStyle((props) => ({
   ...filledStyle(props),
+  ...indeterminateStyle(props),
   rounded: "inherit",
   inset: 0,
 }))
