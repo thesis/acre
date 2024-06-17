@@ -68,7 +68,7 @@ export default function CurrentSeasonSection() {
             currency="bitcoin"
             variant="greater-balance-xl"
             symbolFontWeight="black"
-            // TODO: adjust symbol font size
+            // TODO: Refactor `CurrencyBalance` to make font styles truely adjustable
           />
         </ProgressBar>
 
