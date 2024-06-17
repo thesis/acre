@@ -7,12 +7,12 @@ type OrangeKitConnector = ReturnType<CreateOrangeKitConnectorFn>
 type UseConnectorReturn = OrangeKitConnector | undefined
 
 export function useConnector(): UseConnectorReturn {
-  const { connector } = useAccount()
+  const { connector, status } = useAccount()
 
   return useMemo(() => {
-    if (connector?.type === "orangekit")
+    if (connector?.type === "orangekit" && status === "connected")
       return connector as unknown as OrangeKitConnector
 
     return undefined
-  }, [connector])
+  }, [connector, status])
 }
