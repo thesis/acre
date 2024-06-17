@@ -1,16 +1,17 @@
 import React, { useEffect } from "react"
 import { StakeFlowProvider } from "#/contexts"
-import { useAppDispatch, useSidebar } from "#/hooks"
+import { useAppDispatch, useSidebar, useWallet } from "#/hooks"
 import { ActionFlowType, BaseModalProps } from "#/types"
 import { ModalCloseButton } from "@chakra-ui/react"
 import { resetState, setType } from "#/store/action-flow"
 import ModalContentWrapper from "./ModalContentWrapper"
 import { ActiveFlowStep } from "./ActiveFlowStep"
 import withBaseModal from "../ModalRoot/withBaseModal"
+import { ConnectWalletModalBase } from "../ConnectWalletModal"
 
 type TransactionModalProps = {
   type: ActionFlowType
-} & BaseModalProps
+}
 
 function TransactionModalBase({ type }: TransactionModalProps) {
   const { onOpen: openSideBar, onClose: closeSidebar } = useSidebar()
@@ -42,5 +43,15 @@ function TransactionModalBase({ type }: TransactionModalProps) {
   )
 }
 
-const TransactionModal = withBaseModal(TransactionModalBase)
+function TransactionModalWrapper({
+  type,
+}: TransactionModalProps & BaseModalProps) {
+  const { isConnected } = useWallet()
+
+  if (!isConnected) return <ConnectWalletModalBase />
+
+  return <TransactionModalBase type={type} />
+}
+
+const TransactionModal = withBaseModal(TransactionModalWrapper)
 export default TransactionModal
