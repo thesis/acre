@@ -1,6 +1,6 @@
 import React from "react"
 import { Box, VStack, Heading, Flex } from "@chakra-ui/react"
-import ProgressBar from "#/components/ProgressBar"
+import ProgressBar from "#/components/shared/ProgressBar"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import { TextLg, TextMd, TextXl } from "#/components/shared/Typography"
 import { BENEFITS, SEASON_CAP } from "#/constants"
