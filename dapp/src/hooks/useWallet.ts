@@ -6,7 +6,7 @@ import {
   useConnect,
   useDisconnect,
 } from "wagmi"
-import { logPromiseFailure } from "#/utils"
+import { logPromiseFailure, orangeKit } from "#/utils"
 import { OnErrorCallback, OnSuccessCallback } from "#/types"
 import { useBitcoinProvider, useConnector } from "./orangeKit"
 
@@ -23,7 +23,7 @@ type UseWalletReturn = {
 
 export function useWallet(): UseWalletReturn {
   const chainId = useChainId()
-  const { isConnected } = useAccount()
+  const { status } = useAccount()
   const { connect } = useConnect()
   const { disconnect } = useDisconnect()
   const connector = useConnector()
@@ -31,6 +31,14 @@ export function useWallet(): UseWalletReturn {
 
   const [address, setAddress] = useState<string | undefined>(undefined)
   const [balance, setBalance] = useState<bigint>(0n)
+
+  // `isConnected` is variable derived from `status` but does not guarantee us a set `address`.
+  // When `status` is 'connected' properties like `address` are guaranteed to be defined.
+  // Let's use `status` to make sure the account is connected.
+  const isConnected = useMemo(
+    () => orangeKit.isConnectedStatus(status),
+    [status],
+  )
 
   const onConnect = useCallback(
     (
