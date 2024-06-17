@@ -12,7 +12,7 @@ const filledStyle = defineStyle((props) => {
   const { colorScheme: color, isIndeterminate, hasStripe } = props
 
   const bgColor = `${color}.400`
-  const stripeColor = "rgba(255, 255, 255, 0.1)"
+  const stripeColor = "opacity.white.1"
   const stripesAnimation = keyframes`
     from { background-position: 0 0; }
     to { background-position: 1rem 0; }
