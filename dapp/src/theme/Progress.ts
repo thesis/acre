@@ -9,7 +9,7 @@ import { keyframes } from "@chakra-ui/react"
 const multiStyleConfig = createMultiStyleConfigHelpers(parts.keys)
 
 const filledStyle = defineStyle((props) => {
-  const { colorScheme: color, isIndeterminate, hasStripe } = props
+  const { colorScheme: color, theme, isIndeterminate, hasStripe } = props
 
   const bgColor = `${color}.400`
   const stripeColor = "opacity.white.1"
@@ -18,15 +18,15 @@ const filledStyle = defineStyle((props) => {
     to { background-position: 1rem 0; }
   `
 
-  const addStripe = (!isIndeterminate && hasStripe) as boolean
+  const addStripe = Boolean(!isIndeterminate && hasStripe)
   const style = {
     bgColor,
     bgImage: `repeating-linear-gradient(
       105deg,
       transparent 0%,
       transparent 25%,
-      ${stripeColor} 25%,
-      ${stripeColor} 50%
+      ${getColorVar(theme, stripeColor)} 25%,
+      ${getColorVar(theme, stripeColor)} 50%
     )`,
     bgSize: "16.64px 58.05px", // Calculated for 8px stripes
     animation: `${stripesAnimation} 2s linear infinite`,
@@ -63,6 +63,7 @@ const baseStyleTrack = defineStyle({
   bg: "grey.700",
   rounded: "full",
   w: "full",
+  ringColor: "grey.700",
 })
 
 const baseStyleFilledTrack = defineStyle((props) => ({
@@ -80,11 +81,11 @@ const baseStyle = multiStyleConfig.definePartsStyle((props) => ({
 
 const sizes = {
   xl: multiStyleConfig.definePartsStyle({
-    track: { h: 10, p: 1 },
+    track: { h: 8, ring: 4, m: 1 },
     label: { fontSize: "1.125em", lineHeight: 6, px: 3 },
   }),
   "2xl": multiStyleConfig.definePartsStyle({
-    track: { h: 20, p: 2 },
+    track: { h: 16, ring: 8, m: 2 },
     label: { fontSize: "4xl", lineHeight: "4xl", px: 6 },
   }),
 }
