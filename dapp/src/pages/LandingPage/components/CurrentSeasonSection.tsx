@@ -10,7 +10,8 @@ import { useSeasonProgress } from "#/hooks"
 import BenefitCard from "./BenefitCard"
 
 export default function CurrentSeasonSection() {
-  const { progress, totalAssets } = useSeasonProgress()
+  const { progress: seasonProgress, value: seasonTotalAssets } =
+    useSeasonProgress()
 
   return (
     <Box position="relative" mb={5}>
@@ -58,11 +59,11 @@ export default function CurrentSeasonSection() {
 
         <ProgressBar
           size="2xl"
-          value={progress}
+          value={seasonProgress}
           maxW="50rem" // 800px
         >
           <CurrencyBalance
-            amount={totalAssets}
+            amount={seasonTotalAssets}
             currency="bitcoin"
             variant="greater-balance-xl"
             symbolFontWeight="black"

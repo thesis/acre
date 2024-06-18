@@ -17,7 +17,8 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
 
   const totalJoined = 3045 // TODO: fetch from API
   const tvl = 144500000000 // TODO: fetch from API
-  const { progress, totalAssets } = useSeasonProgress()
+  const { progress: seasonProgress, value: seasonTotalAssets } =
+    useSeasonProgress()
 
   return (
     <VStack
@@ -42,9 +43,9 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
         Staking is live!
       </Heading>
 
-      <ProgressBar value={progress}>
+      <ProgressBar value={seasonProgress}>
         <CurrencyBalance
-          amount={totalAssets}
+          amount={seasonTotalAssets}
           currency="bitcoin"
           variant="greater-balance-md"
         />
