@@ -27,23 +27,6 @@ export default function DashboardPage() {
       </PageLayoutColumn>
 
       <PageLayoutColumn position="relative">
-        {/* <VStack py={10}>
-          <Icon as={AcreLogo} w={20} h={12} />
-          <TextMd>Coming soon...</TextMd>
-        </VStack>
-        <Image
-          width="full"
-          zIndex={-1}
-          position="absolute"
-          inset={0}
-          src={gamificationPlaceholderImage}
-          alt="Gamification placeholder"
-          filter="auto"
-          blur="6px"
-          contrast={1.05}
-          opacity={0.5}
-        /> */}
-
         <BeehiveCard />
       </PageLayoutColumn>
     </PageLayout>
