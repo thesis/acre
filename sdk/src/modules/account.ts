@@ -175,7 +175,7 @@ export default class Account {
     const tbtcAmount = fromSatoshi(btcAmount)
     const shares = await this.#contracts.stBTC.convertToShares(tbtcAmount)
     // Including fees.
-    const redeemedShares = await this.#contracts.stBTC.previewRedeem(shares)
+    const redeemedTbtc = await this.#contracts.stBTC.previewRedeem(shares)
 
     const redeemerProxy = OrangeKitTbtcRedeemerProxy.init(
       this.#contracts,
@@ -191,7 +191,7 @@ export default class Account {
 
     return this.#tbtc.initiateRedemption(
       this.#bitcoinAddress,
-      redeemedShares,
+      redeemedTbtc,
       redeemerProxy,
     )
   }
