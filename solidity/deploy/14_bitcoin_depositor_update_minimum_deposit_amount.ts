@@ -5,7 +5,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { getNamedAccounts, deployments } = hre
   const { deployer } = await getNamedAccounts()
 
-  const minimumDepositAmount = 150000000000000 // 0.00015 tBTC
+  const minimumDepositAmount = BigInt(0.015 * 1e18) // 0.015 tBTC
 
   await deployments.execute(
     "BitcoinDepositor",

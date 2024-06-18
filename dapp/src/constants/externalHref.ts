@@ -1,6 +1,6 @@
 export const EXTERNAL_HREF = {
-  // TODO: Add a correct link
-  DISCORD: "https://discord.com/",
-  DOCS: "",
-  FAQ: "",
+  DISCORD: "https://discord.gg/acre",
+  DOCS: "https://docs.acre.fi/",
+  FAQ: "https://docs.acre.fi/faq",
+  CONTRACTS: "https://docs.acre.fi/contracts",
 }
