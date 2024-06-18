@@ -8,6 +8,7 @@ import { PageLayout, PageLayoutColumn } from "./PageLayout"
 import DashboardCard from "./DashboardCard"
 import GrantedSeasonPassCard from "./GrantedSeasonPassCard"
 import { CurrentSeasonCard } from "./CurrentSeasonCard"
+import BeehiveCard from "./BeehiveCard"
 
 // TODO: Remove placeholder image and replace with actual gamification content
 
@@ -26,7 +27,7 @@ export default function DashboardPage() {
       </PageLayoutColumn>
 
       <PageLayoutColumn position="relative">
-        <VStack py={10}>
+        {/* <VStack py={10}>
           <Icon as={AcreLogo} w={20} h={12} />
           <TextMd>Coming soon...</TextMd>
         </VStack>
@@ -41,7 +42,9 @@ export default function DashboardPage() {
           blur="6px"
           contrast={1.05}
           opacity={0.5}
-        />
+        /> */}
+
+        <BeehiveCard />
       </PageLayoutColumn>
     </PageLayout>
   )
