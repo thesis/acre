@@ -47,9 +47,7 @@ export default function CurrentSeasonSection() {
           }}
         />
 
-        <H3 as="h2" mb={2}>
-          Season 1. Staking is live!
-        </H3>
+        <H3 mb={2}>Season 1. Staking is live!</H3>
 
         <TextLg
           mb="5.5rem" // 88px
