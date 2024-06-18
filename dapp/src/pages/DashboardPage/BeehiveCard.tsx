@@ -10,9 +10,16 @@ import {
   Image,
 } from "@chakra-ui/react"
 import { ArrowUpRight, MezoSign } from "#/assets/icons"
-import mezoBeehiveIlustrationSrc from "#/assets/images/mezo-beehive-ilustration.svg"
+import mezoBeehiveCardIlustrationSrc from "#/assets/images/mezo-beehive-card-ilustration.svg"
+import { useModal } from "#/hooks"
+import { MODAL_TYPES } from "#/types"
 
 export default function BeehiveCard(props: CardProps) {
+  const { openModal } = useModal()
+  const handleOpenBeehiveModal = () => {
+    openModal(MODAL_TYPES.MEZO_BEEHIVE)
+  }
+
   return (
     <Card p={4} {...props}>
       <CardHeader p={0} mb={4}>
@@ -22,7 +29,7 @@ export default function BeehiveCard(props: CardProps) {
       </CardHeader>
 
       <CardBody p={0} mx={-4}>
-        <Image src={mezoBeehiveIlustrationSrc} ml={4} mb={4} />
+        <Image src={mezoBeehiveCardIlustrationSrc} ml={4} mb={4} />
 
         <Card
           borderWidth={0}
@@ -48,6 +55,7 @@ export default function BeehiveCard(props: CardProps) {
 
           <CardBody p={0}>
             <Button
+              onClick={() => handleOpenBeehiveModal()}
               variant="link"
               rightIcon={<ArrowUpRight />}
               iconSpacing={1}
