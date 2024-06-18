@@ -1,6 +1,6 @@
 import {
   EthereumAddress,
-  EthereumNetwork,
+  RedeemerProxy,
   TBTC as TbtcSdk,
   Deposit as TbtcSdkDeposit,
 } from "@keep-network/tbtc-v2.ts"
@@ -24,7 +24,10 @@ import {
 import { MockAcreContracts } from "../../utils/mock-acre-contracts"
 
 import { MockTbtcSdk } from "../../utils/mock-tbtc-sdk"
-import { getChainIdByNetwork } from "../../../src/lib/ethereum/network"
+import {
+  getChainIdByNetwork,
+  EthereumNetwork,
+} from "../../../src/lib/ethereum/network"
 
 jest.mock("@keep-network/tbtc-v2.ts", (): object => ({
   TbtcSdk: jest.fn(),
@@ -56,6 +59,7 @@ class MockEthereumSignerCompatibleWithEthersV5 extends VoidSigner {
 describe("Tbtc", () => {
   const tbtcApiUrl = "https://api.acre.fi/v1/deposit/"
 
+  // @ts-expect-error we only mock the methods used in our SDK.
   const tbtcSdk: TbtcSdk = new MockTbtcSdk()
 
   const { bitcoinDepositor } = new MockAcreContracts()
@@ -257,6 +261,43 @@ describe("Tbtc", () => {
           timestamp: deposit2.createdAt,
         },
       ])
+    })
+  })
+
+  describe("initiateRedemption", () => {
+    const destinationBitcoinAddress = "123"
+    const tbtcAmount = 10000n
+    const redeemer = {} as RedeemerProxy
+
+    const mockedTxHash = Hex.from(
+      "0x7e19682ec2411f26393a3ec55a9483253f4a5150a53aa6f82e069ec78d829f5d",
+    )
+
+    let result: string
+
+    beforeAll(async () => {
+      tbtcSdk.redemptions.requestRedemptionWithProxy = jest
+        .fn()
+        .mockResolvedValueOnce({ targetChainTxHash: mockedTxHash })
+      result = await tbtc.initiateRedemption(
+        destinationBitcoinAddress,
+        tbtcAmount,
+        redeemer,
+      )
+    })
+
+    it("should call redemption service", () => {
+      expect(
+        tbtcSdk.redemptions.requestRedemptionWithProxy,
+      ).toHaveBeenLastCalledWith(
+        destinationBitcoinAddress,
+        tbtcAmount,
+        redeemer,
+      )
+    })
+
+    it("should return the transaction hash", () => {
+      expect(result).toBe(mockedTxHash.toPrefixedString())
     })
   })
 })
