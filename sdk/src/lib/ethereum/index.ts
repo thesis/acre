@@ -20,4 +20,4 @@ function getEthereumContracts(
   return { bitcoinDepositor, stBTC, bitcoinRedeemer }
 }
 
-export { getEthereumContracts, EthereumNetwork }
+export { getEthereumContracts, EthereumNetwork, EthereumBitcoinRedeemer }
