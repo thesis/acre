@@ -197,6 +197,7 @@ describe("BitcoinDepositor", () => {
     beforeAll(() => {
       spyOnEthersContract.mockClear()
 
+      // @ts-expect-error in our case the target is always `string`.
       spyOnEthersContract.mockImplementation((target: string) => {
         if (getAddress(target) === getAddress(bridgeAddress.identifierHex))
           return mockedBridgeContractInstance as unknown as Contract
