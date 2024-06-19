@@ -5,6 +5,7 @@ const PARTS = ["container", "balance", "symbol"]
 const baseStyleContainer = defineStyle(({ symbolPosition }) => ({
   display: "flex",
   flexDir: symbolPosition === "prefix" ? "row-reverse" : "row",
+  alignItems: "baseline",
 }))
 
 const baseStyleBalance = defineStyle(({ symbolPosition }) => ({
@@ -26,6 +27,17 @@ const baseStyle = multiStyleConfig.definePartsStyle((props) => ({
   balance: baseStyleBalance(props),
   symbol: baseStyleSymbol,
 }))
+
+const variantGreaterBalanceMd = multiStyleConfig.definePartsStyle({
+  balance: {
+    fontSize: "lg",
+    lineHeight: "lg",
+  },
+  symbol: {
+    fontSize: "md",
+    lineHeight: "md",
+  },
+})
 
 const variantGreaterBalanceXl = multiStyleConfig.definePartsStyle({
   balance: {
@@ -50,6 +62,7 @@ const variantGreaterBalanceXxl = multiStyleConfig.definePartsStyle({
 })
 
 const variants = {
+  "greater-balance-md": variantGreaterBalanceMd,
   "greater-balance-xl": variantGreaterBalanceXl,
   "greater-balance-xxl": variantGreaterBalanceXxl,
 }
