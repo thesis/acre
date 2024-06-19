@@ -22,27 +22,7 @@ export default class OrangeKitTbtcRedeemerProxy implements TbtcRedeemerProxy {
 
   #sharesAmount: bigint
 
-  static init(
-    contracts: AcreContracts,
-    orangeKitSdk: OrangeKitSdk,
-    account: {
-      publicKey: string
-      bitcoinAddress: string
-      ethereumAddress: ChainIdentifier
-    },
-    bitcoinProvider: BitcoinProvider,
-    sharesAmount: bigint,
-  ) {
-    return new OrangeKitTbtcRedeemerProxy(
-      contracts,
-      orangeKitSdk,
-      account,
-      bitcoinProvider,
-      sharesAmount,
-    )
-  }
-
-  private constructor(
+  constructor(
     contracts: AcreContracts,
     orangeKitSdk: OrangeKitSdk,
     account: {

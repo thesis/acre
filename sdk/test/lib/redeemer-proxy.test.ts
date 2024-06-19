@@ -22,7 +22,7 @@ describe("OrangeKitTbtcRedeemerProxy", () => {
   const sharesAmount = 10n
 
   beforeEach(() => {
-    redeemer = OrangeKitTbtcRedeemerProxy.init(
+    redeemer = new OrangeKitTbtcRedeemerProxy(
       contracts,
       // @ts-expect-error we only mock used the orangeKit methods
       orangeKitSdk,

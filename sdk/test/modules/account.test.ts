@@ -15,7 +15,7 @@ import AcreSubgraphApi from "../../src/lib/api/AcreSubgraphApi"
 import * as satoshiConverter from "../../src/lib/utils/satoshi-converter"
 import { MockBitcoinProvider } from "../utils/mock-bitcoin-provider"
 import { MockOrangeKitSdk } from "../utils/mock-orangekit"
-import OrangeKitTbtcRedeemerProxy from "../../src/lib/redeemer-proxy"
+import * as RedeemerProxyModule from "../../src/lib/redeemer-proxy"
 
 const stakingModuleData: {
   initializeDeposit: {
@@ -360,8 +360,8 @@ describe("Account", () => {
     const mockedTbtcAmountToRedeem = 80000000000000000n
     const spyOnPreviewRedeem = jest.spyOn(contracts.stBTC, "previewRedeem")
 
-    const mockedRedeemer = {} as OrangeKitTbtcRedeemerProxy
-    const spyOnInitRedeemer = jest.spyOn(OrangeKitTbtcRedeemerProxy, "init")
+    const mockedRedeemer = {} as RedeemerProxyModule.default
+    const spyOnInitRedeemer = jest.spyOn(RedeemerProxyModule, "default")
 
     const mockedTxHash =
       "0xad19f160667d583a2eb0b844e9b4f669354e79f91ff79a4782184841e66ca06a"

@@ -182,7 +182,7 @@ export default class Account {
     // Including fees.
     const redeemedTbtc = await this.#contracts.stBTC.previewRedeem(shares)
 
-    const redeemerProxy = OrangeKitTbtcRedeemerProxy.init(
+    const redeemerProxy = new OrangeKitTbtcRedeemerProxy(
       this.#contracts,
       this.#orangeKitSdk,
       {
