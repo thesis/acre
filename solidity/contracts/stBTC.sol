@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@thesis-co/solidity-contracts/contracts/token/IReceiveApproval.sol";
 
 import "./PausableOwnable.sol";
-import "./lib/ERC4626Fees.sol";
+import "./lib/ERC4626Nonfungible.sol";
 import "./interfaces/IDispatcher.sol";
 import {ZeroAddress} from "./utils/Errors.sol";
 
@@ -21,7 +21,7 @@ import {ZeroAddress} from "./utils/Errors.sol";
 ///      burning of shares (stBTC), which are represented as standard ERC20
 ///      tokens, providing a seamless exchange with tBTC tokens.
 // slither-disable-next-line missing-inheritance
-contract stBTC is ERC4626Fees, PausableOwnable {
+contract stBTC is ERC4626Nonfungible, PausableOwnable {
     using SafeERC20 for IERC20;
 
     /// Dispatcher contract that routes tBTC from stBTC to a given allocation
