@@ -1,5 +1,6 @@
 export * from "./store"
 export * from "./sdk"
+export * from "./orangeKit"
 export * from "./useDetectThemeMode"
 export * from "./useRequestBitcoinAccount"
 export * from "./useWalletContext"
