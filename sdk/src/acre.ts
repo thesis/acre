@@ -14,10 +14,6 @@ import { getChainIdByNetwork } from "./lib/ethereum/network"
 import AcreSubgraphApi from "./lib/api/AcreSubgraphApi"
 import Protocol from "./modules/protocol"
 
-// TODO: Should we hide this API key in SDK impl or should it be passed by the
-// consumer?
-const GELATO_API_KEY = ""
-
 class Acre {
   readonly #tbtc: Tbtc
 
@@ -56,6 +52,7 @@ class Acre {
     bitcoinProvider: BitcoinProvider,
     tbtcApiUrl: string,
     ethereumRpcUrl: string,
+    gelatoApiKey: string,
   ) {
     const ethereumNetwork: EthereumNetwork =
       network === BitcoinNetwork.Testnet ? "sepolia" : "mainnet"
@@ -72,7 +69,7 @@ class Acre {
     const orangeKit = await OrangeKitSdk.init(
       Number(ethereumChainId),
       ethereumRpcUrl,
-      new GelatoTransactionSender(GELATO_API_KEY),
+      new GelatoTransactionSender(gelatoApiKey),
     )
 
     const accountBitcoinAddress = await bitcoinProvider.getAddress()
