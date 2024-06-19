@@ -38,6 +38,9 @@ class EthereumStBTC
     super(config, artifact)
   }
 
+  /**
+   * @see {StBTC#getChainIdentifier}
+   */
   getChainIdentifier(): ChainIdentifier {
     return this.getAddress()
   }
@@ -90,12 +93,12 @@ class EthereumStBTC
    */
   encodeApproveAndCallFunctionData(
     spender: ChainIdentifier,
-    amount: bigint,
+    shares: bigint,
     extraData: Hex,
   ): Hex {
     const data = this.instance.interface.encodeFunctionData("approveAndCall", [
       `0x${spender.identifierHex}`,
-      amount,
+      shares,
       extraData.toPrefixedString(),
     ])
 
@@ -105,8 +108,8 @@ class EthereumStBTC
   /**
    * @see {StBTC#previewRedeem}
    */
-  previewRedeem(amount: bigint): Promise<bigint> {
-    return this.instance.previewRedeem(amount)
+  previewRedeem(shares: bigint): Promise<bigint> {
+    return this.instance.previewRedeem(shares)
   }
 
   /**
