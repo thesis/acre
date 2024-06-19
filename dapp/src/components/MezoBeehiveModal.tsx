@@ -89,12 +89,12 @@ function MezoBeehiveModalBase() {
           <CardBody p={0}>
             <TextMd lineHeight={5}>
               <Highlight
-                query={["deposit amount and duration", "Mezo"]}
+                query={["deposit amount and duration", "ACRE"]}
                 styles={{ fontWeight: "bold", color: "inherit" }}
               >
                 In the event of a reward distribution, your share will be
                 calculated based on your deposit amount and duration. You will
-                be able to claim your share directly from Mezo.
+                be able to claim your share directly from ACRE.
               </Highlight>
             </TextMd>
           </CardBody>
