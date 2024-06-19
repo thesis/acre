@@ -5,11 +5,11 @@ import { useAcreContext } from "#/acre-react/hooks"
 import { useAppDispatch } from "../store/useAppDispatch"
 
 export function useFetchMinDepositAmount() {
-  const { acre, isInitialized } = useAcreContext()
+  const { acre, isConnected } = useAcreContext()
   const dispatch = useAppDispatch()
 
   useEffect(() => {
-    if (!isInitialized || !acre) return
+    if (!isConnected || !acre) return
 
     const fetchMinDepositAmount = async () => {
       const minDepositAmount = await acre.protocol.minimumDepositAmount()
@@ -18,5 +18,5 @@ export function useFetchMinDepositAmount() {
     }
 
     logPromiseFailure(fetchMinDepositAmount())
-  }, [acre, dispatch, isInitialized])
+  }, [acre, dispatch, isConnected])
 }
