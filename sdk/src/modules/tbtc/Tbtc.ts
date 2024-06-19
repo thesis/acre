@@ -150,16 +150,28 @@ export default class Tbtc {
     }))
   }
 
+  /**
+   * Requests a redemption of TBTC v2 token into BTC. It builds the redemption
+   * data and handles the redemption request through the provided redeemer
+   * proxy.
+   * @param bitcoinRedeemerAddress Bitcoin address the redeemed BTC should be
+   *        sent to. Only P2PKH, P2WPKH, P2SH, and P2WSH address types are
+   *        supported.
+   * @param amount The amount to be redeemed in 1e18 tBTC token precision.
+   * @param redeemerProxy Object implementing functions required to route tBTC
+   *        redemption requests through the tBTC bridge.
+   * @returns The transaction hash.
+   */
   async initiateRedemption(
     destinationBitcoinAddress: string,
     tbtcAmount: bigint,
-    redeemer: RedeemerProxy,
+    redeemerProxy: RedeemerProxy,
   ): Promise<string> {
     const { targetChainTxHash } =
       await this.#tbtcSdk.redemptions.requestRedemptionWithProxy(
         destinationBitcoinAddress,
         tbtcAmount,
-        redeemer,
+        redeemerProxy,
       )
 
     return targetChainTxHash.toPrefixedString()

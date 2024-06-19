@@ -171,6 +171,11 @@ export default class Account {
     })
   }
 
+  /**
+   * Initializes the withdrawal process.
+   * @param amount Bitcoin amount to withdraw in 1e8 satoshi precision.
+   * @returns Hash of the transaction withdrawal transaction.
+   */
   async initializeWithdrawal(btcAmount: bigint): Promise<string> {
     const tbtcAmount = fromSatoshi(btcAmount)
     const shares = await this.#contracts.stBTC.convertToShares(tbtcAmount)

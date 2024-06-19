@@ -15,7 +15,15 @@ export interface BitcoinProvider {
    */
   getAddress(): Promise<string>
 
+  /**
+   * Signs message.
+   * @param message Message to sign.
+   * @returns Hash of the signed message.
+   */
   signMessage(message: string): Promise<string>
 
+  /**
+   * @returns The public key of the Bitcoin account.
+   */
   getPublicKey(): Promise<string>
 }
