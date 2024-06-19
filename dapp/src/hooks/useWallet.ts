@@ -7,13 +7,14 @@ import {
   useDisconnect,
 } from "wagmi"
 import { logPromiseFailure, orangeKit } from "#/utils"
-import { OnErrorCallback, OnSuccessCallback } from "#/types"
+import { OnErrorCallback, OnSuccessCallback, STATUSES, Status } from "#/types"
 import { useBitcoinProvider, useConnector } from "./orangeKit"
 
 type UseWalletReturn = {
   isConnected: boolean
   address?: string
   balance: bigint
+  status: Status
   onConnect: (
     connector: Connector,
     options?: { onSuccess?: OnSuccessCallback; onError?: OnErrorCallback },
@@ -23,21 +24,22 @@ type UseWalletReturn = {
 
 export function useWallet(): UseWalletReturn {
   const chainId = useChainId()
-  const { status } = useAccount()
-  const { connect } = useConnect()
+  const { status: accountStatus } = useAccount()
+  const { connect, status: connectStatus } = useConnect()
   const { disconnect } = useDisconnect()
   const connector = useConnector()
   const provider = useBitcoinProvider()
 
   const [address, setAddress] = useState<string | undefined>(undefined)
   const [balance, setBalance] = useState<bigint>(0n)
+  const [status, setStatus] = useState<Status>(STATUSES.IDLE)
 
   // `isConnected` is variable derived from `status` but does not guarantee us a set `address`.
   // When `status` is 'connected' properties like `address` are guaranteed to be defined.
   // Let's use `status` to make sure the account is connected.
   const isConnected = useMemo(
-    () => orangeKit.isConnectedStatus(status),
-    [status],
+    () => orangeKit.isConnectedStatus(accountStatus),
+    [accountStatus],
   )
 
   const onConnect = useCallback(
@@ -45,6 +47,7 @@ export function useWallet(): UseWalletReturn {
       selectedConnector: Connector,
       options?: { onSuccess?: OnSuccessCallback; onError?: OnErrorCallback },
     ) => {
+      setStatus(STATUSES.PENDING)
       connect({ connector: selectedConnector, chainId }, { ...options })
     },
     [connect, chainId],
@@ -80,14 +83,20 @@ export function useWallet(): UseWalletReturn {
     logPromiseFailure(fetchBitcoinAddress())
   }, [connector, provider])
 
+  useEffect(() => {
+    if (connectStatus === "error") setStatus(STATUSES.ERROR)
+    if (connectStatus === "success") setStatus(STATUSES.SUCCESS)
+  }, [connectStatus])
+
   return useMemo(
     () => ({
       isConnected,
       address,
       balance,
+      status,
       onConnect,
       onDisconnect,
     }),
-    [address, balance, isConnected, onConnect, onDisconnect],
+    [address, balance, isConnected, onConnect, onDisconnect, status],
   )
 }
