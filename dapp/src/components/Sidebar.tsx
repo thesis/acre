@@ -10,7 +10,6 @@ import {
 import { useSidebar } from "#/hooks"
 import {
   EXTERNAL_HREF,
-  MYSTERY_BOX,
   REWARD_BOOST,
   SEASON_KEY,
   featureFlags,
@@ -42,7 +41,6 @@ const BUTTONS: Partial<ComponentProps<typeof ButtonLink>>[] = [
 
 const BENEFITS = [
   { ...REWARD_BOOST, imageSrc: rewardsBoostArrowImage },
-  MYSTERY_BOX,
   SEASON_KEY,
 ].map((benefit) => ({ ...benefit, name: `1x ${benefit.name}` }))
 
