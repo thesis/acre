@@ -280,6 +280,93 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         return super.withdraw(assets, receiver, owner);
     }
 
+    // NON-FUNGIBLE WITHDRAWALS
+    bool nonFungibleWithdrawalsEnabled;
+    mapping(address => uint256) withdrawableShares;
+    error InsufficientWithdrawableShares(uint256 requested, uint256 available);
+
+    function _deposit(
+        address caller,
+        address receiver,
+        uint256 assets,
+        uint256 shares
+    ) internal virtual override {
+        if (nonFungibleWithdrawalsEnabled) {
+            withdrawableShares[receiver] += shares;
+        }
+
+        super._deposit(caller, receiver, assets, shares);
+    }
+
+    function _withdraw(
+        address caller,
+        address receiver,
+        address owner,
+        uint256 assets,
+        uint256 shares
+    ) internal virtual override {
+        if (nonFungibleWithdrawalsEnabled) {
+            if (withdrawableShares[owner] < shares)
+                revert InsufficientWithdrawableShares(
+                    shares,
+                    withdrawableShares[owner]
+                );
+
+            withdrawableShares[owner] -= shares;
+        }
+
+        super._withdraw(caller, receiver, owner, assets, shares);
+    }
+
+    // MINTING DEBT
+    // XXX: Instead of boolean allowance, should we define a number of shares the
+    // minter is allowed to mint?
+    mapping(address => bool) allowedDebtMinters;
+    mapping(address => uint256) debt;
+
+    // Track debt to include in totalAssets calculation so the shares conversion
+    // reflect these stBTC shares.
+    uint256 public totalDebt;
+
+    function mintDebt(uint256 assets, address receiver) internal {
+        if (!allowedDebtMinters[msg.sender]) {
+            revert("stBTC: debt not allowed");
+        }
+
+        // XXX: Should we track assets (tBTC) or shares (stBTC)?
+        debt[msg.sender] += assets;
+        totalDebt += assets;
+
+        uint256 shares = convertToShares(assets);
+
+        super._mint(receiver, shares);
+    }
+
+    function burnDebt(uint256 assets, address receiver) internal {
+        if (!allowedDebtMinters[msg.sender]) {
+            revert("stBTC: debt not allowed");
+        }
+        if (debt[msg.sender] < assets) {
+            revert("stBTC: insufficient debt");
+        }
+
+        // XXX: Should we track assets (tBTC) or shares (stBTC)?
+        debt[msg.sender] -= assets;
+        totalDebt -= assets;
+
+        uint256 shares = convertToShares(assets);
+
+        super._burn(receiver, shares);
+    }
+
+    function authorizeDebtMinter(address minter) external onlyOwner {
+        allowedDebtMinters[minter] = true;
+    }
+
+    function deauthorizeDebtMinter(address minter) external onlyOwner {
+        allowedDebtMinters[minter] = false;
+    }
+
     /// @notice Redeems shares for assets and transfers them to the receiver.
     /// @dev Redeem unallocated assets first and and if not enough, then pull
     ///      the assets from the dispatcher.
@@ -304,7 +391,9 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     ///         allocations and this contract.
     function totalAssets() public view override returns (uint256) {
         return
-            IERC20(asset()).balanceOf(address(this)) + dispatcher.totalAssets();
+            IERC20(asset()).balanceOf(address(this)) +
+            dispatcher.totalAssets() +
+            totalDebt;
     }
 
     /// @dev Returns the maximum amount of the underlying asset that can be
