@@ -18,7 +18,7 @@ const connectorConfig = {
   relayApiKey: VITE_GELATO_RELAY_API_KEY,
 }
 const transports = chains.reduce(
-  (acc, { id }) => ({ ...acc, [id]: http() }),
+  (acc, { id }) => ({ ...acc, [id]: http(VITE_ETH_HOSTNAME_HTTP) }),
   {},
 )
 

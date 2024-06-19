@@ -1,7 +1,7 @@
 import {
-  mysteryBoxImage,
   rewardsBoostImage,
   seasonKeyImage,
+  bibosBeehiveImage,
 } from "#/assets/images/benefits"
 
 type BenefitDetails = {
@@ -22,10 +22,10 @@ export const SEASON_KEY: BenefitDetails = {
   imageSrc: seasonKeyImage,
 }
 
-export const MYSTERY_BOX: BenefitDetails = {
-  name: "Mystery Box",
-  description: "A surprise gift for the early birds",
-  imageSrc: mysteryBoxImage,
+export const BIBOS_BEEHIVE: BenefitDetails = {
+  name: "Bibo's Beehive",
+  description: "Get rewards from top Bitcoin projects",
+  imageSrc: bibosBeehiveImage,
 }
 
-export const BENEFITS = [REWARD_BOOST, MYSTERY_BOX, SEASON_KEY]
+export const BENEFITS = [SEASON_KEY, BIBOS_BEEHIVE]

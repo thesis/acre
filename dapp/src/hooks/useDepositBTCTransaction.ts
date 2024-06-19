@@ -41,15 +41,15 @@ export function useDepositBTCTransaction(
         throw new Error("Connector was not defined.")
       }
 
-      const client = await connector.getClient()
-
       try {
-        // TODO: Temporary solution - The `sendBitcoin` function accepts amount as number
-        const satoshis = +amount.toString()
+        // @ts-expect-error adjust types to handle bitcoin wallet wrappers
+        const client = await connector.getClient()
+
+        const satoshis = Number(amount)
 
         // @ts-expect-error adjust types to handle bitcoin wallet wrappers
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment
-        const txhash: string = await client?.sendBitcoin(recipient, satoshis)
+        const txhash: string = await client.sendBitcoin(recipient, satoshis)
         setTransactionHash(txhash)
       } catch (error) {
         if (onError) {

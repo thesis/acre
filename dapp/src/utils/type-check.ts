@@ -1,17 +1,13 @@
-export function getType(arg: unknown): string {
-  return Object.prototype.toString.call(arg).slice("[object ".length, -1)
-}
-
 export function isObject(
   arg: unknown,
 ): arg is Record<string | number | symbol, unknown> {
-  return typeof arg === "object" && arg !== null
+  return typeof arg === "object" && arg !== null && !Array.isArray(arg)
 }
 
 export function isString(arg: unknown): arg is string {
-  return getType(arg) === "String"
+  return typeof arg === "string"
 }
 
 export function isNumber(arg: unknown): arg is number {
-  return getType(arg) === "Number"
+  return typeof arg === "number"
 }

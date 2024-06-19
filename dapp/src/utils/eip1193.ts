@@ -25,7 +25,14 @@ function isEIP1193Error(arg: unknown): arg is EIP1193Error {
   )
 }
 
+function didUserRejectRequest(error: unknown): boolean {
+  const { code } = EIP1193_ERROR_CODES.userRejectedRequest
+
+  return isEIP1193Error(error) && error.code === code
+}
+
 export default {
   isEIP1193Error,
   isEIP1193ErrorCodeNumber,
+  didUserRejectRequest,
 }

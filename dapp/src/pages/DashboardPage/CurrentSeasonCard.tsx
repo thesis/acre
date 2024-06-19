@@ -2,13 +2,11 @@ import React from "react"
 import { StackProps, Flex, VStack, Heading } from "@chakra-ui/react"
 import { numberToLocaleString } from "#/utils"
 import { TextMd } from "#/components/shared/Typography"
-import {
-  CountdownTimer,
-  LiveTag,
-  SeasonCountdownSectionBackground,
-} from "#/components/shared/SeasonCountdownSection"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
-import { SEASON_DUE_TIMESTAMP } from "#/constants"
+import ProgressBar from "#/components/shared/ProgressBar"
+import { SeasonSectionBackground } from "#/components/shared/SeasonSectionBackground"
+import { LiveTag } from "#/components/shared/LiveTag"
+import { useSeasonProgress } from "#/hooks"
 
 type CurrentSeasonCardProps = StackProps & {
   showSeasonStats?: boolean
@@ -19,6 +17,8 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
 
   const totalJoined = 3045 // TODO: fetch from API
   const tvl = 144500000000 // TODO: fetch from API
+  const { progress: seasonProgress, value: seasonTotalAssets } =
+    useSeasonProgress()
 
   return (
     <VStack
@@ -34,16 +34,22 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
 
       <Heading
         as="p"
-        color="gold.100"
+        color="grey.700"
         fontSize="2xl"
         lineHeight={1}
         letterSpacing="-0.03rem" // -0.48px
       >
         Season 1 <br />
-        Pre-launch staking
+        Staking is live!
       </Heading>
 
-      <CountdownTimer size="sm" timestamp={SEASON_DUE_TIMESTAMP} />
+      <ProgressBar value={seasonProgress}>
+        <CurrencyBalance
+          amount={seasonTotalAssets}
+          currency="bitcoin"
+          variant="greater-balance-md"
+        />
+      </ProgressBar>
 
       {showSeasonStats && (
         <Flex align="baseline" justify="space-between" color="white">
@@ -67,11 +73,7 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
         </Flex>
       )}
 
-      <SeasonCountdownSectionBackground
-        position="absolute"
-        inset={0}
-        zIndex={-1}
-      />
+      <SeasonSectionBackground position="absolute" inset={0} zIndex={-1} />
     </VStack>
   )
 }
