@@ -21,12 +21,14 @@ export default function BenefitCard(props: IconCardProps) {
     <Card
       px={6}
       py={5}
-      bg="gold.300"
+      bg="gold.200"
+      border={0}
       display="grid"
       gridAutoFlow="row"
       gridAutoColumns="auto 1fr"
       gridTemplateRows="auto 1fr"
-      rowGap="3.75rem" // 60px
+      rowGap={10}
+      textAlign="left"
       {...restProps}
     >
       <CardHeader
@@ -46,17 +48,17 @@ export default function BenefitCard(props: IconCardProps) {
             fontWeight="medium"
             color="grey.500"
             alignSelf="end"
+            w={{ base: "full", md: 3 / 4 }}
           >
             {children}
           </Box>
         )}
         <Box
           gridArea="1 / 2 / 3 / 3"
-          ml={{ base: "auto", xl: 6 }}
+          ml="auto"
+          mr={-6}
           my={-5}
-          w="full"
-          maxW="12.5rem" // 200px
-          minW="9rem" // 144px
+          minW="12.5rem" // 200px
           position="relative"
         >
           <Image

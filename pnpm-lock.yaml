@@ -39,8 +39,8 @@ importers:
         specifier: ^1.3.0
         version: 1.3.9(react@18.3.1)
       '@orangekit/react':
-        specifier: 1.0.0-beta.16
-        version: 1.0.0-beta.16(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5)
+        specifier: 1.0.0-beta.18
+        version: 1.0.0-beta.18(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5)
       '@reduxjs/toolkit':
         specifier: ^2.2.0
         version: 2.2.5(react-redux@9.1.2)(react@18.3.1)
@@ -4975,7 +4975,7 @@ packages:
     dependencies:
       '@ethereumjs/tx': 4.2.0
       '@types/debug': 4.1.12
-      debug: 4.3.5
+      debug: 4.3.4(supports-color@8.1.1)
       semver: 7.6.2
       superstruct: 1.0.4
     transitivePeerDependencies:
@@ -5659,15 +5659,6 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@orangekit/contracts@1.0.0-beta.2(ethers@6.12.1):
-    resolution: {integrity: sha512-xbQBKnVU7bMy/0mlBhfFkiL0e15YziY97Y9mYfMAQKc51mFIH+J93TrGxjLa2kgYyVUiAxSr4++n6BgYWReLVA==}
-    dependencies:
-      '@openzeppelin/contracts': 5.0.2
-      '@safe-global/safe-contracts': 1.4.1-build.0(ethers@6.12.1)
-    transitivePeerDependencies:
-      - ethers
-    dev: false
-
   /@orangekit/contracts@1.0.0-beta.3(ethers@6.12.1):
     resolution: {integrity: sha512-xP1Oz/JzuHypg5DcsHayINhFSL5M/tCmRP/stmNAvjeebXhrKuALKAHWn98H0Mo3QfYYrz8UcltQPeH6+68n6A==}
     dependencies:
@@ -5677,10 +5668,10 @@ packages:
       - ethers
     dev: false
 
-  /@orangekit/react@1.0.0-beta.16(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5):
-    resolution: {integrity: sha512-owpJR0sC8F1fEhlrnh7v1s8sPplJihfQ06Hx9AYZoQw+iiR6NQ5A5hevju1A7iq6zMmEIrqcpo+NFp27Nt1OCA==}
+  /@orangekit/react@1.0.0-beta.18(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5):
+    resolution: {integrity: sha512-0lNE0p0r0tSm4Co8votBOwyfODdrTLhzXv77u0lKMc6aMR4sMPTnoXF3MPcI0Q1IKgLmBxYaTQMPOjpVk0Jv4A==}
     dependencies:
-      '@orangekit/sdk': 1.0.0-beta.12
+      '@orangekit/sdk': 1.0.0-beta.14
       '@rainbow-me/rainbowkit': 2.0.2(@types/react@18.3.3)(react-dom@18.3.1)(react@18.3.1)(viem@2.8.16)(wagmi@2.5.12)
       ethers: 6.12.1
       react: 18.3.1
@@ -5717,13 +5708,13 @@ packages:
       - zod
     dev: false
 
-  /@orangekit/sdk@1.0.0-beta.12:
-    resolution: {integrity: sha512-BVfbkqSQK9ZEb56t8PvuScOK1iBPPexS2xgV8EpbRBgEWWhumTj/a0BAAz87kV5Hw3aNTng1lxV84MS+b4HH8Q==}
+  /@orangekit/sdk@1.0.0-beta.13:
+    resolution: {integrity: sha512-Ysz271rgFGFDeXY/7mnaGEB0Cmfy/qkvVpujIDstqz9lREuGULRFNARZl9tkq7AdmZs6oLvUxWHB9Qm9GdWxYQ==}
     dependencies:
       '@gelatonetwork/relay-sdk': 5.5.6
       '@noble/curves': 1.4.0
       '@noble/hashes': 1.4.0
-      '@orangekit/contracts': 1.0.0-beta.2(ethers@6.12.1)
+      '@orangekit/contracts': 1.0.0-beta.3(ethers@6.12.1)
       '@safe-global/protocol-kit': 3.1.1
       bitcoinjs-lib: 6.1.5
       ethers: 6.12.1
@@ -5735,8 +5726,8 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@orangekit/sdk@1.0.0-beta.13:
-    resolution: {integrity: sha512-Ysz271rgFGFDeXY/7mnaGEB0Cmfy/qkvVpujIDstqz9lREuGULRFNARZl9tkq7AdmZs6oLvUxWHB9Qm9GdWxYQ==}
+  /@orangekit/sdk@1.0.0-beta.14:
+    resolution: {integrity: sha512-HDgKClpuAn5u3xwIYyoTjF/ZkF2f20f64pAORGrTohnkqIErp38tXg1YGAMIFL2eIAhyQKV2JvPHB6BXCmEstA==}
     dependencies:
       '@gelatonetwork/relay-sdk': 5.5.6
       '@noble/curves': 1.4.0
@@ -6630,7 +6621,7 @@ packages:
       '@noble/hashes': 1.4.0
       '@safe-global/safe-deployments': 1.37.0
       ethereumjs-util: 7.1.5
-      ethers: 6.10.0
+      ethers: 6.12.1
       semver: 7.6.2
       web3: 1.10.4
       web3-core: 1.10.4
@@ -12137,7 +12128,7 @@ packages:
   /eth-lib@0.2.7:
     resolution: {integrity: sha512-VqEBQKH92jNsaE8lG9CTq8M/bc12gdAfb5MY8Ro1hVyXkh7rOtY3m5tRHK3Hus5HqIAAwU2ivcUjTLVwsvf/kw==}
     dependencies:
-      bn.js: 4.11.8
+      bn.js: 4.12.0
       elliptic: 6.5.5
       xhr-request-promise: 0.1.3
     dev: false
