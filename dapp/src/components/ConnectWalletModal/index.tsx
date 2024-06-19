@@ -21,17 +21,15 @@ export function ConnectWalletModalBase() {
       <ModalCloseButton />
       <ModalHeader>Connect a Wallet</ModalHeader>
       <ModalBody>
-        <VStack>
-          {connectors.map((connector) => (
-            <ConnectWalletButton
-              key={connector.id}
-              label={connector.name}
-              connector={connector}
-              onClick={() => setSelectedConnectorId(connector.id)}
-              isSelected={selectedConnectorId === connector.id}
-            />
-          ))}
-        </VStack>
+        {connectors.map((connector) => (
+          <ConnectWalletButton
+            key={connector.id}
+            label={connector.name}
+            connector={connector}
+            onClick={() => setSelectedConnectorId(connector.id)}
+            isSelected={selectedConnectorId === connector.id}
+          />
+        ))}
       </ModalBody>
     </>
   )
