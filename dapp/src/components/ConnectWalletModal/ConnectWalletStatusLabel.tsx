@@ -1,7 +1,7 @@
 import React from "react"
 import { STATUSES, Status } from "#/types"
-import { HStack, Icon } from "@chakra-ui/react"
-import { IconCircleCheck } from "@tabler/icons-react"
+import { Box, HStack, Icon } from "@chakra-ui/react"
+import { IconCircleCheck, IconExclamationCircle } from "@tabler/icons-react"
 import { TextMd } from "../shared/Typography"
 import Spinner from "../shared/Spinner"
 
@@ -20,26 +20,31 @@ const statusToLabelProps: Record<Status, { color: string }> = {
   },
 }
 
+const boxSize = 5
+const statusToIcon: Record<Status, React.ReactNode> = {
+  [STATUSES.IDLE]: <Box boxSize={boxSize} />,
+  [STATUSES.PENDING]: <Spinner boxSize={boxSize} />,
+  [STATUSES.ERROR]: <Icon as={IconExclamationCircle} boxSize={boxSize} />,
+  [STATUSES.SUCCESS]: <Icon as={IconCircleCheck} boxSize={boxSize} />,
+}
+
 type ConnectWalletStatusLabelProps = {
   label: string
   status: Status
-  isRejected?: boolean
 }
 
 export default function ConnectWalletStatusLabel({
   status,
   label,
-  isRejected = false,
 }: ConnectWalletStatusLabelProps) {
-  const text = isRejected ? "Rejected, try again" : label
-  const isPending = status === STATUSES.PENDING
-  const isSuccess = status === STATUSES.SUCCESS
+  const isError = status === STATUSES.ERROR
+  const text = isError ? "Rejected, try again" : label
+  const icon = statusToIcon[status]
 
   return (
-    <HStack>
-      {isPending && <Spinner size="sm" />}
-      {isSuccess && <Icon as={IconCircleCheck} boxSize={5} />}
-      <TextMd {...statusToLabelProps[status]}>{text}</TextMd>
+    <HStack {...statusToLabelProps[status]}>
+      {icon}
+      <TextMd>{text}</TextMd>
     </HStack>
   )
 }
