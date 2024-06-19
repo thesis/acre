@@ -8,7 +8,10 @@ const ETH_RPC_URL = import.meta.env.VITE_ETH_HOSTNAME_HTTP
 
 type AcreSdkContextValue = {
   acre?: Acre
-  init: (bitcoinProvider: BitcoinProvider) => Promise<void>
+  init: (
+    bitcoinProvider: BitcoinProvider,
+    gelatoApiKey: string,
+  ) => Promise<void>
   isInitialized: boolean
 }
 
@@ -23,12 +26,13 @@ export function AcreSdkProvider({ children }: { children: React.ReactNode }) {
   const [isInitialized, setIsInitialized] = useState<boolean>(false)
 
   const init = useCallback<AcreSdkContextValue["init"]>(
-    async (bitcoinProvider: BitcoinProvider) => {
+    async (bitcoinProvider: BitcoinProvider, gelatoApiKey: string) => {
       const sdk: Acre = await Acre.initialize(
         BITCOIN_NETWORK,
         bitcoinProvider,
         TBTC_API_ENDPOINT,
         ETH_RPC_URL,
+        gelatoApiKey,
       )
 
       setAcre(sdk)
