@@ -145,7 +145,7 @@ export default function SuccessModal({ type }: SuccessModalProps) {
           Go to dashboard
         </Button>
         <HStack spacing={2}>
-          <Spinner borderWidth={2} />
+          <Spinner borderWidth={2} variant="filled" />
           <TextMd>{footer}</TextMd>
         </HStack>
       </ModalFooter>
