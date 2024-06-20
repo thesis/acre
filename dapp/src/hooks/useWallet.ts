@@ -8,7 +8,9 @@ import {
 } from "wagmi"
 import { logPromiseFailure, orangeKit } from "#/utils"
 import { OnErrorCallback, OnSuccessCallback, STATUSES, Status } from "#/types"
+import { resetState } from "#/store/wallet"
 import { useBitcoinProvider, useConnector } from "./orangeKit"
+import { useAppDispatch } from "./store"
 
 type UseWalletReturn = {
   isConnected: boolean
@@ -29,6 +31,7 @@ export function useWallet(): UseWalletReturn {
   const { disconnect } = useDisconnect()
   const connector = useConnector()
   const provider = useBitcoinProvider()
+  const dispatch = useAppDispatch()
 
   const [address, setAddress] = useState<string | undefined>(undefined)
   const [balance, setBalance] = useState<bigint>(0n)
@@ -55,9 +58,10 @@ export function useWallet(): UseWalletReturn {
 
   const onDisconnect = useCallback(() => {
     disconnect()
-    // TODO: Reset redux state
+
     setStatus(STATUSES.IDLE)
-  }, [disconnect])
+    dispatch(resetState())
+  }, [disconnect, dispatch])
 
   useEffect(() => {
     const fetchBalance = async () => {
