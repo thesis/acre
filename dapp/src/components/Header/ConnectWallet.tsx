@@ -68,7 +68,7 @@ export default function ConnectWallet() {
           )}
 
           <HStack
-            as={motion.button}
+            as={motion.div}
             whileHover="expanded"
             initial="collapsed"
             animate="collapsed"
