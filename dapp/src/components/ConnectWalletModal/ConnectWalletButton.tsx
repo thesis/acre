@@ -1,9 +1,11 @@
 import React, { useCallback, useEffect } from "react"
 import { Box, Button } from "@chakra-ui/react"
 import { Connector } from "wagmi"
-import { useModal, useWallet } from "#/hooks"
+import { useModal, useSignMessage, useWallet } from "#/hooks"
 import { TextMd } from "../shared/Typography"
 import ConnectWalletStatusLabel from "./ConnectWalletStatusLabel"
+
+const MESSAGE = "Test message"
 
 type ConnectWalletButtonProps = {
   label: string
@@ -18,37 +20,49 @@ export default function ConnectWalletButton({
   isSelected,
   connector,
 }: ConnectWalletButtonProps) {
-  const { onConnect, status: connectionStatus } = useWallet()
+  const {
+    isConnected,
+    onConnect,
+    onDisconnect,
+    status: connectionStatus,
+  } = useWallet()
+  const { signMessage, status: signMessageStatus } = useSignMessage()
   const { closeModal } = useModal()
 
   const onSuccess = useCallback(() => {
     closeModal()
   }, [closeModal])
 
-  const onError = (error: unknown) => {
-    console.error(error)
-  }
+  const handleSignMessage = useCallback(() => {
+    signMessage(
+      {
+        message: MESSAGE,
+        connector,
+      },
+      { onSuccess },
+    )
+  }, [connector, onSuccess, signMessage])
 
   const handleConnect = useCallback(() => {
     onConnect(connector, {
-      onSuccess,
-      onError,
+      onSuccess: handleSignMessage,
     })
-  }, [connector, onConnect, onSuccess])
+  }, [connector, handleSignMessage, onConnect])
 
-  const handleClick = useCallback(() => {
-    if (isSelected) {
-      handleConnect()
-    } else {
-      onClick()
-    }
-  }, [handleConnect, isSelected, onClick])
+  const handleClick = () => {
+    onClick()
+
+    if (!isSelected) return
+
+    // Connector still selected and user wants to retry action
+    if (isConnected) handleSignMessage()
+    else handleConnect()
+  }
 
   useEffect(() => {
-    if (isSelected) {
-      handleConnect()
-    }
-  }, [connector, handleConnect, isSelected, onConnect, onSuccess])
+    if (isSelected) handleConnect()
+    else onDisconnect()
+  }, [handleConnect, isSelected, onDisconnect])
 
   return (
     <Box>
@@ -59,6 +73,10 @@ export default function ConnectWalletButton({
           <ConnectWalletStatusLabel
             status={connectionStatus}
             label="Connect wallet"
+          />
+          <ConnectWalletStatusLabel
+            status={signMessageStatus}
+            label="Sign message"
           />
         </Box>
       )}
