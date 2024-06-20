@@ -125,7 +125,7 @@ function MezoBeehiveModalBase() {
 
                 <Button
                   as={Link}
-                  href={EXTERNAL_HREF.MEZO_WEBSITE}
+                  href={EXTERNAL_HREF.MEZO_INFO}
                   isExternal
                   variant="link"
                   rightIcon={
