@@ -15,7 +15,7 @@ import {
 import { useConnector, useWallet } from "#/hooks"
 import { Connector, useConnectors } from "wagmi"
 import { IconArrowNarrowRight } from "@tabler/icons-react"
-import { motion } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion"
 import withBaseModal from "./ModalRoot/withBaseModal"
 import { TextLg, TextMd } from "./shared/Typography"
 
@@ -83,26 +83,29 @@ export function ConnectWalletModalBase() {
               </Button>
             </CardHeader>
 
-            <CardBody
-              as={motion.div}
-              initial={{ height: 0 }}
-              animate={{
-                height: currentConnector?.id === connector.id ? "auto" : 0,
-              }} // TODO: Adjust the condition
-              p={0}
-              overflow="hidden"
-              sx={{ flex: undefined }} // To override the default flex: 1
-            >
-              <VStack
-                p={6}
-                pt={4}
-                borderTopWidth={1}
-                borderStyle="solid"
-                borderColor="gold.300"
-              >
-                <TextMd>Status content</TextMd>
-              </VStack>
-            </CardBody>
+            <AnimatePresence initial={false}>
+              {currentConnector?.id === connector.id && ( // TODO: Adjust the condition
+                <CardBody
+                  as={motion.div}
+                  initial={{ height: 0 }}
+                  exit={{ height: 0 }}
+                  animate={{ height: "auto" }}
+                  p={0}
+                  overflow="hidden"
+                  sx={{ flex: undefined }} // To override the default flex: 1
+                >
+                  <VStack
+                    p={6}
+                    pt={4}
+                    borderTopWidth={1}
+                    borderStyle="solid"
+                    borderColor="gold.300"
+                  >
+                    <TextMd>Status content</TextMd>
+                  </VStack>
+                </CardBody>
+              )}
+            </AnimatePresence>
           </Card>
         ))}
       </ModalBody>
