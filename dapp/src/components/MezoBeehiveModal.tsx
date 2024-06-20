@@ -12,6 +12,7 @@ import {
   CardHeader,
   ModalCloseButton,
   Image,
+  Link,
 } from "@chakra-ui/react"
 import { TextMd, TextXl } from "#/components/shared/Typography"
 import { AcreSign, MezoSign } from "#/assets/icons"
@@ -23,6 +24,8 @@ import {
 } from "@tabler/icons-react"
 import mezoBeehiveModalIlustrationSrc from "#/assets/images/mezo-beehive-modal-ilustration.svg"
 import withBaseModal from "./ModalRoot/withBaseModal"
+import ButtonLink from "./shared/ButtonLink"
+import { EXTERNAL_HREF } from "#/constants"
 
 function MezoBeehiveModalBase() {
   return (
@@ -122,8 +125,13 @@ function MezoBeehiveModalBase() {
                 </TextMd>
 
                 <Button
+                  as={Link}
+                  href={EXTERNAL_HREF.MEZO_WEBSITE}
+                  isExternal
                   variant="link"
-                  rightIcon={<Icon as={IconArrowUpRight} color="brand.400" />}
+                  rightIcon={
+                    <Icon as={IconArrowUpRight} boxSize={4} color="brand.400" />
+                  }
                   iconSpacing={1}
                   justifyContent="center"
                   fontWeight="semibold"
