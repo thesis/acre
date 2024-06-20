@@ -13,7 +13,11 @@ export type CurrencyBalanceProps = {
   shouldBeFormatted?: boolean
   desiredDecimals?: number
   size?: string
-  variant?: "greater-balance-xl" | "greater-balance-xxl" | "unstyled"
+  variant?:
+    | "greater-balance-md"
+    | "greater-balance-xl"
+    | "greater-balance-xxl"
+    | "unstyled"
   balanceFontWeight?: string
   symbolFontWeight?: string
   symbolPosition?: "prefix" | "suffix"

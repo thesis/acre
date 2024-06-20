@@ -1,24 +1,20 @@
 import { useEffect } from "react"
-import { BITCOIN_NETWORK } from "#/constants"
 import { logPromiseFailure } from "#/utils"
 import { useAcreContext } from "#/acre-react/hooks"
-import { LedgerLiveWalletApiBitcoinProvider } from "@acre-btc/sdk/dist/src/lib/bitcoin/providers"
-import { useWalletContext } from "../useWalletContext"
+import { BitcoinProvider } from "@acre-btc/sdk"
+import { useBitcoinProvider } from "../orangeKit/useBitcoinProvider"
 
 export function useInitializeAcreSdk() {
-  const { btcAccount } = useWalletContext()
   const { init } = useAcreContext()
+  const bitcoinProvider = useBitcoinProvider()
 
   useEffect(() => {
-    if (!btcAccount?.id) return
+    if (!bitcoinProvider) return
 
-    const initSDK = async (bitcoinAccountId: string) => {
-      const bitcoinProvider = await LedgerLiveWalletApiBitcoinProvider.init(
-        bitcoinAccountId,
-        BITCOIN_NETWORK,
-      )
-      await init(bitcoinProvider)
+    const initSDK = async (provider: BitcoinProvider) => {
+      await init(provider)
     }
-    logPromiseFailure(initSDK(btcAccount.id))
-  }, [btcAccount?.id, init])
+
+    logPromiseFailure(initSDK(bitcoinProvider))
+  }, [init, bitcoinProvider])
 }

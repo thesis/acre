@@ -1,17 +1,12 @@
 import React from "react"
 import { Button, HStack, Icon, Tooltip } from "@chakra-ui/react"
-import { useWallet, useWalletContext } from "#/hooks"
+import { useModal, useWallet } from "#/hooks"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import { TextMd } from "#/components/shared/Typography"
 import { BitcoinIcon } from "#/assets/icons"
-import { Account } from "@ledgerhq/wallet-api-client"
-import { CURRENCY_ID_BITCOIN } from "#/constants"
-import {
-  isSupportedBTCAddressType,
-  logPromiseFailure,
-  truncateAddress,
-} from "#/utils"
+import { isSupportedBTCAddressType, truncateAddress } from "#/utils"
 import { AnimatePresence, motion, Variants } from "framer-motion"
+import { MODAL_TYPES } from "#/types"
 
 const containerVariants: Variants = {
   hidden: { opacity: 0, y: -48 },
@@ -19,34 +14,29 @@ const containerVariants: Variants = {
 }
 
 const getCustomDataByAccount = (
-  account?: Account,
+  address?: string,
 ): { text: string; colorScheme?: string } => {
-  if (!account) return { text: "Not connected", colorScheme: "error" }
+  if (!address) return { text: "Not connected", colorScheme: "error" }
 
-  const { address, currency } = account
-
-  if (currency === CURRENCY_ID_BITCOIN && !isSupportedBTCAddressType(address))
+  if (!isSupportedBTCAddressType(address))
     return { text: "Not supported", colorScheme: "error" }
 
   return { text: truncateAddress(address) }
 }
 
 export default function ConnectWallet() {
-  const {
-    bitcoin: { account: btcAccount, requestAccount: requestBitcoinAccount },
-  } = useWallet()
-  // TODO: Move `isConnected` to useWallet hook
-  const { isConnected } = useWalletContext()
+  const { isConnected, address, balance } = useWallet()
+  const { openModal } = useModal()
 
-  const customDataBtcAccount = getCustomDataByAccount(btcAccount)
+  const customDataBtcAccount = getCustomDataByAccount(address)
 
-  const handleConnectBitcoinAccount = () => {
-    logPromiseFailure(requestBitcoinAccount())
+  const handleConnectWallet = () => {
+    openModal(MODAL_TYPES.CONNECT_WALLET)
   }
 
   const isBitcoinAddressSupported = React.useMemo(
-    () => !(btcAccount && !isSupportedBTCAddressType(btcAccount.address)),
-    [btcAccount],
+    () => !(address && !isSupportedBTCAddressType(address)),
+    [address],
   )
 
   return (
@@ -63,10 +53,7 @@ export default function ConnectWallet() {
           {isBitcoinAddressSupported && (
             <HStack display={{ base: "none", md: "flex" }}>
               <TextMd color="grey.500">Balance</TextMd>
-              <CurrencyBalance
-                currency="bitcoin"
-                amount={btcAccount?.balance.toString()}
-              />
+              <CurrencyBalance currency="bitcoin" amount={balance} />
             </HStack>
           )}
           <Tooltip
@@ -89,7 +76,7 @@ export default function ConnectWallet() {
               pl={2}
               colorScheme={customDataBtcAccount.colorScheme}
               leftIcon={<Icon as={BitcoinIcon} boxSize={6} color="brand.400" />}
-              onClick={handleConnectBitcoinAccount}
+              onClick={handleConnectWallet}
             >
               {customDataBtcAccount.text}
             </Button>
@@ -102,7 +89,7 @@ export default function ConnectWallet() {
           iconSpacing={3}
           pl={2}
           leftIcon={<Icon as={BitcoinIcon} boxSize={6} color="brand.400" />}
-          onClick={handleConnectBitcoinAccount}
+          onClick={handleConnectWallet}
         >
           Choose account
         </Button>

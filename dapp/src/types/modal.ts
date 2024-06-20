@@ -9,6 +9,7 @@ export const MODAL_TYPES = {
   UNSTAKE: "UNSTAKE",
   WELCOME: "WELCOME",
   MEZO_BEEHIVE: "MEZO_BEEHIVE",
+  CONNECT_WALLET: "CONNECT_WALLET",
 } as const
 
 export type ModalType = (typeof MODAL_TYPES)[keyof typeof MODAL_TYPES]

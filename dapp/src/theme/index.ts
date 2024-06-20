@@ -26,6 +26,7 @@ import { spinnerTheme } from "./Spinner"
 import { linkTheme } from "./Link"
 import { skeletonTheme } from "./Skeleton"
 import { closeButtonTheme } from "./CloseButton"
+import { progressTheme } from "./Progress"
 
 const defaultTheme = {
   // TODO: Remove when dark mode is ready
@@ -63,6 +64,7 @@ const defaultTheme = {
     TokenBalanceInput: tokenBalanceInputTheme,
     Tooltip: tooltipTheme,
     Skeleton: skeletonTheme,
+    Progress: progressTheme,
   },
 }
 

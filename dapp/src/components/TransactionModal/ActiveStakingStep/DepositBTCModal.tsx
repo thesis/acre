@@ -8,8 +8,8 @@ import {
   useStakeFlowContext,
   useVerifyDepositAddress,
 } from "#/hooks"
-import { isLedgerLiveError, logPromiseFailure } from "#/utils"
-import { PROCESS_STATUSES, LedgerLiveError } from "#/types"
+import { eip1193, logPromiseFailure } from "#/utils"
+import { PROCESS_STATUSES } from "#/types"
 import { Highlight } from "@chakra-ui/react"
 import { TextMd } from "#/components/shared/Typography"
 import { CardAlert } from "#/components/shared/alerts"
@@ -44,17 +44,15 @@ export default function DepositBTCModal() {
   }, [dispatch, handleStake])
 
   // TODO: Handle when the function fails
-  const showError = useCallback((error?: LedgerLiveError) => {
+  const showError = useCallback((error?: unknown) => {
     console.error(error)
   }, [])
 
   const onDepositBTCError = useCallback(
     (error: unknown) => {
-      if (!isLedgerLiveError(error)) return
-
-      const isInterrupted =
-        error.message && error.message.includes("Signature interrupted by user")
-      if (isInterrupted) handlePause()
+      if (eip1193.didUserRejectRequest(error)) {
+        handlePause()
+      }
 
       showError(error)
     },
@@ -77,7 +75,7 @@ export default function DepositBTCModal() {
     const status = await verifyDepositAddress(depositReceipt, btcAddress)
 
     if (status === "valid") {
-      await sendBitcoinTransaction(tokenAmount?.amount, btcAddress)
+      await sendBitcoinTransaction(btcAddress, tokenAmount?.amount)
     } else {
       showError()
     }
