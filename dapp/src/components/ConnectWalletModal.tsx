@@ -12,7 +12,7 @@ import withBaseModal from "./ModalRoot/withBaseModal"
 
 export function ConnectWalletModalBase() {
   const connectors = useConnectors()
-  const { isConnected, onConnect, onDisconnect } = useWallet()
+  const { onConnect } = useWallet()
   const { closeModal } = useModal()
 
   const onConnectWalletSuccess = () => {
@@ -29,25 +29,21 @@ export function ConnectWalletModalBase() {
       <ModalCloseButton />
       <ModalHeader>Connect a Wallet</ModalHeader>
       <ModalBody>
-        {isConnected ? (
-          <Button onClick={onDisconnect}>Disconnect</Button>
-        ) : (
-          <VStack>
-            {connectors.map((connector) => (
-              <Button
-                key={connector.id}
-                onClick={() =>
-                  onConnect(connector, {
-                    onSuccess: onConnectWalletSuccess,
-                    onError: onConnectWalletError,
-                  })
-                }
-              >
-                {connector.name}
-              </Button>
-            ))}
-          </VStack>
-        )}
+        <VStack>
+          {connectors.map((connector) => (
+            <Button
+              key={connector.id}
+              onClick={() =>
+                onConnect(connector, {
+                  onSuccess: onConnectWalletSuccess,
+                  onError: onConnectWalletError,
+                })
+              }
+            >
+              {connector.name}
+            </Button>
+          ))}
+        </VStack>
       </ModalBody>
     </>
   )
