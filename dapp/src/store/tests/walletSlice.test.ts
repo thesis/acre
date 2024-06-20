@@ -7,6 +7,7 @@ import reducer, {
   setActivities,
 } from "../wallet/walletSlice"
 
+const isSignedMessage = false
 const pendingActivityId = "0"
 const pendingActivity = createActivity({
   id: pendingActivityId,
@@ -28,6 +29,7 @@ describe("Wallet redux slice", () => {
     state = {
       activities,
       latestActivities,
+      isSignedMessage,
     }
   })
 
@@ -35,6 +37,7 @@ describe("Wallet redux slice", () => {
     expect(reducer(state, deleteLatestActivity(pendingActivityId))).toEqual({
       activities,
       latestActivities: {},
+      isSignedMessage,
     })
   })
 
@@ -55,6 +58,7 @@ describe("Wallet redux slice", () => {
     expect(reducer(state, setActivities(newActivities))).toEqual({
       activities: newActivities,
       latestActivities: newLatestActivities,
+      isSignedMessage,
     })
   })
 })
