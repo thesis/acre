@@ -3,10 +3,9 @@ import { Box, Button } from "@chakra-ui/react"
 import { Connector } from "wagmi"
 import { useAppDispatch, useModal, useSignMessage, useWallet } from "#/hooks"
 import { setIsSignedMessage } from "#/store/wallet"
+import { orangeKit } from "#/utils"
 import { TextMd } from "../shared/Typography"
 import ConnectWalletStatusLabel from "./ConnectWalletStatusLabel"
-
-const MESSAGE = "Test message"
 
 type ConnectWalletButtonProps = {
   label: string
@@ -22,6 +21,7 @@ export default function ConnectWalletButton({
   connector,
 }: ConnectWalletButtonProps) {
   const {
+    address,
     isConnected,
     onConnect,
     onDisconnect,
@@ -37,14 +37,17 @@ export default function ConnectWalletButton({
   }, [closeModal, dispatch])
 
   const handleSignMessage = useCallback(() => {
+    if (!address) return
+
+    const message = orangeKit.createSignInWithWalletMessage(address, "bitcoin")
     signMessage(
       {
-        message: MESSAGE,
+        message,
         connector,
       },
       { onSuccess },
     )
-  }, [connector, onSuccess, signMessage])
+  }, [address, connector, onSuccess, signMessage])
 
   const handleConnect = useCallback(() => {
     onConnect(connector, {
