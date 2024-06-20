@@ -23,9 +23,8 @@ import {
   IconInfoCircle,
 } from "@tabler/icons-react"
 import mezoBeehiveModalIlustrationSrc from "#/assets/images/mezo-beehive-modal-ilustration.svg"
-import withBaseModal from "./ModalRoot/withBaseModal"
-import ButtonLink from "./shared/ButtonLink"
 import { EXTERNAL_HREF } from "#/constants"
+import withBaseModal from "./ModalRoot/withBaseModal"
 
 function MezoBeehiveModalBase() {
   return (
@@ -92,12 +91,12 @@ function MezoBeehiveModalBase() {
           <CardBody p={0}>
             <TextMd lineHeight={5}>
               <Highlight
-                query={["deposit amount and duration", "ACRE"]}
+                query={["deposit amount and duration", "Acre"]}
                 styles={{ fontWeight: "bold", color: "inherit" }}
               >
                 In the event of a reward distribution, your share will be
                 calculated based on your deposit amount and duration. You will
-                be able to claim your share directly from ACRE.
+                be able to claim your share directly from Acre.
               </Highlight>
             </TextMd>
           </CardBody>
