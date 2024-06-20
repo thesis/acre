@@ -11,13 +11,20 @@ import {
   ImageProps,
   Icon,
   VStack,
+  Box,
 } from "@chakra-ui/react"
 import { useConnector, useWallet } from "#/hooks"
 import { Connector, useConnectors } from "wagmi"
 import { IconArrowNarrowRight } from "@tabler/icons-react"
-import { AnimatePresence, motion } from "framer-motion"
+import { AnimatePresence, Variants, motion } from "framer-motion"
 import withBaseModal from "./ModalRoot/withBaseModal"
 import { TextLg, TextMd } from "./shared/Typography"
+import { Alert, AlertTitle, AlertDescription } from "./shared/Alert"
+
+const collapseVariants: Variants = {
+  collapsed: { height: 0 },
+  expanded: { height: "auto" },
+}
 
 const iconStyles: Record<string, ImageProps> = {
   "orangekit-unisat": {
@@ -29,6 +36,7 @@ export function ConnectWalletModalBase() {
   const connectors = useConnectors()
   const { onConnect } = useWallet()
   const currentConnector = useConnector()
+  const mockError = { title: "Error", description: "An error occured!" }
 
   const handleConnection = (connector: Connector) => () => {
     onConnect(connector, {
@@ -47,7 +55,26 @@ export function ConnectWalletModalBase() {
       <ModalCloseButton />
       <ModalHeader>Connect your wallet</ModalHeader>
 
-      <ModalBody gap={3}>
+      <ModalBody gap={0}>
+        <AnimatePresence initial={false}>
+          {mockError && ( // TODO: Add a condition
+            <Box
+              as={motion.div}
+              variants={collapseVariants}
+              initial="collapsed"
+              animate="expanded"
+              exit="collapsed"
+              overflow="hidden"
+              w="full"
+            >
+              <Alert status="error" mb={6}>
+                <AlertTitle>{mockError.title}</AlertTitle>
+                <AlertDescription>{mockError.description}</AlertDescription>
+              </Alert>
+            </Box>
+          )}
+        </AnimatePresence>
+
         {connectors.map((connector) => (
           <Card
             key={connector.id}
@@ -55,6 +82,8 @@ export function ConnectWalletModalBase() {
             borderWidth={1}
             borderColor="gold.300"
             rounded="lg"
+            mb={3}
+            _last={{ mb: 0 }}
           >
             <CardHeader p={0}>
               <Button
@@ -87,9 +116,10 @@ export function ConnectWalletModalBase() {
               {currentConnector?.id === connector.id && ( // TODO: Adjust the condition
                 <CardBody
                   as={motion.div}
-                  initial={{ height: 0 }}
-                  exit={{ height: 0 }}
-                  animate={{ height: "auto" }}
+                  variants={collapseVariants}
+                  initial="collapsed"
+                  animate="expanded"
+                  exit="collapsed"
                   p={0}
                   overflow="hidden"
                   sx={{ flex: undefined }} // To override the default flex: 1
