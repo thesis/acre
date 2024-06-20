@@ -90,7 +90,7 @@ export default function ConnectWallet() {
           py={2}
         >
           <Icon as={BitcoinIcon} boxSize={6} color="brand.400" />
-          <TextMd>{customDataBtcAccount.text}</TextMd>
+          <TextMd color="brand.400">{customDataBtcAccount.text}</TextMd>
         </HStack>
 
         <HStack
