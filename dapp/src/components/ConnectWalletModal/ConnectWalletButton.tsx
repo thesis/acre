@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect } from "react"
 import { Box, Button } from "@chakra-ui/react"
 import { Connector } from "wagmi"
-import { useModal, useSignMessage, useWallet } from "#/hooks"
+import { useAppDispatch, useModal, useSignMessage, useWallet } from "#/hooks"
+import { setIsSignedMessage } from "#/store/wallet"
 import { TextMd } from "../shared/Typography"
 import ConnectWalletStatusLabel from "./ConnectWalletStatusLabel"
 
@@ -28,10 +29,12 @@ export default function ConnectWalletButton({
   } = useWallet()
   const { signMessage, status: signMessageStatus } = useSignMessage()
   const { closeModal } = useModal()
+  const dispatch = useAppDispatch()
 
   const onSuccess = useCallback(() => {
     closeModal()
-  }, [closeModal])
+    dispatch(setIsSignedMessage(true))
+  }, [closeModal, dispatch])
 
   const handleSignMessage = useCallback(() => {
     signMessage(
