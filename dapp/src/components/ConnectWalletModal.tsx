@@ -50,6 +50,7 @@ export function ConnectWalletModalBase() {
       <ModalBody gap={3}>
         {connectors.map((connector) => (
           <Card
+            key={connector.id}
             alignSelf="stretch"
             borderWidth={1}
             borderColor="gold.300"
@@ -61,7 +62,6 @@ export function ConnectWalletModalBase() {
                 boxSize="full"
                 justifyContent="start"
                 p={6}
-                key={connector.id}
                 onClick={handleConnection(connector)}
                 leftIcon={
                   <Image
