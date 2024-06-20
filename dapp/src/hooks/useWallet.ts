@@ -56,6 +56,7 @@ export function useWallet(): UseWalletReturn {
   const onDisconnect = useCallback(() => {
     disconnect()
     // TODO: Reset redux state
+    setStatus(STATUSES.IDLE)
   }, [disconnect])
 
   useEffect(() => {
