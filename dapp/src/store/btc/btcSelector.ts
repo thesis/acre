@@ -11,3 +11,5 @@ export const selectBtcUsdPrice = (state: RootState): number =>
 
 export const selectMinDepositAmount = (state: RootState) =>
   state.btc.minDepositAmount
+
+export const selectTotalAssets = (state: RootState) => state.btc.totalAssets

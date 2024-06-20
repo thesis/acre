@@ -4,6 +4,7 @@ import { ONE_MINUTE_IN_SECONDS, ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import { logPromiseFailure } from "#/utils"
 import { useFetchBTCBalance } from "./useFetchBTCBalance"
 import { useFetchMinDepositAmount } from "./useFetchMinDepositAmount"
+import { useFetchTotalAssets } from "./useFetchTotalAssets"
 import { useFetchDeposits } from "./useFetchDeposits"
 import { useWallet } from "../useWallet"
 
@@ -21,5 +22,6 @@ export function useInitDataFromSdk() {
 
   useFetchBTCBalance()
   useFetchMinDepositAmount()
+  useFetchTotalAssets()
   useInterval(() => logPromiseFailure(fetchDeposits()), INTERVAL_TIME)
 }

@@ -55,6 +55,7 @@ export const colors = {
   },
   opacity: {
     white: {
+      1: "rgba(255, 255, 255, 0.10)",
       5: "rgba(255, 255, 255, 0.50)",
       6: "rgba(255, 255, 255, 0.60)",
     },

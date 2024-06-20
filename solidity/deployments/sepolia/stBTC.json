@@ -1,5 +1,5 @@
 {
-  "address": "0xc14972DC5a4443E4f5e89E3655BE48Ee95A795aB",
+  "address": "0xBc7a17767bd067224d04D2C5FE35E79BF2185939",
   "abi": [
     {
       "inputs": [],
@@ -210,6 +210,11 @@
     },
     {
       "inputs": [],
+      "name": "ExceedsMaxFeeBasisPoints",
+      "type": "error"
+    },
+    {
+      "inputs": [],
       "name": "ExpectedPause",
       "type": "error"
     },
@@ -291,6 +296,21 @@
         }
       ],
       "name": "SafeERC20FailedOperation",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "SameDispatcher",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "SamePauseAdmin",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "SameTreasury",
       "type": "error"
     },
     {
@@ -1386,8 +1406,8 @@
       "type": "function"
     }
   ],
-  "transactionHash": "0x86123a76a3d2e04e1d1d925635a72165d75e10b245cf9a0c67ea7edb05514bad",
+  "transactionHash": "0x0db03a5b4e0f7456eebd7bf5b8404ce63175917c925a9cb14dba7eaeca3df1ee",
   "numDeployments": 1,
-  "implementation": "0x5e6A8368005AD055590AB8C7f9DB6f9f6860f634",
+  "implementation": "0x04D5162465988D29A2A4bBdDB5258B0770eccFAC",
   "devdoc": "Contract deployed as upgradable proxy"
 }

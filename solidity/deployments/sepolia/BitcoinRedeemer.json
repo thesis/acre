@@ -1,5 +1,5 @@
 {
-  "address": "0x0E781e9D538895EE99bd6e9Bf28664942beFF32f",
+  "address": "0xa7049b83dB603f4a7FE93B29D2DfEa76065e76E8",
   "abi": [
     {
       "inputs": [],
@@ -38,6 +38,11 @@
       "type": "error"
     },
     {
+      "inputs": [],
+      "name": "NotTbtcTokenOwner",
+      "type": "error"
+    },
+    {
       "inputs": [
         {
           "internalType": "address",
@@ -60,6 +65,22 @@
       "type": "error"
     },
     {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "redeemer",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "name": "RedeemerNotOwner",
+      "type": "error"
+    },
+    {
       "inputs": [],
       "name": "StbtcZeroAddress",
       "type": "error"
@@ -77,17 +98,6 @@
     {
       "inputs": [],
       "name": "UnexpectedTbtcTokenOwner",
-      "type": "error"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "token",
-          "type": "address"
-        }
-      ],
-      "name": "UnsupportedToken",
       "type": "error"
     },
     {
@@ -260,7 +270,7 @@
         },
         {
           "internalType": "address",
-          "name": "token",
+          "name": "",
           "type": "address"
         },
         {
@@ -347,8 +357,8 @@
       "type": "function"
     }
   ],
-  "transactionHash": "0xa7da2f83d258beac8b9f05d14ff2452842c535d8624f91ae31b4a4857ad1eecf",
+  "transactionHash": "0x35d68cef83bd8858a8ae8c3e1f0b5d024c3cd47d587ba1745a27cce4bb875a52",
   "numDeployments": 1,
-  "implementation": "0x88B0Aa9BAfB9573871683b49407cD7d99668C786",
+  "implementation": "0x43FA1D578365AF91fF7f6dC2245511B640D9cAA9",
   "devdoc": "Contract deployed as upgradable proxy"
 }
