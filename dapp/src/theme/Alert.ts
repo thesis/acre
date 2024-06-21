@@ -17,6 +17,7 @@ const baseStyle = multyStyleConfig.definePartsStyle({
   },
   description: {
     fontWeight: "medium",
+    textAlign: "start",
   },
   icon: {
     marginEnd: 4,
