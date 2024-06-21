@@ -7,7 +7,7 @@ import {
   useDisconnect,
 } from "wagmi"
 import { logPromiseFailure, orangeKit } from "#/utils"
-import { OnErrorCallback, OnSuccessCallback } from "#/types"
+import { OnErrorCallback, OnSuccessCallback, OrangeKitError } from "#/types"
 import { useBitcoinProvider, useConnector } from "./orangeKit"
 
 type UseWalletReturn = {
@@ -16,7 +16,10 @@ type UseWalletReturn = {
   balance: bigint
   onConnect: (
     connector: Connector,
-    options?: { onSuccess?: OnSuccessCallback; onError?: OnErrorCallback },
+    options?: {
+      onSuccess?: OnSuccessCallback
+      onError?: OnErrorCallback<OrangeKitError>
+    },
   ) => void
   onDisconnect: () => void
 }
@@ -43,7 +46,10 @@ export function useWallet(): UseWalletReturn {
   const onConnect = useCallback(
     (
       selectedConnector: Connector,
-      options?: { onSuccess?: OnSuccessCallback; onError?: OnErrorCallback },
+      options?: {
+        onSuccess?: OnSuccessCallback
+        onError?: OnErrorCallback<OrangeKitError>
+      },
     ) => {
       connect({ connector: selectedConnector, chainId }, options)
     },

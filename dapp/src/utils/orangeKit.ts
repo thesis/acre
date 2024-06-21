@@ -1,30 +1,31 @@
-import { ConnectionErrorData } from "#/types"
+import { ConnectionErrorData, OrangeKitError } from "#/types"
 import {
   isUnsupportedBitcoinAddressError,
   isWalletNetworkDoesNotMatchProviderChainError,
 } from "@orangekit/react"
 import { Connector } from "wagmi"
 
-const isWalletConnectionRejectedError = (error: unknown) => {
-  // TODO: Get error type checker from OrangeKit library
-  const { cause } = error as { cause: { code: number } }
-  return cause.code === 4001
-}
+const isWalletConnectionRejectedError = (cause: OrangeKitError["cause"]) =>
+  cause && cause.code === 4001
 
 const isConnectedStatus = (status: string) => status === "connected"
 
 const isOrangeKitConnector = (connector?: Connector) =>
   connector?.type === "orangekit"
 
-const parseOrangeKitConnectionError = (error: unknown): ConnectionErrorData => {
-  if (isWalletConnectionRejectedError(error)) {
+const parseOrangeKitConnectionError = (
+  error: OrangeKitError,
+): ConnectionErrorData => {
+  const { cause } = error
+
+  if (isWalletConnectionRejectedError(cause)) {
     return {
       title: "Wallet connection rejected.",
       description: "If you encountered an error, please try again.",
     }
   }
 
-  if (isUnsupportedBitcoinAddressError(error)) {
+  if (isUnsupportedBitcoinAddressError(cause)) {
     return {
       title: "Not supported.",
       description:
@@ -32,7 +33,7 @@ const parseOrangeKitConnectionError = (error: unknown): ConnectionErrorData => {
     }
   }
 
-  if (isWalletNetworkDoesNotMatchProviderChainError(error)) {
+  if (isWalletNetworkDoesNotMatchProviderChainError(cause)) {
     return {
       title: "Error!",
       description:
@@ -50,4 +51,5 @@ export default {
   isOrangeKitConnector,
   isConnectedStatus,
   parseOrangeKitConnectionError,
+  isWalletConnectionRejectedError,
 }
