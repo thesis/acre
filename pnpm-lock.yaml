@@ -148,8 +148,8 @@ importers:
         specifier: 1.5.0
         version: 1.5.0
       '@orangekit/sdk':
-        specifier: 1.0.0-beta.13
-        version: 1.0.0-beta.13
+        specifier: 1.0.0-beta.14
+        version: 1.0.0-beta.14
       '@swan-bitcoin/xpub-lib':
         specifier: 0.1.5
         version: 0.1.5
@@ -5708,24 +5708,6 @@ packages:
       - zod
     dev: false
 
-  /@orangekit/sdk@1.0.0-beta.13:
-    resolution: {integrity: sha512-Ysz271rgFGFDeXY/7mnaGEB0Cmfy/qkvVpujIDstqz9lREuGULRFNARZl9tkq7AdmZs6oLvUxWHB9Qm9GdWxYQ==}
-    dependencies:
-      '@gelatonetwork/relay-sdk': 5.5.6
-      '@noble/curves': 1.4.0
-      '@noble/hashes': 1.4.0
-      '@orangekit/contracts': 1.0.0-beta.3(ethers@6.12.1)
-      '@safe-global/protocol-kit': 3.1.1
-      bitcoinjs-lib: 6.1.5
-      ethers: 6.12.1
-    transitivePeerDependencies:
-      - bufferutil
-      - debug
-      - encoding
-      - supports-color
-      - utf-8-validate
-    dev: false
-
   /@orangekit/sdk@1.0.0-beta.14:
     resolution: {integrity: sha512-HDgKClpuAn5u3xwIYyoTjF/ZkF2f20f64pAORGrTohnkqIErp38tXg1YGAMIFL2eIAhyQKV2JvPHB6BXCmEstA==}
     dependencies:
@@ -6621,7 +6603,7 @@ packages:
       '@noble/hashes': 1.4.0
       '@safe-global/safe-deployments': 1.37.0
       ethereumjs-util: 7.1.5
-      ethers: 6.12.1
+      ethers: 6.10.0
       semver: 7.6.2
       web3: 1.10.4
       web3-core: 1.10.4
