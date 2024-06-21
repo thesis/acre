@@ -13,6 +13,7 @@ import {
   ModalCloseButton,
   Image,
   Link,
+  Flex,
 } from "@chakra-ui/react"
 import { TextMd, TextXl } from "#/components/shared/Typography"
 import { AcreSignIcon, MezoSignIcon } from "#/assets/icons"
@@ -32,7 +33,7 @@ function MezoBeehiveModalBase() {
       <ModalCloseButton />
       <ModalHeader as={VStack} p={8}>
         <TextXl fontWeight="bold">Acre & Mezo</TextXl>
-        <HStack spacing={0}>
+        <Flex>
           <AcreSignIcon boxSize={10} rounded="full" />
           <MezoSignIcon
             boxSize={10}
@@ -41,7 +42,7 @@ function MezoBeehiveModalBase() {
             ring={3}
             ringColor="gold.100"
           />
-        </HStack>
+        </Flex>
       </ModalHeader>
 
       <ModalBody gap={4} pb={8}>
