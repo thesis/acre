@@ -12,13 +12,18 @@ import {
   CardProps,
   HStack,
   Tag,
+  Tooltip,
   VStack,
 } from "@chakra-ui/react"
 import { ActivitiesList } from "#/components/shared/ActivitiesList"
 import { featureFlags } from "#/constants"
 import { BoostArrowIcon } from "#/assets/icons"
 import IconTag from "#/components/shared/IconTag"
+import ArrivingSoonTooltip from "#/components/ArrivingSoonTooltip"
 import TransactionHistory from "./TransactionHistory"
+
+const isWithdrawalFlowEnabled =
+  import.meta.env.VITE_FEATURE_FLAG_WITHDRAWALS_ENABLED === "true"
 
 const buttonStyles: ButtonProps = {
   size: "lg",
@@ -93,13 +98,16 @@ export default function DashboardCard(props: DashboardCardProps) {
           <Button {...buttonStyles} onClick={openDepositModal}>
             Deposit More
           </Button>
-          <Button
-            variant="outline"
-            {...buttonStyles}
-            onClick={openWithdrawModal}
-          >
-            Withdraw
-          </Button>
+          <ArrivingSoonTooltip shouldDisplayTooltip={!isWithdrawalFlowEnabled}>
+            <Button
+              variant="outline"
+              {...buttonStyles}
+              onClick={openWithdrawModal}
+              isDisabled={!isWithdrawalFlowEnabled}
+            >
+              Withdraw
+            </Button>
+          </ArrivingSoonTooltip>
         </HStack>
 
         <ActivitiesList />

@@ -9,6 +9,10 @@ import {
 import { useModal, useWallet } from "#/hooks"
 import { useConnectors } from "wagmi"
 import withBaseModal from "./ModalRoot/withBaseModal"
+import ArrivingSoonTooltip from "./ArrivingSoonTooltip"
+
+const isOkxWalletEnabled =
+  import.meta.env.VITE_FEATURE_FLAG_OKX_WALLET_ENABLED === "true"
 
 export function ConnectWalletModalBase() {
   const connectors = useConnectors()
@@ -33,19 +37,30 @@ export function ConnectWalletModalBase() {
           <Button onClick={onDisconnect}>Disconnect</Button>
         ) : (
           <VStack>
-            {connectors.map((connector) => (
-              <Button
-                key={connector.id}
-                onClick={() =>
-                  onConnect(connector, {
-                    onSuccess: onConnectWalletSuccess,
-                    onError: onConnectWalletError,
-                  })
-                }
-              >
-                {connector.name}
-              </Button>
-            ))}
+            {connectors.map((connector) => {
+              const shouldDisableOkxWallet =
+                connector.name === "OKX" && !isOkxWalletEnabled
+
+              return (
+                <ArrivingSoonTooltip
+                  shouldDisplayTooltip={shouldDisableOkxWallet}
+                >
+                  <Button
+                    key={connector.id}
+                    onClick={() =>
+                      onConnect(connector, {
+                        onSuccess: onConnectWalletSuccess,
+                        onError: onConnectWalletError,
+                      })
+                    }
+                    isDisabled={shouldDisableOkxWallet}
+                    _hover={shouldDisableOkxWallet ? {} : undefined}
+                  >
+                    {connector.name}
+                  </Button>
+                </ArrivingSoonTooltip>
+              )
+            })}
           </VStack>
         )}
       </ModalBody>
