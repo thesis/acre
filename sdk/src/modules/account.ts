@@ -5,7 +5,10 @@ import { fromSatoshi, toSatoshi } from "../lib/utils"
 import Tbtc from "./tbtc"
 import AcreSubgraphApi from "../lib/api/AcreSubgraphApi"
 import { DepositStatus } from "../lib/api/TbtcApi"
-import OrangeKitTbtcRedeemerProxy from "../lib/redeemer-proxy"
+import OrangeKitTbtcRedeemerProxy, {
+  MessageSignedStepCallback,
+  OnSignMessageStepCallback,
+} from "../lib/redeemer-proxy"
 import { BitcoinProvider } from "../lib/bitcoin"
 
 export { DepositReceipt } from "./tbtc"
@@ -174,9 +177,17 @@ export default class Account {
   /**
    * Initializes the withdrawal process.
    * @param amount Bitcoin amount to withdraw in 1e8 satoshi precision.
+   * @param onSignMessageStepCallback A callback triggered before the message
+   *        signing step.
+   * @param messageSignedStepCallback A callback triggered after the message
+   *        signing step.
    * @returns Hash of the transaction withdrawal transaction.
    */
-  async initializeWithdrawal(btcAmount: bigint): Promise<string> {
+  async initializeWithdrawal(
+    btcAmount: bigint,
+    onSignMessageStepCallback?: OnSignMessageStepCallback,
+    messageSignedStepCallback?: MessageSignedStepCallback,
+  ): Promise<string> {
     const tbtcAmount = fromSatoshi(btcAmount)
     const shares = await this.#contracts.stBTC.convertToShares(tbtcAmount)
     // Including fees.
@@ -192,6 +203,8 @@ export default class Account {
       },
       this.#bitcoinProvider,
       shares,
+      onSignMessageStepCallback,
+      messageSignedStepCallback,
     )
 
     return this.#tbtc.initiateRedemption(

@@ -402,6 +402,8 @@ describe("Account", () => {
         },
         bitcoinProvider,
         mockedShares,
+        undefined,
+        undefined,
       )
     })
 
