@@ -8,42 +8,45 @@ const ETH_RPC_URL = import.meta.env.VITE_ETH_HOSTNAME_HTTP
 
 type AcreSdkContextValue = {
   acre?: Acre
-  init: (bitcoinProvider: BitcoinProvider) => Promise<void>
+  init: (bitcoinProvider?: BitcoinProvider) => Promise<void>
   isInitialized: boolean
+  isConnected: boolean
 }
 
 export const AcreSdkContext = React.createContext<AcreSdkContextValue>({
   acre: undefined,
   init: async () => {},
   isInitialized: false,
+  isConnected: false,
 })
 
 export function AcreSdkProvider({ children }: { children: React.ReactNode }) {
-  const [acre, setAcre] = useState<Acre | undefined>(undefined)
-  const [isInitialized, setIsInitialized] = useState<boolean>(false)
+  const [acre, setAcre] = useState<Acre>()
+  const [isInitialized, setIsInitialized] = useState(false)
+  const [isConnected, setIsConnected] = useState(false)
 
-  const init = useCallback<AcreSdkContextValue["init"]>(
-    async (bitcoinProvider: BitcoinProvider) => {
-      const sdk: Acre = await Acre.initialize(
-        BITCOIN_NETWORK,
-        bitcoinProvider,
-        TBTC_API_ENDPOINT,
-        ETH_RPC_URL,
-      )
+  const init = useCallback(async (bitcoinProvider?: BitcoinProvider) => {
+    let sdk: Acre
 
-      setAcre(sdk)
-      setIsInitialized(true)
-    },
-    [],
-  )
+    sdk = await Acre.initialize(BITCOIN_NETWORK, TBTC_API_ENDPOINT, ETH_RPC_URL)
+
+    if (bitcoinProvider) {
+      sdk = await sdk.connect(bitcoinProvider)
+      setIsConnected(true)
+    }
+
+    setAcre(sdk)
+    setIsInitialized(true)
+  }, [])
 
   const context = useMemo(
     () => ({
       acre,
       init,
       isInitialized,
+      isConnected,
     }),
-    [init, acre, isInitialized],
+    [init, acre, isInitialized, isConnected],
   )
 
   return (
