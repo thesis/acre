@@ -5,7 +5,6 @@ import { ACTION_FLOW_TYPES, ActionFlowType, BaseFormProps } from "#/types"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { logPromiseFailure } from "#/utils"
 import { setTokenAmount } from "#/store/action-flow"
-import { useInitializeWithdraw } from "#/acre-react/hooks"
 import StakeFormModal from "./ActiveStakingStep/StakeFormModal"
 import UnstakeFormModal from "./ActiveUnstakingStep/UnstakeFormModal"
 
@@ -28,7 +27,6 @@ const FORM_DATA: Record<
 
 function ActionFormModal({ type }: { type: ActionFlowType }) {
   const { initStake } = useStakeFlowContext()
-  const initializeWithdraw = useInitializeWithdraw()
   const dispatch = useAppDispatch()
 
   const [isLoading, setIsLoading] = useState(false)
@@ -47,9 +45,6 @@ function ActionFormModal({ type }: { type: ActionFlowType }) {
         setIsLoading(true)
         if (type === ACTION_FLOW_TYPES.STAKE) await handleInitStake()
 
-        if (type === ACTION_FLOW_TYPES.UNSTAKE)
-          await initializeWithdraw(values.amount)
-
         dispatch(setTokenAmount({ amount: values.amount, currency: "bitcoin" }))
       } catch (error) {
         console.error(error)
@@ -57,7 +52,7 @@ function ActionFormModal({ type }: { type: ActionFlowType }) {
         setIsLoading(false)
       }
     },
-    [dispatch, handleInitStake, type, initializeWithdraw],
+    [dispatch, handleInitStake, type],
   )
 
   const handleSubmitFormWrapper = useCallback(

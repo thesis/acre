@@ -8,19 +8,23 @@ export default function TriggerTransactionModal({
   callback,
   children,
   delay = ONE_SEC_IN_MILLISECONDS,
+  title = "Waiting transaction...",
+  subtitle = "Please complete the transaction in your wallet.",
 }: {
   callback: () => void
   children: ReactNode
   delay?: number
+  title?: string
+  subtitle?: string
 }) {
   useTimeout(callback, delay)
 
   return (
     <>
-      <ModalHeader>Waiting transaction...</ModalHeader>
+      <ModalHeader>{title}</ModalHeader>
       <ModalBody>
         <Spinner size="xl" />
-        <TextMd>Please complete the transaction in your wallet.</TextMd>
+        <TextMd>{subtitle}</TextMd>
         {children}
       </ModalBody>
     </>

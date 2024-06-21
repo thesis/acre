@@ -17,7 +17,7 @@ function UnstakeDetails({
   const { value, isValid } = useTokenAmountField()
   // Let's not calculate the details of the transaction when the value is not valid.
   const amount = isValid ? value : 0n
-  const details = useTransactionDetails(amount)
+  const details = useTransactionDetails(amount, "UNSTAKE")
 
   return (
     <Flex flexDirection="column" gap={10} mt={4}>

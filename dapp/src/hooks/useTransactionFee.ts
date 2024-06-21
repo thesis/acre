@@ -1,7 +1,7 @@
 import { useAcreContext } from "#/acre-react/hooks"
 import { logPromiseFailure } from "#/utils"
 import { useEffect, useState } from "react"
-import { DepositFee } from "#/types"
+import { ActionFlowType, DepositFee } from "#/types"
 import { useAppDispatch } from "./store"
 
 export const initialDepositFee = {
@@ -10,7 +10,15 @@ export const initialDepositFee = {
   total: 0n,
 }
 
-export function useTransactionFee(amount?: bigint) {
+// TODO: Not sure about the withdrawal fee type but I'm assuming we can split
+// them in the same way as we did for deposit (in this case we should rename
+// `DepositFee` type to something more generic).
+type WithdrawalFee = DepositFee
+
+export function useTransactionFee<F extends ActionFlowType>(
+  amount: bigint | undefined,
+  flow: F,
+): F extends "STAKE" ? DepositFee : WithdrawalFee {
   const [depositFee, setDepositFee] = useState<DepositFee>(initialDepositFee)
   const { acre } = useAcreContext()
   const dispatch = useAppDispatch()
@@ -21,13 +29,21 @@ export function useTransactionFee(amount?: bigint) {
     } else {
       const getEstimatedDepositFee = async () => {
         if (!acre) return
-        const fee = await acre.protocol.estimateDepositFee(amount)
+
+        let fee: DepositFee = initialDepositFee
+
+        if (flow === "STAKE") {
+          fee = await acre.protocol.estimateDepositFee(amount)
+        } else if (flow === "UNSTAKE") {
+          // TODO: Fetch fees from SDK.
+          fee = { acre: 0n, tbtc: 0n, total: 0n }
+        }
 
         setDepositFee(fee)
       }
       logPromiseFailure(getEstimatedDepositFee())
     }
-  }, [acre, dispatch, amount])
+  }, [acre, dispatch, amount, flow])
 
   return depositFee
 }
