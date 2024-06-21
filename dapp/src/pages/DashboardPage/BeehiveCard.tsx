@@ -29,7 +29,7 @@ export default function BeehiveCard(props: CardProps) {
       </CardHeader>
 
       <CardBody p={0} mx={-4}>
-        <Image src={mezoBeehiveCardIlustrationSrc} ml={4} mb={4} />
+        <Image src={mezoBeehiveCardIlustrationSrc} pl={4} mx="auto" mb={4} />
 
         <Card
           borderWidth={0}
