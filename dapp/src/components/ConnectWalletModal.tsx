@@ -38,12 +38,12 @@ export function ConnectWalletModalBase() {
         ) : (
           <VStack>
             {connectors.map((connector) => {
-              const shouldDisableOkxWallet =
+              const isWalletArrivingSoon =
                 connector.name === "OKX" && !isOkxWalletEnabled
 
               return (
                 <ArrivingSoonTooltip
-                  shouldDisplayTooltip={shouldDisableOkxWallet}
+                  shouldDisplayTooltip={isWalletArrivingSoon}
                 >
                   <Button
                     key={connector.id}
@@ -53,8 +53,8 @@ export function ConnectWalletModalBase() {
                         onError: onConnectWalletError,
                       })
                     }
-                    isDisabled={shouldDisableOkxWallet}
-                    _hover={shouldDisableOkxWallet ? {} : undefined}
+                    isDisabled={isWalletArrivingSoon}
+                    _hover={isWalletArrivingSoon ? {} : undefined}
                   >
                     {connector.name}
                   </Button>
