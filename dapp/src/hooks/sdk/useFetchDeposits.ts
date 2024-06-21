@@ -7,10 +7,10 @@ import { useAppDispatch } from "../store/useAppDispatch"
 
 export function useFetchDeposits() {
   const dispatch = useAppDispatch()
-  const { acre } = useAcreContext()
+  const { acre, isConnected } = useAcreContext()
 
   return useCallback(async () => {
-    if (!acre) return
+    if (!acre || !isConnected) return
 
     const result: Activity[] = (await acre.account.getDeposits()).map(
       (deposit) => ({
@@ -22,5 +22,5 @@ export function useFetchDeposits() {
     )
 
     dispatch(setActivities(result))
-  }, [acre, dispatch])
+  }, [acre, dispatch, isConnected])
 }
