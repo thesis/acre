@@ -9,7 +9,7 @@ import {
   Highlight,
   Image,
 } from "@chakra-ui/react"
-import { ArrowUpRight, MezoSign } from "#/assets/icons"
+import { ArrowUpRight, MezoSignIcon } from "#/assets/icons"
 import mezoBeehiveCardIlustrationSrc from "#/assets/images/mezo-beehive-card-ilustration.svg"
 import { useModal } from "#/hooks"
 import { MODAL_TYPES } from "#/types"
@@ -49,7 +49,7 @@ export default function BeehiveCard(props: CardProps) {
                 Collecting honey from Mezo
               </Highlight>
 
-              <MezoSign boxSize={5} rounded="full" ml={1} />
+              <MezoSignIcon boxSize={5} rounded="full" ml={1} />
             </TextMd>
           </CardHeader>
 

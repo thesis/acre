@@ -15,7 +15,7 @@ import {
   Link,
 } from "@chakra-ui/react"
 import { TextMd, TextXl } from "#/components/shared/Typography"
-import { AcreSign, MezoSign } from "#/assets/icons"
+import { AcreSignIcon, MezoSignIcon } from "#/assets/icons"
 import {
   IconArrowUpRight,
   IconChartPieFilled,
@@ -33,8 +33,8 @@ function MezoBeehiveModalBase() {
       <ModalHeader as={VStack} p={8}>
         <TextXl fontWeight="bold">Acre & Mezo</TextXl>
         <HStack spacing={0}>
-          <AcreSign boxSize={10} rounded="full" />
-          <MezoSign
+          <AcreSignIcon boxSize={10} rounded="full" />
+          <MezoSignIcon
             boxSize={10}
             rounded="full"
             ml={-2}
@@ -111,7 +111,7 @@ function MezoBeehiveModalBase() {
               color="grey.700"
               textAlign="start"
             >
-              <MezoSign
+              <MezoSignIcon
                 boxSize="5.5rem" // 88px
                 rounded="lg"
               />

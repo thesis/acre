@@ -1,8 +1,8 @@
 import React from "react"
 import { createIcon } from "@chakra-ui/react"
 
-export const AcreSign = createIcon({
-  displayName: "AcreSign",
+export const AcreSignIcon = createIcon({
+  displayName: "AcreSignIcon",
   viewBox: "0 0 24 24",
   path: [
     <circle cx="12" cy="12" r="12" fill="#F34900" />,
