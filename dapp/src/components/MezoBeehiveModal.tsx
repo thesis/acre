@@ -57,7 +57,7 @@ function MezoBeehiveModalBase() {
         </VStack>
 
         <Card
-          as={VStack}
+          gap={2}
           p={5}
           rounded="xl"
           bg="grey.700"
