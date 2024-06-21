@@ -22,8 +22,8 @@ import {
   IconCircleCheckFilled,
   IconInfoCircle,
 } from "@tabler/icons-react"
-import mezoBeehiveModalIlustrationSrc from "#/assets/images/mezo-beehive-modal-ilustration.svg"
 import { EXTERNAL_HREF } from "#/constants"
+import mezoBeehiveModalIllustrationSrc from "#/assets/images/mezo-beehive-modal-illustration.svg"
 import withBaseModal from "./ModalRoot/withBaseModal"
 
 function MezoBeehiveModalBase() {
@@ -46,7 +46,7 @@ function MezoBeehiveModalBase() {
 
       <ModalBody gap={4} pb={8}>
         <VStack spacing={0} align="stretch">
-          <Image src={mezoBeehiveModalIlustrationSrc} alt="Mezo Beehive" />
+          <Image src={mezoBeehiveModalIllustrationSrc} alt="Mezo Beehive" />
 
           <TextMd lineHeight={5}>
             <Highlight query="Mezo Points" styles={{ fontWeight: 700 }}>
