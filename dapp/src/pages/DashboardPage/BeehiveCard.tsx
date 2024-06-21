@@ -56,14 +56,10 @@ export default function BeehiveCard(props: CardProps) {
           <CardBody p={0}>
             <Button
               onClick={() => handleOpenBeehiveModal()}
-              variant="link"
+              variant="ghost"
               rightIcon={<ArrowUpRight />}
               iconSpacing={1}
               color="brand.400"
-              justifyContent="center"
-              textDecoration="none"
-              fontWeight="semibold"
-              lineHeight={5}
             >
               More info
             </Button>
