@@ -1,9 +1,4 @@
-import {
-  Contract as EthersContract,
-  getAddress,
-  Signer,
-  VoidSigner,
-} from "ethers"
+import { ContractRunner, Contract as EthersContract, getAddress } from "ethers"
 import { EthereumAddress } from "./address"
 
 /**
@@ -25,7 +20,7 @@ export interface EthersContractDeployment {
  * Use `VoidSigner` from `ethers` if you want to initialize the Ethereum Acre
  * SDK in readonly mode.
  */
-export type EthereumSigner = Signer | VoidSigner
+export type EthereumContractRunner = ContractRunner
 
 /**
  * Represents a config set required to connect an Ethereum contract.
@@ -41,7 +36,7 @@ export interface EthersContractConfig {
    * Signer - will return a Contract which will act on behalf of that signer.
    * The signer will sign all contract transactions.
    */
-  signer: EthereumSigner
+  runner: ContractRunner
 }
 
 /**
@@ -66,7 +61,7 @@ export class EthersContractWrapper<T extends EthersContract> {
     this.instance = new EthersContract(
       contractAddress,
       `${JSON.stringify(deployment.abi)}`,
-      config.signer,
+      config.runner,
     ) as T
 
     this.#address = contractAddress

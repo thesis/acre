@@ -2,7 +2,7 @@ import ethers, { Contract } from "ethers"
 import BitcoinRedeemer from "@acre-btc/contracts/deployments/sepolia/BitcoinRedeemer.json"
 import {
   EthereumAddress,
-  EthereumSigner,
+  EthereumContractRunner,
   EthereumBitcoinRedeemer,
 } from "../../../src/lib/ethereum"
 
@@ -33,7 +33,7 @@ describe("BitcoinRedeemer", () => {
 
     bitcoinRedeemer = new EthereumBitcoinRedeemer(
       {
-        signer: {} as EthereumSigner,
+        runner: {} as EthereumContractRunner,
       },
       "sepolia",
     )

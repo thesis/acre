@@ -1,6 +1,5 @@
 import { GelatoTransactionSender, OrangeKitSdk } from "@orangekit/sdk"
-import { getDefaultProvider } from "ethers"
-import { AcreContracts } from "./lib/contracts"
+import { getDefaultProvider, Provider as EthereumProvider } from "ethers"
 import {
   EthereumAddress,
   EthereumNetwork,
@@ -14,48 +13,55 @@ import { getChainIdByNetwork } from "./lib/ethereum/network"
 import AcreSubgraphApi from "./lib/api/AcreSubgraphApi"
 import Protocol from "./modules/protocol"
 
+/**
+ * Acre SDK.
+ */
 class Acre {
-  readonly #tbtc: Tbtc
+  readonly #network: BitcoinNetwork
+
+  readonly #tbtcApiUrl: string
 
   readonly #orangeKit: OrangeKitSdk
 
-  readonly #bitcoinProvider: BitcoinProvider
+  readonly #ethereumProvider: EthereumProvider
 
   readonly #acreSubgraph: AcreSubgraphApi
 
-  public readonly contracts: AcreContracts
-
-  public readonly account: Account
+  #account: Account | undefined
 
   public readonly protocol: Protocol
 
   private constructor(
-    contracts: AcreContracts,
-    bitcoinProvider: BitcoinProvider,
+    bitcoinNetwork: BitcoinNetwork,
+    ethereumProvider: EthereumProvider,
     orangeKit: OrangeKitSdk,
-    tbtc: Tbtc,
+    tbtcApiUrl: string,
     acreSubgraphApi: AcreSubgraphApi,
-    account: Account,
     protocol: Protocol,
   ) {
-    this.contracts = contracts
-    this.#tbtc = tbtc
+    this.#network = bitcoinNetwork
+    this.#ethereumProvider = ethereumProvider
+    this.#tbtcApiUrl = tbtcApiUrl
     this.#orangeKit = orangeKit
     this.#acreSubgraph = acreSubgraphApi
-    this.#bitcoinProvider = bitcoinProvider
-    this.account = account
     this.protocol = protocol
   }
 
+  /**
+   * Initialize Acre SDK.
+   * @param network - Bitcoin network.
+   * @param tbtcApiUrl - tBTC API URL.
+   * @param ethereumRpcUrl - Ethereum RPC URL.
+   */
   static async initialize(
     network: BitcoinNetwork,
-    bitcoinProvider: BitcoinProvider,
     tbtcApiUrl: string,
     ethereumRpcUrl: string,
     gelatoApiKey: string,
   ) {
     const ethereumNetwork: EthereumNetwork =
-      network === BitcoinNetwork.Testnet ? "sepolia" : "mainnet"
+      Acre.resolveEthereumNetwork(network)
+
     const ethereumChainId = getChainIdByNetwork(ethereumNetwork)
     const ethersProvider = getDefaultProvider(ethereumRpcUrl)
 
@@ -72,53 +78,96 @@ class Acre {
       new GelatoTransactionSender(gelatoApiKey),
     )
 
+    const contracts = getEthereumContracts(ethersProvider, ethereumNetwork)
+
+    const subgraph = new AcreSubgraphApi(
+      // TODO: Set correct url based on the network
+      "https://api.studio.thegraph.com/query/73600/acre/version/latest",
+    )
+
+    const protocol = new Protocol(contracts)
+
+    return new Acre(
+      network,
+      ethersProvider,
+      orangeKit,
+      tbtcApiUrl,
+      subgraph,
+      protocol,
+    )
+  }
+
+  /**
+   * Connect the Acre SDK to a Bitcoin wallet.
+   * @param bitcoinProvider Provider for Bitcoin wallet.
+   * @returns Acre SDK instance with connected account.
+   */
+  async connect(bitcoinProvider: BitcoinProvider): Promise<Acre> {
     const accountBitcoinAddress = await bitcoinProvider.getAddress()
     const accountBitcoinPublicKey = await bitcoinProvider.getPublicKey()
     const accountEthereumAddress = EthereumAddress.from(
-      await orangeKit.predictAddress(accountBitcoinAddress),
+      await this.#orangeKit.predictAddress(accountBitcoinAddress),
     )
 
     const signer = new VoidSigner(
       `0x${accountEthereumAddress.identifierHex}`,
-      ethersProvider,
+      this.#ethereumProvider,
     )
+
+    const ethereumNetwork = Acre.resolveEthereumNetwork(this.#network)
 
     const contracts = getEthereumContracts(signer, ethereumNetwork)
 
     const tbtc = await Tbtc.initialize(
       signer,
       ethereumNetwork,
-      tbtcApiUrl,
+      this.#tbtcApiUrl,
       contracts.bitcoinDepositor,
     )
-    const subgraph = new AcreSubgraphApi(
-      // TODO: Set correct url based on the network
-      "https://api.studio.thegraph.com/query/73600/acre/version/latest",
-    )
 
-    const account = new Account(
+    this.#account = new Account(
       contracts,
       tbtc,
-      subgraph,
+      this.#acreSubgraph,
       {
         bitcoinAddress: accountBitcoinAddress,
         ethereumAddress: accountEthereumAddress,
         bitcoinPublicKey: accountBitcoinPublicKey,
       },
       bitcoinProvider,
-      orangeKit,
+      this.#orangeKit,
     )
-    const protocol = new Protocol(contracts)
 
-    return new Acre(
-      contracts,
-      bitcoinProvider,
-      orangeKit,
-      tbtc,
-      subgraph,
-      account,
-      protocol,
-    )
+    return this
+  }
+
+  /**
+   * Disconnect the Acre SDK from the Bitcoin wallet.
+   */
+  disconnect(): void {
+    if (this.#account) {
+      this.#account = undefined
+    }
+  }
+
+  /**
+   * Resolve ethereum network based on the Bitcoin network.
+   * @param bitcoinNetwork Bitcoin network.
+   * @returns Ethereum network associated with the Bitcoin network.
+   */
+  private static resolveEthereumNetwork(bitcoinNetwork: BitcoinNetwork) {
+    return bitcoinNetwork === BitcoinNetwork.Testnet ? "sepolia" : "mainnet"
+  }
+
+  /**
+   * Get the connected account. Requires calling the `connect` method first.
+   */
+  public get account(): Account {
+    if (!this.#account) {
+      throw new Error("Account is not initialized; call connect method first")
+    }
+
+    return this.#account
   }
 }
 

@@ -1,8 +1,11 @@
 import ethers, { Contract } from "ethers"
 import stBTC from "@acre-btc/contracts/deployments/sepolia/stBTC.json"
 import { EthereumStBTC } from "../../../src/lib/ethereum/stbtc"
-import { EthereumAddress, EthereumSigner } from "../../../src/lib/ethereum"
 import { Hex } from "../../../src/lib/utils"
+import {
+  EthereumAddress,
+  EthereumContractRunner,
+} from "../../../src/lib/ethereum"
 
 jest.mock("ethers", (): object => ({
   Contract: jest.fn(),
@@ -39,7 +42,7 @@ describe("stbtc", () => {
 
     stbtc = new EthereumStBTC(
       {
-        signer: {} as EthereumSigner,
+        runner: {} as EthereumContractRunner,
       },
       "sepolia",
     )
