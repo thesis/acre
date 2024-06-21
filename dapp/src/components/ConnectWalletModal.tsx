@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import {
   Button,
   ModalBody,
@@ -13,10 +13,12 @@ import {
   VStack,
   Box,
 } from "@chakra-ui/react"
-import { useConnector, useWallet } from "#/hooks"
+import { useConnector, useModal, useWallet } from "#/hooks"
 import { Connector, useConnectors } from "wagmi"
 import { IconArrowNarrowRight } from "@tabler/icons-react"
 import { AnimatePresence, Variants, motion } from "framer-motion"
+import { orangeKit } from "#/utils"
+import { ConnectionErrorData } from "#/types"
 import withBaseModal from "./ModalRoot/withBaseModal"
 import { TextLg, TextMd } from "./shared/Typography"
 import { Alert, AlertTitle, AlertDescription } from "./shared/Alert"
@@ -36,16 +38,22 @@ export function ConnectWalletModalBase() {
   const connectors = useConnectors()
   const { onConnect } = useWallet()
   const currentConnector = useConnector()
-  const mockError = { title: "Error", description: "An error occured!" }
+
+  const { closeModal } = useModal()
+
+  const [connectionError, setConnectionError] = useState<ConnectionErrorData>()
+  const resetConnectionError = () => setConnectionError(undefined)
 
   const handleConnection = (connector: Connector) => () => {
+    resetConnectionError()
+
     onConnect(connector, {
       onSuccess: () => {
-        // closeModal()
+        closeModal()
       },
-      onError: (error: unknown) => {
-        // TODO: Handle when the wallet connection fails
-        console.error(error)
+      onError: (error) => {
+        const errorData = orangeKit.parseOrangeKitConnectionError(error)
+        setConnectionError(errorData)
       },
     })
   }
@@ -57,7 +65,7 @@ export function ConnectWalletModalBase() {
 
       <ModalBody gap={0}>
         <AnimatePresence initial={false}>
-          {mockError && ( // TODO: Add a condition
+          {connectionError && (
             <Box
               as={motion.div}
               variants={collapseVariants}
@@ -68,8 +76,10 @@ export function ConnectWalletModalBase() {
               w="full"
             >
               <Alert status="error" mb={6}>
-                <AlertTitle>{mockError.title}</AlertTitle>
-                <AlertDescription>{mockError.description}</AlertDescription>
+                <AlertTitle>{connectionError.title}</AlertTitle>
+                <AlertDescription>
+                  {connectionError.description}
+                </AlertDescription>
               </Alert>
             </Box>
           )}

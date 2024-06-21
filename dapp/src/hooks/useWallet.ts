@@ -45,7 +45,7 @@ export function useWallet(): UseWalletReturn {
       selectedConnector: Connector,
       options?: { onSuccess?: OnSuccessCallback; onError?: OnErrorCallback },
     ) => {
-      connect({ connector: selectedConnector, chainId }, { ...options })
+      connect({ connector: selectedConnector, chainId }, options)
     },
     [connect, chainId],
   )
