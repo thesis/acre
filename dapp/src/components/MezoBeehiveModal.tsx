@@ -118,7 +118,7 @@ function MezoBeehiveModalBase() {
               />
               <VStack align="start">
                 <TextMd lineHeight={5}>
-                  <Highlight query="Mezo" styles={{ fontWeight: 700 }}>
+                  <Highlight query="Mezo" styles={{ fontWeight: "bold" }}>
                     Mezo is the economic layer for Bitcoin with a mission to
                     activate a trillion dollar opportunity.
                   </Highlight>

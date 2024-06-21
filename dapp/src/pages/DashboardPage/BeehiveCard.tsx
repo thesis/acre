@@ -44,7 +44,7 @@ export default function BeehiveCard(props: CardProps) {
             <TextMd fontWeight="semibold" color="grey.500">
               <Highlight
                 query="Mezo"
-                styles={{ fontWeight: 700, color: "grey.700" }}
+                styles={{ fontWeight: "bold", color: "grey.700" }}
               >
                 Collecting honey from Mezo
               </Highlight>
