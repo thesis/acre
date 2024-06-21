@@ -5,13 +5,11 @@ import { BITCOIN_NETWORK } from "#/constants"
 
 const TBTC_API_ENDPOINT = import.meta.env.VITE_TBTC_API_ENDPOINT
 const ETH_RPC_URL = import.meta.env.VITE_ETH_HOSTNAME_HTTP
+const GELATO_API_KEY = import.meta.env.VITE_GELATO_RELAY_API_KEY
 
 type AcreSdkContextValue = {
   acre?: Acre
-  init: (
-    bitcoinProvider: BitcoinProvider,
-    gelatoApiKey: string,
-  ) => Promise<void>
+  init: (bitcoinProvider: BitcoinProvider) => Promise<void>
   isInitialized: boolean
 }
 
@@ -26,13 +24,13 @@ export function AcreSdkProvider({ children }: { children: React.ReactNode }) {
   const [isInitialized, setIsInitialized] = useState<boolean>(false)
 
   const init = useCallback<AcreSdkContextValue["init"]>(
-    async (bitcoinProvider: BitcoinProvider, gelatoApiKey: string) => {
+    async (bitcoinProvider: BitcoinProvider) => {
       const sdk: Acre = await Acre.initialize(
         BITCOIN_NETWORK,
         bitcoinProvider,
         TBTC_API_ENDPOINT,
         ETH_RPC_URL,
-        gelatoApiKey,
+        GELATO_API_KEY,
       )
 
       setAcre(sdk)
