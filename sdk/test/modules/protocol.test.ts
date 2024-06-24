@@ -30,6 +30,24 @@ const data = {
       total: 234990n,
     },
   },
+  estimateWithdrawalFees: {
+    amount: 10_000_000n, // 0.1 BTC,
+    // 0.1 tBTC in 1e18 precision.
+    amountIn1e18: 100000000000000000n,
+    mockedWithdrawalFees: {
+      tbtc: {
+        // 0.00005 tBTC in 1e18 precision.
+        treasuryFee: 50000000000000n,
+      },
+    },
+    // 0.00025 in 1e18 precision.
+    stBTCWithdrawalFee: 250000000000000n,
+    expectedWithdrawalFeesInSatoshi: {
+      tbtc: 5000n,
+      acre: 25000n,
+      total: 30000n,
+    },
+  },
 }
 
 describe("Protocol", () => {
@@ -149,6 +167,63 @@ describe("Protocol", () => {
 
     it("should return the deposit fees in satoshi precision", () => {
       expect(result).toMatchObject(expectedDepositFeesInSatoshi)
+    })
+  })
+
+  describe("estimateWithdrawalFees", () => {
+    const {
+      estimateWithdrawalFees: {
+        amount,
+        amountIn1e18,
+        mockedWithdrawalFees,
+        expectedWithdrawalFeesInSatoshi,
+        stBTCWithdrawalFee,
+      },
+    } = data
+
+    let result: Fees
+    const spyOnFromSatoshi = jest.spyOn(satoshiConverter, "fromSatoshi")
+
+    beforeAll(async () => {
+      spyOnToSatoshi.mockClear()
+
+      contracts.bitcoinRedeemer.calculateWithdrawalFee = jest
+        .fn()
+        .mockResolvedValue(mockedWithdrawalFees)
+
+      contracts.stBTC.calculateWithdrawalFee = jest
+        .fn()
+        .mockResolvedValue(stBTCWithdrawalFee)
+
+      result = await protocol.estimateWithdrawalFee(amount)
+    })
+
+    it("should convert provided amount from satoshi to token precision", () => {
+      expect(spyOnFromSatoshi).toHaveBeenNthCalledWith(1, amount)
+    })
+
+    it("should get the withdrawal fees from Acre Bitcoin Redeemer contract handle", () => {
+      expect(
+        contracts.bitcoinRedeemer.calculateWithdrawalFee,
+      ).toHaveBeenCalledWith(amountIn1e18)
+    })
+
+    it("should get the stBTC withdrawal fee", () => {
+      expect(contracts.stBTC.calculateWithdrawalFee).toHaveBeenCalledWith(
+        amountIn1e18,
+      )
+    })
+
+    it("should convert tBTC network fees to satoshi", () => {
+      const {
+        tbtc: { treasuryFee },
+      } = mockedWithdrawalFees
+
+      expect(spyOnToSatoshi).toHaveBeenNthCalledWith(1, treasuryFee)
+    })
+
+    it("should return the withdrawal fees in satoshi precision", () => {
+      expect(result).toMatchObject(expectedWithdrawalFeesInSatoshi)
     })
   })
 })

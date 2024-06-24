@@ -26,6 +26,7 @@ describe("stbtc", () => {
     balanceOf: jest.fn(),
     assetsBalanceOf: jest.fn(),
     entryFeeBasisPoints: jest.fn(),
+    exitFeeBasisPoints: jest.fn(),
     interface: {
       encodeFunctionData: jest.fn(),
     },
@@ -106,7 +107,7 @@ describe("stbtc", () => {
     })
   })
 
-  describe("depositFee", () => {
+  describe("calculateDepositFee", () => {
     // 0.1 in 1e18 precision
     const amount = 100000000000000000n
     const mockedEntryFeeBasisPointsValue = 1n
@@ -148,6 +149,56 @@ describe("stbtc", () => {
         expect(
           mockedContractInstance.entryFeeBasisPoints,
         ).toHaveBeenCalledTimes(1)
+      })
+
+      it("should calculate the deposit fee correctly", () => {
+        expect(result).toEqual(expectedResult)
+      })
+    })
+  })
+
+  describe("calculateWithdrawalFee", () => {
+    // 0.1 in 1e18 precision
+    const amount = 100000000000000000n
+    const mockedExitFeeBasisPointsValue = 25n
+    // (amount * basisPoints) / (basisPoints / 1e4)
+    const expectedResult = 250000000000000n
+
+    let result: bigint
+
+    describe("when the exit fee basis points value is not yet cached", () => {
+      beforeAll(async () => {
+        mockedContractInstance.exitFeeBasisPoints.mockResolvedValue(
+          mockedExitFeeBasisPointsValue,
+        )
+
+        result = await stbtc.calculateWithdrawalFee(amount)
+      })
+
+      it("should get the exit fee basis points from contract", () => {
+        expect(mockedContractInstance.exitFeeBasisPoints).toHaveBeenCalled()
+      })
+
+      it("should calculate the withdrawal fee correctly", () => {
+        expect(result).toEqual(expectedResult)
+      })
+    })
+
+    describe("when the exit fee basis points value is cached", () => {
+      beforeAll(async () => {
+        mockedContractInstance.exitFeeBasisPoints.mockResolvedValue(
+          mockedExitFeeBasisPointsValue,
+        )
+
+        await stbtc.calculateWithdrawalFee(amount)
+
+        result = await stbtc.calculateWithdrawalFee(amount)
+      })
+
+      it("should get the exit fee basis points from cache", () => {
+        expect(mockedContractInstance.exitFeeBasisPoints).toHaveBeenCalledTimes(
+          1,
+        )
       })
 
       it("should calculate the deposit fee correctly", () => {
