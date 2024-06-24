@@ -1,9 +1,7 @@
 import { useMemo } from "react"
 import { useAccount } from "wagmi"
-import { CreateOrangeKitConnectorFn } from "@orangekit/react/dist/src/wallet/connector"
 import { orangeKit } from "#/utils"
-
-type OrangeKitConnector = ReturnType<CreateOrangeKitConnectorFn>
+import { OrangeKitConnector } from "#/types"
 
 type UseConnectorReturn = OrangeKitConnector | undefined
 

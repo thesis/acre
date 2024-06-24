@@ -1,32 +1,48 @@
-import { STATUSES, Status } from "#/types"
+import { OnErrorCallback, OnSuccessCallback, Status } from "#/types"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useSignMessage as useWagmiSignMessage } from "wagmi"
 import { SignMessageMutate } from "wagmi/query"
+import { useWallet } from "./useWallet"
 
-type SignMessageParams = Parameters<SignMessageMutate<unknown>>
+type SignMessageParams = Parameters<SignMessageMutate<unknown>>[0]
+type SignMessageOptions = {
+  onSuccess?: OnSuccessCallback
+  onError?: OnErrorCallback
+}
 
 type UseSignMessageReturn = {
   status: Status
-  signMessage: (...params: SignMessageParams) => void
+  signMessage: (params: SignMessageParams, options?: SignMessageOptions) => void
 }
 
 export function useSignMessage(): UseSignMessageReturn {
-  const { signMessage, status: signMessageStatus } = useWagmiSignMessage()
+  const { isConnected } = useWallet()
+  const { signMessage } = useWagmiSignMessage()
 
-  const [status, setStatus] = useState<Status>(STATUSES.IDLE)
+  const [status, setStatus] = useState<Status>("idle")
 
   const handleSignMessage = useCallback(
-    (...params: SignMessageParams) => {
-      setStatus(STATUSES.PENDING)
-      signMessage(...params)
+    (params: SignMessageParams, options?: SignMessageOptions) => {
+      setStatus("pending")
+      signMessage(params, {
+        onError: (error) => {
+          setStatus("error")
+          if (options?.onError) options.onError(error)
+        },
+        onSuccess: () => {
+          setStatus("success")
+          if (options?.onSuccess) options.onSuccess()
+        },
+      })
     },
     [signMessage],
   )
 
   useEffect(() => {
-    if (signMessageStatus === "error") setStatus(STATUSES.ERROR)
-    if (signMessageStatus === "success") setStatus(STATUSES.SUCCESS)
-  }, [signMessageStatus])
+    if (isConnected) return
+
+    setStatus("idle")
+  }, [isConnected])
 
   return useMemo(
     () => ({

@@ -1,5 +1,5 @@
 import React from "react"
-import { STATUSES, Status } from "#/types"
+import { Status } from "#/types"
 import { Box, HStack, Icon } from "@chakra-ui/react"
 import {
   IconCircleCheck,
@@ -10,30 +10,26 @@ import { TextMd } from "../shared/Typography"
 import Spinner from "../shared/Spinner"
 
 const statusToLabelProps: Record<Status, { color: string }> = {
-  [STATUSES.IDLE]: {
+  idle: {
     color: "grey.500",
   },
-  [STATUSES.PENDING]: {
+  pending: {
     color: "brand.400",
   },
-  [STATUSES.ERROR]: {
+  error: {
     color: "grey.500",
   },
-  [STATUSES.SUCCESS]: {
+  success: {
     color: "grey.700",
   },
 }
 
 const boxSize = 5
 const statusToIcon: Record<Status, React.ReactNode> = {
-  [STATUSES.IDLE]: <Box boxSize={boxSize} />,
-  [STATUSES.PENDING]: <Spinner boxSize={boxSize} />,
-  [STATUSES.ERROR]: (
-    <Icon as={IconCircleX} boxSize={boxSize} color="grey.500" />
-  ),
-  [STATUSES.SUCCESS]: (
-    <Icon as={IconCircleCheck} boxSize={boxSize} color="green.500" />
-  ),
+  idle: <Box boxSize={boxSize} />,
+  pending: <Spinner boxSize={boxSize} />,
+  error: <Icon as={IconCircleX} boxSize={boxSize} color="grey.500" />,
+  success: <Icon as={IconCircleCheck} boxSize={boxSize} color="green.500" />,
 }
 
 type ConnectWalletStatusLabelProps = {
@@ -45,7 +41,7 @@ export default function ConnectWalletStatusLabel({
   status,
   label,
 }: ConnectWalletStatusLabelProps) {
-  const isError = status === STATUSES.ERROR
+  const isError = status === "error"
   const icon = statusToIcon[status]
 
   return (

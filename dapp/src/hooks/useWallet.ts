@@ -7,7 +7,7 @@ import {
   useDisconnect,
 } from "wagmi"
 import { logPromiseFailure, orangeKit } from "#/utils"
-import { OnErrorCallback, OnSuccessCallback, STATUSES, Status } from "#/types"
+import { OnErrorCallback, Status } from "#/types"
 import { resetState } from "#/store/wallet"
 import { useBitcoinProvider, useConnector } from "./orangeKit"
 import { useAppDispatch } from "./store"
@@ -19,7 +19,10 @@ type UseWalletReturn = {
   status: Status
   onConnect: (
     connector: Connector,
-    options?: { onSuccess?: OnSuccessCallback; onError?: OnErrorCallback },
+    options?: {
+      onSuccess?: (connector: Connector) => void
+      onError?: OnErrorCallback
+    },
   ) => void
   onDisconnect: () => void
 }
@@ -27,7 +30,7 @@ type UseWalletReturn = {
 export function useWallet(): UseWalletReturn {
   const chainId = useChainId()
   const { status: accountStatus } = useAccount()
-  const { connect, status: connectStatus } = useConnect()
+  const { connect } = useConnect()
   const { disconnect } = useDisconnect()
   const connector = useConnector()
   const provider = useBitcoinProvider()
@@ -35,7 +38,7 @@ export function useWallet(): UseWalletReturn {
 
   const [address, setAddress] = useState<string | undefined>(undefined)
   const [balance, setBalance] = useState<bigint>(0n)
-  const [status, setStatus] = useState<Status>(STATUSES.IDLE)
+  const [status, setStatus] = useState<Status>("idle")
 
   // `isConnected` is variable derived from `status` but does not guarantee us a set `address`.
   // When `status` is 'connected' properties like `address` are guaranteed to be defined.
@@ -48,10 +51,26 @@ export function useWallet(): UseWalletReturn {
   const onConnect = useCallback(
     (
       selectedConnector: Connector,
-      options?: { onSuccess?: OnSuccessCallback; onError?: OnErrorCallback },
+      options?: {
+        onSuccess?: (connector: Connector) => void
+        onError?: OnErrorCallback
+      },
     ) => {
-      setStatus(STATUSES.PENDING)
-      connect({ connector: selectedConnector, chainId }, { ...options })
+      setStatus("pending")
+      connect(
+        { connector: selectedConnector, chainId },
+        {
+          onError: (error) => {
+            setStatus("error")
+            if (options?.onError) options.onError(error)
+          },
+          onSuccess: (_, variables) => {
+            setStatus("success")
+            if (options?.onSuccess)
+              options.onSuccess(variables.connector as Connector)
+          },
+        },
+      )
     },
     [connect, chainId],
   )
@@ -59,7 +78,7 @@ export function useWallet(): UseWalletReturn {
   const onDisconnect = useCallback(() => {
     disconnect()
 
-    setStatus(STATUSES.IDLE)
+    setStatus("idle")
     dispatch(resetState())
   }, [disconnect, dispatch])
 
@@ -87,11 +106,6 @@ export function useWallet(): UseWalletReturn {
     logPromiseFailure(fetchBalance())
     logPromiseFailure(fetchBitcoinAddress())
   }, [connector, provider])
-
-  useEffect(() => {
-    if (connectStatus === "error") setStatus(STATUSES.ERROR)
-    if (connectStatus === "success") setStatus(STATUSES.SUCCESS)
-  }, [connectStatus])
 
   return useMemo(
     () => ({
