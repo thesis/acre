@@ -56,10 +56,7 @@ export default function ConnectWalletButton({
 
         if (!btcAddress) return
 
-        const message = orangeKit.createSignInWithWalletMessage(
-          btcAddress,
-          "bitcoin",
-        )
+        const message = orangeKit.createSignInWithWalletMessage(btcAddress)
         signMessage(
           {
             message,
