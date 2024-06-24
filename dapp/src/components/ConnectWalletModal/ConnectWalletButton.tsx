@@ -7,12 +7,15 @@ import { logPromiseFailure, orangeKit } from "#/utils"
 import { OrangeKitConnector } from "#/types"
 import { TextMd } from "../shared/Typography"
 import ConnectWalletStatusLabel from "./ConnectWalletStatusLabel"
+import ArrivingSoonTooltip from "../ArrivingSoonTooltip"
+
+const isOkxWalletEnabled =
+  import.meta.env.VITE_FEATURE_FLAG_OKX_WALLET_ENABLED === "true"
 
 type ConnectWalletButtonProps = {
   label: string
   onClick: () => void
   isSelected: boolean
-  isDisabled: boolean
   connector: Connector
 }
 
@@ -20,7 +23,6 @@ export default function ConnectWalletButton({
   label,
   onClick,
   isSelected,
-  isDisabled,
   connector,
 }: ConnectWalletButtonProps) {
   const {
@@ -34,6 +36,7 @@ export default function ConnectWalletButton({
   const { closeModal } = useModal()
   const dispatch = useAppDispatch()
 
+  const isWalletArrivingSoon = connector.name === "OKX" && !isOkxWalletEnabled
   const hasConnectionError = connectionStatus === "error"
   const hasSignMessageStatus = signMessageStatus === "error"
   const showStatuses = isSelected && !hasConnectionError
@@ -99,37 +102,39 @@ export default function ConnectWalletButton({
   }, [handleConnect, isSelected, onDisconnect])
 
   return (
-    <Box>
-      <Button
-        onClick={handleClick}
-        _hover={isDisabled ? {} : undefined}
-        isDisabled={isDisabled}
-      >
-        {label}
-      </Button>
-      {showStatuses && (
-        <Flex direction="column" gap={2}>
-          <TextMd fontWeight="bold">Requires 2 actions:</TextMd>
-          <ConnectWalletStatusLabel
-            status={connectionStatus}
-            label="Connect wallet"
-          />
-          <ConnectWalletStatusLabel
-            status={signMessageStatus}
-            label="Sign message"
-          />
-          {showRetryButton && (
-            <Button
-              pt={4}
-              size="lg"
-              variant="outline"
-              onClick={() => handleSignMessageWrapper(connector)}
-            >
-              Resume and try again
-            </Button>
-          )}
-        </Flex>
-      )}
-    </Box>
+    <ArrivingSoonTooltip shouldDisplayTooltip={isWalletArrivingSoon}>
+      <Box>
+        <Button
+          onClick={handleClick}
+          _hover={isWalletArrivingSoon ? {} : undefined}
+          isDisabled={isWalletArrivingSoon}
+        >
+          {label}
+        </Button>
+        {showStatuses && (
+          <Flex direction="column" gap={2}>
+            <TextMd fontWeight="bold">Requires 2 actions:</TextMd>
+            <ConnectWalletStatusLabel
+              status={connectionStatus}
+              label="Connect wallet"
+            />
+            <ConnectWalletStatusLabel
+              status={signMessageStatus}
+              label="Sign message"
+            />
+            {showRetryButton && (
+              <Button
+                pt={4}
+                size="lg"
+                variant="outline"
+                onClick={() => handleSignMessageWrapper(connector)}
+              >
+                Resume and try again
+              </Button>
+            )}
+          </Flex>
+        )}
+      </Box>
+    </ArrivingSoonTooltip>
   )
 }
