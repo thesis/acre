@@ -13,7 +13,7 @@ export function useConnector(): UseConnectorReturn {
       orangeKit.isOrangeKitConnector(connector) &&
       orangeKit.isConnectedStatus(status)
     )
-      return connector as unknown as OrangeKitConnector
+      return orangeKit.typeConversionToOrangeKitConnector(connector)
 
     return undefined
   }, [connector, status])

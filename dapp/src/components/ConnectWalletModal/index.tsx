@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { ModalBody, ModalHeader, ModalCloseButton } from "@chakra-ui/react"
-import { useConnectors } from "wagmi"
+import { useConnectors } from "#/hooks"
 import withBaseModal from "../ModalRoot/withBaseModal"
 import ConnectWalletButton from "./ConnectWalletButton"
 

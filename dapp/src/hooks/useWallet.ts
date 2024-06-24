@@ -1,16 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
-import {
-  Connector,
-  useAccount,
-  useChainId,
-  useConnect,
-  useDisconnect,
-} from "wagmi"
+import { useAccount, useChainId, useConnect, useDisconnect } from "wagmi"
 import { logPromiseFailure, orangeKit } from "#/utils"
-import { OnErrorCallback, Status } from "#/types"
+import { OnErrorCallback, OrangeKitConnector, Status } from "#/types"
 import { resetState } from "#/store/wallet"
 import { useBitcoinProvider, useConnector } from "./orangeKit"
 import { useAppDispatch } from "./store"
+
+const { typeConversionToConnector, typeConversionToOrangeKitConnector } =
+  orangeKit
 
 type UseWalletReturn = {
   isConnected: boolean
@@ -18,9 +15,9 @@ type UseWalletReturn = {
   balance: bigint
   status: Status
   onConnect: (
-    connector: Connector,
+    connector: OrangeKitConnector,
     options?: {
-      onSuccess?: (connector: Connector) => void
+      onSuccess?: (connector: OrangeKitConnector) => void
       onError?: OnErrorCallback
     },
   ) => void
@@ -50,15 +47,15 @@ export function useWallet(): UseWalletReturn {
 
   const onConnect = useCallback(
     (
-      selectedConnector: Connector,
+      selectedConnector: OrangeKitConnector,
       options?: {
-        onSuccess?: (connector: Connector) => void
+        onSuccess?: (connector: OrangeKitConnector) => void
         onError?: OnErrorCallback
       },
     ) => {
       setStatus("pending")
       connect(
-        { connector: selectedConnector, chainId },
+        { connector: typeConversionToConnector(selectedConnector), chainId },
         {
           onError: (error) => {
             setStatus("error")
@@ -66,8 +63,14 @@ export function useWallet(): UseWalletReturn {
           },
           onSuccess: (_, variables) => {
             setStatus("success")
-            if (options?.onSuccess)
-              options.onSuccess(variables.connector as Connector)
+            if (
+              options?.onSuccess &&
+              typeof variables.connector !== "function"
+            ) {
+              options.onSuccess(
+                typeConversionToOrangeKitConnector(variables.connector),
+              )
+            }
           },
         },
       )

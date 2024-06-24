@@ -1,10 +1,21 @@
-import { OnErrorCallback, OnSuccessCallback, Status } from "#/types"
+import {
+  OnErrorCallback,
+  OnSuccessCallback,
+  OrangeKitConnector,
+  Status,
+} from "#/types"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useSignMessage as useWagmiSignMessage } from "wagmi"
 import { SignMessageMutate } from "wagmi/query"
+import { orangeKit } from "#/utils"
 import { useWallet } from "./useWallet"
 
-type SignMessageParams = Parameters<SignMessageMutate<unknown>>[0]
+type SignMessageParams = Omit<
+  Parameters<SignMessageMutate<unknown>>[0],
+  "connector"
+> & {
+  connector: OrangeKitConnector
+}
 type SignMessageOptions = {
   onSuccess?: OnSuccessCallback
   onError?: OnErrorCallback
@@ -24,7 +35,11 @@ export function useSignMessage(): UseSignMessageReturn {
   const handleSignMessage = useCallback(
     (params: SignMessageParams, options?: SignMessageOptions) => {
       setStatus("pending")
-      signMessage(params, {
+      const updatedPrams = {
+        ...params,
+        connector: orangeKit.typeConversionToConnector(params.connector),
+      }
+      signMessage(updatedPrams, {
         onError: (error) => {
           setStatus("error")
           if (options?.onError) options.onError(error)

@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect } from "react"
 import { Box, Button, Flex } from "@chakra-ui/react"
-import { Connector } from "wagmi"
 import { useAppDispatch, useModal, useSignMessage, useWallet } from "#/hooks"
 import { setIsSignedMessage } from "#/store/wallet"
 import { logPromiseFailure, orangeKit } from "#/utils"
@@ -16,7 +15,7 @@ type ConnectWalletButtonProps = {
   label: string
   onClick: () => void
   isSelected: boolean
-  connector: Connector
+  connector: OrangeKitConnector
 }
 
 export default function ConnectWalletButton({
@@ -48,29 +47,25 @@ export default function ConnectWalletButton({
   }, [closeModal, dispatch])
 
   const handleSignMessage = useCallback(
-    async (connectedConnector: Connector) => {
-      if (orangeKit.isOrangeKitConnector(connectedConnector)) {
-        const orangeKitConnector =
-          connectedConnector as unknown as OrangeKitConnector
-        const btcAddress: string = await orangeKitConnector.getBitcoinAddress()
+    async (connectedConnector: OrangeKitConnector) => {
+      const btcAddress: string = await connectedConnector.getBitcoinAddress()
 
-        if (!btcAddress) return
+      if (!btcAddress) return
 
-        const message = orangeKit.createSignInWithWalletMessage(btcAddress)
-        signMessage(
-          {
-            message,
-            connector: connectedConnector,
-          },
-          { onSuccess },
-        )
-      }
+      const message = orangeKit.createSignInWithWalletMessage(btcAddress)
+      signMessage(
+        {
+          message,
+          connector: connectedConnector,
+        },
+        { onSuccess },
+      )
     },
     [onSuccess, signMessage],
   )
 
   const handleSignMessageWrapper = useCallback(
-    (connectedConnector: Connector) =>
+    (connectedConnector: OrangeKitConnector) =>
       logPromiseFailure(handleSignMessage(connectedConnector)),
     [handleSignMessage],
   )
