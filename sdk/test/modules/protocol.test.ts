@@ -1,5 +1,5 @@
 import Protocol from "../../src/modules/protocol"
-import { AcreContracts, DepositFee } from "../../src"
+import { AcreContracts, Fees } from "../../src"
 import * as satoshiConverter from "../../src/lib/utils/satoshi-converter"
 import { MockAcreContracts } from "../utils/mock-acre-contracts"
 
@@ -96,7 +96,7 @@ describe("Protocol", () => {
       },
     } = data
 
-    let result: DepositFee
+    let result: Fees
     const spyOnFromSatoshi = jest.spyOn(satoshiConverter, "fromSatoshi")
 
     beforeAll(async () => {
