@@ -1,7 +1,7 @@
 import { useAcreContext } from "#/acre-react/hooks"
 import { logPromiseFailure } from "#/utils"
 import { useEffect, useState } from "react"
-import { ActionFlowType, DepositFee } from "#/types"
+import { ACTION_FLOW_TYPES, ActionFlowType, DepositFee } from "#/types"
 import { useAppDispatch } from "./store"
 
 export const initialDepositFee = {
@@ -32,9 +32,9 @@ export function useTransactionFee<F extends ActionFlowType>(
 
         let fee: DepositFee = initialDepositFee
 
-        if (flow === "STAKE") {
+        if (flow === ACTION_FLOW_TYPES.STAKE) {
           fee = await acre.protocol.estimateDepositFee(amount)
-        } else if (flow === "UNSTAKE") {
+        } else if (flow === ACTION_FLOW_TYPES.UNSTAKE) {
           // TODO: Fetch fees from SDK.
           fee = { acre: 0n, tbtc: 0n, total: 0n }
         }

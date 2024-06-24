@@ -3,7 +3,7 @@ import { Flex, List } from "@chakra-ui/react"
 import TransactionDetailsAmountItem from "#/components/shared/TransactionDetails/AmountItem"
 import { useTokenAmountField } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { useTransactionDetails } from "#/hooks"
-import { CurrencyType } from "#/types"
+import { ACTION_FLOW_TYPES, CurrencyType } from "#/types"
 import { featureFlags } from "#/constants"
 import WithdrawWarning from "./WithdrawWarning"
 
@@ -17,7 +17,7 @@ function UnstakeDetails({
   const { value, isValid } = useTokenAmountField()
   // Let's not calculate the details of the transaction when the value is not valid.
   const amount = isValid ? value : 0n
-  const details = useTransactionDetails(amount, "UNSTAKE")
+  const details = useTransactionDetails(amount, ACTION_FLOW_TYPES.UNSTAKE)
 
   return (
     <Flex flexDirection="column" gap={10} mt={4}>

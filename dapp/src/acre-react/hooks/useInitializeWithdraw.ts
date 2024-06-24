@@ -6,7 +6,7 @@ import {
 import { useAcreContext } from "./useAcreContext"
 
 export default function useInitializeWithdraw() {
-  const { acre } = useAcreContext()
+  const { acre, isConnected } = useAcreContext()
 
   return useCallback(
     async (
@@ -14,7 +14,7 @@ export default function useInitializeWithdraw() {
       onSignMessageStep?: OnSignMessageStepCallback,
       messageSignedStep?: MessageSignedStepCallback,
     ) => {
-      if (!acre) return
+      if (!acre || !isConnected) return
 
       await acre.account.initializeWithdrawal(
         amount,
@@ -22,6 +22,6 @@ export default function useInitializeWithdraw() {
         messageSignedStep,
       )
     },
-    [acre],
+    [acre, isConnected],
   )
 }
