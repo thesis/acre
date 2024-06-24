@@ -234,6 +234,14 @@ class EthereumBitcoinDepositor
 
     return this.#cache.depositorFeeDivisor
   }
+
+  async getTbtcBridgeAddress(): Promise<string> {
+    return this.instance.bridge()
+  }
+
+  async getTbtcVaultAddress(): Promise<string> {
+    return this.instance.tbtcVault()
+  }
 }
 
 export { EthereumBitcoinDepositor, packRevealDepositParameters }
