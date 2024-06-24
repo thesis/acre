@@ -16,6 +16,8 @@ export default class EthereumBitcoinRedeemer
   extends EthersContractWrapper<BitcoinRedeemerTypechain>
   implements BitcoinRedeemer
 {
+  #tbtcBridge: TbtcBridge | undefined
+
   constructor(config: EthersContractConfig, network: EthereumNetwork) {
     let artifact: EthersContractDeployment
 
@@ -29,6 +31,10 @@ export default class EthereumBitcoinRedeemer
     }
 
     super(config, artifact)
+  }
+
+  setTbtcContracts({ tbtcBridge }: { tbtcBridge: TbtcBridge }): void {
+    this.#tbtcBridge = tbtcBridge
   }
 
   /**

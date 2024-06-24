@@ -53,6 +53,10 @@ class EthereumBitcoinDepositor
 {
   #cache: BitcoinDepositorCache
 
+  #tbtcBridge: TbtcBridge | undefined
+
+  #tbtcVault: TbtcVault | undefined
+
   constructor(config: EthersContractConfig, network: EthereumNetwork) {
     let artifact: EthersContractDeployment
 
@@ -70,6 +74,17 @@ class EthereumBitcoinDepositor
       tbtcBridgeMintingParameters: undefined,
       depositorFeeDivisor: undefined,
     }
+  }
+
+  setTbtcContracts({
+    tbtcBridge,
+    tbtcVault,
+  }: {
+    tbtcBridge: TbtcBridge
+    tbtcVault: TbtcVault
+  }): void {
+    this.#tbtcBridge = tbtcBridge
+    this.#tbtcVault = tbtcVault
   }
 
   /**
