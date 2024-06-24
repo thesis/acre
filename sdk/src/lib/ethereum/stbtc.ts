@@ -21,7 +21,8 @@ class EthereumStBTC
 
   #cache: {
     entryFeeBasisPoints?: bigint
-  } = { entryFeeBasisPoints: undefined }
+    exitFeeBasisPoints?: bigint
+  } = { entryFeeBasisPoints: undefined, exitFeeBasisPoints: undefined }
 
   constructor(config: EthersContractConfig, network: EthereumNetwork) {
     let artifact: EthersContractDeployment
@@ -78,6 +79,18 @@ class EthereumStBTC
     )
   }
 
+  /**
+   * @see {StBTC#calculateDepositFee}
+   */
+  async calculateWithdrawalFee(amount: bigint): Promise<bigint> {
+    const exitFeeBasisPoints = await this.#getExitFeeBasisPoints()
+
+    return (
+      (amount * exitFeeBasisPoints) /
+      (exitFeeBasisPoints + this.#BASIS_POINT_SCALE)
+    )
+  }
+
   async #getEntryFeeBasisPoints(): Promise<bigint> {
     if (this.#cache.entryFeeBasisPoints) {
       return this.#cache.entryFeeBasisPoints
@@ -86,6 +99,16 @@ class EthereumStBTC
     this.#cache.entryFeeBasisPoints = await this.instance.entryFeeBasisPoints()
 
     return this.#cache.entryFeeBasisPoints
+  }
+
+  async #getExitFeeBasisPoints(): Promise<bigint> {
+    if (this.#cache.exitFeeBasisPoints) {
+      return this.#cache.exitFeeBasisPoints
+    }
+
+    this.#cache.exitFeeBasisPoints = await this.instance.exitFeeBasisPoints()
+
+    return this.#cache.exitFeeBasisPoints
   }
 
   /**

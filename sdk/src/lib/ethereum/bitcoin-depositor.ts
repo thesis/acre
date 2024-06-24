@@ -9,7 +9,6 @@ import {
   isAddress,
   solidityPacked,
   zeroPadBytes,
-  Contract,
 } from "ethers"
 import {
   ChainIdentifier,
@@ -26,13 +25,12 @@ import {
 } from "./contract"
 import { Hex, fromSatoshi } from "../utils"
 import { EthereumNetwork } from "./network"
+import TbtcBridge from "./tbtc-bridge"
+import TbtcVault from "./tbtc-vault"
 
-type TbtcDepositParameters = {
+type TbtcBridgeMintingParameters = {
   depositTreasuryFeeDivisor: bigint
   depositTxMaxFee: bigint
-}
-
-type TbtcBridgeMintingParameters = TbtcDepositParameters & {
   optimisticMintingFeeDivisor: bigint
 }
 
@@ -197,25 +195,15 @@ class EthereumBitcoinDepositor
       return this.#cache.tbtcBridgeMintingParameters
     }
 
-    const bridgeAddress = await this.instance.bridge()
-    const bridge = new Contract(
-      bridgeAddress,
-      [
-        "function depositParameters() view returns (uint64 depositDustThreshold, uint64 depositTreasuryFeeDivisor, uint64 depositTxMaxFee, uint32 depositRevealAheadPeriod)",
-      ],
-      this.instance.runner,
-    )
-    const { depositTreasuryFeeDivisor, depositTxMaxFee } =
-      (await bridge.depositParameters()) as TbtcDepositParameters
+    if (!this.#tbtcBridge || !this.#tbtcVault) {
+      throw new Error("tBTC contracts not set")
+    }
 
-    const vaultAddress = await this.getTbtcVaultChainIdentifier()
-    const vault = new Contract(
-      `0x${vaultAddress.identifierHex}`,
-      ["function optimisticMintingFeeDivisor() view returns (uint32)"],
-      this.instance.runner,
-    )
+    const { depositTreasuryFeeDivisor, depositTxMaxFee } =
+      await this.#tbtcBridge.depositParameters()
+
     const optimisticMintingFeeDivisor =
-      (await vault.optimisticMintingFeeDivisor()) as bigint
+      await this.#tbtcVault.optimisticMintingFeeDivisor()
 
     this.#cache.tbtcBridgeMintingParameters = {
       depositTreasuryFeeDivisor,
