@@ -13,7 +13,7 @@ export type UseStakeFlowReturn = {
 }
 
 export function useStakeFlow(): UseStakeFlowReturn {
-  const { acre, isInitialized } = useAcreContext()
+  const { acre, isConnected } = useAcreContext()
 
   const [stakeFlow, setStakeFlow] = useState<StakeInitialization | undefined>(
     undefined,
@@ -25,7 +25,7 @@ export function useStakeFlow(): UseStakeFlowReturn {
 
   const initStake = useCallback(
     async (referral: number, bitcoinRecoveryAddress?: string) => {
-      if (!acre || !isInitialized) throw new Error("Acre SDK not defined")
+      if (!acre || !isConnected) throw new Error("Acre SDK not defined")
 
       const initializedStakeFlow = await acre.account.initializeStake(
         referral,
@@ -41,7 +41,7 @@ export function useStakeFlow(): UseStakeFlowReturn {
       setBtcAddress(btcDepositAddress)
       setDepositReceipt(btcDepositReceipt)
     },
-    [isInitialized, acre],
+    [isConnected, acre],
   )
 
   const stake = useCallback(async () => {
