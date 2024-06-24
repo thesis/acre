@@ -2,7 +2,7 @@ import ethers, { Contract, ZeroAddress, getAddress } from "ethers"
 import {
   EthereumBitcoinDepositor,
   EthereumAddress,
-  EthereumSigner,
+  EthereumContractRunner,
 } from "../../../src/lib/ethereum"
 import { DepositFees } from "../../../src"
 import { extraDataValidTestData } from "./data"
@@ -24,7 +24,7 @@ const testData = {
 describe("BitcoinDepositor", () => {
   const spyOnEthersDataSlice = jest.spyOn(ethers, "dataSlice")
   const spyOnEthersContract = jest.spyOn(ethers, "Contract")
-  const signer = {} as EthereumSigner
+  const signer = {} as EthereumContractRunner
 
   const vaultAddress = EthereumAddress.from(
     ethers.Wallet.createRandom().address,
@@ -63,7 +63,7 @@ describe("BitcoinDepositor", () => {
 
     depositor = new EthereumBitcoinDepositor(
       {
-        signer,
+        runner: signer,
         address: depositorAddress.identifierHex,
       },
       "sepolia",

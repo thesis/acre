@@ -5,12 +5,12 @@ import { setEstimatedBtcBalance, setSharesBalance } from "#/store/btc"
 import { useAppDispatch } from "../store/useAppDispatch"
 
 export function useFetchBTCBalance() {
-  const { acre, isInitialized } = useAcreContext()
+  const { acre, isConnected } = useAcreContext()
   const dispatch = useAppDispatch()
 
   useEffect(() => {
     const getBtcBalance = async () => {
-      if (!isInitialized || !acre) return
+      if (!isConnected || !acre) return
 
       const sharesBalance = await acre.account.sharesBalance()
       const estimatedBitcoinBalance =
@@ -20,5 +20,5 @@ export function useFetchBTCBalance() {
       dispatch(setEstimatedBtcBalance(estimatedBitcoinBalance))
     }
     logPromiseFailure(getBtcBalance())
-  }, [acre, isInitialized, dispatch])
+  }, [acre, isConnected, dispatch])
 }

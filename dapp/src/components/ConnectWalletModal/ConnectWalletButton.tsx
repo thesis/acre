@@ -12,6 +12,7 @@ type ConnectWalletButtonProps = {
   label: string
   onClick: () => void
   isSelected: boolean
+  isDisabled: boolean
   connector: Connector
 }
 
@@ -19,6 +20,7 @@ export default function ConnectWalletButton({
   label,
   onClick,
   isSelected,
+  isDisabled,
   connector,
 }: ConnectWalletButtonProps) {
   const {
@@ -98,7 +100,13 @@ export default function ConnectWalletButton({
 
   return (
     <Box>
-      <Button onClick={handleClick}>{label}</Button>
+      <Button
+        onClick={handleClick}
+        _hover={isDisabled ? {} : undefined}
+        isDisabled={isDisabled}
+      >
+        {label}
+      </Button>
       {showStatuses && (
         <Flex direction="column" gap={2}>
           <TextMd fontWeight="bold">Requires 2 actions:</TextMd>
