@@ -111,8 +111,8 @@ describe("stbtc", () => {
     // 0.1 in 1e18 precision
     const amount = 100000000000000000n
     const mockedEntryFeeBasisPointsValue = 1n
-    // (amount * basisPoints) / (basisPoints / 1e4)
-    const expectedResult = 9999000099990n
+    // (amount * basisPoints) / (basisPoints + 1e4)
+    const expectedResult = 9999000099991n
 
     let result: bigint
 
@@ -161,8 +161,8 @@ describe("stbtc", () => {
     // 0.1 in 1e18 precision
     const amount = 100000000000000000n
     const mockedExitFeeBasisPointsValue = 25n
-    // (amount * basisPoints) / (basisPoints / 1e4)
-    const expectedResult = 250000000000000n
+    // (amount * basisPoints) / (basisPoints + 1e4)
+    const expectedResult = 249376558603492n
 
     let result: bigint
 
