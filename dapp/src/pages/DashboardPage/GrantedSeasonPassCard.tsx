@@ -14,7 +14,7 @@ export default function GrantedSeasonPassCard(props: CardProps) {
   return (
     <Card size="md" px={5} py={4} gap={4} {...props}>
       <CardHeader as={HStack} spacing={1} alignItems="normal" p={0}>
-        <TextMd fontWeight="bold">Season 2. Pre-launch staking</TextMd>
+        <TextMd fontWeight="bold">Season 2 arriving soon</TextMd>
         <Icon as={IconLock} boxSize={5} />
       </CardHeader>
       <CardBody
