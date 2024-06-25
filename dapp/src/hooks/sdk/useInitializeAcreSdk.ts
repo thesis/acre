@@ -9,9 +9,7 @@ export function useInitializeAcreSdk() {
   const bitcoinProvider = useBitcoinProvider()
 
   useEffect(() => {
-    if (!bitcoinProvider) return
-
-    const initSDK = async (provider: BitcoinProvider) => {
+    const initSDK = async (provider?: BitcoinProvider) => {
       await init(provider)
     }
 

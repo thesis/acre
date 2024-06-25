@@ -9,10 +9,14 @@ import {
 import { useModal, useWallet } from "#/hooks"
 import { useConnectors } from "wagmi"
 import withBaseModal from "./ModalRoot/withBaseModal"
+import ArrivingSoonTooltip from "./ArrivingSoonTooltip"
+
+const isOkxWalletEnabled =
+  import.meta.env.VITE_FEATURE_FLAG_OKX_WALLET_ENABLED === "true"
 
 export function ConnectWalletModalBase() {
   const connectors = useConnectors()
-  const { onConnect } = useWallet()
+  const { isConnected, onConnect, onDisconnect } = useWallet()
   const { closeModal } = useModal()
 
   const onConnectWalletSuccess = () => {
@@ -29,21 +33,36 @@ export function ConnectWalletModalBase() {
       <ModalCloseButton />
       <ModalHeader>Connect a Wallet</ModalHeader>
       <ModalBody>
-        <VStack>
-          {connectors.map((connector) => (
-            <Button
-              key={connector.id}
-              onClick={() =>
-                onConnect(connector, {
-                  onSuccess: onConnectWalletSuccess,
-                  onError: onConnectWalletError,
-                })
-              }
-            >
-              {connector.name}
-            </Button>
-          ))}
-        </VStack>
+        {isConnected ? (
+          <Button onClick={onDisconnect}>Disconnect</Button>
+        ) : (
+          <VStack>
+            {connectors.map((connector) => {
+              const isWalletArrivingSoon =
+                connector.name === "OKX" && !isOkxWalletEnabled
+
+              return (
+                <ArrivingSoonTooltip
+                  shouldDisplayTooltip={isWalletArrivingSoon}
+                >
+                  <Button
+                    key={connector.id}
+                    onClick={() =>
+                      onConnect(connector, {
+                        onSuccess: onConnectWalletSuccess,
+                        onError: onConnectWalletError,
+                      })
+                    }
+                    isDisabled={isWalletArrivingSoon}
+                    _hover={isWalletArrivingSoon ? {} : undefined}
+                  >
+                    {connector.name}
+                  </Button>
+                </ArrivingSoonTooltip>
+              )
+            })}
+          </VStack>
+        )}
       </ModalBody>
     </>
   )
