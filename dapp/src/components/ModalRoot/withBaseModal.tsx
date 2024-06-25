@@ -20,7 +20,7 @@ function withBaseModal<T extends BaseModalProps>(
         {...modalProps}
       >
         <ModalOverlay mt="header_height" />
-        <ModalContent mt="modal_shift">
+        <ModalContent>
           <WrappedModalContent {...props} />
         </ModalContent>
       </Modal>
