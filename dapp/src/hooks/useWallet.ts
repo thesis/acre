@@ -27,7 +27,7 @@ type UseWalletReturn = {
 export function useWallet(): UseWalletReturn {
   const chainId = useChainId()
   const { status: accountStatus } = useAccount()
-  const { connect } = useConnect()
+  const { connect, status } = useConnect()
   const { disconnect } = useDisconnect()
   const connector = useConnector()
   const provider = useBitcoinProvider()
@@ -35,7 +35,6 @@ export function useWallet(): UseWalletReturn {
 
   const [address, setAddress] = useState<string | undefined>(undefined)
   const [balance, setBalance] = useState<bigint>(0n)
-  const [status, setStatus] = useState<Status>("idle")
 
   // `isConnected` is variable derived from `status` but does not guarantee us a set `address`.
   // When `status` is 'connected' properties like `address` are guaranteed to be defined.
@@ -53,16 +52,13 @@ export function useWallet(): UseWalletReturn {
         onError?: OnErrorCallback
       },
     ) => {
-      setStatus("pending")
       connect(
         { connector: typeConversionToConnector(selectedConnector), chainId },
         {
           onError: (error) => {
-            setStatus("error")
             if (options?.onError) options.onError(error)
           },
           onSuccess: (_, variables) => {
-            setStatus("success")
             if (
               options?.onSuccess &&
               typeof variables.connector !== "function"
@@ -81,7 +77,6 @@ export function useWallet(): UseWalletReturn {
   const onDisconnect = useCallback(() => {
     disconnect()
 
-    setStatus("idle")
     dispatch(resetState())
   }, [disconnect, dispatch])
 

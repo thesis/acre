@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect } from "react"
 import { Box, Button, Flex } from "@chakra-ui/react"
-import { useAppDispatch, useModal, useSignMessage, useWallet } from "#/hooks"
+import { useAppDispatch, useModal, useWallet } from "#/hooks"
 import { setIsSignedMessage } from "#/store/wallet"
 import { logPromiseFailure, orangeKit } from "#/utils"
 import { OrangeKitConnector } from "#/types"
+import { useSignMessage } from "wagmi"
 import { TextMd } from "../shared/Typography"
 import ConnectWalletStatusLabel from "./ConnectWalletStatusLabel"
 import ArrivingSoonTooltip from "../ArrivingSoonTooltip"
@@ -56,7 +57,7 @@ export default function ConnectWalletButton({
       signMessage(
         {
           message,
-          connector: connectedConnector,
+          connector: orangeKit.typeConversionToConnector(connectedConnector),
         },
         { onSuccess },
       )
