@@ -10,12 +10,17 @@ import {
 } from "@chakra-ui/react"
 import { TextMd, TextSm } from "#/components/shared/Typography"
 import { logPromiseFailure } from "#/utils"
-import { UseRequestAccountReturn } from "#/types"
 import { BitcoinIcon } from "#/assets/icons"
 import { ErrorAlert, ErrorAlertIcon } from "../shared/alerts"
 import { CurrencyBalance } from "../shared/CurrencyBalance"
 
-type UnsupportedAccountModalProps = UseRequestAccountReturn
+type UnsupportedAccountModalProps = {
+  account?: {
+    name: string
+    balance: bigint
+  }
+  requestAccount: () => Promise<void>
+}
 
 export default function UnsupportedAccountModal({
   account,
@@ -58,7 +63,7 @@ export default function UnsupportedAccountModal({
                 size="sm"
                 fontWeight="medium"
                 color="grey.500"
-                amount={account.balance.toString()}
+                amount={account.balance}
                 currency="bitcoin"
               />
             </Box>
