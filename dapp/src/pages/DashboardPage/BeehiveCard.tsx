@@ -58,7 +58,6 @@ export default function BeehiveCard(props: CardProps) {
               onClick={() => handleOpenBeehiveModal()}
               variant="ghost"
               rightIcon={<ArrowUpRight />}
-              iconSpacing={1}
               color="brand.400"
             >
               More info

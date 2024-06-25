@@ -132,8 +132,6 @@ function MezoBeehiveModalBase() {
                   rightIcon={
                     <Icon as={IconArrowUpRight} boxSize={4} color="brand.400" />
                   }
-                  iconSpacing={1}
-                  lineHeight={5}
                 >
                   More info
                 </Button>
