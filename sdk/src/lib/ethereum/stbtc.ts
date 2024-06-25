@@ -73,10 +73,7 @@ class EthereumStBTC
   async calculateDepositFee(amount: bigint): Promise<bigint> {
     const entryFeeBasisPoints = await this.#getEntryFeeBasisPoints()
 
-    return (
-      (amount * entryFeeBasisPoints) /
-      (entryFeeBasisPoints + this.#BASIS_POINT_SCALE)
-    )
+    return this.#feeOnTotal(amount, entryFeeBasisPoints)
   }
 
   /**
@@ -85,10 +82,7 @@ class EthereumStBTC
   async calculateWithdrawalFee(amount: bigint): Promise<bigint> {
     const exitFeeBasisPoints = await this.#getExitFeeBasisPoints()
 
-    return (
-      (amount * exitFeeBasisPoints) /
-      (exitFeeBasisPoints + this.#BASIS_POINT_SCALE)
-    )
+    return this.#feeOnTotal(amount, exitFeeBasisPoints)
   }
 
   async #getEntryFeeBasisPoints(): Promise<bigint> {
@@ -140,6 +134,26 @@ class EthereumStBTC
    */
   convertToShares(amount: bigint): Promise<bigint> {
     return this.instance.convertToShares(amount)
+  }
+
+  /**
+   * Calculates the fee when it's included in the amount.
+   * One is added to the result if there is a remainder to match the stBTC
+   * contract calculations rounding.
+   * @param amount Amount in tBTC
+   * @param feeBasisPoints
+   * @returns
+   */
+  #feeOnTotal(amount: bigint, feeBasisPoints: bigint) {
+    const result =
+      (amount * feeBasisPoints) / (feeBasisPoints + this.#BASIS_POINT_SCALE)
+    if (
+      (amount * feeBasisPoints) % (feeBasisPoints + this.#BASIS_POINT_SCALE) >
+      0
+    ) {
+      return result + 1n
+    }
+    return result
   }
 }
 
