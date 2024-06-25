@@ -1,22 +1,20 @@
-import React from "react"
+import { useConnector, useModal, useWallet } from "#/hooks"
 import {
   Button,
-  ModalBody,
-  ModalHeader,
-  ModalCloseButton,
   Card,
-  CardHeader,
   CardBody,
+  CardHeader,
+  Icon,
   Image,
   ImageProps,
-  Icon,
+  ModalBody,
+  ModalCloseButton,
+  ModalHeader,
   VStack,
-  // Box,
 } from "@chakra-ui/react"
-import { useConnector, useModal, useWallet } from "#/hooks"
-import { Connector, useConnectors } from "wagmi"
 import { IconArrowNarrowRight } from "@tabler/icons-react"
 import { AnimatePresence, Variants, motion } from "framer-motion"
+import { Connector, useConnectors } from "wagmi"
 import withBaseModal from "./ModalRoot/withBaseModal"
 import { TextLg, TextMd } from "./shared/Typography"
 // import { Alert, AlertTitle, AlertDescription } from "./shared/Alert"
