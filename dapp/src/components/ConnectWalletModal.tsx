@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useMemo } from "react"
 import { useConnector, useModal, useWallet } from "#/hooks"
 import {
   Button,
@@ -18,7 +18,14 @@ import { AnimatePresence, Variants, motion } from "framer-motion"
 import { Connector, useConnectors } from "wagmi"
 import withBaseModal from "./ModalRoot/withBaseModal"
 import { TextLg, TextMd } from "./shared/Typography"
+import ArrivingSoonTooltip from "./ArrivingSoonTooltip"
 // import { Alert, AlertTitle, AlertDescription } from "./shared/Alert"
+
+const disabledConnectorIds = [
+  import.meta.env.VITE_FEATURE_FLAG_OKX_WALLET_ENABLED !== "true"
+    ? "orangekit-okx"
+    : "",
+].filter(Boolean)
 
 const collapseVariants: Variants = {
   collapsed: { height: 0 },
@@ -33,6 +40,14 @@ const iconStyles: Record<string, ImageProps> = {
 
 export function ConnectWalletModalBase() {
   const connectors = useConnectors()
+  const enabledConnectors = useMemo(
+    () =>
+      connectors.map((connector) => ({
+        ...connector,
+        disabled: disabledConnectorIds.includes(connector.id),
+      })),
+    [connectors],
+  )
   const { onConnect } = useWallet()
   const currentConnector = useConnector()
   const { closeModal } = useModal()
@@ -77,7 +92,7 @@ export function ConnectWalletModalBase() {
           )} */}
         </AnimatePresence>
 
-        {connectors.map((connector) => (
+        {enabledConnectors.map((connector) => (
           <Card
             key={connector.id}
             alignSelf="stretch"
@@ -88,30 +103,33 @@ export function ConnectWalletModalBase() {
             _last={{ mb: 0 }}
           >
             <CardHeader p={0}>
-              <Button
-                variant="ghost"
-                boxSize="full"
-                justifyContent="start"
-                p={6}
-                onClick={handleConnection(connector)}
-                leftIcon={
-                  <Image
-                    src={connector.icon}
-                    boxSize={6}
-                    bg="black"
-                    rounded="sm"
-                    {...iconStyles[connector.id]}
-                  />
-                }
-                rightIcon={
-                  <Icon as={IconArrowNarrowRight} boxSize={6} ml="auto" />
-                }
-                iconSpacing={4}
-              >
-                <TextLg flex={1} textAlign="start" fontWeight="semibold">
-                  {connector.name}
-                </TextLg>
-              </Button>
+              <ArrivingSoonTooltip shouldDisplayTooltip={connector.disabled}>
+                <Button
+                  variant="ghost"
+                  boxSize="full"
+                  justifyContent="start"
+                  p={6}
+                  onClick={handleConnection(connector)}
+                  leftIcon={
+                    <Image
+                      src={connector.icon}
+                      boxSize={6}
+                      bg="black"
+                      rounded="sm"
+                      {...iconStyles[connector.id]}
+                    />
+                  }
+                  rightIcon={
+                    <Icon as={IconArrowNarrowRight} boxSize={6} ml="auto" />
+                  }
+                  iconSpacing={4}
+                  isDisabled={connector.disabled}
+                >
+                  <TextLg flex={1} textAlign="start" fontWeight="semibold">
+                    {connector.name}
+                  </TextLg>
+                </Button>
+              </ArrivingSoonTooltip>
             </CardHeader>
 
             <AnimatePresence initial={false}>
