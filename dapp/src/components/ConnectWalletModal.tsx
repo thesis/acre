@@ -11,15 +11,15 @@ import {
   ImageProps,
   Icon,
   VStack,
-  Box,
+  // Box,
 } from "@chakra-ui/react"
-import { useConnector, useWallet } from "#/hooks"
+import { useConnector, useModal, useWallet } from "#/hooks"
 import { Connector, useConnectors } from "wagmi"
 import { IconArrowNarrowRight } from "@tabler/icons-react"
 import { AnimatePresence, Variants, motion } from "framer-motion"
 import withBaseModal from "./ModalRoot/withBaseModal"
 import { TextLg, TextMd } from "./shared/Typography"
-import { Alert, AlertTitle, AlertDescription } from "./shared/Alert"
+// import { Alert, AlertTitle, AlertDescription } from "./shared/Alert"
 
 const collapseVariants: Variants = {
   collapsed: { height: 0 },
@@ -36,12 +36,15 @@ export function ConnectWalletModalBase() {
   const connectors = useConnectors()
   const { onConnect } = useWallet()
   const currentConnector = useConnector()
-  const mockError = { title: "Error", description: "An error occured!" }
+  const { closeModal } = useModal()
+
+  // TODO: Use commented code to integrate wallet connection error handling
+  // const mockError = { title: "Error", description: "An error occured!" }
 
   const handleConnection = (connector: Connector) => () => {
     onConnect(connector, {
       onSuccess: () => {
-        // closeModal()
+        closeModal()
       },
       onError: (error: unknown) => {
         // TODO: Handle when the wallet connection fails
@@ -57,7 +60,7 @@ export function ConnectWalletModalBase() {
 
       <ModalBody gap={0}>
         <AnimatePresence initial={false}>
-          {mockError && ( // TODO: Add a condition
+          {/* {mockError && ( // TODO: Add a condition
             <Box
               as={motion.div}
               variants={collapseVariants}
@@ -72,7 +75,7 @@ export function ConnectWalletModalBase() {
                 <AlertDescription>{mockError.description}</AlertDescription>
               </Alert>
             </Box>
-          )}
+          )} */}
         </AnimatePresence>
 
         {connectors.map((connector) => (
