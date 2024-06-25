@@ -141,8 +141,8 @@ class EthereumStBTC
    * One is added to the result if there is a remainder to match the stBTC
    * contract calculations rounding.
    * @param amount Amount in tBTC
-   * @param feeBasisPoints
-   * @returns
+   * @param feeBasisPoints Fee basis points applied to calculate the fee.
+   * @returns The fee part of an amount that already includes fees.
    */
   #feeOnTotal(amount: bigint, feeBasisPoints: bigint) {
     const result =
