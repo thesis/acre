@@ -5,6 +5,7 @@ const baseStyleContainer = defineStyle({
   height: "calc(100vh - var(--chakra-space-modal_shift))",
   top: "var(--chakra-space-modal_shift)",
   overflow: "unset",
+  px: 8,
 })
 
 const baseStyleDialog = defineStyle({
