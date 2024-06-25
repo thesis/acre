@@ -165,15 +165,13 @@ function MezoBeehiveModalBase() {
   )
 }
 
-const WelcomeModal = withBaseModal(
+const MezoBeehiveModal = withBaseModal(
   MezoBeehiveModalBase,
-  {
-    size: "lg",
-  },
+  {},
   {
     modalContentProps: {
       my: "auto",
     },
   },
 )
-export default WelcomeModal
+export default MezoBeehiveModal
