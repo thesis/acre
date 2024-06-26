@@ -15,9 +15,6 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { ActivitiesList } from "#/components/shared/ActivitiesList"
-import { featureFlags } from "#/constants"
-import { BoostArrowIcon } from "#/assets/icons"
-import IconTag from "#/components/shared/IconTag"
 import ArrivingSoonTooltip from "#/components/ArrivingSoonTooltip"
 import TransactionHistory from "./TransactionHistory"
 
@@ -88,9 +85,6 @@ export default function DashboardCard(props: DashboardCardProps) {
               }}
             />
           </VStack>
-          {featureFlags.GAMIFICATION_ENABLED && (
-            <IconTag icon={BoostArrowIcon}>Rewards Boost</IconTag>
-          )}
         </VStack>
 
         <HStack w="full" justify="center" spacing={2}>
