@@ -18,7 +18,7 @@ import { Connector, useConnectors } from "wagmi"
 import { IconArrowNarrowRight } from "@tabler/icons-react"
 import { AnimatePresence, Variants, motion } from "framer-motion"
 import { isSupportedBTCAddressType, orangeKit } from "#/utils"
-import { ConnectionErrorData } from "#/types"
+import { ConnectionErrorData, OrangeKitConnector } from "#/types"
 import { CONNECTION_ERRORS } from "#/constants"
 import withBaseModal from "./ModalRoot/withBaseModal"
 import { TextLg, TextMd } from "./shared/Typography"
@@ -59,26 +59,30 @@ export function ConnectWalletModalBase() {
   const [connectionError, setConnectionError] = useState<ConnectionErrorData>()
   const resetConnectionError = () => setConnectionError(undefined)
 
-  const handleConnection = (connector: Connector) => () => {
-    resetConnectionError()
+  const getConnectionHandler =
+    (connector: Connector): VoidFunction =>
+    async () => {
+      resetConnectionError()
 
-    // This is a workaround. Should be handled by OrangeKit
-    const address = connector.getBitcoinAddress() as string
-    if (address && !isSupportedBTCAddressType(address)) {
-      setConnectionError(CONNECTION_ERRORS.NOT_SUPPORTED)
-      return
+      // This is a workaround. Should be handled by OrangeKit
+      const address = await (
+        connector as unknown as OrangeKitConnector
+      ).getBitcoinAddress()
+      if (address && !isSupportedBTCAddressType(address)) {
+        setConnectionError(CONNECTION_ERRORS.NOT_SUPPORTED)
+        return
+      }
+
+      onConnect(connector, {
+        onSuccess: () => {
+          closeModal()
+        },
+        onError: (error) => {
+          const errorData = orangeKit.parseOrangeKitConnectionError(error)
+          setConnectionError(errorData)
+        },
+      })
     }
-
-    onConnect(connector, {
-      onSuccess: () => {
-        closeModal()
-      },
-      onError: (error) => {
-        const errorData = orangeKit.parseOrangeKitConnectionError(error)
-        setConnectionError(errorData)
-      },
-    })
-  }
 
   return (
     <>
@@ -124,7 +128,7 @@ export function ConnectWalletModalBase() {
                   boxSize="full"
                   justifyContent="start"
                   p={6}
-                  onClick={handleConnection(connector)}
+                  onClick={getConnectionHandler(connector)}
                   leftIcon={
                     <Image
                       src={connector.icon}
