@@ -19,7 +19,7 @@ export default function TriggerTransactionModal({
     <>
       <ModalHeader>Waiting transaction...</ModalHeader>
       <ModalBody>
-        <Spinner size="xl" />
+        <Spinner size="xl" variant="filled" />
         <TextMd>Please complete the transaction in your wallet.</TextMd>
         {children}
       </ModalBody>

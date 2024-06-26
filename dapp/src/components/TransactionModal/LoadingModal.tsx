@@ -8,7 +8,7 @@ export default function LoadingModal() {
     <>
       <ModalHeader>Loading...</ModalHeader>
       <ModalBody minH={96}>
-        <Spinner size="xl" />
+        <Spinner size="xl" variant="filled" />
         <VStack>
           <Skeleton height={12} w={60} />
           <Skeleton height={6} w={40} />

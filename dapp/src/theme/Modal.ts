@@ -1,20 +1,27 @@
 import { modalAnatomy as parts } from "@chakra-ui/anatomy"
 import { createMultiStyleConfigHelpers, defineStyle } from "@chakra-ui/react"
 
+const baseStyleContainer = defineStyle({
+  height: "calc(100vh - var(--chakra-space-modal_shift))",
+  top: "var(--chakra-space-modal_shift)",
+  overflow: "unset",
+  px: 8,
+})
+
 const baseStyleDialog = defineStyle({
   borderWidth: "var(--chakra-space-modal_borderWidth)",
   boxShadow: "none",
   borderColor: "white",
   borderRadius: "xl",
   bg: "gold.100",
+  mt: 0,
+  mb: "auto",
 })
 
 const baseCloseButton = defineStyle({
-  top: -10,
-  right: -10,
-  height: 7,
-  width: 7,
-  p: 1.5,
+  top: -7,
+  right: -7,
+  boxSize: 7,
   rounded: "100%",
   bg: "opacity.white.5",
 
@@ -61,6 +68,7 @@ const baseStyleFooter = defineStyle({
 const multiStyleConfig = createMultiStyleConfigHelpers(parts.keys)
 
 const baseStyle = multiStyleConfig.definePartsStyle({
+  dialogContainer: baseStyleContainer,
   dialog: baseStyleDialog,
   closeButton: baseCloseButton,
   overlay: baseStyleOverlay,
