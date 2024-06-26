@@ -96,7 +96,7 @@ export default function ConnectWalletButton({
 
   return (
     <ArrivingSoonTooltip shouldDisplayTooltip={isWalletArrivingSoon}>
-      <Box>
+      <Box w="100%">
         <Button
           onClick={handleClick}
           _hover={isWalletArrivingSoon ? {} : undefined}
@@ -106,7 +106,9 @@ export default function ConnectWalletButton({
         </Button>
         {showStatuses && (
           <Flex direction="column" gap={2}>
-            <TextMd fontWeight="bold">Requires 2 actions:</TextMd>
+            <TextMd fontWeight="bold" textAlign="start">
+              Requires 2 actions:
+            </TextMd>
             <ConnectWalletStatusLabel
               status={connectionStatus}
               label="Connect wallet"
@@ -117,7 +119,7 @@ export default function ConnectWalletButton({
             />
             {showRetryButton && (
               <Button
-                pt={4}
+                mt={4}
                 size="lg"
                 variant="outline"
                 onClick={() => handleSignMessageWrapper(connector)}
