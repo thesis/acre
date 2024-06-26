@@ -1,5 +1,6 @@
 import { useInitDataFromSdk, useInitializeAcreSdk } from "./sdk"
 import { useSentry } from "./sentry"
+import { useDisconnectWallet } from "./useDisconnectWallet"
 import { useFetchBTCPriceUSD } from "./useFetchBTCPriceUSD"
 
 export function useInitApp() {
@@ -9,4 +10,5 @@ export function useInitApp() {
   useInitializeAcreSdk()
   useInitDataFromSdk()
   useFetchBTCPriceUSD()
+  useDisconnectWallet()
 }
