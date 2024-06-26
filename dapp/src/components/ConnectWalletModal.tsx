@@ -17,8 +17,9 @@ import {
 import { Connector, useConnectors } from "wagmi"
 import { IconArrowNarrowRight } from "@tabler/icons-react"
 import { AnimatePresence, Variants, motion } from "framer-motion"
-import { orangeKit } from "#/utils"
+import { isSupportedBTCAddressType, orangeKit } from "#/utils"
 import { ConnectionErrorData } from "#/types"
+import { CONNECTION_ERRORS } from "#/constants"
 import withBaseModal from "./ModalRoot/withBaseModal"
 import { TextLg, TextMd } from "./shared/Typography"
 import ArrivingSoonTooltip from "./ArrivingSoonTooltip"
@@ -60,6 +61,13 @@ export function ConnectWalletModalBase() {
 
   const handleConnection = (connector: Connector) => () => {
     resetConnectionError()
+
+    // This is a workaround. Should be handled by OrangeKit
+    const address = connector.getBitcoinAddress() as string
+    if (address && !isSupportedBTCAddressType(address)) {
+      setConnectionError(CONNECTION_ERRORS.NOT_SUPPORTED)
+      return
+    }
 
     onConnect(connector, {
       onSuccess: () => {

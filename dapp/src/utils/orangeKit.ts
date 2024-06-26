@@ -1,3 +1,4 @@
+import { CONNECTION_ERRORS } from "#/constants"
 import { ConnectionErrorData, OrangeKitError } from "#/types"
 import {
   isUnsupportedBitcoinAddressError,
@@ -19,32 +20,18 @@ const parseOrangeKitConnectionError = (
   const { cause } = error
 
   if (isWalletConnectionRejectedError(cause)) {
-    return {
-      title: "Wallet connection rejected.",
-      description: "If you encountered an error, please try again.",
-    }
+    return CONNECTION_ERRORS.REJECTED
   }
 
   if (isUnsupportedBitcoinAddressError(cause)) {
-    return {
-      title: "Not supported.",
-      description:
-        "Only Native Segwit, Nested Segwit or Legacy addresses supported at this time. Please try a different address or another wallet.",
-    }
+    return CONNECTION_ERRORS.NOT_SUPPORTED
   }
 
   if (isWalletNetworkDoesNotMatchProviderChainError(cause)) {
-    return {
-      title: "Error!",
-      description:
-        "Wrong network detected in your wallet. Please choose proper network and try again.",
-    }
+    return CONNECTION_ERRORS.NETWORK_MISMATCH
   }
 
-  return {
-    title: "Something went wrong...",
-    description: "We encountered an error. Please try again.",
-  }
+  return CONNECTION_ERRORS.DEFAULT
 }
 
 export default {
