@@ -1,4 +1,4 @@
-import React, { useMemo } from "react"
+import React from "react"
 import { useConnector, useModal, useWallet } from "#/hooks"
 import {
   Button,
@@ -40,14 +40,10 @@ const iconStyles: Record<string, ImageProps> = {
 
 export function ConnectWalletModalBase() {
   const connectors = useConnectors()
-  const enabledConnectors = useMemo(
-    () =>
-      connectors.map((connector) => ({
-        ...connector,
-        disabled: disabledConnectorIds.includes(connector.id),
-      })),
-    [connectors],
-  )
+  const enabledConnectors = connectors.map((connector) => ({
+    ...connector,
+    isDisabled: disabledConnectorIds.includes(connector.id),
+  }))
   const { onConnect } = useWallet()
   const currentConnector = useConnector()
   const { closeModal } = useModal()
@@ -103,7 +99,7 @@ export function ConnectWalletModalBase() {
             _last={{ mb: 0 }}
           >
             <CardHeader p={0}>
-              <ArrivingSoonTooltip shouldDisplayTooltip={connector.disabled}>
+              <ArrivingSoonTooltip shouldDisplayTooltip={connector.isDisabled}>
                 <Button
                   variant="ghost"
                   boxSize="full"
@@ -123,7 +119,7 @@ export function ConnectWalletModalBase() {
                     <Icon as={IconArrowNarrowRight} boxSize={6} ml="auto" />
                   }
                   iconSpacing={4}
-                  isDisabled={connector.disabled}
+                  isDisabled={connector.isDisabled}
                 >
                   <TextLg flex={1} textAlign="start" fontWeight="semibold">
                     {connector.name}
