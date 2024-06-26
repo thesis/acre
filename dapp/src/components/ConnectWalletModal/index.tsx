@@ -7,9 +7,7 @@ import ConnectWalletButton from "./ConnectWalletButton"
 export function ConnectWalletModalBase() {
   const connectors = useConnectors()
 
-  const [selectedConnectorId, setSelectedConnectorId] = useState<
-    string | undefined
-  >(undefined)
+  const [selectedConnectorId, setSelectedConnectorId] = useState<string>()
 
   return (
     <>
