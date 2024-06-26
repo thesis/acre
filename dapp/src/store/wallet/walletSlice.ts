@@ -3,11 +3,13 @@ import { isActivityCompleted } from "#/utils"
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 
 export type WalletState = {
+  isSignedMessage: boolean
   latestActivities: ActivitiesByIds
   activities: Activity[]
 }
 
 const initialState: WalletState = {
+  isSignedMessage: false,
   latestActivities: {},
   activities: [],
 }
@@ -16,6 +18,9 @@ export const walletSlice = createSlice({
   name: "wallet",
   initialState,
   reducers: {
+    setIsSignedMessage(state, action: PayloadAction<boolean>) {
+      state.isSignedMessage = action.payload
+    },
     setActivities(state, action: PayloadAction<Activity[]>) {
       const allActivities = action.payload
 
@@ -50,8 +55,18 @@ export const walletSlice = createSlice({
       const activityId = action.payload
       delete state.latestActivities[activityId]
     },
+    resetState(state) {
+      state.isSignedMessage = initialState.isSignedMessage
+      state.latestActivities = initialState.latestActivities
+      state.activities = initialState.activities
+    },
   },
 })
 
-export const { setActivities, deleteLatestActivity } = walletSlice.actions
+export const {
+  setIsSignedMessage,
+  setActivities,
+  deleteLatestActivity,
+  resetState,
+} = walletSlice.actions
 export default walletSlice.reducer

@@ -23,7 +23,7 @@ export default function ResumeModal() {
       </ModalHeader>
       <ModalBody textAlign="start" py={6} mx={3} gap={4}>
         <HStack position="relative" justifyContent="center">
-          <Spinner size="2xl" />
+          <Spinner size="2xl" variant="filled" />
           <PauseIcon position="absolute" boxSize={6} color="brand.400" />
         </HStack>
 
