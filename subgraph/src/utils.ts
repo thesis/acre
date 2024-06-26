@@ -1,4 +1,4 @@
-import { Address } from "@graphprotocol/graph-ts"
+import { Address, ByteArray, ethereum } from "@graphprotocol/graph-ts"
 import { DepositOwner, Deposit, Event, Withdraw } from "../generated/schema"
 
 export function getOrCreateDepositOwner(depositOwnerId: Address): DepositOwner {
@@ -40,4 +40,30 @@ export function getOrCreateWithdraw(id: string): Withdraw {
   }
 
   return withdrawEntity
+}
+
+export function findLogByEventSignatureInLogs(
+  logs: ethereum.Log[],
+  eventSignature: ByteArray,
+  contractAddress: Address,
+): ethereum.Log {
+  let logIndex = -1
+  for (let i = 0; i < logs.length; i += 1) {
+    const receiptLog = logs[i]
+
+    if (
+      receiptLog.address.equals(contractAddress) &&
+      receiptLog.topics[0].equals(eventSignature)
+    ) {
+      logIndex = i
+    }
+  }
+
+  if (logIndex < 0) {
+    throw new Error(
+      `Cannot find event (signature: ${eventSignature.toHexString()}) in transaction logs`,
+    )
+  }
+
+  return logs[logIndex]
 }
