@@ -45,7 +45,7 @@ export default function ConnectWalletStatusLabel({
   const icon = statusToIcon[status]
 
   return (
-    <HStack gap={3}>
+    <HStack spacing={3}>
       <HStack>
         {icon}
         <TextMd {...statusToLabelProps[status]}>{label}</TextMd>
