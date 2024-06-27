@@ -1,3 +1,4 @@
+import { useAccountsChangedUnisat } from "./orangeKit/useAccountsChangedUnisat"
 import { useInitDataFromSdk, useInitializeAcreSdk } from "./sdk"
 import { useSentry } from "./sentry"
 import { useDisconnectWallet } from "./useDisconnectWallet"
@@ -11,4 +12,5 @@ export function useInitApp() {
   useInitDataFromSdk()
   useFetchBTCPriceUSD()
   useDisconnectWallet()
+  useAccountsChangedUnisat()
 }
