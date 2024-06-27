@@ -92,6 +92,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         __ERC4626_init(asset);
         __ERC20_init("Acre Staked Bitcoin", "stBTC");
         __PausableOwnable_init(msg.sender, msg.sender);
+        __ERC4626NonFungibleWithdrawals_init();
 
         if (address(_treasury) == address(0)) {
             revert ZeroAddress();
@@ -211,6 +212,11 @@ contract stBTC is ERC4626Fees, PausableOwnable {
             return true;
         }
         return false;
+    }
+
+    /// @notice Disables non-fungible withdrawals.
+    function disableNonFungibleWithdrawals() external onlyOwner {
+        _disableNonFungibleWithdrawals();
     }
 
     /// @notice Mints shares to receiver by depositing exactly amount of
