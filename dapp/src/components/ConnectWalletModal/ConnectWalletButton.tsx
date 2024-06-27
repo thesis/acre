@@ -1,4 +1,18 @@
 import React, { useCallback, useEffect } from "react"
+import { CONNECTION_ERRORS } from "#/constants"
+import {
+  useAppDispatch,
+  useModal,
+  useWallet,
+  useWalletConnectionError,
+} from "#/hooks"
+import { setIsSignedMessage } from "#/store/wallet"
+import { OrangeKitConnector, OrangeKitError } from "#/types"
+import {
+  isSupportedBTCAddressType,
+  logPromiseFailure,
+  orangeKit,
+} from "#/utils"
 import {
   Button,
   Card,
@@ -6,20 +20,16 @@ import {
   CardHeader,
   Flex,
   Icon,
-  VStack,
   Image,
   ImageProps,
+  VStack,
 } from "@chakra-ui/react"
-import { useAppDispatch, useModal, useWallet } from "#/hooks"
-import { setIsSignedMessage } from "#/store/wallet"
-import { logPromiseFailure, orangeKit } from "#/utils"
-import { OrangeKitConnector } from "#/types"
-import { useSignMessage } from "wagmi"
 import { IconArrowNarrowRight } from "@tabler/icons-react"
 import { AnimatePresence, Variants, motion } from "framer-motion"
+import { useSignMessage } from "wagmi"
+import ArrivingSoonTooltip from "../ArrivingSoonTooltip"
 import { TextLg, TextMd } from "../shared/Typography"
 import ConnectWalletStatusLabel from "./ConnectWalletStatusLabel"
-import ArrivingSoonTooltip from "../ArrivingSoonTooltip"
 
 type ConnectWalletButtonProps = {
   label: string
@@ -55,8 +65,9 @@ export default function ConnectWalletButton({
   const { signMessage, status: signMessageStatus } = useSignMessage()
   const { closeModal } = useModal()
   const dispatch = useAppDispatch()
+  const { connectionError, setConnectionError } = useWalletConnectionError()
 
-  const hasConnectionError = connectionStatus === "error"
+  const hasConnectionError = connectionStatus === "error" || connectionError
   const hasSignMessageStatus = signMessageStatus === "error"
   const showStatuses = isSelected && !hasConnectionError
   const showRetryButton = address && hasSignMessageStatus
@@ -84,29 +95,36 @@ export default function ConnectWalletButton({
     [onSuccess, signMessage],
   )
 
-  const handleConnection = useCallback(() => {
+  const handleConnection = useCallback(async () => {
+    // // This is a workaround. Should be handled by OrangeKit
+    const bitcoinAddress = await connector.getBitcoinAddress()
+    if (bitcoinAddress && !isSupportedBTCAddressType(bitcoinAddress)) {
+      setConnectionError(CONNECTION_ERRORS.NOT_SUPPORTED)
+      return
+    }
+
     onConnect(connector, {
       onSuccess: () => {
         logPromiseFailure(handleSignMessage(connector))
       },
-      onError: (error: unknown) => {
-        // TODO: Handle when the wallet connection fails
-        console.error(error)
+      onError: (error: OrangeKitError) => {
+        const errorData = orangeKit.parseOrangeKitConnectionError(error)
+        setConnectionError(errorData)
       },
     })
-  }, [connector, handleSignMessage, onConnect])
+  }, [connector, handleSignMessage, onConnect, setConnectionError])
 
   const handleButtonClick = () => {
     onClick()
 
     // Connector still selected and user wants to retry connect action
     if (isSelected && !isConnected) {
-      handleConnection()
+      logPromiseFailure(handleConnection())
     }
   }
 
   useEffect(() => {
-    if (isSelected) handleConnection()
+    if (isSelected) logPromiseFailure(handleConnection())
     // Reset the connection when user selects another connector
     else onDisconnect()
   }, [handleConnection, isSelected, onDisconnect])
