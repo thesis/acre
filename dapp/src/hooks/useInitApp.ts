@@ -1,3 +1,4 @@
+import { useAccountChangedOKX } from "./orangeKit/useAccountChangedOKX"
 import { useAccountsChangedUnisat } from "./orangeKit/useAccountsChangedUnisat"
 import { useDisconnectOKX } from "./orangeKit/useDisconnectOKX"
 import { useInitDataFromSdk, useInitializeAcreSdk } from "./sdk"
@@ -13,6 +14,7 @@ export function useInitApp() {
   useInitDataFromSdk()
   useFetchBTCPriceUSD()
   useDisconnectWallet()
+  useAccountChangedOKX()
   useAccountsChangedUnisat()
   useDisconnectOKX()
 }

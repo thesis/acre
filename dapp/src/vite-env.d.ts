@@ -18,11 +18,11 @@ interface ImportMeta {
 
 interface InjectedProvider {
   on(
-    eventName: "accountsChanged" | "disconnect",
+    eventName: "accountsChanged" | "disconnect" | "accountChanged",
     callback: (payload: any) => void,
   ): void
   removeListener(
-    eventName: "accountsChanged" | "disconnect",
+    eventName: "accountsChanged" | "disconnect" | "accountChanged",
     callback: (payload: any) => void,
   ): void
 }
