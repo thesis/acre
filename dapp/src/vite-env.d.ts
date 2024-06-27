@@ -17,13 +17,17 @@ interface ImportMeta {
 }
 
 interface InjectedProvider {
-  on(eventName: "accountsChanged", callback: (payload: any) => void): void
+  on(
+    eventName: "accountsChanged" | "disconnect",
+    callback: (payload: any) => void,
+  ): void
   removeListener(
-    eventName: "accountsChanged",
+    eventName: "accountsChanged" | "disconnect",
     callback: (payload: any) => void,
   ): void
 }
 
 interface Window {
   unisat?: InjectedProvider
+  okxwallet?: { bitcoin: InjectedProvider }
 }
