@@ -80,7 +80,7 @@ abstract contract ERC4626NonFungibleWithdrawals is ERC4626Upgradeable {
     ///         cannot be re-enabled.
     /// @dev This function should be callable only by the owner.
     function _disableNonFungibleWithdrawals() internal {
-        if (nonFungibleWithdrawalsEnabled == false) {
+        if (!nonFungibleWithdrawalsEnabled) {
             revert NonFungibleWithdrawalsAlreadyDisabled();
         }
 
