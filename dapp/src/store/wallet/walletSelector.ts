@@ -20,3 +20,6 @@ export const selectAllActivitiesCount = createSelector(
   (state: RootState) => state.wallet.activities,
   (activities) => activities.length,
 )
+
+export const selectIsSignedMessage = (state: RootState): boolean =>
+  state.wallet.isSignedMessage

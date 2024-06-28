@@ -1,9 +1,7 @@
 import { useMemo } from "react"
 import { useAccount } from "wagmi"
-import { CreateOrangeKitConnectorFn } from "@orangekit/react/dist/src/wallet/connector"
 import { orangeKit } from "#/utils"
-
-type OrangeKitConnector = ReturnType<CreateOrangeKitConnectorFn>
+import { OrangeKitConnector } from "#/types"
 
 type UseConnectorReturn = OrangeKitConnector | undefined
 
@@ -15,7 +13,7 @@ export function useConnector(): UseConnectorReturn {
       orangeKit.isOrangeKitConnector(connector) &&
       orangeKit.isConnectedStatus(status)
     )
-      return connector as unknown as OrangeKitConnector
+      return orangeKit.typeConversionToOrangeKitConnector(connector)
 
     return undefined
   }, [connector, status])

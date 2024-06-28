@@ -23,7 +23,7 @@ export default function TriggerTransactionModal({
     <>
       <ModalHeader>{title}</ModalHeader>
       <ModalBody>
-        <Spinner size="xl" />
+        <Spinner size="xl" variant="filled" />
         <TextMd>{subtitle}</TextMd>
         {children}
       </ModalBody>

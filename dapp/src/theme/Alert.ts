@@ -1,116 +1,57 @@
 import { alertAnatomy as parts } from "@chakra-ui/anatomy"
-import {
-  StyleFunctionProps,
-  SystemStyleInterpolation,
-  createMultiStyleConfigHelpers,
-  defineStyle,
-} from "@chakra-ui/react"
+import { StyleFunctionProps } from "@chakra-ui/react"
+import { createMultiStyleConfigHelpers, cssVar } from "@chakra-ui/styled-system"
 
-const multiStyleConfig = createMultiStyleConfigHelpers(parts.keys)
+const multyStyleConfig = createMultiStyleConfigHelpers(parts.keys)
 
-// Base styles
+const $foregroundColor = cssVar("alert-fg")
+const $borderColor = cssVar("alert-border-color")
 
-const baseContainerStyles = defineStyle({
-  px: 5,
-  borderRadius: "xl",
-  textAlign: "left",
-  color: "white",
-  width: "lg",
-  boxShadow: "0px 8px 12px 0px var(--chakra-colors-opacity-black-15)",
-})
-
-const baseIconStyles = defineStyle({
-  mr: 2,
-})
-
-const baseStyle = multiStyleConfig.definePartsStyle({
-  container: baseContainerStyles,
-  icon: baseIconStyles,
-})
-
-// Status styles
-
-const statusInfo = multiStyleConfig.definePartsStyle({
+const baseStyle = multyStyleConfig.definePartsStyle({
   container: {
-    bg: "blue.500",
+    borderWidth: 1,
+    borderStyle: "solid",
+    borderColor: $borderColor.reference,
+    p: 5,
+    rounded: "xl",
+  },
+  description: {
+    fontWeight: "medium",
+    textAlign: "start",
   },
   icon: {
-    color: "white",
+    marginEnd: 4,
+    boxSize: 6,
+    strokeWidth: 1.5,
   },
 })
 
-const statusError = multiStyleConfig.definePartsStyle({
-  container: {
-    bg: "red.400",
-  },
-  icon: {
-    color: "white",
-  },
-})
-
-const statusStyles = (props: StyleFunctionProps) => {
-  const { status } = props
-
-  const styleMap: {
-    [status: string]: Record<string, SystemStyleInterpolation>
-  } = {
-    info: statusInfo,
-    error: statusError,
-  }
-
-  return styleMap[status as string] || {}
+const getForegroundColor = (props: StyleFunctionProps) => {
+  const { colorScheme: c } = props
+  return `colors.${c}.400`
 }
 
-// Subtle variant styles
+const getBorderColor = (props: StyleFunctionProps) => {
+  const { colorScheme: c } = props
+  return `colors.${c}.200`
+}
 
-const variantSubtle = multiStyleConfig.definePartsStyle((props) =>
-  statusStyles(props),
-)
-
-// Process variant styles
-
-const processContainerStyles = defineStyle({
-  px: 6,
-  py: 4,
-  bg: "gold.300",
-  borderWidth: 1,
-  borderColor: "gold.100",
-  shadow: "none",
-  alignItems: "flex-start",
+const variantSubtle = multyStyleConfig.definePartsStyle((props) => {
+  const foregroundColor = getForegroundColor(props)
+  const borderColor = getBorderColor(props)
+  return {
+    container: {
+      [$borderColor.variable]: borderColor,
+      [$foregroundColor.variable]: foregroundColor,
+    },
+  }
 })
-
-const processIconStyles = defineStyle({
-  mr: 4,
-  w: 12,
-  h: 12,
-})
-
-const processTitleStyles = defineStyle({
-  color: "grey.700",
-  fontWeight: "bold",
-  m: 0,
-})
-
-const processDescriptionStyles = defineStyle({
-  color: "grey.500",
-  fontWeight: "medium",
-})
-
-const processVariant = multiStyleConfig.definePartsStyle({
-  container: processContainerStyles,
-  icon: processIconStyles,
-  title: processTitleStyles,
-  description: processDescriptionStyles,
-})
-
-// Theme definition
 
 const variants = {
   subtle: variantSubtle,
-  process: processVariant,
 }
 
-export const alertTheme = multiStyleConfig.defineMultiStyleConfig({
+export const alertTheme = multyStyleConfig.defineMultiStyleConfig({
   baseStyle,
   variants,
 })

@@ -6,12 +6,7 @@ import { WagmiProvider } from "wagmi"
 import { QueryClientProvider } from "@tanstack/react-query"
 import { AcreSdkProvider } from "./acre-react/contexts"
 import GlobalStyles from "./components/GlobalStyles"
-import {
-  DocsDrawerContextProvider,
-  LedgerWalletAPIProvider,
-  SidebarContextProvider,
-  WalletContextProvider,
-} from "./contexts"
+import { DocsDrawerContextProvider, SidebarContextProvider } from "./contexts"
 import { useInitApp } from "./hooks"
 import { router } from "./router"
 import { store } from "./store"
@@ -34,21 +29,17 @@ function DAppProviders() {
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        <LedgerWalletAPIProvider>
-          <WalletContextProvider>
-            <AcreSdkProvider>
-              <DocsDrawerContextProvider>
-                <SidebarContextProvider>
-                  <ReduxProvider store={store}>
-                    <ChakraProvider theme={theme}>
-                      <DApp />
-                    </ChakraProvider>
-                  </ReduxProvider>
-                </SidebarContextProvider>
-              </DocsDrawerContextProvider>
-            </AcreSdkProvider>
-          </WalletContextProvider>
-        </LedgerWalletAPIProvider>
+        <AcreSdkProvider>
+          <DocsDrawerContextProvider>
+            <SidebarContextProvider>
+              <ReduxProvider store={store}>
+                <ChakraProvider theme={theme}>
+                  <DApp />
+                </ChakraProvider>
+              </ReduxProvider>
+            </SidebarContextProvider>
+          </DocsDrawerContextProvider>
+        </AcreSdkProvider>
       </QueryClientProvider>
     </WagmiProvider>
   )

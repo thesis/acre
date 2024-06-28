@@ -1,6 +1,7 @@
 import React, { ComponentType } from "react"
 import { Modal, ModalContent, ModalOverlay, ModalProps } from "@chakra-ui/react"
 import { BaseModalProps } from "#/types"
+import { useSidebar } from "#/hooks"
 
 export const MODAL_BASE_SIZE = "lg"
 
@@ -10,6 +11,9 @@ function withBaseModal<T extends BaseModalProps>(
 ) {
   return function ModalBase(props: T) {
     const { closeModal } = props
+
+    const { isOpen: isSidebarOpen } = useSidebar()
+
     return (
       <Modal
         isOpen
@@ -20,7 +24,12 @@ function withBaseModal<T extends BaseModalProps>(
         {...modalProps}
       >
         <ModalOverlay mt="header_height" />
-        <ModalContent mt="modal_shift">
+        <ModalContent
+          mr={{
+            base: isSidebarOpen ? "var(--chakra-sizes-sidebar_width)" : 0,
+            xl: 0,
+          }}
+        >
           <WrappedModalContent {...props} />
         </ModalContent>
       </Modal>

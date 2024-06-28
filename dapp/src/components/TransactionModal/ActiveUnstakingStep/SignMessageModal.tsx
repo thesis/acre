@@ -67,9 +67,9 @@ export default function SignMessageModal() {
     (error: unknown) => {
       if (eip1193.didUserRejectRequest(error)) {
         handlePause()
+      } else {
+        onSignMessageError()
       }
-
-      onSignMessageError()
     },
     [onSignMessageError, handlePause],
   )

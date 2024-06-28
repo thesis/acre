@@ -3,12 +3,14 @@ import { useModal } from "#/hooks"
 import { ModalType } from "#/types"
 import TransactionModal from "../TransactionModal"
 import WelcomeModal from "../WelcomeModal"
+import MezoBeehiveModal from "../MezoBeehiveModal"
 import ConnectWalletModal from "../ConnectWalletModal"
 
 const MODALS: Record<ModalType, ElementType> = {
   STAKE: TransactionModal,
   UNSTAKE: TransactionModal,
   WELCOME: WelcomeModal,
+  MEZO_BEEHIVE: MezoBeehiveModal,
   CONNECT_WALLET: ConnectWalletModal,
 } as const
 
