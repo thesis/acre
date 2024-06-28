@@ -9,6 +9,7 @@ import {
   TBTCContracts,
 } from "@keep-network/tbtc-v2.ts"
 
+// @ts-expect-error we only mock the methods used in our SDK.
 // eslint-disable-next-line import/prefer-default-export
 export class MockTbtcSdk implements TBTC {
   deposits: DepositsService
