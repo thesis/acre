@@ -67,7 +67,7 @@ export default function ConnectWalletButton({
   const dispatch = useAppDispatch()
   const { connectionError, setConnectionError } = useWalletConnectionError()
 
-  const hasConnectionError = connectionStatus === "error" || connectionError
+  const hasConnectionError = connectionError || connectionStatus === "error"
   const hasSignMessageStatus = signMessageStatus === "error"
   const showStatuses = isSelected && !hasConnectionError
   const showRetryButton = address && hasSignMessageStatus
@@ -96,15 +96,18 @@ export default function ConnectWalletButton({
   )
 
   const handleConnection = useCallback(async () => {
-    // // This is a workaround. Should be handled by OrangeKit
     const bitcoinAddress = await connector.getBitcoinAddress()
-    if (bitcoinAddress && !isSupportedBTCAddressType(bitcoinAddress)) {
-      setConnectionError(CONNECTION_ERRORS.NOT_SUPPORTED)
-      return
-    }
 
     onConnect(connector, {
       onSuccess: () => {
+        // This is workaround to disallow Nested Segwit addresses.
+        // Should be handled by OrangeKit
+        if (!isSupportedBTCAddressType(bitcoinAddress)) {
+          onDisconnect()
+          setConnectionError(CONNECTION_ERRORS.NOT_SUPPORTED)
+          return
+        }
+
         logPromiseFailure(handleSignMessage(connector))
       },
       onError: (error: OrangeKitError) => {
@@ -112,7 +115,13 @@ export default function ConnectWalletButton({
         setConnectionError(errorData)
       },
     })
-  }, [connector, handleSignMessage, onConnect, setConnectionError])
+  }, [
+    connector,
+    handleSignMessage,
+    onConnect,
+    onDisconnect,
+    setConnectionError,
+  ])
 
   const handleButtonClick = () => {
     onClick()
