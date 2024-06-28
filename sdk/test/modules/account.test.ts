@@ -1,4 +1,5 @@
 import { BitcoinTxHash } from "@keep-network/tbtc-v2.ts"
+import { OrangeKitSdk } from "@orangekit/sdk"
 import {
   AcreContracts,
   Hex,
@@ -12,6 +13,9 @@ import { MockTbtc } from "../utils/mock-tbtc"
 import { DepositReceipt } from "../../src/modules/tbtc"
 import AcreSubgraphApi from "../../src/lib/api/AcreSubgraphApi"
 import * as satoshiConverter from "../../src/lib/utils/satoshi-converter"
+import { MockBitcoinProvider } from "../utils/mock-bitcoin-provider"
+import { MockOrangeKitSdk } from "../utils/mock-orangekit"
+import * as RedeemerProxyModule from "../../src/lib/redeemer-proxy"
 
 const stakingModuleData: {
   initializeDeposit: {
@@ -69,14 +73,27 @@ describe("Account", () => {
   const contracts: AcreContracts = new MockAcreContracts()
   const tbtc = new MockTbtc()
   const acreSubgraph = new AcreSubgraphApi("test")
+  const bitcoinProvider = new MockBitcoinProvider()
+  const orangeKit: OrangeKitSdk =
+    new MockOrangeKitSdk() as unknown as OrangeKitSdk
 
   const { bitcoinDepositorAddress, predictedEthereumDepositorAddress } =
     stakingModuleData.initializeDeposit
 
-  const account: Account = new Account(contracts, tbtc, acreSubgraph, {
+  const accountData = {
     bitcoinAddress: bitcoinDepositorAddress,
     ethereumAddress: predictedEthereumDepositorAddress,
-  })
+    bitcoinPublicKey: "123456",
+  }
+
+  const account: Account = new Account(
+    contracts,
+    tbtc,
+    acreSubgraph,
+    accountData,
+    bitcoinProvider,
+    orangeKit,
+  )
 
   describe("initializeStake", () => {
     const { mockedDepositBTCAddress, referral, extraData } =
@@ -328,6 +345,78 @@ describe("Account", () => {
 
     it("should return correct data", () => {
       expect(result).toStrictEqual(expectedDeposits)
+    })
+  })
+
+  describe("initializeWithdrawal", () => {
+    const btcAmount = 10000000n // 0.1 BTC
+    const btcAmountIn1e18 = 100000000000000000n
+    const spyOnFromSatoshi = jest.spyOn(satoshiConverter, "fromSatoshi")
+
+    const mockedShares = 90000000000000000n // 0.09 stBTC in 1e18 precision
+    const spyOnConvertToShares = jest.spyOn(contracts.stBTC, "convertToShares")
+
+    // 0.08 tBTC in 1e18 precision
+    const mockedTbtcAmountToRedeem = 80000000000000000n
+    const spyOnPreviewRedeem = jest.spyOn(contracts.stBTC, "previewRedeem")
+
+    const mockedRedeemer = {} as RedeemerProxyModule.default
+    const spyOnInitRedeemer = jest.spyOn(RedeemerProxyModule, "default")
+
+    const mockedTxHash =
+      "0xad19f160667d583a2eb0b844e9b4f669354e79f91ff79a4782184841e66ca06a"
+
+    let result: string
+
+    beforeEach(async () => {
+      spyOnConvertToShares.mockResolvedValueOnce(mockedShares)
+      spyOnPreviewRedeem.mockResolvedValueOnce(mockedTbtcAmountToRedeem)
+      spyOnInitRedeemer.mockReturnValueOnce(mockedRedeemer)
+
+      tbtc.initiateRedemption = jest.fn().mockResolvedValueOnce(mockedTxHash)
+
+      result = await account.initializeWithdrawal(btcAmount)
+    })
+
+    it("should convert satoshi amount to tBTC 1e18 precision", () => {
+      expect(spyOnFromSatoshi).toHaveBeenLastCalledWith(btcAmount)
+      expect(spyOnFromSatoshi).toHaveReturnedWith(btcAmountIn1e18)
+    })
+
+    it("should convert to shares", () => {
+      expect(spyOnConvertToShares).toHaveBeenCalledWith(btcAmountIn1e18)
+    })
+
+    it("should preview redeem", () => {
+      expect(spyOnPreviewRedeem).toHaveBeenCalledWith(mockedShares)
+    })
+
+    it("should init the redeemer proxy", () => {
+      expect(spyOnInitRedeemer).toHaveBeenCalledWith(
+        contracts,
+        orangeKit,
+        {
+          bitcoinAddress: accountData.bitcoinAddress,
+          ethereumAddress: accountData.ethereumAddress,
+          publicKey: accountData.bitcoinPublicKey,
+        },
+        bitcoinProvider,
+        mockedShares,
+        undefined,
+        undefined,
+      )
+    })
+
+    it("should initiate redemption", () => {
+      expect(tbtc.initiateRedemption).toHaveBeenCalledWith(
+        accountData.bitcoinAddress,
+        mockedTbtcAmountToRedeem,
+        mockedRedeemer,
+      )
+    })
+
+    it("should return the transaction hash", () => {
+      expect(result).toBe(mockedTxHash)
     })
   })
 })

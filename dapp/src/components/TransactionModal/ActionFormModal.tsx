@@ -43,7 +43,6 @@ function ActionFormModal({ type }: { type: ActionFlowType }) {
 
       try {
         setIsLoading(true)
-        // TODO: Init unstake flow
         if (type === ACTION_FLOW_TYPES.STAKE) await handleInitStake()
 
         dispatch(setTokenAmount({ amount: values.amount, currency: "bitcoin" }))
