@@ -1,3 +1,5 @@
+/* eslint-disable class-methods-use-this */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { OrangeKitSdk } from "@orangekit/sdk"
 import { ContractTransaction } from "ethers"
 
@@ -15,23 +17,28 @@ export class MockOrangeKitSdk implements OrangeKitSdk {
     return this.#chainId
   }
 
-  // eslint-disable-next-line class-methods-use-this
   predictAddress(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     bitcoinAddress: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     publicKey?: string,
   ): Promise<`0x${string}`> {
     return Promise.resolve("0x126A16657b7293fdf5D963d6A6E8B9ec387D53e1")
   }
 
-  // eslint-disable-next-line class-methods-use-this
   populateSafeDeploymentTransaction(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     bitcoinAddress: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     publicKey?: string,
   ): Promise<ContractTransaction> {
     return Promise.resolve({} as ContractTransaction)
+  }
+
+  sendTransaction(
+    to: string,
+    value: string,
+    data: string,
+    bitcoinAddress: string,
+    publicKey: string,
+    bitcoinSignMessageFn: (message: string) => Promise<string>,
+  ): Promise<string> {
+    return Promise.resolve("0x0")
   }
 }

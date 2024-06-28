@@ -1,4 +1,4 @@
-import { OrangeKitSdk } from "@orangekit/sdk"
+import { GelatoTransactionSender, OrangeKitSdk } from "@orangekit/sdk"
 import { getDefaultProvider, Provider as EthereumProvider } from "ethers"
 import {
   EthereumAddress,
@@ -57,6 +57,7 @@ class Acre {
     network: BitcoinNetwork,
     tbtcApiUrl: string,
     ethereumRpcUrl: string,
+    gelatoApiKey: string,
   ) {
     const ethereumNetwork: EthereumNetwork =
       Acre.resolveEthereumNetwork(network)
@@ -74,6 +75,7 @@ class Acre {
     const orangeKit = await OrangeKitSdk.init(
       Number(ethereumChainId),
       ethereumRpcUrl,
+      new GelatoTransactionSender(gelatoApiKey),
     )
 
     const contracts = getEthereumContracts(ethersProvider, ethereumNetwork)
@@ -102,6 +104,7 @@ class Acre {
    */
   async connect(bitcoinProvider: BitcoinProvider): Promise<Acre> {
     const accountBitcoinAddress = await bitcoinProvider.getAddress()
+    const accountBitcoinPublicKey = await bitcoinProvider.getPublicKey()
     const accountEthereumAddress = EthereumAddress.from(
       await this.#orangeKit.predictAddress(accountBitcoinAddress),
     )
@@ -122,10 +125,18 @@ class Acre {
       contracts.bitcoinDepositor,
     )
 
-    this.#account = new Account(contracts, tbtc, this.#acreSubgraph, {
-      bitcoinAddress: accountBitcoinAddress,
-      ethereumAddress: accountEthereumAddress,
-    })
+    this.#account = new Account(
+      contracts,
+      tbtc,
+      this.#acreSubgraph,
+      {
+        bitcoinAddress: accountBitcoinAddress,
+        ethereumAddress: accountEthereumAddress,
+        bitcoinPublicKey: accountBitcoinPublicKey,
+      },
+      bitcoinProvider,
+      this.#orangeKit,
+    )
 
     return this
   }
