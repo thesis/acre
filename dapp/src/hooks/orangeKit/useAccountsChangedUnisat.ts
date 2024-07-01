@@ -10,7 +10,7 @@ export function useAccountsChangedUnisat() {
   useEffect(() => {
     const provider = window.unisat
 
-    if (!provider) return
+    if (!provider) return undefined
 
     const handleAccountsChanged = (accounts: string[]) => {
       if (isConnected && accounts.length === 0) {
@@ -22,7 +22,6 @@ export function useAccountsChangedUnisat() {
     }
     provider.on("accountsChanged", handleAccountsChanged)
 
-    // eslint-disable-next-line consistent-return
     return () => {
       provider.removeListener("accountsChanged", handleAccountsChanged)
     }

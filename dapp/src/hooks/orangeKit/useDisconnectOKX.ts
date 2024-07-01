@@ -10,11 +10,10 @@ export function useDisconnectOKX() {
   useEffect(() => {
     const provider = window?.okxwallet?.bitcoin
 
-    if (!provider || !isOkxWalletEnabled) return
+    if (!provider || !isOkxWalletEnabled) return undefined
 
     provider.on("disconnect", onDisconnect)
 
-    // eslint-disable-next-line consistent-return
     return () => {
       provider.removeListener("disconnect", onDisconnect)
     }

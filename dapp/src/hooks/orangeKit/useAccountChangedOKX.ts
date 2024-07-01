@@ -13,7 +13,7 @@ export function useAccountChangedOKX() {
   useEffect(() => {
     const provider = window?.okxwallet?.bitcoin
 
-    if (!provider || !isOkxWalletEnabled) return
+    if (!provider || !isOkxWalletEnabled) return undefined
 
     const handleAccountChanged = (addressInfo: {
       address: string
@@ -27,7 +27,6 @@ export function useAccountChangedOKX() {
     }
     provider.on("accountChanged", handleAccountChanged)
 
-    // eslint-disable-next-line consistent-return
     return () => {
       provider.removeListener("accountChanged", handleAccountChanged)
     }
