@@ -1,4 +1,4 @@
-import { selectEstimatedBtcBalance } from "#/store/btc"
+import { selectEstimatedBtcBalance } from "#/store/wallet"
 import { useAppSelector } from "./useAppSelector"
 
 export function useEstimatedBTCBalance() {
