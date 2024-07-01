@@ -1,10 +1,15 @@
 import React, { useState } from "react"
-import { ModalBody, ModalHeader, ModalCloseButton } from "@chakra-ui/react"
+import {
+  ModalBody,
+  ModalHeader,
+  ModalCloseButton,
+  // VStack,
+} from "@chakra-ui/react"
 import { useConnectors } from "#/hooks"
 import { AnimatePresence } from "framer-motion"
 import withBaseModal from "../ModalRoot/withBaseModal"
 import ConnectWalletButton from "./ConnectWalletButton"
-// import { Alert, AlertTitle, AlertDescription } from "./shared/Alert"
+// import { Alert, AlertTitle, AlertDescription, AlertIcon } from "./shared/Alert"
 
 const disabledConnectorIds = [
   import.meta.env.VITE_FEATURE_FLAG_OKX_WALLET_ENABLED !== "true"
@@ -42,9 +47,12 @@ export function ConnectWalletModalBase() {
               w="full"
             >
               <Alert status="error" mb={6}>
-                <AlertTitle>{mockError.title}</AlertTitle>
-                <AlertDescription>{mockError.description}</AlertDescription>
-              </Alert>
+                <AlertIcon />
+                <VStack w="full" align="start" spacing={0}>
+                  <AlertTitle>{mockError.title}</AlertTitle>
+                  <AlertDescription>{mockError.description}</AlertDescription>
+                </VStack>
+                </Alert>
             </Box>
           )} */}
         </AnimatePresence>

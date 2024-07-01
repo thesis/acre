@@ -7,7 +7,6 @@ import {
   AlertDescription,
   AlertStatus,
   useAlertStyles,
-  VStack,
 } from "@chakra-ui/react"
 import {
   IconCircleCheck,
@@ -52,11 +51,24 @@ const getStatusColorScheme = (status: AlertStatus) =>
 const getStatusIcon = (status: AlertStatus) => STATUSES[status].icon
 
 function AlertIcon(props: AlertProps) {
-  const { status = "info" } = props
-  const icon = getStatusIcon(status)
+  const { status = "info", as } = props
+  const icon = as ?? getStatusIcon(status)
   const styles = useAlertStyles()
-  const css = status === "loading" ? styles.spinner : styles.icon
-  return <Icon as={icon} __css={css} />
+  const css =
+    status === "loading"
+      ? {
+          ...styles.spinner,
+          ...styles.icon,
+        }
+      : styles.icon
+
+  return (
+    <Icon
+      as={icon}
+      __css={css}
+      variant={status === "loading" ? "filled" : undefined}
+    />
+  )
 }
 
 export default function Alert(props: AlertProps) {
@@ -65,11 +77,7 @@ export default function Alert(props: AlertProps) {
 
   return (
     <ChakraAlert colorScheme={colorScheme} {...restProps}>
-      <AlertIcon status={status} />
-
-      <VStack w="full" align="start" spacing={0}>
-        {children}
-      </VStack>
+      {children}
     </ChakraAlert>
   )
 }
