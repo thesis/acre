@@ -10,7 +10,7 @@ export type WalletState = {
   activities: Activity[]
 }
 
-const initialState: WalletState = {
+export const initialState: WalletState = {
   estimatedBtcBalance: 0n,
   sharesBalance: 0n,
   isSignedMessage: false,
