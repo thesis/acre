@@ -31,9 +31,6 @@ abstract contract ERC4626NonFungibleWithdrawals is ERC4626Upgradeable {
     /// @notice Emitted when the non-fungible withdrawals are disabled.
     event NonFungibleWithdrawalsDisabled();
 
-    /// @notice Emitted when the non-fungible withdrawals are already disabled.
-    error NonFungibleWithdrawalsAlreadyDisabled();
-
     /// @dev Initializes the contract by setting the non-fungible withdrawals to
     ///      enabled.
     function __ERC4626NonFungibleWithdrawals_init() internal onlyInitializing {
@@ -80,10 +77,6 @@ abstract contract ERC4626NonFungibleWithdrawals is ERC4626Upgradeable {
     ///         cannot be re-enabled.
     /// @dev This function should be callable only by the owner.
     function _disableNonFungibleWithdrawals() internal {
-        if (!nonFungibleWithdrawalsEnabled) {
-            revert NonFungibleWithdrawalsAlreadyDisabled();
-        }
-
         nonFungibleWithdrawalsEnabled = false;
 
         emit NonFungibleWithdrawalsDisabled();

@@ -2238,17 +2238,20 @@ describe("stBTC", () => {
         context("when non fungible withdrawals are disabled", () => {
           beforeAfterSnapshotWrapper()
 
+          let tx: ContractTransactionResponse
+
           before(async () => {
             await stbtc.connect(governance).disableNonFungibleWithdrawals()
+
+            tx = await stbtc.connect(governance).disableNonFungibleWithdrawals()
           })
 
-          it("should revert", async () => {
-            await expect(
-              stbtc.connect(governance).disableNonFungibleWithdrawals(),
-            ).to.be.revertedWithCustomError(
-              stbtc,
-              "NonFungibleWithdrawalsAlreadyDisabled",
-            )
+          it("should emit NonFungibleWithdrawalsDisabled event", async () => {
+            await expect(tx).to.emit(stbtc, "NonFungibleWithdrawalsDisabled")
+          })
+
+          it("should disable non fungible withdrawals", async () => {
+            expect(await stbtc.nonFungibleWithdrawalsEnabled()).to.be.false
           })
         })
 
