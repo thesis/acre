@@ -1,4 +1,4 @@
-import { Address, ByteArray, ethereum } from "@graphprotocol/graph-ts"
+import { Address, BigInt, ByteArray, ethereum } from "@graphprotocol/graph-ts"
 import { DepositOwner, Deposit, Event, Withdraw } from "../generated/schema"
 
 export function getOrCreateDepositOwner(depositOwnerId: Address): DepositOwner {
@@ -32,21 +32,32 @@ export function getOrCreateEvent(eventId: string): Event {
   return event
 }
 
-export function getOrCreateWithdraw(id: string): Withdraw {
-  let withdrawEntity = Withdraw.load(id)
+export function getOrCreateWithdraw(redemptionKey: string): Withdraw {
+  let loop = true
+  let count = BigInt.zero()
+  let id = ""
+  let withdrawEntity: Withdraw | null
 
-  if (!withdrawEntity) {
-    withdrawEntity = new Withdraw(id)
+  while (loop) {
+    id = redemptionKey.concat("-").concat(count.toString())
+    withdrawEntity = Withdraw.load(id)
+
+    if (withdrawEntity) {
+      count = count.plus(BigInt.fromI32(1))
+    } else {
+      withdrawEntity = new Withdraw(id)
+      loop = false
+    }
   }
 
-  return withdrawEntity
+  return withdrawEntity!
 }
 
-export function findLogByEventSignatureInLogs(
+export function getLogByEventSignatureInLogs(
   logs: ethereum.Log[],
   eventSignature: ByteArray,
   contractAddress: Address,
-): ethereum.Log {
+): ethereum.Log | null {
   let logIndex = -1
   for (let i = 0; i < logs.length; i += 1) {
     const receiptLog = logs[i]
@@ -60,10 +71,28 @@ export function findLogByEventSignatureInLogs(
   }
 
   if (logIndex < 0) {
+    return null
+  }
+
+  return logs[logIndex]
+}
+
+export function findLogByEventSignatureInLogs(
+  logs: ethereum.Log[],
+  eventSignature: ByteArray,
+  contractAddress: Address,
+): ethereum.Log {
+  const log = getLogByEventSignatureInLogs(
+    logs,
+    eventSignature,
+    contractAddress,
+  )
+
+  if (!log) {
     throw new Error(
       `Cannot find event (signature: ${eventSignature.toHexString()}) in transaction logs`,
     )
   }
 
-  return logs[logIndex]
+  return log
 }
