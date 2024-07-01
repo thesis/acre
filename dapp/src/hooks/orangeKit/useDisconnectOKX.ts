@@ -1,8 +1,6 @@
 import { useEffect } from "react"
+import { featureFlags } from "#/constants"
 import { useWallet } from "../useWallet"
-
-const isOkxWalletEnabled =
-  import.meta.env.VITE_FEATURE_FLAG_OKX_WALLET_ENABLED === "true"
 
 export function useDisconnectOKX() {
   const { onDisconnect } = useWallet()
@@ -10,7 +8,7 @@ export function useDisconnectOKX() {
   useEffect(() => {
     const provider = window?.okxwallet?.bitcoin
 
-    if (!provider || !isOkxWalletEnabled) return undefined
+    if (!provider || !featureFlags.OKX_WALLET_ENABLED) return undefined
 
     provider.on("disconnect", onDisconnect)
 

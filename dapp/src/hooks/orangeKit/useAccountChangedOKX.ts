@@ -1,10 +1,8 @@
 import { useEffect } from "react"
 import { MODAL_TYPES } from "#/types"
+import { featureFlags } from "#/constants"
 import { useWallet } from "../useWallet"
 import { useModal } from "../useModal"
-
-const isOkxWalletEnabled =
-  import.meta.env.VITE_FEATURE_FLAG_OKX_WALLET_ENABLED === "true"
 
 export function useAccountChangedOKX() {
   const { isConnected, address, onDisconnect } = useWallet()
@@ -13,7 +11,7 @@ export function useAccountChangedOKX() {
   useEffect(() => {
     const provider = window?.okxwallet?.bitcoin
 
-    if (!provider || !isOkxWalletEnabled) return undefined
+    if (!provider || !featureFlags.OKX_WALLET_ENABLED) return undefined
 
     const handleAccountChanged = (addressInfo: {
       address: string
