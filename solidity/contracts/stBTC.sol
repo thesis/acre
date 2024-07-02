@@ -44,6 +44,19 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     /// Exit fee basis points applied to exit fee calculation.
     uint256 public exitFeeBasisPoints;
 
+    /// @notice Returns the maximum amount of the underlying asset for which the
+    ///      shares can be minted without the coverage in deposited assets.
+    mapping(address => uint256) public allowedDebt;
+
+    /// @notice Returns the current debt of the debtor.
+    mapping(address => uint256) public currentDebt;
+
+    /// @notice Total amount of debt across all debtors.
+    /// @dev This is the total amount of assets for which shares have been minted
+    ///      without the coverage in deposited assets. The value is used to
+    ///      adjust the total assets held by the vault.
+    uint256 public totalDebt;
+
     /// Emitted when the treasury wallet address is updated.
     /// @param oldTreasury Address of the old treasury wallet.
     /// @param newTreasury Address of the new treasury wallet.
@@ -82,6 +95,24 @@ contract stBTC is ERC4626Fees, PausableOwnable {
 
     /// Reverts if the dispatcher address is the same.
     error SameDispatcher();
+
+    /// @notice Emitted when the debt allowance of a debtor is insufficient.
+    /// @dev Used in the debt minting function.
+    /// @param debtor Address of the debtor.
+    /// @param allowance Maximum debt allowance of the debtor.
+    /// @param needed Requested amount of debt of the debtor.
+    error InsufficientDebtAllowance(
+        address debtor,
+        uint256 allowance,
+        uint256 needed
+    );
+
+    /// @notice Emitted when the debt of a debtor is insufficient.
+    /// @dev Used in the debt cancellation function.
+    /// @param debtor Address of the debtor.
+    /// @param debt Current debt of the debtor.
+    /// @param needed Requested amount of assets cancelling the debt.
+    error InsufficientDebt(address debtor, uint256 debt, uint256 needed);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -219,6 +250,88 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         _disableNonFungibleWithdrawals();
     }
 
+    /// @notice Sets the maximum debt allowance of the debtor.
+    /// @param debtor Address of the debtor.
+    /// @param newAllowance Maximum debt allowance of the debtor.
+    function setDebtAllowance(
+        address debtor,
+        uint256 newAllowance
+    ) external onlyOwner {
+        allowedDebt[debtor] = newAllowance;
+    }
+
+    /// @notice Mints shares corresponding to given number of assets, that are
+    ///         considered a debt.
+    /// @dev The number of shares is calculated based on the current conversion
+    ///      rate from the assets to shares.
+    /// @param assets Amount of assets for which debt will be taken.
+    /// @param receiver Receiver of the shares.
+    /// @return shares Amount of shares minted.
+    function mintDebt(
+        uint256 assets,
+        address receiver
+    ) external whenNotPaused returns (uint256 shares) {
+        // Increase the debt of the debtor.
+        currentDebt[msg.sender] += assets;
+
+        // Check the maximum debt allowance of the debtor.
+        if (currentDebt[msg.sender] > allowedDebt[msg.sender]) {
+            revert InsufficientDebtAllowance(
+                msg.sender,
+                allowedDebt[msg.sender],
+                currentDebt[msg.sender]
+            );
+        }
+
+        // Convert the assets to shares. Conversion has to be executed before the
+        // `totalDebt` adjustment.
+        shares = convertToShares(assets);
+
+        // Increase the total debt.
+        totalDebt += assets;
+
+        // Mint the shares to the receiver.
+        super._mint(receiver, shares);
+
+        return shares;
+    }
+
+    /// @notice Cancels the debt of the debtor.
+    /// @dev The number of shares is calculated based on the current conversion
+    ///      rate from the assets to shares.
+    /// @dev The debtor has to approve the transfer of the shares, to determine
+    ///      the number of shares to approve the caller can use the `previewCancelDebt`
+    ///      function.
+    /// @param assets Amount of debt to cancel.
+    /// @return shares Amount of shares burned.
+    function cancelDebt(
+        uint256 assets
+    ) external whenNotPaused returns (uint256 shares) {
+        // Check the current debt of the debtor.
+        if (currentDebt[msg.sender] < assets) {
+            revert InsufficientDebt(
+                msg.sender,
+                currentDebt[msg.sender],
+                assets
+            );
+        }
+
+        // Decrease the debt of the debtor.
+        currentDebt[msg.sender] -= assets;
+
+        // Convert the assets to shares. Conversion has to be executed before the
+        // `totalDebt` adjustment.
+        shares = previewCancelDebt(assets);
+
+        // Decrease the total debt.
+        totalDebt -= assets;
+
+        // Burn the shares from the debtor.
+        super._burn(msg.sender, shares);
+
+        return shares;
+    }
+
     /// @notice Mints shares to receiver by depositing exactly amount of
     ///         tBTC tokens.
     /// @dev Takes into account a deposit parameter, minimum deposit amount,
@@ -308,9 +421,15 @@ contract stBTC is ERC4626Fees, PausableOwnable {
 
     /// @notice Returns the total amount of assets held by the vault across all
     ///         allocations and this contract.
+    /// @dev The value contains virtual assets reflecting the debt minted by the
+    ///      debtors. The debt is not backed by the deposited assets, and it is
+    ///      used to adjust the total assets held by the vault, to allow shares
+    ///      and assets conversion calculations.
     function totalAssets() public view override returns (uint256) {
         return
-            IERC20(asset()).balanceOf(address(this)) + dispatcher.totalAssets();
+            IERC20(asset()).balanceOf(address(this)) +
+            dispatcher.totalAssets() +
+            totalDebt;
     }
 
     /// @dev Returns the maximum amount of the underlying asset that can be
@@ -361,6 +480,12 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     /// @return The amount of assets.
     function assetsBalanceOf(address account) public view returns (uint256) {
         return convertToAssets(balanceOf(account));
+    }
+
+    /// @notice Previews the amount of shares that will be burned for the given
+    ///         amount of cancelled debt assets.
+    function previewCancelDebt(uint256 assets) public view returns (uint256) {
+        return convertToShares(assets);
     }
 
     /// @return Returns entry fee basis point used in deposits.
