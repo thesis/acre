@@ -282,7 +282,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     /// @notice Sets the maximum debt allowance of the debtor.
     /// @param debtor Address of the debtor.
     /// @param newAllowance Maximum debt allowance of the debtor.
-    function setDebtAllowance(
+    function updateDebtAllowance(
         address debtor,
         uint256 newAllowance
     ) external onlyOwner {

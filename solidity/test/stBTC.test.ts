@@ -2893,7 +2893,7 @@ describe("stBTC", () => {
   describe("mintDebt and cancelDebt", () => {
     beforeAfterSnapshotWrapper()
 
-    describe("setDebtAllowance", () => {
+    describe("updateDebtAllowance", () => {
       beforeAfterSnapshotWrapper()
 
       describe("when caller is not governance", () => {
@@ -2901,7 +2901,7 @@ describe("stBTC", () => {
           await expect(
             stbtc
               .connect(thirdParty)
-              .setDebtAllowance(externalMinter.address, to1e18(1)),
+              .updateDebtAllowance(externalMinter.address, to1e18(1)),
           )
             .to.be.revertedWithCustomError(stbtc, "OwnableUnauthorizedAccount")
             .withArgs(thirdParty.address)
@@ -2912,7 +2912,7 @@ describe("stBTC", () => {
         describe("when allowed debt is zero", () => {
           beforeAfterSnapshotWrapper()
 
-          testSetDebtAllowance(to1e18(100))
+          testupdateDebtAllowance(to1e18(100))
         })
 
         describe("when allowed debt is non-zero", () => {
@@ -2921,29 +2921,29 @@ describe("stBTC", () => {
           before(async () => {
             await stbtc
               .connect(governance)
-              .setDebtAllowance(externalMinter.address, to1e18(1))
+              .updateDebtAllowance(externalMinter.address, to1e18(1))
           })
 
           describe("when changing the debt allowance to non-zero value", () => {
             beforeAfterSnapshotWrapper()
 
-            testSetDebtAllowance(to1e18(100))
+            testupdateDebtAllowance(to1e18(100))
           })
 
           describe("when changing the debt allowance to zero value", () => {
             beforeAfterSnapshotWrapper()
 
-            testSetDebtAllowance(to1e18(0))
+            testupdateDebtAllowance(to1e18(0))
           })
         })
 
-        function testSetDebtAllowance(newDebtAllowance: bigint) {
+        function testupdateDebtAllowance(newDebtAllowance: bigint) {
           let tx: ContractTransactionResponse
 
           before(async () => {
             tx = await stbtc
               .connect(governance)
-              .setDebtAllowance(externalMinter.address, newDebtAllowance)
+              .updateDebtAllowance(externalMinter.address, newDebtAllowance)
           })
 
           it("should set the new debt allowance", async () => {
@@ -3003,7 +3003,7 @@ describe("stBTC", () => {
           before(async () => {
             await stbtc
               .connect(governance)
-              .setDebtAllowance(externalMinter.address, debtAllowance)
+              .updateDebtAllowance(externalMinter.address, debtAllowance)
           })
 
           describe("on empty vault", () => {
@@ -3174,11 +3174,11 @@ describe("stBTC", () => {
 
             await stbtc
               .connect(governance)
-              .setDebtAllowance(minter1.address, minter1DebtAllowance)
+              .updateDebtAllowance(minter1.address, minter1DebtAllowance)
 
             await stbtc
               .connect(governance)
-              .setDebtAllowance(minter2.address, minter2DebtAllowance)
+              .updateDebtAllowance(minter2.address, minter2DebtAllowance)
           })
 
           testMintDebt(
@@ -3325,7 +3325,7 @@ describe("stBTC", () => {
           before(async () => {
             await stbtc
               .connect(governance)
-              .setDebtAllowance(externalMinter.address, existingDebt)
+              .updateDebtAllowance(externalMinter.address, existingDebt)
             await stbtc
               .connect(externalMinter)
               .mintDebt(existingDebt, sharesOwner1.address)
