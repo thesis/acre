@@ -1,5 +1,5 @@
 import React from "react"
-import { useEstimatedBTCBalance } from "#/hooks"
+import { useBTCBalance } from "#/hooks"
 import { PageLayout, PageLayoutColumn } from "./PageLayout"
 import DashboardCard from "./DashboardCard"
 import GrantedSeasonPassCard from "./GrantedSeasonPassCard"
@@ -9,7 +9,8 @@ import BeehiveCard from "./BeehiveCard"
 // TODO: Remove placeholder image and replace with actual gamification content
 
 export default function DashboardPage() {
-  const bitcoinWalletBalance = useEstimatedBTCBalance()
+  const { data } = useBTCBalance()
+  const bitcoinWalletBalance = data?.estimatedBitcoinBalance ?? 0n
 
   return (
     <PageLayout>

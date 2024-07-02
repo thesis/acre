@@ -1,7 +1,7 @@
 export * from "./useInitializeAcreSdk"
 export * from "./useFetchMinDepositAmount"
 export * from "./useInitDataFromSdk"
-export * from "./useFetchBTCBalance"
 export * from "./useFetchDeposits"
 export * from "./useMinWithdrawAmount"
 export { default as useTotalAssets } from "./useTotalAssets"
+export { default as useBTCBalance } from "./useBTCBalance"
