@@ -3,6 +3,9 @@ import {
   getOrCreateDepositOwner,
   getOrCreateEvent,
   getOrCreateWithdraw,
+  getNextWithdrawId,
+  getOrCreateRedemptionKeyCounter,
+  getLastWithdrawId,
 } from "./utils"
 import { RedemptionRequested } from "../generated/TbtcBridge/TbtcBridge"
 import { buildRedemptionKey } from "./tbtc-utils"
@@ -33,7 +36,10 @@ export function handleRedemptionRequested(event: RedemptionRequested): void {
     event.params.walletPubKeyHash,
   )
 
-  const withdraw = getOrCreateWithdraw(redemptionKey)
+  const withdrawId = getNextWithdrawId(redemptionKey)
+  const redemptionKeyCounter = getOrCreateRedemptionKeyCounter(redemptionKey)
+
+  const withdraw = getOrCreateWithdraw(withdrawId)
   withdraw.depositOwner = ownerEntity.id
   const amount = getTbtcAmountFromRedemptionRequestedLog(
     bitcoinRedeemerRedemptionRequestLog,
@@ -50,6 +56,10 @@ export function handleRedemptionRequested(event: RedemptionRequested): void {
   ownerEntity.save()
   withdraw.save()
   redemptionRequestedEvent.save()
+  redemptionKeyCounter.counter = redemptionKeyCounter.counter.plus(
+    BigInt.fromI32(1),
+  )
+  redemptionKeyCounter.save()
 }
 
 export function handleSubmitRedemptionProofCall(): void {

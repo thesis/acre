@@ -47,6 +47,15 @@ describe("handleRedemptionRequested", () => {
       )
     })
 
+    test("should create RedemptionKeyCounter entity", () => {
+      assert.fieldEquals(
+        "RedemptionKeyCounter",
+        redemptionRequestedEventData.redemptionKey,
+        "counter",
+        "1",
+      )
+    })
+
     test("should create Withdraw entity", () => {
       assert.entityCount("Withdraw", 1, "Invalid `Withdraw` entity count")
     })
@@ -57,7 +66,7 @@ describe("handleRedemptionRequested", () => {
 
     test("should save Withdraw entity with correct fields", () => {
       const withdrawEntityId =
-        redemptionRequestedEventData.redemptionKey.concat("-0")
+        redemptionRequestedEventData.redemptionKey.concat("-1")
 
       assert.fieldEquals(
         "Withdraw",
@@ -91,11 +100,20 @@ describe("handleRedemptionRequested", () => {
       assert.entityCount("Withdraw", 2, "Invalid `Withdraw` entity count")
     })
 
+    test("should count the redemption key correctly", () => {
+      assert.fieldEquals(
+        "RedemptionKeyCounter",
+        redemptionRequestedEventData.redemptionKey,
+        "counter",
+        "2",
+      )
+    })
+
     test("should set correct id", () => {
       const withdrawEntityId =
-        redemptionRequestedEventData.redemptionKey.concat("-0")
-      const withdrawEntityId2 =
         redemptionRequestedEventData.redemptionKey.concat("-1")
+      const withdrawEntityId2 =
+        redemptionRequestedEventData.redemptionKey.concat("-2")
 
       assert.fieldEquals(
         "Withdraw",

@@ -44,3 +44,9 @@ type Event @entity {
   activity: ActivityData
   type: EventType!
 }
+
+type RedemptionKeyCounter @entity {
+  # keccak256(keccak256(redeemerOutputScript) | walletPubKeyHash)
+  id: ID!
+  counter: BigInt!
+}

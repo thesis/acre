@@ -55,6 +55,7 @@ dataSources:
       entities:
         - Withdraw
         - Event
+        - RedemptionKeyCounter
       abis:
         - name: TbtcBridge
           file: ./abis/TbtcBridge.json

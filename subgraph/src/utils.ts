@@ -1,5 +1,11 @@
 import { Address, BigInt, ByteArray, ethereum } from "@graphprotocol/graph-ts"
-import { DepositOwner, Deposit, Event, Withdraw } from "../generated/schema"
+import {
+  DepositOwner,
+  Deposit,
+  Event,
+  Withdraw,
+  RedemptionKeyCounter,
+} from "../generated/schema"
 
 export function getOrCreateDepositOwner(depositOwnerId: Address): DepositOwner {
   const depositOwnerHexString = depositOwnerId.toHexString()
@@ -32,25 +38,45 @@ export function getOrCreateEvent(eventId: string): Event {
   return event
 }
 
-export function getOrCreateWithdraw(redemptionKey: string): Withdraw {
-  let loop = true
-  let count = BigInt.zero()
-  let id = ""
-  let withdrawEntity: Withdraw | null
+export function getOrCreateRedemptionKeyCounter(
+  redemptionKey: string,
+): RedemptionKeyCounter {
+  let redemptionKeyCounter = RedemptionKeyCounter.load(redemptionKey)
 
-  while (loop) {
-    id = redemptionKey.concat("-").concat(count.toString())
-    withdrawEntity = Withdraw.load(id)
-
-    if (withdrawEntity) {
-      count = count.plus(BigInt.fromI32(1))
-    } else {
-      withdrawEntity = new Withdraw(id)
-      loop = false
-    }
+  if (!redemptionKeyCounter) {
+    redemptionKeyCounter = new RedemptionKeyCounter(redemptionKey)
+    redemptionKeyCounter.counter = BigInt.zero()
   }
 
-  return withdrawEntity!
+  return redemptionKeyCounter
+}
+
+function buildWithdrawId(redemptionKey: string, counter: BigInt): string {
+  return redemptionKey.concat("-").concat(counter.toString())
+}
+
+export function getLastWithdrawId(redemptionKey: string): string {
+  const redemptionKeyCounter = getOrCreateRedemptionKeyCounter(redemptionKey)
+
+  return buildWithdrawId(redemptionKey, redemptionKeyCounter.counter)
+}
+
+export function getNextWithdrawId(redemptionKey: string): string {
+  const redemptionKeyCounter = getOrCreateRedemptionKeyCounter(redemptionKey)
+
+  return buildWithdrawId(
+    redemptionKey,
+    redemptionKeyCounter.counter.plus(BigInt.fromI32(1)),
+  )
+}
+
+export function getOrCreateWithdraw(id: string): Withdraw {
+  let withdraw = Withdraw.load(id)
+  if (!withdraw) {
+    withdraw = new Withdraw(id)
+  }
+
+  return withdraw
 }
 
 export function getLogByEventSignatureInLogs(
