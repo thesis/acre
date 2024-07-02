@@ -79,6 +79,35 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     /// @param exitFeeBasisPoints New value of the fee basis points.
     event ExitFeeBasisPointsUpdated(uint256 exitFeeBasisPoints);
 
+    /// Emitted when the maximum debt allowance of the debtor is updated.
+    /// @param debtor Address of the debtor.
+    /// @param newAllowance Maximum debt allowance of the debtor.
+    event DebtAllowanceUpdated(address indexed debtor, uint256 newAllowance);
+
+    /// Emitted when debt is minted.
+    /// @param debtor Address of the debtor.
+    /// @param currentDebt Current debt of the debtor.
+    /// @param assets Amount of assets for which debt will be taken.
+    /// @param shares Amount of shares minted.
+    event DebtMinted(
+        address indexed debtor,
+        uint256 currentDebt,
+        uint256 assets,
+        uint256 shares
+    );
+
+    /// Emitted when debt is cancelled.
+    /// @param debtor Address of the debtor.
+    /// @param currentDebt Current debt of the debtor.
+    /// @param assets Amount of assets cancelling the debt.
+    /// @param shares Amount of shares burned.
+    event DebtCancelled(
+        address indexed debtor,
+        uint256 currentDebt,
+        uint256 assets,
+        uint256 shares
+    );
+
     /// Reverts if the amount is less than the minimum deposit amount.
     /// @param amount Amount to check.
     /// @param min Minimum amount to check 'amount' against.
@@ -257,6 +286,8 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         address debtor,
         uint256 newAllowance
     ) external onlyOwner {
+        emit DebtAllowanceUpdated(debtor, newAllowance);
+
         allowedDebt[debtor] = newAllowance;
     }
 
@@ -286,6 +317,8 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         // Convert the assets to shares. Conversion has to be executed before the
         // `totalDebt` adjustment.
         shares = convertToShares(assets);
+
+        emit DebtMinted(msg.sender, currentDebt[msg.sender], assets, shares);
 
         // Increase the total debt.
         totalDebt += assets;
@@ -322,6 +355,8 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         // Convert the assets to shares. Conversion has to be executed before the
         // `totalDebt` adjustment.
         shares = previewCancelDebt(assets);
+
+        emit DebtCancelled(msg.sender, currentDebt[msg.sender], assets, shares);
 
         // Decrease the total debt.
         totalDebt -= assets;
