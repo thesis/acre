@@ -1,4 +1,10 @@
-import { Address, BigInt, ByteArray, ethereum } from "@graphprotocol/graph-ts"
+import {
+  Address,
+  BigInt,
+  ByteArray,
+  ethereum,
+  Bytes,
+} from "@graphprotocol/graph-ts"
 import {
   DepositOwner,
   Deposit,
@@ -55,8 +61,12 @@ function buildWithdrawId(redemptionKey: string, counter: BigInt): string {
   return redemptionKey.concat("-").concat(counter.toString())
 }
 
-export function getLastWithdrawId(redemptionKey: string): string {
+export function getLastWithdrawId(redemptionKey: string): string | null {
   const redemptionKeyCounter = getOrCreateRedemptionKeyCounter(redemptionKey)
+
+  if (BigInt.zero().equals(redemptionKeyCounter.counter)) {
+    return null
+  }
 
   return buildWithdrawId(redemptionKey, redemptionKeyCounter.counter)
 }
@@ -74,6 +84,7 @@ export function getOrCreateWithdraw(id: string): Withdraw {
   let withdraw = Withdraw.load(id)
   if (!withdraw) {
     withdraw = new Withdraw(id)
+    withdraw.depositOwner = Address.zero().toHexString()
   }
 
   return withdraw
@@ -121,4 +132,13 @@ export function findLogByEventSignatureInLogs(
   }
 
   return log
+}
+
+// Ref: https://github.com/suntzu93/threshold-tBTC/blob/master/src/utils/utils.ts#L54C1-L60C2
+export function bytesToUint8Array(bytes: Bytes): Uint8Array {
+  const uint8Array = new Uint8Array(bytes.length)
+  for (let i = 0; i < bytes.length; i += 1) {
+    uint8Array[i] = bytes[i]
+  }
+  return uint8Array
 }

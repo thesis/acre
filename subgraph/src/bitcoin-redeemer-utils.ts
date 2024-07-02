@@ -27,7 +27,7 @@ export function getRedemptionRequestedLog(
 }
 export function getOwnerFromRedemptionRequestedLog(log: ethereum.Log): Address {
   // The owner address is first indexed param.
-  return Address.fromString(log.topics[1].toHexString())
+  return ethereum.decode("address", log.topics[1])!.toAddress()
 }
 
 export function getTbtcAmountFromRedemptionRequestedLog(

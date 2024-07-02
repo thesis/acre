@@ -50,3 +50,9 @@ type RedemptionKeyCounter @entity {
   id: ID!
   counter: BigInt!
 }
+
+type RedemptionsCompletedEvent @entity {
+  # wallet public key hash + block hash
+  id: ID!
+  redemptionTxHash: Bytes!
+}

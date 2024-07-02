@@ -15,6 +15,18 @@ const DEPOSIT_REVEALED_EVENT_SIGNATURE = crypto.keccak256(
   ),
 )
 
+export function toBitcoinTxId(bitcoinTxHash: string): string {
+  // Bitcoin transaction id in the same byte order as used by the
+  // Bitcoin block explorers.
+  const bitcoinTransactionId = BigInt.fromUnsignedBytes(
+    Bytes.fromHexString(bitcoinTxHash),
+  )
+    .toHexString()
+    .slice(2)
+
+  return bitcoinTransactionId
+}
+
 export function findBitcoinTransactionIdFromTransactionReceipt(
   transactionReceipt: ethereum.TransactionReceipt | null,
 ): string {
@@ -41,15 +53,7 @@ export function findBitcoinTransactionIdFromTransactionReceipt(
   // (w/o `0x` prefix) points to the Bitcoin transaction hash.
   const bitcoinTxHash = depositRevealedLog.data.toHexString().slice(2, 66)
 
-  // Bitcoin transaction id in the same byte order as used by the
-  // Bitcoin block explorers.
-  const bitcoinTransactionId = BigInt.fromUnsignedBytes(
-    Bytes.fromHexString(bitcoinTxHash),
-  )
-    .toHexString()
-    .slice(2)
-
-  return bitcoinTransactionId
+  return toBitcoinTxId(bitcoinTxHash)
 }
 
 /**
