@@ -67,6 +67,9 @@ describe("BitcoinRedeemer", () => {
       depositor2,
       thirdParty,
     } = await loadFixture(fixture))
+
+    await stbtc.connect(governance).updateEntryFeeBasisPoints(0)
+    await stbtc.connect(governance).updateExitFeeBasisPoints(0)
   })
 
   describe("receiveApproval", () => {
