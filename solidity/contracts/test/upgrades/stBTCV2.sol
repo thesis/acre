@@ -11,12 +11,21 @@ import "../../interfaces/IDispatcher.sol";
 import {ZeroAddress} from "../../utils/Errors.sol";
 
 /// @title stBTCV2
-/// @dev  This is a contract used to test stBTC upgradeability. It is a copy of
-///       stBTC contract with some differences marked with `TEST:` comments.
+/// @notice This contract implements the ERC-4626 tokenized vault standard. By
+///         staking tBTC, users acquire a liquid staking token called stBTC,
+///         commonly referred to as "shares".
+///         Users have the flexibility to redeem stBTC, enabling them to
+///         withdraw their deposited tBTC along with the accrued yield.
+/// @dev ERC-4626 is a standard to optimize and unify the technical parameters
+///      of yield-bearing vaults. This contract facilitates the minting and
+///      burning of shares (stBTC), which are represented as standard ERC20
+///      tokens, providing a seamless exchange with tBTC tokens.
+// slither-disable-next-line missing-inheritance
 contract stBTCV2 is ERC4626Fees, PausableOwnable {
     using SafeERC20 for IERC20;
 
-    /// Dispatcher contract that routes tBTC from stBTC to a given vault and back.
+    /// Dispatcher contract that routes tBTC from stBTC to a given allocation
+    /// contract and back.
     IDispatcher public dispatcher;
 
     /// Address of the treasury wallet, where fees should be transferred to.
@@ -35,6 +44,18 @@ contract stBTCV2 is ERC4626Fees, PausableOwnable {
     /// Exit fee basis points applied to exit fee calculation.
     uint256 public exitFeeBasisPoints;
 
+    /// @notice Returns the maximum amount of the underlying asset for which the
+    ///      shares can be minted without the coverage in deposited assets.
+    mapping(address => uint256) public allowedDebt;
+    /// @notice Returns the current debt of the debtor.
+    mapping(address => uint256) public currentDebt;
+
+    /// @notice Total amount of debt across all debtors.
+    /// @dev This is the total amount of assets for which shares have been minted
+    ///      without the coverage in deposited assets. The value is used to
+    ///      adjust the total assets held by the vault.
+    uint256 public totalDebt;
+
     // TEST: New variable.
     uint256 public newVariable;
 
@@ -45,7 +66,7 @@ contract stBTCV2 is ERC4626Fees, PausableOwnable {
 
     /// Emitted when deposit parameters are updated.
     /// @param minimumDepositAmount New value of the minimum deposit amount.
-    event DepositParametersUpdated(uint256 minimumDepositAmount);
+    event MinimumDepositAmountUpdated(uint256 minimumDepositAmount);
 
     /// Emitted when the dispatcher contract is updated.
     /// @param oldDispatcher Address of the old dispatcher contract.
@@ -71,6 +92,33 @@ contract stBTCV2 is ERC4626Fees, PausableOwnable {
     /// Reverts if the address is disallowed.
     error DisallowedAddress();
 
+    /// Reverts if the fee basis points exceed the maximum value.
+    error ExceedsMaxFeeBasisPoints();
+
+    /// Reverts if the treasury address is the same.
+    error SameTreasury();
+
+    /// Reverts if the dispatcher address is the same.
+    error SameDispatcher();
+
+    /// @notice Emitted when the debt allowance of a debtor is insufficient.
+    /// @dev Used in the debt minting function.
+    /// @param debtor Address of the debtor.
+    /// @param allowance Maximum debt allowance of the debtor.
+    /// @param needed Requested amount of debt of the debtor.
+    error InsufficientDebtAllowance(
+        address debtor,
+        uint256 allowance,
+        uint256 needed
+    );
+
+    /// @notice Emitted when the debt of a debtor is insufficient.
+    /// @dev Used in the debt repayment function.
+    /// @param debtor Address of the debtor.
+    /// @param debt Current debt of the debtor.
+    /// @param needed Requested amount of assets paying the debt.
+    error InsufficientDebt(address debtor, uint256 debt, uint256 needed);
+
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
@@ -89,12 +137,14 @@ contract stBTCV2 is ERC4626Fees, PausableOwnable {
     /// @notice Updates treasury wallet address.
     /// @param newTreasury New treasury wallet address.
     function updateTreasury(address newTreasury) external onlyOwner {
-        // TODO: Introduce a parameters update process.
         if (newTreasury == address(0)) {
             revert ZeroAddress();
         }
         if (newTreasury == address(this)) {
             revert DisallowedAddress();
+        }
+        if (newTreasury == treasury) {
+            revert SameTreasury();
         }
 
         emit TreasuryUpdated(treasury, newTreasury);
@@ -102,20 +152,17 @@ contract stBTCV2 is ERC4626Fees, PausableOwnable {
         treasury = newTreasury;
     }
 
-    /// @notice Updates deposit parameters.
-    /// @param _minimumDepositAmount New value of the minimum deposit amount. It
+    /// @notice Updates minimum deposit amount.
+    /// @param newMinimumDepositAmount New value of the minimum deposit amount. It
     ///        is the minimum amount for a single deposit operation.
-    function updateDepositParameters(
-        uint256 _minimumDepositAmount
+    function updateMinimumDepositAmount(
+        uint256 newMinimumDepositAmount
     ) external onlyOwner {
-        // TODO: Introduce a parameters update process.
-        minimumDepositAmount = _minimumDepositAmount;
+        minimumDepositAmount = newMinimumDepositAmount;
 
-        emit DepositParametersUpdated(_minimumDepositAmount);
+        emit MinimumDepositAmountUpdated(newMinimumDepositAmount);
     }
 
-    // TODO: Implement a governed upgrade process that initiates an update and
-    //       then finalizes it after a delay.
     /// @notice Updates the dispatcher contract and gives it an unlimited
     ///         allowance to transfer deposited tBTC.
     /// @param newDispatcher Address of the new dispatcher contract.
@@ -123,15 +170,14 @@ contract stBTCV2 is ERC4626Fees, PausableOwnable {
         if (address(newDispatcher) == address(0)) {
             revert ZeroAddress();
         }
+        if (address(newDispatcher) == address(dispatcher)) {
+            revert SameDispatcher();
+        }
 
         address oldDispatcher = address(dispatcher);
 
         emit DispatcherUpdated(oldDispatcher, address(newDispatcher));
         dispatcher = newDispatcher;
-
-        // TODO: Once withdrawal/rebalancing is implemented, we need to revoke the
-        // approval of the vaults share tokens from the old dispatcher and approve
-        // a new dispatcher to manage the share tokens.
 
         if (oldDispatcher != address(0)) {
             // Setting allowance to zero for the old dispatcher
@@ -142,25 +188,27 @@ contract stBTCV2 is ERC4626Fees, PausableOwnable {
         IERC20(asset()).forceApprove(address(dispatcher), type(uint256).max);
     }
 
-    // TODO: Implement a governed upgrade process that initiates an update and
-    //       then finalizes it after a delay.
     /// @notice Update the entry fee basis points.
     /// @param newEntryFeeBasisPoints New value of the fee basis points.
     function updateEntryFeeBasisPoints(
         uint256 newEntryFeeBasisPoints
     ) external onlyOwner {
+        if (newEntryFeeBasisPoints > _BASIS_POINT_SCALE) {
+            revert ExceedsMaxFeeBasisPoints();
+        }
         entryFeeBasisPoints = newEntryFeeBasisPoints;
 
         emit EntryFeeBasisPointsUpdated(newEntryFeeBasisPoints);
     }
 
-    // TODO: Implement a governed upgrade process that initiates an update and
-    //       then finalizes it after a delay.
     /// @notice Update the exit fee basis points.
     /// @param newExitFeeBasisPoints New value of the fee basis points.
     function updateExitFeeBasisPoints(
         uint256 newExitFeeBasisPoints
     ) external onlyOwner {
+        if (newExitFeeBasisPoints > _BASIS_POINT_SCALE) {
+            revert ExceedsMaxFeeBasisPoints();
+        }
         exitFeeBasisPoints = newExitFeeBasisPoints;
 
         emit ExitFeeBasisPointsUpdated(newExitFeeBasisPoints);
@@ -168,13 +216,16 @@ contract stBTCV2 is ERC4626Fees, PausableOwnable {
 
     /// @notice Calls `receiveApproval` function on spender previously approving
     ///         the spender to withdraw from the caller multiple times, up to
-    ///         the `amount` amount. If this function is called again, it
-    ///         overwrites the current allowance with `amount`. Reverts if the
+    ///         the `value` amount. If this function is called again, it
+    ///         overwrites the current allowance with `value`. Reverts if the
     ///         approval reverted or if `receiveApproval` call on the spender
     ///         reverted.
-    /// @return True if both approval and `receiveApproval` calls succeeded.
-    /// @dev If the `amount` is set to `type(uint256).max` then
+    /// @dev If the `value` is set to `type(uint256).max` then
     ///      `transferFrom` and `burnFrom` will not reduce an allowance.
+    /// @param spender The address which will spend the funds.
+    /// @param value The amount of tokens to be spent.
+    /// @param extraData Additional data.
+    /// @return True if both approval and `receiveApproval` calls succeeded.
     function approveAndCall(
         address spender,
         uint256 value,
@@ -182,7 +233,7 @@ contract stBTCV2 is ERC4626Fees, PausableOwnable {
     ) external returns (bool) {
         if (approve(spender, value)) {
             IReceiveApproval(spender).receiveApproval(
-                _msgSender(),
+                msg.sender,
                 value,
                 address(this),
                 extraData
@@ -190,6 +241,87 @@ contract stBTCV2 is ERC4626Fees, PausableOwnable {
             return true;
         }
         return false;
+    }
+
+    /// @notice Disables non-fungible withdrawals.
+    function disableNonFungibleWithdrawals() external onlyOwner {
+        _disableNonFungibleWithdrawals();
+    }
+
+    /// @notice Sets the maximum debt allowance of the debtor.
+    /// @param debtor Address of the debtor.
+    /// @param newAllowance Maximum debt allowance of the debtor.
+    function setDebtAllowance(
+        address debtor,
+        uint256 newAllowance
+    ) external onlyOwner {
+        allowedDebt[debtor] = newAllowance;
+    }
+
+    /// @notice Mints shares corresponding to given number of assets, that are
+    ///         considered a debt.
+    /// @param assets Amount of assets for which debt will be taken.
+    /// @param receiver Receiver of the shares.
+    /// @return shares Amount of shares minted.
+    function mintDebt(
+        uint256 assets,
+        address receiver
+    ) external whenNotPaused returns (uint256 shares) {
+        // Increase the debt of the debtor.
+        currentDebt[msg.sender] += assets;
+
+        // Check the maximum debt allowance of the debtor.
+        if (currentDebt[msg.sender] > allowedDebt[msg.sender]) {
+            revert InsufficientDebtAllowance(
+                msg.sender,
+                allowedDebt[msg.sender],
+                currentDebt[msg.sender]
+            );
+        }
+
+        // Convert the assets to shares. Conversion has to be executed before the
+        // `totalDebt` adjustment.
+        shares = convertToShares(assets);
+
+        // Increase the total debt.
+        totalDebt += assets;
+
+        // Mint the shares to the receiver.
+        super._mint(receiver, shares);
+
+        return shares;
+    }
+
+    /// @notice Cancels the debt of the debtor.
+    /// @dev The debtor has to approve the transfer of the shares.
+    /// @param assets Amount of debt to cancel.
+    /// @return shares Amount of shares burned.
+    function cancelDebt(
+        uint256 assets
+    ) external whenNotPaused returns (uint256 shares) {
+        // Check the current debt of the debtor.
+        if (currentDebt[msg.sender] < assets) {
+            revert InsufficientDebt(
+                msg.sender,
+                currentDebt[msg.sender],
+                assets
+            );
+        }
+
+        // Decrease the debt of the debtor.
+        currentDebt[msg.sender] -= assets;
+
+        // Convert the assets to shares. Conversion has to be executed before the
+        // `totalDebt` adjustment.
+        shares = previewCancelDebt(assets);
+
+        // Decrease the total debt.
+        totalDebt -= assets;
+
+        // Burn the shares from the debtor.
+        super._burn(msg.sender, shares);
+
+        return shares;
     }
 
     // TEST: Modified function.
@@ -229,17 +361,112 @@ contract stBTCV2 is ERC4626Fees, PausableOwnable {
         }
     }
 
-    /// @notice Returns value of assets that would be exchanged for the amount of
-    ///         shares owned by the `account`.
-    /// @param account Owner of shares.
-    /// @return Assets amount.
+    /// @notice Withdraws assets from the vault and transfers them to the
+    ///         receiver.
+    /// @dev Withdraw unallocated assets first and and if not enough, then pull
+    ///      the assets from the dispatcher.
+    /// @param assets Amount of assets to withdraw.
+    /// @param receiver The address to which the assets will be transferred.
+    /// @param owner The address of the owner of the shares.
+    function withdraw(
+        uint256 assets,
+        address receiver,
+        address owner
+    ) public override returns (uint256) {
+        uint256 currentAssetsBalance = IERC20(asset()).balanceOf(address(this));
+        // If there is not enough assets in stBTC to cover user withdrawals and
+        // withdrawal fees then pull the assets from the dispatcher.
+        uint256 assetsWithFees = assets + _feeOnRaw(assets, exitFeeBasisPoints);
+        if (assetsWithFees > currentAssetsBalance) {
+            dispatcher.withdraw(assetsWithFees - currentAssetsBalance);
+        }
+
+        return super.withdraw(assets, receiver, owner);
+    }
+
+    /// @notice Redeems shares for assets and transfers them to the receiver.
+    /// @dev Redeem unallocated assets first and and if not enough, then pull
+    ///      the assets from the dispatcher.
+    /// @param shares Amount of shares to redeem.
+    /// @param receiver The address to which the assets will be transferred.
+    /// @param owner The address of the owner of the shares.
+    function redeem(
+        uint256 shares,
+        address receiver,
+        address owner
+    ) public override returns (uint256) {
+        uint256 assets = convertToAssets(shares);
+        uint256 currentAssetsBalance = IERC20(asset()).balanceOf(address(this));
+        if (assets > currentAssetsBalance) {
+            dispatcher.withdraw(assets - currentAssetsBalance);
+        }
+
+        return super.redeem(shares, receiver, owner);
+    }
+
+    /// @notice Returns the total amount of assets held by the vault across all
+    ///         allocations and this contract.
+    function totalAssets() public view override returns (uint256) {
+        return
+            IERC20(asset()).balanceOf(address(this)) +
+            dispatcher.totalAssets() +
+            totalDebt;
+    }
+
+    /// @dev Returns the maximum amount of the underlying asset that can be
+    ///      deposited into the Vault for the receiver, through a deposit call.
+    ///      If the Vault is paused, returns 0.
+    function maxDeposit(address) public view override returns (uint256) {
+        if (paused()) {
+            return 0;
+        }
+        return type(uint256).max;
+    }
+
+    /// @dev Returns the maximum amount of the Vault shares that can be minted
+    ///      for the receiver, through a mint call.
+    ///      If the Vault is paused, returns 0.
+    function maxMint(address) public view override returns (uint256) {
+        if (paused()) {
+            return 0;
+        }
+        return type(uint256).max;
+    }
+
+    /// @dev Returns the maximum amount of the underlying asset that can be
+    ///      withdrawn from the owner balance in the Vault, through a withdraw call.
+    ///      If the Vault is paused, returns 0.
+    function maxWithdraw(address owner) public view override returns (uint256) {
+        if (paused()) {
+            return 0;
+        }
+        return super.maxWithdraw(owner);
+    }
+
+    /// @dev Returns the maximum amount of Vault shares that can be redeemed from
+    ///      the owner balance in the Vault, through a redeem call.
+    ///      If the Vault is paused, returns 0.
+    function maxRedeem(address owner) public view override returns (uint256) {
+        if (paused()) {
+            return 0;
+        }
+        return super.maxRedeem(owner);
+    }
+
+    /// @notice Returns the number of assets that corresponds to the amount of
+    ///         shares held by the specified account.
+    /// @dev    This function is used to convert shares to assets position for
+    ///         the given account. It does not take fees into account.
+    /// @param account The owner of the shares.
+    /// @return The amount of assets.
     function assetsBalanceOf(address account) public view returns (uint256) {
         return convertToAssets(balanceOf(account));
     }
 
-    /// @return Returns deposit parameters.
-    function depositParameters() public view returns (uint256) {
-        return (minimumDepositAmount);
+    /// @notice Previews the amount of shares that will be burned for the given
+    ///         amount of cancelled debt assets.
+    function previewCancelDebt(uint256 assets) public view returns (uint256) {
+        return convertToShares(assets);
     }
 
     /// @return Returns entry fee basis point used in deposits.
