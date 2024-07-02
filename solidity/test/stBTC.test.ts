@@ -29,6 +29,7 @@ async function fixture() {
     sharesOwner2,
     sharesOwner3,
     thirdParty,
+    externalMinter,
   ] = await getUnnamedSigners()
 
   const amountToMint = to1e18(100000)
@@ -47,6 +48,7 @@ async function fixture() {
     sharesOwner3,
     governance,
     thirdParty,
+    externalMinter,
     treasury,
     mezoAllocator,
     pauseAdmin,
@@ -73,6 +75,7 @@ describe("stBTC", () => {
   let sharesOwner3: HardhatEthersSigner
 
   let thirdParty: HardhatEthersSigner
+  let externalMinter: HardhatEthersSigner
   let treasury: HardhatEthersSigner
   let pauseAdmin: HardhatEthersSigner
   let maintainer: HardhatEthersSigner
@@ -89,6 +92,7 @@ describe("stBTC", () => {
       sharesOwner3,
       governance,
       thirdParty,
+      externalMinter,
       treasury,
       mezoAllocator,
       pauseAdmin,
@@ -2299,7 +2303,7 @@ describe("stBTC", () => {
       const depositAmountNet2 =
         depositAmount2 - feeOnTotal(depositAmount2, entryFeeBasisPoints)
       /**
-       *  Expected total shares amount received by the receiver 2.
+       * Expected total shares amount received by the receiver 2.
        * The deposit is made after the earned yield, so the assets to shares
        * conversion ratio is no longer 1:1, we need to calculate amount of shares.
        */
@@ -2880,6 +2884,610 @@ describe("stBTC", () => {
 
               expect(actual).to.be.equal(expected)
             })
+          })
+        })
+      })
+    })
+  })
+
+  describe("mintDebt and cancelDebt", () => {
+    beforeAfterSnapshotWrapper()
+
+    describe("setDebtAllowance", () => {
+      beforeAfterSnapshotWrapper()
+
+      describe("when caller is not governance", () => {
+        it("should revert", async () => {
+          await expect(
+            stbtc
+              .connect(thirdParty)
+              .setDebtAllowance(externalMinter.address, to1e18(1)),
+          )
+            .to.be.revertedWithCustomError(stbtc, "OwnableUnauthorizedAccount")
+            .withArgs(thirdParty.address)
+        })
+      })
+
+      describe("when caller is governance", () => {
+        describe("when allowed debt is zero", () => {
+          beforeAfterSnapshotWrapper()
+
+          const debtAllowance = to1e18(100)
+
+          before(async () => {
+            await stbtc
+              .connect(governance)
+              .setDebtAllowance(externalMinter.address, debtAllowance)
+          })
+
+          it("should set the new debt allowance", async () => {
+            expect(await stbtc.allowedDebt(externalMinter.address)).to.be.eq(
+              debtAllowance,
+            )
+          })
+        })
+
+        describe("when allowed debt is non-zero", () => {
+          beforeAfterSnapshotWrapper()
+
+          before(async () => {
+            await stbtc
+              .connect(governance)
+              .setDebtAllowance(externalMinter.address, to1e18(1))
+          })
+
+          describe("when changing the debt allowance to non-zero value", () => {
+            beforeAfterSnapshotWrapper()
+
+            const newDebtAllowance = to1e18(100)
+
+            before(async () => {
+              await stbtc
+                .connect(governance)
+                .setDebtAllowance(externalMinter.address, newDebtAllowance)
+            })
+
+            it("should set the new debt allowance", async () => {
+              expect(await stbtc.allowedDebt(externalMinter.address)).to.be.eq(
+                newDebtAllowance,
+              )
+            })
+          })
+
+          describe("when changing the debt allowance to zero value", () => {
+            beforeAfterSnapshotWrapper()
+
+            const newDebtAllowance = to1e18(0)
+
+            before(async () => {
+              await stbtc
+                .connect(governance)
+                .setDebtAllowance(externalMinter.address, newDebtAllowance)
+            })
+
+            it("should set the new debt allowance", async () => {
+              expect(await stbtc.allowedDebt(externalMinter.address)).to.be.eq(
+                newDebtAllowance,
+              )
+            })
+          })
+        })
+      })
+    })
+
+    describe("mintDebt", () => {
+      beforeAfterSnapshotWrapper()
+
+      describe("when paused", () => {
+        beforeAfterSnapshotWrapper()
+
+        before(async () => {
+          await stbtc.connect(governance).pause()
+        })
+
+        it("should revert", async () => {
+          await expect(
+            stbtc.connect(thirdParty).mintDebt(to1e18(1), sharesOwner1.address),
+          ).to.be.revertedWithCustomError(stbtc, "EnforcedPause")
+        })
+      })
+
+      describe("when not paused", () => {
+        beforeAfterSnapshotWrapper()
+
+        describe("when not allowed", () => {
+          beforeAfterSnapshotWrapper()
+
+          it("should revert", async () => {
+            await expect(
+              stbtc
+                .connect(thirdParty)
+                .mintDebt(to1e18(1), sharesOwner1.address),
+            )
+              .to.be.revertedWithCustomError(stbtc, "InsufficientDebtAllowance")
+              .withArgs(thirdParty.address, 0, to1e18(1))
+          })
+        })
+
+        describe("when allowed", () => {
+          beforeAfterSnapshotWrapper()
+
+          const debtAllowance = to1e18(100)
+
+          before(async () => {
+            await stbtc
+              .connect(governance)
+              .setDebtAllowance(externalMinter.address, debtAllowance)
+          })
+
+          describe("on empty vault", () => {
+            beforeAfterSnapshotWrapper()
+
+            const newDebtAssets = to1e18(10)
+
+            testMintDebt(
+              () => sharesOwner1.address,
+              newDebtAssets,
+              newDebtAssets,
+            )
+          })
+
+          describe("when the vault is not empty", () => {
+            describe("when there is debt already minted", () => {
+              beforeAfterSnapshotWrapper()
+
+              const existingMintedDebt = to1e18(23)
+
+              before(async () => {
+                await stbtc
+                  .connect(externalMinter)
+                  .mintDebt(existingMintedDebt, sharesOwner2.address)
+              })
+
+              describe("when requested debt exceeds the allowance", () => {
+                beforeAfterSnapshotWrapper()
+
+                it("should revert", async () => {
+                  const requestedDebt = debtAllowance - existingMintedDebt + 1n
+                  const expectedDebt = existingMintedDebt + requestedDebt
+
+                  await expect(
+                    stbtc
+                      .connect(externalMinter)
+                      .mintDebt(requestedDebt, sharesOwner1.address),
+                  )
+                    .to.be.revertedWithCustomError(
+                      stbtc,
+                      "InsufficientDebtAllowance",
+                    )
+                    .withArgs(
+                      externalMinter.address,
+                      debtAllowance,
+                      expectedDebt,
+                    )
+                })
+              })
+
+              describe("when requested debt does not exceed the allowance", () => {
+                beforeAfterSnapshotWrapper()
+
+                const newDebtAssets = to1e18(10)
+
+                testMintDebt(
+                  () => sharesOwner1.address,
+                  newDebtAssets,
+                  newDebtAssets,
+                )
+              })
+            })
+
+            describe("when there are deposits already made", () => {
+              beforeAfterSnapshotWrapper()
+
+              const existingDepositedAssets = to1e18(24)
+              // Calculate amount of assets to deposit, including the entry fee,
+              // so as a result the vault will have the expected amount of assets.
+              const assetsToDeposit =
+                existingDepositedAssets +
+                feeOnRaw(existingDepositedAssets, entryFeeBasisPoints)
+
+              const newDebtAssets = to1e18(10)
+
+              before(async () => {
+                await tbtc
+                  .connect(depositor1)
+                  .approve(await stbtc.getAddress(), assetsToDeposit)
+
+                await stbtc
+                  .connect(depositor1)
+                  .deposit(assetsToDeposit, sharesOwner2.address)
+              })
+
+              describe("when requested debt exceeds the allowance", () => {
+                beforeAfterSnapshotWrapper()
+
+                it("should revert", async () => {
+                  const requestedDebt = debtAllowance + 1n
+
+                  await expect(
+                    stbtc
+                      .connect(externalMinter)
+                      .mintDebt(requestedDebt, sharesOwner1.address),
+                  )
+                    .to.be.revertedWithCustomError(
+                      stbtc,
+                      "InsufficientDebtAllowance",
+                    )
+                    .withArgs(
+                      externalMinter.address,
+                      debtAllowance,
+                      requestedDebt,
+                    )
+                })
+              })
+
+              describe("when requested debt does not exceed the allowance", () => {
+                beforeAfterSnapshotWrapper()
+
+                describe("when there is no yield generated", () => {
+                  beforeAfterSnapshotWrapper()
+
+                  testMintDebt(
+                    () => sharesOwner1.address,
+                    newDebtAssets,
+                    newDebtAssets,
+                  )
+                })
+
+                describe("when there is yield generated", () => {
+                  beforeAfterSnapshotWrapper()
+
+                  // Initial state:
+                  //   Deposited assets: 24
+                  //   Debt: 0
+                  //   Yield: 6
+                  // New mint:
+                  //   Debt: 10
+                  //   Expected Shares: 10 * 24 / (24 + 6) = 8
+
+                  const earnedYield = to1e18(6)
+
+                  // shares = assets * total supply / total assets
+                  const expectedMintedShares = to1e18(8)
+
+                  before(async () => {
+                    await tbtc.mint(await stbtc.getAddress(), earnedYield)
+                  })
+
+                  testMintDebt(
+                    () => sharesOwner1.address,
+                    newDebtAssets,
+                    expectedMintedShares,
+                  )
+                })
+              })
+            })
+          })
+
+          function testMintDebt(
+            getReceiver: () => string,
+            newDebtAssets: bigint,
+            expectedNewShares: bigint,
+          ) {
+            let receiverAddress: string
+            let initialCurrentDebt: bigint
+            let initialTotalDebt: bigint
+            let initialTotalSupply: bigint
+            let initialTotalAssets: bigint
+            let tx: ContractTransactionResponse
+
+            before(async () => {
+              receiverAddress = getReceiver()
+
+              initialCurrentDebt = await stbtc.currentDebt(
+                externalMinter.address,
+              )
+              initialTotalDebt = await stbtc.totalDebt()
+              initialTotalSupply = await stbtc.totalSupply()
+              initialTotalAssets = await stbtc.totalAssets()
+
+              tx = await stbtc
+                .connect(externalMinter)
+                .mintDebt(newDebtAssets, receiverAddress)
+            })
+
+            it("should transfer stBTC to the receiver", async () => {
+              await expect(tx).to.changeTokenBalances(
+                stbtc,
+                [receiverAddress],
+                [expectedNewShares],
+              )
+            })
+
+            it("should not set current debt for the receiver", async () => {
+              expect(await stbtc.currentDebt(receiverAddress)).to.be.eq(0)
+            })
+
+            it("should increase current debt for the minter", async () => {
+              expect(await stbtc.currentDebt(externalMinter.address)).to.be.eq(
+                initialCurrentDebt + newDebtAssets,
+              )
+            })
+
+            it("should increase total debt", async () => {
+              expect(await stbtc.totalDebt()).to.be.eq(
+                initialTotalDebt + newDebtAssets,
+              )
+            })
+
+            it("should increase total supply", async () => {
+              expect(await stbtc.totalSupply()).to.be.eq(
+                initialTotalSupply + expectedNewShares,
+              )
+            })
+
+            it("should increase total assets", async () => {
+              expect(await stbtc.totalAssets()).to.be.eq(
+                initialTotalAssets + newDebtAssets,
+              )
+            })
+          }
+        })
+      })
+    })
+
+    describe("cancelDebt", () => {
+      beforeAfterSnapshotWrapper()
+
+      describe("when paused", () => {
+        beforeAfterSnapshotWrapper()
+
+        before(async () => {
+          await stbtc.connect(governance).pause()
+        })
+
+        it("should revert", async () => {
+          await expect(
+            stbtc.connect(thirdParty).cancelDebt(to1e18(1)),
+          ).to.be.revertedWithCustomError(stbtc, "EnforcedPause")
+        })
+      })
+
+      describe("when not paused", () => {
+        beforeAfterSnapshotWrapper()
+
+        describe("with no current debt", () => {
+          beforeAfterSnapshotWrapper()
+
+          it("should revert", async () => {
+            await expect(stbtc.connect(thirdParty).cancelDebt(to1e18(1)))
+              .to.be.revertedWithCustomError(stbtc, "InsufficientDebt")
+              .withArgs(thirdParty.address, 0, to1e18(1))
+          })
+        })
+
+        describe("when there is debt already minted", () => {
+          beforeAfterSnapshotWrapper()
+
+          const existingDebt = to1e18(10)
+
+          before(async () => {
+            await stbtc
+              .connect(governance)
+              .setDebtAllowance(externalMinter.address, existingDebt)
+            await stbtc
+              .connect(externalMinter)
+              .mintDebt(existingDebt, sharesOwner1.address)
+          })
+
+          describe("when called by shares owner", () => {
+            beforeAfterSnapshotWrapper()
+
+            it("should revert", async () => {
+              await expect(stbtc.connect(sharesOwner1).cancelDebt(existingDebt))
+                .to.be.revertedWithCustomError(stbtc, "InsufficientDebt")
+                .withArgs(sharesOwner1.address, 0, existingDebt)
+            })
+          })
+
+          describe("when called by debt minter", () => {
+            describe("when the requested debt is greater than the current debt", () => {
+              beforeAfterSnapshotWrapper()
+
+              it("should revert", async () => {
+                const requestedAmount = existingDebt + 1n
+                await expect(
+                  stbtc.connect(externalMinter).cancelDebt(requestedAmount),
+                )
+                  .to.be.revertedWithCustomError(stbtc, "InsufficientDebt")
+                  .withArgs(
+                    externalMinter.address,
+                    existingDebt,
+                    requestedAmount,
+                  )
+              })
+            })
+
+            describe("when the requested debt is same as the current debt", () => {
+              beforeAfterSnapshotWrapper()
+
+              before(async () => {
+                await stbtc
+                  .connect(sharesOwner1)
+                  .transfer(externalMinter.address, existingDebt)
+              })
+
+              testCancelDebt(existingDebt, existingDebt)
+            })
+
+            describe("when the requested debt is less than the current debt", () => {
+              describe("when debt minter doesn't have enough shares", () => {
+                beforeAfterSnapshotWrapper()
+
+                const requestedCanceledAmount = to1e18(5)
+                const sharesBalance = requestedCanceledAmount - 1n
+
+                before(async () => {
+                  await stbtc
+                    .connect(sharesOwner1)
+                    .transfer(externalMinter.address, sharesBalance)
+                })
+
+                it("should revert", async () => {
+                  await expect(
+                    stbtc
+                      .connect(externalMinter)
+                      .cancelDebt(requestedCanceledAmount),
+                  )
+                    .to.be.revertedWithCustomError(
+                      stbtc,
+                      "ERC20InsufficientBalance",
+                    )
+                    .withArgs(
+                      externalMinter.address,
+                      sharesBalance,
+                      requestedCanceledAmount,
+                    )
+                })
+              })
+
+              describe("when debt minter has enough shares", () => {
+                const requestedCanceledAmount = to1e18(5)
+
+                before(async () => {
+                  await stbtc
+                    .connect(sharesOwner1)
+                    .transfer(externalMinter.address, requestedCanceledAmount)
+                })
+
+                describe("when there is no deposits", () => {
+                  beforeAfterSnapshotWrapper()
+
+                  before(async () => {
+                    await stbtc
+                      .connect(sharesOwner1)
+                      .transfer(externalMinter.address, requestedCanceledAmount)
+                  })
+
+                  testCancelDebt(
+                    requestedCanceledAmount,
+                    requestedCanceledAmount,
+                  )
+                })
+
+                describe("when there are deposits already made", () => {
+                  beforeAfterSnapshotWrapper()
+
+                  const existingDepositedAssets = to1e18(24)
+                  // Calculate amount of assets to deposit, including the entry fee,
+                  // so as a result the vault will have the expected amount of assets.
+                  const assetsToDeposit =
+                    existingDepositedAssets +
+                    feeOnRaw(existingDepositedAssets, entryFeeBasisPoints)
+
+                  before(async () => {
+                    await tbtc
+                      .connect(depositor1)
+                      .approve(await stbtc.getAddress(), assetsToDeposit)
+
+                    await stbtc
+                      .connect(depositor1)
+                      .deposit(assetsToDeposit, sharesOwner2.address)
+                  })
+
+                  describe("when there is no yield generated", () => {
+                    beforeAfterSnapshotWrapper()
+
+                    testCancelDebt(
+                      requestedCanceledAmount,
+                      requestedCanceledAmount,
+                    )
+                  })
+
+                  describe("when there is yield generated", () => {
+                    beforeAfterSnapshotWrapper()
+
+                    // Initial state:
+                    //   Deposited assets: 24
+                    //   Debt: 10
+                    //   Yield: 6
+                    // New mint:
+                    //   Debt: 5
+                    //   Expected Shares: 5 * (24 + 10) / (24 + 10 + 6) = 4,25
+
+                    const earnedYield = to1e18(6)
+
+                    // shares = assets * total supply / total assets
+                    const expectedCancelledShares = BigInt(4.25 * 10 ** 18)
+
+                    before(async () => {
+                      await tbtc.mint(await stbtc.getAddress(), earnedYield)
+                    })
+
+                    testCancelDebt(
+                      requestedCanceledAmount,
+                      expectedCancelledShares,
+                    )
+                  })
+                })
+              })
+            })
+
+            function testCancelDebt(
+              debtCancelAmount: bigint,
+              expectedBurnedShares: bigint,
+            ) {
+              let initialCurrentDebt: bigint
+              let initialTotalDebt: bigint
+              let initialTotalSupply: bigint
+              let initialTotalAssets: bigint
+              let tx: ContractTransactionResponse
+
+              before(async () => {
+                initialCurrentDebt = await stbtc.currentDebt(
+                  externalMinter.address,
+                )
+                initialTotalDebt = await stbtc.totalDebt()
+                initialTotalSupply = await stbtc.totalSupply()
+                initialTotalAssets = await stbtc.totalAssets()
+
+                tx = await stbtc
+                  .connect(externalMinter)
+                  .cancelDebt(debtCancelAmount)
+              })
+
+              it("should transfer stBTC from the debt minter", async () => {
+                await expect(tx).to.changeTokenBalances(
+                  stbtc,
+                  [externalMinter],
+                  [-expectedBurnedShares],
+                )
+              })
+
+              it("should decrease current debt for the minter", async () => {
+                expect(
+                  await stbtc.currentDebt(externalMinter.address),
+                ).to.be.eq(initialCurrentDebt - debtCancelAmount)
+              })
+
+              it("should decrease total debt", async () => {
+                expect(await stbtc.totalDebt()).to.be.eq(
+                  initialTotalDebt - debtCancelAmount,
+                )
+              })
+
+              it("should decrease total supply", async () => {
+                expect(await stbtc.totalSupply()).to.be.eq(
+                  initialTotalSupply - expectedBurnedShares,
+                )
+              })
+
+              it("should decrease total assets", async () => {
+                expect(await stbtc.totalAssets()).to.be.eq(
+                  initialTotalAssets - debtCancelAmount,
+                )
+              })
+            }
           })
         })
       })
