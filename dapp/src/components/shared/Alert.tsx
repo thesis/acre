@@ -25,7 +25,7 @@ import Spinner from "./Spinner"
 const STATUSES = {
   info: {
     icon: IconInfoCircle,
-    colorScheme: "grey",
+    colorScheme: "gold",
   },
   warning: {
     icon: IconExclamationCircle,
@@ -36,7 +36,7 @@ const STATUSES = {
     colorScheme: "green",
   },
   error: {
-    icon: IconInfoCircle,
+    icon: IconExclamationCircle,
     colorScheme: "red",
   },
   loading: {

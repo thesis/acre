@@ -3,9 +3,9 @@ import { Box } from "@chakra-ui/react"
 import { CurrencyType } from "#/types"
 import { MINIMUM_BALANCE } from "#/constants"
 import { formatSatoshiAmount, getCurrencyByType } from "#/utils"
-import { CardAlert } from "#/components/shared/alerts"
 import { TextMd } from "#/components/shared/Typography"
 import { useTokenAmountField } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
+import { Alert, AlertTitle, AlertIcon } from "#/components/shared/Alert"
 
 function WithdrawWarning({
   balance,
@@ -28,32 +28,28 @@ function WithdrawWarning({
 
   if (isMinimumBalanceExceeded && isValid) {
     return (
-      // TODO: Update global styles for the Alert component
-      // Previously, we distinguished more types of alerts.
-      // The following styles should be moved to global styles and unneeded parts removed.
-      <CardAlert
-        status="error"
-        bgColor="red.100"
-        borderColor="red.400"
-        colorIcon="red.400"
-      >
-        <TextMd pr={5}>
+      <Alert status="error">
+        <AlertIcon status="error" />
+
+        <TextMd as={AlertTitle}>
           The new balance is below the required minimum of
           <Box as="strong"> {minimumBalanceText}.</Box> Withdrawing your funds
           will result in the loss of your current rewards.
         </TextMd>
-      </CardAlert>
+      </Alert>
     )
   }
 
   return (
-    <CardAlert>
-      <TextMd>
+    <Alert status="info" variant="elevated">
+      <AlertIcon />
+
+      <TextMd as={AlertTitle}>
         A minimum balance of
         <Box as="strong"> {minimumBalanceText}</Box> is required to keep all
         rewards active.
       </TextMd>
-    </CardAlert>
+    </Alert>
   )
 }
 
