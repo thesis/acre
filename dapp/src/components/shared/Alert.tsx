@@ -19,9 +19,6 @@ import Spinner from "./Spinner"
 // as a workaround
 // Ref: https://github.com/chakra-ui/chakra-ui/discussions/5997#discussioncomment-4098525
 
-// TODO: Replace all uses of `components/shared/alerts/...` with this component
-// and remove the old ones
-
 const STATUSES = {
   info: {
     icon: IconInfoCircle,
