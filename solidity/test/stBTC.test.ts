@@ -2912,19 +2912,7 @@ describe("stBTC", () => {
         describe("when allowed debt is zero", () => {
           beforeAfterSnapshotWrapper()
 
-          const debtAllowance = to1e18(100)
-
-          before(async () => {
-            await stbtc
-              .connect(governance)
-              .setDebtAllowance(externalMinter.address, debtAllowance)
-          })
-
-          it("should set the new debt allowance", async () => {
-            expect(await stbtc.allowedDebt(externalMinter.address)).to.be.eq(
-              debtAllowance,
-            )
-          })
+          testSetDebtAllowance(to1e18(100))
         })
 
         describe("when allowed debt is non-zero", () => {
@@ -2939,28 +2927,21 @@ describe("stBTC", () => {
           describe("when changing the debt allowance to non-zero value", () => {
             beforeAfterSnapshotWrapper()
 
-            const newDebtAllowance = to1e18(100)
-
-            before(async () => {
-              await stbtc
-                .connect(governance)
-                .setDebtAllowance(externalMinter.address, newDebtAllowance)
-            })
-
-            it("should set the new debt allowance", async () => {
-              expect(await stbtc.allowedDebt(externalMinter.address)).to.be.eq(
-                newDebtAllowance,
-              )
-            })
+            testSetDebtAllowance(to1e18(100))
           })
 
           describe("when changing the debt allowance to zero value", () => {
             beforeAfterSnapshotWrapper()
 
-            const newDebtAllowance = to1e18(0)
+            testSetDebtAllowance(to1e18(0))
+          })
+        })
+
+        function testSetDebtAllowance(newDebtAllowance: bigint) {
+          let tx: ContractTransactionResponse
 
             before(async () => {
-              await stbtc
+            tx = await stbtc
                 .connect(governance)
                 .setDebtAllowance(externalMinter.address, newDebtAllowance)
             })
@@ -2970,8 +2951,13 @@ describe("stBTC", () => {
                 newDebtAllowance,
               )
             })
+
+          it("should emit DebtAllowanceUpdated event", async () => {
+            await expect(tx)
+              .to.emit(stbtc, "DebtAllowanceUpdated")
+              .withArgs(externalMinter.address, newDebtAllowance)
           })
-        })
+        }
       })
     })
 
@@ -3229,6 +3215,17 @@ describe("stBTC", () => {
             it("should increase total assets", async () => {
               expect(await stbtc.totalAssets()).to.be.eq(
                 initialTotalAssets + newDebtAssets,
+            )
+          })
+
+          it("should emit DebtMinted event", async () => {
+            await expect(tx)
+              .to.emit(stbtc, "DebtMinted")
+              .withArgs(
+                minter.address,
+                initialCurrentDebt + newDebtAssets,
+                newDebtAssets,
+                expectedNewShares,
               )
             })
           }
@@ -3485,6 +3482,17 @@ describe("stBTC", () => {
               it("should decrease total assets", async () => {
                 expect(await stbtc.totalAssets()).to.be.eq(
                   initialTotalAssets - debtCancelAmount,
+                )
+              })
+
+              it("should emit DebtCancelled event", async () => {
+                await expect(tx)
+                  .to.emit(stbtc, "DebtCancelled")
+                  .withArgs(
+                    externalMinter.address,
+                    initialCurrentDebt - debtCancelAmount,
+                    debtCancelAmount,
+                    expectedBurnedShares,
                 )
               })
             }
