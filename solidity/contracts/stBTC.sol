@@ -99,10 +99,9 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         }
         treasury = _treasury;
 
-        // TODO: Revisit the exact values closer to the launch.
         minimumDepositAmount = 0.001 * 1e18; // 0.001 tBTC
-        entryFeeBasisPoints = 0; // TODO: tbd
-        exitFeeBasisPoints = 0; // TODO: tbd
+        entryFeeBasisPoints = 0;
+        exitFeeBasisPoints = 25; // 25 bps == 0.25%
     }
 
     /// @notice Updates treasury wallet address.

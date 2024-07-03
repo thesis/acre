@@ -175,7 +175,6 @@ contract BitcoinDepositor is AbstractTBTCDepositor, Ownable2StepUpgradeable {
         tbtcToken = IERC20(_tbtcToken);
         stbtc = stBTC(_stbtc);
 
-        // TODO: Revisit initial values before mainnet deployment.
         minDepositAmount = 0.015 * 1e18; // 0.015 BTC
         depositorFeeDivisor = 1000; // 1/1000 == 10bps == 0.1% == 0.001
     }

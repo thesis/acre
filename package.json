@@ -9,5 +9,10 @@
     "@thesis/prettier-config": "github:thesis/prettier-config",
     "prettier": "^3.1.0",
     "syncpack": "^11.2.1"
+  },
+  "pnpm": {
+    "neverBuiltDependencies": [
+      "@threshold-network/solidity-contracts"
+    ]
   }
 }
