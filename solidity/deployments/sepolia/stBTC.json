@@ -1,5 +1,5 @@
 {
-  "address": "0xBc7a17767bd067224d04D2C5FE35E79BF2185939",
+  "address": "0x7e184179b1F95A9ca398E6a16127f06b81Cb37a3",
   "abi": [
     {
       "inputs": [],
@@ -447,6 +447,12 @@
     },
     {
       "anonymous": false,
+      "inputs": [],
+      "name": "NonFungibleWithdrawalsDisabled",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
       "inputs": [
         {
           "indexed": true,
@@ -821,6 +827,13 @@
     },
     {
       "inputs": [],
+      "name": "disableNonFungibleWithdrawals",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "dispatcher",
       "outputs": [
         {
@@ -997,6 +1010,19 @@
           "internalType": "string",
           "name": "",
           "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "nonFungibleWithdrawalsEnabled",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
         }
       ],
       "stateMutability": "view",
@@ -1404,10 +1430,29 @@
       ],
       "stateMutability": "nonpayable",
       "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "withdrawableShares",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
     }
   ],
-  "transactionHash": "0x0db03a5b4e0f7456eebd7bf5b8404ce63175917c925a9cb14dba7eaeca3df1ee",
+  "transactionHash": "0x1869168080e8ac1d99ca4bee294c32da920d1375742e27126266838972ee725e",
   "numDeployments": 1,
-  "implementation": "0x04D5162465988D29A2A4bBdDB5258B0770eccFAC",
+  "implementation": "0xF10045376dbCA549166350C3DF577F11D7cc0Af9",
   "devdoc": "Contract deployed as upgradable proxy"
 }
