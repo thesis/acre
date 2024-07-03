@@ -80,10 +80,7 @@ class Acre {
 
     const contracts = getEthereumContracts(ethersProvider, ethereumNetwork)
 
-    const subgraph = new AcreSubgraphApi(
-      // TODO: Set correct url based on the network
-      "https://api.studio.thegraph.com/query/73600/acre/version/latest",
-    )
+    const subgraph = new AcreSubgraphApi(network)
 
     const protocol = new Protocol(contracts)
 

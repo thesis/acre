@@ -6,6 +6,7 @@ import {
   Account,
   DepositStatus,
   StakeInitialization,
+  BitcoinNetwork,
 } from "../../src"
 import { EthereumAddress } from "../../src/lib/ethereum"
 import { MockAcreContracts } from "../utils/mock-acre-contracts"
@@ -72,7 +73,7 @@ const stakingInitializationData: {
 describe("Account", () => {
   const contracts: AcreContracts = new MockAcreContracts()
   const tbtc = new MockTbtc()
-  const acreSubgraph = new AcreSubgraphApi("test")
+  const acreSubgraph = new AcreSubgraphApi(BitcoinNetwork.Testnet)
   const bitcoinProvider = new MockBitcoinProvider()
   const orangeKit: OrangeKitSdk =
     new MockOrangeKitSdk() as unknown as OrangeKitSdk

@@ -4,6 +4,7 @@ import AcreSubgraphApi, {
   buildGetDepositsByOwnerQuery,
 } from "../../../src/lib/api/AcreSubgraphApi"
 import { DepositStatus } from "../../../src/lib/api/TbtcApi"
+import { BitcoinNetwork } from "../bitcoin"
 
 const subgraphData = {
   data: {
@@ -67,7 +68,7 @@ const expectedDepositData = [
 
 describe("Acre Subgraph API", () => {
   const subgraphApiUrl = " https://subgraph.test"
-  const subgraph = new AcreSubgraphApi(subgraphApiUrl)
+  const subgraph = new AcreSubgraphApi(BitcoinNetwork.Testnet)
 
   describe("getDepositsByOwner", () => {
     const depositOwnerId = EthereumAddress.from(

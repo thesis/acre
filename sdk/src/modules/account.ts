@@ -213,4 +213,23 @@ export default class Account {
       redeemerProxy,
     )
   }
+
+  /**
+   * @returns All withdrawals associated with the account.
+   */
+  async getWithdrawals(): Promise<
+    {
+      id: string
+      amount: bigint
+      bitcoinTransactionId?: string
+      status: "initialized" | "finalized"
+    }[]
+  > {
+    return (
+      await this.#acreSubgraphApi.getWithdrawalsByOwner(this.#ethereumAddress)
+    ).map((withdraw) => ({
+      ...withdraw,
+      status: withdraw.bitcoinTransactionId ? "finalized" : "initialized",
+    }))
+  }
 }
