@@ -184,20 +184,24 @@ export default class AcreSubgraphApi extends HttpApi {
   // TODO: set the correct url for mainnet
   readonly #tbtcSubgraph: TbtcSubgraph
 
-  constructor(network: BitcoinNetwork) {
+  static init(network: BitcoinNetwork) {
     // TODO: set mainnet api url
     const acreSubgraphApiUrl =
       network === BitcoinNetwork.Testnet
         ? // TODO: set correct url.
           "https://api.studio.thegraph.com/query/73600/acre-development/version/latest"
         : ""
-    const tbtcSubgraphApi =
+    const tbtcSubgraphApiUrl =
       network === BitcoinNetwork.Testnet
         ? "https://api.studio.thegraph.com/proxy/59264/threshold-tbtc-sepolia/version/latest"
         : ""
 
+    return new AcreSubgraphApi(acreSubgraphApiUrl, tbtcSubgraphApiUrl)
+  }
+
+  constructor(acreSubgraphApiUrl: string, tbtcSubgraphApiUrl: string) {
     super(acreSubgraphApiUrl)
-    this.#tbtcSubgraph = new TbtcSubgraph(tbtcSubgraphApi)
+    this.#tbtcSubgraph = new TbtcSubgraph(tbtcSubgraphApiUrl)
   }
 
   /**

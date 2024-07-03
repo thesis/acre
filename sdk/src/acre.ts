@@ -80,7 +80,7 @@ class Acre {
 
     const contracts = getEthereumContracts(ethersProvider, ethereumNetwork)
 
-    const subgraph = new AcreSubgraphApi(network)
+    const subgraph = AcreSubgraphApi.init(network)
 
     const protocol = new Protocol(contracts)
 
