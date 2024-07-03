@@ -57,7 +57,7 @@ export default function SignMessageModal() {
   }, [dispatch])
 
   const onSignMessageSuccess = useCallback(() => {
-    invalidateQueries({ queryKey: ["bitcoinBalance"] })
+    invalidateQueries({ queryKey: ["BTCBalance"] })
     dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED))
   }, [dispatch, invalidateQueries])
 
