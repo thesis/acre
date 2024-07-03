@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import {
   Button,
   Card,
@@ -17,9 +17,11 @@ import { OnSuccessCallback, OrangeKitConnector } from "#/types"
 import { useSignMessage } from "wagmi"
 import { IconArrowNarrowRight } from "@tabler/icons-react"
 import { AnimatePresence, Variants, motion } from "framer-motion"
+import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import { TextLg, TextMd } from "../shared/Typography"
 import ConnectWalletStatusLabel from "./ConnectWalletStatusLabel"
 import ArrivingSoonTooltip from "../ArrivingSoonTooltip"
+import Spinner from "../shared/Spinner"
 
 type ConnectWalletButtonProps = {
   label: string
@@ -57,6 +59,8 @@ export default function ConnectWalletButton({
   const { signMessage, status: signMessageStatus } = useSignMessage()
   const { closeModal } = useModal()
   const dispatch = useAppDispatch()
+
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const hasConnectionError = connectionStatus === "error"
   const hasSignMessageStatus = signMessageStatus === "error"
@@ -102,7 +106,28 @@ export default function ConnectWalletButton({
     })
   }, [connector, handleSignMessage, onConnect])
 
+  const handleRedirectUser = useCallback(() => {
+    setIsLoading(true)
+
+    setTimeout(() => {
+      const wallet = orangeKit.getWalletInfo(connector)
+
+      if (wallet) {
+        window.open(wallet.downloadUrls.desktop, "_blank")?.focus()
+      }
+
+      setIsLoading(false)
+    }, ONE_SEC_IN_MILLISECONDS * 2)
+  }, [connector])
+
   const handleButtonClick = () => {
+    const isInstalled = orangeKit.isWalletInstalled(connector)
+
+    if (!isInstalled) {
+      handleRedirectUser()
+      return
+    }
+
     onClick()
 
     // Connector still selected and user wants to retry connect action
@@ -144,7 +169,13 @@ export default function ConnectWalletButton({
                 {...iconStyles[connector.id]}
               />
             }
-            rightIcon={<Icon as={IconArrowNarrowRight} boxSize={6} ml="auto" />}
+            rightIcon={
+              !isLoading ? (
+                <Icon as={IconArrowNarrowRight} boxSize={6} ml="auto" />
+              ) : (
+                <Spinner boxSize={6} variant="filled" />
+              )
+            }
             iconSpacing={4}
             isDisabled={connector.isDisabled}
           >
