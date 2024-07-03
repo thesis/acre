@@ -1,6 +1,15 @@
+import { CONNECTION_ERRORS } from "#/constants"
+import {
+  ConnectionErrorData,
+  OrangeKitError,
+  OrangeKitConnector,
+} from "#/types"
+import {
+  isUnsupportedBitcoinAddressError,
+  isWalletNetworkDoesNotMatchProviderChainError,
+} from "@orangekit/react"
 import { Connector } from "wagmi"
 import { SignInWithWalletMessage } from "@orangekit/sign-in-with-wallet"
-import { OrangeKitConnector } from "#/types"
 import { wallets } from "#/constants"
 
 const getWalletInfo = (connector: OrangeKitConnector) => {
@@ -18,6 +27,9 @@ const isWalletInstalled = (connector: OrangeKitConnector) => {
   const provider = connector.getBitcoinProvider()
   return provider.isInstalled()
 }
+
+const isWalletConnectionRejectedError = (cause: OrangeKitError["cause"]) =>
+  cause && cause.code === 4001
 
 const isConnectedStatus = (status: string) => status === "connected"
 
@@ -46,6 +58,26 @@ const typeConversionToOrangeKitConnector = (
 const typeConversionToConnector = (connector?: OrangeKitConnector): Connector =>
   connector as unknown as Connector
 
+const parseOrangeKitConnectionError = (
+  error: OrangeKitError,
+): ConnectionErrorData => {
+  const { cause } = error
+
+  if (isWalletConnectionRejectedError(cause)) {
+    return CONNECTION_ERRORS.REJECTED
+  }
+
+  if (isUnsupportedBitcoinAddressError(cause)) {
+    return CONNECTION_ERRORS.NOT_SUPPORTED
+  }
+
+  if (isWalletNetworkDoesNotMatchProviderChainError(cause)) {
+    return CONNECTION_ERRORS.NETWORK_MISMATCH
+  }
+
+  return CONNECTION_ERRORS.DEFAULT
+}
+
 export default {
   getWalletInfo,
   isWalletInstalled,
@@ -54,4 +86,6 @@ export default {
   createSignInWithWalletMessage,
   typeConversionToOrangeKitConnector,
   typeConversionToConnector,
+  parseOrangeKitConnectionError,
+  isWalletConnectionRejectedError,
 }
