@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { DepositFee } from "#/types"
+import { ACTION_FLOW_TYPES, ActionFlowType, DepositFee } from "#/types"
 import { initialDepositFee, useTransactionFee } from "./useTransactionFee"
 
 type UseTransactionDetailsResult = {
@@ -14,9 +14,12 @@ const initialTransactionDetails = {
   estimatedAmount: 0n,
 }
 
-export function useTransactionDetails(amount: bigint | undefined) {
+export function useTransactionDetails(
+  amount: bigint | undefined,
+  flow: ActionFlowType = ACTION_FLOW_TYPES.STAKE,
+) {
   // TODO: Temporary solution - Let's update when withdrawal fees are defined
-  const transactionFee = useTransactionFee(amount)
+  const transactionFee = useTransactionFee(amount, flow)
   const [details, setDetails] = useState<UseTransactionDetailsResult>(
     initialTransactionDetails,
   )

@@ -92,6 +92,10 @@ describe("Deployment", () => {
       it("should set treasury", async () => {
         expect(await stbtc.treasury()).to.be.equal(mainnetAccounts.treasury)
       })
+
+      it("should enable non-fungible withdrawals", async () => {
+        expect(await stbtc.nonFungibleWithdrawalsEnabled()).to.be.true
+      })
     })
 
     describe("ownable", () => {

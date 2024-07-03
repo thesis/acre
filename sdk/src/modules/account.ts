@@ -1,9 +1,15 @@
+import { OrangeKitSdk } from "@orangekit/sdk"
 import { AcreContracts, ChainIdentifier } from "../lib/contracts"
 import StakeInitialization from "./staking"
-import { toSatoshi } from "../lib/utils"
+import { fromSatoshi, toSatoshi } from "../lib/utils"
 import Tbtc from "./tbtc"
 import AcreSubgraphApi from "../lib/api/AcreSubgraphApi"
 import { DepositStatus } from "../lib/api/TbtcApi"
+import OrangeKitTbtcRedeemerProxy, {
+  MessageSignedStepCallback,
+  OnSignMessageStepCallback,
+} from "../lib/redeemer-proxy"
+import { BitcoinProvider } from "../lib/bitcoin"
 
 export { DepositReceipt } from "./tbtc"
 
@@ -58,17 +64,32 @@ export default class Account {
 
   readonly #ethereumAddress: ChainIdentifier
 
+  readonly #bitcoinPublicKey: string
+
+  readonly #bitcoinProvider: BitcoinProvider
+
+  readonly #orangeKitSdk: OrangeKitSdk
+
   constructor(
     contracts: AcreContracts,
     tbtc: Tbtc,
     acreSubgraphApi: AcreSubgraphApi,
-    account: { bitcoinAddress: string; ethereumAddress: ChainIdentifier },
+    account: {
+      bitcoinAddress: string
+      bitcoinPublicKey: string
+      ethereumAddress: ChainIdentifier
+    },
+    bitcoinProvider: BitcoinProvider,
+    orangeKitSdk: OrangeKitSdk,
   ) {
     this.#contracts = contracts
     this.#tbtc = tbtc
     this.#acreSubgraphApi = acreSubgraphApi
     this.#bitcoinAddress = account.bitcoinAddress
     this.#ethereumAddress = account.ethereumAddress
+    this.#bitcoinProvider = bitcoinProvider
+    this.#orangeKitSdk = orangeKitSdk
+    this.#bitcoinPublicKey = account.bitcoinPublicKey
   }
 
   /**
@@ -151,5 +172,45 @@ export default class Account {
         timestamp: deposit.timestamp,
       }
     })
+  }
+
+  /**
+   * Initializes the withdrawal process.
+   * @param amount Bitcoin amount to withdraw in 1e8 satoshi precision.
+   * @param onSignMessageStepCallback A callback triggered before the message
+   *        signing step.
+   * @param messageSignedStepCallback A callback triggered after the message
+   *        signing step.
+   * @returns Hash of the transaction withdrawal transaction.
+   */
+  async initializeWithdrawal(
+    btcAmount: bigint,
+    onSignMessageStepCallback?: OnSignMessageStepCallback,
+    messageSignedStepCallback?: MessageSignedStepCallback,
+  ): Promise<string> {
+    const tbtcAmount = fromSatoshi(btcAmount)
+    const shares = await this.#contracts.stBTC.convertToShares(tbtcAmount)
+    // Including fees.
+    const redeemedTbtc = await this.#contracts.stBTC.previewRedeem(shares)
+
+    const redeemerProxy = new OrangeKitTbtcRedeemerProxy(
+      this.#contracts,
+      this.#orangeKitSdk,
+      {
+        bitcoinAddress: this.#bitcoinAddress,
+        ethereumAddress: this.#ethereumAddress,
+        publicKey: this.#bitcoinPublicKey,
+      },
+      this.#bitcoinProvider,
+      shares,
+      onSignMessageStepCallback,
+      messageSignedStepCallback,
+    )
+
+    return this.#tbtc.initiateRedemption(
+      this.#bitcoinAddress,
+      redeemedTbtc,
+      redeemerProxy,
+    )
   }
 }
