@@ -1,11 +1,21 @@
-export type Activity = {
+type CommonActivityData = {
   id: string
   timestamp: number
-  txHash: string
   amount: bigint
   status: "completed" | "pending"
-  type: "deposit" | "withdraw"
 }
+
+type ConditionalActivityData =
+  | {
+      type: "deposit"
+      txHash: string
+    }
+  | {
+      type: "withdraw"
+      txHash?: string
+    }
+
+export type Activity = CommonActivityData & ConditionalActivityData
 
 export type ActivitiesByIds = {
   [id: string]: Activity

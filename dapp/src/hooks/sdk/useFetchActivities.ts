@@ -5,20 +5,35 @@ import { Activity } from "#/types"
 import { DepositStatus } from "@acre-btc/sdk"
 import { useAppDispatch } from "../store/useAppDispatch"
 
-export function useFetchDeposits() {
+export function useFetchActivities() {
   const dispatch = useAppDispatch()
   const { acre, isConnected } = useAcreContext()
 
   return useCallback(async () => {
     if (!acre || !isConnected) return
 
-    const result: Activity[] = (await acre.account.getDeposits()).map(
+    const deposits: Activity[] = (await acre.account.getDeposits()).map(
       (deposit) => ({
         ...deposit,
         status:
           deposit.status === DepositStatus.Finalized ? "completed" : "pending",
         type: "deposit",
       }),
+    )
+
+    const withdrawals: Activity[] = (await acre.account.getWithdrawals()).map(
+      (withdraw) => ({
+        id: withdraw.id,
+        timestamp: withdraw.timestamp,
+        txHash: withdraw.bitcoinTransactionId,
+        amount: withdraw.amount,
+        status: withdraw.bitcoinTransactionId ? "completed" : "pending",
+        type: "withdraw",
+      }),
+    )
+
+    const result = [...deposits, ...withdrawals].sort(
+      (a, b) => b.timestamp - a.timestamp,
     )
 
     dispatch(setActivities(result))

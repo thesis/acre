@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react"
 import {
   useAppDispatch,
   useExecuteFunction,
-  useFetchDeposits,
+  useFetchActivities,
   useStakeFlowContext,
 } from "#/hooks"
 import { PROCESS_STATUSES } from "#/types"
@@ -15,7 +15,7 @@ import LoadingModal from "../../LoadingModal"
 export default function StakingErrorModal() {
   const { stake } = useStakeFlowContext()
   const dispatch = useAppDispatch()
-  const fetchDeposits = useFetchDeposits()
+  const fetchDeposits = useFetchActivities()
 
   const [isLoading, setIsLoading] = useState(false)
   const [isServerError, setIsServerError] = useState(false)
