@@ -13,7 +13,7 @@ import {
 import { useAppDispatch, useModal, useWallet } from "#/hooks"
 import { setIsSignedMessage } from "#/store/wallet"
 import { logPromiseFailure, orangeKit } from "#/utils"
-import { OrangeKitConnector } from "#/types"
+import { OnSuccessCallback, OrangeKitConnector } from "#/types"
 import { useSignMessage } from "wagmi"
 import { IconArrowNarrowRight } from "@tabler/icons-react"
 import { AnimatePresence, Variants, motion } from "framer-motion"
@@ -28,6 +28,7 @@ type ConnectWalletButtonProps = {
   onClick: () => void
   isSelected: boolean
   connector: OrangeKitConnector & { isDisabled: boolean }
+  onSuccess?: OnSuccessCallback
 }
 
 const iconStyles: Record<string, ImageProps> = {
@@ -46,6 +47,7 @@ export default function ConnectWalletButton({
   onClick,
   isSelected,
   connector,
+  onSuccess,
 }: ConnectWalletButtonProps) {
   const {
     address,
@@ -65,10 +67,14 @@ export default function ConnectWalletButton({
   const showStatuses = isSelected && !hasConnectionError
   const showRetryButton = address && hasSignMessageStatus
 
-  const onSuccess = useCallback(() => {
+  const handleOnSuccess = useCallback(() => {
     closeModal()
     dispatch(setIsSignedMessage(true))
-  }, [closeModal, dispatch])
+
+    if (onSuccess) {
+      onSuccess()
+    }
+  }, [closeModal, dispatch, onSuccess])
 
   const handleSignMessage = useCallback(
     async (connectedConnector: OrangeKitConnector) => {
@@ -82,10 +88,10 @@ export default function ConnectWalletButton({
           message,
           connector: orangeKit.typeConversionToConnector(connectedConnector),
         },
-        { onSuccess },
+        { onSuccess: handleOnSuccess },
       )
     },
-    [onSuccess, signMessage],
+    [handleOnSuccess, signMessage],
   )
 
   const handleConnection = useCallback(() => {
