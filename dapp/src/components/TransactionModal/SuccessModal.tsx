@@ -15,7 +15,6 @@ import {
   useModal,
   useAllActivitiesCount,
   useFetchDeposits,
-  useInvalidateQueries,
 } from "#/hooks"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import { ACTION_FLOW_TYPES, ActionFlowType, MODAL_TYPES } from "#/types"
@@ -23,7 +22,7 @@ import { useNavigate } from "react-router-dom"
 import { routerPath } from "#/router/path"
 import { IconArrowUpRight } from "@tabler/icons-react"
 import { logPromiseFailure } from "#/utils"
-import { featureFlags, queryKeys } from "#/constants"
+import { featureFlags } from "#/constants"
 import { TextMd } from "../shared/Typography"
 import Spinner from "../shared/Spinner"
 import BlockExplorerLink from "../shared/BlockExplorerLink"
@@ -107,13 +106,10 @@ export default function SuccessModal({ type }: SuccessModalProps) {
   const fetchDeposits = useFetchDeposits()
   const navigate = useNavigate()
   const allActivitiesCount = useAllActivitiesCount()
-  const invalidateQueries = useInvalidateQueries()
 
   const { heading, footer, renderComponent } = CONTENT[type]
 
   const handleCloseModal = () => {
-    invalidateQueries({ queryKey: [queryKeys.BITCOIN_BALANCE] })
-    invalidateQueries({ queryKey: [queryKeys.BITCOIN_POSITION] })
     closeModal()
     navigate(routerPath.dashboard)
 

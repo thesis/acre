@@ -5,6 +5,7 @@ import {
   useAppDispatch,
   useDepositBTCTransaction,
   useExecuteFunction,
+  useInvalidateQueries,
   useStakeFlowContext,
   useVerifyDepositAddress,
 } from "#/hooks"
@@ -14,6 +15,7 @@ import { Highlight } from "@chakra-ui/react"
 import { TextMd } from "#/components/shared/Typography"
 import { CardAlert } from "#/components/shared/alerts"
 import { setStatus, setTxHash } from "#/store/action-flow"
+import { queryKeys } from "#/constants"
 import TriggerTransactionModal from "../TriggerTransactionModal"
 
 export default function DepositBTCModal() {
@@ -22,10 +24,12 @@ export default function DepositBTCModal() {
   const verifyDepositAddress = useVerifyDepositAddress()
   const dispatch = useAppDispatch()
   const { handlePause } = useActionFlowPause()
+  const invalidateQueries = useInvalidateQueries()
 
   const onStakeBTCSuccess = useCallback(() => {
+    invalidateQueries({ queryKey: [queryKeys.BITCOIN_BALANCE] })
     dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED))
-  }, [dispatch])
+  }, [dispatch, invalidateQueries])
 
   const onStakeBTCError = useCallback(() => {
     dispatch(setStatus(PROCESS_STATUSES.FAILED))
