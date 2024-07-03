@@ -4,7 +4,6 @@ import {
   useActionFlowTokenAmount,
   useAppDispatch,
   useExecuteFunction,
-  useInvalidateQueries,
   useModal,
 } from "#/hooks"
 import { PROCESS_STATUSES } from "#/types"
@@ -42,6 +41,7 @@ export default function SignMessageModal() {
   const amount = tokenAmount?.amount
   const { closeModal } = useModal()
   const { handlePause } = useActionFlowPause()
+
   const initializeWithdraw = useInitializeWithdraw()
 
   const onSignMessageCallback = useCallback(async () => {
