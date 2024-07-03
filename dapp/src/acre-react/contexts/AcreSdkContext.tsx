@@ -5,6 +5,7 @@ import { BITCOIN_NETWORK } from "#/constants"
 
 const TBTC_API_ENDPOINT = import.meta.env.VITE_TBTC_API_ENDPOINT
 const ETH_RPC_URL = import.meta.env.VITE_ETH_HOSTNAME_HTTP
+const GELATO_API_KEY = import.meta.env.VITE_GELATO_RELAY_API_KEY
 
 type AcreSdkContextValue = {
   acre?: Acre
@@ -25,19 +26,25 @@ export function AcreSdkProvider({ children }: { children: React.ReactNode }) {
   const [isInitialized, setIsInitialized] = useState(false)
   const [isConnected, setIsConnected] = useState(false)
 
-  const init = useCallback(async (bitcoinProvider?: BitcoinProvider) => {
-    let sdk: Acre
+  const init = useCallback<AcreSdkContextValue["init"]>(
+    async (bitcoinProvider?: BitcoinProvider) => {
+      let sdk = await Acre.initialize(
+        BITCOIN_NETWORK,
+        TBTC_API_ENDPOINT,
+        ETH_RPC_URL,
+        GELATO_API_KEY,
+      )
 
-    sdk = await Acre.initialize(BITCOIN_NETWORK, TBTC_API_ENDPOINT, ETH_RPC_URL)
+      if (bitcoinProvider) {
+        sdk = await sdk.connect(bitcoinProvider)
+        setIsConnected(true)
+      }
 
-    if (bitcoinProvider) {
-      sdk = await sdk.connect(bitcoinProvider)
-      setIsConnected(true)
-    }
-
-    setAcre(sdk)
-    setIsInitialized(true)
-  }, [])
+      setAcre(sdk)
+      setIsInitialized(true)
+    },
+    [],
+  )
 
   const context = useMemo(
     () => ({
