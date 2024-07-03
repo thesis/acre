@@ -199,12 +199,6 @@ importers:
       '@thesis-co/solidity-contracts':
         specifier: github:thesis/solidity-contracts#c315b9d
         version: github.com/thesis/solidity-contracts/c315b9d
-      '@types/chai-as-promised':
-        specifier: ^7.1.8
-        version: 7.1.8
-      chai-as-promised:
-        specifier: ^7.1.1
-        version: 7.1.2(chai@4.4.1)
     devDependencies:
       '@keep-network/hardhat-helpers':
         specifier: ^0.7.1
@@ -242,6 +236,9 @@ importers:
       '@types/chai':
         specifier: ^4.3.11
         version: 4.3.16
+      '@types/chai-as-promised':
+        specifier: ^7.1.8
+        version: 7.1.8
       '@types/mocha':
         specifier: ^10.0.6
         version: 10.0.6
@@ -251,6 +248,9 @@ importers:
       chai:
         specifier: ^4.3.10
         version: 4.4.1
+      chai-as-promised:
+        specifier: ^7.1.1
+        version: 7.1.2(chai@4.4.1)
       dotenv-safer:
         specifier: ^1.0.0
         version: 1.0.0(dotenv@16.4.5)
@@ -7396,9 +7396,11 @@ packages:
     resolution: {integrity: sha512-ThlRVIJhr69FLlh6IctTXFkmhtP3NpMZ2QGq69StYLyKZFp/HOp1VdKZj7RvfNWYYcJ1xlbLGLLWj1UvP5u/Gw==}
     dependencies:
       '@types/chai': 4.3.16
+    dev: true
 
   /@types/chai@4.3.16:
     resolution: {integrity: sha512-PatH4iOdyh3MyWtmHVFXLWCCIhUbopaltqddG9BzB+gMIzee2MJrvd+jouii9Z3wzQJruGWAm7WOMjgfG8hQlQ==}
+    dev: true
 
   /@types/chrome@0.0.136:
     resolution: {integrity: sha512-XDEiRhLkMd+SB7Iw3ZUIj/fov3wLd4HyTdLltVszkgl1dBfc3Rb7oPMVZ2Mz2TLqnF7Ow+StbR8E7r9lqpb4DA==}
@@ -10176,6 +10178,7 @@ packages:
     dependencies:
       chai: 4.4.1
       check-error: 1.0.3
+    dev: true
 
   /chai@4.4.1:
     resolution: {integrity: sha512-13sOfMv2+DWduEU+/xbun3LScLoqN17nBeTLUsmDfKdoiC1fr0n9PU4guu4AhRcOVFk/sW8LyZWHuhWtQZiF+g==}

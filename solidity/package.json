@@ -41,12 +41,14 @@
     "@nomiclabs/hardhat-etherscan": "^3.1.7",
     "@openzeppelin/hardhat-upgrades": "^3.0.5",
     "@thesis-co/eslint-config": "github:thesis/eslint-config#7b9bc8c",
+    "@types/chai-as-promised": "^7.1.8",
     "@typechain/ethers-v6": "^0.5.1",
     "@typechain/hardhat": "^9.1.0",
     "@types/chai": "^4.3.11",
     "@types/mocha": "^10.0.6",
     "@types/node": "^20.9.4",
     "chai": "^4.3.10",
+    "chai-as-promised": "^7.1.1",
     "dotenv-safer": "^1.0.0",
     "eslint": "^8.54.0",
     "ethers": "6.10.0",
@@ -69,8 +71,6 @@
     "@keep-network/tbtc-v2": "1.6.0",
     "@openzeppelin/contracts": "^5.0.2",
     "@openzeppelin/contracts-upgradeable": "^5.0.2",
-    "@thesis-co/solidity-contracts": "github:thesis/solidity-contracts#c315b9d",
-    "@types/chai-as-promised": "^7.1.8",
-    "chai-as-promised": "^7.1.1"
+    "@thesis-co/solidity-contracts": "github:thesis/solidity-contracts#c315b9d"
   }
 }
