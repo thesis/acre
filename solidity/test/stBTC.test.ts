@@ -21,17 +21,30 @@ async function fixture() {
   const { governance, treasury, pauseAdmin, maintainer } =
     await getNamedSigners()
 
-  const [depositor1, depositor2, thirdParty] = await getUnnamedSigners()
+  const [
+    depositor1,
+    depositor2,
+    depositor3,
+    sharesOwner1,
+    sharesOwner2,
+    sharesOwner3,
+    thirdParty,
+  ] = await getUnnamedSigners()
 
   const amountToMint = to1e18(100000)
   await tbtc.mint(depositor1, amountToMint)
   await tbtc.mint(depositor2, amountToMint)
+  await tbtc.mint(depositor3, amountToMint)
 
   return {
     stbtc,
     tbtc,
     depositor1,
     depositor2,
+    depositor3,
+    sharesOwner1,
+    sharesOwner2,
+    sharesOwner3,
     governance,
     thirdParty,
     treasury,
@@ -53,6 +66,12 @@ describe("stBTC", () => {
   let governance: HardhatEthersSigner
   let depositor1: HardhatEthersSigner
   let depositor2: HardhatEthersSigner
+  let depositor3: HardhatEthersSigner
+
+  let sharesOwner1: HardhatEthersSigner
+  let sharesOwner2: HardhatEthersSigner
+  let sharesOwner3: HardhatEthersSigner
+
   let thirdParty: HardhatEthersSigner
   let treasury: HardhatEthersSigner
   let pauseAdmin: HardhatEthersSigner
@@ -64,6 +83,10 @@ describe("stBTC", () => {
       tbtc,
       depositor1,
       depositor2,
+      depositor3,
+      sharesOwner1,
+      sharesOwner2,
+      sharesOwner3,
       governance,
       thirdParty,
       treasury,
@@ -2194,6 +2217,672 @@ describe("stBTC", () => {
         [depositor1.address],
         [maxWithdraw],
       )
+    })
+  })
+
+  describe("non fungible withdrawals", () => {
+    describe("disableNonFungibleWithdrawals", () => {
+      beforeAfterSnapshotWrapper()
+
+      context("when caller is not governance", () => {
+        it("should revert", async () => {
+          await expect(
+            stbtc.connect(thirdParty).disableNonFungibleWithdrawals(),
+          )
+            .to.be.revertedWithCustomError(stbtc, "OwnableUnauthorizedAccount")
+            .withArgs(thirdParty.address)
+        })
+      })
+
+      context("when caller is governance", () => {
+        context("when non fungible withdrawals are disabled", () => {
+          beforeAfterSnapshotWrapper()
+
+          let tx: ContractTransactionResponse
+
+          before(async () => {
+            await stbtc.connect(governance).disableNonFungibleWithdrawals()
+
+            tx = await stbtc.connect(governance).disableNonFungibleWithdrawals()
+          })
+
+          it("should emit NonFungibleWithdrawalsDisabled event", async () => {
+            await expect(tx).to.emit(stbtc, "NonFungibleWithdrawalsDisabled")
+          })
+
+          it("should disable non fungible withdrawals", async () => {
+            expect(await stbtc.nonFungibleWithdrawalsEnabled()).to.be.false
+          })
+        })
+
+        context("when non fungible withdrawals are enabled", () => {
+          beforeAfterSnapshotWrapper()
+
+          let tx: ContractTransactionResponse
+
+          before(async () => {
+            tx = await stbtc.connect(governance).disableNonFungibleWithdrawals()
+          })
+
+          it("should emit NonFungibleWithdrawalsDisabled event", async () => {
+            await expect(tx).to.emit(stbtc, "NonFungibleWithdrawalsDisabled")
+          })
+
+          it("should disable non fungible withdrawals", async () => {
+            expect(await stbtc.nonFungibleWithdrawalsEnabled()).to.be.false
+          })
+        })
+      })
+    })
+
+    describe("withdrawable amount tracking", () => {
+      beforeAfterSnapshotWrapper()
+
+      /** The amount of assets the first depositor will deposit. */
+      const depositAmount1 = to1e18(3)
+      /** The actually deposited amount after the fee is subtracted. */
+      const depositAmountNet1 =
+        depositAmount1 - feeOnTotal(depositAmount1, entryFeeBasisPoints)
+      /**
+       * Expected total shares amount received by the receiver 1.
+       * The deposit is made before the earned yield, so the assets to shares
+       * conversion ratio is 1:1.
+       */
+      const expectedSharesAmount1 = depositAmountNet1
+
+      /** The amount of assets the vault will earn before the second deposit. */
+      const earnedYield = to1e18(6)
+
+      /** The amount of assets the second depositor will deposit. */
+      const depositAmount2 = to1e18(2)
+      /** The actually deposited amount after the fee is subtracted.  */
+      const depositAmountNet2 =
+        depositAmount2 - feeOnTotal(depositAmount2, entryFeeBasisPoints)
+      /**
+       *  Expected total shares amount received by the receiver 2.
+       * The deposit is made after the earned yield, so the assets to shares
+       * conversion ratio is no longer 1:1, we need to calculate amount of shares.
+       */
+      const expectedSharesAmount2 =
+        (depositAmountNet2 * expectedSharesAmount1) /
+          (depositAmountNet1 + earnedYield) +
+        1n
+
+      /** The amount of shares the third depositor will mint. */
+      const mintAmount3 = to1e18(1)
+
+      /**
+       * Initial state, mixing deposits created with `deposit` and `mint` functions,
+       * to confirm that withdrawable shares are tracked for these both methods with
+       * the common internal `_withdraw` function.
+       * Added earned yield, to introduce non 1-to-1 assets to shares conversion
+       * ration.
+       */
+      async function setupDeposits() {
+        // 1. Deposit
+        await tbtc
+          .connect(depositor1)
+          .approve(await stbtc.getAddress(), depositAmount1)
+
+        await stbtc
+          .connect(depositor1)
+          .deposit(depositAmount1, sharesOwner1.address)
+
+        // Earned Yield
+        await tbtc.mint(await stbtc.getAddress(), earnedYield)
+
+        // 2. Deposit
+        await tbtc
+          .connect(depositor2)
+          .approve(await stbtc.getAddress(), depositAmount2)
+
+        await stbtc
+          .connect(depositor2)
+          .deposit(depositAmount2, sharesOwner2.address)
+
+        // 3. Mint
+        await tbtc
+          .connect(depositor3)
+          .approve(
+            await stbtc.getAddress(),
+            await stbtc.previewMint(mintAmount3),
+          )
+
+        await stbtc.connect(depositor3).mint(mintAmount3, sharesOwner3.address)
+      }
+
+      describe("deposit and mint", () => {
+        beforeAfterSnapshotWrapper()
+
+        describe("when non fungible withdrawals are enabled", () => {
+          beforeAfterSnapshotWrapper()
+
+          before(async () => {
+            await setupDeposits()
+          })
+
+          it("should register withdrawable shares", async () => {
+            // Withdrawable shares are tracked for receivers, not depositors.
+            expect(
+              await stbtc.withdrawableShares(depositor1.address),
+              "invalid withdrawable shares for depositor 1",
+            ).to.be.equal(0)
+
+            expect(
+              await stbtc.withdrawableShares(depositor2.address),
+              "invalid withdrawable shares for depositor 2",
+            ).to.be.equal(0)
+
+            expect(
+              await stbtc.withdrawableShares(depositor3.address),
+              "invalid withdrawable shares for depositor 3",
+            ).to.be.equal(0)
+
+            expect(
+              await stbtc.withdrawableShares(sharesOwner1.address),
+              "invalid withdrawable shares for receiver 1",
+            ).to.be.equal(expectedSharesAmount1)
+
+            expect(
+              await stbtc.withdrawableShares(sharesOwner2.address),
+              "invalid withdrawable shares for receiver 2",
+            ).to.be.equal(expectedSharesAmount2)
+
+            expect(
+              await stbtc.withdrawableShares(sharesOwner3.address),
+              "invalid withdrawable shares for receiver 3",
+            ).to.be.equal(mintAmount3)
+          })
+        })
+
+        describe("when non fungible withdrawals are disabled", () => {
+          beforeAfterSnapshotWrapper()
+
+          before(async () => {
+            await stbtc.connect(governance).disableNonFungibleWithdrawals()
+
+            await setupDeposits()
+          })
+
+          it("should not register withdrawable shares", async () => {
+            expect(
+              await stbtc.withdrawableShares(depositor1.address),
+              "invalid withdrawable shares for depositor 1",
+            ).to.be.equal(0)
+
+            expect(
+              await stbtc.withdrawableShares(depositor2.address),
+              "invalid withdrawable shares for depositor 2",
+            ).to.be.equal(0)
+
+            expect(
+              await stbtc.withdrawableShares(depositor3.address),
+              "invalid withdrawable shares for depositor 3",
+            ).to.be.equal(0)
+
+            expect(
+              await stbtc.withdrawableShares(sharesOwner1.address),
+              "invalid withdrawable shares for receiver 1",
+            ).to.be.equal(0)
+
+            expect(
+              await stbtc.withdrawableShares(sharesOwner2.address),
+              "invalid withdrawable shares for receiver 2",
+            ).to.be.equal(0)
+
+            expect(
+              await stbtc.withdrawableShares(sharesOwner3.address),
+              "invalid withdrawable shares for receiver 3",
+            ).to.be.equal(0)
+          })
+        })
+      })
+
+      describe("withdraw and redeem", () => {
+        beforeAfterSnapshotWrapper()
+
+        let withdrawalReceiver1: HardhatEthersSigner
+
+        before(() => {
+          withdrawalReceiver1 = ethers.Wallet.createRandom()
+        })
+
+        describe("when non fungible withdrawals are enabled", () => {
+          beforeAfterSnapshotWrapper()
+
+          before(async () => {
+            await setupDeposits()
+          })
+
+          describe("redeem", () => {
+            beforeAfterSnapshotWrapper()
+
+            describe("when redeeming partially", () => {
+              beforeAfterSnapshotWrapper()
+
+              const redeemSharesAmount1 = to1e18(2)
+              /**
+               * The amount of assets the receiver will still have in the vault
+               * after the first redeem.
+               */
+              const expectedSharesAmountLeft =
+                expectedSharesAmount1 - redeemSharesAmount1
+
+              it("should update withdrawable shares", async () => {
+                await stbtc
+                  .connect(sharesOwner1)
+                  .redeem(
+                    redeemSharesAmount1,
+                    withdrawalReceiver1.address,
+                    sharesOwner1.address,
+                  )
+
+                expect(
+                  await stbtc.balanceOf(sharesOwner1.address),
+                  "invalid balance after redeem 1",
+                ).to.be.equal(expectedSharesAmountLeft)
+
+                expect(
+                  await stbtc.withdrawableShares(sharesOwner1.address),
+                  "invalid withdrawable shares after redeem 1",
+                ).to.be.equal(expectedSharesAmountLeft)
+              })
+
+              describe("when redeeming fully", () => {
+                beforeAfterSnapshotWrapper()
+
+                it("should update withdrawable shares", async () => {
+                  await stbtc
+                    .connect(sharesOwner1)
+                    .redeem(
+                      expectedSharesAmountLeft,
+                      withdrawalReceiver1.address,
+                      sharesOwner1.address,
+                    )
+
+                  expect(
+                    await stbtc.balanceOf(sharesOwner1.address),
+                    "invalid balance after redeem 2",
+                  ).to.be.equal(0)
+
+                  expect(
+                    await stbtc.withdrawableShares(sharesOwner1.address),
+                    "invalid withdrawable shares after redeem 2",
+                  ).to.be.equal(0)
+
+                  // The other receiver should still have withdrawable shares.
+                  expect(
+                    await stbtc.withdrawableShares(sharesOwner2.address),
+                    "invalid withdrawable shares after redeem 2 for the other holder",
+                  ).to.be.equal(expectedSharesAmount2)
+                })
+              })
+            })
+
+            describe("when redeeming more than registered withdrawable shares", () => {
+              beforeAfterSnapshotWrapper()
+
+              before(async () => {
+                // Transfer some shares to the first receiver.
+                await stbtc
+                  .connect(sharesOwner2)
+                  .transfer(sharesOwner1.address, 100)
+              })
+
+              it("should revert", async () => {
+                await expect(
+                  stbtc
+                    .connect(sharesOwner1)
+                    .redeem(
+                      expectedSharesAmount1 + 1n,
+                      withdrawalReceiver1.address,
+                      sharesOwner1.address,
+                    ),
+                )
+                  .to.be.revertedWithCustomError(
+                    stbtc,
+                    "ERC4626ExceededMaxRedeem",
+                  )
+                  .withArgs(
+                    sharesOwner1.address,
+                    expectedSharesAmount1 + 1n,
+                    expectedSharesAmount1,
+                  )
+              })
+            })
+          })
+
+          describe("withdraw", () => {
+            beforeAfterSnapshotWrapper()
+
+            describe("when withdrawing partially", () => {
+              beforeAfterSnapshotWrapper()
+
+              const withdrawAmount1 = to1e18(1)
+              /**
+               * The amount of assets the receiver will withdraw including the fee
+               * added on top of the requested raw withdraw amount.
+               */
+              const withdrawAmountGross1 =
+                withdrawAmount1 + feeOnRaw(withdrawAmount1, exitFeeBasisPoints)
+
+              let expectedSharesAmountLeft: bigint
+              let withdrawAmount2: bigint
+
+              before(async () => {
+                expectedSharesAmountLeft =
+                  expectedSharesAmount1 -
+                  (await stbtc.convertToShares(withdrawAmountGross1)) -
+                  1n
+
+                withdrawAmount2 = await stbtc.convertToAssets(
+                  expectedSharesAmountLeft -
+                    feeOnTotal(expectedSharesAmountLeft, exitFeeBasisPoints),
+                )
+              })
+
+              it("should update withdrawable shares", async () => {
+                await stbtc
+                  .connect(sharesOwner1)
+                  .withdraw(
+                    withdrawAmount1,
+                    withdrawalReceiver1.address,
+                    sharesOwner1.address,
+                  )
+
+                expect(
+                  await stbtc.balanceOf(sharesOwner1.address),
+                  "invalid balance after withdraw 1",
+                ).to.be.equal(expectedSharesAmountLeft)
+
+                expect(
+                  await stbtc.withdrawableShares(sharesOwner1.address),
+                  "invalid withdrawable shares after withdraw 1",
+                ).to.be.equal(expectedSharesAmountLeft)
+              })
+
+              describe("when withdrawing fully", () => {
+                beforeAfterSnapshotWrapper()
+
+                it("should update withdrawable shares", async () => {
+                  await stbtc
+                    .connect(sharesOwner1)
+                    .withdraw(
+                      withdrawAmount2,
+                      withdrawalReceiver1.address,
+                      sharesOwner1.address,
+                    )
+
+                  expect(
+                    await stbtc.balanceOf(sharesOwner1.address),
+                    "invalid balance after withdraw 2",
+                  ).to.be.equal(0)
+
+                  expect(
+                    await stbtc.withdrawableShares(sharesOwner1.address),
+                    "invalid withdrawable shares after withdraw 2",
+                  ).to.be.equal(0)
+
+                  // The other receiver should still have withdrawable shares.
+                  expect(
+                    await stbtc.withdrawableShares(sharesOwner2.address),
+                    "invalid withdrawable shares after withdraw 2 for the other holder",
+                  ).to.be.equal(expectedSharesAmount2)
+                })
+              })
+            })
+
+            describe("when withdrawing more than registered withdrawable shares", () => {
+              beforeAfterSnapshotWrapper()
+
+              before(async () => {
+                // Transfer some shares to the first receiver.
+                await stbtc
+                  .connect(sharesOwner2)
+                  .transfer(sharesOwner1.address, 100)
+              })
+
+              it("should revert", async () => {
+                const assetsAmount = await stbtc.convertToAssets(
+                  expectedSharesAmount1,
+                )
+
+                const withdrawalAmount = await stbtc.previewRedeem(
+                  expectedSharesAmount1 + 100n,
+                )
+
+                const expectedMaxWithdrawal =
+                  assetsAmount - feeOnTotal(assetsAmount, exitFeeBasisPoints)
+
+                await expect(
+                  stbtc
+                    .connect(sharesOwner1)
+                    .withdraw(
+                      withdrawalAmount,
+                      withdrawalReceiver1.address,
+                      sharesOwner1.address,
+                    ),
+                )
+                  .to.be.revertedWithCustomError(
+                    stbtc,
+                    "ERC4626ExceededMaxWithdraw",
+                  )
+                  .withArgs(
+                    sharesOwner1.address,
+                    withdrawalAmount,
+                    expectedMaxWithdrawal,
+                  )
+              })
+            })
+          })
+        })
+
+        describe("when non fungible withdrawals are disabled", () => {
+          beforeAfterSnapshotWrapper()
+
+          before(async () => {
+            // Initiate the state with enabled non-fungible withdrawals.
+            await setupDeposits()
+
+            // Disable the non-fungible withdrawals after the initial deposits
+            // were made.
+            await stbtc.connect(governance).disableNonFungibleWithdrawals()
+          })
+
+          describe("redeem", () => {
+            beforeAfterSnapshotWrapper()
+
+            describe("when redeeming partially", () => {
+              beforeAfterSnapshotWrapper()
+
+              const redeemSharesAmount1 = to1e18(2)
+              const redeemSharesAmount2 =
+                expectedSharesAmount1 - redeemSharesAmount1
+
+              it("should update withdrawable shares", async () => {
+                await stbtc
+                  .connect(sharesOwner1)
+                  .redeem(
+                    redeemSharesAmount1,
+                    withdrawalReceiver1.address,
+                    sharesOwner1.address,
+                  )
+
+                expect(
+                  await stbtc.balanceOf(sharesOwner1.address),
+                  "invalid balance after redeem 1",
+                ).to.be.equal(redeemSharesAmount2)
+
+                expect(
+                  await stbtc.withdrawableShares(sharesOwner1.address),
+                  "invalid withdrawable shares after redeem 1",
+                ).to.be.equal(expectedSharesAmount1)
+              })
+            })
+
+            describe("when redeeming more than registered withdrawable shares", () => {
+              beforeAfterSnapshotWrapper()
+
+              before(async () => {
+                await stbtc
+                  .connect(sharesOwner2)
+                  .transfer(sharesOwner1.address, 100)
+              })
+
+              it("should not revert", async () => {
+                await expect(
+                  stbtc
+                    .connect(sharesOwner1)
+                    .redeem(
+                      expectedSharesAmount1 + 100n,
+                      withdrawalReceiver1.address,
+                      sharesOwner1.address,
+                    ),
+                ).to.be.not.reverted
+              })
+            })
+          })
+
+          describe("withdraw", () => {
+            beforeAfterSnapshotWrapper()
+
+            describe("when withdrawing partially", () => {
+              beforeAfterSnapshotWrapper()
+
+              const withdrawAmount1 = to1e18(1)
+              const withdrawAmountGross1 =
+                withdrawAmount1 + feeOnRaw(withdrawAmount1, exitFeeBasisPoints)
+
+              let expectedSharesAmountLeft: bigint
+
+              before(async () => {
+                expectedSharesAmountLeft =
+                  expectedSharesAmount1 -
+                  (await stbtc.convertToShares(withdrawAmountGross1)) -
+                  1n
+              })
+
+              it("should update withdrawable shares", async () => {
+                await stbtc
+                  .connect(sharesOwner1)
+                  .withdraw(
+                    withdrawAmount1,
+                    withdrawalReceiver1.address,
+                    sharesOwner1.address,
+                  )
+
+                expect(
+                  await stbtc.balanceOf(sharesOwner1.address),
+                  "invalid balance after withdraw 1",
+                ).to.be.equal(expectedSharesAmountLeft)
+
+                expect(
+                  await stbtc.withdrawableShares(sharesOwner1.address),
+                  "invalid withdrawable shares after withdraw 1",
+                ).to.be.equal(expectedSharesAmount1)
+              })
+            })
+
+            describe("when withdrawing more than registered withdrawable shares", () => {
+              beforeAfterSnapshotWrapper()
+
+              before(async () => {
+                await stbtc
+                  .connect(sharesOwner2)
+                  .transfer(sharesOwner1.address, 100)
+              })
+
+              it("should not revert", async () => {
+                const withdrawalAmount = await stbtc.previewRedeem(
+                  expectedSharesAmount1 + 100n,
+                )
+
+                await expect(
+                  stbtc
+                    .connect(sharesOwner1)
+                    .withdraw(
+                      withdrawalAmount,
+                      withdrawalReceiver1.address,
+                      sharesOwner1.address,
+                    ),
+                ).to.be.not.reverted
+              })
+            })
+          })
+        })
+      })
+
+      describe("maxWithdraw and maxRedeem", () => {
+        beforeAfterSnapshotWrapper()
+
+        before(async () => {
+          await setupDeposits()
+
+          // Transfer shares from the second receiver to the first receiver.
+          // This changes shares balance, but doesn't affect registered withdrawable
+          // shares mapping.
+          await stbtc
+            .connect(sharesOwner2)
+            .transfer(sharesOwner1.address, expectedSharesAmount2)
+        })
+
+        describe("when non fungible withdrawals are enabled", () => {
+          describe("maxRedeem", () => {
+            it("should return the correct amount", async () => {
+              const actual = await stbtc.maxRedeem(sharesOwner1.address)
+
+              // Only shares that were initially minted for the first receiver.
+              const expected = expectedSharesAmount1
+
+              expect(actual).to.be.equal(expected)
+            })
+          })
+
+          describe("maxWithdraw", () => {
+            it("should return the correct amount", async () => {
+              const actual = await stbtc.maxWithdraw(sharesOwner1.address)
+
+              // Includes only shares that were initially minted for the first receiver.
+              const assets = await stbtc.convertToAssets(expectedSharesAmount1)
+              const expected = assets - feeOnTotal(assets, exitFeeBasisPoints)
+
+              expect(actual).to.be.equal(expected)
+            })
+          })
+        })
+
+        describe("when non fungible withdrawals are disabled", () => {
+          before(async () => {
+            await stbtc.connect(governance).disableNonFungibleWithdrawals()
+          })
+
+          describe("maxRedeem", () => {
+            it("should return the correct amount", async () => {
+              const actual = await stbtc.maxRedeem(sharesOwner1.address)
+
+              // Includes additional shares that were transferred from the second receiver.
+              const expected = expectedSharesAmount1 + expectedSharesAmount2
+
+              expect(actual).to.be.equal(expected)
+            })
+          })
+
+          describe("maxWithdraw", () => {
+            it("should return the correct amount", async () => {
+              const actual = await stbtc.maxWithdraw(sharesOwner1.address)
+
+              // Includes additional shares that were transferred from the second receiver.
+              const assets = await stbtc.convertToAssets(
+                expectedSharesAmount1 + expectedSharesAmount2,
+              )
+
+              const expected = assets - feeOnTotal(assets, exitFeeBasisPoints)
+
+              expect(actual).to.be.equal(expected)
+            })
+          })
+        })
+      })
     })
   })
 
