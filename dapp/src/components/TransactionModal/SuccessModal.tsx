@@ -15,6 +15,7 @@ import {
   useModal,
   useAllActivitiesCount,
   useFetchDeposits,
+  useInvalidateQueries,
 } from "#/hooks"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import { ACTION_FLOW_TYPES, ActionFlowType, MODAL_TYPES } from "#/types"
@@ -106,10 +107,13 @@ export default function SuccessModal({ type }: SuccessModalProps) {
   const fetchDeposits = useFetchDeposits()
   const navigate = useNavigate()
   const allActivitiesCount = useAllActivitiesCount()
+  const invalidateQueries = useInvalidateQueries()
 
   const { heading, footer, renderComponent } = CONTENT[type]
 
   const handleCloseModal = () => {
+    invalidateQueries({ queryKey: ["bitcoinBalance"] })
+    invalidateQueries({ queryKey: ["BTCBalance"] })
     closeModal()
     navigate(routerPath.dashboard)
 

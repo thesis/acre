@@ -43,7 +43,6 @@ export default function SignMessageModal() {
   const { closeModal } = useModal()
   const { handlePause } = useActionFlowPause()
   const initializeWithdraw = useInitializeWithdraw()
-  const invalidateQueries = useInvalidateQueries()
 
   const onSignMessageCallback = useCallback(async () => {
     setWaitingStatus("signature")
@@ -57,9 +56,8 @@ export default function SignMessageModal() {
   }, [dispatch])
 
   const onSignMessageSuccess = useCallback(() => {
-    invalidateQueries({ queryKey: ["BTCBalance"] })
     dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED))
-  }, [dispatch, invalidateQueries])
+  }, [dispatch])
 
   const onSignMessageError = useCallback(() => {
     dispatch(setStatus(PROCESS_STATUSES.FAILED))
