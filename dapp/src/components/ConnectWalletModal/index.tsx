@@ -2,14 +2,13 @@ import React, { useState } from "react"
 import { ModalBody, ModalHeader, ModalCloseButton } from "@chakra-ui/react"
 import { useConnectors } from "#/hooks"
 import { AnimatePresence } from "framer-motion"
+import { featureFlags } from "#/constants"
 import withBaseModal from "../ModalRoot/withBaseModal"
 import ConnectWalletButton from "./ConnectWalletButton"
 // import { Alert, AlertTitle, AlertDescription } from "./shared/Alert"
 
 const disabledConnectorIds = [
-  import.meta.env.VITE_FEATURE_FLAG_OKX_WALLET_ENABLED !== "true"
-    ? "orangekit-okx"
-    : "",
+  featureFlags.OKX_WALLET_ENABLED ? "orangekit-okx" : "",
 ].filter(Boolean)
 
 export function ConnectWalletModalBase() {
