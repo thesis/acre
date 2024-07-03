@@ -3,7 +3,11 @@ import { useAccount, useChainId, useConnect, useDisconnect } from "wagmi"
 import { logPromiseFailure, orangeKit } from "#/utils"
 import { OnErrorCallback, OrangeKitConnector, Status } from "#/types"
 import { resetState } from "#/store/wallet"
-import { useBitcoinProvider, useConnector } from "./orangeKit"
+import {
+  useBitcoinBalance,
+  useBitcoinProvider,
+  useConnector,
+} from "./orangeKit"
 import { useAppDispatch } from "./store"
 
 const { typeConversionToConnector, typeConversionToOrangeKitConnector } =
@@ -12,7 +16,7 @@ const { typeConversionToConnector, typeConversionToOrangeKitConnector } =
 type UseWalletReturn = {
   isConnected: boolean
   address?: string
-  balance: bigint
+  balance?: bigint
   status: Status
   onConnect: (
     connector: OrangeKitConnector,
@@ -32,9 +36,9 @@ export function useWallet(): UseWalletReturn {
   const connector = useConnector()
   const provider = useBitcoinProvider()
   const dispatch = useAppDispatch()
+  const { data: balance } = useBitcoinBalance()
 
   const [address, setAddress] = useState<string | undefined>(undefined)
-  const [balance, setBalance] = useState<bigint>(0n)
 
   // `isConnected` is variable derived from `status` but does not guarantee us a set `address`.
   // When `status` is 'connected' properties like `address` are guaranteed to be defined.
@@ -81,16 +85,6 @@ export function useWallet(): UseWalletReturn {
   }, [disconnect, dispatch])
 
   useEffect(() => {
-    const fetchBalance = async () => {
-      if (provider) {
-        const { total } = await provider.getBalance()
-
-        setBalance(BigInt(total))
-      } else {
-        setBalance(0n)
-      }
-    }
-
     const fetchBitcoinAddress = async () => {
       if (connector) {
         const btcAddress = await connector.getBitcoinAddress()
@@ -101,7 +95,6 @@ export function useWallet(): UseWalletReturn {
       }
     }
 
-    logPromiseFailure(fetchBalance())
     logPromiseFailure(fetchBitcoinAddress())
   }, [connector, provider])
 

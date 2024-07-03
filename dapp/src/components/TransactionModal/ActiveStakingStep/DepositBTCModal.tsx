@@ -5,6 +5,7 @@ import {
   useAppDispatch,
   useDepositBTCTransaction,
   useExecuteFunction,
+  useInvalidateQueries,
   useStakeFlowContext,
   useVerifyDepositAddress,
 } from "#/hooks"
@@ -22,10 +23,12 @@ export default function DepositBTCModal() {
   const verifyDepositAddress = useVerifyDepositAddress()
   const dispatch = useAppDispatch()
   const { handlePause } = useActionFlowPause()
+  const invalidateQueries = useInvalidateQueries()
 
   const onStakeBTCSuccess = useCallback(() => {
+    invalidateQueries({ queryKey: ["bitcoinBalance"] })
     dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED))
-  }, [dispatch])
+  }, [dispatch, invalidateQueries])
 
   const onStakeBTCError = useCallback(() => {
     dispatch(setStatus(PROCESS_STATUSES.FAILED))
