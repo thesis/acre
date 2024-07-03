@@ -76,17 +76,10 @@ export function createRedemptionRequestedEvent(): RedemptionRequestedEventData {
   const acreOwner = Address.fromString(
     "0x5476A06f08CD1F9669Ae6643C5eF9cc4F1848970",
   )
-  const shares = BigInt.fromString("10200000000000000")
+  const acreOwnerAsHex = Bytes.fromHexString(
+    "0x0000000000000000000000005476a06f08cd1f9669ae6643c5ef9cc4f1848970",
+  )
   const tbtcAmount = BigInt.fromString("10174563591022443")
-
-  // const tupleArray: Array<ethereum.Value> = [
-  //   ethereum.Value.fromUnsignedBigInt(shares),
-  //   ethereum.Value.fromUnsignedBigInt(tbtcAmount),
-  // ]
-
-  // const tuple = tupleArray as ethereum.Tuple
-
-  // const encoded = ethereum.encode(ethereum.Value.fromTuple(tuple))!
 
   // Logs data from https://sepolia.etherscan.io/tx/0x4951c225e35cb61c741d531c268d72c3c861a8f59f5877ec33cb181c36e90d39#eventlog#144
   const log = new ethereum.Log(
@@ -97,7 +90,7 @@ export function createRedemptionRequestedEvent(): RedemptionRequestedEventData {
         "0x46949ee51143d5b58e4df83122d6c382a04f7bffbe563f78cd7fa61ee519ec08",
       ),
       // `owner` - indexed topic 1
-      Bytes.fromHexString(acreOwner.toHexString()),
+      acreOwnerAsHex,
     ],
     Bytes.fromHexString(
       "0x00000000000000000000000000000000000000000000000000243cd890b58000000000000000000000000000000000000000000000000000002425b63096676b",
