@@ -78,6 +78,7 @@ type WithdrawalsDataResponse = {
       id: string
       bitcoinTransactionId: string
       amount: string
+      events: { type: "Initialized" | "Finalized"; timestamp: string }[]
     }[]
   }
 }
@@ -86,6 +87,7 @@ type Withdraw = {
   id: string
   amount: bigint
   bitcoinTransactionId?: string
+  timestamp: number
 }
 
 type SearchRedemptionDataResponse = {
@@ -124,6 +126,10 @@ export function buildGetWithdrawalsByOwnerQuery(owner: ChainIdentifier) {
         id
         bitcoinTransactionId
         amount
+        events(orderBy: timestamp, orderDirection: asc) {
+          timestamp
+          type
+        }
       }
   }`
 }
@@ -291,6 +297,7 @@ export default class AcreSubgraphApi extends HttpApi {
         id: withdraw.id,
         bitcoinTransactionId,
         amount: BigInt(withdraw.amount),
+        timestamp: parseInt(withdraw.events[0].timestamp, 10),
       }
     })
   }

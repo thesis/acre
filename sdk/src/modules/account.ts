@@ -223,12 +223,14 @@ export default class Account {
       amount: bigint
       bitcoinTransactionId?: string
       status: "initialized" | "finalized"
+      timestamp: number
     }[]
   > {
     return (
       await this.#acreSubgraphApi.getWithdrawalsByOwner(this.#ethereumAddress)
     ).map((withdraw) => ({
       ...withdraw,
+      amount: toSatoshi(withdraw.amount),
       status: withdraw.bitcoinTransactionId ? "finalized" : "initialized",
     }))
   }
