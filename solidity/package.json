@@ -67,7 +67,7 @@
   "dependencies": {
     "@keep-network/bitcoin-spv-sol": "3.4.0-solc-0.8",
     "@keep-network/tbtc-v2": "1.6.0",
-    "@openzeppelin/contracts": "^5.0.0",
+    "@openzeppelin/contracts": "^5.0.2",
     "@openzeppelin/contracts-upgradeable": "^5.0.2",
     "@thesis-co/solidity-contracts": "github:thesis/solidity-contracts#c315b9d",
     "@types/chai-as-promised": "^7.1.8",

@@ -191,7 +191,7 @@ importers:
         specifier: 1.6.0
         version: 1.6.0(@keep-network/keep-core@1.8.1-dev.0)
       '@openzeppelin/contracts':
-        specifier: ^5.0.0
+        specifier: ^5.0.2
         version: 5.0.2
       '@openzeppelin/contracts-upgradeable':
         specifier: ^5.0.2
