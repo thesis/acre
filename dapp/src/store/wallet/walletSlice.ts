@@ -3,12 +3,16 @@ import { isActivityCompleted } from "#/utils"
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 
 export type WalletState = {
+  estimatedBtcBalance: bigint
+  sharesBalance: bigint
   isSignedMessage: boolean
   latestActivities: ActivitiesByIds
   activities: Activity[]
 }
 
-const initialState: WalletState = {
+export const initialState: WalletState = {
+  estimatedBtcBalance: 0n,
+  sharesBalance: 0n,
   isSignedMessage: false,
   latestActivities: {},
   activities: [],
@@ -18,6 +22,12 @@ export const walletSlice = createSlice({
   name: "wallet",
   initialState,
   reducers: {
+    setSharesBalance(state, action: PayloadAction<bigint>) {
+      state.sharesBalance = action.payload
+    },
+    setEstimatedBtcBalance(state, action: PayloadAction<bigint>) {
+      state.estimatedBtcBalance = action.payload
+    },
     setIsSignedMessage(state, action: PayloadAction<boolean>) {
       state.isSignedMessage = action.payload
     },
@@ -55,15 +65,13 @@ export const walletSlice = createSlice({
       const activityId = action.payload
       delete state.latestActivities[activityId]
     },
-    resetState(state) {
-      state.isSignedMessage = initialState.isSignedMessage
-      state.latestActivities = initialState.latestActivities
-      state.activities = initialState.activities
-    },
+    resetState: () => initialState,
   },
 })
 
 export const {
+  setSharesBalance,
+  setEstimatedBtcBalance,
   setIsSignedMessage,
   setActivities,
   deleteLatestActivity,
