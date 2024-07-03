@@ -5,7 +5,7 @@ export const BITCOIN: Currency = {
   symbol: "BTC",
   decimals: 8,
   // TODO: Change when min amount of BTC will be updated
-  desiredDecimals: 5,
+  desiredDecimals: 4,
 }
 
 export const STBTC: Currency = {
