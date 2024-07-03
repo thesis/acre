@@ -1,12 +1,12 @@
 import { useAcreContext } from "#/acre-react/hooks"
 import { useQuery } from "@tanstack/react-query"
-import { INTERVAL_TIME_IN_MILLISECONDS } from "#/constants"
+import { INTERVAL_TIME_IN_MILLISECONDS, queryKeys } from "#/constants"
 
-export default function useBTCBalance() {
+export default function useBitcoinPosition() {
   const { acre, isInitialized } = useAcreContext()
 
   return useQuery({
-    queryKey: ["BTCBalance", { acre, isInitialized }],
+    queryKey: [queryKeys.BITCOIN_POSITION, { acre, isInitialized }],
     queryFn: async () => {
       if (!isInitialized || !acre)
         return { sharesBalance: 0n, estimatedBitcoinBalance: 0n }

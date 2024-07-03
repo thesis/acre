@@ -23,7 +23,7 @@ import { useNavigate } from "react-router-dom"
 import { routerPath } from "#/router/path"
 import { IconArrowUpRight } from "@tabler/icons-react"
 import { logPromiseFailure } from "#/utils"
-import { featureFlags } from "#/constants"
+import { featureFlags, queryKeys } from "#/constants"
 import { TextMd } from "../shared/Typography"
 import Spinner from "../shared/Spinner"
 import BlockExplorerLink from "../shared/BlockExplorerLink"
@@ -112,8 +112,8 @@ export default function SuccessModal({ type }: SuccessModalProps) {
   const { heading, footer, renderComponent } = CONTENT[type]
 
   const handleCloseModal = () => {
-    invalidateQueries({ queryKey: ["bitcoinBalance"] })
-    invalidateQueries({ queryKey: ["BTCBalance"] })
+    invalidateQueries({ queryKey: [queryKeys.BITCOIN_BALANCE] })
+    invalidateQueries({ queryKey: [queryKeys.BITCOIN_POSITION] })
     closeModal()
     navigate(routerPath.dashboard)
 

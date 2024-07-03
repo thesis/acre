@@ -3,13 +3,13 @@ import TokenAmountForm from "#/components/shared/TokenAmountForm"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { FormSubmitButton } from "#/components/shared/Form"
 import { BaseFormProps } from "#/types"
-import { useBTCBalance, useMinWithdrawAmount } from "#/hooks"
+import { useBitcoinPosition, useMinWithdrawAmount } from "#/hooks"
 import UnstakeDetails from "./UnstakeDetails"
 
 function UnstakeFormModal({
   onSubmitForm,
 }: BaseFormProps<TokenAmountFormValues>) {
-  const { data } = useBTCBalance()
+  const { data } = useBitcoinPosition()
   const balance = data?.estimatedBitcoinBalance ?? 0n
   const minTokenAmount = useMinWithdrawAmount()
 
