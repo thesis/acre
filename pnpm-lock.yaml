@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+neverBuiltDependencies:
+  - '@threshold-network/solidity-contracts'
+
 importers:
 
   .:
@@ -7258,7 +7261,6 @@ packages:
 
   /@threshold-network/solidity-contracts@1.2.1(@keep-network/keep-core@1.8.1-dev.0):
     resolution: {integrity: sha512-v19gnQzdU52DLB6ZpkCW4YHTvApmwA1EG/YRxh+FRrzeDOC6rv+EqUhLgKpMtSpgBZT1ryqqLXm1QmjkW6CIGw==}
-    requiresBuild: true
     peerDependencies:
       '@keep-network/keep-core': '>1.8.1-dev <1.8.1-goerli'
     dependencies:
