@@ -22,10 +22,7 @@ export const modalSlice = createSlice({
       state.modalType = action.payload.modalType
       state.props = action.payload.props
     },
-    closeModal: (state: ModalState) => {
-      state.modalType = null
-      state.props = {}
-    },
+    closeModal: () => initialState,
   },
 })
 

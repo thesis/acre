@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { CONNECTION_ERRORS } from "#/constants"
 import {
   useAppDispatch,
@@ -7,7 +7,7 @@ import {
   useWalletConnectionError,
 } from "#/hooks"
 import { setIsSignedMessage } from "#/store/wallet"
-import { OrangeKitConnector, OrangeKitError } from "#/types"
+import { OrangeKitConnector, OrangeKitError, OnSuccessCallback } from "#/types"
 import {
   isSupportedBTCAddressType,
   logPromiseFailure,
@@ -24,18 +24,21 @@ import {
   ImageProps,
   VStack,
 } from "@chakra-ui/react"
+import { useSignMessage } from "wagmi"
 import { IconArrowNarrowRight } from "@tabler/icons-react"
 import { AnimatePresence, Variants, motion } from "framer-motion"
-import { useSignMessage } from "wagmi"
+import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import ArrivingSoonTooltip from "../ArrivingSoonTooltip"
 import { TextLg, TextMd } from "../shared/Typography"
 import ConnectWalletStatusLabel from "./ConnectWalletStatusLabel"
+import Spinner from "../shared/Spinner"
 
 type ConnectWalletButtonProps = {
   label: string
   onClick: () => void
   isSelected: boolean
   connector: OrangeKitConnector & { isDisabled: boolean }
+  onSuccess?: OnSuccessCallback
 }
 
 const iconStyles: Record<string, ImageProps> = {
@@ -54,6 +57,7 @@ export default function ConnectWalletButton({
   onClick,
   isSelected,
   connector,
+  onSuccess,
 }: ConnectWalletButtonProps) {
   const {
     address,
@@ -65,6 +69,8 @@ export default function ConnectWalletButton({
   const { signMessage, status: signMessageStatus } = useSignMessage()
   const { closeModal } = useModal()
   const dispatch = useAppDispatch()
+
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const { connectionError, setConnectionError } = useWalletConnectionError()
 
   const hasConnectionError = connectionError || connectionStatus === "error"
@@ -72,10 +78,14 @@ export default function ConnectWalletButton({
   const showStatuses = isSelected && !hasConnectionError
   const showRetryButton = address && hasSignMessageStatus
 
-  const onSuccess = useCallback(() => {
+  const handleOnSuccess = useCallback(() => {
     closeModal()
     dispatch(setIsSignedMessage(true))
-  }, [closeModal, dispatch])
+
+    if (onSuccess) {
+      onSuccess()
+    }
+  }, [closeModal, dispatch, onSuccess])
 
   const handleSignMessage = useCallback(
     async (connectedConnector: OrangeKitConnector) => {
@@ -89,10 +99,10 @@ export default function ConnectWalletButton({
           message,
           connector: orangeKit.typeConversionToConnector(connectedConnector),
         },
-        { onSuccess },
+        { onSuccess: handleOnSuccess },
       )
     },
-    [onSuccess, signMessage],
+    [handleOnSuccess, signMessage],
   )
 
   const handleConnection = useCallback(async () => {
@@ -123,7 +133,28 @@ export default function ConnectWalletButton({
     setConnectionError,
   ])
 
+  const handleRedirectUser = useCallback(() => {
+    setIsLoading(true)
+
+    setTimeout(() => {
+      const wallet = orangeKit.getWalletInfo(connector)
+
+      if (wallet) {
+        window.open(wallet.downloadUrls.desktop, "_blank")?.focus()
+      }
+
+      setIsLoading(false)
+    }, ONE_SEC_IN_MILLISECONDS * 2)
+  }, [connector])
+
   const handleButtonClick = () => {
+    const isInstalled = orangeKit.isWalletInstalled(connector)
+
+    if (!isInstalled) {
+      handleRedirectUser()
+      return
+    }
+
     onClick()
 
     // Connector still selected and user wants to retry connect action
@@ -165,7 +196,13 @@ export default function ConnectWalletButton({
                 {...iconStyles[connector.id]}
               />
             }
-            rightIcon={<Icon as={IconArrowNarrowRight} boxSize={6} ml="auto" />}
+            rightIcon={
+              !isLoading ? (
+                <Icon as={IconArrowNarrowRight} boxSize={6} ml="auto" />
+              ) : (
+                <Spinner boxSize={6} variant="filled" />
+              )
+            }
             iconSpacing={4}
             isDisabled={connector.isDisabled}
           >

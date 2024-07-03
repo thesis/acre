@@ -8,8 +8,9 @@ import {
   Status,
 } from "#/types"
 import { resetState } from "#/store/wallet"
-import { useBitcoinProvider, useConnector } from "./orangeKit"
 import { useAppDispatch } from "./store"
+import { useConnector } from "./orangeKit/useConnector"
+import { useBitcoinProvider } from "./orangeKit/useBitcoinProvider"
 
 const { typeConversionToConnector, typeConversionToOrangeKitConnector } =
   orangeKit

@@ -2,17 +2,21 @@ import React, { useState } from "react"
 import { ModalBody, ModalHeader, ModalCloseButton } from "@chakra-ui/react"
 import { useConnectors, useWalletConnectionError } from "#/hooks"
 import { OrangeKitConnector } from "#/types"
+import { BaseModalProps, OnSuccessCallback } from "#/types"
+import { featureFlags } from "#/constants"
 import withBaseModal from "../ModalRoot/withBaseModal"
 import ConnectWalletButton from "./ConnectWalletButton"
 import ConnectWalletErrorAlert from "./ConnectWalletErrorAlert"
 
 const disabledConnectorIds = [
-  import.meta.env.VITE_FEATURE_FLAG_OKX_WALLET_ENABLED !== "true"
-    ? "orangekit-okx"
-    : "",
+  featureFlags.OKX_WALLET_ENABLED ? "orangekit-okx" : "",
 ].filter(Boolean)
 
-export function ConnectWalletModalBase() {
+export function ConnectWalletModalBase({
+  onSuccess,
+}: {
+  onSuccess?: OnSuccessCallback
+} & BaseModalProps) {
   const connectors = useConnectors()
   const enabledConnectors = connectors.map((connector) => ({
     ...connector,
@@ -42,6 +46,7 @@ export function ConnectWalletModalBase() {
             connector={connector}
             onClick={() => handleButtonOnClick(connector)}
             isSelected={selectedConnectorId === connector.id}
+            onSuccess={onSuccess}
           />
         ))}
       </ModalBody>

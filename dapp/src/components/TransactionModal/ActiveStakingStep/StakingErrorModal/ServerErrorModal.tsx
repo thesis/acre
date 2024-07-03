@@ -15,7 +15,6 @@ import { CableWithPlugIcon, Info } from "#/assets/icons"
 import { TextMd } from "#/components/shared/Typography"
 import { EXTERNAL_HREF } from "#/constants"
 import IconWrapper from "#/components/shared/IconWrapper"
-import { MODAL_BASE_SIZE } from "#/components/ModalRoot/withBaseModal"
 import {
   IconBrandDiscordFilled,
   IconReload,
@@ -62,12 +61,6 @@ export default function ServerErrorModal({
         justifyContent="space-between"
         bgColor="gold.200"
         borderRadius="xl"
-        // The dialog container style has padding set by default.
-        // However, the modal footer should be positioned outside this padding.
-        // To avoid changing it, let's set the position to relative and calculate the correct width.
-        // To calculate the width we need to subtract the border width on two sides from the modal width.
-        position="relative"
-        w={`calc(var(--chakra-sizes-${MODAL_BASE_SIZE}) - 2 * var(--chakra-space-modal_borderWidth))`}
       >
         <Flex flexDirection="column">
           <HStack>

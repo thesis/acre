@@ -10,6 +10,23 @@ import {
 } from "@orangekit/react"
 import { Connector } from "wagmi"
 import { SignInWithWalletMessage } from "@orangekit/sign-in-with-wallet"
+import { wallets } from "#/constants"
+
+const getWalletInfo = (connector: OrangeKitConnector) => {
+  switch (connector.id) {
+    case "orangekit-unisat":
+      return wallets.UNISAT
+    case "orangekit-okx":
+      return wallets.OKX
+    default:
+      return null
+  }
+}
+
+const isWalletInstalled = (connector: OrangeKitConnector) => {
+  const provider = connector.getBitcoinProvider()
+  return provider.isInstalled()
+}
 
 const isWalletConnectionRejectedError = (cause: OrangeKitError["cause"]) =>
   cause && cause.code === 4001
@@ -62,6 +79,8 @@ const parseOrangeKitConnectionError = (
 }
 
 export default {
+  getWalletInfo,
+  isWalletInstalled,
   isOrangeKitConnector,
   isConnectedStatus,
   createSignInWithWalletMessage,

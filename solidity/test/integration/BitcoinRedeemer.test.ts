@@ -69,7 +69,7 @@ describe("BitcoinRedeemer", () => {
       beforeAfterSnapshotWrapper()
 
       const stBtcAmountToRedeem = to1e18(5)
-      const expectedTbtcAmountToRedeem = to1e18(5)
+      const expectedTbtcAmountToRedeem = 4987531172069825436n // 5 tBTC * (1 - (25 / 1000 + 25)) = 4.9875 tBTC
 
       before(async () => {
         tx = await stbtc
