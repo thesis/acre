@@ -12,7 +12,7 @@ import { TextMd } from "#/components/shared/Typography"
 import { EXTERNAL_HREF } from "#/constants"
 import { IconBrandDiscordFilled } from "@tabler/icons-react"
 
-export default function UnstakeErrorModal() {
+export default function UnexpectedErrorModal() {
   return (
     <>
       <ModalCloseButton />

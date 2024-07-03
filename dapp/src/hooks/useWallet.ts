@@ -1,10 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useAccount, useChainId, useConnect, useDisconnect } from "wagmi"
 import { logPromiseFailure, orangeKit } from "#/utils"
-import { OnErrorCallback, OrangeKitConnector, Status } from "#/types"
+import {
+  OnErrorCallback,
+  OrangeKitConnector,
+  OrangeKitError,
+  Status,
+} from "#/types"
 import { resetState } from "#/store/wallet"
-import { useBitcoinProvider, useConnector } from "./orangeKit"
 import { useAppDispatch } from "./store"
+import { useConnector } from "./orangeKit/useConnector"
+import { useBitcoinProvider } from "./orangeKit/useBitcoinProvider"
 
 const { typeConversionToConnector, typeConversionToOrangeKitConnector } =
   orangeKit
@@ -18,7 +24,7 @@ type UseWalletReturn = {
     connector: OrangeKitConnector,
     options?: {
       onSuccess?: (connector: OrangeKitConnector) => void
-      onError?: OnErrorCallback
+      onError?: OnErrorCallback<OrangeKitError>
     },
   ) => void
   onDisconnect: () => void
@@ -49,7 +55,7 @@ export function useWallet(): UseWalletReturn {
       selectedConnector: OrangeKitConnector,
       options?: {
         onSuccess?: (connector: OrangeKitConnector) => void
-        onError?: OnErrorCallback
+        onError?: OnErrorCallback<OrangeKitError>
       },
     ) => {
       connect(

@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { useAcreContext } from "#/acre-react/hooks"
 import { logPromiseFailure } from "#/utils"
-import { setEstimatedBtcBalance, setSharesBalance } from "#/store/btc"
+import { setEstimatedBtcBalance, setSharesBalance } from "#/store/wallet"
 import { useAppDispatch } from "../store/useAppDispatch"
 
 export function useFetchBTCBalance() {
