@@ -1,7 +1,7 @@
 import React, { useRef } from "react"
 import {
   Box,
-  Button,
+  // Button,
   FormControl,
   FormErrorMessage,
   FormHelperText,
@@ -9,7 +9,7 @@ import {
   Icon,
   InputGroup,
   InputProps,
-  InputRightElement,
+  // InputRightElement,
   useMultiStyleConfig,
 } from "@chakra-ui/react"
 import {
@@ -159,11 +159,19 @@ export default function TokenBalanceInput({
             setAmount(valueRef?.current)
           }}
         />
-        <InputRightElement>
-          <Button h="70%" onClick={() => setAmount(tokenBalance)}>
-            Max
-          </Button>
-        </InputRightElement>
+        {
+          // As you attempt to deposit max amount of wallet balance you won't be
+          // able to finalize the transaction due to insuficient balance to pay
+          // gas fee.
+          //
+          // TODO: Estimate gas fee, uncomment and handle error edge case.
+          //
+          // <InputRightElement>
+          //   <Button h="70%" onClick={() => setAmount(tokenBalance)}>
+          //     Max
+          //   </Button>
+          // </InputRightElement>
+        }
       </InputGroup>
       <HelperErrorText
         helperText={helperText}
