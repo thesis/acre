@@ -12,16 +12,16 @@ const INTERVAL_TIME = ONE_SEC_IN_MILLISECONDS * ONE_MINUTE_IN_SECONDS * 30
 
 export function useInitDataFromSdk() {
   const { address } = useWallet()
-  const fetchDeposits = useFetchActivities()
+  const fetchActivities = useFetchActivities()
 
   useEffect(() => {
     if (address) {
-      logPromiseFailure(fetchDeposits())
+      logPromiseFailure(fetchActivities())
     }
-  }, [address, fetchDeposits])
+  }, [address, fetchActivities])
 
   useFetchBTCBalance()
   useFetchMinDepositAmount()
   useFetchTotalAssets()
-  useInterval(() => logPromiseFailure(fetchDeposits()), INTERVAL_TIME)
+  useInterval(() => logPromiseFailure(fetchActivities()), INTERVAL_TIME)
 }

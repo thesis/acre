@@ -103,7 +103,7 @@ type SuccessModalProps = {
 
 export default function SuccessModal({ type }: SuccessModalProps) {
   const { closeModal, openModal } = useModal()
-  const fetchDeposits = useFetchActivities()
+  const fetchActivities = useFetchActivities()
   const navigate = useNavigate()
   const allActivitiesCount = useAllActivitiesCount()
 
@@ -123,7 +123,7 @@ export default function SuccessModal({ type }: SuccessModalProps) {
       }
     }
 
-    logPromiseFailure(fetchDeposits())
+    logPromiseFailure(fetchActivities())
   }
 
   return (

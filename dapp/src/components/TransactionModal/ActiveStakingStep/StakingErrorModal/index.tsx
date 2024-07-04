@@ -15,15 +15,15 @@ import LoadingModal from "../../LoadingModal"
 export default function StakingErrorModal() {
   const { stake } = useStakeFlowContext()
   const dispatch = useAppDispatch()
-  const fetchDeposits = useFetchActivities()
+  const fetchActivities = useFetchActivities()
 
   const [isLoading, setIsLoading] = useState(false)
   const [isServerError, setIsServerError] = useState(false)
 
   const onStakeBTCSuccess = useCallback(() => {
-    logPromiseFailure(fetchDeposits())
+    logPromiseFailure(fetchActivities())
     dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED))
-  }, [dispatch, fetchDeposits])
+  }, [dispatch, fetchActivities])
 
   const onStakeBTCError = useCallback(() => setIsServerError(true), [])
 
