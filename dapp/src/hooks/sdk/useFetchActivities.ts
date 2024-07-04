@@ -22,14 +22,16 @@ export function useFetchActivities() {
     )
 
     const withdrawals: Activity[] = (await acre.account.getWithdrawals()).map(
-      (withdraw) => ({
-        id: withdraw.id,
-        timestamp: withdraw.timestamp,
-        txHash: withdraw.bitcoinTransactionId,
-        amount: withdraw.amount,
-        status: withdraw.bitcoinTransactionId ? "completed" : "pending",
-        type: "withdraw",
-      }),
+      (withdraw) => {
+        const { bitcoinTransactionId, status, ...rest } = withdraw
+
+        return {
+          ...rest,
+          txHash: bitcoinTransactionId,
+          status: status === "finalized" ? "completed" : "pending",
+          type: "withdraw",
+        }
+      },
     )
 
     dispatch(setActivities([...deposits, ...withdrawals]))
