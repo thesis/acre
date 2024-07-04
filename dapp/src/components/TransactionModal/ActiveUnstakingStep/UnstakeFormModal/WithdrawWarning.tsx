@@ -41,7 +41,7 @@ function WithdrawWarning({
   }
 
   return (
-    <Alert status="info" variant="elevated">
+    <Alert variant="elevated">
       <AlertIcon />
 
       <TextMd as={AlertTitle}>
