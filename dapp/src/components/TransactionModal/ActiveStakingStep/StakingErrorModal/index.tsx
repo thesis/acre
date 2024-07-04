@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react"
 import {
+  useActionFlowTxHash,
   useAppDispatch,
   useExecuteFunction,
   useFetchDeposits,
@@ -11,11 +12,13 @@ import { setStatus } from "#/store/action-flow"
 import ServerErrorModal from "./ServerErrorModal"
 import RetryModal from "./RetryModal"
 import LoadingModal from "../../LoadingModal"
+import UnexpectedErrorModal from "../../UnexpectedErrorModal"
 
 export default function StakingErrorModal() {
   const { stake } = useStakeFlowContext()
   const dispatch = useAppDispatch()
   const fetchDeposits = useFetchDeposits()
+  const txHash = useActionFlowTxHash()
 
   const [isLoading, setIsLoading] = useState(false)
   const [isServerError, setIsServerError] = useState(false)
@@ -49,5 +52,7 @@ export default function StakingErrorModal() {
 
   if (isLoading) return <LoadingModal />
 
-  return <RetryModal retry={handleRetryWrapper} />
+  if (txHash) return <RetryModal retry={handleRetryWrapper} />
+
+  return <UnexpectedErrorModal />
 }

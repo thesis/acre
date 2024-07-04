@@ -1,4 +1,4 @@
-import { selectSharesBalance } from "#/store/btc"
+import { selectSharesBalance } from "#/store/wallet"
 import { useAppSelector } from "./useAppSelector"
 
 export function useSharesBalance() {

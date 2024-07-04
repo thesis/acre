@@ -54,7 +54,7 @@ export default function ConnectWallet() {
         leftIcon={<Icon as={BitcoinIcon} boxSize={6} color="brand.400" />}
         onClick={handleConnectWallet}
       >
-        Choose account
+        Connect wallet
       </Button>
     )
   }

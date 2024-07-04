@@ -15,7 +15,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     governance,
   )
 
-  if (hre.network.name !== "mainnet") {
+  if (hre.network.name !== "mainnet" && hre.network.name !== "integration") {
     await deployments.execute(
       "BitcoinRedeemer",
       { from: governance, log: true, waitConfirmations: 1 },

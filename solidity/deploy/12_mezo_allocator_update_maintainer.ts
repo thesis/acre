@@ -20,5 +20,5 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
 export default func
 
-func.dependencies = ["MezoAllocator"]
 func.tags = ["MezoAllocatorAddMaintainer"]
+func.dependencies = ["MezoAllocator"]

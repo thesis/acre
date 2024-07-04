@@ -89,32 +89,32 @@ const config: HardhatUserConfig = {
   namedAccounts: {
     deployer: {
       default: 1,
-      sepolia: 0, // TODO: updated to the actual address once available
-      mainnet: "", // TODO: updated to the actual address once available
+      sepolia: 0,
+      mainnet: "0x123694886DBf5Ac94DDA07135349534536D14cAf",
     },
     governance: {
       default: 2,
-      sepolia: 0, // TODO: updated to the actual address once available
-      mainnet: "", // TODO: updated to the actual address once available
-      integration: 0, // TODO: update to the same value as mainnet
+      sepolia: 0,
+      mainnet: "0x790Dda4c56b3c45d0e4514eDbAaBa30D7129c857",
+      integration: "0x790Dda4c56b3c45d0e4514eDbAaBa30D7129c857",
     },
     treasury: {
       default: 3,
-      sepolia: 0, // TODO: updated to the actual address once available
-      mainnet: "", // TODO: updated to the actual address once available
-      integration: 0, // TODO: update to the same value as mainnet
+      sepolia: 0,
+      mainnet: "0xb0d97781D70A8ebD0cd8bFbE79AbC5545B829fc5",
+      integration: "0xb0d97781D70A8ebD0cd8bFbE79AbC5545B829fc5",
     },
     maintainer: {
       default: 4,
       sepolia: "0x5CD05b073Ed2d01991A46cd55dA5D10a63B1E2CA",
-      mainnet: "", // TODO: updated to the actual address once available
-      integration: 0, // TODO: update to the same value as mainnet
+      mainnet: "0x373C177845cEfaB4Ed85666b99c9fDB40ae7Cd19",
+      integration: "0x373C177845cEfaB4Ed85666b99c9fDB40ae7Cd19",
     },
     pauseAdmin: {
       default: 5,
-      sepolia: 0, // TODO: updated to the actual address once available
-      mainnet: "", // TODO: updated to the actual address once available
-      integration: 0, // TODO: update to the same value as mainnet
+      sepolia: 0,
+      mainnet: "0x1299C7432034d1B85e148a2033d571a9B578292B",
+      integration: "0x1299C7432034d1B85e148a2033d571a9B578292B",
     },
   },
 
