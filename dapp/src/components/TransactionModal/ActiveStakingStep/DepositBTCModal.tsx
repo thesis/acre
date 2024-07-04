@@ -31,15 +31,15 @@ export default function DepositBTCModal() {
     dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED))
   }, [dispatch, invalidateQueries])
 
-  const onStakeBTCError = useCallback(() => {
-    dispatch(setStatus(PROCESS_STATUSES.FAILED))
-  }, [dispatch])
-
-  const handleStake = useExecuteFunction(
-    stake,
-    onStakeBTCSuccess,
-    onStakeBTCError,
+  const onError = useCallback(
+    (error?: unknown) => {
+      console.error(error)
+      dispatch(setStatus(PROCESS_STATUSES.FAILED))
+    },
+    [dispatch],
   )
+
+  const handleStake = useExecuteFunction(stake, onStakeBTCSuccess, onError)
 
   const onDepositBTCSuccess = useCallback(() => {
     dispatch(setStatus(PROCESS_STATUSES.LOADING))
@@ -47,20 +47,15 @@ export default function DepositBTCModal() {
     logPromiseFailure(handleStake())
   }, [dispatch, handleStake])
 
-  // TODO: Handle when the function fails
-  const showError = useCallback((error?: unknown) => {
-    console.error(error)
-  }, [])
-
   const onDepositBTCError = useCallback(
     (error: unknown) => {
       if (eip1193.didUserRejectRequest(error)) {
         handlePause()
+      } else {
+        onError(error)
       }
-
-      showError(error)
     },
-    [showError, handlePause],
+    [onError, handlePause],
   )
 
   const { sendBitcoinTransaction, transactionHash } = useDepositBTCTransaction(
@@ -81,12 +76,12 @@ export default function DepositBTCModal() {
     if (status === "valid") {
       await sendBitcoinTransaction(btcAddress, tokenAmount?.amount)
     } else {
-      showError()
+      onError()
     }
   }, [
     btcAddress,
     depositReceipt,
-    showError,
+    onError,
     verifyDepositAddress,
     sendBitcoinTransaction,
     tokenAmount?.amount,

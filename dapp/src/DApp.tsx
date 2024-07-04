@@ -7,7 +7,11 @@ import { QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { AcreSdkProvider } from "./acre-react/contexts"
 import GlobalStyles from "./components/GlobalStyles"
-import { DocsDrawerContextProvider, SidebarContextProvider } from "./contexts"
+import {
+  DocsDrawerContextProvider,
+  SidebarContextProvider,
+  WalletConnectionErrorContextProvider,
+} from "./contexts"
 import { useInitApp } from "./hooks"
 import { router } from "./router"
 import { store } from "./store"
@@ -34,11 +38,13 @@ function DAppProviders() {
         <AcreSdkProvider>
           <DocsDrawerContextProvider>
             <SidebarContextProvider>
-              <ReduxProvider store={store}>
-                <ChakraProvider theme={theme}>
-                  <DApp />
-                </ChakraProvider>
-              </ReduxProvider>
+              <WalletConnectionErrorContextProvider>
+                <ReduxProvider store={store}>
+                  <ChakraProvider theme={theme}>
+                    <DApp />
+                  </ChakraProvider>
+                </ReduxProvider>
+              </WalletConnectionErrorContextProvider>
             </SidebarContextProvider>
           </DocsDrawerContextProvider>
         </AcreSdkProvider>

@@ -45,13 +45,7 @@ export const actionFlowSlice = createSlice({
     goNextStep(state) {
       state.activeStep += 1
     },
-    resetState(state) {
-      state.type = initialState.type
-      state.activeStep = initialState.activeStep
-      state.status = initialState.status
-      state.tokenAmount = initialState.tokenAmount
-      state.txHash = initialState.txHash
-    },
+    resetState: () => initialState,
   },
 })
 
