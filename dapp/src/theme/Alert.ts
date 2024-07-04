@@ -2,12 +2,12 @@ import { alertAnatomy as parts } from "@chakra-ui/anatomy"
 import { StyleFunctionProps } from "@chakra-ui/react"
 import { createMultiStyleConfigHelpers, cssVar } from "@chakra-ui/styled-system"
 
-const multyStyleConfig = createMultiStyleConfigHelpers(parts.keys)
+const multiStyleConfig = createMultiStyleConfigHelpers(parts.keys)
 
 const $foregroundColor = cssVar("alert-fg")
 const $borderColor = cssVar("alert-border-color")
 
-const baseStyle = multyStyleConfig.definePartsStyle({
+const baseStyle = multiStyleConfig.definePartsStyle({
   container: {
     borderWidth: 1,
     borderStyle: "solid",
@@ -36,7 +36,7 @@ const getBorderColor = (props: StyleFunctionProps) => {
   return `colors.${c}.200`
 }
 
-const variantSubtle = multyStyleConfig.definePartsStyle((props) => {
+const variantSubtle = multiStyleConfig.definePartsStyle((props) => {
   const foregroundColor = getForegroundColor(props)
   const borderColor = getBorderColor(props)
   return {
@@ -51,7 +51,7 @@ const variants = {
   subtle: variantSubtle,
 }
 
-export const alertTheme = multyStyleConfig.defineMultiStyleConfig({
+export const alertTheme = multiStyleConfig.defineMultiStyleConfig({
   baseStyle,
   variants,
 })

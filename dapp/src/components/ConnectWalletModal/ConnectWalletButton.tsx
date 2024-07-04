@@ -1,4 +1,18 @@
-import React, { useCallback, useEffect } from "react"
+import React, { useCallback, useEffect, useState } from "react"
+import { CONNECTION_ERRORS } from "#/constants"
+import {
+  useAppDispatch,
+  useModal,
+  useWallet,
+  useWalletConnectionError,
+} from "#/hooks"
+import { setIsSignedMessage } from "#/store/wallet"
+import { OrangeKitConnector, OrangeKitError, OnSuccessCallback } from "#/types"
+import {
+  isSupportedBTCAddressType,
+  logPromiseFailure,
+  orangeKit,
+} from "#/utils"
 import {
   Button,
   Card,
@@ -6,26 +20,25 @@ import {
   CardHeader,
   Flex,
   Icon,
-  VStack,
   Image,
   ImageProps,
+  VStack,
 } from "@chakra-ui/react"
-import { useAppDispatch, useModal, useWallet } from "#/hooks"
-import { setIsSignedMessage } from "#/store/wallet"
-import { logPromiseFailure, orangeKit } from "#/utils"
-import { OrangeKitConnector } from "#/types"
 import { useSignMessage } from "wagmi"
 import { IconArrowNarrowRight } from "@tabler/icons-react"
 import { AnimatePresence, Variants, motion } from "framer-motion"
+import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
+import ArrivingSoonTooltip from "../ArrivingSoonTooltip"
 import { TextLg, TextMd } from "../shared/Typography"
 import ConnectWalletStatusLabel from "./ConnectWalletStatusLabel"
-import ArrivingSoonTooltip from "../ArrivingSoonTooltip"
+import Spinner from "../shared/Spinner"
 
 type ConnectWalletButtonProps = {
   label: string
   onClick: () => void
   isSelected: boolean
   connector: OrangeKitConnector & { isDisabled: boolean }
+  onSuccess?: OnSuccessCallback
 }
 
 const iconStyles: Record<string, ImageProps> = {
@@ -44,6 +57,7 @@ export default function ConnectWalletButton({
   onClick,
   isSelected,
   connector,
+  onSuccess,
 }: ConnectWalletButtonProps) {
   const {
     address,
@@ -56,15 +70,22 @@ export default function ConnectWalletButton({
   const { closeModal } = useModal()
   const dispatch = useAppDispatch()
 
-  const hasConnectionError = connectionStatus === "error"
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const { connectionError, setConnectionError } = useWalletConnectionError()
+
+  const hasConnectionError = connectionError || connectionStatus === "error"
   const hasSignMessageStatus = signMessageStatus === "error"
   const showStatuses = isSelected && !hasConnectionError
   const showRetryButton = address && hasSignMessageStatus
 
-  const onSuccess = useCallback(() => {
+  const handleOnSuccess = useCallback(() => {
     closeModal()
     dispatch(setIsSignedMessage(true))
-  }, [closeModal, dispatch])
+
+    if (onSuccess) {
+      onSuccess()
+    }
+  }, [closeModal, dispatch, onSuccess])
 
   const handleSignMessage = useCallback(
     async (connectedConnector: OrangeKitConnector) => {
@@ -78,35 +99,72 @@ export default function ConnectWalletButton({
           message,
           connector: orangeKit.typeConversionToConnector(connectedConnector),
         },
-        { onSuccess },
+        { onSuccess: handleOnSuccess },
       )
     },
-    [onSuccess, signMessage],
+    [handleOnSuccess, signMessage],
   )
 
-  const handleConnection = useCallback(() => {
+  const handleConnection = useCallback(async () => {
+    const bitcoinAddress = await connector.getBitcoinAddress()
+
     onConnect(connector, {
       onSuccess: () => {
+        // This is workaround to disallow Nested Segwit addresses.
+        // Should be handled by OrangeKit
+        if (!isSupportedBTCAddressType(bitcoinAddress)) {
+          onDisconnect()
+          setConnectionError(CONNECTION_ERRORS.NOT_SUPPORTED)
+          return
+        }
+
         logPromiseFailure(handleSignMessage(connector))
       },
-      onError: (error: unknown) => {
-        // TODO: Handle when the wallet connection fails
-        console.error(error)
+      onError: (error: OrangeKitError) => {
+        const errorData = orangeKit.parseOrangeKitConnectionError(error)
+        setConnectionError(errorData)
       },
     })
-  }, [connector, handleSignMessage, onConnect])
+  }, [
+    connector,
+    handleSignMessage,
+    onConnect,
+    onDisconnect,
+    setConnectionError,
+  ])
+
+  const handleRedirectUser = useCallback(() => {
+    setIsLoading(true)
+
+    setTimeout(() => {
+      const wallet = orangeKit.getWalletInfo(connector)
+
+      if (wallet) {
+        window.open(wallet.downloadUrls.desktop, "_blank")?.focus()
+      }
+
+      setIsLoading(false)
+    }, ONE_SEC_IN_MILLISECONDS * 2)
+  }, [connector])
 
   const handleButtonClick = () => {
+    const isInstalled = orangeKit.isWalletInstalled(connector)
+
+    if (!isInstalled) {
+      handleRedirectUser()
+      return
+    }
+
     onClick()
 
     // Connector still selected and user wants to retry connect action
     if (isSelected && !isConnected) {
-      handleConnection()
+      logPromiseFailure(handleConnection())
     }
   }
 
   useEffect(() => {
-    if (isSelected) handleConnection()
+    if (isSelected) logPromiseFailure(handleConnection())
     // Reset the connection when user selects another connector
     else onDisconnect()
   }, [handleConnection, isSelected, onDisconnect])
@@ -138,7 +196,13 @@ export default function ConnectWalletButton({
                 {...iconStyles[connector.id]}
               />
             }
-            rightIcon={<Icon as={IconArrowNarrowRight} boxSize={6} ml="auto" />}
+            rightIcon={
+              !isLoading ? (
+                <Icon as={IconArrowNarrowRight} boxSize={6} ml="auto" />
+              ) : (
+                <Spinner boxSize={6} variant="filled" />
+              )
+            }
             iconSpacing={4}
             isDisabled={connector.isDisabled}
           >
