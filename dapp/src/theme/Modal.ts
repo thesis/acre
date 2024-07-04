@@ -9,7 +9,7 @@ const baseStyleContainer = defineStyle({
 })
 
 const baseStyleDialog = defineStyle({
-  borderWidth: "var(--chakra-space-modal_borderWidth)",
+  borderWidth: "2px",
   boxShadow: "none",
   borderColor: "white",
   borderRadius: "xl",

@@ -4,7 +4,7 @@ import { expect } from "chai"
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 
 import { ContractTransactionResponse } from "ethers"
-import { beforeAfterSnapshotWrapper, deployment } from "../helpers"
+import { beforeAfterSnapshotWrapper } from "../helpers"
 
 import {
   StBTC as stBTC,
@@ -14,26 +14,10 @@ import {
 } from "../../typechain"
 
 import { to1e18 } from "../utils"
+import { integrationTestFixture } from "./helpers"
 
-const { getNamedSigners, getUnnamedSigners } = helpers.signers
+const { getUnnamedSigners } = helpers.signers
 const { impersonateAccount } = helpers.account
-
-async function fixture() {
-  const { tbtc, stbtc, mezoAllocator, mezoPortal } = await deployment()
-  const { governance, maintainer } = await getNamedSigners()
-  const [depositor, thirdParty] = await getUnnamedSigners()
-
-  return {
-    governance,
-    thirdParty,
-    depositor,
-    maintainer,
-    tbtc,
-    stbtc,
-    mezoAllocator,
-    mezoPortal,
-  }
-}
 
 describe("MezoAllocator", () => {
   // This is a random mainnet address of the whale account that holds 100 tBTC
@@ -56,19 +40,15 @@ describe("MezoAllocator", () => {
   let tbtcHolder: HardhatEthersSigner
 
   before(async () => {
-    ;({
-      thirdParty,
-      depositor,
-      maintainer,
-      governance,
-      tbtc,
-      stbtc,
-      mezoAllocator,
-      mezoPortal,
-    } = await loadFixture(fixture))
+    ;({ maintainer, governance, tbtc, stbtc, mezoAllocator, mezoPortal } =
+      await loadFixture(integrationTestFixture))
+    ;[depositor, thirdParty] = await getUnnamedSigners()
 
     await impersonateAccount(whaleAddress)
     tbtcHolder = await ethers.getSigner(whaleAddress)
+
+    await stbtc.connect(governance).updateEntryFeeBasisPoints(0)
+    await stbtc.connect(governance).updateExitFeeBasisPoints(0)
   })
 
   describe("allocate", () => {

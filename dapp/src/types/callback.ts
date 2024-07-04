@@ -1,3 +1,3 @@
 export type OnSuccessCallback = () => void
 
-export type OnErrorCallback = (error: unknown) => void
+export type OnErrorCallback<ErrorType = unknown> = (error: ErrorType) => void
