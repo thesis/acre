@@ -419,4 +419,58 @@ describe("Account", () => {
       expect(result).toBe(mockedTxHash)
     })
   })
+
+  describe("getWithdrawals", () => {
+    const withdrawals = [
+      {
+        id: "0x047078deab9f2325ce5adc483d6b28dfb32547017ffb73f857482b51b622d5eb-1",
+        bitcoinTransactionId: Hex.from(
+          "0x844b472231eaaeba765e375dad992c7468deaa81b42d2977cebbf441069b2001",
+        )
+          .reverse()
+          .toString(),
+        amount: 10000000000000000n,
+        timestamp: 1718871276,
+      },
+      {
+        id: "0xa40df409c4e463cb0c7744df310ad8714a01c40bcf6807cb2b4266ffa0b860ea-1",
+        bitcoinTransactionId: undefined,
+        amount: 10000000000000000n,
+        timestamp: 1718889168,
+      },
+    ]
+
+    const spyOnSubgraphGetWithdrawals = jest
+      .spyOn(acreSubgraph, "getWithdrawalsByOwner")
+      .mockImplementationOnce(() => Promise.resolve(withdrawals))
+
+    const expectedWithdrawals = [
+      {
+        ...withdrawals[0],
+        amount: 1000000n,
+        status: "finalized",
+      },
+      {
+        ...withdrawals[1],
+        amount: 1000000n,
+        status: "initialized",
+      },
+    ]
+
+    let result: Awaited<ReturnType<Account["getWithdrawals"]>>
+
+    beforeAll(async () => {
+      result = await account.getWithdrawals()
+    })
+
+    it("should get withdrawals from subgraph", () => {
+      expect(spyOnSubgraphGetWithdrawals).toHaveBeenCalledWith(
+        predictedEthereumDepositorAddress,
+      )
+    })
+
+    it("should return correct data", () => {
+      expect(result).toMatchObject(expectedWithdrawals)
+    })
+  })
 })
