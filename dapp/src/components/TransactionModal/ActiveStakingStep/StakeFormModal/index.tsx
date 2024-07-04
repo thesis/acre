@@ -20,6 +20,7 @@ function StakeFormModal({
       tokenBalance={tokenBalance}
       minTokenAmount={minDepositAmount}
       onSubmitForm={onSubmitForm}
+      withMaxButton={false}
     >
       <StakeDetails currency="bitcoin" />
       <FormSubmitButton mt={10}>Stake</FormSubmitButton>
