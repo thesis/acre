@@ -134,7 +134,7 @@ export function buildGetWithdrawalsByOwnerQuery(owner: ChainIdentifier) {
   }`
 }
 
-function buildSearchRedemptionsByIdQuery(redemptionIds: string[]) {
+export function buildSearchRedemptionsByIdQuery(redemptionIds: string[]) {
   // id = <redemption_key>-<counter>
   const ids = redemptionIds.map((id) => {
     const [redemptionKey] = id.split("-")
@@ -155,7 +155,7 @@ function buildSearchRedemptionsByIdQuery(redemptionIds: string[]) {
     }
   `
 }
-class TbtcSubgraph extends HttpApi {
+export class TbtcSubgraph extends HttpApi {
   async getRedemptionsByIds(
     redemptionIds: string[],
   ): Promise<SearchRedemptionDataResponse["data"]["searchRedemption"]> {
