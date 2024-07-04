@@ -32,10 +32,6 @@ export function useFetchActivities() {
       }),
     )
 
-    const result = [...deposits, ...withdrawals].sort(
-      (a, b) => b.timestamp - a.timestamp,
-    )
-
-    dispatch(setActivities(result))
+    dispatch(setActivities([...deposits, ...withdrawals]))
   }, [acre, dispatch, isConnected])
 }
