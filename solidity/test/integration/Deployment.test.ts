@@ -8,6 +8,7 @@ import type {
   TestERC20,
   MezoAllocator,
   BitcoinDepositor,
+  BitcoinRedeemer,
 } from "../../typechain"
 import { getDeployedContract } from "../helpers"
 
@@ -18,11 +19,11 @@ describe("Deployment", () => {
   let mezoAllocator: MezoAllocator
   let tbtc: TestERC20
   let bitcoinDepositor: BitcoinDepositor
+  let bitcoinRedeemer: BitcoinRedeemer
 
   before(async () => {
-    ;({ stbtc, mezoAllocator, bitcoinDepositor, tbtc } = await loadFixture(
-      integrationTestFixture,
-    ))
+    ;({ stbtc, mezoAllocator, bitcoinDepositor, bitcoinRedeemer, tbtc } =
+      await loadFixture(integrationTestFixture))
   })
 
   function testUpgradeableInitialization(
@@ -186,6 +187,36 @@ describe("Deployment", () => {
     })
   })
 
-  // TODO: Add tests for BitcoinRedeemer
-  describe("BitcoinRedeemer", () => {})
+  describe("BitcoinRedeemer", () => {
+    testUpgradeableInitialization(
+      "BitcoinRedeemer",
+      ZeroAddress,
+      ZeroAddress,
+      ZeroAddress,
+    )
+
+    it("should set tbtcVault", async () => {
+      expect(await bitcoinRedeemer.tbtcVault()).to.be.equal(
+        expectedMainnetAddresses.tbtcVault,
+      )
+    })
+
+    it("should set tbtc", async () => {
+      expect(await bitcoinRedeemer.tbtcToken()).to.be.equal(
+        expectedMainnetAddresses.tbtc,
+      )
+    })
+
+    it("should set stbtc", async () => {
+      expect(await bitcoinRedeemer.stbtc()).to.be.equal(
+        await stbtc.getAddress(),
+      )
+    })
+
+    it("should set owner", async () => {
+      expect(await bitcoinDepositor.owner()).to.be.equal(
+        expectedMainnetAddresses.governance,
+      )
+    })
+  })
 })
