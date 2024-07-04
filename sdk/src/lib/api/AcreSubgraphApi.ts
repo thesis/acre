@@ -4,6 +4,7 @@ import { ChainIdentifier } from "../contracts"
 import { Hex } from "../utils"
 import HttpApi from "./HttpApi"
 import { DepositStatus } from "./TbtcApi"
+import TbtcSubgraphApi from "./TbtcSubgraphApi"
 
 /**
  * Represents the response data returned form the Acre Subgraph from query that
@@ -90,15 +91,6 @@ type Withdraw = {
   timestamp: number
 }
 
-type SearchRedemptionDataResponse = {
-  data: {
-    searchRedemption: {
-      id: string
-      completedTxHash?: string
-    }[]
-  }
-}
-
 export function buildGetDepositsByOwnerQuery(owner: ChainIdentifier) {
   return `
   query {
@@ -134,55 +126,12 @@ export function buildGetWithdrawalsByOwnerQuery(owner: ChainIdentifier) {
   }`
 }
 
-export function buildSearchRedemptionsByIdQuery(redemptionIds: string[]) {
-  // id = <redemption_key>-<counter>
-  const ids = redemptionIds.map((id) => {
-    const [redemptionKey] = id.split("-")
-    return redemptionKey
-  })
-
-  // Queries with multiple search terms separated by the or operator will return
-  // all entities with a match from any of the provided terms.
-  // Ref: https://thegraph.com/docs/en/querying/graphql-api/#fulltext-search-queries
-  const searchText = ids.join(" | ")
-
-  return `
-    query {
-      searchRedemption( text: "${searchText}" ) {
-        id
-        completedTxHash
-      }
-    }
-  `
-}
-export class TbtcSubgraph extends HttpApi {
-  async getRedemptionsByIds(
-    redemptionIds: string[],
-  ): Promise<SearchRedemptionDataResponse["data"]["searchRedemption"]> {
-    const query = buildSearchRedemptionsByIdQuery(redemptionIds)
-
-    const response = await this.postRequest(
-      "",
-      { query },
-      { credentials: undefined },
-    )
-
-    if (!response.ok) {
-      throw new Error(`Could not get redemptions by ids: ${response.status}`)
-    }
-
-    const responseData = (await response.json()) as SearchRedemptionDataResponse
-
-    return responseData.data.searchRedemption
-  }
-}
-
 /**
  * Class for integration with Acre Subgraph.
  */
 export default class AcreSubgraphApi extends HttpApi {
   // TODO: set the correct url for mainnet
-  readonly #tbtcSubgraph: TbtcSubgraph
+  readonly #tbtcSubgraph: TbtcSubgraphApi
 
   static init(network: BitcoinNetwork) {
     // TODO: set mainnet api url
@@ -201,7 +150,7 @@ export default class AcreSubgraphApi extends HttpApi {
 
   constructor(acreSubgraphApiUrl: string, tbtcSubgraphApiUrl: string) {
     super(acreSubgraphApiUrl)
-    this.#tbtcSubgraph = new TbtcSubgraph(tbtcSubgraphApiUrl)
+    this.#tbtcSubgraph = new TbtcSubgraphApi(tbtcSubgraphApiUrl)
   }
 
   /**

@@ -1,11 +1,12 @@
 import { EthereumAddress } from "@keep-network/tbtc-v2.ts"
 import { ethers } from "ethers"
-import * as AcreSubgraphApiModule from "../../../src/lib/api/AcreSubgraphApi"
+import * as TbtcSubgraphApiModule from "../../../src/lib/api/TbtcSubgraphApi"
+import TbtcSubgraphApi, {
+  buildSearchRedemptionsByIdQuery,
+} from "../../../src/lib/api/TbtcSubgraphApi"
 import AcreSubgraphApi, {
-  TbtcSubgraph,
   buildGetDepositsByOwnerQuery,
   buildGetWithdrawalsByOwnerQuery,
-  buildSearchRedemptionsByIdQuery,
 } from "../../../src/lib/api/AcreSubgraphApi"
 import { DepositStatus } from "../../../src/lib/api/TbtcApi"
 import { Hex } from "../../../src/lib/utils"
@@ -140,10 +141,10 @@ describe("Acre Subgraph API", () => {
 
   const mockTbtcSubgraphApi = {
     getRedemptionsByIds: jest.fn(),
-  } as unknown as TbtcSubgraph
+  } as unknown as TbtcSubgraphApi
 
   jest
-    .spyOn(AcreSubgraphApiModule, "TbtcSubgraph")
+    .spyOn(TbtcSubgraphApiModule, "default")
     .mockReturnValue(mockTbtcSubgraphApi)
 
   const depositOwnerId = EthereumAddress.from(
