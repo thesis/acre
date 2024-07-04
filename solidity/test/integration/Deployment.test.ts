@@ -3,8 +3,6 @@ import { expect } from "chai"
 import { Contract, MaxUint256, ZeroAddress } from "ethers"
 import { deployments, ethers } from "hardhat"
 
-import { deployment } from "../helpers/context"
-
 import type {
   StBTC as stBTC,
   TestERC20,
@@ -13,31 +11,7 @@ import type {
 } from "../../typechain"
 import { getDeployedContract } from "../helpers"
 
-async function fixture() {
-  const { stbtc, mezoAllocator, bitcoinDepositor, tbtc } = await deployment()
-
-  return {
-    stbtc,
-    mezoAllocator,
-    bitcoinDepositor,
-    tbtc,
-  }
-}
-
-const mainnetContracts = {
-  mezoPortal: "0xAB13B8eecf5AA2460841d75da5d5D861fD5B8A39",
-  tbtc: "0x18084fbA666a33d37592fA2633fD49a74DD93a88",
-  bridge: "0x5e4861a80B55f035D899f66772117F00FA0E8e7B",
-  tbtcVault: "0x9C070027cdC9dc8F82416B2e5314E11DFb4FE3CD",
-}
-
-// TODO: Replace with actual addresses once defined for mainnet.
-const mainnetAccounts = {
-  treasury: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-  governance: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-  pauseAdmin: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-  maintainer: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-}
+import { expectedMainnetAddresses, integrationTestFixture } from "./helpers"
 
 describe("Deployment", () => {
   let stbtc: stBTC
@@ -46,8 +20,9 @@ describe("Deployment", () => {
   let bitcoinDepositor: BitcoinDepositor
 
   before(async () => {
-    ;({ stbtc, mezoAllocator, bitcoinDepositor, tbtc } =
-      await loadFixture(fixture))
+    ;({ stbtc, mezoAllocator, bitcoinDepositor, tbtc } = await loadFixture(
+      integrationTestFixture,
+    ))
   })
 
   function testUpgradeableInitialization(
@@ -86,11 +61,13 @@ describe("Deployment", () => {
 
     describe("initializer", () => {
       it("should set asset", async () => {
-        expect(await stbtc.asset()).to.be.equal(mainnetContracts.tbtc)
+        expect(await stbtc.asset()).to.be.equal(expectedMainnetAddresses.tbtc)
       })
 
       it("should set treasury", async () => {
-        expect(await stbtc.treasury()).to.be.equal(mainnetAccounts.treasury)
+        expect(await stbtc.treasury()).to.be.equal(
+          expectedMainnetAddresses.treasury,
+        )
       })
 
       it("should enable non-fungible withdrawals", async () => {
@@ -100,13 +77,17 @@ describe("Deployment", () => {
 
     describe("ownable", () => {
       it("should set owner", async () => {
-        expect(await stbtc.owner()).to.be.equal(mainnetAccounts.governance)
+        expect(await stbtc.owner()).to.be.equal(
+          expectedMainnetAddresses.governance,
+        )
       })
     })
 
     describe("pausable", () => {
       it("should set pauseAdmin", async () => {
-        expect(await stbtc.pauseAdmin()).to.be.equal(mainnetAccounts.pauseAdmin)
+        expect(await stbtc.pauseAdmin()).to.be.equal(
+          expectedMainnetAddresses.pauseAdmin,
+        )
       })
     })
 
@@ -138,12 +119,14 @@ describe("Deployment", () => {
 
     it("should set mezoPortal", async () => {
       expect(await mezoAllocator.mezoPortal()).to.be.equal(
-        mainnetContracts.mezoPortal,
+        expectedMainnetAddresses.mezoPortal,
       )
     })
 
     it("should set tbtc", async () => {
-      expect(await mezoAllocator.tbtc()).to.be.equal(mainnetContracts.tbtc)
+      expect(await mezoAllocator.tbtc()).to.be.equal(
+        expectedMainnetAddresses.tbtc,
+      )
     })
 
     it("should set stbtc", async () => {
@@ -152,13 +135,14 @@ describe("Deployment", () => {
 
     it("should set owner", async () => {
       expect(await mezoAllocator.owner()).to.be.equal(
-        mainnetAccounts.governance,
+        expectedMainnetAddresses.governance,
       )
     })
 
     it("should set maintainer", async () => {
-      expect(await mezoAllocator.isMaintainer(mainnetAccounts.maintainer)).to.be
-        .true
+      expect(
+        await mezoAllocator.isMaintainer(expectedMainnetAddresses.maintainer),
+      ).to.be.true
     })
   })
 
@@ -173,19 +157,19 @@ describe("Deployment", () => {
 
     it("should set bridge", async () => {
       expect(await bitcoinDepositor.bridge()).to.be.equal(
-        mainnetContracts.bridge,
+        expectedMainnetAddresses.bridge,
       )
     })
 
     it("should set tbtcVault", async () => {
       expect(await bitcoinDepositor.tbtcVault()).to.be.equal(
-        mainnetContracts.tbtcVault,
+        expectedMainnetAddresses.tbtcVault,
       )
     })
 
     it("should set tbtc", async () => {
       expect(await bitcoinDepositor.tbtcToken()).to.be.equal(
-        mainnetContracts.tbtc,
+        expectedMainnetAddresses.tbtc,
       )
     })
 
@@ -197,7 +181,7 @@ describe("Deployment", () => {
 
     it("should set owner", async () => {
       expect(await bitcoinDepositor.owner()).to.be.equal(
-        mainnetAccounts.governance,
+        expectedMainnetAddresses.governance,
       )
     })
   })
