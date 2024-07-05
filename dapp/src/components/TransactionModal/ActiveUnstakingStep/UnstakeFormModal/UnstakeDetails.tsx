@@ -5,7 +5,9 @@ import { useTokenAmountField } from "#/components/shared/TokenAmountForm/TokenAm
 import { useTransactionDetails } from "#/hooks"
 import { ACTION_FLOW_TYPES, CurrencyType } from "#/types"
 import { featureFlags } from "#/constants"
+import FeesDetailsAmountItem from "#/components/shared/FeesDetails/FeesItem"
 import WithdrawWarning from "./WithdrawWarning"
+import { FeesTooltip } from "../../FeesTooltip"
 
 function UnstakeDetails({
   balance,
@@ -18,6 +20,8 @@ function UnstakeDetails({
   // Let's not calculate the details of the transaction when the value is not valid.
   const amount = isValid ? value : 0n
   const details = useTransactionDetails(amount, ACTION_FLOW_TYPES.UNSTAKE)
+
+  const { total, ...restFees } = details.transactionFee
 
   return (
     <Flex flexDirection="column" gap={10} mt={4}>
@@ -35,19 +39,20 @@ function UnstakeDetails({
             currency: "usd",
           }}
         />
-        {/* TODO: Uncomment when unstaking fees are ready.  */}
-        {/* <FeesDetailsAmountItem
-        label="Fees"
-        sublabel="How are fees calculated?"
-        tooltip={<FeesTooltip fees={{}} />}
-        from={{
-          currency,
-          amount: transactionFee.total,
-        }}
-        to={{
-          currency: "usd",
-        }}
-      /> */}
+
+        <FeesDetailsAmountItem
+          label="Fees"
+          // TODO: Add `Bitcoin Network fee` (funding transaction fee selected by
+          // the user) and figure out how to estimate this fee.
+          tooltip={<FeesTooltip fees={restFees} />}
+          from={{
+            currency,
+            amount: total,
+          }}
+          to={{
+            currency: "usd",
+          }}
+        />
         <TransactionDetailsAmountItem
           label="You will receive"
           from={{

@@ -5,18 +5,7 @@ import FeesDetailsAmountItem from "#/components/shared/FeesDetails/FeesItem"
 import { useTokenAmountField } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { FeesTooltip } from "#/components/TransactionModal/FeesTooltip"
 import { useTransactionDetails } from "#/hooks"
-import { CurrencyType, DepositFee } from "#/types"
-
-const mapDepositFeeToLabel = (feeId: keyof DepositFee) => {
-  switch (feeId) {
-    case "acre":
-      return "Acre protocol fees"
-    case "tbtc":
-      return "tBTC bridge fees"
-    default:
-      return ""
-  }
-}
+import { CurrencyType } from "#/types"
 
 function StakeDetails({ currency }: { currency: CurrencyType }) {
   const { value, isValid } = useTokenAmountField()
@@ -41,9 +30,7 @@ function StakeDetails({ currency }: { currency: CurrencyType }) {
         label="Fees"
         // TODO: Add `Bitcoin Network fee` (funding transaction fee selected by
         // the user) and figure out how to estimate this fee.
-        tooltip={
-          <FeesTooltip fees={restFees} mapFeeToLabel={mapDepositFeeToLabel} />
-        }
+        tooltip={<FeesTooltip fees={restFees} />}
         from={{
           currency,
           amount: total,
