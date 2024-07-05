@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react"
-import { CONNECTION_ERRORS } from "#/constants"
+import { CONNECTION_ERRORS, ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import {
   useAppDispatch,
   useModal,
@@ -27,7 +27,6 @@ import {
 import { useSignMessage } from "wagmi"
 import { IconArrowNarrowRight } from "@tabler/icons-react"
 import { AnimatePresence, Variants, motion } from "framer-motion"
-import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import ArrivingSoonTooltip from "../ArrivingSoonTooltip"
 import { TextLg, TextMd } from "../shared/Typography"
 import ConnectWalletStatusLabel from "./ConnectWalletStatusLabel"
