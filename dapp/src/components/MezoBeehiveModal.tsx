@@ -147,7 +147,9 @@ function MezoBeehiveModalBase() {
 
             <CardBody p={0} as={HStack} spacing={3}>
               <Icon as={IconInfoCircle} color="gold.700" boxSize={6} />
-              <TextMd>Acre is not in control of the chain’s launch date.</TextMd>
+              <TextMd textAlign="start">
+                Acre is not in control of the chain’s launch date.
+              </TextMd>
             </CardBody>
           </Card>
 
