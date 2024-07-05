@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { INTERVAL_TIME_IN_MILLISECONDS, queryKeys } from "#/constants"
+import { REFETCH_INTERVAL_IN_MILLISECONDS, queryKeys } from "#/constants"
 import { useBitcoinProvider } from "./useBitcoinProvider"
 
 export default function useBitcoinBalance() {
@@ -13,6 +13,6 @@ export default function useBitcoinBalance() {
       const { total } = await provider.getBalance()
       return BigInt(total)
     },
-    refetchInterval: INTERVAL_TIME_IN_MILLISECONDS,
+    refetchInterval: REFETCH_INTERVAL_IN_MILLISECONDS,
   })
 }

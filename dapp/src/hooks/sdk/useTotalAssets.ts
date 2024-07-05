@@ -1,6 +1,6 @@
 import { useAcreContext } from "#/acre-react/hooks"
 import { useQuery } from "@tanstack/react-query"
-import { INTERVAL_TIME_IN_MILLISECONDS, queryKeys } from "#/constants"
+import { REFETCH_INTERVAL_IN_MILLISECONDS, queryKeys } from "#/constants"
 
 export default function useTotalAssets() {
   const { acre, isInitialized } = useAcreContext()
@@ -13,6 +13,6 @@ export default function useTotalAssets() {
       const totalAssets = await acre.protocol.totalAssets()
       return totalAssets
     },
-    refetchInterval: INTERVAL_TIME_IN_MILLISECONDS,
+    refetchInterval: REFETCH_INTERVAL_IN_MILLISECONDS,
   })
 }
