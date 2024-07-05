@@ -1,5 +1,6 @@
 import { StBTC as StBTCTypechain } from "@acre-btc/contracts/typechain/contracts/StBTC"
-import stBTC from "@acre-btc/contracts/deployments/sepolia/stBTC.json"
+import SepoliaStBTC from "@acre-btc/contracts/deployments/sepolia/stBTC.json"
+import MainnetStBTC from "@acre-btc/contracts/deployments/mainnet/stBTC.json"
 
 import {
   EthersContractConfig,
@@ -29,9 +30,11 @@ class EthereumStBTC
 
     switch (network) {
       case "sepolia":
-        artifact = stBTC
+        artifact = SepoliaStBTC
         break
       case "mainnet":
+        artifact = MainnetStBTC
+        break
       default:
         throw new Error("Unsupported network")
     }
