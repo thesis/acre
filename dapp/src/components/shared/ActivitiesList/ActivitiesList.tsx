@@ -24,7 +24,7 @@ function ActivitiesList(props: ListProps) {
   if (latestActivities.length === 0) return null
 
   return (
-    <MotionList pos="relative" {...props}>
+    <MotionList pos="relative" w="full" {...props}>
       <AnimatePresence mode="popLayout">
         {latestActivities.map((item) => (
           <MotionListItem

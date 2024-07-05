@@ -11,10 +11,10 @@ import {
 import { TextMd, TextSm } from "#/components/shared/Typography"
 import { logPromiseFailure } from "#/utils"
 import { BitcoinIcon } from "#/assets/icons"
-import { ErrorAlert, ErrorAlertIcon } from "../shared/alerts"
 import { CurrencyBalance } from "../shared/CurrencyBalance"
+import { Alert, AlertIcon } from "../shared/Alert"
 
-type UnsupportedAccountModalProps = {
+type UnsupportedBitcoinAddressModalProps = {
   account?: {
     name: string
     balance: bigint
@@ -22,10 +22,10 @@ type UnsupportedAccountModalProps = {
   requestAccount: () => Promise<void>
 }
 
-export default function UnsupportedAccountModal({
+export default function UnsupportedBitcoinAddressModal({
   account,
   requestAccount,
-}: UnsupportedAccountModalProps) {
+}: UnsupportedBitcoinAddressModalProps) {
   const handleClick = () => {
     logPromiseFailure(requestAccount())
   }
@@ -39,8 +39,9 @@ export default function UnsupportedAccountModal({
 
       <ModalBody>
         {account && (
-          <ErrorAlert>
-            <ErrorAlertIcon
+          <Alert status="error">
+            <AlertIcon
+              status="error"
               as={BitcoinIcon}
               color="grey.700"
               bg="gold.200"
@@ -80,7 +81,7 @@ export default function UnsupportedAccountModal({
             >
               Unsupported
             </Tag>
-          </ErrorAlert>
+          </Alert>
         )}
 
         <TextMd
