@@ -32,4 +32,8 @@ const sizes = {
   "2xl": size2Xl,
 }
 
-export const spinnerTheme = defineStyleConfig({ baseStyle, sizes, variants })
+export const spinnerTheme = defineStyleConfig({
+  baseStyle,
+  sizes,
+  variants,
+})
