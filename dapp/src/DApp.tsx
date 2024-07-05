@@ -4,6 +4,7 @@ import { Provider as ReduxProvider } from "react-redux"
 import { RouterProvider } from "react-router-dom"
 import { WagmiProvider } from "wagmi"
 import { QueryClientProvider } from "@tanstack/react-query"
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { AcreSdkProvider } from "./acre-react/contexts"
 import GlobalStyles from "./components/GlobalStyles"
 import {
@@ -25,6 +26,7 @@ function DApp() {
     <>
       <GlobalStyles />
       <RouterProvider router={router} />
+      <ReactQueryDevtools initialIsOpen={false} />
     </>
   )
 }
