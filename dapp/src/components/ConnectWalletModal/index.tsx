@@ -8,7 +8,7 @@ import ConnectWalletButton from "./ConnectWalletButton"
 import ConnectWalletErrorAlert from "./ConnectWalletErrorAlert"
 
 const disabledConnectorIds = [
-  featureFlags.OKX_WALLET_ENABLED ? "orangekit-okx" : "",
+  !featureFlags.OKX_WALLET_ENABLED ? "orangekit-okx" : "",
 ].filter(Boolean)
 
 export function ConnectWalletModalBase({

@@ -5,14 +5,12 @@ type BtcState = {
   isLoadingPriceUSD: boolean
   usdPrice: number
   minDepositAmount: bigint
-  totalAssets: bigint
 }
 
 const initialState: BtcState = {
   isLoadingPriceUSD: false,
   usdPrice: 0,
   minDepositAmount: 0n,
-  totalAssets: 0n,
 }
 
 // Store Bitcoin data such as balance, balance in usd and other related data to Bitcoin chain.
@@ -22,9 +20,6 @@ export const btcSlice = createSlice({
   reducers: {
     setMinDepositAmount(state, action: PayloadAction<bigint>) {
       state.minDepositAmount = action.payload
-    },
-    setTotalAssets(state, action: PayloadAction<bigint>) {
-      state.totalAssets = action.payload
     },
   },
   extraReducers: (builder) => {
@@ -44,4 +39,4 @@ export const btcSlice = createSlice({
   },
 })
 
-export const { setMinDepositAmount, setTotalAssets } = btcSlice.actions
+export const { setMinDepositAmount } = btcSlice.actions

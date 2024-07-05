@@ -1,6 +1,6 @@
 {
   "name": "@acre-btc/contracts",
-  "version": "0.0.1",
+  "version": "0.2.0-dev",
   "description": "Bitcoin Liquid Staking",
   "license": "GPL-3.0-only",
   "files": [
