@@ -1,5 +1,6 @@
 import { BitcoinRedeemer as BitcoinRedeemerTypechain } from "@acre-btc/contracts/typechain/contracts/BitcoinRedeemer"
-import BitcoinRedeemerArtifact from "@acre-btc/contracts/deployments/sepolia/BitcoinRedeemer.json"
+import SepoliaBitcoinRedeemer from "@acre-btc/contracts/deployments/sepolia/BitcoinRedeemer.json"
+import MainnetBitcoinRedeemer from "@acre-btc/contracts/deployments/mainnet/BitcoinRedeemer.json"
 
 import {
   EthersContractConfig,
@@ -34,9 +35,11 @@ export default class EthereumBitcoinRedeemer
 
     switch (network) {
       case "sepolia":
-        artifact = BitcoinRedeemerArtifact
+        artifact = SepoliaBitcoinRedeemer
         break
       case "mainnet":
+        artifact = MainnetBitcoinRedeemer
+        break
       default:
         throw new Error("Unsupported network")
     }

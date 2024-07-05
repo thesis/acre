@@ -1,6 +1,7 @@
 import { packRevealDepositParameters } from "@keep-network/tbtc-v2.ts"
 import { BitcoinDepositor as BitcoinDepositorTypechain } from "@acre-btc/contracts/typechain/contracts/BitcoinDepositor"
 import SepoliaBitcoinDepositor from "@acre-btc/contracts/deployments/sepolia/BitcoinDepositor.json"
+import MainnetBitcoinDepositor from "@acre-btc/contracts/deployments/mainnet/BitcoinDepositor.json"
 
 import {
   ZeroAddress,
@@ -63,6 +64,8 @@ class EthereumBitcoinDepositor
         artifact = SepoliaBitcoinDepositor
         break
       case "mainnet":
+        artifact = MainnetBitcoinDepositor
+        break
       default:
         throw new Error("Unsupported network")
     }
