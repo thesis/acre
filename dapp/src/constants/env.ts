@@ -1,3 +1,5 @@
+const { PROD } = import.meta.env
+
 const USE_TESTNET = import.meta.env.VITE_USE_TESTNET === "true"
 
 const SENTRY_SUPPORT = import.meta.env.VITE_SENTRY_SUPPORT === "true"
@@ -13,6 +15,7 @@ const TBTC_API_ENDPOINT = import.meta.env.VITE_TBTC_API_ENDPOINT
 const GELATO_RELAY_API_KEY = import.meta.env.VITE_GELATO_RELAY_API_KEY
 
 export default {
+  PROD,
   USE_TESTNET,
   SENTRY_SUPPORT,
   SENTRY_DSN,

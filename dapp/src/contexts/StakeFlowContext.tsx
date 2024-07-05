@@ -4,7 +4,7 @@ import {
   useAcreContext,
   useStakeFlow,
 } from "#/acre-react/hooks"
-import { REFERRAL } from "#/constants"
+import { env } from "#/constants"
 
 type StakeFlowContextValue = Omit<UseStakeFlowReturn, "initStake"> & {
   initStake: () => Promise<void>
@@ -27,7 +27,7 @@ export function StakeFlowProvider({ children }: { children: React.ReactNode }) {
   const initStake = useCallback(async () => {
     if (!acre) throw new Error("Acre SDK not defined")
 
-    await acreInitStake(REFERRAL)
+    await acreInitStake(env.REFERRAL)
   }, [acreInitStake, acre])
 
   const context = useMemo(
