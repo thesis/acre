@@ -43,8 +43,10 @@ export default function SignMessageModal() {
   const amount = tokenAmount?.amount
   const { closeModal } = useModal()
   const { handlePause } = useActionFlowPause()
-  const invalidateQueries = useInvalidateQueries()
   const initializeWithdraw = useInitializeWithdraw()
+  const handleBitcoinPositionInvalidation = useInvalidateQueries({
+    queryKey: [queryKeys.BITCOIN_POSITION],
+  })
 
   const onSignMessageCallback = useCallback(async () => {
     setWaitingStatus("signature")
@@ -58,9 +60,9 @@ export default function SignMessageModal() {
   }, [dispatch])
 
   const onSignMessageSuccess = useCallback(() => {
-    invalidateQueries({ queryKey: [queryKeys.BITCOIN_POSITION] })
+    handleBitcoinPositionInvalidation()
     dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED))
-  }, [dispatch, invalidateQueries])
+  }, [dispatch, handleBitcoinPositionInvalidation])
 
   const onSignMessageError = useCallback(() => {
     dispatch(setStatus(PROCESS_STATUSES.FAILED))

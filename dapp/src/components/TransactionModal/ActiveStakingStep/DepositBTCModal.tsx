@@ -24,12 +24,14 @@ export default function DepositBTCModal() {
   const verifyDepositAddress = useVerifyDepositAddress()
   const dispatch = useAppDispatch()
   const { handlePause } = useActionFlowPause()
-  const invalidateQueries = useInvalidateQueries()
+  const handleBitcoinBalanceInvalidation = useInvalidateQueries({
+    queryKey: [queryKeys.BITCOIN_BALANCE],
+  })
 
   const onStakeBTCSuccess = useCallback(() => {
-    invalidateQueries({ queryKey: [queryKeys.BITCOIN_BALANCE] })
+    handleBitcoinBalanceInvalidation()
     dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED))
-  }, [dispatch, invalidateQueries])
+  }, [dispatch, handleBitcoinBalanceInvalidation])
 
   const onError = useCallback(
     (error?: unknown) => {

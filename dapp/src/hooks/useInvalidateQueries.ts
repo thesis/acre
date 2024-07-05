@@ -4,12 +4,13 @@ import { useCallback } from "react"
 
 type InvalidateQueriesParams = Parameters<QueryClient["invalidateQueries"]>
 
-export default function useInvalidateQueries() {
+export default function useInvalidateQueries(
+  ...params: InvalidateQueriesParams
+) {
   const queryClient = useQueryClient()
 
   return useCallback(
-    (...params: InvalidateQueriesParams) =>
-      logPromiseFailure(queryClient.invalidateQueries(...params)),
-    [queryClient],
+    () => logPromiseFailure(queryClient.invalidateQueries(...params)),
+    [params, queryClient],
   )
 }
