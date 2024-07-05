@@ -100,6 +100,7 @@ export type TokenBalanceInputProps = {
   size?: "lg" | "md"
   fiatCurrency?: CurrencyType
   setAmount: (value?: bigint) => void
+  withMaxButton?: boolean
 } & InputProps &
   HelperErrorTextProps
 
@@ -114,6 +115,7 @@ export default function TokenBalanceInput({
   helperText,
   hasError = false,
   fiatCurrency,
+  withMaxButton = false,
   ...inputProps
 }: TokenBalanceInputProps) {
   const valueRef = useRef<bigint | undefined>(amount)
@@ -159,11 +161,14 @@ export default function TokenBalanceInput({
             setAmount(valueRef?.current)
           }}
         />
-        <InputRightElement>
-          <Button h="70%" onClick={() => setAmount(tokenBalance)}>
-            Max
-          </Button>
-        </InputRightElement>
+
+        {withMaxButton && (
+          <InputRightElement>
+            <Button h="70%" onClick={() => setAmount(tokenBalance)}>
+              Max
+            </Button>
+          </InputRightElement>
+        )}
       </InputGroup>
       <HelperErrorText
         helperText={helperText}

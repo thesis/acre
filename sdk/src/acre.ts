@@ -78,7 +78,10 @@ class Acre {
       new GelatoTransactionSender(gelatoApiKey),
     )
 
-    const contracts = getEthereumContracts(ethersProvider, ethereumNetwork)
+    const contracts = await getEthereumContracts(
+      ethersProvider,
+      ethereumNetwork,
+    )
 
     const subgraph = new AcreSubgraphApi(
       // TODO: Set correct url based on the network
@@ -116,7 +119,7 @@ class Acre {
 
     const ethereumNetwork = Acre.resolveEthereumNetwork(this.#network)
 
-    const contracts = getEthereumContracts(signer, ethereumNetwork)
+    const contracts = await getEthereumContracts(signer, ethereumNetwork)
 
     const tbtc = await Tbtc.initialize(
       signer,

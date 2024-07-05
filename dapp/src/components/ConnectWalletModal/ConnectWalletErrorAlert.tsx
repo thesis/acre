@@ -1,11 +1,12 @@
 import React from "react"
-import { Box } from "@chakra-ui/react"
+import { Box, VStack } from "@chakra-ui/react"
 import { AnimatePresence, Variants, motion } from "framer-motion"
 import { ConnectionErrorData } from "#/types"
 import {
   Alert,
   AlertDescription,
   AlertTitle,
+  AlertIcon,
   AlertProps,
 } from "../shared/Alert"
 
@@ -36,8 +37,11 @@ export default function ConnectWalletErrorAlert(
           w="full"
         >
           <Alert status="error" mb={6} {...restProps}>
-            <AlertTitle>{title}</AlertTitle>
-            <AlertDescription>{description}</AlertDescription>
+            <AlertIcon />
+            <VStack w="full" align="start" spacing={0}>
+              <AlertTitle>{title}</AlertTitle>
+              <AlertDescription>{description}</AlertDescription>
+            </VStack>
           </Alert>
         </Box>
       )}

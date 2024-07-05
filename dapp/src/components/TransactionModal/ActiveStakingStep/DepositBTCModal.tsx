@@ -13,9 +13,9 @@ import { eip1193, logPromiseFailure } from "#/utils"
 import { PROCESS_STATUSES } from "#/types"
 import { Highlight } from "@chakra-ui/react"
 import { TextMd } from "#/components/shared/Typography"
-import { CardAlert } from "#/components/shared/alerts"
 import { setStatus, setTxHash } from "#/store/action-flow"
 import { queryKeys } from "#/constants"
+import { Alert, AlertIcon, AlertDescription } from "#/components/shared/Alert"
 import TriggerTransactionModal from "../TriggerTransactionModal"
 
 export default function DepositBTCModal() {
@@ -95,14 +95,17 @@ export default function DepositBTCModal() {
 
   return (
     <TriggerTransactionModal callback={handledDepositBTCWrapper}>
-      <CardAlert>
-        <TextMd>
-          <Highlight query="Rewards" styles={{ fontWeight: "bold" }}>
-            You will receive your Rewards once the deposit transaction is
-            completed.
-          </Highlight>
-        </TextMd>
-      </CardAlert>
+      <Alert variant="elevated">
+        <AlertIcon />
+        <AlertDescription>
+          <TextMd>
+            <Highlight query="Rewards" styles={{ fontWeight: "bold" }}>
+              You will receive your Rewards once the deposit transaction is
+              completed.
+            </Highlight>
+          </TextMd>
+        </AlertDescription>
+      </Alert>
     </TriggerTransactionModal>
   )
 }

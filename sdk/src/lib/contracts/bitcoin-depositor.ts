@@ -75,7 +75,7 @@ export interface BitcoinDepositor extends DepositorProxy {
   /**
    * Calculates the deposit fee based on the provided amount.
    * @param amountToDeposit Amount to deposit in 1e18 token precision.
-   * @returns Deposit fees grouped by tBTC and Acre networks in 1e18 tBTC token
+   * @returns Deposit fees grouped by tBTC and Acre protocols in 1e18 tBTC token
    *          precision.
    */
   calculateDepositFee(amountToDeposit: bigint): Promise<DepositFees>

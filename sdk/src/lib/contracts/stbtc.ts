@@ -34,6 +34,14 @@ export interface StBTC {
   calculateDepositFee(amount: bigint): Promise<bigint>
 
   /**
+   * Calculates the withdrawal fee taken from each tBTC withdrawal from the stBTC
+   * pool which is then transferred to the treasury.
+   * @param amount Amount to withdraw in 1e18 precision.
+   * @returns Withdrawal fee.
+   */
+  calculateWithdrawalFee(amount: bigint): Promise<bigint>
+
+  /**
    * Encodes the transaction data for a transaction that calls the
    * `approveAndCall` function. The `approveAndCall` function allows `spender`
    * to spend no more than `amount` stBTC tokens on user's behalf and then ping
