@@ -28,6 +28,7 @@
     "@sentry/types": "^7.102.0",
     "@tabler/icons-react": "^3.1.0",
     "@tanstack/react-query": "^5.40.1",
+    "@tanstack/react-query-devtools": "^5.49.2",
     "axios": "^1.6.7",
     "ethers": "^6.10.0",
     "formik": "^2.4.5",

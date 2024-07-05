@@ -1,8 +1,10 @@
 import { SEASON_CAP } from "#/constants"
-import { useTotalAssets } from "./store"
+import useTotalAssets from "./sdk/useTotalAssets"
 
 export const useSeasonProgress = () => {
-  const totalAssets = useTotalAssets()
+  const { data } = useTotalAssets()
+
+  const totalAssets = data ?? 0n
   const dividingResult = Number((totalAssets * 100n) / SEASON_CAP) / 100
 
   const isSeasonCapExceeded = totalAssets > SEASON_CAP
