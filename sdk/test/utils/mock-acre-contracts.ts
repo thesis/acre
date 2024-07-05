@@ -29,6 +29,7 @@ export class MockAcreContracts implements AcreContracts {
       balanceOf: jest.fn(),
       assetsBalanceOf: jest.fn(),
       calculateDepositFee: jest.fn(),
+      calculateWithdrawalFee: jest.fn(),
       previewRedeem: jest.fn(),
       getChainIdentifier: jest.fn(),
       convertToShares: jest.fn(),
@@ -37,6 +38,7 @@ export class MockAcreContracts implements AcreContracts {
 
     this.bitcoinRedeemer = {
       getChainIdentifier: jest.fn(),
+      calculateWithdrawalFee: jest.fn(),
     } as BitcoinRedeemer
   }
 }

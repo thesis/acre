@@ -1,13 +1,17 @@
-import { AcreContracts, DepositFees } from "../lib/contracts"
+import { AcreContracts } from "../lib/contracts"
 import { fromSatoshi, toSatoshi } from "../lib/utils"
 
 /**
  * Represents all total deposit fees grouped by network.
  */
-export type DepositFee = {
+export type Fees = {
   tbtc: bigint
   acre: bigint
   total: bigint
+}
+
+function sumFees(fees: { [key: string]: bigint }): bigint {
+  return Object.values(fees).reduce((reducer, fee) => reducer + fee, 0n)
 }
 
 /**
@@ -37,7 +41,7 @@ export default class Protocol {
    * @returns Deposit fee grouped by tBTC and Acre protocols in 1e8 satoshi
    *          precision and total deposit fee value.
    */
-  async estimateDepositFee(amount: bigint): Promise<DepositFee> {
+  async estimateDepositFee(amount: bigint): Promise<Fees> {
     const amountInTokenPrecision = fromSatoshi(amount)
 
     const { acre: acreFees, tbtc: tbtcFees } =
@@ -48,15 +52,38 @@ export default class Protocol {
       amountInTokenPrecision,
     )
 
-    const sumFeesByProtocol = <
-      T extends DepositFees["tbtc"] | DepositFees["acre"],
-    >(
-      fees: T,
-    ) => Object.values(fees).reduce((reducer, fee) => reducer + fee, 0n)
+    const tbtc = toSatoshi(sumFees(tbtcFees))
 
-    const tbtc = toSatoshi(sumFeesByProtocol(tbtcFees))
+    const acre = toSatoshi(sumFees(acreFees)) + toSatoshi(depositFee)
 
-    const acre = toSatoshi(sumFeesByProtocol(acreFees)) + toSatoshi(depositFee)
+    return {
+      tbtc,
+      acre,
+      total: tbtc + acre,
+    }
+  }
+
+  /**
+   * Estimates the withdrawal fee based on the provided amount.
+   * @param amount Amount to withdraw in satoshi.
+   * @returns Withdrawal fee grouped by tBTC and Acre protocols in 1e8 satoshi
+   *          precision and total withdrawal fee value.
+   */
+  async estimateWithdrawalFee(amount: bigint): Promise<Fees> {
+    const amountInTokenPrecision = fromSatoshi(amount)
+
+    const { tbtc: tbtcFees } =
+      await this.#contracts.bitcoinRedeemer.calculateWithdrawalFee(
+        amountInTokenPrecision,
+      )
+
+    const withdrawalFee = await this.#contracts.stBTC.calculateWithdrawalFee(
+      amountInTokenPrecision,
+    )
+
+    const tbtc = toSatoshi(sumFees(tbtcFees))
+
+    const acre = toSatoshi(withdrawalFee)
 
     return {
       tbtc,
