@@ -6,15 +6,15 @@ schema:
 dataSources:
   - kind: ethereum
     name: BitcoinDepositor
-    network: sepolia
+    network: mainnet
     context:
       tbtcBridgeAddress:
         type: Bytes
-        data: "0x9b1a7fE5a16A15F2f9475C5B231750598b113403"
+        data: "0x5e4861a80B55f035D899f66772117F00FA0E8e7B"
     source:
-      address: "0x6c2c643c90383Cba125E4b8DD01344eA35A75F27"
+      address: "0x2Ba614a598Cffa5a19d683cDCA97bac3a49313d1"
       abi: BitcoinDepositor
-      startBlock: 6237625
+      startBlock: 20235512
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
