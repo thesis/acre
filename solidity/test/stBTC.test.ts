@@ -3554,6 +3554,169 @@ describe("stBTC", () => {
         })
       })
     })
+
+    describe("round trip", () => {
+      // This test covers a roundtrip debt minting and burning with small values
+      // to test the solution from external minter perspective and make sure the
+      // amounts of assets and shares are converted correctly.
+
+      beforeAfterSnapshotWrapper()
+
+      before(async () => {
+        await stbtc.connect(governance).updateEntryFeeBasisPoints(0)
+        await stbtc.connect(governance).updateExitFeeBasisPoints(0)
+
+        await stbtc.connect(governance).updateMinimumDepositAmount(1)
+
+        await stbtc
+          .connect(governance)
+          .updateDebtAllowance(externalMinter.address, 100)
+      })
+
+      describe("on empty vault", () => {
+        beforeAfterSnapshotWrapper()
+
+        testRoundTrip(
+          10n,
+          10n,
+          { totalAssets: 10n, totalSupply: 10n },
+          { totalAssets: 0n, totalSupply: 0n },
+        )
+      })
+
+      describe("on non-empty vault", () => {
+        beforeAfterSnapshotWrapper()
+
+        before(async () => {
+          const existingDeposit = 23n
+
+          await tbtc
+            .connect(depositor1)
+            .approve(await stbtc.getAddress(), existingDeposit)
+
+          await stbtc
+            .connect(depositor1)
+            .deposit(existingDeposit, depositor1.address)
+        })
+
+        describe("when there is no yield generated", () => {
+          beforeAfterSnapshotWrapper()
+
+          testRoundTrip(
+            10n,
+            10n,
+            // totalAssets = 23 + 10 = 33
+            // totalSupply = 23 + 10 = 33
+            { totalAssets: 33n, totalSupply: 33n },
+            // totalAssets = 33 - 10 = 23
+            // totalSupply = 33 - 10 = 23
+            { totalAssets: 23n, totalSupply: 23n },
+          )
+        })
+
+        describe("when there is yield generated", () => {
+          beforeAfterSnapshotWrapper()
+
+          const yieldAmount = 5n
+
+          before(async () => {
+            await tbtc.mint(await stbtc.getAddress(), yieldAmount)
+          })
+
+          testRoundTrip(
+            10n,
+            8n,
+            // totalAssets = 23 + 5 + 10 = 38
+            // totalSupply = 23 + 8 = 31
+            { totalAssets: 38n, totalSupply: 31n },
+            // totalAssets = 38 - 10 = 28
+            // totalSupply = 31 - 8 = 23
+            { totalAssets: 28n, totalSupply: 23n },
+          )
+        })
+      })
+
+      function testRoundTrip(
+        debtAssets: bigint,
+        expectedShares: bigint,
+        expectedMintDebtResult: {
+          totalAssets: bigint
+          totalSupply: bigint
+        },
+        expectedCancelDebtResults: {
+          totalAssets: bigint
+          totalSupply: bigint
+        },
+      ) {
+        describe("mintDebt", () => {
+          let mintDebtTx: ContractTransactionResponse
+
+          before(async () => {
+            mintDebtTx = await stbtc
+              .connect(externalMinter)
+              .mintDebt(debtAssets, externalMinter.address)
+          })
+
+          it("should transfer stBTC to the receiver", async () => {
+            await expect(mintDebtTx).to.changeTokenBalances(
+              stbtc,
+              [externalMinter],
+              [expectedShares],
+            )
+          })
+
+          it("should increase total debt", async () => {
+            expect(await stbtc.totalDebt()).to.be.eq(debtAssets)
+          })
+
+          it("should increase total assets", async () => {
+            expect(await stbtc.totalAssets()).to.be.eq(
+              expectedMintDebtResult.totalAssets,
+            )
+          })
+
+          it("should increase total supply", async () => {
+            expect(await stbtc.totalSupply()).to.be.eq(
+              expectedMintDebtResult.totalSupply,
+            )
+          })
+        })
+
+        describe("cancelDebt", () => {
+          let cancelDebtTx: ContractTransactionResponse
+
+          before(async () => {
+            cancelDebtTx = await stbtc
+              .connect(externalMinter)
+              .cancelDebt(debtAssets)
+          })
+
+          it("should transfer stBTC from the debt minter", async () => {
+            await expect(cancelDebtTx).to.changeTokenBalances(
+              stbtc,
+              [externalMinter],
+              [-expectedShares],
+            )
+          })
+
+          it("should decrease total debt", async () => {
+            expect(await stbtc.totalDebt()).to.be.eq(0)
+          })
+
+          it("should decrease total assets", async () => {
+            expect(await stbtc.totalAssets()).to.be.eq(
+              expectedCancelDebtResults.totalAssets,
+            )
+          })
+
+          it("should decrease total supply", async () => {
+            expect(await stbtc.totalSupply()).to.be.eq(
+              expectedCancelDebtResults.totalSupply,
+            )
+          })
+        })
+      }
+    })
   })
 
   describe("feeOnTotal - internal test helper", () => {
