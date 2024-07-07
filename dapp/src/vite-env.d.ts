@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
@@ -13,4 +14,20 @@ interface ImportMetaEnv {
 
 interface ImportMeta {
   readonly env: ImportMetaEnv
+}
+
+interface InjectedProvider {
+  on(
+    eventName: "accountsChanged" | "disconnect" | "accountChanged",
+    callback: (payload: any) => void,
+  ): void
+  removeListener(
+    eventName: "accountsChanged" | "disconnect" | "accountChanged",
+    callback: (payload: any) => void,
+  ): void
+}
+
+interface Window {
+  unisat?: InjectedProvider
+  okxwallet?: { bitcoin: InjectedProvider }
 }

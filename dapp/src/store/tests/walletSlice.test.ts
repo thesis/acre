@@ -4,6 +4,7 @@ import { Activity } from "#/types"
 import { WalletState } from "../wallet"
 import reducer, {
   deleteLatestActivity,
+  initialState,
   setActivities,
 } from "../wallet/walletSlice"
 
@@ -27,6 +28,7 @@ describe("Wallet redux slice", () => {
 
   beforeEach(() => {
     state = {
+      ...initialState,
       activities,
       latestActivities,
       isSignedMessage,
@@ -35,6 +37,7 @@ describe("Wallet redux slice", () => {
 
   it("should delete latest activity", () => {
     expect(reducer(state, deleteLatestActivity(pendingActivityId))).toEqual({
+      ...initialState,
       activities,
       latestActivities: {},
       isSignedMessage,
@@ -56,6 +59,7 @@ describe("Wallet redux slice", () => {
     }
 
     expect(reducer(state, setActivities(newActivities))).toEqual({
+      ...initialState,
       activities: newActivities,
       latestActivities: newLatestActivities,
       isSignedMessage,
