@@ -96,12 +96,12 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         uint256 shares
     );
 
-    /// Emitted when debt is cancelled.
+    /// Emitted when debt is repaid.
     /// @param debtor Address of the debtor.
     /// @param currentDebt Current debt of the debtor.
-    /// @param assets Amount of assets cancelling the debt.
+    /// @param assets Amount of assets repaying the debt.
     /// @param shares Amount of shares burned.
-    event DebtCancelled(
+    event DebtRepaid(
         address indexed debtor,
         uint256 currentDebt,
         uint256 assets,
@@ -137,10 +137,10 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     );
 
     /// @notice Emitted when the debt of a debtor is insufficient.
-    /// @dev Used in the debt cancellation function.
+    /// @dev Used in the debt repayment function.
     /// @param debtor Address of the debtor.
     /// @param debt Current debt of the debtor.
-    /// @param needed Requested amount of assets cancelling the debt.
+    /// @param needed Requested amount of assets repaying the debt.
     error InsufficientDebt(address debtor, uint256 debt, uint256 needed);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -328,15 +328,15 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         return shares;
     }
 
-    /// @notice Cancels the debt of the debtor.
+    /// @notice Repay the debt.
     /// @dev The number of shares is calculated based on the current conversion
     ///      rate from the assets to shares.
     /// @dev The debtor has to approve the transfer of the shares, to determine
-    ///      the number of shares to approve the caller can use the `previewCancelDebt`
+    ///      the number of shares to approve the caller can use the `previewRepayDebt`
     ///      function.
-    /// @param assets Amount of debt to cancel.
+    /// @param assets Amount of debt to repay.
     /// @return shares Amount of shares burned.
-    function cancelDebt(
+    function repayDebt(
         uint256 assets
     ) external whenNotPaused returns (uint256 shares) {
         // Check the current debt of the debtor.
@@ -353,9 +353,9 @@ contract stBTC is ERC4626Fees, PausableOwnable {
 
         // Convert the assets to shares. Conversion has to be executed before the
         // `totalDebt` adjustment.
-        shares = previewCancelDebt(assets);
+        shares = previewRepayDebt(assets);
 
-        emit DebtCancelled(msg.sender, currentDebt[msg.sender], assets, shares);
+        emit DebtRepaid(msg.sender, currentDebt[msg.sender], assets, shares);
 
         // Decrease the total debt.
         totalDebt -= assets;
@@ -517,8 +517,8 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     }
 
     /// @notice Previews the amount of shares that will be burned for the given
-    ///         amount of cancelled debt assets.
-    function previewCancelDebt(uint256 assets) public view returns (uint256) {
+    ///         amount of repaid debt assets.
+    function previewRepayDebt(uint256 assets) public view returns (uint256) {
         return convertToShares(assets);
     }
 
