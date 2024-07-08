@@ -177,7 +177,6 @@ export function handleSubmitRedemptionProofCall(
     // should be set correctly. Otherwise, it means the withdrawal does not come
     // from the Acre network. The tBTC network redeems in a batch so there may
     // be other redemptions not only from the Acre.
-    // eslint-disable-next-line eqeqeq
     if (withdrawId) {
       const withdraw = getOrCreateWithdraw(withdrawId)
 
