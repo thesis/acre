@@ -1,4 +1,3 @@
-// eslint-disable-next-line max-classes-per-file
 import { BitcoinNetwork } from "../bitcoin"
 import { ChainIdentifier } from "../contracts"
 import { Hex } from "../utils"
