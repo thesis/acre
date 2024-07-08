@@ -80,7 +80,7 @@ context.setBytes(
 )
 
 dataSourceMock.setReturnValues(
-  "0x2F86FE8C5683372Db667E6f6d88dcB6d55a81286",
+  "0x6c2c643c90383Cba125E4b8DD01344eA35A75F27",
   "sepolia",
   context,
 )

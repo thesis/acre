@@ -1,14 +1,10 @@
 import { useEffect } from "react"
 import { useInterval } from "@chakra-ui/react"
-import { ONE_MINUTE_IN_SECONDS, ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import { logPromiseFailure } from "#/utils"
-import { useFetchBTCBalance } from "./useFetchBTCBalance"
+import { REFETCH_INTERVAL_IN_MILLISECONDS } from "#/constants"
 import { useFetchMinDepositAmount } from "./useFetchMinDepositAmount"
-import { useFetchTotalAssets } from "./useFetchTotalAssets"
 import { useFetchDeposits } from "./useFetchDeposits"
 import { useWallet } from "../useWallet"
-
-const INTERVAL_TIME = ONE_SEC_IN_MILLISECONDS * ONE_MINUTE_IN_SECONDS * 30
 
 export function useInitDataFromSdk() {
   const { address } = useWallet()
@@ -20,8 +16,9 @@ export function useInitDataFromSdk() {
     }
   }, [address, fetchDeposits])
 
-  useFetchBTCBalance()
   useFetchMinDepositAmount()
-  useFetchTotalAssets()
-  useInterval(() => logPromiseFailure(fetchDeposits()), INTERVAL_TIME)
+  useInterval(
+    () => logPromiseFailure(fetchDeposits()),
+    REFETCH_INTERVAL_IN_MILLISECONDS,
+  )
 }

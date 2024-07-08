@@ -5,6 +5,7 @@ import {
   useAppDispatch,
   useDepositBTCTransaction,
   useExecuteFunction,
+  useInvalidateQueries,
   useStakeFlowContext,
   useVerifyDepositAddress,
 } from "#/hooks"
@@ -12,8 +13,9 @@ import { eip1193, logPromiseFailure } from "#/utils"
 import { PROCESS_STATUSES } from "#/types"
 import { Highlight } from "@chakra-ui/react"
 import { TextMd } from "#/components/shared/Typography"
-import { CardAlert } from "#/components/shared/alerts"
 import { setStatus, setTxHash } from "#/store/action-flow"
+import { queryKeys } from "#/constants"
+import { Alert, AlertIcon, AlertDescription } from "#/components/shared/Alert"
 import TriggerTransactionModal from "../TriggerTransactionModal"
 
 export default function DepositBTCModal() {
@@ -22,20 +24,24 @@ export default function DepositBTCModal() {
   const verifyDepositAddress = useVerifyDepositAddress()
   const dispatch = useAppDispatch()
   const { handlePause } = useActionFlowPause()
+  const handleBitcoinBalanceInvalidation = useInvalidateQueries({
+    queryKey: [queryKeys.BITCOIN_BALANCE],
+  })
 
   const onStakeBTCSuccess = useCallback(() => {
+    handleBitcoinBalanceInvalidation()
     dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED))
-  }, [dispatch])
+  }, [dispatch, handleBitcoinBalanceInvalidation])
 
-  const onStakeBTCError = useCallback(() => {
-    dispatch(setStatus(PROCESS_STATUSES.FAILED))
-  }, [dispatch])
-
-  const handleStake = useExecuteFunction(
-    stake,
-    onStakeBTCSuccess,
-    onStakeBTCError,
+  const onError = useCallback(
+    (error?: unknown) => {
+      console.error(error)
+      dispatch(setStatus(PROCESS_STATUSES.FAILED))
+    },
+    [dispatch],
   )
+
+  const handleStake = useExecuteFunction(stake, onStakeBTCSuccess, onError)
 
   const onDepositBTCSuccess = useCallback(() => {
     dispatch(setStatus(PROCESS_STATUSES.LOADING))
@@ -43,20 +49,15 @@ export default function DepositBTCModal() {
     logPromiseFailure(handleStake())
   }, [dispatch, handleStake])
 
-  // TODO: Handle when the function fails
-  const showError = useCallback((error?: unknown) => {
-    console.error(error)
-  }, [])
-
   const onDepositBTCError = useCallback(
     (error: unknown) => {
       if (eip1193.didUserRejectRequest(error)) {
         handlePause()
+      } else {
+        onError(error)
       }
-
-      showError(error)
     },
-    [showError, handlePause],
+    [onError, handlePause],
   )
 
   const { sendBitcoinTransaction, transactionHash } = useDepositBTCTransaction(
@@ -77,12 +78,12 @@ export default function DepositBTCModal() {
     if (status === "valid") {
       await sendBitcoinTransaction(btcAddress, tokenAmount?.amount)
     } else {
-      showError()
+      onError()
     }
   }, [
     btcAddress,
     depositReceipt,
-    showError,
+    onError,
     verifyDepositAddress,
     sendBitcoinTransaction,
     tokenAmount?.amount,
@@ -94,14 +95,17 @@ export default function DepositBTCModal() {
 
   return (
     <TriggerTransactionModal callback={handledDepositBTCWrapper}>
-      <CardAlert>
-        <TextMd>
-          <Highlight query="Rewards" styles={{ fontWeight: "bold" }}>
-            You will receive your Rewards once the deposit transaction is
-            completed.
-          </Highlight>
-        </TextMd>
-      </CardAlert>
+      <Alert variant="elevated">
+        <AlertIcon />
+        <AlertDescription>
+          <TextMd>
+            <Highlight query="Rewards" styles={{ fontWeight: "bold" }}>
+              You will receive your Rewards once the deposit transaction is
+              completed.
+            </Highlight>
+          </TextMd>
+        </AlertDescription>
+      </Alert>
     </TriggerTransactionModal>
   )
 }

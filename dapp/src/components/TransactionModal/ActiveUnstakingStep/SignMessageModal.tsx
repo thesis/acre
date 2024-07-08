@@ -4,6 +4,7 @@ import {
   useActionFlowTokenAmount,
   useAppDispatch,
   useExecuteFunction,
+  useInvalidateQueries,
   useModal,
 } from "#/hooks"
 import { PROCESS_STATUSES } from "#/types"
@@ -11,6 +12,7 @@ import { Button } from "@chakra-ui/react"
 import { eip1193, logPromiseFailure } from "#/utils"
 import { setStatus } from "#/store/action-flow"
 import { useInitializeWithdraw } from "#/acre-react/hooks"
+import { queryKeys } from "#/constants"
 import TriggerTransactionModal from "../TriggerTransactionModal"
 
 type WithdrawalStatus = "building-data" | "signature" | "transaction"
@@ -41,8 +43,10 @@ export default function SignMessageModal() {
   const amount = tokenAmount?.amount
   const { closeModal } = useModal()
   const { handlePause } = useActionFlowPause()
-
   const initializeWithdraw = useInitializeWithdraw()
+  const handleBitcoinPositionInvalidation = useInvalidateQueries({
+    queryKey: [queryKeys.BITCOIN_POSITION],
+  })
 
   const onSignMessageCallback = useCallback(async () => {
     setWaitingStatus("signature")
@@ -56,8 +60,9 @@ export default function SignMessageModal() {
   }, [dispatch])
 
   const onSignMessageSuccess = useCallback(() => {
+    handleBitcoinPositionInvalidation()
     dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED))
-  }, [dispatch])
+  }, [dispatch, handleBitcoinPositionInvalidation])
 
   const onSignMessageError = useCallback(() => {
     dispatch(setStatus(PROCESS_STATUSES.FAILED))

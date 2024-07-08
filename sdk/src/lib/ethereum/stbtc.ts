@@ -1,5 +1,6 @@
 import { StBTC as StBTCTypechain } from "@acre-btc/contracts/typechain/contracts/StBTC"
-import stBTC from "@acre-btc/contracts/deployments/sepolia/stBTC.json"
+import SepoliaStBTC from "@acre-btc/contracts/deployments/sepolia/stBTC.json"
+import MainnetStBTC from "@acre-btc/contracts/deployments/mainnet/stBTC.json"
 
 import {
   EthersContractConfig,
@@ -21,16 +22,19 @@ class EthereumStBTC
 
   #cache: {
     entryFeeBasisPoints?: bigint
-  } = { entryFeeBasisPoints: undefined }
+    exitFeeBasisPoints?: bigint
+  } = { entryFeeBasisPoints: undefined, exitFeeBasisPoints: undefined }
 
   constructor(config: EthersContractConfig, network: EthereumNetwork) {
     let artifact: EthersContractDeployment
 
     switch (network) {
       case "sepolia":
-        artifact = stBTC
+        artifact = SepoliaStBTC
         break
       case "mainnet":
+        artifact = MainnetStBTC
+        break
       default:
         throw new Error("Unsupported network")
     }
@@ -72,10 +76,16 @@ class EthereumStBTC
   async calculateDepositFee(amount: bigint): Promise<bigint> {
     const entryFeeBasisPoints = await this.#getEntryFeeBasisPoints()
 
-    return (
-      (amount * entryFeeBasisPoints) /
-      (entryFeeBasisPoints + this.#BASIS_POINT_SCALE)
-    )
+    return this.#feeOnTotal(amount, entryFeeBasisPoints)
+  }
+
+  /**
+   * @see {StBTC#calculateDepositFee}
+   */
+  async calculateWithdrawalFee(amount: bigint): Promise<bigint> {
+    const exitFeeBasisPoints = await this.#getExitFeeBasisPoints()
+
+    return this.#feeOnTotal(amount, exitFeeBasisPoints)
   }
 
   async #getEntryFeeBasisPoints(): Promise<bigint> {
@@ -86,6 +96,16 @@ class EthereumStBTC
     this.#cache.entryFeeBasisPoints = await this.instance.entryFeeBasisPoints()
 
     return this.#cache.entryFeeBasisPoints
+  }
+
+  async #getExitFeeBasisPoints(): Promise<bigint> {
+    if (this.#cache.exitFeeBasisPoints) {
+      return this.#cache.exitFeeBasisPoints
+    }
+
+    this.#cache.exitFeeBasisPoints = await this.instance.exitFeeBasisPoints()
+
+    return this.#cache.exitFeeBasisPoints
   }
 
   /**
@@ -117,6 +137,26 @@ class EthereumStBTC
    */
   convertToShares(amount: bigint): Promise<bigint> {
     return this.instance.convertToShares(amount)
+  }
+
+  /**
+   * Calculates the fee when it's included in the amount.
+   * One is added to the result if there is a remainder to match the stBTC
+   * contract calculations rounding.
+   * @param amount Amount in tBTC
+   * @param feeBasisPoints Fee basis points applied to calculate the fee.
+   * @returns The fee part of an amount that already includes fees.
+   */
+  #feeOnTotal(amount: bigint, feeBasisPoints: bigint) {
+    const result =
+      (amount * feeBasisPoints) / (feeBasisPoints + this.#BASIS_POINT_SCALE)
+    if (
+      (amount * feeBasisPoints) % (feeBasisPoints + this.#BASIS_POINT_SCALE) >
+      0
+    ) {
+      return result + 1n
+    }
+    return result
   }
 }
 

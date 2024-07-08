@@ -5,6 +5,8 @@ import {
   EthereumContractRunner,
   EthereumBitcoinRedeemer,
 } from "../../../src/lib/ethereum"
+import TbtcBridge from "../../../src/lib/ethereum/tbtc-bridge"
+import { WithdrawalFees } from "../../../src/lib/contracts"
 
 jest.mock("ethers", (): object => ({
   Contract: jest.fn(),
@@ -18,6 +20,12 @@ jest.mock(
     abi: [],
   }),
 )
+
+const testData = {
+  redemptionParameters: {
+    redemptionTreasuryFeeDivisor: 2_000n, // 1/2000 == 5bps == 0.05% == 0.0005
+  },
+}
 
 describe("BitcoinRedeemer", () => {
   let bitcoinRedeemer: EthereumBitcoinRedeemer
@@ -46,6 +54,66 @@ describe("BitcoinRedeemer", () => {
       expect(
         result.equals(EthereumAddress.from(BitcoinRedeemer.address)),
       ).toBeTruthy()
+    })
+  })
+
+  describe("calculateWithdrawalFee", () => {
+    const mockedBridgeContractInstance = {
+      redemptionParameters: jest
+        .fn()
+        .mockResolvedValue(testData.redemptionParameters),
+    }
+
+    const amountToWithdraw = 100000000000000000n // 0.1 in 1e18 token precision
+
+    const expectedResult = {
+      tbtc: {
+        treasuryFee: 50000000000000n,
+      },
+    }
+
+    beforeAll(() => {
+      bitcoinRedeemer.setTbtcContracts({
+        tbtcBridge: mockedBridgeContractInstance as unknown as TbtcBridge,
+      })
+    })
+
+    describe("when network fees are not yet cached", () => {
+      let result: WithdrawalFees
+
+      beforeAll(async () => {
+        result = await bitcoinRedeemer.calculateWithdrawalFee(amountToWithdraw)
+      })
+
+      it("should get the redemption parameters from chain", () => {
+        expect(
+          mockedBridgeContractInstance.redemptionParameters,
+        ).toHaveBeenCalled()
+      })
+
+      it("should return correct fees", () => {
+        expect(result).toMatchObject(expectedResult)
+      })
+    })
+
+    describe("when network fees are already cached", () => {
+      let result: WithdrawalFees
+
+      beforeAll(async () => {
+        mockedBridgeContractInstance.redemptionParameters.mockClear()
+
+        result = await bitcoinRedeemer.calculateWithdrawalFee(amountToWithdraw)
+      })
+
+      it("should get the deposit parameters from cache", () => {
+        expect(
+          mockedBridgeContractInstance.redemptionParameters,
+        ).toHaveBeenCalledTimes(0)
+      })
+
+      it("should return correct fees", () => {
+        expect(result).toMatchObject(expectedResult)
+      })
     })
   })
 })

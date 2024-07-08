@@ -1,18 +1,19 @@
 import { alertAnatomy as parts } from "@chakra-ui/anatomy"
-import { StyleFunctionProps } from "@chakra-ui/react"
 import { createMultiStyleConfigHelpers, cssVar } from "@chakra-ui/styled-system"
 
-const multyStyleConfig = createMultiStyleConfigHelpers(parts.keys)
+const multiStyleConfig = createMultiStyleConfigHelpers(parts.keys)
 
+const $backgroundColor = cssVar("alert-bg")
 const $foregroundColor = cssVar("alert-fg")
 const $borderColor = cssVar("alert-border-color")
 
-const baseStyle = multyStyleConfig.definePartsStyle({
+const baseStyle = multiStyleConfig.definePartsStyle({
   container: {
     borderWidth: 1,
     borderStyle: "solid",
     borderColor: $borderColor.reference,
-    p: 5,
+    px: 5,
+    py: 5,
     rounded: "xl",
   },
   description: {
@@ -26,19 +27,12 @@ const baseStyle = multyStyleConfig.definePartsStyle({
   },
 })
 
-const getForegroundColor = (props: StyleFunctionProps) => {
-  const { colorScheme: c } = props
-  return `colors.${c}.400`
-}
+const getColorLevel = (colorScheme: string, level: number) =>
+  `colors.${colorScheme}.${level}`
 
-const getBorderColor = (props: StyleFunctionProps) => {
-  const { colorScheme: c } = props
-  return `colors.${c}.200`
-}
-
-const variantSubtle = multyStyleConfig.definePartsStyle((props) => {
-  const foregroundColor = getForegroundColor(props)
-  const borderColor = getBorderColor(props)
+const variantSubtle = multiStyleConfig.definePartsStyle(({ colorScheme }) => {
+  const foregroundColor = getColorLevel(colorScheme, 400)
+  const borderColor = getColorLevel(colorScheme, 200)
   return {
     container: {
       [$borderColor.variable]: borderColor,
@@ -47,11 +41,48 @@ const variantSubtle = multyStyleConfig.definePartsStyle((props) => {
   }
 })
 
+const variantElevated = multiStyleConfig.definePartsStyle(({ colorScheme }) => {
+  const backgroundColor = getColorLevel(colorScheme, 200)
+  const foregroundColor = getColorLevel("grey", 700)
+  const borderColor = getColorLevel(colorScheme, 300)
+  return {
+    container: {
+      [$backgroundColor.variable]: backgroundColor,
+      [$borderColor.variable]: borderColor,
+      [$foregroundColor.variable]: foregroundColor,
+    },
+  }
+})
+
+const variantProcess = multiStyleConfig.definePartsStyle({
+  container: {
+    px: 6,
+    py: 4,
+    bg: "gold.300",
+    borderWidth: 1,
+    borderColor: "gold.100",
+    alignItems: "flex-start",
+    [$foregroundColor.variable]: "colors.brand.400",
+  },
+  icon: {
+    mr: 4,
+    boxSize: 12,
+  },
+  title: {
+    color: "grey.700",
+    fontWeight: "bold",
+    m: 0,
+  },
+  description: { color: "grey.500", fontWeight: "medium" },
+})
+
 const variants = {
   subtle: variantSubtle,
+  process: variantProcess,
+  elevated: variantElevated,
 }
 
-export const alertTheme = multyStyleConfig.defineMultiStyleConfig({
+export const alertTheme = multiStyleConfig.defineMultiStyleConfig({
   baseStyle,
   variants,
 })
