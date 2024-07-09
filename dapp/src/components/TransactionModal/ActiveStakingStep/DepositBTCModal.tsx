@@ -14,9 +14,11 @@ import { PROCESS_STATUSES } from "#/types"
 import { Highlight } from "@chakra-ui/react"
 import { TextMd } from "#/components/shared/Typography"
 import { setStatus, setTxHash } from "#/store/action-flow"
-import { queryKeys } from "#/constants"
+import { queryKeysFactory } from "#/constants"
 import { Alert, AlertIcon, AlertDescription } from "#/components/shared/Alert"
 import TriggerTransactionModal from "../TriggerTransactionModal"
+
+const { userKeys } = queryKeysFactory
 
 export default function DepositBTCModal() {
   const tokenAmount = useActionFlowTokenAmount()
@@ -25,7 +27,7 @@ export default function DepositBTCModal() {
   const dispatch = useAppDispatch()
   const { handlePause } = useActionFlowPause()
   const handleBitcoinBalanceInvalidation = useInvalidateQueries({
-    queryKey: [queryKeys.BITCOIN_BALANCE],
+    queryKey: userKeys.balance(),
   })
 
   const onStakeBTCSuccess = useCallback(() => {
