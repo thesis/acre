@@ -1,10 +1,15 @@
 import React, { ReactNode, useCallback, useState } from "react"
 import { Box, ModalBody, ModalCloseButton, ModalHeader } from "@chakra-ui/react"
 import { useAppDispatch, useStakeFlowContext } from "#/hooks"
-import { ACTION_FLOW_TYPES, ActionFlowType, BaseFormProps } from "#/types"
+import {
+  ACTION_FLOW_TYPES,
+  ActionFlowType,
+  BaseFormProps,
+  PROCESS_STATUSES,
+} from "#/types"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { logPromiseFailure } from "#/utils"
-import { setTokenAmount } from "#/store/action-flow"
+import { setStatus, setTokenAmount } from "#/store/action-flow"
 import StakeFormModal from "./ActiveStakingStep/StakeFormModal"
 import UnstakeFormModal from "./ActiveUnstakingStep/UnstakeFormModal"
 
@@ -46,6 +51,11 @@ function ActionFormModal({ type }: { type: ActionFlowType }) {
         if (type === ACTION_FLOW_TYPES.STAKE) await handleInitStake()
 
         dispatch(setTokenAmount({ amount: values.amount, currency: "bitcoin" }))
+
+        if (type === ACTION_FLOW_TYPES.UNSTAKE) {
+          // TODO: Do check here
+          dispatch(setStatus(PROCESS_STATUSES.NOT_ENOUGH_FUNDS))
+        }
       } catch (error) {
         console.error(error)
       } finally {
