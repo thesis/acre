@@ -44,7 +44,10 @@ create a private one
    - [Windows](https://docs.docker.com/desktop/install/windows-install/)
    - [Linux](https://docs.docker.com/desktop/install/linux-install/)
 
-2. Set the API key in the `docker-compose.yaml` file.
+2. Set the API key in the `docker-compose.yaml` file. Note that the provided RPC
+   URL should support the `trace_filter` method because the Acre subgraph
+   defines the contract's function call handler. Eg. Alchemy does not not
+   support it in a free plan - it requires at least `growth` paid plan.
 
    ```
    ethereum: "sepolia:https://eth-sepolia.g.alchemy.com/v2/<API key>"
