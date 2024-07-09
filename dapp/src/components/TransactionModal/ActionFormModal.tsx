@@ -1,6 +1,11 @@
 import React, { ReactNode, useCallback, useState } from "react"
 import { Box, ModalBody, ModalCloseButton, ModalHeader } from "@chakra-ui/react"
-import { useAppDispatch, useStakeFlowContext } from "#/hooks"
+import {
+  useAppDispatch,
+  useMinWithdrawAmount,
+  useStakeFlowContext,
+  useWallet,
+} from "#/hooks"
 import {
   ACTION_FLOW_TYPES,
   ActionFlowType,
@@ -33,6 +38,8 @@ const FORM_DATA: Record<
 function ActionFormModal({ type }: { type: ActionFlowType }) {
   const { initStake } = useStakeFlowContext()
   const dispatch = useAppDispatch()
+  const minWithdrawAmount = useMinWithdrawAmount()
+  const { balance } = useWallet()
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -44,7 +51,7 @@ function ActionFormModal({ type }: { type: ActionFlowType }) {
 
   const handleSubmitForm = useCallback(
     async (values: TokenAmountFormValues) => {
-      if (!values.amount) return
+      if (!values.amount || !balance) return
 
       try {
         setIsLoading(true)
@@ -52,8 +59,11 @@ function ActionFormModal({ type }: { type: ActionFlowType }) {
 
         dispatch(setTokenAmount({ amount: values.amount, currency: "bitcoin" }))
 
-        if (type === ACTION_FLOW_TYPES.UNSTAKE) {
-          // TODO: Do check here
+        const hasEnoughFundsForFutureWithdrawals =
+          type === ACTION_FLOW_TYPES.UNSTAKE &&
+          balance - values.amount >= minWithdrawAmount
+
+        if (!hasEnoughFundsForFutureWithdrawals) {
           dispatch(setStatus(PROCESS_STATUSES.NOT_ENOUGH_FUNDS))
         }
       } catch (error) {
@@ -62,7 +72,7 @@ function ActionFormModal({ type }: { type: ActionFlowType }) {
         setIsLoading(false)
       }
     },
-    [dispatch, handleInitStake, type],
+    [dispatch, handleInitStake, type, balance, minWithdrawAmount],
   )
 
   const handleSubmitFormWrapper = useCallback(
