@@ -13,6 +13,7 @@ import { eip1193, logPromiseFailure } from "#/utils"
 import { setStatus } from "#/store/action-flow"
 import { useInitializeWithdraw } from "#/acre-react/hooks"
 import { queryKeys } from "#/constants"
+import { activityInitialized } from "#/store/wallet"
 import TriggerTransactionModal from "../TriggerTransactionModal"
 
 type WithdrawalStatus = "building-data" | "signature" | "transaction"
@@ -83,10 +84,40 @@ export default function SignMessageModal() {
     async () => {
       if (!amount) return
 
-      await initializeWithdraw(
+      const { redemptionKey } = await initializeWithdraw(
         amount,
         onSignMessageCallback,
         messageSignedCallback,
+      )
+
+      dispatch(
+        activityInitialized({
+          // Note that the withdraw id returned from the Acre SDK while fetching
+          // the withdrawals has the following pattern:
+          // `<redemptionKey>-<count>`. The redemption key returned during the
+          // withdrawal initialization does not contain the `-<count>` suffix
+          // because there may be delay between indexing the Acre subgraph and
+          // the time when a transaction was actually made and it's hard to get
+          // the exact number of the redemptions with the same key. Eg:
+          // - a user initialized a withdraw,
+          // - the Acre SDK is asking the subgraph for the number of withdrawals
+          //   with the same redemption key,
+          // - the Acre subgraph may or may not be up to date with the chain and
+          //   we are not sure if we should add +1 to the counter or the
+          //   returned value already includes the requested withdraw from the
+          //   first step. So we can't create the correct withdraw id.
+          // So here we set the id as a redemption key. Only one pending
+          // withdrawal can exist with the same redemption key, so when the user
+          // can initialize the next withdrawal with the same redemption key, we
+          // assume the dapp should already re-fetch all withdrawals with the
+          // correct IDs and move the `pending` redemption to `completed`
+          // section with the proper id.
+          id: redemptionKey,
+          type: "withdraw",
+          status: "pending",
+          amount,
+          timestamp: new Date().getTime(),
+        }),
       )
     },
     onSignMessageSuccess,

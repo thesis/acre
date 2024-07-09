@@ -66,6 +66,13 @@ export const walletSlice = createSlice({
       delete state.latestActivities[activityId]
     },
     resetState: () => initialState,
+    activityInitialized(state, action: PayloadAction<Activity>) {
+      const activity = action.payload
+      state.latestActivities = {
+        ...state.latestActivities,
+        [activity.id]: activity,
+      }
+    },
   },
 })
 
@@ -76,5 +83,6 @@ export const {
   setActivities,
   deleteLatestActivity,
   resetState,
+  activityInitialized,
 } = walletSlice.actions
 export default walletSlice.reducer
