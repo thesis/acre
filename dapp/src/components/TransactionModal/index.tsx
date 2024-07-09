@@ -1,6 +1,12 @@
 import React, { useEffect } from "react"
 import { StakeFlowProvider } from "#/contexts"
-import { useAppDispatch, useSidebar, useWallet } from "#/hooks"
+import {
+  useAppDispatch,
+  useIsSignedMessage,
+  useModal,
+  useSidebar,
+  useTransactionModal,
+} from "#/hooks"
 import { ActionFlowType, BaseModalProps } from "#/types"
 import { ModalCloseButton } from "@chakra-ui/react"
 import { resetState, setType } from "#/store/action-flow"
@@ -46,11 +52,15 @@ function TransactionModalBase({ type }: TransactionModalProps) {
 function TransactionModalWrapper({
   type,
 }: TransactionModalProps & BaseModalProps) {
-  const { isConnected } = useWallet()
+  const openModal = useTransactionModal(type)
+  const { closeModal } = useModal()
+  const isSignedMessage = useIsSignedMessage()
 
-  if (!isConnected) return <ConnectWalletModalBase />
+  if (isSignedMessage) return <TransactionModalBase type={type} />
 
-  return <TransactionModalBase type={type} />
+  return (
+    <ConnectWalletModalBase onSuccess={openModal} closeModal={closeModal} />
+  )
 }
 
 const TransactionModal = withBaseModal(TransactionModalWrapper)

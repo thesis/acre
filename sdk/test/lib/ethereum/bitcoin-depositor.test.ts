@@ -6,6 +6,8 @@ import {
 } from "../../../src/lib/ethereum"
 import { DepositFees } from "../../../src"
 import { extraDataValidTestData } from "./data"
+import TbtcBridge from "../../../src/lib/ethereum/tbtc-bridge"
+import TbtcVault from "../../../src/lib/ethereum/tbtc-vault"
 
 jest.mock("ethers", (): object => ({
   Contract: jest.fn(),
@@ -205,6 +207,11 @@ describe("BitcoinDepositor", () => {
 
         throw new Error("Cannot create mocked contract instance")
       })
+
+      depositor.setTbtcContracts({
+        tbtcBridge: mockedBridgeContractInstance as unknown as TbtcBridge,
+        tbtcVault: mockedVaultContractInstance as unknown as TbtcVault,
+      })
     })
 
     describe("when network fees are not yet cached", () => {
@@ -214,38 +221,10 @@ describe("BitcoinDepositor", () => {
         result = await depositor.calculateDepositFee(amountToStake)
       })
 
-      it("should get the bridge contract address", () => {
-        expect(mockedContractInstance.bridge).toHaveBeenCalled()
-      })
-
-      it("should create the ethers Contract instance of the Bridge contract", () => {
-        expect(Contract).toHaveBeenNthCalledWith(
-          1,
-          `0x${bridgeAddress.identifierHex}`,
-          [
-            "function depositParameters() view returns (uint64 depositDustThreshold, uint64 depositTreasuryFeeDivisor, uint64 depositTxMaxFee, uint32 depositRevealAheadPeriod)",
-          ],
-          mockedContractInstance.runner,
-        )
-      })
-
       it("should get the deposit parameters from chain", () => {
         expect(
           mockedBridgeContractInstance.depositParameters,
         ).toHaveBeenCalled()
-      })
-
-      it("should get the vault contract address", () => {
-        expect(mockedContractInstance.tbtcVault).toHaveBeenCalled()
-      })
-
-      it("should create the ethers Contract instance of the tBTC Vault contract", () => {
-        expect(Contract).toHaveBeenNthCalledWith(
-          2,
-          `0x${vaultAddress.identifierHex}`,
-          ["function optimisticMintingFeeDivisor() view returns (uint32)"],
-          mockedContractInstance.runner,
-        )
       })
 
       it("should get the optimistic minting fee divisor", () => {

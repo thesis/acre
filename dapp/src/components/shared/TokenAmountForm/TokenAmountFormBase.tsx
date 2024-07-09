@@ -25,6 +25,7 @@ export type TokenAmountFormBaseProps = {
   tokenBalance: bigint
   tokenBalanceInputPlaceholder: string
   currency: CurrencyType
+  withMaxButton: boolean
   fiatCurrency?: CurrencyType
   children?: React.ReactNode
 }
@@ -35,6 +36,7 @@ export default function TokenAmountFormBase({
   currency,
   fiatCurrency,
   tokenBalanceInputPlaceholder,
+  withMaxButton,
   children,
   ...formikProps
 }: TokenAmountFormBaseProps & FormikProps<TokenAmountFormValues>) {
@@ -46,6 +48,7 @@ export default function TokenAmountFormBase({
         placeholder={tokenBalanceInputPlaceholder}
         currency={currency}
         fiatCurrency={fiatCurrency}
+        withMaxButton={withMaxButton}
       />
       {children}
     </Form>

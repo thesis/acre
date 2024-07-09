@@ -12,9 +12,9 @@ dataSources:
         type: Bytes
         data: "0x9b1a7fE5a16A15F2f9475C5B231750598b113403"
     source:
-      address: "0xA19F8A66B78634e5E5900630d477d39B9334EAB0"
+      address: "0x6c2c643c90383Cba125E4b8DD01344eA35A75F27"
       abi: BitcoinDepositor
-      startBlock: 6094528
+      startBlock: 6237625
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9

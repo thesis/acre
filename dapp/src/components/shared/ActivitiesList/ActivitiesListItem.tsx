@@ -1,21 +1,17 @@
 import React from "react"
 import { ArrowUpRight, LoadingSpinnerSuccessIcon } from "#/assets/icons"
 import { Activity as ActivityType } from "#/types"
+import { Button, HStack, VStack, VisuallyHidden } from "@chakra-ui/react"
+import { CurrencyBalance } from "../CurrencyBalance"
+import BlockExplorerLink from "../BlockExplorerLink"
 import {
   Alert,
   AlertDescription,
   AlertIcon,
   AlertProps,
   AlertTitle,
-  Button,
-  HStack,
-  Text,
-  VStack,
-  VisuallyHidden,
-} from "@chakra-ui/react"
-import { CurrencyBalance } from "../CurrencyBalance"
-import Spinner from "../Spinner"
-import BlockExplorerLink from "../BlockExplorerLink"
+} from "../Alert"
+import { TextMd } from "../Typography"
 
 type ActivitiesListItemProps = Omit<AlertProps, "status"> &
   ActivityType & {
@@ -28,23 +24,25 @@ function ActivitiesListItem(props: ActivitiesListItemProps) {
   const isCompleted = status === "completed"
 
   return (
-    <Alert as={HStack} variant="process" {...restProps}>
-      <AlertIcon
-        color="brand.400"
-        as={isCompleted ? LoadingSpinnerSuccessIcon : Spinner}
-      />
+    <Alert w="full" variant="process" {...restProps}>
+      {isCompleted ? (
+        <AlertIcon as={LoadingSpinnerSuccessIcon} borderWidth={0} />
+      ) : (
+        <AlertIcon status="loading" variant="filled" />
+      )}
 
       <VStack flex={1} spacing={0} align="stretch">
-        <HStack justify="space-between" as={AlertTitle}>
-          <Text as="span">
+        <AlertTitle justify="space-between" as={HStack}>
+          <TextMd fontWeight="bold">
             {isCompleted
               ? `${type === "withdraw" ? "Unstaking" : "Staking"} completed`
               : `${type === "withdraw" ? "Unstaking" : "Staking"}...`}
-          </Text>
+          </TextMd>
 
           <CurrencyBalance amount={amount} currency="bitcoin" />
-        </HStack>
-        <HStack justify="space-between" as={AlertDescription}>
+        </AlertTitle>
+
+        <AlertDescription justify="space-between" as={HStack}>
           {isCompleted ? (
             <Button
               variant="link"
@@ -64,10 +62,10 @@ function ActivitiesListItem(props: ActivitiesListItemProps) {
               </Text> */}
             </>
           )}
-        </HStack>
+        </AlertDescription>
       </VStack>
 
-      {txHash && (
+      {txHash && status === "pending" && (
         <BlockExplorerLink
           id={txHash}
           chain="bitcoin"
