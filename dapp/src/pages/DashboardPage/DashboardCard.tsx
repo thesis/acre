@@ -16,10 +16,10 @@ import {
 } from "@chakra-ui/react"
 import { ActivitiesList } from "#/components/shared/ActivitiesList"
 import ArrivingSoonTooltip from "#/components/ArrivingSoonTooltip"
+import { featureFlags } from "#/constants"
 import TransactionHistory from "./TransactionHistory"
 
-const isWithdrawalFlowEnabled =
-  import.meta.env.VITE_FEATURE_FLAG_WITHDRAWALS_ENABLED === "true"
+const isWithdrawalFlowEnabled = featureFlags.WITHDRAWALS_ENABLED
 
 const buttonStyles: ButtonProps = {
   size: "lg",
