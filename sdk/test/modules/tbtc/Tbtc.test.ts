@@ -1,5 +1,8 @@
 import {
+  BitcoinAddressConverter,
+  BitcoinHashUtils,
   EthereumAddress,
+  EthereumBridge,
   RedeemerProxy,
   TBTC as TbtcSdk,
   Deposit as TbtcSdkDeposit,
@@ -10,6 +13,7 @@ import {
   IEthereumSignerCompatibleWithEthersV5,
   VoidSigner,
   Hex,
+  BitcoinNetwork,
 } from "../../../src"
 import Deposit from "../../../src/modules/tbtc/Deposit"
 import TbtcApi from "../../../src/lib/api/TbtcApi"
@@ -65,14 +69,19 @@ describe("Tbtc", () => {
   const { bitcoinDepositor } = new MockAcreContracts()
   const tbtcApi: TbtcApi = new TbtcApi(tbtcApiUrl)
 
-  const tbtc = new Tbtc(tbtcApi, tbtcSdk, bitcoinDepositor)
+  const tbtc = new Tbtc(
+    tbtcApi,
+    tbtcSdk,
+    bitcoinDepositor,
+    BitcoinNetwork.Testnet,
+  )
 
   describe("initialize", () => {
     const mockedSigner: IEthereumSignerCompatibleWithEthersV5 =
       new MockEthereumSignerCompatibleWithEthersV5()
 
     describe("when network is mainnet", () => {
-      const network: EthereumNetwork = "mainnet"
+      const network: BitcoinNetwork = BitcoinNetwork.Mainnet
 
       let result: Tbtc
 
@@ -96,8 +105,8 @@ describe("Tbtc", () => {
       })
     })
 
-    describe("when network is sepolia", () => {
-      const network: EthereumNetwork = "sepolia"
+    describe("when network is testnet", () => {
+      const network: BitcoinNetwork = BitcoinNetwork.Testnet
 
       let result: Tbtc
 
@@ -265,20 +274,46 @@ describe("Tbtc", () => {
   })
 
   describe("initiateRedemption", () => {
-    const destinationBitcoinAddress = "123"
+    const destinationBitcoinAddress =
+      "tb1qumuaw3exkxdhtut0u85latkqfz4ylgwstkdzsx"
+    const redeemerOutputScript = Hex.from(
+      "0014e6f9d74726b19b75f16fe1e9feaec048aa4fa1d0",
+    )
+    const walletPublicKey = Hex.from(
+      "03989d253b17a6a0f41838b84ff0d20e8898f9d7b1a98f2564da4cc29dcf8581d9",
+    )
+    const walletPublicKeyHash = Hex.from(
+      "8db50eb52063ea9d98b3eac91489a90f738986f6",
+    )
     const tbtcAmount = 10000n
     const redeemer = {} as RedeemerProxy
 
+    const expectedRedemptionKey =
+      "0xb7466077357653f26ca2dbbeb43b9609c9603603413284d44548e0efcb75af20"
     const mockedTxHash = Hex.from(
       "0x7e19682ec2411f26393a3ec55a9483253f4a5150a53aa6f82e069ec78d829f5d",
     )
 
-    let result: string
+    const spyOnBuildRedemptionKey = jest.spyOn(
+      EthereumBridge,
+      "buildRedemptionKey",
+    )
+    const spyOnAddressToOutputScript = jest.spyOn(
+      BitcoinAddressConverter,
+      "addressToOutputScript",
+    )
+
+    const spyOnComputeHash160 = jest.spyOn(BitcoinHashUtils, "computeHash160")
+
+    let result: Awaited<ReturnType<Tbtc["initiateRedemption"]>>
 
     beforeAll(async () => {
       tbtcSdk.redemptions.requestRedemptionWithProxy = jest
         .fn()
-        .mockResolvedValueOnce({ targetChainTxHash: mockedTxHash })
+        .mockResolvedValueOnce({
+          targetChainTxHash: mockedTxHash,
+          walletPublicKey,
+        })
       result = await tbtc.initiateRedemption(
         destinationBitcoinAddress,
         tbtcAmount,
@@ -296,8 +331,31 @@ describe("Tbtc", () => {
       )
     })
 
-    it("should return the transaction hash", () => {
-      expect(result).toBe(mockedTxHash.toPrefixedString())
+    it("should convert the destination bitcoin address to output script", () => {
+      expect(spyOnAddressToOutputScript).toHaveBeenCalledWith(
+        destinationBitcoinAddress,
+        BitcoinNetwork.Testnet,
+      )
+
+      expect(spyOnAddressToOutputScript).toHaveReturnedWith(
+        redeemerOutputScript,
+      )
+    })
+
+    it("should compute wallet public key hash", () => {
+      expect(spyOnComputeHash160).toHaveBeenCalledWith(walletPublicKey)
+    })
+
+    it("should build redemption key", () => {
+      expect(spyOnBuildRedemptionKey).toHaveBeenCalledWith(
+        walletPublicKeyHash,
+        redeemerOutputScript,
+      )
+    })
+
+    it("should return the transaction hash and redemption key", () => {
+      expect(result.transactionHash).toBe(mockedTxHash.toPrefixedString())
+      expect(result.redemptionKey).toBe(expectedRedemptionKey)
     })
   })
 })

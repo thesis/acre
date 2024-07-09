@@ -365,15 +365,20 @@ describe("Account", () => {
 
     const mockedTxHash =
       "0xad19f160667d583a2eb0b844e9b4f669354e79f91ff79a4782184841e66ca06a"
+    const mockedRedemptionKey =
+      "0xb7466077357653f26ca2dbbeb43b9609c9603603413284d44548e0efcb75af20"
 
-    let result: string
+    let result: Awaited<ReturnType<Account["initializeWithdrawal"]>>
 
     beforeEach(async () => {
       spyOnConvertToShares.mockResolvedValueOnce(mockedShares)
       spyOnPreviewRedeem.mockResolvedValueOnce(mockedTbtcAmountToRedeem)
       spyOnInitRedeemer.mockReturnValueOnce(mockedRedeemer)
 
-      tbtc.initiateRedemption = jest.fn().mockResolvedValueOnce(mockedTxHash)
+      tbtc.initiateRedemption = jest.fn().mockResolvedValueOnce({
+        transactionHash: mockedTxHash,
+        redemptionKey: mockedRedemptionKey,
+      })
 
       result = await account.initializeWithdrawal(btcAmount)
     })
@@ -415,8 +420,11 @@ describe("Account", () => {
       )
     })
 
-    it("should return the transaction hash", () => {
-      expect(result).toBe(mockedTxHash)
+    it("should return the transaction hash and redemption key", () => {
+      expect(result).toStrictEqual({
+        transactionHash: mockedTxHash,
+        redemptionKey: mockedRedemptionKey,
+      })
     })
   })
 

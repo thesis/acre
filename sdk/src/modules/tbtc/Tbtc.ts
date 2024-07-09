@@ -2,6 +2,9 @@ import {
   ChainIdentifier,
   TBTC as TbtcSdk,
   RedeemerProxy,
+  EthereumBridge,
+  BitcoinAddressConverter,
+  BitcoinHashUtils,
 } from "@keep-network/tbtc-v2.ts"
 
 import { ethers } from "ethers"
@@ -14,6 +17,7 @@ import {
 } from "../../lib/utils"
 
 import Deposit from "./Deposit"
+import { BitcoinNetwork } from "../../lib/bitcoin"
 
 /**
  * Represents the tBTC module.
@@ -25,14 +29,18 @@ export default class Tbtc {
 
   readonly #bitcoinDepositor: BitcoinDepositor
 
+  readonly #network: BitcoinNetwork
+
   constructor(
     tbtcApi: TbtcApi,
     tbtcSdk: TbtcSdk,
     bitcoinDepositor: BitcoinDepositor,
+    network: BitcoinNetwork,
   ) {
     this.#tbtcApi = tbtcApi
     this.#tbtcSdk = tbtcSdk
     this.#bitcoinDepositor = bitcoinDepositor
+    this.#network = network
   }
 
   /**
@@ -46,14 +54,14 @@ export default class Tbtc {
    */
   static async initialize(
     signer: EthereumSignerCompatibleWithEthersV5,
-    network: EthereumNetwork,
+    network: BitcoinNetwork,
     tbtcApiUrl: string,
     bitcoinDepositor: BitcoinDepositor,
   ): Promise<Tbtc> {
     const tbtcApi = new TbtcApi(tbtcApiUrl)
 
     const tbtcSdk =
-      network === "mainnet"
+      network === BitcoinNetwork.Mainnet
         ? // @ts-expect-error We require the `signer` must include the ethers v5
           // signer's methods used in tBTC-v2.ts SDK so if we pass signer from
           // ethers v6 it won't break the Acre SDK initialization.
@@ -63,7 +71,7 @@ export default class Tbtc {
           // ethers v6 it won't break the Acre SDK initialization.
           await TbtcSdk.initializeSepolia(signer)
 
-    return new Tbtc(tbtcApi, tbtcSdk, bitcoinDepositor)
+    return new Tbtc(tbtcApi, tbtcSdk, bitcoinDepositor, network)
   }
 
   /**
@@ -160,20 +168,33 @@ export default class Tbtc {
    * @param amount The amount to be redeemed in 1e18 tBTC token precision.
    * @param redeemerProxy Object implementing functions required to route tBTC
    *        redemption requests through the tBTC bridge.
-   * @returns The transaction hash.
+   * @returns The transaction hash and redemption key.
    */
   async initiateRedemption(
     destinationBitcoinAddress: string,
     tbtcAmount: bigint,
     redeemerProxy: RedeemerProxy,
-  ): Promise<string> {
-    const { targetChainTxHash } =
+  ): Promise<{ transactionHash: string; redemptionKey: string }> {
+    const { targetChainTxHash, walletPublicKey } =
       await this.#tbtcSdk.redemptions.requestRedemptionWithProxy(
         destinationBitcoinAddress,
         tbtcAmount,
         redeemerProxy,
       )
 
-    return targetChainTxHash.toPrefixedString()
+    const redeemerOutputScript = BitcoinAddressConverter.addressToOutputScript(
+      destinationBitcoinAddress,
+      this.#network,
+    )
+
+    const redemptionKey = EthereumBridge.buildRedemptionKey(
+      BitcoinHashUtils.computeHash160(walletPublicKey),
+      redeemerOutputScript,
+    )
+
+    return {
+      transactionHash: targetChainTxHash.toPrefixedString(),
+      redemptionKey,
+    }
   }
 }
