@@ -132,15 +132,15 @@ export default class AcreSubgraphApi extends HttpApi {
   // TODO: set the correct url for mainnet
   readonly #tbtcSubgraph: TbtcSubgraphApi
 
-  static init(network: BitcoinNetwork) {
-    // TODO: set mainnet api url
+  static init(network: BitcoinNetwork, subgraphApiKey: string) {
     const acreSubgraphApiUrl =
       network === BitcoinNetwork.Mainnet
-        ? "https://api.studio.thegraph.com/query/73600/acre-mainnet/version/latest"
+        ? // TODO: Set the production URL. This is the development query url.
+          "https://api.studio.thegraph.com/query/73600/acre-mainnet/version/latest"
         : "https://api.studio.thegraph.com/query/73600/acre/version/latest"
     const tbtcSubgraphApiUrl =
       network === BitcoinNetwork.Mainnet
-        ? "https://gateway-arbitrum.network.thegraph.com/api/<API-KEY>/subgraphs/id/DETCX5Xm6tJfctRcZAxhQB9q3aK8P4BXLbujHmzEBXYV"
+        ? `https://gateway-arbitrum.network.thegraph.com/api/${subgraphApiKey}/subgraphs/id/DETCX5Xm6tJfctRcZAxhQB9q3aK8P4BXLbujHmzEBXYV`
         : "https://api.studio.thegraph.com/proxy/59264/threshold-tbtc-sepolia/version/latest"
 
     return new AcreSubgraphApi(acreSubgraphApiUrl, tbtcSubgraphApiUrl)

@@ -58,6 +58,7 @@ class Acre {
     tbtcApiUrl: string,
     ethereumRpcUrl: string,
     gelatoApiKey: string,
+    subgraphApi: string,
   ) {
     const ethereumNetwork: EthereumNetwork =
       Acre.resolveEthereumNetwork(network)
@@ -83,7 +84,7 @@ class Acre {
       ethereumNetwork,
     )
 
-    const subgraph = AcreSubgraphApi.init(network)
+    const subgraph = AcreSubgraphApi.init(network, subgraphApi)
 
     const protocol = new Protocol(contracts)
 
