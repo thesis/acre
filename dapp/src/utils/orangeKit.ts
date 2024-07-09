@@ -1,4 +1,4 @@
-import { CONNECTION_ERRORS } from "#/constants"
+import { CONNECTION_ERRORS, wallets } from "#/constants"
 import {
   ConnectionErrorData,
   OrangeKitError,
@@ -10,7 +10,6 @@ import {
 } from "@orangekit/react"
 import { Connector } from "wagmi"
 import { SignInWithWalletMessage } from "@orangekit/sign-in-with-wallet"
-import { wallets } from "#/constants"
 
 const getWalletInfo = (connector: OrangeKitConnector) => {
   switch (connector.id) {
