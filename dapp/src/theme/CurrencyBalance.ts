@@ -3,7 +3,7 @@ import { createMultiStyleConfigHelpers, defineStyle } from "@chakra-ui/react"
 const PARTS = ["container", "balance", "symbol"]
 
 const baseStyleContainer = defineStyle(({ symbolPosition }) => ({
-  display: "flex",
+  display: "inline-flex",
   flexDir: symbolPosition === "prefix" ? "row-reverse" : "row",
   alignItems: "baseline",
 }))

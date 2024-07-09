@@ -3,7 +3,7 @@ import {
   useActionFlowTokenAmount,
   useActionFlowType,
 } from "#/hooks"
-import { ACTION_FLOW_TYPES, PROCESS_STATUSES } from "#/types"
+import { PROCESS_STATUSES } from "#/types"
 import React from "react"
 import ActionFormModal from "./ActionFormModal"
 import ErrorModal from "./ErrorModal"
