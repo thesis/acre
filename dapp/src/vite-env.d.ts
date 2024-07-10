@@ -10,6 +10,7 @@ interface ImportMetaEnv {
   readonly VITE_FEATURE_FLAG_GAMIFICATION_ENABLED: string
   readonly VITE_FEATURE_FLAG_WITHDRAWALS_ENABLED: string
   readonly VITE_FEATURE_FLAG_OKX_WALLET_ENABLED: string
+  readonly VITE_SUBGRAPH_API_KEY: string
 }
 
 interface ImportMeta {

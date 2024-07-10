@@ -14,7 +14,7 @@ import {
   useActionFlowTxHash,
   useModal,
   useAllActivitiesCount,
-  useFetchDeposits,
+  useFetchActivities,
 } from "#/hooks"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import { ACTION_FLOW_TYPES, ActionFlowType, MODAL_TYPES } from "#/types"
@@ -103,7 +103,7 @@ type SuccessModalProps = {
 
 export default function SuccessModal({ type }: SuccessModalProps) {
   const { closeModal, openModal } = useModal()
-  const fetchDeposits = useFetchDeposits()
+  const fetchActivities = useFetchActivities()
   const navigate = useNavigate()
   const allActivitiesCount = useAllActivitiesCount()
 
@@ -123,7 +123,7 @@ export default function SuccessModal({ type }: SuccessModalProps) {
       }
     }
 
-    logPromiseFailure(fetchDeposits())
+    logPromiseFailure(fetchActivities())
   }
 
   return (

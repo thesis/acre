@@ -3,22 +3,22 @@ import { useInterval } from "@chakra-ui/react"
 import { logPromiseFailure } from "#/utils"
 import { REFETCH_INTERVAL_IN_MILLISECONDS } from "#/constants"
 import { useFetchMinDepositAmount } from "./useFetchMinDepositAmount"
-import { useFetchDeposits } from "./useFetchDeposits"
+import { useFetchActivities } from "./useFetchActivities"
 import { useWallet } from "../useWallet"
 
 export function useInitDataFromSdk() {
   const { address } = useWallet()
-  const fetchDeposits = useFetchDeposits()
+  const fetchActivities = useFetchActivities()
 
   useEffect(() => {
     if (address) {
-      logPromiseFailure(fetchDeposits())
+      logPromiseFailure(fetchActivities())
     }
-  }, [address, fetchDeposits])
+  }, [address, fetchActivities])
 
   useFetchMinDepositAmount()
   useInterval(
-    () => logPromiseFailure(fetchDeposits()),
+    () => logPromiseFailure(fetchActivities()),
     REFETCH_INTERVAL_IN_MILLISECONDS,
   )
 }
