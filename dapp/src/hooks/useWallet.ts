@@ -38,7 +38,7 @@ export function useWallet(): UseWalletReturn {
   const connector = useConnector()
   const provider = useBitcoinProvider()
   const { data: balance } = useBitcoinBalance()
-  const restWalletState = useResetWalletState()
+  const resetWalletState = useResetWalletState()
 
   const [address, setAddress] = useState<string | undefined>(undefined)
 
@@ -82,8 +82,8 @@ export function useWallet(): UseWalletReturn {
 
   const onDisconnect = useCallback(() => {
     disconnect()
-    restWalletState()
-  }, [disconnect, restWalletState])
+    resetWalletState()
+  }, [disconnect, resetWalletState])
 
   useEffect(() => {
     const fetchBitcoinAddress = async () => {
