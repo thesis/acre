@@ -60,10 +60,12 @@ function ActionFormModal({ type }: { type: ActionFlowType }) {
         dispatch(setTokenAmount({ amount: values.amount, currency: "bitcoin" }))
 
         const hasEnoughFundsForFutureWithdrawals =
-          type === ACTION_FLOW_TYPES.UNSTAKE &&
           balance - values.amount >= minWithdrawAmount
 
-        if (!hasEnoughFundsForFutureWithdrawals) {
+        if (
+          type === ACTION_FLOW_TYPES.UNSTAKE &&
+          !hasEnoughFundsForFutureWithdrawals
+        ) {
           dispatch(setStatus(PROCESS_STATUSES.NOT_ENOUGH_FUNDS))
         }
       } catch (error) {
