@@ -11,9 +11,9 @@ import {
 import { setStatus } from "#/store/action-flow"
 import { PROCESS_STATUSES } from "#/types"
 import { BitcoinsStackErrorIcon } from "#/assets/icons"
-import { TextMd, TextXl } from "../shared/Typography"
-import { Alert, AlertIcon } from "../shared/Alert"
-import { CurrencyBalance } from "../shared/CurrencyBalance"
+import { TextMd, TextXl } from "../../shared/Typography"
+import { Alert, AlertIcon } from "../../shared/Alert"
+import { CurrencyBalance } from "../../shared/CurrencyBalance"
 
 export default function NotEnoughFundsModal() {
   const dispatch = useAppDispatch()

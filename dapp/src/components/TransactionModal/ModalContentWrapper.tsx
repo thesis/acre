@@ -10,7 +10,7 @@ import ErrorModal from "./ErrorModal"
 import LoadingModal from "./LoadingModal"
 import ResumeModal from "./ResumeModal"
 import SuccessModal from "./SuccessModal"
-import NotEnoughFundsModal from "./NotEnoughFundsModal"
+import NotEnoughFundsModal from "./ActiveUnstakingStep/NotEnoughFundsModal"
 
 export default function ModalContentWrapper({
   children,
