@@ -10,7 +10,6 @@ import {
 import { ethers } from "ethers"
 import TbtcApi, { DepositStatus } from "../../lib/api/TbtcApi"
 import { BitcoinDepositor } from "../../lib/contracts"
-import { EthereumNetwork } from "../../lib/ethereum"
 import {
   Hex,
   IEthereumSignerCompatibleWithEthersV5 as EthereumSignerCompatibleWithEthersV5,

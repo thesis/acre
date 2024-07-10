@@ -28,10 +28,7 @@ import {
 import { MockAcreContracts } from "../../utils/mock-acre-contracts"
 
 import { MockTbtcSdk } from "../../utils/mock-tbtc-sdk"
-import {
-  getChainIdByNetwork,
-  EthereumNetwork,
-} from "../../../src/lib/ethereum/network"
+import { getChainIdByNetwork } from "../../../src/lib/ethereum/network"
 
 jest.mock("@keep-network/tbtc-v2.ts", (): object => ({
   TbtcSdk: jest.fn(),
