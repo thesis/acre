@@ -41,13 +41,13 @@ dataSources:
     context:
       bitcoinRedeemerAddress:
         type: Bytes
-        data: "0xa7049b83dB603f4a7FE93B29D2DfEa76065e76E8"
+        data: "0xF4011FD0C77Bd4d909Ae05c7390b88455294dAeA"
     source:
       abi: TbtcBridge
       address: "0x9b1a7fE5a16A15F2f9475C5B231750598b113403"
       # We can start indexing from the same block where the BitcoinRedeemer
       # contract was deployed since we only want to index Acre redemptions.
-      startBlock: 6094537
+      startBlock: 6237636
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
