@@ -5,7 +5,6 @@ import { FormSubmitButton } from "#/components/shared/Form"
 import { BaseFormProps, PROCESS_STATUSES } from "#/types"
 import {
   useActionFlowStatus,
-  useActionFlowTokenAmount,
   useBitcoinPosition,
   useMinWithdrawAmount,
 } from "#/hooks"
@@ -17,7 +16,6 @@ function UnstakeFormModal({
   const { data } = useBitcoinPosition()
   const balance = data?.estimatedBitcoinBalance ?? 0n
   const minTokenAmount = useMinWithdrawAmount()
-  const unstakeAmount = useActionFlowTokenAmount()
   const status = useActionFlowStatus()
 
   return (
@@ -30,9 +28,7 @@ function UnstakeFormModal({
       onSubmitForm={onSubmitForm}
       withMaxButton
       defaultAmount={
-        status === PROCESS_STATUSES.REFINE_AMOUNT
-          ? unstakeAmount?.amount
-          : undefined
+        status === PROCESS_STATUSES.REFINE_AMOUNT ? balance : undefined
       }
     >
       <UnstakeDetails balance={balance} currency="bitcoin" />
