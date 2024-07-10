@@ -129,7 +129,6 @@ export function buildGetWithdrawalsByOwnerQuery(owner: ChainIdentifier) {
  * Class for integration with Acre Subgraph.
  */
 export default class AcreSubgraphApi extends HttpApi {
-  // TODO: set the correct url for mainnet
   readonly #tbtcSubgraph: TbtcSubgraphApi
 
   static init(network: BitcoinNetwork, subgraphApiKey: string) {
