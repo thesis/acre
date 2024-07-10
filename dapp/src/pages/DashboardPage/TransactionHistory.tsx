@@ -74,23 +74,26 @@ export default function TransactionHistory(props: StackProps) {
                         />
                       </Box>
                     </HStack>
-
-                    <BlockExplorerLink
-                      id={txHash}
-                      chain="bitcoin"
-                      type="transaction"
-                      variant="ghost"
-                      color="grey.300"
-                      _groupHover={{ color: "brand.400" }}
-                      pl={6}
-                      pr={4}
-                      py={5}
-                      mx={-4}
-                      my={-5}
-                    >
-                      <IconArrowUpRight size={16} />
-                      <VisuallyHidden>View transaction details</VisuallyHidden>
-                    </BlockExplorerLink>
+                    {txHash && (
+                      <BlockExplorerLink
+                        id={txHash}
+                        chain="bitcoin"
+                        type="transaction"
+                        variant="ghost"
+                        color="grey.300"
+                        _groupHover={{ color: "brand.400" }}
+                        pl={6}
+                        pr={4}
+                        py={5}
+                        mx={-4}
+                        my={-5}
+                      >
+                        <IconArrowUpRight size={16} />
+                        <VisuallyHidden>
+                          View transaction details
+                        </VisuallyHidden>
+                      </BlockExplorerLink>
+                    )}
                   </CardBody>
                 </Card>
               ))

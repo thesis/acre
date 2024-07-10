@@ -1,6 +1,9 @@
-import { ChainIdentifier } from "@keep-network/tbtc-v2.ts"
+import { BitcoinNetwork } from "../bitcoin"
+import { ChainIdentifier } from "../contracts"
+import { Hex } from "../utils"
 import HttpApi from "./HttpApi"
 import { DepositStatus } from "./TbtcApi"
+import TbtcSubgraphApi from "./TbtcSubgraphApi"
 
 /**
  * Represents the response data returned form the Acre Subgraph from query that
@@ -69,6 +72,24 @@ type Deposit = {
   timestamp: number
 }
 
+type WithdrawalsDataResponse = {
+  data: {
+    withdraws: {
+      id: string
+      bitcoinTransactionId: string
+      amount: string
+      events: { type: "Initialized" | "Finalized"; timestamp: string }[]
+    }[]
+  }
+}
+
+type Withdraw = {
+  id: string
+  amount: bigint
+  bitcoinTransactionId?: string
+  timestamp: number
+}
+
 export function buildGetDepositsByOwnerQuery(owner: ChainIdentifier) {
   return `
   query {
@@ -87,10 +108,48 @@ export function buildGetDepositsByOwnerQuery(owner: ChainIdentifier) {
   }`
 }
 
+export function buildGetWithdrawalsByOwnerQuery(owner: ChainIdentifier) {
+  return `
+  query {
+    withdraws(
+      where: {depositOwner_contains_nocase: "0x${owner.identifierHex}"}
+    ) {
+        id
+        bitcoinTransactionId
+        amount
+        events(orderBy: timestamp, orderDirection: asc) {
+          timestamp
+          type
+        }
+      }
+  }`
+}
+
 /**
  * Class for integration with Acre Subgraph.
  */
 export default class AcreSubgraphApi extends HttpApi {
+  readonly #tbtcSubgraph: TbtcSubgraphApi
+
+  static init(network: BitcoinNetwork, subgraphApiKey: string) {
+    const acreSubgraphApiUrl =
+      network === BitcoinNetwork.Mainnet
+        ? // TODO: Set the production URL. This is the development query url.
+          "https://api.studio.thegraph.com/query/73600/acre-mainnet/version/latest"
+        : "https://api.studio.thegraph.com/query/73600/acre/version/latest"
+    const tbtcSubgraphApiUrl =
+      network === BitcoinNetwork.Mainnet
+        ? `https://gateway-arbitrum.network.thegraph.com/api/${subgraphApiKey}/subgraphs/id/DETCX5Xm6tJfctRcZAxhQB9q3aK8P4BXLbujHmzEBXYV`
+        : "https://api.studio.thegraph.com/proxy/59264/threshold-tbtc-sepolia/version/latest"
+
+    return new AcreSubgraphApi(acreSubgraphApiUrl, tbtcSubgraphApiUrl)
+  }
+
+  constructor(acreSubgraphApiUrl: string, tbtcSubgraphApiUrl: string) {
+    super(acreSubgraphApiUrl)
+    this.#tbtcSubgraph = new TbtcSubgraphApi(tbtcSubgraphApiUrl)
+  }
+
   /**
    * @param depositOwnerId The deposit owner id as EVM-chain identifier.
    * @returns All deposits for a given depositor. Returns only initialized or
@@ -139,6 +198,56 @@ export default class AcreSubgraphApi extends HttpApi {
         type: "deposit",
         status,
         timestamp,
+      }
+    })
+  }
+
+  async getWithdrawalsByOwner(
+    depositOwnerId: ChainIdentifier,
+  ): Promise<Withdraw[]> {
+    const query = buildGetWithdrawalsByOwnerQuery(depositOwnerId)
+
+    const response = await this.postRequest(
+      "",
+      { query },
+      { credentials: undefined },
+    )
+
+    if (!response.ok) {
+      throw new Error(
+        `Could not get withdrawals by deposit owner: ${response.status}`,
+      )
+    }
+
+    const acreWithdrawals = (await response.json()) as WithdrawalsDataResponse
+    const ids = acreWithdrawals.data.withdraws.map((withdraw) => withdraw.id)
+
+    const tbtcRedemptionsResponse =
+      await this.#tbtcSubgraph.getRedemptionsByIds(ids)
+
+    const redemptionToBitcoinTx = new Map(
+      tbtcRedemptionsResponse.map((redemption) => {
+        const [redemptionKey, counter] = redemption.id.split("-")
+        return [
+          // In Acre we count withdrawals with the same redemption key from 1
+          // but the tBTC subgraph counts from 0.
+          `${redemptionKey}-${Number(counter) + 1}`,
+          redemption.completedTxHash,
+        ]
+      }),
+    )
+
+    return acreWithdrawals.data.withdraws.map((withdraw) => {
+      const bitcoinTxHash = redemptionToBitcoinTx.get(withdraw.id)
+      const bitcoinTransactionId = bitcoinTxHash
+        ? Hex.from(bitcoinTxHash).reverse().toString()
+        : undefined
+
+      return {
+        id: withdraw.id,
+        bitcoinTransactionId,
+        amount: BigInt(withdraw.amount),
+        timestamp: parseInt(withdraw.events[0].timestamp, 10),
       }
     })
   }
