@@ -41,7 +41,7 @@ export default function NotEnoughFundsModal() {
       <ModalBody>
         <BitcoinsStackErrorIcon />
 
-        <TextMd color="grey.600">
+        <TextMd color="grey.600" px={1}>
           After this withdrawal, your balance will fall below the{" "}
           <CurrencyBalance amount={minWithdrawAmount} currency="bitcoin" />{" "}
           minimum required to initiate a withdrawal. Subsequent withdrawals will
