@@ -6,10 +6,11 @@ import {
   useExecuteFunction,
   useInvalidateQueries,
   useModal,
+  useTransactionDetails,
 } from "#/hooks"
-import { PROCESS_STATUSES } from "#/types"
+import { ACTION_FLOW_TYPES, PROCESS_STATUSES } from "#/types"
 import { Button } from "@chakra-ui/react"
-import { eip1193, logPromiseFailure } from "#/utils"
+import { dateToUnixTimestamp, eip1193, logPromiseFailure } from "#/utils"
 import { setStatus } from "#/store/action-flow"
 import { useInitializeWithdraw } from "#/acre-react/hooks"
 import { queryKeys } from "#/constants"
@@ -48,6 +49,10 @@ export default function SignMessageModal() {
   const handleBitcoinPositionInvalidation = useInvalidateQueries({
     queryKey: [queryKeys.BITCOIN_POSITION],
   })
+  const { transactionFee } = useTransactionDetails(
+    amount,
+    ACTION_FLOW_TYPES.UNSTAKE,
+  )
 
   const onSignMessageCallback = useCallback(async () => {
     setWaitingStatus("signature")
@@ -115,8 +120,10 @@ export default function SignMessageModal() {
           id: redemptionKey,
           type: "withdraw",
           status: "pending",
-          amount,
-          timestamp: new Date().getTime(),
+          // This is a requested amount. The amount of BTC received will be
+          // around: `amount - transactionFee.total`.
+          amount: amount - transactionFee.acre,
+          timestamp: dateToUnixTimestamp(),
         }),
       )
     },
