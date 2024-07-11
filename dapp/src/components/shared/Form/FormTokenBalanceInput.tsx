@@ -25,8 +25,7 @@ export function FormTokenBalanceInput({
     if (defaultValue) {
       setAmount(defaultValue)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [defaultValue, setAmount])
 
   return (
     <TokenBalanceInput
