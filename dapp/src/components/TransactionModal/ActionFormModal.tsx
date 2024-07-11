@@ -64,6 +64,8 @@ function ActionFormModal({ type }: { type: ActionFlowType }) {
         !hasEnoughFundsForFutureWithdrawals
       ) {
         dispatch(setStatus(PROCESS_STATUSES.NOT_ENOUGH_FUNDS))
+      } else {
+        dispatch(setStatus(PROCESS_STATUSES.PENDING))
       }
     },
     [depositedAmount, dispatch, minWithdrawAmount],
