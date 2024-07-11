@@ -24,6 +24,8 @@ export const PROCESS_STATUSES = {
   SUCCEEDED: "SUCCEEDED",
   PAUSED: "PAUSED",
   PENDING: "PENDING",
+  NOT_ENOUGH_FUNDS: "NOT_ENOUGH_FUNDS",
+  REFINE_AMOUNT: "REFINE_AMOUNT",
 } as const
 
 export type ProcessStatus =

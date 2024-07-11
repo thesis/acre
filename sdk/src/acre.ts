@@ -121,7 +121,7 @@ class Acre {
 
     const tbtc = await Tbtc.initialize(
       signer,
-      ethereumNetwork,
+      this.#network,
       this.#tbtcApiUrl,
       contracts.bitcoinDepositor,
     )
