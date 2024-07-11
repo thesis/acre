@@ -55,21 +55,29 @@ function ActionFormModal({ type }: { type: ActionFlowType }) {
       if (!values.amount || !depositedAmount) return
 
       try {
+        dispatch(setStatus(PROCESS_STATUSES.PENDING))
+
         setIsLoading(true)
         if (type === ACTION_FLOW_TYPES.STAKE) await handleInitStake()
 
         dispatch(setTokenAmount({ amount: values.amount, currency: "bitcoin" }))
 
         const hasEnoughFundsForFutureWithdrawals =
+          type === ACTION_FLOW_TYPES.UNSTAKE &&
           depositedAmount - values.amount >= minWithdrawAmount
 
-        if (
+        const hasSubmittedMaxWithdrawalAmount =
           type === ACTION_FLOW_TYPES.UNSTAKE &&
+          depositedAmount === values.amount
+
+        if (
+          !hasSubmittedMaxWithdrawalAmount &&
           !hasEnoughFundsForFutureWithdrawals
         ) {
           dispatch(setStatus(PROCESS_STATUSES.NOT_ENOUGH_FUNDS))
         }
       } catch (error) {
+        dispatch(setStatus(PROCESS_STATUSES.IDLE))
         console.error(error)
       } finally {
         setIsLoading(false)
