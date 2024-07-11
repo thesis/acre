@@ -330,6 +330,12 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         return shares;
     }
 
+    /// @dev This function proxies `mintDebt` call and provides compatibility
+    ///      with Mezo IReceiptToken interface.
+    function mintReceipt(address to, uint256 amount) external {
+        mintDebt(amount, to);
+    }
+
     /// @notice Repay the asset debt, fully of partially with the provided shares.
     /// @dev The debt to be repaid is calculated based on the current conversion
     ///      rate from the shares to assets.
@@ -364,6 +370,12 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         super._burn(msg.sender, shares);
 
         return shares;
+    }
+
+    /// @notice This function proxies `repayDebt` call and provides
+    ///         compatibility with Mezo IReceiptToken interface.
+    function burnReceipt(uint256 amount) external {
+        repayDebt(amount);
     }
 
     /// @notice Mints shares to receiver by depositing exactly amount of
