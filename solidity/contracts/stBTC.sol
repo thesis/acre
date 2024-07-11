@@ -136,7 +136,8 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         uint256 needed
     );
 
-    /// @notice Emitted when the debt of a debtor is insufficient.
+    /// @notice Emitted when the debt of the debtor is insufficient - the debtor
+    ///         tries to repay more than they borrowed.
     /// @dev Used in the debt repayment function.
     /// @param debtor Address of the debtor.
     /// @param debt Current debt of the debtor.
@@ -290,17 +291,19 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         allowedDebt[debtor] = newAllowance;
     }
 
-    /// @notice Mints shares corresponding to given number of assets, that are
-    ///         considered a debt.
-    /// @dev The number of shares is calculated based on the current conversion
-    ///      rate from the assets to shares.
-    /// @param assets Amount of assets for which debt will be taken.
-    /// @param receiver Receiver of the shares.
-    /// @return shares Amount of shares minted.
+    /// @notice Mints the requested amount of shares and registers a debt in
+    ///         asset corresponding to the minted amount of shares.
+    /// @dev The debt is calculated based on the current conversion
+    ///      rate from the shares to assets.
+    /// @param shares The amount of shares to mint.
+    /// @param receiver The receiver of the shares.
+    /// @return assets The debt amount in asset taken for the shares minted.
     function mintDebt(
-        uint256 assets,
+        uint256 shares,
         address receiver
-    ) external whenNotPaused returns (uint256 shares) {
+    ) external whenNotPaused returns (uint256 assets) {
+        assets = convertToAssets(shares);
+
         // Increase the debt of the debtor.
         currentDebt[msg.sender] += assets;
 
@@ -313,10 +316,6 @@ contract stBTC is ERC4626Fees, PausableOwnable {
             );
         }
 
-        // Convert the assets to shares. Conversion has to be executed before the
-        // `totalDebt` adjustment.
-        shares = convertToShares(assets);
-
         emit DebtMinted(msg.sender, currentDebt[msg.sender], assets, shares);
 
         // Increase the total debt.
@@ -328,17 +327,19 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         return shares;
     }
 
-    /// @notice Repay the debt.
-    /// @dev The number of shares is calculated based on the current conversion
-    ///      rate from the assets to shares.
-    /// @dev The debtor has to approve the transfer of the shares, to determine
-    ///      the number of shares to approve the caller can use the `previewRepayDebt`
-    ///      function.
-    /// @param assets Amount of debt to repay.
-    /// @return shares Amount of shares burned.
+    /// @notice Repay the asset debt, fully of partially with the provided shares.
+    /// @dev The debt to be repaid is calculated based on the current conversion
+    ///      rate from the shares to assets.
+    /// @dev The debtor has to approve the transfer of the shares. To determine
+    ///      the asset debt that is going to be repaid, the the caller can use
+    ///      the `previewRepayDebt` function.
+    /// @param shares The amount of shares to return.
+    /// @return assets The amount of debt in asset paid off.
     function repayDebt(
-        uint256 assets
-    ) external whenNotPaused returns (uint256 shares) {
+        uint256 shares
+    ) external whenNotPaused returns (uint256 assets) {
+        assets = convertToAssets(shares);
+
         // Check the current debt of the debtor.
         if (currentDebt[msg.sender] < assets) {
             revert InsufficientDebt(
@@ -350,10 +351,6 @@ contract stBTC is ERC4626Fees, PausableOwnable {
 
         // Decrease the debt of the debtor.
         currentDebt[msg.sender] -= assets;
-
-        // Convert the assets to shares. Conversion has to be executed before the
-        // `totalDebt` adjustment.
-        shares = previewRepayDebt(assets);
 
         emit DebtRepaid(msg.sender, currentDebt[msg.sender], assets, shares);
 
@@ -518,8 +515,8 @@ contract stBTC is ERC4626Fees, PausableOwnable {
 
     /// @notice Previews the amount of shares that will be burned for the given
     ///         amount of repaid debt assets.
-    function previewRepayDebt(uint256 assets) public view returns (uint256) {
-        return convertToShares(assets);
+    function previewRepayDebt(uint256 shares) public view returns (uint256) {
+        return convertToAssets(shares);
     }
 
     /// @return Returns entry fee basis point used in deposits.

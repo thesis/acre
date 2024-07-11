@@ -3009,12 +3009,12 @@ describe("stBTC", () => {
           describe("on empty vault", () => {
             beforeAfterSnapshotWrapper()
 
-            const newDebtAssets = to1e18(10)
+            const newDebtShares = to1e18(10)
 
             testMintDebt(
               () => sharesOwner1.address,
-              newDebtAssets,
-              newDebtAssets,
+              newDebtShares,
+              newDebtShares,
             )
           })
 
@@ -3022,6 +3022,8 @@ describe("stBTC", () => {
             describe("when there is debt already minted", () => {
               beforeAfterSnapshotWrapper()
 
+              // amount of shares minted equals the amount of assets taken
+              // as a debt in this case so we can assume 1:1 conversion
               const existingMintedDebt = to1e18(23)
 
               before(async () => {
@@ -3057,12 +3059,12 @@ describe("stBTC", () => {
               describe("when requested debt does not exceed the allowance", () => {
                 beforeAfterSnapshotWrapper()
 
-                const newDebtAssets = to1e18(10)
+                const newDebtShares = to1e18(10)
 
                 testMintDebt(
                   () => sharesOwner1.address,
-                  newDebtAssets,
-                  newDebtAssets,
+                  newDebtShares,
+                  newDebtShares,
                 )
               })
             })
@@ -3077,8 +3079,6 @@ describe("stBTC", () => {
                 existingDepositedAssets +
                 feeOnRaw(existingDepositedAssets, entryFeeBasisPoints)
 
-              const newDebtAssets = to1e18(10)
-
               before(async () => {
                 await tbtc
                   .connect(depositor1)
@@ -3092,13 +3092,13 @@ describe("stBTC", () => {
               describe("when requested debt exceeds the allowance", () => {
                 beforeAfterSnapshotWrapper()
 
-                it("should revert", async () => {
-                  const requestedDebt = debtAllowance + 1n
+                const requestedShares = debtAllowance + 1n
 
+                it("should revert", async () => {
                   await expect(
                     stbtc
                       .connect(externalMinter)
-                      .mintDebt(requestedDebt, sharesOwner1.address),
+                      .mintDebt(requestedShares, sharesOwner1.address),
                   )
                     .to.be.revertedWithCustomError(
                       stbtc,
@@ -3107,7 +3107,7 @@ describe("stBTC", () => {
                     .withArgs(
                       externalMinter.address,
                       debtAllowance,
-                      requestedDebt,
+                      requestedShares,
                     )
                 })
               })
@@ -3115,13 +3115,15 @@ describe("stBTC", () => {
               describe("when requested debt does not exceed the allowance", () => {
                 beforeAfterSnapshotWrapper()
 
+                const newDebtShares = to1e18(12)
+
                 describe("when there is no yield generated", () => {
                   beforeAfterSnapshotWrapper()
 
                   testMintDebt(
                     () => sharesOwner1.address,
-                    newDebtAssets,
-                    newDebtAssets,
+                    newDebtShares,
+                    newDebtShares,
                   )
                 })
 
@@ -3133,13 +3135,15 @@ describe("stBTC", () => {
                   //   Debt: 0
                   //   Yield: 6
                   // New mint:
-                  //   Debt: 10
-                  //   Expected Shares: 10 * 24 / (24 + 6) = 8
+                  //   Shares: 12
+                  //   Expected debt: 12 * (24 + 6) / 24 = 15
 
                   const earnedYield = to1e18(6)
 
-                  // shares = assets * total supply / total assets
-                  const expectedMintedShares = to1e18(8)
+                  // assets = shares * total assets / total supply
+                  // the -1n comes from convertToAssets implementation in
+                  // ERC4626Upgradeable
+                  const expectedDebt = to1e18(15) - 1n
 
                   before(async () => {
                     await tbtc.mint(await stbtc.getAddress(), earnedYield)
@@ -3147,8 +3151,8 @@ describe("stBTC", () => {
 
                   testMintDebt(
                     () => sharesOwner1.address,
-                    newDebtAssets,
-                    expectedMintedShares,
+                    newDebtShares,
+                    expectedDebt,
                   )
                 })
               })
@@ -3160,10 +3164,10 @@ describe("stBTC", () => {
           beforeAfterSnapshotWrapper()
 
           const minter1DebtAllowance = to1e18(100)
-          const minter1Debt = to1e18(10)
+          const minter1Shares = to1e18(10)
 
           const minter2DebtAllowance = to1e18(120)
-          const minter2Debt = to1e18(110)
+          const minter2Shares = to1e18(110)
 
           let minter1: HardhatEthersSigner
           let minter2: HardhatEthersSigner
@@ -3183,16 +3187,16 @@ describe("stBTC", () => {
 
           testMintDebt(
             () => sharesOwner1.address,
-            minter1Debt,
-            minter1Debt,
+            minter1Shares,
+            minter1Shares,
             () => minter1,
             "test mint debt for minter 1",
           )
 
           testMintDebt(
             () => sharesOwner2.address,
-            minter2Debt,
-            minter2Debt,
+            minter2Shares,
+            minter2Shares,
             () => minter2,
             "test mint debt for minter 2",
           )
@@ -3200,7 +3204,7 @@ describe("stBTC", () => {
           describe("test results after two debt mints", () => {
             it("should sum up the total debt", async () => {
               expect(await stbtc.totalDebt()).to.be.eq(
-                minter1Debt + minter2Debt,
+                minter1Shares + minter2Shares,
               )
             })
           })
@@ -3209,8 +3213,8 @@ describe("stBTC", () => {
 
       function testMintDebt(
         getReceiver: () => string,
-        newDebtAssets: bigint,
-        expectedNewShares: bigint,
+        newShares: bigint,
+        expectedNewDebt: bigint,
         getMinter: () => HardhatEthersSigner = () => externalMinter,
         testDescription = "test mint debt for minter",
       ) {
@@ -3234,14 +3238,14 @@ describe("stBTC", () => {
 
             tx = await stbtc
               .connect(minter)
-              .mintDebt(newDebtAssets, receiverAddress)
+              .mintDebt(newShares, receiverAddress)
           })
 
           it("should transfer stBTC to the receiver", async () => {
             await expect(tx).to.changeTokenBalances(
               stbtc,
               [receiverAddress],
-              [expectedNewShares],
+              [newShares],
             )
           })
 
@@ -3251,25 +3255,25 @@ describe("stBTC", () => {
 
           it("should increase current debt for the minter", async () => {
             expect(await stbtc.currentDebt(minter.address)).to.be.eq(
-              initialCurrentDebt + newDebtAssets,
+              initialCurrentDebt + expectedNewDebt,
             )
           })
 
           it("should increase total debt", async () => {
             expect(await stbtc.totalDebt()).to.be.eq(
-              initialTotalDebt + newDebtAssets,
+              initialTotalDebt + expectedNewDebt,
             )
           })
 
           it("should increase total supply", async () => {
             expect(await stbtc.totalSupply()).to.be.eq(
-              initialTotalSupply + expectedNewShares,
+              initialTotalSupply + newShares,
             )
           })
 
           it("should increase total assets", async () => {
             expect(await stbtc.totalAssets()).to.be.eq(
-              initialTotalAssets + newDebtAssets,
+              initialTotalAssets + expectedNewDebt,
             )
           })
 
@@ -3278,9 +3282,9 @@ describe("stBTC", () => {
               .to.emit(stbtc, "DebtMinted")
               .withArgs(
                 minter.address,
-                initialCurrentDebt + newDebtAssets,
-                newDebtAssets,
-                expectedNewShares,
+                initialCurrentDebt + expectedNewDebt,
+                expectedNewDebt,
+                newShares,
               )
           })
         })
@@ -3320,15 +3324,18 @@ describe("stBTC", () => {
         describe("when there is debt already minted", () => {
           beforeAfterSnapshotWrapper()
 
-          const existingDebt = to1e18(10)
+          const existingDebt = to1e18(12)
 
           before(async () => {
             await stbtc
               .connect(governance)
               .updateDebtAllowance(externalMinter.address, existingDebt)
+            // amount of shares minted equals the amount of assets taken
+            // as a debt in this case so we can assume 1:1 conversion
+            const sharesToMint = existingDebt
             await stbtc
               .connect(externalMinter)
-              .mintDebt(existingDebt, sharesOwner1.address)
+              .mintDebt(sharesToMint, sharesOwner1.address)
           })
 
           describe("when called by shares owner", () => {
@@ -3342,7 +3349,7 @@ describe("stBTC", () => {
           })
 
           describe("when called by debt minter", () => {
-            describe("when the requested debt is greater than the current debt", () => {
+            describe("when the requested debt repayment is greater than the current debt", () => {
               beforeAfterSnapshotWrapper()
 
               it("should revert", async () => {
@@ -3359,7 +3366,7 @@ describe("stBTC", () => {
               })
             })
 
-            describe("when the requested debt is same as the current debt", () => {
+            describe("when the requested debt repayment is same as the current debt", () => {
               beforeAfterSnapshotWrapper()
 
               before(async () => {
@@ -3403,9 +3410,9 @@ describe("stBTC", () => {
               })
 
               describe("when debt minter has enough shares", () => {
-                // beforeAfterSnapshotWrapper()
+                beforeAfterSnapshotWrapper()
 
-                const requestedRepayAmount = to1e18(5)
+                const requestedRepayAmount = to1e18(6)
 
                 before(async () => {
                   await stbtc
@@ -3458,28 +3465,29 @@ describe("stBTC", () => {
                     //   Deposited assets: 24
                     //   Debt: 10
                     //   Yield: 6
-                    // New mint:
-                    //   Debt: 5
-                    //   Expected Shares: 5 * (24 + 10) / (24 + 10 + 6) = 4,25
+                    // Repayment:
+                    //   Shares: 6
+                    //   Expected asset repayment: 6 * (24 + 10 + 6) / (24 + 10) = ~7
 
                     const earnedYield = to1e18(6)
 
-                    // shares = assets * total supply / total assets
-                    const expectedRepayShares = BigInt(4.25 * 10 ** 18)
+                    // assets = shares * total assets / total supply
+                    // see the rounding in _convertToAssets
+                    const expectedDebtRepay = to1e18(7) - 1n
 
                     before(async () => {
                       await tbtc.mint(await stbtc.getAddress(), earnedYield)
                     })
 
-                    testRepayDebt(requestedRepayAmount, expectedRepayShares)
+                    testRepayDebt(requestedRepayAmount, expectedDebtRepay)
                   })
                 })
               })
             })
 
             function testRepayDebt(
-              debtRepayAmount: bigint,
-              expectedBurnedShares: bigint,
+              repaySharesAmount: bigint,
+              expectedDebtRepayment: bigint,
             ) {
               let initialCurrentDebt: bigint
               let initialTotalDebt: bigint
@@ -3497,38 +3505,38 @@ describe("stBTC", () => {
 
                 tx = await stbtc
                   .connect(externalMinter)
-                  .repayDebt(debtRepayAmount)
+                  .repayDebt(repaySharesAmount)
               })
 
               it("should transfer stBTC from the debt minter", async () => {
                 await expect(tx).to.changeTokenBalances(
                   stbtc,
                   [externalMinter],
-                  [-expectedBurnedShares],
+                  [-repaySharesAmount],
                 )
               })
 
               it("should decrease current debt for the minter", async () => {
                 expect(
                   await stbtc.currentDebt(externalMinter.address),
-                ).to.be.eq(initialCurrentDebt - debtRepayAmount)
+                ).to.be.eq(initialCurrentDebt - expectedDebtRepayment)
               })
 
               it("should decrease total debt", async () => {
                 expect(await stbtc.totalDebt()).to.be.eq(
-                  initialTotalDebt - debtRepayAmount,
+                  initialTotalDebt - expectedDebtRepayment,
                 )
               })
 
               it("should decrease total supply", async () => {
                 expect(await stbtc.totalSupply()).to.be.eq(
-                  initialTotalSupply - expectedBurnedShares,
+                  initialTotalSupply - repaySharesAmount,
                 )
               })
 
               it("should decrease total assets", async () => {
                 expect(await stbtc.totalAssets()).to.be.eq(
-                  initialTotalAssets - debtRepayAmount,
+                  initialTotalAssets - expectedDebtRepayment,
                 )
               })
 
@@ -3537,9 +3545,9 @@ describe("stBTC", () => {
                   .to.emit(stbtc, "DebtRepaid")
                   .withArgs(
                     externalMinter.address,
-                    initialCurrentDebt - debtRepayAmount,
-                    debtRepayAmount,
-                    expectedBurnedShares,
+                    initialCurrentDebt - expectedDebtRepayment,
+                    expectedDebtRepayment,
+                    repaySharesAmount,
                   )
               })
             }
@@ -3618,20 +3626,21 @@ describe("stBTC", () => {
 
           testRoundTrip(
             10n,
-            8n,
-            // totalAssets = 23 + 5 + 10 = 38
-            // totalSupply = 23 + 8 = 31
-            { totalAssets: 38n, totalSupply: 31n },
-            // totalAssets = 38 - 10 = 28
-            // totalSupply = 31 - 8 = 23
+            // 10 * (23 + 5) / 23 = 12
+            12n,
+            // totalAssets = 23 + 5 + 12 = 40
+            // totalSupply = 23 + 10 = 33
+            { totalAssets: 40n, totalSupply: 33n },
+            // totalAssets = 40 - 12 = 28
+            // totalSupply = 33 - 10 = 23
             { totalAssets: 28n, totalSupply: 23n },
           )
         })
       })
 
       function testRoundTrip(
-        debtAssets: bigint,
-        expectedShares: bigint,
+        shares: bigint,
+        expectedDebtAmount: bigint,
         expectedMintDebtResult: {
           totalAssets: bigint
           totalSupply: bigint
@@ -3647,19 +3656,19 @@ describe("stBTC", () => {
           before(async () => {
             mintDebtTx = await stbtc
               .connect(externalMinter)
-              .mintDebt(debtAssets, externalMinter.address)
+              .mintDebt(shares, externalMinter.address)
           })
 
           it("should transfer stBTC to the receiver", async () => {
             await expect(mintDebtTx).to.changeTokenBalances(
               stbtc,
               [externalMinter],
-              [expectedShares],
+              [shares],
             )
           })
 
           it("should increase total debt", async () => {
-            expect(await stbtc.totalDebt()).to.be.eq(debtAssets)
+            expect(await stbtc.totalDebt()).to.be.eq(expectedDebtAmount)
           })
 
           it("should increase total assets", async () => {
@@ -3679,16 +3688,14 @@ describe("stBTC", () => {
           let repayDebtTx: ContractTransactionResponse
 
           before(async () => {
-            repayDebtTx = await stbtc
-              .connect(externalMinter)
-              .repayDebt(debtAssets)
+            repayDebtTx = await stbtc.connect(externalMinter).repayDebt(shares)
           })
 
           it("should transfer stBTC from the debt minter", async () => {
             await expect(repayDebtTx).to.changeTokenBalances(
               stbtc,
               [externalMinter],
-              [-expectedShares],
+              [-shares],
             )
           })
 
