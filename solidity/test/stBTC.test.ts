@@ -3316,7 +3316,7 @@ describe("stBTC", () => {
 
           it("should revert", async () => {
             await expect(stbtc.connect(thirdParty).repayDebt(to1e18(1)))
-              .to.be.revertedWithCustomError(stbtc, "InsufficientDebt")
+              .to.be.revertedWithCustomError(stbtc, "ExcessiveDebtRepayment")
               .withArgs(thirdParty.address, 0, to1e18(1))
           })
         })
@@ -3343,7 +3343,7 @@ describe("stBTC", () => {
 
             it("should revert", async () => {
               await expect(stbtc.connect(sharesOwner1).repayDebt(existingDebt))
-                .to.be.revertedWithCustomError(stbtc, "InsufficientDebt")
+                .to.be.revertedWithCustomError(stbtc, "ExcessiveDebtRepayment")
                 .withArgs(sharesOwner1.address, 0, existingDebt)
             })
           })
@@ -3357,7 +3357,7 @@ describe("stBTC", () => {
                 await expect(
                   stbtc.connect(externalMinter).repayDebt(requestedAmount),
                 )
-                  .to.be.revertedWithCustomError(stbtc, "InsufficientDebt")
+                  .to.be.revertedWithCustomError(stbtc, "ExcessiveDebtRepayment")
                   .withArgs(
                     externalMinter.address,
                     existingDebt,

@@ -142,7 +142,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     /// @param debtor Address of the debtor.
     /// @param debt Current debt of the debtor.
     /// @param needed Requested amount of assets repaying the debt.
-    error InsufficientDebt(address debtor, uint256 debt, uint256 needed);
+    error ExcessiveDebtRepayment(address debtor, uint256 debt, uint256 needed);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -331,7 +331,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     /// @dev The debt to be repaid is calculated based on the current conversion
     ///      rate from the shares to assets.
     /// @dev The debtor has to approve the transfer of the shares. To determine
-    ///      the asset debt that is going to be repaid, the the caller can use
+    ///      the asset debt that is going to be repaid, the caller can use
     ///      the `previewRepayDebt` function.
     /// @param shares The amount of shares to return.
     /// @return assets The amount of debt in asset paid off.
@@ -342,7 +342,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
 
         // Check the current debt of the debtor.
         if (currentDebt[msg.sender] < assets) {
-            revert InsufficientDebt(
+            revert ExcessiveDebtRepayment(
                 msg.sender,
                 currentDebt[msg.sender],
                 assets
