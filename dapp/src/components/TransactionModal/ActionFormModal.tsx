@@ -1,6 +1,7 @@
-import React, { ReactNode, useCallback, useState } from "react"
+import React, { ReactNode, useCallback, useEffect, useState } from "react"
 import { Box, ModalBody, ModalCloseButton, ModalHeader } from "@chakra-ui/react"
 import {
+  useActionFlowStatus,
   useAppDispatch,
   useBitcoinPosition,
   useMinWithdrawAmount,
@@ -41,6 +42,7 @@ function ActionFormModal({ type }: { type: ActionFlowType }) {
   const minWithdrawAmount = useMinWithdrawAmount()
   const { data } = useBitcoinPosition()
   const depositedAmount = data?.estimatedBitcoinBalance ?? 0n
+  const status = useActionFlowStatus()
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -50,40 +52,40 @@ function ActionFormModal({ type }: { type: ActionFlowType }) {
     await initStake()
   }, [initStake])
 
+  const handleUnstake = useCallback(
+    (amount: bigint) => {
+      const hasEnoughFundsForFutureWithdrawals =
+        depositedAmount - amount >= minWithdrawAmount
+
+      const hasSubmittedMaxWithdrawalAmount = depositedAmount === amount
+
+      if (
+        !hasSubmittedMaxWithdrawalAmount &&
+        !hasEnoughFundsForFutureWithdrawals
+      ) {
+        dispatch(setStatus(PROCESS_STATUSES.NOT_ENOUGH_FUNDS))
+      }
+    },
+    [depositedAmount, dispatch, minWithdrawAmount],
+  )
+
   const handleSubmitForm = useCallback(
     async (values: TokenAmountFormValues) => {
-      if (!values.amount || !depositedAmount) return
+      if (!values.amount) return
 
       try {
-        dispatch(setStatus(PROCESS_STATUSES.PENDING))
-
         setIsLoading(true)
         if (type === ACTION_FLOW_TYPES.STAKE) await handleInitStake()
+        if (type === ACTION_FLOW_TYPES.UNSTAKE) handleUnstake(values.amount)
 
         dispatch(setTokenAmount({ amount: values.amount, currency: "bitcoin" }))
-
-        const hasEnoughFundsForFutureWithdrawals =
-          type === ACTION_FLOW_TYPES.UNSTAKE &&
-          depositedAmount - values.amount >= minWithdrawAmount
-
-        const hasSubmittedMaxWithdrawalAmount =
-          type === ACTION_FLOW_TYPES.UNSTAKE &&
-          depositedAmount === values.amount
-
-        if (
-          !hasSubmittedMaxWithdrawalAmount &&
-          !hasEnoughFundsForFutureWithdrawals
-        ) {
-          dispatch(setStatus(PROCESS_STATUSES.NOT_ENOUGH_FUNDS))
-        }
       } catch (error) {
-        dispatch(setStatus(PROCESS_STATUSES.IDLE))
         console.error(error)
       } finally {
         setIsLoading(false)
       }
     },
-    [dispatch, handleInitStake, type, depositedAmount, minWithdrawAmount],
+    [dispatch, handleInitStake, handleUnstake, type],
   )
 
   const handleSubmitFormWrapper = useCallback(
@@ -91,6 +93,13 @@ function ActionFormModal({ type }: { type: ActionFlowType }) {
       logPromiseFailure(handleSubmitForm(values)),
     [handleSubmitForm],
   )
+
+  useEffect(() => {
+    // Set the status only when it is the user's first step
+    if (status === PROCESS_STATUSES.IDLE) {
+      dispatch(setStatus(PROCESS_STATUSES.PENDING))
+    }
+  }, [dispatch, status])
 
   return (
     <>
