@@ -13,9 +13,11 @@ import { Button } from "@chakra-ui/react"
 import { dateToUnixTimestamp, eip1193, logPromiseFailure } from "#/utils"
 import { setStatus } from "#/store/action-flow"
 import { useInitializeWithdraw } from "#/acre-react/hooks"
-import { queryKeys } from "#/constants"
+import { queryKeysFactory } from "#/constants"
 import { activityInitialized } from "#/store/wallet"
 import TriggerTransactionModal from "../TriggerTransactionModal"
+
+const { userKeys } = queryKeysFactory
 
 type WithdrawalStatus = "building-data" | "signature" | "transaction"
 
@@ -47,7 +49,7 @@ export default function SignMessageModal() {
   const { handlePause } = useActionFlowPause()
   const initializeWithdraw = useInitializeWithdraw()
   const handleBitcoinPositionInvalidation = useInvalidateQueries({
-    queryKey: [queryKeys.BITCOIN_POSITION],
+    queryKey: userKeys.position(),
   })
   const { transactionFee } = useTransactionDetails(
     amount,
