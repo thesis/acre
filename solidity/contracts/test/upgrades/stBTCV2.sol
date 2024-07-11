@@ -47,6 +47,7 @@ contract stBTCV2 is ERC4626Fees, PausableOwnable {
     /// @notice Returns the maximum amount of the underlying asset for which the
     ///      shares can be minted without the coverage in deposited assets.
     mapping(address => uint256) public allowedDebt;
+
     /// @notice Returns the current debt of the debtor.
     mapping(address => uint256) public currentDebt;
 
@@ -81,6 +82,35 @@ contract stBTCV2 is ERC4626Fees, PausableOwnable {
     /// @param exitFeeBasisPoints New value of the fee basis points.
     event ExitFeeBasisPointsUpdated(uint256 exitFeeBasisPoints);
 
+    /// Emitted when the maximum debt allowance of the debtor is updated.
+    /// @param debtor Address of the debtor.
+    /// @param newAllowance Maximum debt allowance of the debtor.
+    event DebtAllowanceUpdated(address indexed debtor, uint256 newAllowance);
+
+    /// Emitted when debt is minted.
+    /// @param debtor Address of the debtor.
+    /// @param currentDebt Current debt of the debtor.
+    /// @param assets Amount of assets for which debt will be taken.
+    /// @param shares Amount of shares minted.
+    event DebtMinted(
+        address indexed debtor,
+        uint256 currentDebt,
+        uint256 assets,
+        uint256 shares
+    );
+
+    /// Emitted when debt is repaid.
+    /// @param debtor Address of the debtor.
+    /// @param currentDebt Current debt of the debtor.
+    /// @param assets Amount of assets repaying the debt.
+    /// @param shares Amount of shares burned.
+    event DebtRepaid(
+        address indexed debtor,
+        uint256 currentDebt,
+        uint256 assets,
+        uint256 shares
+    );
+
     // TEST: New event.
     event NewEvent();
 
@@ -112,12 +142,13 @@ contract stBTCV2 is ERC4626Fees, PausableOwnable {
         uint256 needed
     );
 
-    /// @notice Emitted when the debt of a debtor is insufficient.
+    /// @notice Emitted when the debt of the debtor is insufficient - the debtor
+    ///         tries to repay more than they borrowed.
     /// @dev Used in the debt repayment function.
     /// @param debtor Address of the debtor.
     /// @param debt Current debt of the debtor.
-    /// @param needed Requested amount of assets paying the debt.
-    error InsufficientDebt(address debtor, uint256 debt, uint256 needed);
+    /// @param needed Requested amount of assets repaying the debt.
+    error ExcessiveDebtRepayment(address debtor, uint256 debt, uint256 needed);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -255,18 +286,24 @@ contract stBTCV2 is ERC4626Fees, PausableOwnable {
         address debtor,
         uint256 newAllowance
     ) external onlyOwner {
+        emit DebtAllowanceUpdated(debtor, newAllowance);
+
         allowedDebt[debtor] = newAllowance;
     }
 
-    /// @notice Mints shares corresponding to given number of assets, that are
-    ///         considered a debt.
-    /// @param assets Amount of assets for which debt will be taken.
-    /// @param receiver Receiver of the shares.
-    /// @return shares Amount of shares minted.
+    /// @notice Mints the requested amount of shares and registers a debt in
+    ///         asset corresponding to the minted amount of shares.
+    /// @dev The debt is calculated based on the current conversion
+    ///      rate from the shares to assets.
+    /// @param shares The amount of shares to mint.
+    /// @param receiver The receiver of the shares.
+    /// @return assets The debt amount in asset taken for the shares minted.
     function mintDebt(
-        uint256 assets,
+        uint256 shares,
         address receiver
-    ) external whenNotPaused returns (uint256 shares) {
+    ) external whenNotPaused returns (uint256 assets) {
+        assets = convertToAssets(shares);
+
         // Increase the debt of the debtor.
         currentDebt[msg.sender] += assets;
 
@@ -279,9 +316,7 @@ contract stBTCV2 is ERC4626Fees, PausableOwnable {
             );
         }
 
-        // Convert the assets to shares. Conversion has to be executed before the
-        // `totalDebt` adjustment.
-        shares = convertToShares(assets);
+        emit DebtMinted(msg.sender, currentDebt[msg.sender], assets, shares);
 
         // Increase the total debt.
         totalDebt += assets;
@@ -292,16 +327,22 @@ contract stBTCV2 is ERC4626Fees, PausableOwnable {
         return shares;
     }
 
-    /// @notice Cancels the debt of the debtor.
-    /// @dev The debtor has to approve the transfer of the shares.
-    /// @param assets Amount of debt to cancel.
-    /// @return shares Amount of shares burned.
-    function cancelDebt(
-        uint256 assets
-    ) external whenNotPaused returns (uint256 shares) {
+    /// @notice Repay the asset debt, fully of partially with the provided shares.
+    /// @dev The debt to be repaid is calculated based on the current conversion
+    ///      rate from the shares to assets.
+    /// @dev The debtor has to approve the transfer of the shares. To determine
+    ///      the asset debt that is going to be repaid, the caller can use
+    ///      the `previewRepayDebt` function.
+    /// @param shares The amount of shares to return.
+    /// @return assets The amount of debt in asset paid off.
+    function repayDebt(
+        uint256 shares
+    ) external whenNotPaused returns (uint256 assets) {
+        assets = convertToAssets(shares);
+
         // Check the current debt of the debtor.
         if (currentDebt[msg.sender] < assets) {
-            revert InsufficientDebt(
+            revert ExcessiveDebtRepayment(
                 msg.sender,
                 currentDebt[msg.sender],
                 assets
@@ -311,9 +352,7 @@ contract stBTCV2 is ERC4626Fees, PausableOwnable {
         // Decrease the debt of the debtor.
         currentDebt[msg.sender] -= assets;
 
-        // Convert the assets to shares. Conversion has to be executed before the
-        // `totalDebt` adjustment.
-        shares = previewCancelDebt(assets);
+        emit DebtRepaid(msg.sender, currentDebt[msg.sender], assets, shares);
 
         // Decrease the total debt.
         totalDebt -= assets;
@@ -406,6 +445,10 @@ contract stBTCV2 is ERC4626Fees, PausableOwnable {
 
     /// @notice Returns the total amount of assets held by the vault across all
     ///         allocations and this contract.
+    /// @dev The value contains virtual assets reflecting the debt minted by the
+    ///      debtors. The debt is not backed by the deposited assets, and it is
+    ///      used to adjust the total assets held by the vault, to allow shares
+    ///      and assets conversion calculations.
     function totalAssets() public view override returns (uint256) {
         return
             IERC20(asset()).balanceOf(address(this)) +
@@ -464,9 +507,9 @@ contract stBTCV2 is ERC4626Fees, PausableOwnable {
     }
 
     /// @notice Previews the amount of shares that will be burned for the given
-    ///         amount of cancelled debt assets.
-    function previewCancelDebt(uint256 assets) public view returns (uint256) {
-        return convertToShares(assets);
+    ///         amount of repaid debt assets.
+    function previewRepayDebt(uint256 shares) public view returns (uint256) {
+        return convertToAssets(shares);
     }
 
     /// @return Returns entry fee basis point used in deposits.

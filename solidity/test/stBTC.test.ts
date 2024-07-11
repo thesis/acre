@@ -3357,7 +3357,10 @@ describe("stBTC", () => {
                 await expect(
                   stbtc.connect(externalMinter).repayDebt(requestedAmount),
                 )
-                  .to.be.revertedWithCustomError(stbtc, "ExcessiveDebtRepayment")
+                  .to.be.revertedWithCustomError(
+                    stbtc,
+                    "ExcessiveDebtRepayment",
+                  )
                   .withArgs(
                     externalMinter.address,
                     existingDebt,
