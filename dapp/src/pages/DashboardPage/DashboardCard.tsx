@@ -1,8 +1,8 @@
 import React from "react"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import { TextMd } from "#/components/shared/Typography"
-import { useTransactionModal } from "#/hooks"
-import { ACTION_FLOW_TYPES, AmountType } from "#/types"
+import { useBitcoinPosition, useTransactionModal } from "#/hooks"
+import { ACTION_FLOW_TYPES } from "#/types"
 import {
   Button,
   ButtonProps,
@@ -31,19 +31,19 @@ const buttonStyles: ButtonProps = {
   h: "auto",
 }
 
-type DashboardCardProps = CardProps & {
-  bitcoinAmount: AmountType
-  positionPercentage?: number // TODO: Make this required in post MVP phase
-}
+type DashboardCardProps = CardProps & {}
 
 export default function DashboardCard(props: DashboardCardProps) {
-  const { bitcoinAmount, positionPercentage, ...restProps } = props
+  const { data } = useBitcoinPosition()
+  const bitcoinAmount = data?.estimatedBitcoinBalance ?? 0n
 
   const openDepositModal = useTransactionModal(ACTION_FLOW_TYPES.STAKE)
   const openWithdrawModal = useTransactionModal(ACTION_FLOW_TYPES.UNSTAKE)
 
+  const positionPercentage = undefined
+
   return (
-    <Card px={5} py={10} gap={10} overflow="hidden" {...restProps}>
+    <Card px={5} py={10} gap={10} overflow="hidden" {...props}>
       <CardHeader p={0} textAlign="center">
         <TextMd fontWeight="bold">
           My position
