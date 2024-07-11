@@ -14,9 +14,9 @@ export default function useInitializeWithdraw() {
       onSignMessageStep?: OnSignMessageStepCallback,
       messageSignedStep?: MessageSignedStepCallback,
     ) => {
-      if (!acre || !isConnected) return
+      if (!acre || !isConnected) throw new Error("Account not connected")
 
-      await acre.account.initializeWithdrawal(
+      return acre.account.initializeWithdrawal(
         amount,
         onSignMessageStep,
         messageSignedStep,

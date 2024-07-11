@@ -20,7 +20,7 @@ export default function UnexpectedErrorModal() {
         Unexpected error...
       </ModalHeader>
       <ModalBody gap={10} pb={6}>
-        <TextMd>Please try agin.</TextMd>
+        <TextMd>Please try again.</TextMd>
       </ModalBody>
       <ModalFooter py={6} px={8} flexDirection="row">
         <Button
