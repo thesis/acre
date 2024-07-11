@@ -35,6 +35,7 @@ export function FormTokenBalanceInput({
       setAmount={setAmount}
       hasError={Boolean(meta.touched && meta.error)}
       errorMsgText={meta.error}
+      decimalScale={8}
     />
   )
 }
