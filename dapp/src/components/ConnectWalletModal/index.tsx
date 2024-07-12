@@ -13,8 +13,10 @@ const disabledConnectorIds = [
 
 export function ConnectWalletModalBase({
   onSuccess,
+  withCloseButton = true,
 }: {
   onSuccess?: OnSuccessCallback
+  withCloseButton: boolean
 } & BaseModalProps) {
   const connectors = useConnectors()
   const enabledConnectors = connectors.map((connector) => ({
@@ -32,7 +34,9 @@ export function ConnectWalletModalBase({
 
   return (
     <>
-      <ModalCloseButton onClick={() => resetConnectionError()} />
+      {withCloseButton && (
+        <ModalCloseButton onClick={() => resetConnectionError()} />
+      )}
       <ModalHeader>Connect your wallet</ModalHeader>
 
       <ModalBody gap={0}>
