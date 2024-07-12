@@ -17,7 +17,7 @@ function StakeDetails({ currency }: { currency: CurrencyType }) {
   return (
     <List spacing={3} mt={10}>
       <TransactionDetailsAmountItem
-        label="Amount to be staked"
+        label="Amount to be deposited"
         from={{
           currency,
           amount: details.amount,
@@ -40,7 +40,7 @@ function StakeDetails({ currency }: { currency: CurrencyType }) {
         }}
       />
       <TransactionDetailsAmountItem
-        label="Approximately staked tokens"
+        label="Approximate staked tokens"
         from={{
           currency,
           amount: details.estimatedAmount,
