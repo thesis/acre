@@ -31,7 +31,7 @@ const buttonStyles: ButtonProps = {
   h: "auto",
 }
 
-type DashboardCardProps = CardProps & {}
+type DashboardCardProps = CardProps
 
 export default function DashboardCard(props: DashboardCardProps) {
   const { data } = useBitcoinPosition()
