@@ -11,15 +11,13 @@ export const useSeasonProgress = () => {
 
   const isSeasonCapExceeded = totalAssets > SEASON_CAP
 
-  let progress: number | string = isSeasonCapExceeded
-    ? 100
-    : dividingResult * 100
+  let progress = isSeasonCapExceeded ? 100 : dividingResult * 100
   const value = isSeasonCapExceeded ? SEASON_CAP : totalAssets
 
-  if (progress > 1) {
-    progress = Math.floor(progress)
+  if (progress < 1) {
+    progress = Number(progress.toFixed(2))
   } else {
-    progress = progress.toFixed(2)
+    progress = Math.floor(progress)
   }
 
   return { progress, value }
