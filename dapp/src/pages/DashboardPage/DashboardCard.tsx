@@ -40,14 +40,13 @@ export default function DashboardCard(props: DashboardCardProps) {
   const openDepositModal = useTransactionModal(ACTION_FLOW_TYPES.STAKE)
   const openWithdrawModal = useTransactionModal(ACTION_FLOW_TYPES.UNSTAKE)
 
-  const positionPercentage = undefined
-
   return (
     <Card px={5} py={10} gap={10} overflow="hidden" {...props}>
       <CardHeader p={0} textAlign="center">
         <TextMd fontWeight="bold">
           My position
-          {positionPercentage && (
+          {/* TODO: Uncomment when position will be implemented */}
+          {/* {positionPercentage && (
             <Tag
               px={3}
               py={1}
@@ -61,7 +60,7 @@ export default function DashboardCard(props: DashboardCardProps) {
             >
               Top {positionPercentage}%
             </Tag>
-          )}
+          )} */}
         </TextMd>
       </CardHeader>
       <CardBody as={VStack} p={0} spacing={10}>
