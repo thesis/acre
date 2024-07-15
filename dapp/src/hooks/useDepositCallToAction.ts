@@ -2,22 +2,20 @@ import { routerPath } from "#/router/path"
 import { ACTION_FLOW_TYPES } from "#/types"
 import { useEffect } from "react"
 import { useLocation } from "react-router-dom"
-import { useIsSignedMessage } from "./store"
+import { useAllActivitiesCount, useIsSignedMessage } from "./store"
 import { useTransactionModal } from "./useTransactionModal"
 import { useModal } from "./useModal"
-import useBitcoinPosition from "./sdk/useBitcoinPosition"
 
 export function useDepositCallToAction() {
-  const { data } = useBitcoinPosition()
-  const bitcoinWalletBalance = data?.estimatedBitcoinBalance ?? 0n
+  const activitiesCount = useAllActivitiesCount()
+  const hasActivities = activitiesCount > 0
   const openDepositModal = useTransactionModal(ACTION_FLOW_TYPES.STAKE)
   const { closeModal } = useModal()
   const location = useLocation()
   const isSignedMessage = useIsSignedMessage()
 
   useEffect(() => {
-    const shouldOpenDepositModal =
-      isSignedMessage && bitcoinWalletBalance === 0n
+    const shouldOpenDepositModal = isSignedMessage && !hasActivities
 
     if (shouldOpenDepositModal) openDepositModal()
     // This side effect should be triggered only when page component gets
