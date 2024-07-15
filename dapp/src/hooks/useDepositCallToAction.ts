@@ -18,10 +18,7 @@ export function useDepositCallToAction() {
     const shouldOpenDepositModal = isSignedMessage && !hasActivities
 
     if (shouldOpenDepositModal) openDepositModal()
-    // This side effect should be triggered only when page component gets
-    // mounted.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [hasActivities, isSignedMessage, openDepositModal])
 
   useEffect(() => {
     const shouldCloseDepositModal =
