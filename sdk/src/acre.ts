@@ -84,7 +84,13 @@ class Acre {
       ethereumNetwork,
     )
 
-    const subgraph = AcreSubgraphApi.init(network, subgraphApi)
+    const acreSubgraphApiUrl =
+      network === BitcoinNetwork.Mainnet
+        ? // TODO: Set the production URL. This is the development query url.
+          "https://api.studio.thegraph.com/query/73600/acre-mainnet/version/latest"
+        : "https://api.studio.thegraph.com/query/73600/acre/version/latest"
+
+    const subgraph = new AcreSubgraphApi(acreSubgraphApiUrl)
 
     const protocol = new Protocol(contracts)
 
