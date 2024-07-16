@@ -20,7 +20,7 @@ export default function GrantedSeasonPassCard(props: CardProps) {
           <Icon as={IconLock} boxSize={5} />
         </CardHeader>
       </UserDataSkeleton>
-      <UserDataSkeleton w="60%">
+      <UserDataSkeleton w="80%">
         <CardBody
           as={HStack}
           spacing={2}
