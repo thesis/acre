@@ -1,7 +1,7 @@
 import React from "react"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import { TextMd } from "#/components/shared/Typography"
-import { useTransactionModal } from "#/hooks"
+import { useIsSignedMessage, useTransactionModal } from "#/hooks"
 import { ACTION_FLOW_TYPES, AmountType } from "#/types"
 import {
   Button,
@@ -18,6 +18,7 @@ import { ActivitiesList } from "#/components/shared/ActivitiesList"
 import ArrivingSoonTooltip from "#/components/ArrivingSoonTooltip"
 import { featureFlags } from "#/constants"
 import TransactionHistory from "./TransactionHistory"
+import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 
 const isWithdrawalFlowEnabled = featureFlags.WITHDRAWALS_ENABLED
 
@@ -67,23 +68,25 @@ export default function DashboardCard(props: DashboardCardProps) {
       <CardBody as={VStack} p={0} spacing={10}>
         <VStack justify="center" spacing={6}>
           <VStack justify="center" spacing={0}>
-            <CurrencyBalanceWithConversion
-              from={{
-                amount: bitcoinAmount,
-                currency: "bitcoin",
-                fontSize: "6xl",
-                lineHeight: 1.2,
-                letterSpacing: "-0.075rem", // -1.2px
-                fontWeight: "bold",
-                color: "grey.700",
-              }}
-              to={{
-                currency: "usd",
-                shouldBeFormatted: false,
-                color: "grey.500",
-                fontWeight: "medium",
-              }}
-            />
+            <UserDataSkeleton>
+              <CurrencyBalanceWithConversion
+                from={{
+                  amount: bitcoinAmount,
+                  currency: "bitcoin",
+                  fontSize: "6xl",
+                  lineHeight: 1.2,
+                  letterSpacing: "-0.075rem", // -1.2px
+                  fontWeight: "bold",
+                  color: "grey.700",
+                }}
+                to={{
+                  currency: "usd",
+                  shouldBeFormatted: false,
+                  color: "grey.500",
+                  fontWeight: "medium",
+                }}
+              />
+            </UserDataSkeleton>
           </VStack>
         </VStack>
 
