@@ -13,11 +13,9 @@ function TransactionHistoryContent() {
   if (!isSignedMessage)
     return (
       <VStack w="100%" spacing={2}>
-        {Array(3)
-          .fill("")
-          .map(() => (
-            <UserDataSkeleton height={8} w="100%" />
-          ))}
+        {[...Array(3).keys()].map((key) => (
+          <UserDataSkeleton key={key} height={8} w="100%" />
+        ))}
       </VStack>
     )
 
