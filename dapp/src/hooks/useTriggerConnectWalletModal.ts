@@ -14,7 +14,10 @@ export default function useTriggerConnectWalletModal(pathname: Pathname) {
     const isOnPage = pathname === location.pathname
 
     if (isOnPage && !isSignedMessage)
-      openModal(MODAL_TYPES.CONNECT_WALLET, { withCloseButton: false })
+      openModal(MODAL_TYPES.CONNECT_WALLET, {
+        withCloseButton: false,
+        closeOnEsc: false,
+      })
 
     return () => {
       closeModal()
