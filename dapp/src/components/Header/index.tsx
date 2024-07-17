@@ -1,8 +1,9 @@
 import React from "react"
 import { AcreLogo } from "#/assets/icons"
 import { routerPath } from "#/router/path"
-import { Flex, HStack, Icon } from "@chakra-ui/react"
+import { Flex, HStack, Icon, Link } from "@chakra-ui/react"
 import { NavigationItemType } from "#/types"
+import { EXTERNAL_HREF } from "#/constants"
 import ConnectWallet from "./ConnectWallet"
 import { Navigation } from "./Navigation"
 
@@ -15,7 +16,9 @@ const NAVIGATION_ITEMS: NavigationItemType[] = [
 export default function Header() {
   return (
     <HStack as="header" px={10} py={7}>
-      <Icon as={AcreLogo} w={20} h={12} />
+      <Link href={EXTERNAL_HREF.WEBSITE} isExternal>
+        <Icon as={AcreLogo} w={20} h={12} />
+      </Link>
       <Navigation items={NAVIGATION_ITEMS} />
       <Flex ml="auto">
         <ConnectWallet />
