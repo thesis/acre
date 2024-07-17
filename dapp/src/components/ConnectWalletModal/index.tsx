@@ -37,7 +37,7 @@ export function ConnectWalletModalBase({
       {withCloseButton && (
         <ModalCloseButton onClick={() => resetConnectionError()} />
       )}
-      <ModalHeader>Connect your wallet</ModalHeader>
+      <ModalHeader>Connect your wallet.</ModalHeader>
 
       <ModalBody gap={0}>
         <ConnectWalletErrorAlert {...connectionError} />
