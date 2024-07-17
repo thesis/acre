@@ -2,6 +2,7 @@ export type ModalProps = Record<string, unknown>
 
 export type BaseModalProps = {
   closeModal: () => void
+  closeOnEsc?: boolean
 }
 
 export const MODAL_TYPES = {
