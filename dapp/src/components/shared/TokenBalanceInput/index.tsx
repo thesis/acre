@@ -162,6 +162,7 @@ export default function TokenBalanceInput({
           onChange={() => {
             setAmount(valueRef?.current)
           }}
+          decimalScale={decimals}
         />
 
         {withMaxButton && (

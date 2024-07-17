@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from "react"
 import { useField } from "formik"
-import { getCurrencyByType, logPromiseFailure } from "#/utils"
+import { logPromiseFailure } from "#/utils"
 import TokenBalanceInput, { TokenBalanceInputProps } from "../TokenBalanceInput"
 
 export type FormTokenBalanceInputProps = {
@@ -28,8 +28,6 @@ export function FormTokenBalanceInput({
     }
   }, [defaultValue, setAmount])
 
-  const { decimals } = getCurrencyByType(currency)
-
   return (
     <TokenBalanceInput
       {...restProps}
@@ -38,7 +36,6 @@ export function FormTokenBalanceInput({
       setAmount={setAmount}
       hasError={Boolean(meta.touched && meta.error)}
       errorMsgText={meta.error}
-      currency={currency}
       decimalScale={decimals}
     />
   )
