@@ -52,13 +52,18 @@ class Acre {
    * @param network - Bitcoin network.
    * @param tbtcApiUrl - tBTC API URL.
    * @param ethereumRpcUrl - Ethereum RPC URL.
+   * @param gelatoApiKey - Gelato API key.
+   * @param subgraphApiKey - The subgraph API key.
    */
   static async initialize(
     network: BitcoinNetwork,
     tbtcApiUrl: string,
     ethereumRpcUrl: string,
     gelatoApiKey: string,
-    subgraphApi: string,
+    // This will be used, when we switch to the production Acre subgraph API
+    // URL.
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    subgraphApiKey: string,
   ) {
     const ethereumNetwork: EthereumNetwork =
       Acre.resolveEthereumNetwork(network)
