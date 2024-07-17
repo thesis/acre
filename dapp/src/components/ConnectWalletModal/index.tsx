@@ -16,7 +16,7 @@ export function ConnectWalletModalBase({
   withCloseButton = true,
 }: {
   onSuccess?: OnSuccessCallback
-  withCloseButton: boolean
+  withCloseButton?: boolean
 } & BaseModalProps) {
   const connectors = useConnectors()
   const enabledConnectors = connectors.map((connector) => ({
