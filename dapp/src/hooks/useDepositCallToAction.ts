@@ -10,7 +10,7 @@ import {
 import { useTransactionModal } from "./useTransactionModal"
 import { useModal } from "./useModal"
 
-export function useDepositCallToAction() {
+function useDepositCallToAction() {
   const activitiesCount = useAllActivitiesCount()
   const hasFetchedActivities = useHasFetchedActivities()
   const hasActivities = activitiesCount > 0
@@ -33,3 +33,5 @@ export function useDepositCallToAction() {
     if (shouldCloseDepositModal) closeModal()
   }, [location, isSignedMessage, closeModal])
 }
+
+export default useDepositCallToAction
