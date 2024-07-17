@@ -1,7 +1,7 @@
 import React from "react"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import { TextMd } from "#/components/shared/Typography"
-import { useIsSignedMessage, useTransactionModal } from "#/hooks"
+import { useTransactionModal } from "#/hooks"
 import { ACTION_FLOW_TYPES, AmountType } from "#/types"
 import {
   Button,
@@ -17,8 +17,8 @@ import {
 import { ActivitiesList } from "#/components/shared/ActivitiesList"
 import ArrivingSoonTooltip from "#/components/ArrivingSoonTooltip"
 import { featureFlags } from "#/constants"
-import TransactionHistory from "./TransactionHistory"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
+import TransactionHistory from "./TransactionHistory"
 
 const isWithdrawalFlowEnabled = featureFlags.WITHDRAWALS_ENABLED
 
