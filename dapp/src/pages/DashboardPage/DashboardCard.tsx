@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardProps,
   HStack,
-  Tag,
+  // Tag,
   VStack,
 } from "@chakra-ui/react"
 import { ActivitiesList } from "#/components/shared/ActivitiesList"
