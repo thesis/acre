@@ -66,6 +66,7 @@ describe("Wallet redux slice", () => {
         activities: newActivities,
         latestActivities: newLatestActivities,
         isSignedMessage,
+        hasFetchedActivities: true,
       })
     })
   })
@@ -141,6 +142,7 @@ describe("Wallet redux slice", () => {
           activities: newActivities,
           latestActivities: expectedLatestActivities,
           isSignedMessage,
+          hasFetchedActivities: true,
         })
       })
     })
@@ -179,6 +181,7 @@ describe("Wallet redux slice", () => {
           activities: newActivities,
           latestActivities: expectedLatestActivities,
           isSignedMessage,
+          hasFetchedActivities: true,
         })
       })
     })
