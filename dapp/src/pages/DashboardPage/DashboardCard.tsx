@@ -67,8 +67,8 @@ export default function DashboardCard(props: DashboardCardProps) {
       </CardHeader>
       <CardBody as={VStack} p={0} spacing={10}>
         <VStack justify="center" spacing={6}>
-          <VStack justify="center" spacing={0}>
-            <UserDataSkeleton>
+          <UserDataSkeleton>
+            <VStack justify="center" spacing={0}>
               <CurrencyBalanceWithConversion
                 from={{
                   amount: bitcoinAmount,
@@ -86,8 +86,8 @@ export default function DashboardCard(props: DashboardCardProps) {
                   fontWeight: "medium",
                 }}
               />
-            </UserDataSkeleton>
-          </VStack>
+            </VStack>
+          </UserDataSkeleton>
         </VStack>
 
         <HStack w="full" justify="center" spacing={2}>
