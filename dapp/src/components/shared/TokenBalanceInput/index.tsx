@@ -104,7 +104,7 @@ export type TokenBalanceInputProps = {
   withMaxButton?: boolean
 } & InputProps &
   HelperErrorTextProps &
-  NumberFormatInputProps
+  Pick<NumberFormatInputProps, "decimalScale">
 
 export default function TokenBalanceInput({
   amount,
