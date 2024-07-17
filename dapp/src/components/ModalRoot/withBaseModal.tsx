@@ -10,7 +10,7 @@ function withBaseModal<T extends BaseModalProps>(
   modalProps?: Omit<ModalProps, "isOpen" | "onClose" | "children">,
 ) {
   return function ModalBase(props: T) {
-    const { closeModal } = props
+    const { closeModal, closeOnEsc } = props
 
     const { isOpen: isSidebarOpen } = useSidebar()
 
@@ -21,6 +21,7 @@ function withBaseModal<T extends BaseModalProps>(
         scrollBehavior="inside"
         closeOnOverlayClick={false}
         size={MODAL_BASE_SIZE}
+        closeOnEsc={closeOnEsc}
         {...modalProps}
       >
         <ModalOverlay mt="header_height" />
