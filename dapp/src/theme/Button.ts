@@ -5,6 +5,10 @@ import {
 
 // TODO: Update the button styles correctly when ready
 export const buttonTheme: ComponentSingleStyleConfig = {
+  baseStyle: {
+    // Remove a blue outline when the button is in focus.
+    boxShadow: "none !important",
+  },
   sizes: {
     md: {
       fontSize: "sm",
