@@ -1,6 +1,6 @@
 {
   "name": "@acre-btc/subgraph",
-  "version": "0.0.7-dev",
+  "version": "0.3.0",
   "license": "GPL-3.0-only",
   "scripts": {
     "codegen": "graph codegen",
