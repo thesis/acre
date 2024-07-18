@@ -1,5 +1,10 @@
 import React, { useMemo } from "react"
-import { Box, useMultiStyleConfig, TextProps } from "@chakra-ui/react"
+import {
+  Box,
+  useMultiStyleConfig,
+  TextProps,
+  ResponsiveValue,
+} from "@chakra-ui/react"
 import {
   formatTokenAmount,
   getCurrencyByType,
@@ -12,12 +17,13 @@ export type CurrencyBalanceProps = {
   amount?: AmountType
   shouldBeFormatted?: boolean
   desiredDecimals?: number
-  size?: string
-  variant?:
+  size?: ResponsiveValue<string>
+  variant?: ResponsiveValue<
     | "greater-balance-md"
     | "greater-balance-xl"
     | "greater-balance-xxl"
     | "unstyled"
+  >
   balanceFontWeight?: string
   symbolFontWeight?: string
   symbolPosition?: "prefix" | "suffix"

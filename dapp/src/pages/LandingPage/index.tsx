@@ -1,5 +1,16 @@
 import React from "react"
-import { Flex, VStack, Image } from "@chakra-ui/react"
+import {
+  Flex,
+  VStack,
+  Image,
+  Highlight,
+  Stack,
+  StackDivider,
+  Card,
+  CardHeader,
+  CardBody,
+  Box,
+} from "@chakra-ui/react"
 import { EXTERNAL_HREF, PARTNER_LOGOS } from "#/constants"
 import {
   CurrentSeasonSection,
@@ -8,19 +19,28 @@ import {
   ContentCard,
 } from "#/pages/LandingPage/components"
 import MobileModeBanner from "#/components/MobileModeBanner"
+import { H4 } from "#/components/shared/Typography"
 
 export default function LandingPage() {
   return (
     <>
       <MobileModeBanner />
-      <Flex w="full" flexFlow="column" px={10} pb={10}>
+      <Flex
+        w="full"
+        flexFlow="column"
+        px={{
+          base: 4,
+          md: 10,
+        }}
+        pb={10}
+      >
         <HeroSection />
         <CurrentSeasonSection />
         <VStack
           spacing={4}
           w="full"
           maxW="79.25rem" // 1268px
-          px={{ base: 6, xl: 0 }}
+          px={{ base: 0, md: 6, xl: 0 }}
           mx="auto"
           align="stretch"
         >
@@ -35,14 +55,33 @@ export default function LandingPage() {
           </Box>
         </ContentCard>
           */}
-          <ContentCard header="Trusted by pioneers.">
-            {PARTNER_LOGOS.map((logoAttributes) => (
-              <Image key={logoAttributes.src} h="auto" {...logoAttributes} />
-            ))}
-          </ContentCard>
+          <Card>
+            <CardHeader as={H4} textAlign="center" p={10}>
+              <Highlight query="pioneers." styles={{ color: "brand.400" }}>
+                Trusted by pioneers.
+              </Highlight>
+            </CardHeader>
+
+            <CardBody
+              as={Flex}
+              direction={{ base: "column", md: "row" }}
+              gap={12}
+              align="center"
+              justify="center"
+              px={10}
+              pt={0}
+              pb={8}
+            >
+              {PARTNER_LOGOS.map((logoAttributes) => (
+                <Image key={logoAttributes.src} h="auto" {...logoAttributes} />
+              ))}
+            </CardBody>
+          </Card>
+
           <CardButton href={EXTERNAL_HREF.DOCS} isExternal>
             Docs
           </CardButton>
+
           <CardButton href={EXTERNAL_HREF.FAQ} isExternal>
             FAQ
           </CardButton>
