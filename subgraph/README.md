@@ -59,7 +59,13 @@ create a private one
    docker-compose up
    ```
 
-4. Allocate the subgraph name in the local Graph Node:
+4. Build the subgraph manifest for sepolia network:
+
+   ```
+   pnpm run prepare:sepolia
+   ```
+
+5. Allocate the subgraph name in the local Graph Node:
 
    ```
    pnpm create-local
@@ -67,13 +73,13 @@ create a private one
 
 Note: use it only if your subgraph is not created in the local Graph node.
 
-5. Deploy the subgraph to your local Graph Node:
+6. Deploy the subgraph to your local Graph Node:
 
    ```
    pnpm deploy-local
    ```
 
-6. Create Subgraph queries and preview of the entities:
+7. Create Subgraph queries and preview of the entities:
 
    ```
    http://localhost:8000/subgraphs/name/acre-subgraph
@@ -98,7 +104,19 @@ Note: use it only if your subgraph is not created in the local Graph node.
    The `<DEPLOY_KEY>` can be found on "My Subgraphs" page or subgraph details
    page.
 
-4. Deploying a Subgraph to Subgraph Studio
+4. Build the subgraph manifest for a given network:
+
+   ```
+   pnpm run prepare:mainnet
+   ```
+
+   or
+
+   ```
+   pnpm run prepare:sepolia
+   ```
+
+5. Deploying a Subgraph to Subgraph Studio
 
    ```
    graph deploy --studio <SUBGRAPH_SLUG>
