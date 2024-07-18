@@ -15,7 +15,9 @@
     "lint:js": "eslint .",
     "lint:js:fix": "eslint . --fix",
     "lint:config": "prettier -c '**/*.@(json|yaml|toml)'",
-    "lint:config:fix": "prettier -w '**/*.@(json|yaml|toml)'"
+    "lint:config:fix": "prettier -w '**/*.@(json|yaml|toml)'",
+    "prepare:mainnet": "mustache config/mainnet.json subgraph.template.yaml > subgraph.yaml",
+    "prepare:sepolia": "mustache config/sepolia.json subgraph.template.yaml > subgraph.yaml"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.71.0",
@@ -28,6 +30,7 @@
     "@typescript-eslint/parser": "^6.12.0",
     "eslint": "^8.54.0",
     "matchstick-as": "0.6.0",
+    "mustache": "^4.2.0",
     "prettier": "^3.1.0"
   }
 }

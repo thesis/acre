@@ -1,0 +1,14 @@
+{
+  "network": "sepolia",
+  "bitcoinDepositor": {
+    "address": "0x6c2c643c90383Cba125E4b8DD01344eA35A75F27",
+    "startBlock": 6237625
+  },
+  "bitcoinRedeemer": {
+    "address": "0xF4011FD0C77Bd4d909Ae05c7390b88455294dAeA",
+    "startBlock": 6237636
+  },
+  "tbtcBridge": {
+    "address": "0x9b1a7fE5a16A15F2f9475C5B231750598b113403"
+  }
+}

@@ -6,15 +6,15 @@ schema:
 dataSources:
   - kind: ethereum
     name: BitcoinDepositor
-    network: sepolia
+    network: {{network}}
     context:
       tbtcBridgeAddress:
         type: Bytes
-        data: "0x9b1a7fE5a16A15F2f9475C5B231750598b113403"
+        data: "{{tbtcBridge.address}}"
     source:
-      address: "0x6c2c643c90383Cba125E4b8DD01344eA35A75F27"
+      address: "{{bitcoinDepositor.address}}"
       abi: BitcoinDepositor
-      startBlock: 6237625
+      startBlock: {{bitcoinDepositor.startBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
@@ -37,17 +37,17 @@ dataSources:
       file: ./src/bitcoin-depositor.ts
   - kind: ethereum
     name: TbtcBridge
-    network: sepolia
+    network: {{network}}
     context:
       bitcoinRedeemerAddress:
         type: Bytes
-        data: "0xF4011FD0C77Bd4d909Ae05c7390b88455294dAeA"
+        data: "{{bitcoinRedeemer.address}}"
     source:
       abi: TbtcBridge
-      address: "0x9b1a7fE5a16A15F2f9475C5B231750598b113403"
+      address: "{{tbtcBridge.address}}"
       # We can start indexing from the same block where the BitcoinRedeemer
       # contract was deployed since we only want to index Acre redemptions.
-      startBlock: 6237636
+      startBlock: {{bitcoinRedeemer.startBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9

@@ -1,0 +1,14 @@
+{
+  "network": "mainnet",
+  "bitcoinDepositor": {
+    "address": "0x2Ba614a598Cffa5a19d683cDCA97bac3a49313d1",
+    "startBlock": 20235512
+  },
+  "bitcoinRedeemer": {
+    "address": "0x7e184B0cC12572D12Db6dA248322A0e3618fc756",
+    "startBlock": 20235530
+  },
+  "tbtcBridge": {
+    "address": "0x5e4861a80B55f035D899f66772117F00FA0E8e7B"
+  }
+}
