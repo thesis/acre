@@ -37,7 +37,13 @@ export default function BeehiveCard(props: CardProps) {
 
       <CardBody p={0} mx={-MARGIN}>
         {isSignedMessage ? (
-          <Image src={mezoBeehiveCardIllustrationSrc} pl={MARGIN} mx="auto" />
+          <Image
+            src={mezoBeehiveCardIllustrationSrc}
+            pl={MARGIN}
+            w="full"
+            maxW="24.75rem" // 396px
+            mx="auto"
+          />
         ) : (
           <HStack justifyContent="space-between" pl={MARGIN}>
             <UserDataSkeleton boxSize={24} rounded="100%" />
