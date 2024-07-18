@@ -29,8 +29,8 @@ export default function BeehiveCard(props: CardProps) {
 
   return (
     <Card p={4} {...props}>
-      <CardHeader p={0} mb={4}>
-        <TextMd fontWeight="semibold" color="grey.500">
+      <CardHeader p={0}>
+        <TextMd fontWeight="bold" color="grey.700">
           Beehive
         </TextMd>
       </CardHeader>
@@ -73,6 +73,10 @@ export default function BeehiveCard(props: CardProps) {
                 variant="ghost"
                 rightIcon={<ArrowUpRight />}
                 color="brand.400"
+                iconSpacing={1}
+                p={0}
+                h="auto"
+                lineHeight={5}
               >
                 More info
               </Button>
