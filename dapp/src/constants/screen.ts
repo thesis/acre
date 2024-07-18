@@ -1,3 +1,3 @@
-const MAX_MOBILE_SCREEN_WIDTH = "1024px"
+const MAX_MOBILE_SCREEN_WIDTH = "1023px"
 
 export default { MAX_MOBILE_SCREEN_WIDTH }
