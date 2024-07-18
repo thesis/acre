@@ -1,5 +1,9 @@
 import React from "react"
-import { useBitcoinPosition, useTriggerConnectWalletModal } from "#/hooks"
+import {
+  useBitcoinPosition,
+  useMobileMode,
+  useTriggerConnectWalletModal,
+} from "#/hooks"
 import { routerPath } from "#/router/path"
 import { PageLayout, PageLayoutColumn } from "./PageLayout"
 import DashboardCard from "./DashboardCard"
@@ -11,9 +15,14 @@ import BeehiveCard from "./BeehiveCard"
 
 export default function DashboardPage() {
   const { data } = useBitcoinPosition()
+  const isMobileMode = useMobileMode()
   const bitcoinWalletBalance = data?.estimatedBitcoinBalance ?? 0n
 
   useTriggerConnectWalletModal(routerPath.dashboard)
+
+  if (isMobileMode) {
+    return null
+  }
 
   return (
     <PageLayout>

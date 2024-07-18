@@ -10,6 +10,7 @@ export function LiveTag(props: TagProps) {
       px={4}
       py={2}
       rounded="3xl"
+      color="gold.200"
       bg="grey.700"
       variant="solid"
       fontSize="md"
@@ -36,7 +37,6 @@ export function LiveTag(props: TagProps) {
         />
       </Box>
       <TagLabel
-        color="gold.200"
         textTransform="uppercase"
         fontStyle="italic"
         overflow="visible"

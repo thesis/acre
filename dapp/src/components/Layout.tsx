@@ -1,10 +1,13 @@
 import React, { useState } from "react"
 import { AnimatePresence, motion, Variants } from "framer-motion"
 import { useLocation, useOutlet } from "react-router-dom"
+import { useIsActiveRoute } from "#/hooks"
+import { routerPath } from "#/router/path"
 import DocsDrawer from "./DocsDrawer"
 import Header from "./Header"
-import Sidebar from "./Sidebar"
+import MobileModeBanner from "./MobileModeBanner"
 import ModalRoot from "./ModalRoot"
+import Sidebar from "./Sidebar"
 
 const wrapperVariants: Variants = {
   in: { opacity: 0, y: 48 },
@@ -22,8 +25,11 @@ function PersistentOutlet() {
 
 function Layout() {
   const location = useLocation()
+  const isDashboardPage = useIsActiveRoute(routerPath.dashboard)
+
   return (
     <>
+      <MobileModeBanner forceOpen={isDashboardPage} />
       <Header />
       <AnimatePresence mode="popLayout">
         <motion.main
