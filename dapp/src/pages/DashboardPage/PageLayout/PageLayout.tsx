@@ -6,6 +6,8 @@ function PageLayout(props: GridProps) {
 
   return (
     <Grid
+      maxW="110rem" // 1760px -> content width + x-axis padding
+      mx="auto"
       px={10}
       py={9}
       gap={8}
