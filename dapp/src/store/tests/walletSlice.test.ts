@@ -36,6 +36,7 @@ describe("Wallet redux slice", () => {
         activities,
         latestActivities,
         isSignedMessage,
+        hasFetchedActivities,
       }
     })
 
