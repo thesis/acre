@@ -5,6 +5,7 @@ import {
   useTriggerConnectWalletModal,
 } from "#/hooks"
 import { routerPath } from "#/router/path"
+import MobileModeBanner from "#/components/MobileModeBanner"
 import { PageLayout, PageLayoutColumn } from "./PageLayout"
 import DashboardCard from "./DashboardCard"
 import GrantedSeasonPassCard from "./GrantedSeasonPassCard"
@@ -20,11 +21,9 @@ export default function DashboardPage() {
 
   useTriggerConnectWalletModal(routerPath.dashboard)
 
-  if (isMobileMode) {
-    return null
-  }
-
-  return (
+  return isMobileMode ? (
+    <MobileModeBanner forceOpen />
+  ) : (
     <PageLayout>
       <PageLayoutColumn isMain>
         <DashboardCard bitcoinAmount={bitcoinWalletBalance} />

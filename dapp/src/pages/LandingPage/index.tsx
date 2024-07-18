@@ -7,21 +7,24 @@ import {
   CardButton,
   ContentCard,
 } from "#/pages/LandingPage/components"
+import MobileModeBanner from "#/components/MobileModeBanner"
 
 export default function LandingPage() {
   return (
-    <Flex w="full" flexFlow="column" px={10} pb={10}>
-      <HeroSection />
-      <CurrentSeasonSection />
-      <VStack
-        spacing={4}
-        w="full"
-        maxW="79.25rem" // 1268px
-        px={{ base: 6, xl: 0 }}
-        mx="auto"
-        align="stretch"
-      >
-        {/* 
+    <>
+      <MobileModeBanner />
+      <Flex w="full" flexFlow="column" px={10} pb={10}>
+        <HeroSection />
+        <CurrentSeasonSection />
+        <VStack
+          spacing={4}
+          w="full"
+          maxW="79.25rem" // 1268px
+          px={{ base: 6, xl: 0 }}
+          mx="auto"
+          align="stretch"
+        >
+          {/* 
         TODO: Bring back when TVL, user count and/or how-it-works diagram are available
 
         <HighlightedValueCard header="Users joined">8,172</HighlightedValueCard>
@@ -32,18 +35,19 @@ export default function LandingPage() {
           </Box>
         </ContentCard>
           */}
-        <ContentCard header="Trusted by pioneers.">
-          {PARTNER_LOGOS.map((logoAttributes) => (
-            <Image key={logoAttributes.src} h="auto" {...logoAttributes} />
-          ))}
-        </ContentCard>
-        <CardButton href={EXTERNAL_HREF.DOCS} isExternal>
-          Docs
-        </CardButton>
-        <CardButton href={EXTERNAL_HREF.FAQ} isExternal>
-          FAQ
-        </CardButton>
-      </VStack>
-    </Flex>
+          <ContentCard header="Trusted by pioneers.">
+            {PARTNER_LOGOS.map((logoAttributes) => (
+              <Image key={logoAttributes.src} h="auto" {...logoAttributes} />
+            ))}
+          </ContentCard>
+          <CardButton href={EXTERNAL_HREF.DOCS} isExternal>
+            Docs
+          </CardButton>
+          <CardButton href={EXTERNAL_HREF.FAQ} isExternal>
+            FAQ
+          </CardButton>
+        </VStack>
+      </Flex>
+    </>
   )
 }

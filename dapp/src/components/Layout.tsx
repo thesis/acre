@@ -1,13 +1,13 @@
 import React, { useState } from "react"
 import { AnimatePresence, motion, Variants } from "framer-motion"
 import { useLocation, useOutlet } from "react-router-dom"
-import { useIsActiveRoute } from "#/hooks"
-import { routerPath } from "#/router/path"
+import { Flex } from "@chakra-ui/react"
 import DocsDrawer from "./DocsDrawer"
 import Header from "./Header"
-import MobileModeBanner from "./MobileModeBanner"
 import ModalRoot from "./ModalRoot"
 import Sidebar from "./Sidebar"
+
+const MotionFlex = motion(Flex)
 
 const wrapperVariants: Variants = {
   in: { opacity: 0, y: 48 },
@@ -25,14 +25,13 @@ function PersistentOutlet() {
 
 function Layout() {
   const location = useLocation()
-  const isDashboardPage = useIsActiveRoute(routerPath.dashboard)
 
   return (
     <>
-      <MobileModeBanner forceOpen={isDashboardPage} />
-      <Header />
       <AnimatePresence mode="popLayout">
-        <motion.main
+        <MotionFlex
+          as="main"
+          flexFlow="column"
           key={location.pathname}
           variants={wrapperVariants}
           transition={{ type: "spring", damping: 12, stiffness: 120 }}
@@ -40,9 +39,12 @@ function Layout() {
           animate="visible"
           exit="out"
         >
+          <Header />
+
           <PersistentOutlet />
-        </motion.main>
+        </MotionFlex>
       </AnimatePresence>
+
       <Sidebar />
       <DocsDrawer />
       <ModalRoot />

@@ -6,6 +6,7 @@ import {
   Button,
   Flex,
   Icon,
+  Link,
   useDisclosure,
 } from "@chakra-ui/react"
 import { IconChevronDown } from "@tabler/icons-react"
@@ -13,6 +14,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import { LiveTag } from "../shared/LiveTag"
 import { H5, TextMd, TextXl } from "../shared/Typography"
 import AcreAnimatedBadge from "./AcreAnimatedBadge"
+import { EXTERNAL_HREF } from "#/constants"
 
 const MotionIcon = motion(Icon)
 const MotionBox = motion(Box)
@@ -33,7 +35,7 @@ function MobileModeBanner(props: MobileModeBannerProps) {
   if (!isMobileMode) return null
 
   return (
-    <Box position="relative" zIndex="mobileBanner" {...restProps}>
+    <Box order="-1" position="relative" zIndex="mobileBanner" {...restProps}>
       <Flex align="center" justify="center" p={4} bg="grey.700">
         <TextMd color="gold.300" textAlign="center" whiteSpace="break-spaces">
           Staking is <LiveTag color="brand.400" gap={1} px={1} py={0} /> on
@@ -88,8 +90,23 @@ function MobileModeBanner(props: MobileModeBannerProps) {
               </H5>
 
               <TextXl lineHeight={9}>
-                Stay tuned on X and join our Discord. We would love to hear from
-                you.
+                Stay tuned on{" "}
+                <Link
+                  textDecoration="underline"
+                  href={EXTERNAL_HREF.X}
+                  isExternal
+                >
+                  X
+                </Link>{" "}
+                and join our{" "}
+                <Link
+                  textDecoration="underline"
+                  href={EXTERNAL_HREF.DISCORD}
+                  isExternal
+                >
+                  Discord
+                </Link>
+                . We would love to hear from you.
               </TextXl>
             </Box>
           </MotionBox>
