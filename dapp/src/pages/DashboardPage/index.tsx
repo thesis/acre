@@ -12,13 +12,10 @@ import GrantedSeasonPassCard from "./GrantedSeasonPassCard"
 import { CurrentSeasonCard } from "./CurrentSeasonCard"
 import BeehiveCard from "./BeehiveCard"
 
-// TODO: Remove placeholder image and replace with actual gamification content
-
 export default function DashboardPage() {
   const { data } = useBitcoinPosition()
   const isMobileMode = useMobileMode()
   const bitcoinWalletBalance = data?.estimatedBitcoinBalance ?? 0n
-
   useTriggerConnectWalletModal(routerPath.dashboard)
 
   return isMobileMode ? (

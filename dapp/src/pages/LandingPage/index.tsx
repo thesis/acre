@@ -4,19 +4,15 @@ import {
   VStack,
   Image,
   Highlight,
-  Stack,
-  StackDivider,
   Card,
   CardHeader,
   CardBody,
-  Box,
 } from "@chakra-ui/react"
 import { EXTERNAL_HREF, PARTNER_LOGOS } from "#/constants"
 import {
   CurrentSeasonSection,
   HeroSection,
   CardButton,
-  ContentCard,
 } from "#/pages/LandingPage/components"
 import MobileModeBanner from "#/components/MobileModeBanner"
 import { H4 } from "#/components/shared/Typography"
