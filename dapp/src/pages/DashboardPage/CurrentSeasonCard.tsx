@@ -43,7 +43,7 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
         Staking is live!
       </Heading>
 
-      <ProgressBar value={seasonProgress}>
+      <ProgressBar value={seasonProgress} w="auto">
         <CurrencyBalance
           amount={seasonTotalAssets}
           currency="bitcoin"

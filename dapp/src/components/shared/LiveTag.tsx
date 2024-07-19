@@ -28,7 +28,7 @@ export function LiveTag(props: TagProps) {
           w={2}
           h={2}
           bg="brand.400"
-          animate={{ scale: [1, 6], opacity: [0.5, 0] }}
+          animate={{ scale: [1, 5.5, 0], opacity: [0.5, 0.1, 0] }}
           transition={{
             duration: 2,
             ease: "easeInOut",

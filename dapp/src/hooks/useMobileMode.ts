@@ -25,7 +25,7 @@ const useMobileMode = () => {
       return isMobileScreen
     }
 
-    return isMobileDevice() ?? isMobileScreen
+    return isMobileDevice()
   }, [isMobileScreen])
 
   return isMobile
