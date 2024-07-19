@@ -57,19 +57,28 @@ export function findBitcoinTransactionIdFromTransactionReceipt(
 }
 
 /**
- * keccak256(keccak256(redeemerOutputScript) | walletPubKeyHash)
- * */
+ * keccak256(scriptHash | walletPubKeyHash)
+ */
 export function buildRedemptionKey(
+  scriptHash: ByteArray,
+  walletPublicKeyHash: ByteArray,
+): string {
+  const data = new Uint8Array(scriptHash.length + walletPublicKeyHash.length)
+
+  data.set(scriptHash, 0)
+  data.set(walletPublicKeyHash, scriptHash.length)
+
+  return crypto.keccak256(Bytes.fromUint8Array(data)).toHexString()
+}
+
+/**
+ * keccak256(keccak256(redeemerOutputScript) | walletPubKeyHash)
+ */
+export function buildRedemptionKeyFromRedeemerOutputScript(
   redeemerOutputScript: ByteArray,
   walletPublicKeyHash: ByteArray,
 ): string {
   const scriptHashArray = crypto.keccak256(redeemerOutputScript)
-  const data = new Uint8Array(
-    scriptHashArray.length + walletPublicKeyHash.length,
-  )
 
-  data.set(scriptHashArray, 0)
-  data.set(walletPublicKeyHash, scriptHashArray.length)
-
-  return crypto.keccak256(Bytes.fromUint8Array(data)).toHexString()
+  return buildRedemptionKey(scriptHashArray, walletPublicKeyHash)
 }

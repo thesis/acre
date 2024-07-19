@@ -10,7 +10,7 @@ export type NumberFormatInputValues = {
   floatValue: number
 }
 
-type NumberFormatInputProps = {
+export type NumberFormatInputProps = {
   onValueChange: (values: NumberFormatInputValues) => void
   decimalScale?: number
 } & InputProps
