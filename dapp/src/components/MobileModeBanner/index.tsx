@@ -11,10 +11,10 @@ import {
 } from "@chakra-ui/react"
 import { IconChevronDown } from "@tabler/icons-react"
 import { AnimatePresence, motion } from "framer-motion"
+import { EXTERNAL_HREF } from "#/constants"
 import { LiveTag } from "../shared/LiveTag"
 import { H5, TextMd, TextXl } from "../shared/Typography"
 import AcreAnimatedBadge from "./AcreAnimatedBadge"
-import { EXTERNAL_HREF } from "#/constants"
 
 const MotionIcon = motion(Icon)
 const MotionBox = motion(Box)
