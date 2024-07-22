@@ -65,7 +65,7 @@ export const getRelativeTime = (dateOrUnixTimestamp: Date | number): string => {
   return rtf.format(Math.floor(diff / divisor), unit)
 }
 
-// The function displays the date in the format: 21/11/2023, 16:02
+// The function displays the date in the format: 21 Nov 2024, 16:02
 export const formatBlockTimestamp = (blockTimestamp: number) =>
   new Date(blockTimestamp * ONE_SEC_IN_MILLISECONDS).toLocaleString(
     DATE_FORMAT_LOCALE_TAG,
