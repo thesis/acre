@@ -1,10 +1,10 @@
 import { BITCOIN_NETWORK } from "#/constants"
-import { isPublicKeyHashTypeAddress } from "@acre-btc/sdk"
+import { isSupportedBTCAddressTypeByAcre } from "@acre-btc/sdk"
 
 export function truncateAddress(address: string): string {
   return `${address.slice(0, 6)}…${address.slice(-5)}`
 }
 
-// tBTC v2 deposit process supports only 2PKH or P2WPKH Bitcoin address
+// Only Native Segwit, Nested Segwit or Legacy addresses are supported by Acre.
 export const isSupportedBTCAddressType = (address: string): boolean =>
-  isPublicKeyHashTypeAddress(address, BITCOIN_NETWORK)
+  isSupportedBTCAddressTypeByAcre(address, BITCOIN_NETWORK)
