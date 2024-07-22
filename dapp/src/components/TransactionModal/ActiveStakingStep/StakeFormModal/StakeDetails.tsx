@@ -8,9 +8,7 @@ import { useTransactionDetails } from "#/hooks"
 import { CurrencyType } from "#/types"
 
 function StakeDetails({ currency }: { currency: CurrencyType }) {
-  const { value, isValid } = useTokenAmountField()
-  // Let's not calculate the details of the transaction when the value is not valid.
-  const amount = isValid ? value : 0n
+  const { value: amount } = useTokenAmountField()
   const details = useTransactionDetails(amount)
   const { total, ...restFees } = details.transactionFee
 
