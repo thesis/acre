@@ -91,19 +91,25 @@ export default function DashboardCard(props: DashboardCardProps) {
         </VStack>
 
         <HStack w="full" justify="center" spacing={2}>
-          <Button {...buttonStyles} onClick={openDepositModal}>
-            Deposit more
-          </Button>
-          <ArrivingSoonTooltip shouldDisplayTooltip={!isWithdrawalFlowEnabled}>
-            <Button
-              variant="outline"
-              {...buttonStyles}
-              onClick={openWithdrawModal}
-              isDisabled={!isWithdrawalFlowEnabled}
-            >
-              Withdraw
+          <UserDataSkeleton>
+            <Button {...buttonStyles} onClick={openDepositModal}>
+              Deposit more
             </Button>
-          </ArrivingSoonTooltip>
+          </UserDataSkeleton>
+          <UserDataSkeleton>
+            <ArrivingSoonTooltip
+              shouldDisplayTooltip={!isWithdrawalFlowEnabled}
+            >
+              <Button
+                variant="outline"
+                {...buttonStyles}
+                onClick={openWithdrawModal}
+                isDisabled={!isWithdrawalFlowEnabled}
+              >
+                Withdraw
+              </Button>
+            </ArrivingSoonTooltip>
+          </UserDataSkeleton>
         </HStack>
 
         <ActivitiesList />
