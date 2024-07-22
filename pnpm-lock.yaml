@@ -22662,17 +22662,6 @@ packages:
       use-sync-external-store: 1.2.0(react@18.3.1)
     dev: false
 
-  git@github.com+thesis/prettier-config/daeaac564056a7885e4366ce12bfde6fd823fc90(prettier@3.3.2):
-    resolution: {commit: daeaac564056a7885e4366ce12bfde6fd823fc90, repo: git@github.com:thesis/prettier-config.git, type: git}
-    id: git@github.com+thesis/prettier-config/daeaac564056a7885e4366ce12bfde6fd823fc90
-    name: '@thesis/prettier-config'
-    version: 0.0.2
-    peerDependencies:
-      prettier: '>=2.3.0 <4'
-    dependencies:
-      prettier: 3.3.2
-    dev: true
-
   github.com/bitcoinjs/bip39/d8ea080a18b40f301d4e2219a2991cd2417e83c2:
     resolution: {tarball: https://codeload.github.com/bitcoinjs/bip39/tar.gz/d8ea080a18b40f301d4e2219a2991cd2417e83c2}
     name: bip39
@@ -22732,7 +22721,7 @@ packages:
     peerDependencies:
       eslint: '>=6.8.0'
     dependencies:
-      '@thesis-co/prettier-config': git@github.com+thesis/prettier-config/daeaac564056a7885e4366ce12bfde6fd823fc90(prettier@3.3.2)
+      '@thesis-co/prettier-config': github.com/thesis/prettier-config/daeaac564056a7885e4366ce12bfde6fd823fc90(prettier@3.3.2)
       '@typescript-eslint/eslint-plugin': 6.21.0(@typescript-eslint/parser@6.21.0)(eslint@8.57.0)(typescript@5.4.5)
       '@typescript-eslint/parser': 6.21.0(eslint@8.57.0)(typescript@5.4.5)
       eslint: 8.57.0
