@@ -92,7 +92,7 @@ export default function DashboardCard(props: DashboardCardProps) {
 
         <HStack w="full" justify="center" spacing={2}>
           <Button {...buttonStyles} onClick={openDepositModal}>
-            Deposit More
+            Deposit more
           </Button>
           <ArrivingSoonTooltip shouldDisplayTooltip={!isWithdrawalFlowEnabled}>
             <Button
