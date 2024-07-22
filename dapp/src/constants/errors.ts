@@ -8,7 +8,7 @@ export const CONNECTION_ERRORS: Record<string, ConnectionErrorData> = {
   NOT_SUPPORTED: {
     title: "Not supported.",
     description:
-      "Only Native Segwit or Legacy addresses supported at this time. Please try a different address or another wallet.",
+      "Only Native Segwit, Nested Segwit or Legacy addresses supported at this time. Please try a different address or another wallet.",
   },
   NETWORK_MISMATCH: {
     title: "Error!",
