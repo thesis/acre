@@ -9,6 +9,7 @@ export default function useBitcoinBalance() {
 
   return useQuery({
     queryKey: [...userKeys.balance(), { provider }],
+    enabled: !!provider,
     queryFn: async () => {
       if (!provider) return 0n
 
