@@ -77,7 +77,7 @@ export default function ConnectWalletButton({
   const showStatuses = isSelected && !hasConnectionError
   const showRetryButton = address && hasSignMessageStatus
 
-  const handleOnSuccess = useCallback(() => {
+  const onSuccessSignMessage = useCallback(() => {
     closeModal()
     dispatch(setIsSignedMessage(true))
 
@@ -87,50 +87,48 @@ export default function ConnectWalletButton({
   }, [closeModal, dispatch, onSuccess])
 
   const handleSignMessage = useCallback(
-    async (connectedConnector: OrangeKitConnector) => {
-      const btcAddress: string = await connectedConnector.getBitcoinAddress()
-
-      if (!btcAddress) return
-
+    (connectedConnector: OrangeKitConnector, btcAddress: string) => {
       const message = orangeKit.createSignInWithWalletMessage(btcAddress)
       signMessage(
         {
           message,
           connector: orangeKit.typeConversionToConnector(connectedConnector),
         },
-        { onSuccess: handleOnSuccess },
+        { onSuccess: onSuccessSignMessage },
       )
     },
-    [handleOnSuccess, signMessage],
+    [onSuccessSignMessage, signMessage],
   )
 
-  const handleConnection = useCallback(async () => {
-    const bitcoinAddress = await connector.getBitcoinAddress()
+  const onSuccessConnection = useCallback(
+    async (connectedConnector: OrangeKitConnector) => {
+      const btcAddress: string = await connectedConnector.getBitcoinAddress()
 
+      if (!btcAddress) return
+
+      // This is workaround to disallow Nested Segwit addresses.
+      // Should be handled by OrangeKit
+      if (!isSupportedBTCAddressType(btcAddress)) {
+        onDisconnect()
+        setConnectionError(CONNECTION_ERRORS.NOT_SUPPORTED)
+      } else {
+        handleSignMessage(connector, btcAddress)
+      }
+    },
+    [connector, handleSignMessage, onDisconnect, setConnectionError],
+  )
+
+  const handleConnection = useCallback(() => {
     onConnect(connector, {
       onSuccess: () => {
-        // This is workaround to disallow Nested Segwit addresses.
-        // Should be handled by OrangeKit
-        if (!isSupportedBTCAddressType(bitcoinAddress)) {
-          onDisconnect()
-          setConnectionError(CONNECTION_ERRORS.NOT_SUPPORTED)
-          return
-        }
-
-        logPromiseFailure(handleSignMessage(connector))
+        logPromiseFailure(onSuccessConnection(connector))
       },
       onError: (error: OrangeKitError) => {
         const errorData = orangeKit.parseOrangeKitConnectionError(error)
         setConnectionError(errorData)
       },
     })
-  }, [
-    connector,
-    handleSignMessage,
-    onConnect,
-    onDisconnect,
-    setConnectionError,
-  ])
+  }, [onConnect, connector, onSuccessConnection, setConnectionError])
 
   const handleRedirectUser = useCallback(() => {
     setIsLoading(true)
@@ -158,12 +156,12 @@ export default function ConnectWalletButton({
 
     // Connector still selected and user wants to retry connect action
     if (isSelected && !isConnected) {
-      logPromiseFailure(handleConnection())
+      handleConnection()
     }
   }
 
   useEffect(() => {
-    if (isSelected) logPromiseFailure(handleConnection())
+    if (isSelected) handleConnection()
     // Reset the connection when user selects another connector
     else onDisconnect()
   }, [handleConnection, isSelected, onDisconnect])
@@ -249,9 +247,7 @@ export default function ConnectWalletButton({
                     mt={4}
                     size="lg"
                     variant="outline"
-                    onClick={() =>
-                      logPromiseFailure(handleSignMessage(connector))
-                    }
+                    onClick={() => handleSignMessage(connector, address)}
                   >
                     Resume and try again
                   </Button>

@@ -4,6 +4,7 @@ import {
   HStack,
   Icon,
   ModalBody,
+  ModalCloseButton,
   ModalFooter,
   ModalHeader,
   VStack,
@@ -14,7 +15,7 @@ import {
   useActionFlowTxHash,
   useModal,
   useAllActivitiesCount,
-  useFetchDeposits,
+  useFetchActivities,
 } from "#/hooks"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import { ACTION_FLOW_TYPES, ActionFlowType, MODAL_TYPES } from "#/types"
@@ -103,7 +104,7 @@ type SuccessModalProps = {
 
 export default function SuccessModal({ type }: SuccessModalProps) {
   const { closeModal, openModal } = useModal()
-  const fetchDeposits = useFetchDeposits()
+  const fetchActivities = useFetchActivities()
   const navigate = useNavigate()
   const allActivitiesCount = useAllActivitiesCount()
 
@@ -123,11 +124,12 @@ export default function SuccessModal({ type }: SuccessModalProps) {
       }
     }
 
-    logPromiseFailure(fetchDeposits())
+    logPromiseFailure(fetchActivities())
   }
 
   return (
     <>
+      {type === ACTION_FLOW_TYPES.UNSTAKE && <ModalCloseButton />}
       <ModalHeader>{heading}</ModalHeader>
       <ModalBody gap={10}>
         <VStack gap={4}>

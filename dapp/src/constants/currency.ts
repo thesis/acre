@@ -1,4 +1,5 @@
 import { Currency, CurrencyType } from "#/types"
+import env from "./env"
 
 export const BITCOIN: Currency = {
   name: "Bitcoin",
@@ -21,8 +22,9 @@ export const USD: Currency = {
   desiredDecimals: 2,
 }
 
-export const CURRENCY_ID_BITCOIN =
-  import.meta.env.VITE_USE_TESTNET === "true" ? "bitcoin_testnet" : "bitcoin"
+export const CURRENCY_ID_BITCOIN = env.USE_TESTNET
+  ? "bitcoin_testnet"
+  : "bitcoin"
 
 export const CURRENCIES_BY_TYPE: Record<CurrencyType, Currency> = {
   bitcoin: BITCOIN,

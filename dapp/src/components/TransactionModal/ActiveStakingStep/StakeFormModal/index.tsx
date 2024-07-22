@@ -23,7 +23,7 @@ function StakeFormModal({
       withMaxButton={false}
     >
       <StakeDetails currency="bitcoin" />
-      <FormSubmitButton mt={10}>Stake</FormSubmitButton>
+      <FormSubmitButton mt={10}>Deposit</FormSubmitButton>
     </TokenAmountForm>
   )
 }

@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo, useState } from "react"
 import { Acre } from "@acre-btc/sdk"
 import { BitcoinProvider } from "@acre-btc/sdk/dist/src/lib/bitcoin/providers"
-import { BITCOIN_NETWORK } from "#/constants"
+import { BITCOIN_NETWORK, env } from "#/constants"
 
-const TBTC_API_ENDPOINT = import.meta.env.VITE_TBTC_API_ENDPOINT
-const ETH_RPC_URL = import.meta.env.VITE_ETH_HOSTNAME_HTTP
-const GELATO_API_KEY = import.meta.env.VITE_GELATO_RELAY_API_KEY
+const { TBTC_API_ENDPOINT, SUBGRAPH_API_KEY } = env
+const ETH_RPC_URL = env.ETH_HOSTNAME_HTTP
+const GELATO_API_KEY = env.GELATO_RELAY_API_KEY
 
 type AcreSdkContextValue = {
   acre?: Acre
@@ -33,6 +33,7 @@ export function AcreSdkProvider({ children }: { children: React.ReactNode }) {
         TBTC_API_ENDPOINT,
         ETH_RPC_URL,
         GELATO_API_KEY,
+        SUBGRAPH_API_KEY,
       )
 
       if (bitcoinProvider) {

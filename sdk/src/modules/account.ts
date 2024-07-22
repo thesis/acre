@@ -181,13 +181,13 @@ export default class Account {
    *        signing step.
    * @param messageSignedStepCallback A callback triggered after the message
    *        signing step.
-   * @returns Hash of the transaction withdrawal transaction.
+   * @returns Hash of the withdrawal transaction and the redemption key.
    */
   async initializeWithdrawal(
     btcAmount: bigint,
     onSignMessageStepCallback?: OnSignMessageStepCallback,
     messageSignedStepCallback?: MessageSignedStepCallback,
-  ): Promise<string> {
+  ): Promise<{ transactionHash: string; redemptionKey: string }> {
     const tbtcAmount = fromSatoshi(btcAmount)
     const shares = await this.#contracts.stBTC.convertToShares(tbtcAmount)
     // Including fees.
@@ -212,5 +212,26 @@ export default class Account {
       redeemedTbtc,
       redeemerProxy,
     )
+  }
+
+  /**
+   * @returns All withdrawals associated with the account.
+   */
+  async getWithdrawals(): Promise<
+    {
+      id: string
+      amount: bigint
+      bitcoinTransactionId?: string
+      status: "initialized" | "finalized"
+      timestamp: number
+    }[]
+  > {
+    return (
+      await this.#acreSubgraphApi.getWithdrawalsByOwner(this.#ethereumAddress)
+    ).map((withdraw) => ({
+      ...withdraw,
+      amount: toSatoshi(withdraw.amount),
+      status: withdraw.bitcoinTransactionId ? "finalized" : "initialized",
+    }))
   }
 }

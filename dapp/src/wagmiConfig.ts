@@ -4,21 +4,19 @@ import {
   getOrangeKitUnisatConnector,
   getOrangeKitOKXConnector,
 } from "@orangekit/react"
+import { env } from "./constants"
 
-const { VITE_ETH_HOSTNAME_HTTP, VITE_GELATO_RELAY_API_KEY, VITE_USE_TESTNET } =
-  import.meta.env
-const isTestnet = VITE_USE_TESTNET === "true"
-
+const isTestnet = env.USE_TESTNET
 const CHAIN_ID = isTestnet ? sepolia.id : mainnet.id
 
 const chains: [Chain, ...Chain[]] = isTestnet ? [sepolia] : [mainnet]
 const connectorConfig = {
-  rpcUrl: VITE_ETH_HOSTNAME_HTTP,
+  rpcUrl: env.ETH_HOSTNAME_HTTP,
   chainId: CHAIN_ID,
-  relayApiKey: VITE_GELATO_RELAY_API_KEY,
+  relayApiKey: env.GELATO_RELAY_API_KEY,
 }
 const transports = chains.reduce(
-  (acc, { id }) => ({ ...acc, [id]: http(VITE_ETH_HOSTNAME_HTTP) }),
+  (acc, { id }) => ({ ...acc, [id]: http(env.ETH_HOSTNAME_HTTP) }),
   {},
 )
 

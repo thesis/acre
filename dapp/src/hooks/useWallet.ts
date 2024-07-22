@@ -7,11 +7,10 @@ import {
   OrangeKitError,
   Status,
 } from "#/types"
-import { resetState } from "#/store/wallet"
-import { useAppDispatch } from "./store"
 import { useConnector } from "./orangeKit/useConnector"
 import { useBitcoinProvider } from "./orangeKit/useBitcoinProvider"
 import useBitcoinBalance from "./orangeKit/useBitcoinBalance"
+import useResetWalletState from "./useResetWalletState"
 
 const { typeConversionToConnector, typeConversionToOrangeKitConnector } =
   orangeKit
@@ -38,8 +37,8 @@ export function useWallet(): UseWalletReturn {
   const { disconnect } = useDisconnect()
   const connector = useConnector()
   const provider = useBitcoinProvider()
-  const dispatch = useAppDispatch()
   const { data: balance } = useBitcoinBalance()
+  const resetWalletState = useResetWalletState()
 
   const [address, setAddress] = useState<string | undefined>(undefined)
 
@@ -83,9 +82,8 @@ export function useWallet(): UseWalletReturn {
 
   const onDisconnect = useCallback(() => {
     disconnect()
-
-    dispatch(resetState())
-  }, [disconnect, dispatch])
+    resetWalletState()
+  }, [disconnect, resetWalletState])
 
   useEffect(() => {
     const fetchBitcoinAddress = async () => {
