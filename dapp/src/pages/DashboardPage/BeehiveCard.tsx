@@ -84,7 +84,7 @@ export default function BeehiveCard(props: CardProps) {
                 h="auto"
                 lineHeight={5}
               >
-                More info
+                What is Bibo&apos;s Beehive?
               </Button>
             </CardBody>
           </Card>
