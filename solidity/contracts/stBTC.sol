@@ -304,7 +304,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     function mintDebt(
         uint256 shares,
         address receiver
-    ) external whenNotPaused returns (uint256 assets) {
+    ) public whenNotPaused returns (uint256 assets) {
         assets = convertToAssets(shares);
 
         // Increase the debt of the debtor.
@@ -346,7 +346,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     /// @return assets The amount of debt in asset paid off.
     function repayDebt(
         uint256 shares
-    ) external whenNotPaused returns (uint256 assets) {
+    ) public whenNotPaused returns (uint256 assets) {
         assets = convertToAssets(shares);
 
         // Check the current debt of the debtor.
