@@ -3,6 +3,7 @@ import {
   useActionFlowTxHash,
   useAppDispatch,
   useExecuteFunction,
+  useFetchActivities,
   useStakeFlowContext,
 } from "#/hooks"
 import { PROCESS_STATUSES } from "#/types"
@@ -16,14 +17,16 @@ import UnexpectedErrorModal from "../../UnexpectedErrorModal"
 export default function StakingErrorModal() {
   const { stake } = useStakeFlowContext()
   const dispatch = useAppDispatch()
+  const fetchActivities = useFetchActivities()
   const txHash = useActionFlowTxHash()
 
   const [isLoading, setIsLoading] = useState(false)
   const [isServerError, setIsServerError] = useState(false)
 
   const onStakeBTCSuccess = useCallback(() => {
+    logPromiseFailure(fetchActivities())
     dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED))
-  }, [dispatch])
+  }, [dispatch, fetchActivities])
 
   const onStakeBTCError = useCallback(() => setIsServerError(true), [])
 

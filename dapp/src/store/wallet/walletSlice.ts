@@ -8,6 +8,7 @@ export type WalletState = {
   isSignedMessage: boolean
   latestActivities: ActivitiesByIds
   activities: Activity[]
+  hasFetchedActivities: boolean
 }
 
 export const initialState: WalletState = {
@@ -16,6 +17,7 @@ export const initialState: WalletState = {
   isSignedMessage: false,
   latestActivities: {},
   activities: [],
+  hasFetchedActivities: false,
 }
 
 export const walletSlice = createSlice({
@@ -46,26 +48,67 @@ export const walletSlice = createSlice({
       const pendingActivitiesIds = Object.keys(pendingActivities)
 
       const { latestActivities } = state
-      const updatedActivitiesByIds = Object.values(
+
+      const completedActivitiesByIds = Object.values(
         latestActivities,
-      ).reduce<ActivitiesByIds>((acc, activity) => {
-        if (!pendingActivitiesIds.includes(activity.id))
-          acc[activity.id] = { ...activity, status: "completed" }
+      ).reduce<ActivitiesByIds>((acc, latestActivity) => {
+        if (
+          latestActivity.type === "deposit" &&
+          !pendingActivitiesIds.includes(latestActivity.id)
+        ) {
+          acc[latestActivity.id] = { ...latestActivity, status: "completed" }
+          return acc
+        }
+
+        const pendingActivityIdWithSameRedemptionKey =
+          pendingActivitiesIds.find((id) => latestActivity.id.includes(id))
+
+        const completedWithdrawalsWithSameRedemptionKey = allActivities
+          .filter(
+            (activity) =>
+              activity.id.includes(latestActivity.id) &&
+              activity.status === "completed",
+          )
+          .sort((first, second) => {
+            // The withdraw id is: `<redemptionKey>-<count>`
+            const [, firstCount] = first.id.split("-")
+            const [, secondCount] = second.id.split("-")
+
+            return Number(secondCount) - Number(firstCount)
+          })
+
+        const latestCompletedWithdraw =
+          completedWithdrawalsWithSameRedemptionKey[0]
+
+        if (
+          !pendingActivityIdWithSameRedemptionKey &&
+          latestCompletedWithdraw
+        ) {
+          acc[latestCompletedWithdraw.id] = latestCompletedWithdraw
+        }
 
         return acc
       }, {})
 
       state.activities = allActivities
       state.latestActivities = Object.assign(
-        updatedActivitiesByIds,
+        completedActivitiesByIds,
         pendingActivitiesByIds,
       )
+      state.hasFetchedActivities = true
     },
     deleteLatestActivity(state, action: PayloadAction<string>) {
       const activityId = action.payload
       delete state.latestActivities[activityId]
     },
     resetState: () => initialState,
+    activityInitialized(state, action: PayloadAction<Activity>) {
+      const activity = action.payload
+      state.latestActivities = {
+        ...state.latestActivities,
+        [activity.id]: activity,
+      }
+    },
   },
 })
 
@@ -76,5 +119,6 @@ export const {
   setActivities,
   deleteLatestActivity,
   resetState,
+  activityInitialized,
 } = walletSlice.actions
 export default walletSlice.reducer

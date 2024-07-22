@@ -16,10 +16,11 @@ import {
 } from "@chakra-ui/react"
 import { ActivitiesList } from "#/components/shared/ActivitiesList"
 import ArrivingSoonTooltip from "#/components/ArrivingSoonTooltip"
+import { featureFlags } from "#/constants"
+import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import TransactionHistory from "./TransactionHistory"
 
-const isWithdrawalFlowEnabled =
-  import.meta.env.VITE_FEATURE_FLAG_WITHDRAWALS_ENABLED === "true"
+const isWithdrawalFlowEnabled = featureFlags.WITHDRAWALS_ENABLED
 
 const buttonStyles: ButtonProps = {
   size: "lg",
@@ -66,41 +67,49 @@ export default function DashboardCard(props: DashboardCardProps) {
       </CardHeader>
       <CardBody as={VStack} p={0} spacing={10}>
         <VStack justify="center" spacing={6}>
-          <VStack justify="center" spacing={0}>
-            <CurrencyBalanceWithConversion
-              from={{
-                amount: bitcoinAmount,
-                currency: "bitcoin",
-                fontSize: "6xl",
-                lineHeight: 1.2,
-                letterSpacing: "-0.075rem", // -1.2px
-                fontWeight: "bold",
-                color: "grey.700",
-              }}
-              to={{
-                currency: "usd",
-                shouldBeFormatted: false,
-                color: "grey.500",
-                fontWeight: "medium",
-              }}
-            />
-          </VStack>
+          <UserDataSkeleton>
+            <VStack justify="center" spacing={0}>
+              <CurrencyBalanceWithConversion
+                from={{
+                  amount: bitcoinAmount,
+                  currency: "bitcoin",
+                  fontSize: "6xl",
+                  lineHeight: 1.2,
+                  letterSpacing: "-0.075rem", // -1.2px
+                  fontWeight: "bold",
+                  color: "grey.700",
+                }}
+                to={{
+                  currency: "usd",
+                  shouldBeFormatted: false,
+                  color: "grey.500",
+                  fontWeight: "medium",
+                }}
+              />
+            </VStack>
+          </UserDataSkeleton>
         </VStack>
 
         <HStack w="full" justify="center" spacing={2}>
-          <Button {...buttonStyles} onClick={openDepositModal}>
-            Deposit More
-          </Button>
-          <ArrivingSoonTooltip shouldDisplayTooltip={!isWithdrawalFlowEnabled}>
-            <Button
-              variant="outline"
-              {...buttonStyles}
-              onClick={openWithdrawModal}
-              isDisabled={!isWithdrawalFlowEnabled}
-            >
-              Withdraw
+          <UserDataSkeleton>
+            <Button {...buttonStyles} onClick={openDepositModal}>
+              Deposit More
             </Button>
-          </ArrivingSoonTooltip>
+          </UserDataSkeleton>
+          <UserDataSkeleton>
+            <ArrivingSoonTooltip
+              shouldDisplayTooltip={!isWithdrawalFlowEnabled}
+            >
+              <Button
+                variant="outline"
+                {...buttonStyles}
+                onClick={openWithdrawModal}
+                isDisabled={!isWithdrawalFlowEnabled}
+              >
+                Withdraw
+              </Button>
+            </ArrivingSoonTooltip>
+          </UserDataSkeleton>
         </HStack>
 
         <ActivitiesList />

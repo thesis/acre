@@ -2,8 +2,12 @@ import React from "react"
 import TokenAmountForm from "#/components/shared/TokenAmountForm"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { FormSubmitButton } from "#/components/shared/Form"
-import { BaseFormProps } from "#/types"
-import { useBitcoinPosition, useMinWithdrawAmount } from "#/hooks"
+import { BaseFormProps, PROCESS_STATUSES } from "#/types"
+import {
+  useActionFlowStatus,
+  useBitcoinPosition,
+  useMinWithdrawAmount,
+} from "#/hooks"
 import UnstakeDetails from "./UnstakeDetails"
 
 function UnstakeFormModal({
@@ -12,6 +16,7 @@ function UnstakeFormModal({
   const { data } = useBitcoinPosition()
   const balance = data?.estimatedBitcoinBalance ?? 0n
   const minTokenAmount = useMinWithdrawAmount()
+  const status = useActionFlowStatus()
 
   return (
     <TokenAmountForm
@@ -22,6 +27,9 @@ function UnstakeFormModal({
       minTokenAmount={minTokenAmount}
       onSubmitForm={onSubmitForm}
       withMaxButton
+      defaultAmount={
+        status === PROCESS_STATUSES.REFINE_AMOUNT ? balance : undefined
+      }
     >
       <UnstakeDetails balance={balance} currency="bitcoin" />
       <FormSubmitButton mt={10}>Withdraw</FormSubmitButton>

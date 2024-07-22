@@ -8,16 +8,14 @@ import { useTransactionDetails } from "#/hooks"
 import { CurrencyType } from "#/types"
 
 function StakeDetails({ currency }: { currency: CurrencyType }) {
-  const { value, isValid } = useTokenAmountField()
-  // Let's not calculate the details of the transaction when the value is not valid.
-  const amount = isValid ? value : 0n
+  const { value: amount } = useTokenAmountField()
   const details = useTransactionDetails(amount)
   const { total, ...restFees } = details.transactionFee
 
   return (
     <List spacing={3} mt={10}>
       <TransactionDetailsAmountItem
-        label="Amount to be staked"
+        label="Amount to be deposited"
         from={{
           currency,
           amount: details.amount,
@@ -40,7 +38,7 @@ function StakeDetails({ currency }: { currency: CurrencyType }) {
         }}
       />
       <TransactionDetailsAmountItem
-        label="Approximately staked tokens"
+        label="Approximate staked tokens"
         from={{
           currency,
           amount: details.estimatedAmount,

@@ -58,6 +58,7 @@ class Acre {
     tbtcApiUrl: string,
     ethereumRpcUrl: string,
     gelatoApiKey: string,
+    subgraphApi: string,
   ) {
     const ethereumNetwork: EthereumNetwork =
       Acre.resolveEthereumNetwork(network)
@@ -83,11 +84,7 @@ class Acre {
       ethereumNetwork,
     )
 
-    const subgraph = new AcreSubgraphApi(
-      network === BitcoinNetwork.Mainnet
-        ? "https://api.studio.thegraph.com/query/73600/acre-mainnet/version/latest"
-        : "https://api.studio.thegraph.com/query/73600/acre/version/latest",
-    )
+    const subgraph = AcreSubgraphApi.init(network, subgraphApi)
 
     const protocol = new Protocol(contracts)
 
@@ -124,7 +121,7 @@ class Acre {
 
     const tbtc = await Tbtc.initialize(
       signer,
-      ethereumNetwork,
+      this.#network,
       this.#tbtcApiUrl,
       contracts.bitcoinDepositor,
     )

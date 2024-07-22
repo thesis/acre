@@ -22,6 +22,7 @@ import { IconInfoCircle } from "@tabler/icons-react"
 import { useCurrencyConversion } from "#/hooks"
 import NumberFormatInput, {
   NumberFormatInputValues,
+  NumberFormatInputProps,
 } from "../NumberFormatInput"
 import { CurrencyBalance } from "../CurrencyBalance"
 
@@ -102,7 +103,8 @@ export type TokenBalanceInputProps = {
   setAmount: (value?: bigint) => void
   withMaxButton?: boolean
 } & InputProps &
-  HelperErrorTextProps
+  HelperErrorTextProps &
+  Pick<NumberFormatInputProps, "decimalScale">
 
 export default function TokenBalanceInput({
   amount,
@@ -160,6 +162,8 @@ export default function TokenBalanceInput({
           onChange={() => {
             setAmount(valueRef?.current)
           }}
+          decimalScale={decimals}
+          allowNegative={false}
         />
 
         {withMaxButton && (

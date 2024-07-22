@@ -10,11 +10,16 @@ import {
 import Spinner from "#/components/shared/Spinner"
 import { PauseIcon } from "#/assets/icons"
 import { TextMd } from "#/components/shared/Typography"
-import { useActionFlowPause, useModal } from "#/hooks"
+import { useActionFlowPause, useActionFlowType, useModal } from "#/hooks"
+import { ACTION_FLOW_TYPES } from "#/types"
 
 export default function ResumeModal() {
   const { handleResume } = useActionFlowPause()
   const { closeModal } = useModal()
+  const type = useActionFlowType()
+
+  const btnText =
+    type === ACTION_FLOW_TYPES.STAKE ? "Resume deposit" : "Resume withdrawal"
 
   return (
     <>
@@ -31,7 +36,7 @@ export default function ResumeModal() {
       </ModalBody>
       <ModalFooter flexDirection="column" gap={2}>
         <Button size="lg" width="100%" onClick={handleResume}>
-          Resume deposit
+          {btnText}
         </Button>
         <Button size="lg" width="100%" variant="outline" onClick={closeModal}>
           Yes, cancel
