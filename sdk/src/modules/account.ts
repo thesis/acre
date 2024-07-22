@@ -9,7 +9,12 @@ import OrangeKitTbtcRedeemerProxy, {
   MessageSignedStepCallback,
   OnSignMessageStepCallback,
 } from "../lib/redeemer-proxy"
-import { BitcoinProvider } from "../lib/bitcoin"
+import {
+  BitcoinNetwork,
+  BitcoinProvider,
+  isPublicKeyHashTypeAddress,
+} from "../lib/bitcoin"
+import { tbtc } from "../lib/constants"
 
 export { DepositReceipt } from "./tbtc"
 
@@ -94,6 +99,7 @@ export default class Account {
 
   /**
    * Initializes the Acre deposit process.
+   * @param network Bitcoin network.
    * @param referral Data used for referral program.
    * @param bitcoinRecoveryAddress `P2PKH` or `P2WPKH` Bitcoin address that can
    *        be used for emergency recovery of the deposited funds. If
@@ -106,13 +112,23 @@ export default class Account {
    * @returns Object represents the deposit process.
    */
   async initializeStake(
+    network: BitcoinNetwork,
     referral: number,
     bitcoinRecoveryAddress?: string,
   ): Promise<StakeInitialization> {
     // tBTC-v2 SDK will handle Bitcoin address validation and throw an error if
     // address is not supported.
-    const finalBitcoinRecoveryAddress =
+    let finalBitcoinRecoveryAddress =
       bitcoinRecoveryAddress ?? this.#bitcoinAddress
+
+    // By default the bitcoin recovery address is set to currently connected Bitcoin user address
+    // but only P2PKH or P2WPKH address can be used as recovery address in tBTC v2.
+    // So we are going to use default bitcoin address that should be used when user is connected
+    // to other Bitcoin address type than supported by tBTC v2 network.
+    if (!isPublicKeyHashTypeAddress(finalBitcoinRecoveryAddress, network)) {
+      finalBitcoinRecoveryAddress =
+        tbtc.NETWORK_TO_TBTC_DEPOSIT_BITCOIN_RECOVERY_ADDRESS[network]
+    }
 
     const tbtcDeposit = await this.#tbtc.initiateDeposit(
       this.#ethereumAddress,

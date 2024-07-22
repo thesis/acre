@@ -6,6 +6,7 @@ import {
   Account,
   DepositStatus,
   StakeInitialization,
+  BitcoinNetwork,
 } from "../../src"
 import { EthereumAddress } from "../../src/lib/ethereum"
 import { MockAcreContracts } from "../utils/mock-acre-contracts"
@@ -140,6 +141,7 @@ describe("Account", () => {
           tbtc.initiateDeposit = jest.fn().mockReturnValue(mockedDeposit)
 
           result = await account.initializeStake(
+            BitcoinNetwork.Testnet,
             referral,
             bitcoinRecoveryAddress,
           )
