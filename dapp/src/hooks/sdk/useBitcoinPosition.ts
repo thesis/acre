@@ -9,6 +9,7 @@ export default function useBitcoinPosition() {
 
   return useQuery({
     queryKey: [...userKeys.position(), { acre, isConnected }],
+    enabled: isConnected && !!acre,
     queryFn: async () => {
       if (!isConnected || !acre)
         return { sharesBalance: 0n, estimatedBitcoinBalance: 0n }
