@@ -6,7 +6,6 @@ import {
   Account,
   DepositStatus,
   StakeInitialization,
-  BitcoinNetwork,
 } from "../../src"
 import { EthereumAddress } from "../../src/lib/ethereum"
 import { MockAcreContracts } from "../utils/mock-acre-contracts"
