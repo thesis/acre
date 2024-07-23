@@ -35,7 +35,7 @@ export const isPublicKeyHashTypeAddress = (
  * @param address The address to be checked.
  * @param network The network for which the check will be done.
  */
-export const isPayScriptHashTypeAddress = (
+export const isPayToScriptHashTypeAddress = (
   address: string,
   network: BitcoinNetwork,
 ): boolean => {

@@ -3,7 +3,7 @@ import {
   BitcoinScriptUtils,
 } from "@keep-network/tbtc-v2.ts"
 import {
-  isPayScriptHashTypeAddress,
+  isPayToScriptHashTypeAddress,
   isPublicKeyHashTypeAddress,
 } from "../../../src"
 import { btcAddresses } from "./data"
@@ -94,7 +94,7 @@ describe("isPublicKeyHashTypeAddress", () => {
   })
 })
 
-describe("isPayScriptHashTypeAddress", () => {
+describe("isPayToScriptHashTypeAddress", () => {
   const btcAddressesWithExpectedResult = btcAddresses.map((address) => ({
     ...address,
     expectedResult: address.type === "P2SH" || address.type === "P2WSH",
@@ -115,7 +115,7 @@ describe("isPayScriptHashTypeAddress", () => {
         let result: boolean
 
         beforeAll(() => {
-          result = isPayScriptHashTypeAddress(address, network)
+          result = isPayToScriptHashTypeAddress(address, network)
         })
 
         it("should convert address to output script", () => {
@@ -154,7 +154,7 @@ describe("isPayScriptHashTypeAddress", () => {
           spyOnIsP2WSHScript = jest.spyOn(BitcoinScriptUtils, "isP2WSHScript")
           spyOnIsP2SHScript = jest.spyOn(BitcoinScriptUtils, "isP2SHScript")
 
-          result = isPayScriptHashTypeAddress(address, network)
+          result = isPayToScriptHashTypeAddress(address, network)
         })
 
         it("should not be able to convert address to output script", () => {

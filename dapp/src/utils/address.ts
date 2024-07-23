@@ -1,6 +1,6 @@
 import { BITCOIN_NETWORK } from "#/constants"
 import {
-  isPayScriptHashTypeAddress,
+  isPayToScriptHashTypeAddress,
   isPublicKeyHashTypeAddress,
 } from "@acre-btc/sdk"
 
@@ -11,4 +11,4 @@ export function truncateAddress(address: string): string {
 // Only Native Segwit, Nested Segwit or Legacy addresses are supported by Acre.
 export const isSupportedBTCAddressType = (address: string): boolean =>
   isPublicKeyHashTypeAddress(address, BITCOIN_NETWORK) ||
-  isPayScriptHashTypeAddress(address, BITCOIN_NETWORK)
+  isPayToScriptHashTypeAddress(address, BITCOIN_NETWORK)
