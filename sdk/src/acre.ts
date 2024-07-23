@@ -1,5 +1,9 @@
 import { GelatoTransactionSender, OrangeKitSdk } from "@orangekit/sdk"
-import { getDefaultProvider, Provider as EthereumProvider } from "ethers"
+import {
+  getDefaultProvider,
+  Provider as EthereumProvider,
+  VoidSigner,
+} from "ethers"
 import {
   EthereumAddress,
   EthereumNetwork,
@@ -7,7 +11,6 @@ import {
 } from "./lib/ethereum"
 import Account from "./modules/account"
 import Tbtc from "./modules/tbtc"
-import { VoidSigner } from "./lib/utils"
 import { BitcoinProvider, BitcoinNetwork } from "./lib/bitcoin"
 import { getChainIdByNetwork } from "./lib/ethereum/network"
 import AcreSubgraphApi from "./lib/api/AcreSubgraphApi"
@@ -25,6 +28,8 @@ class Acre {
 
   readonly #ethereumProvider: EthereumProvider
 
+  readonly #ethereumRpcURL: string
+
   readonly #acreSubgraph: AcreSubgraphApi
 
   #account: Account | undefined
@@ -38,6 +43,7 @@ class Acre {
     tbtcApiUrl: string,
     acreSubgraphApi: AcreSubgraphApi,
     protocol: Protocol,
+    ethereumRpcURL: string,
   ) {
     this.#network = bitcoinNetwork
     this.#ethereumProvider = ethereumProvider
@@ -45,6 +51,7 @@ class Acre {
     this.#orangeKit = orangeKit
     this.#acreSubgraph = acreSubgraphApi
     this.protocol = protocol
+    this.#ethereumRpcURL = ethereumRpcURL
   }
 
   /**
@@ -95,6 +102,7 @@ class Acre {
       tbtcApiUrl,
       subgraph,
       protocol,
+      ethereumRpcUrl,
     )
   }
 
@@ -120,8 +128,8 @@ class Acre {
     const contracts = await getEthereumContracts(signer, ethereumNetwork)
 
     const tbtc = await Tbtc.initialize(
-      signer,
       this.#network,
+      this.#ethereumRpcURL,
       this.#tbtcApiUrl,
       contracts.bitcoinDepositor,
     )

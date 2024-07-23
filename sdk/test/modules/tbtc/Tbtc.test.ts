@@ -8,13 +8,9 @@ import {
   Deposit as TbtcSdkDeposit,
 } from "@keep-network/tbtc-v2.ts"
 
-import { ZeroAddress, Provider, ethers } from "ethers"
-import {
-  IEthereumSignerCompatibleWithEthersV5,
-  VoidSigner,
-  Hex,
-  BitcoinNetwork,
-} from "../../../src"
+import { ethers } from "ethers"
+import { ethers as ethersV5 } from "ethers-v5"
+import { Hex, BitcoinNetwork } from "../../../src"
 import Deposit from "../../../src/modules/tbtc/Deposit"
 import TbtcApi from "../../../src/lib/api/TbtcApi"
 
@@ -28,34 +24,11 @@ import {
 import { MockAcreContracts } from "../../utils/mock-acre-contracts"
 
 import { MockTbtcSdk } from "../../utils/mock-tbtc-sdk"
-import { getChainIdByNetwork } from "../../../src/lib/ethereum/network"
 
 jest.mock("@keep-network/tbtc-v2.ts", (): object => ({
   TbtcSdk: jest.fn(),
   ...jest.requireActual("@keep-network/tbtc-v2.ts"),
 }))
-
-class MockEthereumSignerCompatibleWithEthersV5 extends VoidSigner {
-  constructor() {
-    super(ZeroAddress, {} as Provider)
-  }
-
-  getAddress = jest.fn()
-
-  connect = jest.fn()
-
-  signTransaction = jest.fn()
-
-  signMessage = jest.fn()
-
-  signTypedData = jest.fn()
-
-  _isSigner: boolean = true
-
-  _checkProvider = jest.fn()
-
-  getChainId = jest.fn().mockResolvedValue(getChainIdByNetwork("sepolia"))
-}
 
 describe("Tbtc", () => {
   const tbtcApiUrl = "https://api.acre.fi/v1/deposit/"
@@ -65,17 +38,17 @@ describe("Tbtc", () => {
 
   const { bitcoinDepositor } = new MockAcreContracts()
   const tbtcApi: TbtcApi = new TbtcApi(tbtcApiUrl)
+  const mockedSigner = {} as ethersV5.VoidSigner
 
-  const tbtc = new Tbtc(
-    tbtcApi,
-    tbtcSdk,
-    bitcoinDepositor,
-    BitcoinNetwork.Testnet,
-  )
+  let tbtc: Tbtc
+
+  beforeAll(() => {
+    jest.spyOn(ethersV5, "VoidSigner").mockReturnValue(mockedSigner)
+    tbtc = new Tbtc(tbtcApi, tbtcSdk, bitcoinDepositor, BitcoinNetwork.Testnet)
+  })
 
   describe("initialize", () => {
-    const mockedSigner: IEthereumSignerCompatibleWithEthersV5 =
-      new MockEthereumSignerCompatibleWithEthersV5()
+    const ethereumRpcUrl = "https://test.com"
 
     describe("when network is mainnet", () => {
       const network: BitcoinNetwork = BitcoinNetwork.Mainnet
@@ -84,10 +57,9 @@ describe("Tbtc", () => {
 
       beforeAll(async () => {
         jest.spyOn(TbtcSdk, "initializeMainnet").mockResolvedValueOnce(tbtcSdk)
-
         result = await Tbtc.initialize(
-          mockedSigner,
           network,
+          ethereumRpcUrl,
           tbtcApiUrl,
           bitcoinDepositor,
         )
@@ -111,8 +83,8 @@ describe("Tbtc", () => {
         jest.spyOn(TbtcSdk, "initializeSepolia").mockResolvedValueOnce(tbtcSdk)
 
         result = await Tbtc.initialize(
-          mockedSigner,
           network,
+          ethereumRpcUrl,
           tbtcApiUrl,
           bitcoinDepositor,
         )

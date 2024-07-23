@@ -159,6 +159,9 @@ importers:
       ethers:
         specifier: 6.10.0
         version: 6.10.0
+      ethers-v5:
+        specifier: npm:ethers@^5.5.2
+        version: /ethers@5.7.2
     devDependencies:
       '@thesis-co/eslint-config':
         specifier: github:thesis/eslint-config#7b9bc8c

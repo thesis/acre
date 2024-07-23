@@ -7,13 +7,11 @@ import {
   BitcoinHashUtils,
 } from "@keep-network/tbtc-v2.ts"
 
-import { ethers } from "ethers"
+import { ethers, ZeroAddress } from "ethers"
+import { getDefaultProvider, VoidSigner } from "ethers-v5"
 import TbtcApi, { DepositStatus } from "../../lib/api/TbtcApi"
 import { BitcoinDepositor } from "../../lib/contracts"
-import {
-  Hex,
-  IEthereumSignerCompatibleWithEthersV5 as EthereumSignerCompatibleWithEthersV5,
-} from "../../lib/utils"
+import { Hex } from "../../lib/utils"
 
 import Deposit from "./Deposit"
 import { BitcoinNetwork } from "../../lib/bitcoin"
@@ -45,30 +43,27 @@ export default class Tbtc {
   /**
    * Initializes the Tbtc module.
    *
-   * @param signer The Ethereum signer compatible with ethers v5.
    * @param network The Ethereum network.
    * @param tbtcApiUrl The tBTC API URL.
    * @param bitcoinDepositor The Bitcoin depositor contract handle.
    * @returns A Promise that resolves to an instance of Tbtc.
    */
   static async initialize(
-    signer: EthereumSignerCompatibleWithEthersV5,
     network: BitcoinNetwork,
+    ethereumRpcUrl: string,
     tbtcApiUrl: string,
     bitcoinDepositor: BitcoinDepositor,
   ): Promise<Tbtc> {
     const tbtcApi = new TbtcApi(tbtcApiUrl)
+    const signer = new VoidSigner(
+      ZeroAddress,
+      getDefaultProvider(ethereumRpcUrl),
+    )
 
     const tbtcSdk =
       network === BitcoinNetwork.Mainnet
-        ? // @ts-expect-error We require the `signer` must include the ethers v5
-          // signer's methods used in tBTC-v2.ts SDK so if we pass signer from
-          // ethers v6 it won't break the Acre SDK initialization.
-          await TbtcSdk.initializeMainnet(signer)
-        : // @ts-expect-error We require the `signer` must include the ethers v5
-          // signer's methods used in tBTC-v2.ts SDK so if we pass signer from
-          // ethers v6 it won't break the Acre SDK initialization.
-          await TbtcSdk.initializeSepolia(signer)
+        ? await TbtcSdk.initializeMainnet(signer)
+        : await TbtcSdk.initializeSepolia(signer)
 
     return new Tbtc(tbtcApi, tbtcSdk, bitcoinDepositor, network)
   }
