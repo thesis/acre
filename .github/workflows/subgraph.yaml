@@ -30,6 +30,9 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --prefer-offline --frozen-lockfile
 
+      - name: Build subgraph manifest
+        run: pnpm run prepare:sepolia
+
       - name: Codegen
         run: pnpm run codegen
 
