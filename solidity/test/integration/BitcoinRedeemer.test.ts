@@ -6,14 +6,7 @@ import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 import { ContractTransactionResponse } from "ethers"
 import { beforeAfterSnapshotWrapper, deployment } from "../helpers"
 
-import {
-  StBTC as stBTC,
-  TestERC20,
-  BitcoinRedeemer,
-  BridgeStub,
-} from "../../typechain"
-
-import { to1e18 } from "../utils"
+import { StBTC as stBTC, BitcoinRedeemer, BridgeStub } from "../../typechain"
 
 import { tbtcRedemptionData } from "../data/tbtc"
 
@@ -22,10 +15,11 @@ const { impersonateAccount } = helpers.account
 
 async function fixture() {
   const { tbtc, stbtc, bitcoinRedeemer, tbtcBridge } = await deployment()
-  const { governance, maintainer } = await getNamedSigners()
+  const { deployer, governance, maintainer } = await getNamedSigners()
   const [depositor, thirdParty] = await getUnnamedSigners()
 
   return {
+    deployer,
     governance,
     thirdParty,
     depositor,
@@ -38,7 +32,6 @@ async function fixture() {
 }
 
 describe("BitcoinRedeemer", () => {
-  let tbtc: TestERC20
   let stbtc: stBTC
   let bitcoinRedeemer: BitcoinRedeemer
   let tbtcBridge: BridgeStub
@@ -46,10 +39,11 @@ describe("BitcoinRedeemer", () => {
   let depositor: HardhatEthersSigner
 
   before(async () => {
-    ;({ depositor, tbtc, stbtc, bitcoinRedeemer, tbtcBridge } =
+    let deployer: HardhatEthersSigner
+    ;({ deployer, depositor, stbtc, bitcoinRedeemer, tbtcBridge } =
       await loadFixture(fixture))
 
-    await impersonateAccount(tbtcRedemptionData.redeemer)
+    await impersonateAccount(tbtcRedemptionData.redeemer, { from: deployer })
     depositor = await ethers.getSigner(tbtcRedemptionData.redeemer)
   })
 
@@ -58,18 +52,11 @@ describe("BitcoinRedeemer", () => {
 
     let tx: ContractTransactionResponse
 
-    before(async () => {
-      await tbtc
-        .connect(depositor)
-        .approve(await stbtc.getAddress(), to1e18(10))
-      await stbtc.connect(depositor).deposit(to1e18(10), depositor)
-    })
-
     context("when the deposit is not fully withdrawn", () => {
       beforeAfterSnapshotWrapper()
 
-      const stBtcAmountToRedeem = to1e18(5)
-      const expectedTbtcAmountToRedeem = 4987531172069825436n // 5 tBTC * (1 - (25 / 1000 + 25)) = 4.9875 tBTC
+      const stBtcAmountToRedeem = BigInt(0.01 * 1e18)
+      const expectedTbtcAmountToRedeem = 9975062344139650n // 0.01 tBTC * (1 - (25 / (10000 + 25))) = ~0.009975 tBTC
 
       before(async () => {
         tx = await stbtc
@@ -81,7 +68,7 @@ describe("BitcoinRedeemer", () => {
           )
       })
 
-      it("should burn 5 stBTC from depositor", async () => {
+      it("should burn stBTC from depositor", async () => {
         await expect(tx).to.changeTokenBalances(
           stbtc,
           [depositor.address],
@@ -89,7 +76,7 @@ describe("BitcoinRedeemer", () => {
         )
       })
 
-      it("should emit RedemptionRequested event", async () => {
+      it("should emit RedemptionRequested event from BitcoinRedeemer", async () => {
         await expect(tx)
           .to.emit(bitcoinRedeemer, "RedemptionRequested")
           .withArgs(
@@ -99,7 +86,7 @@ describe("BitcoinRedeemer", () => {
           )
       })
 
-      it("should emit RedemptionRequested event", async () => {
+      it("should emit RedemptionRequested event from tBTC Bridge", async () => {
         await expect(tx).to.emit(tbtcBridge, "RedemptionRequested")
       })
     })

@@ -16,6 +16,10 @@ const GELATO_RELAY_API_KEY = import.meta.env.VITE_GELATO_RELAY_API_KEY
 
 const SUBGRAPH_API_KEY = import.meta.env.VITE_SUBGRAPH_API_KEY
 
+const NETWORK_TYPE = USE_TESTNET ? "testnet" : "mainnet"
+
+const LATEST_COMMIT_HASH = import.meta.env.VITE_LATEST_COMMIT_HASH
+
 export default {
   PROD,
   USE_TESTNET,
@@ -26,4 +30,6 @@ export default {
   TBTC_API_ENDPOINT,
   GELATO_RELAY_API_KEY,
   SUBGRAPH_API_KEY,
+  NETWORK_TYPE,
+  LATEST_COMMIT_HASH,
 }

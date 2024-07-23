@@ -8,6 +8,7 @@ export type WalletState = {
   isSignedMessage: boolean
   latestActivities: ActivitiesByIds
   activities: Activity[]
+  hasFetchedActivities: boolean
 }
 
 export const initialState: WalletState = {
@@ -16,6 +17,7 @@ export const initialState: WalletState = {
   isSignedMessage: false,
   latestActivities: {},
   activities: [],
+  hasFetchedActivities: false,
 }
 
 export const walletSlice = createSlice({
@@ -93,6 +95,7 @@ export const walletSlice = createSlice({
         completedActivitiesByIds,
         pendingActivitiesByIds,
       )
+      state.hasFetchedActivities = true
     },
     deleteLatestActivity(state, action: PayloadAction<string>) {
       const activityId = action.payload

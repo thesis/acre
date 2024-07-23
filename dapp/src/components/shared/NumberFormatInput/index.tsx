@@ -1,5 +1,5 @@
 import React from "react"
-import { NumericFormat } from "react-number-format"
+import { NumericFormat, NumericFormatProps } from "react-number-format"
 import { InputProps, chakra, useMultiStyleConfig } from "@chakra-ui/react"
 
 const ChakraWrapper = chakra(NumericFormat)
@@ -12,8 +12,8 @@ export type NumberFormatInputValues = {
 
 export type NumberFormatInputProps = {
   onValueChange: (values: NumberFormatInputValues) => void
-  decimalScale?: number
-} & InputProps
+} & InputProps &
+  Pick<NumericFormatProps, "decimalScale" | "allowNegative">
 
 /**
  * Component is from the Threshold Network React Components repository.
