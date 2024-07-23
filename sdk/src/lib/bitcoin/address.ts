@@ -55,15 +55,3 @@ export const isPayScriptHashTypeAddress = (
     return false
   }
 }
-
-/**
- * Checks if the address is supported by Acre.
- * @param address The address to be checked.
- * @param network The network for which the check will be done.
- */
-export const isSupportedBTCAddressTypeByAcre = (
-  address: string,
-  network: BitcoinNetwork,
-): boolean =>
-  isPublicKeyHashTypeAddress(address, network) ||
-  isPayScriptHashTypeAddress(address, network)
