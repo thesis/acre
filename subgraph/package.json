@@ -5,8 +5,8 @@
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
-    "create-local": "graph create --node http://localhost:8020/ acre-subgraph subgraph.sepolia.yaml",
-    "remove-local": "graph remove --node http://localhost:8020/ acre-subgraph subgraph.sepolia.yaml",
+    "create-local": "graph create --node http://localhost:8020/ acre-subgraph",
+    "remove-local": "graph remove --node http://localhost:8020/ acre-subgraph",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 acre-subgraph subgraph.sepolia.yaml",
     "test": "graph test",
     "format": "npm run lint:js && npm run lint:config",
