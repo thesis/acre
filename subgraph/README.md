@@ -107,19 +107,19 @@ Note: use it only if your subgraph is not created in the local Graph node.
    or
 
    ```
-   pnpm codegen-sepolia && pnpm build-sepolia
+   pnpm codegen:sepolia && pnpm build:sepolia
    ```
 
 5. Deploying a Subgraph to Subgraph Studio
 
    ```
-   pnpm deploy-mainnet
+   pnpm deploy:mainnet
    ```
 
    or
 
    ```
-   pnpm deploy-sepolia
+   pnpm deploy:sepolia
    ```
 
    After running this command, the CLI will ask for a version label, you can
