@@ -29,3 +29,5 @@ export default func
 func.tags = ["TransferOwnershipBitcoinDepositor"]
 func.dependencies = ["BitcoinDepositor"]
 func.runAtTheEnd = true
+func.skip = async (hre: HardhatRuntimeEnvironment): Promise<boolean> =>
+  Promise.resolve(hre.network.name === "integration")

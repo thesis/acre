@@ -19,3 +19,5 @@ export default func
 
 func.tags = ["stBTCUpdateDispatcher"]
 func.dependencies = ["stBTC", "MezoAllocator"]
+func.skip = async (hre: HardhatRuntimeEnvironment): Promise<boolean> =>
+  Promise.resolve(hre.network.name === "integration")

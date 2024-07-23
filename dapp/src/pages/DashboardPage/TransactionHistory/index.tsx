@@ -1,16 +1,16 @@
 import React from "react"
 import { StackProps, VStack, Image } from "@chakra-ui/react"
 import { TextMd } from "#/components/shared/Typography"
-import { useCompletedActivities, useIsSignedMessage } from "#/hooks"
+import { useCompletedActivities, useIsFetchedWalletData } from "#/hooks"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import emptyStateIllustration from "#/assets/images/empty-state.png"
 import TransactionTable from "./TransactionTable"
 
 function TransactionHistoryContent() {
   const completedActivities = useCompletedActivities()
-  const isSignedMessage = useIsSignedMessage()
+  const isFetchedWalletData = useIsFetchedWalletData()
 
-  if (!isSignedMessage)
+  if (!isFetchedWalletData)
     return (
       <VStack w="100%" spacing={2}>
         {[...Array(3).keys()].map((key) => (

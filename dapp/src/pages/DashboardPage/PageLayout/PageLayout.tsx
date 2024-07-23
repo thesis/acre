@@ -6,6 +6,8 @@ function PageLayout(props: GridProps) {
 
   return (
     <Grid
+      maxW="110rem" // 1760px -> content width + x-axis padding
+      mx="auto"
       px={10}
       py={9}
       gap={8}
@@ -13,8 +15,8 @@ function PageLayout(props: GridProps) {
       gridTemplateColumns={{
         base: "1fr",
         md: "repeat(2, 1fr)",
-        lg: "1fr 0.5fr",
-        xl: "minmax(358px, auto) 1fr minmax(358px, auto)",
+        lg: "1fr 0.6fr",
+        "2xl": "minmax(396px, auto) 1fr minmax(396px, auto)",
       }}
       {...restProps}
     >

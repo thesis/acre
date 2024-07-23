@@ -13,7 +13,11 @@ import {
   RedemptionsCompleted,
   SubmitRedemptionProofCall,
 } from "../generated/TbtcBridge/TbtcBridge"
-import { buildRedemptionKey, toBitcoinTxId } from "./tbtc-utils"
+import {
+  buildRedemptionKey,
+  toBitcoinTxId,
+  buildRedemptionKeyFromRedeemerOutputScript,
+} from "./tbtc-utils"
 import {
   getOwnerFromRedemptionRequestedLog,
   getRedemptionRequestedLog,
@@ -38,7 +42,7 @@ export function handleRedemptionRequested(event: RedemptionRequested): void {
 
   const ownerEntity = getOrCreateDepositOwner(ownerId)
 
-  const redemptionKey = buildRedemptionKey(
+  const redemptionKey = buildRedemptionKeyFromRedeemerOutputScript(
     event.params.redeemerOutputScript,
     event.params.walletPubKeyHash,
   )
@@ -144,8 +148,7 @@ export function handleSubmitRedemptionProofCall(
   // so we need to jump over 1+2 bytes of compactSize uint.
   let outputStartingIndex = outputsCompactSizeUintLength.plus(BigInt.fromI32(1))
 
-  // eslint-disable-next-line no-plusplus
-  for (let i: i32 = 0; i < outputsCount; i++) {
+  for (let i: i32 = 0; i < outputsCount; i += 1) {
     const outputLength = BitcoinUtils.determineOutputLengthAt(
       outputVector,
       outputStartingIndex,

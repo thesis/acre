@@ -37,3 +37,5 @@ export default func
 
 func.tags = ["TransferOwnershipMezoAllocator"]
 func.dependencies = ["MezoAllocator"]
+func.skip = async (hre: HardhatRuntimeEnvironment): Promise<boolean> =>
+  Promise.resolve(hre.network.name === "integration")
