@@ -141,7 +141,6 @@ describe("Account", () => {
           tbtc.initiateDeposit = jest.fn().mockReturnValue(mockedDeposit)
 
           result = await account.initializeStake(
-            BitcoinNetwork.Testnet,
             referral,
             bitcoinRecoveryAddress,
           )

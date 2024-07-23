@@ -1,6 +1,5 @@
 import { useCallback, useState } from "react"
 import { StakeInitialization, DepositReceipt } from "@acre-btc/sdk"
-import { BITCOIN_NETWORK } from "#/constants"
 import { useAcreContext } from "./useAcreContext"
 
 export type UseStakeFlowReturn = {
@@ -29,7 +28,6 @@ export function useStakeFlow(): UseStakeFlowReturn {
       if (!acre || !isConnected) throw new Error("Acre SDK not defined")
 
       const initializedStakeFlow = await acre.account.initializeStake(
-        BITCOIN_NETWORK,
         referral,
         bitcoinRecoveryAddress,
       )
