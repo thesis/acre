@@ -23,11 +23,6 @@ export async function integrationTestFixture() {
     },
   )
 
-  await contracts.stbtc.connect(governance).acceptOwnership()
-  await contracts.mezoAllocator.connect(governance).acceptOwnership()
-  await contracts.bitcoinDepositor.connect(governance).acceptOwnership()
-  await contracts.bitcoinRedeemer.connect(governance).acceptOwnership()
-
   return {
     governance,
     maintainer,
