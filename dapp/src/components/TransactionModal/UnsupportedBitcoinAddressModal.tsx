@@ -87,8 +87,9 @@ export default function UnsupportedBitcoinAddressModal({
         <TextMd
           maxW="25rem" // 400px
         >
-          We currently support <strong>Legacy</strong> and{" "}
-          <strong>Native Segwit</strong> accounts only.
+          We currently support <strong>Native Segwit</strong>,{" "}
+          <strong>Nested Segwit</strong> and <strong>Legacy</strong> accounts
+          only.
         </TextMd>
       </ModalBody>
 
