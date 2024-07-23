@@ -8,7 +8,7 @@ export default function TriggerTransactionModal({
   callback,
   children,
   delay = ONE_SEC_IN_MILLISECONDS,
-  title = "Waiting transaction...",
+  title = "Awaiting transaction...",
   subtitle = "Please complete the transaction in your wallet.",
 }: {
   callback: () => void
