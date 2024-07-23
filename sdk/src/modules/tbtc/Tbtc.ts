@@ -44,6 +44,7 @@ export default class Tbtc {
    * Initializes the Tbtc module.
    *
    * @param network The Ethereum network.
+   * @param ethereumRpcUrl The Ethereum RPC URL.
    * @param tbtcApiUrl The tBTC API URL.
    * @param bitcoinDepositor The Bitcoin depositor contract handle.
    * @returns A Promise that resolves to an instance of Tbtc.
