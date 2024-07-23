@@ -5,7 +5,6 @@
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ acre-subgraph subgraph.sepolia.yaml",
     "create-local": "graph create --node http://localhost:8020/ acre-subgraph subgraph.sepolia.yaml",
     "remove-local": "graph remove --node http://localhost:8020/ acre-subgraph subgraph.sepolia.yaml",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 acre-subgraph subgraph.sepolia.yaml",
