@@ -4,11 +4,13 @@ import TransactionDetailsAmountItem from "#/components/shared/TransactionDetails
 import FeesDetailsAmountItem from "#/components/shared/FeesDetails/FeesItem"
 import { useTokenAmountField } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { FeesTooltip } from "#/components/TransactionModal/FeesTooltip"
-import { useTransactionDetails } from "#/hooks"
+import { useMinDepositAmount, useTransactionDetails } from "#/hooks"
 import { CurrencyType } from "#/types"
 
 function StakeDetails({ currency }: { currency: CurrencyType }) {
-  const { value: amount } = useTokenAmountField()
+  const { value = 0n } = useTokenAmountField()
+  const minDepositAmount = useMinDepositAmount()
+  const amount = value >= minDepositAmount ? value : 0n
   const details = useTransactionDetails(amount)
   const { total, ...restFees } = details.transactionFee
 
