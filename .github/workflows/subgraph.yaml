@@ -30,11 +30,8 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --prefer-offline --frozen-lockfile
 
-      - name: Build subgraph manifest
-        run: pnpm run prepare:sepolia
-
       - name: Codegen
-        run: pnpm run codegen
+        run: pnpm run codegen-sepolia
 
       - name: Upload Codegen Artifacts
         uses: actions/upload-artifact@v4

@@ -3,4 +3,3 @@ build/
 data/
 # Matchstick binaries
 **/tests/.*
-subgraph.yaml

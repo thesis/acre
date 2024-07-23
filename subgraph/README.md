@@ -28,7 +28,7 @@ By the moment, there one subgraph have been developed:
 3. Build the subgraph:
 
    ```
-   pnpm codegen && pnpm build
+   pnpm codegen-sepolia && pnpm build-sepolia
    ```
 
 ### Deploy the subgraph locally
@@ -57,12 +57,6 @@ create a private one
 
    ```
    docker-compose up
-   ```
-
-4. Build the subgraph manifest for sepolia network:
-
-   ```
-   pnpm run prepare:sepolia
    ```
 
 5. Allocate the subgraph name in the local Graph Node:
@@ -104,26 +98,29 @@ Note: use it only if your subgraph is not created in the local Graph node.
    The `<DEPLOY_KEY>` can be found on "My Subgraphs" page or subgraph details
    page.
 
-4. Build the subgraph manifest for a given network:
+4. Build the subgraph for a given network:
 
    ```
-   pnpm run prepare:mainnet
+   pnpm codegen-mainnet && pnpm build-mainnet
    ```
 
    or
 
    ```
-   pnpm run prepare:sepolia
+   pnpm codegen-sepolia && pnpm build-sepolia
    ```
 
 5. Deploying a Subgraph to Subgraph Studio
 
    ```
-   graph deploy --studio <SUBGRAPH_SLUG>
+   pnpm deploy-mainnet
    ```
 
-   The `<SUBGRAPH_SLUG>` can be found on subgraph details page in the Subgraph
-   Studio.
+   or
+
+   ```
+   pnpm deploy-sepolia
+   ```
 
    After running this command, the CLI will ask for a version label, you can
    name it however you want, you can use labels such as 0.1 and 0.2 or use
