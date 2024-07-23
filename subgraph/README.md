@@ -59,7 +59,7 @@ create a private one
    docker-compose up
    ```
 
-5. Allocate the subgraph name in the local Graph Node:
+4. Allocate the subgraph name in the local Graph Node:
 
    ```
    pnpm create-local
@@ -67,13 +67,13 @@ create a private one
 
 Note: use it only if your subgraph is not created in the local Graph node.
 
-6. Deploy the subgraph to your local Graph Node:
+5. Deploy the subgraph to your local Graph Node:
 
    ```
    pnpm deploy-local
    ```
 
-7. Create Subgraph queries and preview of the entities:
+6. Create Subgraph queries and preview of the entities:
 
    ```
    http://localhost:8000/subgraphs/name/acre-subgraph
