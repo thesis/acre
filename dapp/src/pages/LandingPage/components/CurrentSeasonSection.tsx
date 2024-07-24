@@ -50,12 +50,14 @@ export default function CurrentSeasonSection() {
 
         <H3 mb={2}>Season 1. Staking is live!</H3>
 
-        <TextLg
-          mb="5.5rem" // 88px
-        >
+        <TextLg mb={12}>
           Season 1 stakers will harvest Mezo points and get priority access to
           Bitcoin yield
         </TextLg>
+
+        <TextMd fontWeight="semibold" mb={4}>
+          Total value locked
+        </TextMd>
 
         <ProgressBar
           size="2xl"
