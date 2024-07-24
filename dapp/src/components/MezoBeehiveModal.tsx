@@ -45,7 +45,7 @@ function MezoBeehiveModalBase() {
         </Flex>
       </ModalHeader>
 
-      <ModalBody gap={4} pb={8}>
+      <ModalBody gap={4} pb={8} overflowX="hidden">
         <VStack spacing={0} align="stretch">
           <Image src={mezoBeehiveModalIllustrationSrc} alt="Mezo Beehive" />
 
