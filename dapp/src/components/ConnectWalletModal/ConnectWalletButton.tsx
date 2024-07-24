@@ -15,18 +15,16 @@ import {
   CardBody,
   CardHeader,
   Flex,
-  Icon,
   Image,
   ImageProps,
+  Tag,
   VStack,
 } from "@chakra-ui/react"
 import { useSignMessage } from "wagmi"
-import { IconArrowNarrowRight } from "@tabler/icons-react"
 import { AnimatePresence, Variants, motion } from "framer-motion"
-import ArrivingSoonTooltip from "../ArrivingSoonTooltip"
 import { TextLg, TextMd } from "../shared/Typography"
 import ConnectWalletStatusLabel from "./ConnectWalletStatusLabel"
-import Spinner from "../shared/Spinner"
+import ConnectWalletButtonRightIcon from "./ConnectWalletButtonRightIcon"
 
 type ConnectWalletButtonProps = {
   label: string
@@ -46,6 +44,8 @@ const collapseVariants: Variants = {
   collapsed: { height: 0 },
   expanded: { height: "auto" },
 }
+
+const nonLedgerWallets = ["orangekit-xverse"]
 
 export default function ConnectWalletButton({
   label,
@@ -166,37 +166,54 @@ export default function ConnectWalletButton({
       _last={{ mb: 0 }}
     >
       <CardHeader p={0}>
-        <ArrivingSoonTooltip shouldDisplayTooltip={connector.isDisabled}>
-          <Button
-            variant="ghost"
-            boxSize="full"
-            justifyContent="start"
-            p={6}
-            onClick={handleButtonClick}
-            leftIcon={
-              <Image
-                src={connector.icon}
-                boxSize={6}
-                bg="black"
-                rounded="sm"
-                {...iconStyles[connector.id]}
+        <Button
+          variant="ghost"
+          boxSize="full"
+          justifyContent="start"
+          p={6}
+          onClick={handleButtonClick}
+          leftIcon={
+            <Image
+              src={connector.icon}
+              boxSize={6}
+              bg="black"
+              rounded="sm"
+              {...iconStyles[connector.id]}
+            />
+          }
+          rightIcon={
+            !connector.isDisabled ? (
+              <ConnectWalletButtonRightIcon
+                isLoading={isLoading}
+                isConnectorDisabled={connector.isDisabled}
               />
-            }
-            rightIcon={
-              !isLoading ? (
-                <Icon as={IconArrowNarrowRight} boxSize={6} ml="auto" />
-              ) : (
-                <Spinner boxSize={6} variant="filled" />
-              )
-            }
-            iconSpacing={4}
-            isDisabled={connector.isDisabled}
-          >
-            <TextLg flex={1} textAlign="start" fontWeight="semibold">
-              {label}
-            </TextLg>
-          </Button>
-        </ArrivingSoonTooltip>
+            ) : undefined
+          }
+          iconSpacing={4}
+          isDisabled={connector.isDisabled}
+          _disabled={{ opacity: 1, cursor: "not-allowed" }}
+        >
+          <TextLg flex={1} textAlign="start" fontWeight="semibold">
+            {label}
+          </TextLg>
+
+          {(connector.isDisabled ||
+            nonLedgerWallets.includes(connector.id)) && (
+            <Tag
+              textTransform="uppercase"
+              px={3}
+              py={1.5}
+              fontSize="xs"
+              fontWeight="medium"
+              borderColor="gold.500"
+              color="grey.700"
+            >
+              {nonLedgerWallets.includes(connector.id)
+                ? "Ledger not supported"
+                : "Coming soon"}
+            </Tag>
+          )}
+        </Button>
       </CardHeader>
 
       <AnimatePresence initial={false}>
