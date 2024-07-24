@@ -77,6 +77,24 @@ const parseOrangeKitConnectionError = (
   return CONNECTION_ERRORS.DEFAULT
 }
 
+async function verifySignInWithWalletMessage(
+  messageToSign: string,
+  signedMessage: `0x${string}`,
+) {
+  const signInWithWallet = new SignInWithWalletMessage(messageToSign)
+
+  const result = await signInWithWallet.verify({ signature: signedMessage })
+
+  if (!result.success) {
+    throw (
+      result.error ??
+      new Error("Unexpected error when verifying Sign In With Wallet request")
+    )
+  }
+
+  return result.data
+}
+
 export default {
   getWalletInfo,
   isWalletInstalled,
@@ -87,4 +105,5 @@ export default {
   typeConversionToConnector,
   parseOrangeKitConnectionError,
   isWalletConnectionRejectedError,
+  verifySignInWithWalletMessage,
 }
