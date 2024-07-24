@@ -96,8 +96,7 @@ export default function CurrentSeasonSection() {
         </TextXl>
 
         {/* TODO: Uncomment in post-launch phases */}
-        {/* 
-        <Flex
+        {/*  <Flex
           flexDirection={{ base: "column", xl: "row" }}
           gap={5}
           align="stretch"
@@ -115,9 +114,7 @@ export default function CurrentSeasonSection() {
               <TextMd>{description}</TextMd>
             </BenefitCard>
           ))} 
-          
-        </Flex>
-        */}
+        </Flex> */}
 
         <Card p={6} w="full" maxW="landing_page_content_width" mx="auto">
           <CardHeader p={0} mb={6}>
