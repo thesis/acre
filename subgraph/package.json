@@ -5,17 +5,25 @@
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ acre-subgraph",
-    "create-local": "graph create --node http://localhost:8020/ acre-subgraph",
-    "remove-local": "graph remove --node http://localhost:8020/ acre-subgraph",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 acre-subgraph",
-    "test": "graph test",
+    "create:local": "graph create --node http://localhost:8020/ acre-subgraph",
+    "remove:local": "graph remove --node http://localhost:8020/ acre-subgraph",
+    "deploy:local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 acre-subgraph subgraph.sepolia.yaml",
+    "test": "npm run prepare:test && graph test",
+    "prepare:test": "mustache config/sepolia.json subgraph.template.yaml > subgraph.yaml",
     "format": "npm run lint:js && npm run lint:config",
     "format:fix": "npm run lint:js:fix && npm run lint:config:fix",
     "lint:js": "eslint .",
     "lint:js:fix": "eslint . --fix",
     "lint:config": "prettier -c '**/*.@(json|yaml|toml)'",
-    "lint:config:fix": "prettier -w '**/*.@(json|yaml|toml)'"
+    "lint:config:fix": "prettier -w '**/*.@(json|yaml|toml)'",
+    "prepare:sepolia": "mustache config/sepolia.json subgraph.template.yaml > subgraph.sepolia.yaml",
+    "codegen:sepolia": "npm run codegen subgraph.sepolia.yaml",
+    "build:sepolia": "npm run build subgraph.sepolia.yaml",
+    "deploy:sepolia": "graph deploy --studio acre subgraph.sepolia.yaml",
+    "prepare:mainnet": "mustache config/mainnet.json subgraph.template.yaml > subgraph.mainnet.yaml",
+    "codegen:mainnet": "npm run codegen subgraph.mainnet.yaml",
+    "build:mainnet": "npm run build subgraph.mainnet.yaml",
+    "deploy:mainnet": "graph deploy --studio acre-mainnet subgraph.mainnet.yaml"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.71.0",
@@ -28,6 +36,7 @@
     "@typescript-eslint/parser": "^6.12.0",
     "eslint": "^8.54.0",
     "matchstick-as": "0.6.0",
+    "mustache": "^4.2.0",
     "prettier": "^3.1.0"
   }
 }
