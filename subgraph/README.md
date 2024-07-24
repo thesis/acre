@@ -28,7 +28,7 @@ By the moment, there one subgraph have been developed:
 3. Build the subgraph:
 
    ```
-   pnpm codegen-sepolia && pnpm build-sepolia
+   pnpm codegen:sepolia && pnpm build:sepolia
    ```
 
 ### Deploy the subgraph locally
@@ -62,7 +62,7 @@ create a private one
 4. Allocate the subgraph name in the local Graph Node:
 
    ```
-   pnpm create-local
+   pnpm create:local
    ```
 
 Note: use it only if your subgraph is not created in the local Graph node.
@@ -70,7 +70,7 @@ Note: use it only if your subgraph is not created in the local Graph node.
 5. Deploy the subgraph to your local Graph Node:
 
    ```
-   pnpm deploy-local
+   pnpm deploy:local
    ```
 
 6. Create Subgraph queries and preview of the entities:
@@ -101,7 +101,7 @@ Note: use it only if your subgraph is not created in the local Graph node.
 4. Build the subgraph for a given network:
 
    ```
-   pnpm codegen-mainnet && pnpm build-mainnet
+   pnpm codegen:mainnet && pnpm build:mainnet
    ```
 
    or
