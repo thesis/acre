@@ -59,13 +59,18 @@ class Acre {
    * @param network - Bitcoin network.
    * @param tbtcApiUrl - tBTC API URL.
    * @param ethereumRpcUrl - Ethereum RPC URL.
+   * @param gelatoApiKey - Gelato API key.
+   * @param subgraphApiKey - The subgraph API key.
    */
   static async initialize(
     network: BitcoinNetwork,
     tbtcApiUrl: string,
     ethereumRpcUrl: string,
     gelatoApiKey: string,
-    subgraphApi: string,
+    // This will be used, when we switch to the production Acre subgraph API
+    // URL.
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    subgraphApiKey: string,
   ) {
     const ethereumNetwork: EthereumNetwork =
       Acre.resolveEthereumNetwork(network)
@@ -91,7 +96,13 @@ class Acre {
       ethereumNetwork,
     )
 
-    const subgraph = AcreSubgraphApi.init(network, subgraphApi)
+    const acreSubgraphApiUrl =
+      network === BitcoinNetwork.Mainnet
+        ? // TODO: Set the production URL. This is the development query url.
+          "https://api.studio.thegraph.com/query/73600/acre-mainnet/version/latest"
+        : "https://api.studio.thegraph.com/query/73600/acre/version/latest"
+
+    const subgraph = new AcreSubgraphApi(acreSubgraphApiUrl)
 
     const protocol = new Protocol(contracts)
 

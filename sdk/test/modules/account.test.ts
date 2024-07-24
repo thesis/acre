@@ -72,7 +72,7 @@ const stakingInitializationData: {
 describe("Account", () => {
   const contracts: AcreContracts = new MockAcreContracts()
   const tbtc = new MockTbtc()
-  const acreSubgraph = new AcreSubgraphApi("test", "test")
+  const acreSubgraph = new AcreSubgraphApi("test")
   const bitcoinProvider = new MockBitcoinProvider()
   const orangeKit: OrangeKitSdk =
     new MockOrangeKitSdk() as unknown as OrangeKitSdk
