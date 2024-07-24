@@ -53,5 +53,7 @@ export function ConnectWalletModalBase({
   )
 }
 
-const ConnectWalletModal = withBaseModal(ConnectWalletModalBase)
+const ConnectWalletModal = withBaseModal(ConnectWalletModalBase, {
+  returnFocusOnClose: false,
+})
 export default ConnectWalletModal
