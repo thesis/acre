@@ -19,4 +19,8 @@ export const CONNECTION_ERRORS: Record<string, ConnectionErrorData> = {
     title: "Something went wrong...",
     description: "We encountered an error. Please try again.",
   },
+  INVALID_SIWW_SIGNATURE: {
+    title: "Invalid Sign In With Wallet signature",
+    description: "We encountered an error. Please try again.",
+  },
 }

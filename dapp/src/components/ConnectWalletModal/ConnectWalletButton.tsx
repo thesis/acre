@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react"
-import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
+import { CONNECTION_ERRORS, ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import {
   useAppDispatch,
   useModal,
@@ -61,7 +61,7 @@ export default function ConnectWalletButton({
     onDisconnect,
     status: connectionStatus,
   } = useWallet()
-  const { signMessage, status: signMessageStatus } = useSignMessage()
+  const { signMessageAsync, status: signMessageStatus } = useSignMessage()
   const { closeModal } = useModal()
   const dispatch = useAppDispatch()
 
@@ -83,17 +83,21 @@ export default function ConnectWalletButton({
   }, [closeModal, dispatch, onSuccess])
 
   const handleSignMessage = useCallback(
-    (connectedConnector: OrangeKitConnector, btcAddress: string) => {
+    async (connectedConnector: OrangeKitConnector, btcAddress: string) => {
       const message = orangeKit.createSignInWithWalletMessage(btcAddress)
-      signMessage(
-        {
-          message,
-          connector: orangeKit.typeConversionToConnector(connectedConnector),
-        },
-        { onSuccess: onSuccessSignMessage },
-      )
+      const signedMessage = await signMessageAsync({
+        message,
+        connector: orangeKit.typeConversionToConnector(connectedConnector),
+      })
+
+      try {
+        await orangeKit.verifySignInWithWalletMessage(message, signedMessage)
+        onSuccessSignMessage()
+      } catch (error) {
+        setConnectionError(CONNECTION_ERRORS.INVALID_SIWW_SIGNATURE)
+      }
     },
-    [onSuccessSignMessage, signMessage],
+    [signMessageAsync, onSuccessSignMessage, setConnectionError],
   )
 
   const onSuccessConnection = useCallback(
@@ -102,7 +106,7 @@ export default function ConnectWalletButton({
 
       if (!btcAddress) return
 
-      handleSignMessage(connector, btcAddress)
+      await handleSignMessage(connector, btcAddress)
     },
     [connector, handleSignMessage],
   )
@@ -236,7 +240,9 @@ export default function ConnectWalletButton({
                     mt={4}
                     size="lg"
                     variant="outline"
-                    onClick={() => handleSignMessage(connector, address)}
+                    onClick={() =>
+                      logPromiseFailure(handleSignMessage(connector, address))
+                    }
                   >
                     Resume and try again
                   </Button>
