@@ -13,10 +13,12 @@ import { SignInWithWalletMessage } from "@orangekit/sign-in-with-wallet"
 
 const getWalletInfo = (connector: OrangeKitConnector) => {
   switch (connector.id) {
-    case "orangekit-unisat":
+    case wallets.UNISAT.id:
       return wallets.UNISAT
-    case "orangekit-okx":
+    case wallets.OKX.id:
       return wallets.OKX
+    case wallets.XVERSE.id:
+      return wallets.XVERSE
     default:
       return null
   }

@@ -2,14 +2,10 @@ import React, { useState } from "react"
 import { ModalBody, ModalHeader, ModalCloseButton } from "@chakra-ui/react"
 import { useConnectors, useWalletConnectionError } from "#/hooks"
 import { OrangeKitConnector, BaseModalProps, OnSuccessCallback } from "#/types"
-import { featureFlags } from "#/constants"
+import { wallets } from "#/constants"
 import withBaseModal from "../ModalRoot/withBaseModal"
 import ConnectWalletButton from "./ConnectWalletButton"
 import ConnectWalletErrorAlert from "./ConnectWalletErrorAlert"
-
-const disabledConnectorIds = [
-  !featureFlags.OKX_WALLET_ENABLED ? "orangekit-okx" : "",
-].filter(Boolean)
 
 export function ConnectWalletModalBase({
   onSuccess,
@@ -21,7 +17,7 @@ export function ConnectWalletModalBase({
   const connectors = useConnectors()
   const enabledConnectors = connectors.map((connector) => ({
     ...connector,
-    isDisabled: disabledConnectorIds.includes(connector.id),
+    isDisabled: !wallets.SUPPORTED_WALLET_IDS.includes(connector.id),
   }))
 
   const [selectedConnectorId, setSelectedConnectorId] = useState<string>()
@@ -37,7 +33,7 @@ export function ConnectWalletModalBase({
       {withCloseButton && (
         <ModalCloseButton onClick={() => resetConnectionError()} />
       )}
-      <ModalHeader>Connect your wallet</ModalHeader>
+      <ModalHeader>Select your wallet</ModalHeader>
 
       <ModalBody gap={0}>
         <ConnectWalletErrorAlert {...connectionError} />

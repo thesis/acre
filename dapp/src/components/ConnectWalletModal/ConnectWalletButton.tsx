@@ -8,11 +8,7 @@ import {
 } from "#/hooks"
 import { setIsSignedMessage } from "#/store/wallet"
 import { OrangeKitConnector, OrangeKitError, OnSuccessCallback } from "#/types"
-import {
-  isSupportedBTCAddressType,
-  logPromiseFailure,
-  orangeKit,
-} from "#/utils"
+import { logPromiseFailure, orangeKit } from "#/utils"
 import {
   Button,
   Card,
@@ -110,16 +106,9 @@ export default function ConnectWalletButton({
 
       if (!btcAddress) return
 
-      // This is workaround to disallow Nested SegWit addresses.
-      // Should be handled by OrangeKit
-      if (!isSupportedBTCAddressType(btcAddress)) {
-        onDisconnect()
-        setConnectionError(CONNECTION_ERRORS.NOT_SUPPORTED)
-      } else {
-        await handleSignMessage(connector, btcAddress)
-      }
+      await handleSignMessage(connector, btcAddress)
     },
-    [connector, handleSignMessage, onDisconnect, setConnectionError],
+    [connector, handleSignMessage],
   )
 
   const handleConnection = useCallback(() => {
