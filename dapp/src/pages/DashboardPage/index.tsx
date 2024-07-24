@@ -3,11 +3,9 @@ import { useBitcoinPosition, useTriggerConnectWalletModal } from "#/hooks"
 import { routerPath } from "#/router/path"
 import { PageLayout, PageLayoutColumn } from "./PageLayout"
 import DashboardCard from "./DashboardCard"
-import GrantedSeasonPassCard from "./GrantedSeasonPassCard"
+// import GrantedSeasonPassCard from "./GrantedSeasonPassCard"
 import { CurrentSeasonCard } from "./CurrentSeasonCard"
-import BeehiveCard from "./BeehiveCard"
-
-// TODO: Remove placeholder image and replace with actual gamification content
+import AcrePointsCard from "./AcrePointsCard"
 
 export default function DashboardPage() {
   const { data } = useBitcoinPosition()
@@ -23,11 +21,12 @@ export default function DashboardPage() {
 
       <PageLayoutColumn>
         <CurrentSeasonCard showSeasonStats={false} />
-        <GrantedSeasonPassCard />
+        {/* TODO: Uncomment in post-launch phases */}
+        {/* <GrantedSeasonPassCard /> */}
       </PageLayoutColumn>
 
       <PageLayoutColumn position="relative">
-        <BeehiveCard />
+        <AcrePointsCard />
       </PageLayoutColumn>
     </PageLayout>
   )

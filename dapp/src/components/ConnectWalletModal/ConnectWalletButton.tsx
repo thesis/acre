@@ -8,11 +8,7 @@ import {
 } from "#/hooks"
 import { setIsSignedMessage } from "#/store/wallet"
 import { OrangeKitConnector, OrangeKitError, OnSuccessCallback } from "#/types"
-import {
-  isSupportedBTCAddressType,
-  logPromiseFailure,
-  orangeKit,
-} from "#/utils"
+import { logPromiseFailure, orangeKit } from "#/utils"
 import {
   Button,
   Card,
@@ -65,7 +61,7 @@ export default function ConnectWalletButton({
     onDisconnect,
     status: connectionStatus,
   } = useWallet()
-  const { signMessage, status: signMessageStatus } = useSignMessage()
+  const { signMessageAsync, status: signMessageStatus } = useSignMessage()
   const { closeModal } = useModal()
   const dispatch = useAppDispatch()
 
@@ -87,17 +83,21 @@ export default function ConnectWalletButton({
   }, [closeModal, dispatch, onSuccess])
 
   const handleSignMessage = useCallback(
-    (connectedConnector: OrangeKitConnector, btcAddress: string) => {
+    async (connectedConnector: OrangeKitConnector, btcAddress: string) => {
       const message = orangeKit.createSignInWithWalletMessage(btcAddress)
-      signMessage(
-        {
-          message,
-          connector: orangeKit.typeConversionToConnector(connectedConnector),
-        },
-        { onSuccess: onSuccessSignMessage },
-      )
+      const signedMessage = await signMessageAsync({
+        message,
+        connector: orangeKit.typeConversionToConnector(connectedConnector),
+      })
+
+      try {
+        await orangeKit.verifySignInWithWalletMessage(message, signedMessage)
+        onSuccessSignMessage()
+      } catch (error) {
+        setConnectionError(CONNECTION_ERRORS.INVALID_SIWW_SIGNATURE)
+      }
     },
-    [onSuccessSignMessage, signMessage],
+    [signMessageAsync, onSuccessSignMessage, setConnectionError],
   )
 
   const onSuccessConnection = useCallback(
@@ -106,16 +106,9 @@ export default function ConnectWalletButton({
 
       if (!btcAddress) return
 
-      // This is workaround to disallow Nested Segwit addresses.
-      // Should be handled by OrangeKit
-      if (!isSupportedBTCAddressType(btcAddress)) {
-        onDisconnect()
-        setConnectionError(CONNECTION_ERRORS.NOT_SUPPORTED)
-      } else {
-        handleSignMessage(connector, btcAddress)
-      }
+      await handleSignMessage(connector, btcAddress)
     },
-    [connector, handleSignMessage, onDisconnect, setConnectionError],
+    [connector, handleSignMessage],
   )
 
   const handleConnection = useCallback(() => {
@@ -247,7 +240,9 @@ export default function ConnectWalletButton({
                     mt={4}
                     size="lg"
                     variant="outline"
-                    onClick={() => handleSignMessage(connector, address)}
+                    onClick={() =>
+                      logPromiseFailure(handleSignMessage(connector, address))
+                    }
                   >
                     Resume and try again
                   </Button>

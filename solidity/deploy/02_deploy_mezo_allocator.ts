@@ -11,6 +11,8 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const tbtc = await deployments.get("TBTC")
   const mezoPortal = await deployments.get("MezoPortal")
 
+  console.log("mezoPortal", mezoPortal.address)
+
   const [, deployment] = await helpers.upgrades.deployProxy("MezoAllocator", {
     factoryOpts: {
       signer: deployer,
@@ -34,3 +36,5 @@ export default func
 
 func.tags = ["MezoAllocator"]
 func.dependencies = ["TBTC", "stBTC", "MezoPortal"]
+func.skip = async (hre: HardhatRuntimeEnvironment): Promise<boolean> =>
+  Promise.resolve(hre.network.name === "integration")
