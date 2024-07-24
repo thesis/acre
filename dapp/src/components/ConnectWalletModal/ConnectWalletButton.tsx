@@ -45,7 +45,7 @@ const collapseVariants: Variants = {
   expanded: { height: "auto" },
 }
 
-const nonLedgerWallets = ["orangekit-xverse"]
+const nonLedgerWallets = ["orangekit-okx", "orangekit-xverse"]
 
 export default function ConnectWalletButton({
   label,
@@ -208,9 +208,7 @@ export default function ConnectWalletButton({
               borderColor="gold.500"
               color="grey.700"
             >
-              {nonLedgerWallets.includes(connector.id)
-                ? "Ledger not supported"
-                : "Coming soon"}
+              {connector.isDisabled ? "Coming soon" : "Ledger not supported"}
             </Tag>
           )}
         </Button>
