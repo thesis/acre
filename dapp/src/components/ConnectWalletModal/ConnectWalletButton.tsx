@@ -65,7 +65,7 @@ export default function ConnectWalletButton({
     onDisconnect,
     status: connectionStatus,
   } = useWallet()
-  const { signMessage, status: signMessageStatus } = useSignMessage()
+  const { signMessageAsync, status: signMessageStatus } = useSignMessage()
   const { closeModal } = useModal()
   const dispatch = useAppDispatch()
 
@@ -87,17 +87,21 @@ export default function ConnectWalletButton({
   }, [closeModal, dispatch, onSuccess])
 
   const handleSignMessage = useCallback(
-    (connectedConnector: OrangeKitConnector, btcAddress: string) => {
+    async (connectedConnector: OrangeKitConnector, btcAddress: string) => {
       const message = orangeKit.createSignInWithWalletMessage(btcAddress)
-      signMessage(
-        {
-          message,
-          connector: orangeKit.typeConversionToConnector(connectedConnector),
-        },
-        { onSuccess: onSuccessSignMessage },
-      )
+      const signedMessage = await signMessageAsync({
+        message,
+        connector: orangeKit.typeConversionToConnector(connectedConnector),
+      })
+
+      try {
+        await orangeKit.verifySignInWithWalletMessage(message, signedMessage)
+        onSuccessSignMessage()
+      } catch (error) {
+        setConnectionError(CONNECTION_ERRORS.INVALID_SIWW_SIGNATURE)
+      }
     },
-    [onSuccessSignMessage, signMessage],
+    [signMessageAsync, onSuccessSignMessage, setConnectionError],
   )
 
   const onSuccessConnection = useCallback(
@@ -112,7 +116,7 @@ export default function ConnectWalletButton({
         onDisconnect()
         setConnectionError(CONNECTION_ERRORS.NOT_SUPPORTED)
       } else {
-        handleSignMessage(connector, btcAddress)
+        await handleSignMessage(connector, btcAddress)
       }
     },
     [connector, handleSignMessage, onDisconnect, setConnectionError],
