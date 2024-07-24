@@ -251,7 +251,9 @@ export default function ConnectWalletButton({
                     mt={4}
                     size="lg"
                     variant="outline"
-                    onClick={() => handleSignMessage(connector, address)}
+                    onClick={() =>
+                      logPromiseFailure(handleSignMessage(connector, address))
+                    }
                   >
                     Resume and try again
                   </Button>
