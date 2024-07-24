@@ -1,4 +1,5 @@
 import {
+  DATE_FORMAT_LOCALE_TAG,
   ONE_DAY_IN_SECONDS,
   ONE_HOUR_IN_SECONDS,
   ONE_MINUTE_IN_SECONDS,
@@ -40,7 +41,7 @@ const unitsToDivisor: [Intl.RelativeTimeFormatUnit, number, number][] = [
   ["month", ONE_YEAR_IN_SECONDS, ONE_MONTH_IN_SECONDS],
   ["year", Infinity, ONE_YEAR_IN_SECONDS],
 ]
-const rtf = new Intl.RelativeTimeFormat("en-gb")
+const rtf = new Intl.RelativeTimeFormat(DATE_FORMAT_LOCALE_TAG)
 
 /**
  * The problem of displaying relative time has already been solved in Threshold Network
@@ -64,12 +65,15 @@ export const getRelativeTime = (dateOrUnixTimestamp: Date | number): string => {
   return rtf.format(Math.floor(diff / divisor), unit)
 }
 
-// The function displays the date in the format: 21/11/2023, 16:02
+// The function displays the date in the format: 21 Nov 2024, 16:02
 export const formatBlockTimestamp = (blockTimestamp: number) =>
-  new Date(blockTimestamp * ONE_SEC_IN_MILLISECONDS).toLocaleString([], {
-    dateStyle: "short",
-    timeStyle: "short",
-  })
+  new Date(blockTimestamp * ONE_SEC_IN_MILLISECONDS).toLocaleString(
+    DATE_FORMAT_LOCALE_TAG,
+    {
+      dateStyle: "medium",
+      timeStyle: "short",
+    },
+  )
 
 export const displayBlockTimestamp = (blockTimestamp: number) => {
   const diff = Math.round(dateToUnixTimestamp() - blockTimestamp)

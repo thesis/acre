@@ -31,7 +31,7 @@ jobs:
         run: pnpm install --prefer-offline --frozen-lockfile
 
       - name: Codegen
-        run: pnpm run codegen
+        run: pnpm run codegen:sepolia
 
       - name: Upload Codegen Artifacts
         uses: actions/upload-artifact@v4
@@ -93,7 +93,7 @@ jobs:
         run: pnpm install --prefer-offline --frozen-lockfile
 
       - name: Build
-        run: pnpm run build
+        run: pnpm run build:sepolia
 
   subgraph-test:
     needs: [subgraph-codegen]

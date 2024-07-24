@@ -106,7 +106,7 @@ export default function ConnectWalletButton({
 
       if (!btcAddress) return
 
-      // This is workaround to disallow Nested Segwit addresses.
+      // This is workaround to disallow Nested SegWit addresses.
       // Should be handled by OrangeKit
       if (!isSupportedBTCAddressType(btcAddress)) {
         onDisconnect()

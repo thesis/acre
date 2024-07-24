@@ -159,6 +159,9 @@ importers:
       ethers:
         specifier: 6.10.0
         version: 6.10.0
+      ethers-v5:
+        specifier: npm:ethers@^5.5.2
+        version: /ethers@5.7.2
     devDependencies:
       '@thesis-co/eslint-config':
         specifier: github:thesis/eslint-config#7b9bc8c
@@ -333,6 +336,9 @@ importers:
       matchstick-as:
         specifier: 0.6.0
         version: 0.6.0
+      mustache:
+        specifier: ^4.2.0
+        version: 4.2.0
       prettier:
         specifier: ^3.1.0
         version: 3.3.2
@@ -9369,16 +9375,6 @@ packages:
       - debug
     dev: false
 
-  /axios@1.7.2:
-    resolution: {integrity: sha512-2A8QhOMrbomlDuiLeK9XibIBzuHeRcqqNOHp0Cyp5EoJ1IFDh+XZH3A6BkXtv0K4gFGCI0Y4BM7B1wOEi0Rmgw==}
-    dependencies:
-      follow-redirects: 1.15.6(debug@4.3.4)
-      form-data: 4.0.0
-      proxy-from-env: 1.1.0
-    transitivePeerDependencies:
-      - debug
-    dev: true
-
   /axios@1.7.2(debug@4.3.5):
     resolution: {integrity: sha512-2A8QhOMrbomlDuiLeK9XibIBzuHeRcqqNOHp0Cyp5EoJ1IFDh+XZH3A6BkXtv0K4gFGCI0Y4BM7B1wOEi0Rmgw==}
     dependencies:
@@ -12211,7 +12207,7 @@ packages:
         optional: true
     dependencies:
       '@solidity-parser/parser': 0.14.5
-      axios: 1.7.2
+      axios: 1.7.2(debug@4.3.5)
       cli-table3: 0.5.1
       colors: 1.4.0
       ethereum-cryptography: 1.2.0
@@ -12974,6 +12970,7 @@ packages:
         optional: true
     dependencies:
       debug: 4.3.4(supports-color@8.1.1)
+    dev: false
 
   /follow-redirects@1.15.6(debug@4.3.5):
     resolution: {integrity: sha512-wWN62YITEaOpSK584EZXJafH1AGpO8RVgElfkuXbTOrPX4fIfOyEpW/CsiNd8JdYrAoOvafRTOEnvsO++qCqFA==}
@@ -16594,6 +16591,11 @@ packages:
       encode-utf8: 1.0.3
       fmix: 0.1.0
       imul: 1.0.1
+    dev: true
+
+  /mustache@4.2.0:
+    resolution: {integrity: sha512-71ippSywq5Yb7/tVYyGbkBggbU8H3u5Rz56fH60jGFgr8uHwxs+aSKeqmluIVzM0m0kB7xQjKS6qPfd0b2ZoqQ==}
+    hasBin: true
     dev: true
 
   /nan@2.20.0:
