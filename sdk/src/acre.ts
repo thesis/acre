@@ -67,9 +67,6 @@ class Acre {
     tbtcApiUrl: string,
     ethereumRpcUrl: string,
     gelatoApiKey: string,
-    // This will be used, when we switch to the production Acre subgraph API
-    // URL.
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     subgraphApiKey: string,
   ) {
     const ethereumNetwork: EthereumNetwork =
@@ -98,8 +95,7 @@ class Acre {
 
     const acreSubgraphApiUrl =
       network === BitcoinNetwork.Mainnet
-        ? // TODO: Set the production URL. This is the development query url.
-          "https://api.studio.thegraph.com/query/73600/acre-mainnet/version/latest"
+        ? `https://gateway-arbitrum.network.thegraph.com/api/${subgraphApiKey}/subgraphs/id/DJfS9X5asHtFEdAPikBcSLw8jtKmFcbReQVEa2iY9C9`
         : "https://api.studio.thegraph.com/query/73600/acre/version/latest"
 
     const subgraph = new AcreSubgraphApi(acreSubgraphApiUrl)
