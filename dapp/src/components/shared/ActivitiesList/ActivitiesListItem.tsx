@@ -42,7 +42,7 @@ function ActivitiesListItem(props: ActivitiesListItemProps) {
           <CurrencyBalance amount={amount} currency="bitcoin" />
         </AlertTitle>
 
-        <AlertDescription justify="space-between" as={HStack}>
+        <AlertDescription display="flex" justifyContent="space-between" mt={1}>
           {isCompleted ? (
             <Button
               variant="link"
@@ -62,30 +62,21 @@ function ActivitiesListItem(props: ActivitiesListItemProps) {
               </Text> */}
             </>
           )}
+
+          {txHash && status === "pending" && (
+            <BlockExplorerLink
+              id={txHash}
+              chain="bitcoin"
+              type="transaction"
+              display="flex"
+              ml="auto"
+            >
+              <ArrowUpRight color="brand.400" boxSize={4} alignSelf="center" />
+              <VisuallyHidden>View transaction details</VisuallyHidden>
+            </BlockExplorerLink>
+          )}
         </AlertDescription>
       </VStack>
-
-      {txHash && status === "pending" && (
-        <BlockExplorerLink
-          id={txHash}
-          chain="bitcoin"
-          type="transaction"
-          display="flex"
-          my={-4}
-          ml={6}
-          mr={-6}
-          h="auto"
-          alignSelf="stretch"
-          borderLeftWidth={1}
-          borderColor="inherit"
-          rounded={0}
-          px={4}
-          py={5}
-        >
-          <ArrowUpRight color="gray.500" boxSize={4} alignSelf="center" />
-          <VisuallyHidden>View transaction details</VisuallyHidden>
-        </BlockExplorerLink>
-      )}
     </Alert>
   )
 }

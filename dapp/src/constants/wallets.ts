@@ -27,7 +27,7 @@ const XVERSE: WalletInfo = {
   id: "orangekit-xverse",
   downloadUrls: {
     desktop:
-      "https://chromewebstore.google.com/detail/xverse-wallet/idnnbdplmphpflfnlkomgpfbpcgelopg?hl=en-GB&authuser=1",
+      "https://chromewebstore.google.com/detail/xverse-wallet/idnnbdplmphpflfnlkomgpfbpcgelopg",
   },
 }
 
