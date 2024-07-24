@@ -49,6 +49,7 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
           amount={seasonTotalAssets}
           currency="bitcoin"
           variant="greater-balance-md"
+          desiredDecimals={2}
         />
       </ProgressBar>
 

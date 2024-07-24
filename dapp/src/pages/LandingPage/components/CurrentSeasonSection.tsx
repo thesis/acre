@@ -75,6 +75,7 @@ export default function CurrentSeasonSection() {
             currency="bitcoin"
             variant="greater-balance-xl"
             symbolFontWeight="black"
+            desiredDecimals={2}
             // TODO: Refactor `CurrencyBalance` to make font styles truely adjustable
           />
         </ProgressBar>
@@ -91,6 +92,7 @@ export default function CurrentSeasonSection() {
             size="xl"
             amount={SEASON_CAP}
             currency="bitcoin"
+            desiredDecimals={0}
           />
         </TextXl>
 
