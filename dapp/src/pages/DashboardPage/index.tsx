@@ -5,7 +5,7 @@ import { PageLayout, PageLayoutColumn } from "./PageLayout"
 import DashboardCard from "./DashboardCard"
 // import GrantedSeasonPassCard from "./GrantedSeasonPassCard"
 import { CurrentSeasonCard } from "./CurrentSeasonCard"
-import BeehiveCard from "./BeehiveCard"
+import AcrePointsCard from "./AcrePointsCard"
 
 export default function DashboardPage() {
   const { data } = useBitcoinPosition()
@@ -26,7 +26,7 @@ export default function DashboardPage() {
       </PageLayoutColumn>
 
       <PageLayoutColumn position="relative">
-        <BeehiveCard />
+        <AcrePointsCard />
       </PageLayoutColumn>
     </PageLayout>
   )
