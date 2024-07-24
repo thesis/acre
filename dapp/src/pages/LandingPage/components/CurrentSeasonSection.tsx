@@ -55,11 +55,10 @@ export default function CurrentSeasonSection() {
           }}
         />
 
-        <H3 mb={2}>Season 1. Staking is live!</H3>
+        <H3 mb={2}>Season 1 staking is live!</H3>
 
         <TextLg mb={12}>
-          Season 1 stakers will harvest Mezo points and get priority access to
-          Bitcoin yield
+          Season 1 stakers will soon be able to earn Acre and Mezo points.
         </TextLg>
 
         <TextMd fontWeight="semibold" mb={4}>
