@@ -7,6 +7,7 @@ export const numberToLocaleString = (
   if (number === 0) return `0.${"0".repeat(desiredDecimals)}`
 
   return number.toLocaleString("default", {
+    minimumFractionDigits: desiredDecimals,
     maximumFractionDigits: desiredDecimals,
   })
 }

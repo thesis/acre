@@ -163,6 +163,7 @@ export default function TokenBalanceInput({
             setAmount(valueRef?.current)
           }}
           decimalScale={decimals}
+          allowNegative={false}
         />
 
         {withMaxButton && (

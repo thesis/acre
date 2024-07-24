@@ -1,10 +1,10 @@
 import React from "react"
 import { SkeletonProps } from "@chakra-ui/react"
-import { useIsSignedMessage } from "#/hooks"
+import useIsFetchedWalletData from "#/hooks/useIsFetchedWalletData"
 import Skeleton from "./Skeleton"
 
 export default function UserDataSkeleton({ ...props }: SkeletonProps) {
-  const isSignedMessage = useIsSignedMessage()
+  const isFetchedWalletData = useIsFetchedWalletData()
 
-  return <Skeleton isLoaded={isSignedMessage} {...props} />
+  return <Skeleton isLoaded={isFetchedWalletData} {...props} />
 }

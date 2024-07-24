@@ -20,3 +20,5 @@ export default func
 
 func.tags = ["UpdatePauseAdminStBTC"]
 func.dependencies = ["stBTC"]
+func.skip = async (hre: HardhatRuntimeEnvironment): Promise<boolean> =>
+  Promise.resolve(hre.network.name === "integration")

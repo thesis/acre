@@ -12,6 +12,7 @@ interface ImportMetaEnv {
   readonly VITE_FEATURE_FLAG_OKX_WALLET_ENABLED: string
   readonly VITE_FEATURE_FLAG_XVERSE_WALLET_ENABLED: string
   readonly VITE_SUBGRAPH_API_KEY: string
+  readonly VITE_LATEST_COMMIT_HASH: string
 }
 
 interface ImportMeta {
