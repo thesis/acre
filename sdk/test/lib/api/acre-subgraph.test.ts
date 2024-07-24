@@ -1,15 +1,10 @@
 import { EthereumAddress } from "@keep-network/tbtc-v2.ts"
 import { ethers } from "ethers"
-import * as TbtcSubgraphApiModule from "../../../src/lib/api/TbtcSubgraphApi"
-import TbtcSubgraphApi, {
-  buildSearchRedemptionsByIdQuery,
-} from "../../../src/lib/api/TbtcSubgraphApi"
 import AcreSubgraphApi, {
   buildGetDepositsByOwnerQuery,
   buildGetWithdrawalsByOwnerQuery,
 } from "../../../src/lib/api/AcreSubgraphApi"
 import { DepositStatus } from "../../../src/lib/api/TbtcApi"
-import { Hex } from "../../../src/lib/utils"
 
 const subgraphData = {
   data: {
@@ -71,27 +66,13 @@ const expectedDepositData = [
   },
 ]
 
-const tbtcSubgraphData = {
-  data: {
-    searchRedemption: [
-      {
-        id: "0x047078deab9f2325ce5adc483d6b28dfb32547017ffb73f857482b51b622d5eb-0",
-        completedTxHash:
-          "0x844b472231eaaeba765e375dad992c7468deaa81b42d2977cebbf441069b2001",
-      },
-      {
-        id: "0xa40df409c4e463cb0c7744df310ad8714a01c40bcf6807cb2b4266ffa0b860ea-0",
-        completedTxHash: null,
-      },
-    ],
-  },
-}
 const acreSubgraphWithdrawalsData = {
   data: {
     withdraws: [
       {
         id: "0x047078deab9f2325ce5adc483d6b28dfb32547017ffb73f857482b51b622d5eb-1",
-        bitcoinTransactionId: null,
+        bitcoinTransactionId:
+          "01209B0641F4BBCE77292DB481AADE68742C99AD5D375E76BAAEEA3122474B84",
         amount: "10000000000000000",
         events: [
           {
@@ -118,11 +99,8 @@ const acreSubgraphWithdrawalsData = {
 const expectedWithdrawalsData = [
   {
     id: "0x047078deab9f2325ce5adc483d6b28dfb32547017ffb73f857482b51b622d5eb-1",
-    bitcoinTransactionId: Hex.from(
-      "0x844b472231eaaeba765e375dad992c7468deaa81b42d2977cebbf441069b2001",
-    )
-      .reverse()
-      .toString(),
+    bitcoinTransactionId:
+      "01209B0641F4BBCE77292DB481AADE68742C99AD5D375E76BAAEEA3122474B84",
     amount: 10000000000000000n,
     timestamp: 1718871276,
   },
@@ -136,16 +114,7 @@ const expectedWithdrawalsData = [
 
 describe("Acre Subgraph API", () => {
   const subgraphApiUrl = "https://subgraph.test"
-  const tbtcSubgraphApiUrl = "https://tbtc.subgraph.test"
-  const subgraph = new AcreSubgraphApi(subgraphApiUrl, tbtcSubgraphApiUrl)
-
-  const mockTbtcSubgraphApi = {
-    getRedemptionsByIds: jest.fn(),
-  } as unknown as TbtcSubgraphApi
-
-  jest
-    .spyOn(TbtcSubgraphApiModule, "default")
-    .mockReturnValue(mockTbtcSubgraphApi)
+  const subgraph = new AcreSubgraphApi(subgraphApiUrl)
 
   const depositOwnerId = EthereumAddress.from(
     ethers.Wallet.createRandom().address,
@@ -197,33 +166,20 @@ describe("Acre Subgraph API", () => {
   })
 
   describe("getWithdrawalsByOwner", () => {
-    const spyOnFetch = jest
-      .spyOn(global, "fetch")
-      .mockImplementationOnce(() =>
-        // @ts-expect-error We only mock fields/methods used in the code.
-        Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve(acreSubgraphWithdrawalsData),
-        }),
-      )
-      .mockImplementationOnce(() =>
-        // @ts-expect-error We only mock fields/methods used in the code.
-        Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve(tbtcSubgraphData),
-        }),
-      )
+    const spyOnFetch = jest.spyOn(global, "fetch").mockImplementationOnce(() =>
+      // @ts-expect-error We only mock fields/methods used in the code.
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(acreSubgraphWithdrawalsData),
+      }),
+    )
 
     const mockedURLObject = {} as URL
-    const mockedTbtcUrlObject = {} as URL
     const spyOnURL = jest
       .spyOn(global, "URL")
       .mockReturnValueOnce(mockedURLObject)
-      .mockReturnValueOnce(mockedTbtcUrlObject)
 
     const query = buildGetWithdrawalsByOwnerQuery(depositOwnerId)
-    const ids: string[] = expectedWithdrawalsData.map((withdraw) => withdraw.id)
-    const tbtcSubgraphQuery = buildSearchRedemptionsByIdQuery(ids)
 
     let result: Awaited<ReturnType<AcreSubgraphApi["getWithdrawalsByOwner"]>>
 
@@ -235,23 +191,10 @@ describe("Acre Subgraph API", () => {
       expect(spyOnURL).toHaveBeenNthCalledWith(1, "", subgraphApiUrl)
     })
 
-    it("should create the URL object for tBTC subgraph", () => {
-      expect(spyOnURL).toHaveBeenNthCalledWith(2, "", tbtcSubgraphApiUrl)
-    })
-
     it("should send POST request to Acre subgraph", () => {
       expect(spyOnFetch).toHaveBeenNthCalledWith(1, mockedURLObject, {
         method: "POST",
         body: JSON.stringify({ query }),
-        credentials: undefined,
-        headers: { "Content-Type": "application/json" },
-      })
-    })
-
-    it("should send POST request to tBTC subgraph", () => {
-      expect(spyOnFetch).toHaveBeenNthCalledWith(2, mockedTbtcUrlObject, {
-        method: "POST",
-        body: JSON.stringify({ query: tbtcSubgraphQuery }),
         credentials: undefined,
         headers: { "Content-Type": "application/json" },
       })
