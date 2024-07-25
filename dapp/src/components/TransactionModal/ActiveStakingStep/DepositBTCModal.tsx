@@ -11,7 +11,7 @@ import {
 } from "#/hooks"
 import { eip1193, logPromiseFailure } from "#/utils"
 import { PROCESS_STATUSES } from "#/types"
-import { Highlight } from "@chakra-ui/react"
+import { Highlight, ModalCloseButton } from "@chakra-ui/react"
 import { TextMd } from "#/components/shared/Typography"
 import { setStatus, setTxHash } from "#/store/action-flow"
 import { queryKeysFactory } from "#/constants"
@@ -96,18 +96,21 @@ export default function DepositBTCModal() {
   }, [handledDepositBTC])
 
   return (
-    <TriggerTransactionModal callback={handledDepositBTCWrapper}>
-      <Alert variant="elevated">
-        <AlertIcon />
-        <AlertDescription>
-          <TextMd>
-            <Highlight query="Rewards" styles={{ fontWeight: "bold" }}>
-              You will receive your Rewards once the deposit transaction is
-              completed.
-            </Highlight>
-          </TextMd>
-        </AlertDescription>
-      </Alert>
-    </TriggerTransactionModal>
+    <>
+      <ModalCloseButton />
+      <TriggerTransactionModal callback={handledDepositBTCWrapper}>
+        <Alert variant="elevated">
+          <AlertIcon />
+          <AlertDescription>
+            <TextMd>
+              <Highlight query="Rewards" styles={{ fontWeight: "bold" }}>
+                You will receive your Rewards once the deposit transaction is
+                completed.
+              </Highlight>
+            </TextMd>
+          </AlertDescription>
+        </Alert>
+      </TriggerTransactionModal>
+    </>
   )
 }
