@@ -8,7 +8,7 @@ export const CONNECTION_ERRORS: Record<string, ConnectionErrorData> = {
   NOT_SUPPORTED: {
     title: "Not supported.",
     description:
-      "Only Native Segwit or Legacy addresses supported at this time. Please try a different address or another wallet.",
+      "Only Native SegWit, Nested SegWit or Legacy addresses supported at this time. Please try a different address or another wallet.",
   },
   NETWORK_MISMATCH: {
     title: "Error!",
@@ -17,6 +17,10 @@ export const CONNECTION_ERRORS: Record<string, ConnectionErrorData> = {
   },
   DEFAULT: {
     title: "Something went wrong...",
+    description: "We encountered an error. Please try again.",
+  },
+  INVALID_SIWW_SIGNATURE: {
+    title: "Invalid Sign In With Wallet signature",
     description: "We encountered an error. Please try again.",
   },
 }

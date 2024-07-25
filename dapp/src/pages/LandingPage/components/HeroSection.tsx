@@ -26,7 +26,7 @@ export default function HeroSection() {
         Bitcoin staking done right.
       </H2>
       <TextLg lineHeight={7} mb={10} fontWeight="medium">
-        The open source, decentralized way to grow your bitcoin
+        The open-source, decentralized way to grow your Bitcoin
       </TextLg>
       {!isMobileMode && (
         <Button

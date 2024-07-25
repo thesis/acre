@@ -34,3 +34,5 @@ export default func
 
 func.tags = ["BitcoinRedeemer"]
 func.dependencies = ["TBTC", "stBTC", "TBTCVault"]
+func.skip = async (hre: HardhatRuntimeEnvironment): Promise<boolean> =>
+  Promise.resolve(hre.network.name === "integration")

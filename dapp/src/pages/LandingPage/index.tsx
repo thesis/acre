@@ -35,7 +35,7 @@ export default function LandingPage() {
         <VStack
           spacing={4}
           w="full"
-          maxW="79.25rem" // 1268px
+          maxW="landing_page_content_width"
           px={{ base: 0, md: 6, xl: 0 }}
           mx="auto"
           align="stretch"
@@ -60,7 +60,7 @@ export default function LandingPage() {
 
             <CardBody
               as={Flex}
-              direction={{ base: "column", md: "row" }}
+              direction={{ base: "column", lg: "row" }}
               gap={12}
               align="center"
               justify="center"

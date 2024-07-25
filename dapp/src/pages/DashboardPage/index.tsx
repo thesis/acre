@@ -1,16 +1,15 @@
-import React from "react"
+import MobileModeBanner from "#/components/MobileModeBanner"
 import {
   useBitcoinPosition,
   useMobileMode,
   useTriggerConnectWalletModal,
 } from "#/hooks"
 import { routerPath } from "#/router/path"
-import MobileModeBanner from "#/components/MobileModeBanner"
-import { PageLayout, PageLayoutColumn } from "./PageLayout"
 import DashboardCard from "./DashboardCard"
-import GrantedSeasonPassCard from "./GrantedSeasonPassCard"
+import { PageLayout, PageLayoutColumn } from "./PageLayout"
+// import GrantedSeasonPassCard from "./GrantedSeasonPassCard"
+import AcrePointsCard from "./AcrePointsCard"
 import { CurrentSeasonCard } from "./CurrentSeasonCard"
-import BeehiveCard from "./BeehiveCard"
 
 export default function DashboardPage() {
   const { data } = useBitcoinPosition()
@@ -28,11 +27,12 @@ export default function DashboardPage() {
 
       <PageLayoutColumn>
         <CurrentSeasonCard showSeasonStats={false} />
-        <GrantedSeasonPassCard />
+        {/* TODO: Uncomment in post-launch phases */}
+        {/* <GrantedSeasonPassCard /> */}
       </PageLayoutColumn>
 
       <PageLayoutColumn position="relative">
-        <BeehiveCard />
+        <AcrePointsCard />
       </PageLayoutColumn>
     </PageLayout>
   )

@@ -11,7 +11,7 @@ import {
   Image,
 } from "@chakra-ui/react"
 import { ArrowUpRight, MezoSignIcon } from "#/assets/icons"
-import { useIsSignedMessage, useModal } from "#/hooks"
+import { useIsFetchedWalletData, useModal } from "#/hooks"
 import { MODAL_TYPES } from "#/types"
 import mezoBeehiveCardIllustrationSrc from "#/assets/images/mezo-beehive-card-illustration.svg"
 import beehiveIllustrationSrc from "#/assets/images/beehive-illustration.svg"
@@ -21,7 +21,7 @@ const MARGIN = 4
 
 export default function BeehiveCard(props: CardProps) {
   const { openModal } = useModal()
-  const isSignedMessage = useIsSignedMessage()
+  const isFetchedWalletData = useIsFetchedWalletData()
 
   const handleOpenBeehiveModal = () => {
     openModal(MODAL_TYPES.MEZO_BEEHIVE)
@@ -29,15 +29,21 @@ export default function BeehiveCard(props: CardProps) {
 
   return (
     <Card p={4} {...props}>
-      <CardHeader p={0} mb={4}>
-        <TextMd fontWeight="semibold" color="grey.500">
+      <CardHeader p={0}>
+        <TextMd fontWeight="bold" color="grey.700">
           Beehive
         </TextMd>
       </CardHeader>
 
       <CardBody p={0} mx={-MARGIN}>
-        {isSignedMessage ? (
-          <Image src={mezoBeehiveCardIllustrationSrc} pl={MARGIN} mx="auto" />
+        {isFetchedWalletData ? (
+          <Image
+            src={mezoBeehiveCardIllustrationSrc}
+            pl={MARGIN}
+            w="full"
+            maxW="24.75rem" // 396px
+            mx="auto"
+          />
         ) : (
           <HStack justifyContent="space-between" pl={MARGIN}>
             <UserDataSkeleton boxSize={24} rounded="100%" />
@@ -73,8 +79,12 @@ export default function BeehiveCard(props: CardProps) {
                 variant="ghost"
                 rightIcon={<ArrowUpRight />}
                 color="brand.400"
+                iconSpacing={1}
+                p={0}
+                h="auto"
+                lineHeight={5}
               >
-                More info
+                What is Bibo&apos;s Beehive?
               </Button>
             </CardBody>
           </Card>

@@ -4,6 +4,7 @@ import {
   HStack,
   Icon,
   ModalBody,
+  ModalCloseButton,
   ModalFooter,
   ModalHeader,
   VStack,
@@ -128,6 +129,7 @@ export default function SuccessModal({ type }: SuccessModalProps) {
 
   return (
     <>
+      {type === ACTION_FLOW_TYPES.UNSTAKE && <ModalCloseButton />}
       <ModalHeader>{heading}</ModalHeader>
       <ModalBody gap={10}>
         <VStack gap={4}>

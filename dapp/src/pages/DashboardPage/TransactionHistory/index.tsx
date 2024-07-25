@@ -1,16 +1,16 @@
 import React from "react"
 import { StackProps, VStack, Image } from "@chakra-ui/react"
 import { TextMd } from "#/components/shared/Typography"
-import { useCompletedActivities, useIsSignedMessage } from "#/hooks"
+import { useCompletedActivities, useIsFetchedWalletData } from "#/hooks"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
-import emptyStateIllustration from "#/assets/images/empty-state.png"
+import emptyStateIllustration from "#/assets/images/empty-state.svg"
 import TransactionTable from "./TransactionTable"
 
 function TransactionHistoryContent() {
   const completedActivities = useCompletedActivities()
-  const isSignedMessage = useIsSignedMessage()
+  const isFetchedWalletData = useIsFetchedWalletData()
 
-  if (!isSignedMessage)
+  if (!isFetchedWalletData)
     return (
       <VStack w="100%" spacing={2}>
         {[...Array(3).keys()].map((key) => (
@@ -22,8 +22,11 @@ function TransactionHistoryContent() {
   if (completedActivities.length === 0)
     return (
       <VStack w="100%">
-        <Image src={emptyStateIllustration} alt="" opacity={0.3} />,
-        <TextMd color="grey.400">You have no transactions yet!</TextMd>
+        <Image
+          src={emptyStateIllustration}
+          alt="Stack of paper with magnifying glass"
+        />
+        ,<TextMd color="grey.400">You have no transactions yet!</TextMd>
       </VStack>
     )
 

@@ -51,7 +51,7 @@ const config: HardhatUserConfig = {
     hardhat: {
       forking:
         process.env.FORKING === "true"
-          ? { url: MAINNET_RPC_URL, blockNumber: 19813880 }
+          ? { url: MAINNET_RPC_URL, blockNumber: 20262761 }
           : undefined,
     },
     integration: {
@@ -75,7 +75,7 @@ const config: HardhatUserConfig = {
     deployments: {
       sepolia: ["./external/sepolia"],
       mainnet: ["./external/mainnet"],
-      integration: ["./external/mainnet"],
+      integration: ["./external/mainnet", "./deployments/mainnet"],
     },
   },
 

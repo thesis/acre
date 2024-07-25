@@ -23,9 +23,10 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
   return (
     <VStack
       spacing={4}
-      px={5}
-      py={4}
+      px={4}
+      py={6}
       w="full"
+      minH="12.5rem" // 200px
       align="stretch"
       position="relative"
       {...restProps}
@@ -38,9 +39,9 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
         fontSize="2xl"
         lineHeight={1}
         letterSpacing="-0.03rem" // -0.48px
+        mb="auto"
       >
-        Season 1 <br />
-        Staking is live!
+        Season 1 staking is live!
       </Heading>
 
       <ProgressBar value={seasonProgress} w="auto">
@@ -48,6 +49,7 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
           amount={seasonTotalAssets}
           currency="bitcoin"
           variant="greater-balance-md"
+          desiredDecimals={2}
         />
       </ProgressBar>
 
