@@ -19,9 +19,18 @@ export function LiveTag(props: TagProps) {
       gap={3}
       {...props}
     >
-      <Box pos="relative">
-        <Box rounded="full" w={2} h={2} bg="brand.400" />
+      <Box as="span" display="block" pos="relative">
+        <Box
+          as="span"
+          display="block"
+          rounded="full"
+          w={2}
+          h={2}
+          bg="brand.400"
+        />
         <MotionBox
+          as="span"
+          display="block"
           pos="absolute"
           top={0}
           rounded="full"
