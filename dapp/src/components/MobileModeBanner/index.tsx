@@ -35,7 +35,15 @@ function MobileModeBanner(props: MobileModeBannerProps) {
   if (!isMobileMode) return null
 
   return (
-    <Box order="-1" position="relative" zIndex="mobileBanner" {...restProps}>
+    <Box
+      order="-1"
+      position={isBannerOpen ? "sticky" : "relative"}
+      top={0}
+      w="full"
+      zIndex="mobileBanner"
+      maxH="100vh"
+      {...restProps}
+    >
       <Flex align="center" justify="center" p={4} bg="grey.700">
         <TextMd color="gold.300" textAlign="center" whiteSpace="break-spaces">
           Staking is <LiveTag color="brand.400" gap={1} px={1} py={0} /> on
@@ -70,7 +78,6 @@ function MobileModeBanner(props: MobileModeBannerProps) {
             initial={forceOpen ? false : { height: 0 }}
             animate={{ height: "100vh" }}
             exit={{ height: 0 }}
-            position="fixed"
             w="full"
             overflow="hidden"
           >
