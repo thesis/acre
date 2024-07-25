@@ -10,6 +10,7 @@ export function LiveTag(props: TagProps) {
       px={4}
       py={2}
       rounded="3xl"
+      color="gold.200"
       bg="grey.700"
       variant="solid"
       fontSize="md"
@@ -18,16 +19,25 @@ export function LiveTag(props: TagProps) {
       gap={3}
       {...props}
     >
-      <Box pos="relative">
-        <Box rounded="full" w={2} h={2} bg="brand.400" />
+      <Box as="span" display="block" pos="relative">
+        <Box
+          as="span"
+          display="block"
+          rounded="full"
+          w={2}
+          h={2}
+          bg="brand.400"
+        />
         <MotionBox
+          as="span"
+          display="block"
           pos="absolute"
           top={0}
           rounded="full"
           w={2}
           h={2}
           bg="brand.400"
-          animate={{ scale: [1, 6], opacity: [0.5, 0] }}
+          animate={{ scale: [1, 5.5, 0], opacity: [0.5, 0.1, 0] }}
           transition={{
             duration: 2,
             ease: "easeInOut",
@@ -36,7 +46,6 @@ export function LiveTag(props: TagProps) {
         />
       </Box>
       <TagLabel
-        color="gold.200"
         textTransform="uppercase"
         fontStyle="italic"
         overflow="visible"
