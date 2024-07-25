@@ -5,4 +5,5 @@ export const EXTERNAL_HREF = {
   CONTRACTS: "https://docs.acre.fi/contracts",
   MEZO_INFO: "https://info.mezo.org",
   WEBSITE: "https://acre.fi",
+  X: "https://x.com/AcreBTC",
 }

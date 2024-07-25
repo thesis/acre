@@ -36,8 +36,8 @@ importers:
         specifier: ^11.11.0
         version: 11.11.5(@emotion/react@11.11.4)(@types/react@18.3.3)(react@18.3.1)
       '@orangekit/react':
-        specifier: 1.0.0-beta.25
-        version: 1.0.0-beta.25(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5)(valibot@0.33.2)
+        specifier: 1.0.0-beta.28
+        version: 1.0.0-beta.28(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5)(valibot@0.33.2)
       '@orangekit/sign-in-with-wallet':
         specifier: 1.0.0-beta.6
         version: 1.0.0-beta.6(bech32@2.0.0)(ethers@6.13.0)
@@ -5748,8 +5748,8 @@ packages:
       - ethers
     dev: false
 
-  /@orangekit/react@1.0.0-beta.25(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5)(valibot@0.33.2):
-    resolution: {integrity: sha512-f+FWdt/X+lJbVVHc4VkhqwshCgl/+u5cdRz5nzulmaDHGoocu4q+F4vqLn/7Rqa0NHR1LasTGo3ZYTKxH6uVnw==}
+  /@orangekit/react@1.0.0-beta.28(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5)(valibot@0.33.2):
+    resolution: {integrity: sha512-ZLZRWIfURCluVemfLF1nagi0+n5YDEJWBs6fNW0bSXu53j9fjP/M2E7sJdKTtX9jPmWVn4MRzeWmOLKC5i0xGw==}
     dependencies:
       '@orangekit/sdk': 1.0.0-beta.15
       '@rainbow-me/rainbowkit': 2.0.2(@types/react@18.3.3)(react-dom@18.3.1)(react@18.3.1)(viem@2.8.16)(wagmi@2.5.12)

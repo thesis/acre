@@ -3,7 +3,7 @@ import { Card, CardBody, CardHeader, CardProps } from "@chakra-ui/react"
 import contentCardBackground from "#/assets/images/content-card-bg.png"
 
 export type ContentCardProps = CardProps & {
-  header: React.ReactNode
+  header?: React.ReactNode
   withBackground?: boolean
 }
 
@@ -34,16 +34,18 @@ export default function ContentCard(props: ContentCardProps) {
       }
       {...restProps}
     >
-      <CardHeader
-        p={0}
-        fontSize="md"
-        lineHeight={6}
-        fontWeight="semibold"
-        color="grey.700"
-        zIndex={1}
-      >
-        {header}
-      </CardHeader>
+      {header && (
+        <CardHeader
+          p={0}
+          fontSize="md"
+          lineHeight={6}
+          fontWeight="semibold"
+          color="grey.700"
+          zIndex={1}
+        >
+          {header}
+        </CardHeader>
+      )}
       <CardBody
         p={0}
         zIndex={1}
