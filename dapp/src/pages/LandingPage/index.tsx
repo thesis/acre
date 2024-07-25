@@ -16,7 +16,7 @@ export default function LandingPage() {
       <VStack
         spacing={4}
         w="full"
-        maxW="79.25rem" // 1268px
+        maxW="landing_page_content_width"
         px={{ base: 6, xl: 0 }}
         mx="auto"
         align="stretch"

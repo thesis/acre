@@ -122,7 +122,10 @@ class Acre {
     const accountBitcoinAddress = await bitcoinProvider.getAddress()
     const accountBitcoinPublicKey = await bitcoinProvider.getPublicKey()
     const accountEthereumAddress = EthereumAddress.from(
-      await this.#orangeKit.predictAddress(accountBitcoinAddress),
+      await this.#orangeKit.predictAddress(
+        accountBitcoinAddress,
+        accountBitcoinPublicKey,
+      ),
     )
 
     const signer = new VoidSigner(

@@ -13,10 +13,12 @@ import { SignInWithWalletMessage } from "@orangekit/sign-in-with-wallet"
 
 const getWalletInfo = (connector: OrangeKitConnector) => {
   switch (connector.id) {
-    case "orangekit-unisat":
+    case wallets.UNISAT.id:
       return wallets.UNISAT
-    case "orangekit-okx":
+    case wallets.OKX.id:
       return wallets.OKX
+    case wallets.XVERSE.id:
+      return wallets.XVERSE
     default:
       return null
   }
@@ -77,6 +79,24 @@ const parseOrangeKitConnectionError = (
   return CONNECTION_ERRORS.DEFAULT
 }
 
+async function verifySignInWithWalletMessage(
+  messageToSign: string,
+  signedMessage: `0x${string}`,
+) {
+  const signInWithWallet = new SignInWithWalletMessage(messageToSign)
+
+  const result = await signInWithWallet.verify({ signature: signedMessage })
+
+  if (!result.success) {
+    throw (
+      result.error ??
+      new Error("Unexpected error when verifying Sign In With Wallet request")
+    )
+  }
+
+  return result.data
+}
+
 export default {
   getWalletInfo,
   isWalletInstalled,
@@ -87,4 +107,5 @@ export default {
   typeConversionToConnector,
   parseOrangeKitConnectionError,
   isWalletConnectionRejectedError,
+  verifySignInWithWalletMessage,
 }
