@@ -1,3 +1,4 @@
+import React from "react"
 import MobileModeBanner from "#/components/MobileModeBanner"
 import {
   useBitcoinPosition,
