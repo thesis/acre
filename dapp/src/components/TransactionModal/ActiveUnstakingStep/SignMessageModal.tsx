@@ -41,7 +41,11 @@ const withdrawalStatusToContent: Record<
 
 const sessionIdToPromise: Record<
   number,
-  { promise: Promise<void>; cancel: (reason: string) => void }
+  {
+    promise: Promise<void>
+    cancel: (reason: Error) => void
+    shouldOpenErrorModal: boolean
+  }
 > = {}
 
 export default function SignMessageModal() {
@@ -63,11 +67,16 @@ export default function SignMessageModal() {
   )
 
   useEffect(() => {
-    let cancel = (_: string) => {}
+    let cancel = (_: Error) => {}
     const promise: Promise<void> = new Promise((_, reject) => {
       cancel = reject
     })
-    sessionIdToPromise[sessionId.current] = { cancel, promise }
+
+    sessionIdToPromise[sessionId.current] = {
+      cancel,
+      promise,
+      shouldOpenErrorModal: true,
+    }
   }, [])
 
   const onSignMessageCallback = useCallback(async () => {
@@ -95,6 +104,8 @@ export default function SignMessageModal() {
 
   const onError = useCallback(
     (error: unknown) => {
+      if (!sessionIdToPromise[sessionId.current].shouldOpenErrorModal) return
+
       if (eip1193.didUserRejectRequest(error)) {
         handlePause()
       } else {
@@ -157,7 +168,16 @@ export default function SignMessageModal() {
   const { title, subtitle } = withdrawalStatusToContent[status]
 
   const onClose = () => {
-    sessionIdToPromise[sessionId.current].cancel("Withdrawal cancelled")
+    const currentSessionId = sessionId.current
+    const sessionData = sessionIdToPromise[currentSessionId]
+    sessionIdToPromise[currentSessionId] = {
+      ...sessionData,
+      shouldOpenErrorModal: false,
+    }
+
+    sessionIdToPromise[currentSessionId].cancel(
+      new Error("Withdrawal cancelled"),
+    )
     closeModal()
   }
 
