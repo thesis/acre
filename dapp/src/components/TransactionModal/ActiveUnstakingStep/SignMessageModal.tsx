@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
 import {
   useActionFlowPause,
   useActionFlowTokenAmount,
@@ -39,6 +39,11 @@ const withdrawalStatusToContent: Record<
   },
 }
 
+const sessionIdToPromise: Record<
+  number,
+  { promise: Promise<void>; cancel: (reason: string) => void }
+> = {}
+
 export default function SignMessageModal() {
   const [status, setWaitingStatus] = useState<WithdrawalStatus>("building-data")
 
@@ -51,14 +56,26 @@ export default function SignMessageModal() {
   const handleBitcoinPositionInvalidation = useInvalidateQueries({
     queryKey: userKeys.position(),
   })
+  const sessionId = useRef(Math.random())
   const { transactionFee } = useTransactionDetails(
     amount,
     ACTION_FLOW_TYPES.UNSTAKE,
   )
 
+  useEffect(() => {
+    let cancel = (_: string) => {}
+    const promise: Promise<void> = new Promise((_, reject) => {
+      cancel = reject
+    })
+    sessionIdToPromise[sessionId.current] = { cancel, promise }
+  }, [])
+
   const onSignMessageCallback = useCallback(async () => {
     setWaitingStatus("signature")
-    return Promise.resolve()
+    return Promise.race([
+      sessionIdToPromise[sessionId.current].promise,
+      Promise.resolve(),
+    ])
   }, [])
 
   const messageSignedCallback = useCallback(() => {
@@ -139,19 +156,22 @@ export default function SignMessageModal() {
 
   const { title, subtitle } = withdrawalStatusToContent[status]
 
+  const onClose = () => {
+    sessionIdToPromise[sessionId.current].cancel("Withdrawal cancelled")
+    closeModal()
+  }
+
   return (
     <>
-      {status !== "building-data" && <ModalCloseButton />}
+      <ModalCloseButton onClick={onClose} />
       <TriggerTransactionModal
         title={title}
         subtitle={subtitle}
         callback={handleInitWithdrawAndSignMessageWrapper}
       >
-        {status !== "building-data" && (
-          <Button size="lg" width="100%" variant="outline" onClick={closeModal}>
-            Cancel
-          </Button>
-        )}
+        <Button size="lg" width="100%" variant="outline" onClick={onClose}>
+          Cancel
+        </Button>
       </TriggerTransactionModal>
     </>
   )
