@@ -19,7 +19,10 @@ export default function BenefitCard(props: IconCardProps) {
 
   return (
     <Card
-      px={6}
+      px={{
+        base: 5,
+        md: 6,
+      }}
       py={5}
       bg="gold.200"
       border={0}
@@ -27,13 +30,19 @@ export default function BenefitCard(props: IconCardProps) {
       gridAutoFlow="row"
       gridAutoColumns="auto 1fr"
       gridTemplateRows="auto 1fr"
-      rowGap={10}
+      rowGap={{
+        base: 4,
+        md: 10,
+      }}
       textAlign="left"
       {...restProps}
     >
       <CardHeader
         p={0}
-        fontSize="2xl"
+        fontSize={{
+          base: "lg",
+          md: "2xl",
+        }}
         lineHeight={8}
         fontWeight="bold"
         color="grey.700"
@@ -58,7 +67,10 @@ export default function BenefitCard(props: IconCardProps) {
           ml="auto"
           mr={-6}
           my={-5}
-          minW="12.5rem" // 200px
+          minW={{
+            base: "9.125rem", // 146px
+            md: "12.5rem", // 200px
+          }}
           position="relative"
         >
           <Image

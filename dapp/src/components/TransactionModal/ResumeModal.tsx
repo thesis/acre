@@ -32,7 +32,7 @@ export default function ResumeModal() {
           <PauseIcon position="absolute" boxSize={6} color="brand.400" />
         </HStack>
 
-        <TextMd>Are your sure you want to cancel?</TextMd>
+        <TextMd>Are you sure you want to cancel?</TextMd>
       </ModalBody>
       <ModalFooter flexDirection="column" gap={2}>
         <Button size="lg" width="100%" onClick={handleResume}>

@@ -59,13 +59,15 @@ class Acre {
    * @param network - Bitcoin network.
    * @param tbtcApiUrl - tBTC API URL.
    * @param ethereumRpcUrl - Ethereum RPC URL.
+   * @param gelatoApiKey - Gelato API key.
+   * @param subgraphApiKey - The subgraph API key.
    */
   static async initialize(
     network: BitcoinNetwork,
     tbtcApiUrl: string,
     ethereumRpcUrl: string,
     gelatoApiKey: string,
-    subgraphApi: string,
+    subgraphApiKey: string,
   ) {
     const ethereumNetwork: EthereumNetwork =
       Acre.resolveEthereumNetwork(network)
@@ -91,7 +93,12 @@ class Acre {
       ethereumNetwork,
     )
 
-    const subgraph = AcreSubgraphApi.init(network, subgraphApi)
+    const acreSubgraphApiUrl =
+      network === BitcoinNetwork.Mainnet
+        ? `https://gateway-arbitrum.network.thegraph.com/api/${subgraphApiKey}/subgraphs/id/DJfS9X5asHtFEdAPikBcSLw8jtKmFcbReQVEa2iY9C9`
+        : "https://api.studio.thegraph.com/query/73600/acre/version/latest"
+
+    const subgraph = new AcreSubgraphApi(acreSubgraphApiUrl)
 
     const protocol = new Protocol(contracts)
 
@@ -115,7 +122,10 @@ class Acre {
     const accountBitcoinAddress = await bitcoinProvider.getAddress()
     const accountBitcoinPublicKey = await bitcoinProvider.getPublicKey()
     const accountEthereumAddress = EthereumAddress.from(
-      await this.#orangeKit.predictAddress(accountBitcoinAddress),
+      await this.#orangeKit.predictAddress(
+        accountBitcoinAddress,
+        accountBitcoinPublicKey,
+      ),
     )
 
     const signer = new VoidSigner(

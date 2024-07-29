@@ -1,46 +1,28 @@
-import React, { useState } from "react"
-import { AnimatePresence, motion, Variants } from "framer-motion"
-import { useLocation, useOutlet } from "react-router-dom"
+import React from "react"
+import { Outlet } from "react-router-dom"
+import { Flex } from "@chakra-ui/react"
+import { useMobileMode } from "#/hooks"
 import DocsDrawer from "./DocsDrawer"
 import Header from "./Header"
-import Sidebar from "./Sidebar"
 import ModalRoot from "./ModalRoot"
-
-const wrapperVariants: Variants = {
-  in: { opacity: 0, y: 48 },
-  out: { opacity: 0, y: -48 },
-  visible: { opacity: 1, y: 0 },
-}
-
-// This tricky component makes Outlet persistent so React and Framer Motion can
-// distinguish wheather it should be rerendered between routes.
-// Ref: https://github.com/remix-run/react-router/discussions/8008#discussioncomment-1280897
-function PersistentOutlet() {
-  const [outlet] = useState(useOutlet())
-  return outlet
-}
+import Sidebar from "./Sidebar"
 
 function Layout() {
-  const location = useLocation()
+  const isMobileMode = useMobileMode()
+
   return (
-    <>
+    <Flex flexFlow="column">
       <Header />
-      <AnimatePresence mode="popLayout">
-        <motion.main
-          key={location.pathname}
-          variants={wrapperVariants}
-          transition={{ type: "spring", damping: 12, stiffness: 120 }}
-          initial="in"
-          animate="visible"
-          exit="out"
-        >
-          <PersistentOutlet />
-        </motion.main>
-      </AnimatePresence>
-      <Sidebar />
-      <DocsDrawer />
-      <ModalRoot />
-    </>
+      <Outlet />
+
+      {!isMobileMode && (
+        <>
+          <Sidebar />
+          <DocsDrawer />
+          <ModalRoot />
+        </>
+      )}
+    </Flex>
   )
 }
 

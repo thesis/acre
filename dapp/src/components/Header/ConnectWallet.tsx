@@ -12,7 +12,7 @@ import { useModal, useWallet } from "#/hooks"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import { TextMd } from "#/components/shared/Typography"
 import { BitcoinIcon } from "#/assets/icons"
-import { isSupportedBTCAddressType, truncateAddress } from "#/utils"
+import { truncateAddress } from "#/utils"
 import { motion } from "framer-motion"
 import { MODAL_TYPES } from "#/types"
 import { IconCopy, IconLogout, IconWallet } from "@tabler/icons-react"
@@ -21,9 +21,6 @@ const getCustomDataByAccount = (
   address?: string,
 ): { text: string; colorScheme?: string } => {
   if (!address) return { text: "Not connected", colorScheme: "error" }
-
-  if (!isSupportedBTCAddressType(address))
-    return { text: "Not supported", colorScheme: "error" }
 
   return { text: truncateAddress(address) }
 }
@@ -38,11 +35,6 @@ export default function ConnectWallet() {
   const handleConnectWallet = () => {
     openModal(MODAL_TYPES.CONNECT_WALLET)
   }
-
-  const isBitcoinAddressSupported = React.useMemo(
-    () => !(address && !isSupportedBTCAddressType(address)),
-    [address],
-  )
 
   if (!isConnected) {
     return (
@@ -64,12 +56,10 @@ export default function ConnectWallet() {
 
   return (
     <HStack spacing={4}>
-      {isBitcoinAddressSupported && (
-        <HStack display={{ base: "none", md: "flex" }}>
-          <CurrencyBalance currency="bitcoin" amount={balance} />
-          <Icon as={IconWallet} boxSize={5} />
-        </HStack>
-      )}
+      <HStack display={{ base: "none", md: "flex" }}>
+        <CurrencyBalance currency="bitcoin" amount={balance} />
+        <Icon as={IconWallet} boxSize={5} />
+      </HStack>
 
       <HStack
         as={motion.div}
