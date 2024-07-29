@@ -9,7 +9,7 @@ import {
   useTransactionDetails,
 } from "#/hooks"
 import { ACTION_FLOW_TYPES, PROCESS_STATUSES } from "#/types"
-import { Button } from "@chakra-ui/react"
+import { Button, ModalCloseButton } from "@chakra-ui/react"
 import { dateToUnixTimestamp, eip1193, logPromiseFailure } from "#/utils"
 import { setStatus } from "#/store/action-flow"
 import { useInitializeWithdraw } from "#/acre-react/hooks"
@@ -140,14 +140,19 @@ export default function SignMessageModal() {
   const { title, subtitle } = withdrawalStatusToContent[status]
 
   return (
-    <TriggerTransactionModal
-      title={title}
-      subtitle={subtitle}
-      callback={handleInitWithdrawAndSignMessageWrapper}
-    >
-      <Button size="lg" width="100%" variant="outline" onClick={closeModal}>
-        Cancel
-      </Button>
-    </TriggerTransactionModal>
+    <>
+      {status !== "building-data" && <ModalCloseButton />}
+      <TriggerTransactionModal
+        title={title}
+        subtitle={subtitle}
+        callback={handleInitWithdrawAndSignMessageWrapper}
+      >
+        {status !== "building-data" && (
+          <Button size="lg" width="100%" variant="outline" onClick={closeModal}>
+            Cancel
+          </Button>
+        )}
+      </TriggerTransactionModal>
+    </>
   )
 }

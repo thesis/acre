@@ -1,19 +1,26 @@
 import React from "react"
-import { useBitcoinPosition, useTriggerConnectWalletModal } from "#/hooks"
+import MobileModeBanner from "#/components/MobileModeBanner"
+import {
+  useBitcoinPosition,
+  useMobileMode,
+  useTriggerConnectWalletModal,
+} from "#/hooks"
 import { routerPath } from "#/router/path"
-import { PageLayout, PageLayoutColumn } from "./PageLayout"
 import DashboardCard from "./DashboardCard"
+import { PageLayout, PageLayoutColumn } from "./PageLayout"
 // import GrantedSeasonPassCard from "./GrantedSeasonPassCard"
-import { CurrentSeasonCard } from "./CurrentSeasonCard"
 import AcrePointsCard from "./AcrePointsCard"
+import { CurrentSeasonCard } from "./CurrentSeasonCard"
 
 export default function DashboardPage() {
   const { data } = useBitcoinPosition()
+  const isMobileMode = useMobileMode()
   const bitcoinWalletBalance = data?.estimatedBitcoinBalance ?? 0n
-
   useTriggerConnectWalletModal(routerPath.dashboard)
 
-  return (
+  return isMobileMode ? (
+    <MobileModeBanner forceOpen />
+  ) : (
     <PageLayout>
       <PageLayoutColumn isMain>
         <DashboardCard bitcoinAmount={bitcoinWalletBalance} />
