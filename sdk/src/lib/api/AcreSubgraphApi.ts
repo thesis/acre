@@ -197,13 +197,19 @@ export default class AcreSubgraphApi extends HttpApi {
 
     const acreWithdrawals = (await response.json()) as WithdrawalsDataResponse
 
-    return acreWithdrawals.data.withdraws.map((withdraw) => ({
-      id: withdraw.id,
-      bitcoinTransactionId: withdraw.bitcoinTransactionId
-        ? withdraw.bitcoinTransactionId
-        : undefined,
-      amount: BigInt(withdraw.amount),
-      timestamp: parseInt(withdraw.events[0].timestamp, 10),
-    }))
+    return acreWithdrawals.data.withdraws.map((withdraw) => {
+      const { id, events } = withdraw
+      const bitcoinTransactionId = withdraw.bitcoinTransactionId ?? undefined
+      const amount = BigInt(withdraw.amount)
+      const finalizedEvent = events.find((event) => event.type === "Finalized")! // The event is always present
+      const timestamp = parseInt(finalizedEvent.timestamp, 10)
+
+      return {
+        id,
+        bitcoinTransactionId,
+        amount,
+        timestamp,
+      }
+    })
   }
 }
