@@ -23,9 +23,10 @@ export default function useReferral(): UseReferralReturn {
 
   const detectReferral = useCallback(() => {
     const params = new URLSearchParams(window.location.search)
-    const detectedReferral = params.get(PARAM_NAME)
+    const param = params.get(PARAM_NAME)
+    const detectedReferral = param ? parseInt(param, 10) : null
 
-    if (detectedReferral && isOfTypeReferral(parseInt(detectedReferral, 10))) {
+    if (detectedReferral && isOfTypeReferral(detectedReferral)) {
       setReferral(detectedReferral)
     }
   }, [setReferral])
