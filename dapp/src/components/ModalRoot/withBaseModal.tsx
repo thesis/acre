@@ -31,7 +31,7 @@ function withBaseModal<T extends BaseModalProps>(
             xl: 0,
           }}
         >
-          <WrappedModalContent {...props} />
+          <WrappedModalContent {...props} closeModal={closeModal} />
         </ModalContent>
       </Modal>
     )
