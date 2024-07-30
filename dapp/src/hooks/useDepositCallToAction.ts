@@ -1,7 +1,5 @@
-import { routerPath } from "#/router/path"
 import { ACTION_FLOW_TYPES } from "#/types"
 import { useEffect } from "react"
-import { useLocation } from "react-router-dom"
 import {
   useAllActivitiesCount,
   useHasFetchedActivities,
@@ -16,7 +14,6 @@ function useDepositCallToAction() {
   const hasActivities = activitiesCount > 0
   const openDepositModal = useTransactionModal(ACTION_FLOW_TYPES.STAKE)
   const { closeModal } = useModal()
-  const location = useLocation()
   const isSignedMessage = useIsSignedMessage()
 
   useEffect(() => {
@@ -24,14 +21,17 @@ function useDepositCallToAction() {
       hasFetchedActivities && isSignedMessage && !hasActivities
 
     if (shouldOpenDepositModal) openDepositModal()
-  }, [hasFetchedActivities, hasActivities, isSignedMessage, openDepositModal])
 
-  useEffect(() => {
-    const shouldCloseDepositModal =
-      location.pathname !== routerPath.dashboard || !isSignedMessage
-
-    if (shouldCloseDepositModal) closeModal()
-  }, [location, isSignedMessage, closeModal])
+    return () => {
+      closeModal()
+    }
+  }, [
+    hasFetchedActivities,
+    hasActivities,
+    isSignedMessage,
+    openDepositModal,
+    closeModal,
+  ])
 }
 
 export default useDepositCallToAction
