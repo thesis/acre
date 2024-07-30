@@ -1,17 +1,25 @@
 import React from "react"
-import { useDepositCallToAction, useTriggerConnectWalletModal } from "#/hooks"
+import {
+  useDepositCallToAction,
+  useTriggerConnectWalletModal,
+  useMobileMode,
+} from "#/hooks"
+import MobileModeBanner from "#/components/MobileModeBanner"
 import { routerPath } from "#/router/path"
-import { PageLayout, PageLayoutColumn } from "./PageLayout"
 import DashboardCard from "./DashboardCard"
-import GrantedSeasonPassCard from "./GrantedSeasonPassCard"
+import { PageLayout, PageLayoutColumn } from "./PageLayout"
+// import GrantedSeasonPassCard from "./GrantedSeasonPassCard"
+import AcrePointsCard from "./AcrePointsCard"
 import { CurrentSeasonCard } from "./CurrentSeasonCard"
-import BeehiveCard from "./BeehiveCard"
 
 export default function DashboardPage() {
-  useDepositCallToAction()
+  const isMobileMode = useMobileMode()
   useTriggerConnectWalletModal(routerPath.dashboard)
+  useDepositCallToAction()
 
-  return (
+  return isMobileMode ? (
+    <MobileModeBanner forceOpen />
+  ) : (
     <PageLayout>
       <PageLayoutColumn isMain>
         <DashboardCard />
@@ -19,11 +27,12 @@ export default function DashboardPage() {
 
       <PageLayoutColumn>
         <CurrentSeasonCard showSeasonStats={false} />
-        <GrantedSeasonPassCard />
+        {/* TODO: Uncomment in post-launch phases */}
+        {/* <GrantedSeasonPassCard /> */}
       </PageLayoutColumn>
 
       <PageLayoutColumn position="relative">
-        <BeehiveCard />
+        <AcrePointsCard />
       </PageLayoutColumn>
     </PageLayout>
   )

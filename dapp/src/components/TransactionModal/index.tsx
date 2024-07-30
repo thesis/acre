@@ -8,7 +8,6 @@ import {
   useTransactionModal,
 } from "#/hooks"
 import { ActionFlowType, BaseModalProps } from "#/types"
-import { ModalCloseButton } from "@chakra-ui/react"
 import { resetState, setType } from "#/store/action-flow"
 import ModalContentWrapper from "./ModalContentWrapper"
 import { ActiveFlowStep } from "./ActiveFlowStep"
@@ -42,7 +41,6 @@ function TransactionModalBase({ type }: TransactionModalProps) {
   return (
     <StakeFlowProvider>
       <ModalContentWrapper>
-        <ModalCloseButton />
         <ActiveFlowStep />
       </ModalContentWrapper>
     </StakeFlowProvider>

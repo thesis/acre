@@ -20,7 +20,7 @@
     "@chakra-ui/react": "^2.8.2",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
-    "@orangekit/react": "1.0.0-beta.18",
+    "@orangekit/react": "1.0.0-beta.28",
     "@orangekit/sign-in-with-wallet": "1.0.0-beta.6",
     "@reduxjs/toolkit": "^2.2.0",
     "@safe-global/safe-core-sdk-types": "^5.0.1",

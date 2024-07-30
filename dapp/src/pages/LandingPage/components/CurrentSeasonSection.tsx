@@ -1,13 +1,20 @@
 import React from "react"
-import { Box, VStack, Flex } from "@chakra-ui/react"
+import {
+  Box,
+  VStack,
+  Card,
+  CardHeader,
+  CardBody,
+  Image,
+} from "@chakra-ui/react"
 import ProgressBar from "#/components/shared/ProgressBar"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
-import { H3, TextLg, TextMd, TextXl } from "#/components/shared/Typography"
-import { BENEFITS, SEASON_CAP } from "#/constants"
+import { H3, TextMd } from "#/components/shared/Typography"
+import { SEASON_CAP } from "#/constants"
 import { LiveTag } from "#/components/shared/LiveTag"
 import { SeasonSectionBackground } from "#/components/shared/SeasonSectionBackground"
 import { useSeasonProgress } from "#/hooks"
-import BenefitCard from "./BenefitCard"
+import { mezoLogoColor } from "#/assets/images/partner-logos"
 
 export default function CurrentSeasonSection() {
   const { progress: seasonProgress, value: seasonTotalAssets } =
@@ -17,14 +24,17 @@ export default function CurrentSeasonSection() {
     <Box position="relative" mb={5}>
       <VStack
         spacing={0}
-        px={{ base: 6, xl: 0 }}
-        pb={12}
+        px={{ base: 3, md: 6, xl: 0 }}
+        pb={{ base: 6, md: 8 }}
         textAlign="center"
         color="grey.700"
       >
         <LiveTag
           mt={-4}
-          mb="5.125rem" // 82px
+          mb={{
+            base: "2.625rem", // 42px
+            md: "5.125rem", // 82px
+          }}
           ring={12}
           ringColor="gold.300"
           position="relative"
@@ -48,51 +58,82 @@ export default function CurrentSeasonSection() {
           }}
         />
 
-        <H3 mb={2}>Season 1. Staking is live!</H3>
-
-        <TextLg
-          mb="5.5rem" // 88px
+        <H3
+          mb={2}
+          letterSpacing="-0.72px" // -2% of font size
+          sx={{ textWrap: "balance" }}
         >
-          Season 1 stakers will harvest Mezo points and get priority access to
-          Bitcoin yield
-        </TextLg>
+          Season 1 staking is live!
+        </H3>
+
+        <TextMd
+          mb={{
+            base: 10,
+            md: "5.5rem", // 88px
+          }}
+          fontWeight="semibold"
+          fontSize={{ md: "lg" }}
+          lineHeight={{ md: "lg" }}
+        >
+          Season 1 stakers will soon be able to earn Acre and Mezo points.
+        </TextMd>
+
+        <TextMd fontWeight="semibold" mb={4}>
+          Total value locked
+        </TextMd>
 
         <ProgressBar
-          size="2xl"
+          size={{
+            base: "xl",
+            md: "2xl",
+          }}
           value={seasonProgress}
           maxW="50rem" // 800px
         >
           <CurrencyBalance
             amount={seasonTotalAssets}
             currency="bitcoin"
-            variant="greater-balance-xl"
+            variant={{
+              base: "greater-balance-md",
+              md: "greater-balance-xl",
+            }}
             symbolFontWeight="black"
+            desiredDecimals={2}
             // TODO: Refactor `CurrencyBalance` to make font styles truely adjustable
           />
         </ProgressBar>
 
-        <TextXl
+        <TextMd
+          fontSize={{ md: "xl" }}
+          lineHeight={{ md: "xl" }}
           display="flex"
           whiteSpace="pre"
           mt={2}
-          mb="7.5rem" // 120px
+          mb={{
+            base: 10,
+            md: "7.5rem", // 120px
+          }}
         >
           Season 1 cap{" "}
           <CurrencyBalance
             as="span"
-            size="xl"
+            size={{ base: "", md: "xl" }}
             amount={SEASON_CAP}
             currency="bitcoin"
+            desiredDecimals={0}
           />
-        </TextXl>
+        </TextMd>
 
-        <Flex
+        {/* TODO: Uncomment in post-launch phases */}
+        {/*  <Flex
           flexDirection={{ base: "column", xl: "row" }}
-          gap={5}
+          gap={{ base: 2, md: 5 }}
           align="stretch"
-          w="full"
           maxW="63rem" // 1008px
-          mx="auto"
+          mx={{
+            base: -1,
+            md: "auto",
+          }}
         >
           {BENEFITS.map(({ name, description, imageSrc }) => (
             <BenefitCard
@@ -103,8 +144,27 @@ export default function CurrentSeasonSection() {
             >
               <TextMd>{description}</TextMd>
             </BenefitCard>
-          ))}
-        </Flex>
+          ))} 
+        </Flex> */}
+
+        <Card p={6} w="full" maxW="landing_page_content_width" mx="auto">
+          <CardHeader p={0} mb={6}>
+            <TextMd fontWeight="semibold">Season partner</TextMd>
+          </CardHeader>
+          <CardBody p={0} as={VStack} spacing={6}>
+            <Image
+              src={mezoLogoColor}
+              maxW={{
+                base: "8.25rem", // 132px
+                md: "16.5rem", // 264px
+              }}
+            />
+            <TextMd fontWeight="medium" color="grey.500">
+              Mezo is the economic layer for Bitcoin with a mission to activate
+              a trillion dollar opportunity.
+            </TextMd>
+          </CardBody>
+        </Card>
       </VStack>
 
       <SeasonSectionBackground

@@ -28,7 +28,7 @@ By the moment, there one subgraph have been developed:
 3. Build the subgraph:
 
    ```
-   pnpm codegen && pnpm build
+   pnpm codegen:sepolia && pnpm build:sepolia
    ```
 
 ### Deploy the subgraph locally
@@ -62,7 +62,7 @@ create a private one
 4. Allocate the subgraph name in the local Graph Node:
 
    ```
-   pnpm create-local
+   pnpm create:local
    ```
 
 Note: use it only if your subgraph is not created in the local Graph node.
@@ -70,7 +70,7 @@ Note: use it only if your subgraph is not created in the local Graph node.
 5. Deploy the subgraph to your local Graph Node:
 
    ```
-   pnpm deploy-local
+   pnpm deploy:local
    ```
 
 6. Create Subgraph queries and preview of the entities:
@@ -98,14 +98,29 @@ Note: use it only if your subgraph is not created in the local Graph node.
    The `<DEPLOY_KEY>` can be found on "My Subgraphs" page or subgraph details
    page.
 
-4. Deploying a Subgraph to Subgraph Studio
+4. Build the subgraph for a given network:
 
    ```
-   graph deploy --studio <SUBGRAPH_SLUG>
+   pnpm codegen:mainnet && pnpm build:mainnet
    ```
 
-   The `<SUBGRAPH_SLUG>` can be found on subgraph details page in the Subgraph
-   Studio.
+   or
+
+   ```
+   pnpm codegen:sepolia && pnpm build:sepolia
+   ```
+
+5. Deploying a Subgraph to Subgraph Studio
+
+   ```
+   pnpm deploy:mainnet
+   ```
+
+   or
+
+   ```
+   pnpm deploy:sepolia
+   ```
 
    After running this command, the CLI will ask for a version label, you can
    name it however you want, you can use labels such as 0.1 and 0.2 or use
