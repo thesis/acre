@@ -3,7 +3,7 @@ import { Chain, mainnet, sepolia } from "wagmi/chains"
 import {
   getOrangeKitUnisatConnector,
   getOrangeKitOKXConnector,
-  getOrangeKitXVerseConnector,
+  getOrangeKitXverseConnector,
 } from "@orangekit/react"
 import { env } from "./constants"
 
@@ -23,12 +23,12 @@ const transports = chains.reduce(
 
 const orangeKitUnisatConnector = getOrangeKitUnisatConnector(connectorConfig)
 const orangeKitOKXConnector = getOrangeKitOKXConnector(connectorConfig)
-const orangeKitXVerseConnector = getOrangeKitXVerseConnector(connectorConfig)
+const orangeKitXverseConnector = getOrangeKitXverseConnector(connectorConfig)
 
 const connectors = [
   orangeKitOKXConnector(),
   orangeKitUnisatConnector(),
-  orangeKitXVerseConnector(),
+  orangeKitXverseConnector(),
 ] as unknown as CreateConnectorFn[]
 
 const wagmiConfig = createConfig({
