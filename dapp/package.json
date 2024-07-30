@@ -23,6 +23,7 @@
     "@orangekit/react": "1.0.0-beta.28",
     "@orangekit/sign-in-with-wallet": "1.0.0-beta.6",
     "@reduxjs/toolkit": "^2.2.0",
+    "@rehooks/local-storage": "^2.4.5",
     "@safe-global/safe-core-sdk-types": "^5.0.1",
     "@sentry/react": "^7.98.0",
     "@sentry/types": "^7.102.0",

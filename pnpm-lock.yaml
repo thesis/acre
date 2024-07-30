@@ -44,6 +44,9 @@ importers:
       '@reduxjs/toolkit':
         specifier: ^2.2.0
         version: 2.2.5(react-redux@9.1.2)(react@18.3.1)
+      '@rehooks/local-storage':
+        specifier: ^2.4.5
+        version: 2.4.5(react@18.3.1)
       '@safe-global/safe-core-sdk-types':
         specifier: ^5.0.1
         version: 5.0.1(typescript@5.4.5)
@@ -6501,6 +6504,15 @@ packages:
       redux: 5.0.1
       redux-thunk: 3.1.0(redux@5.0.1)
       reselect: 5.1.1
+    dev: false
+
+  /@rehooks/local-storage@2.4.5(react@18.3.1):
+    resolution: {integrity: sha512-3Q4KtiUBaKoIDRK72BWfAy50ul6hbw29f/M7tyCzlMe2FbSsiQNok0WGeBLaYj4T2PJ7JMSJlSbUGY8RNsImmw==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      react: '>=16.8.0'
+    dependencies:
+      react: 18.3.1
     dev: false
 
   /@remix-run/router@1.16.1:
