@@ -7,18 +7,18 @@ import {
   CardBody,
   Image,
 } from "@chakra-ui/react"
-import ProgressBar from "#/components/shared/ProgressBar"
-import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
+// import ProgressBar from "#/components/shared/ProgressBar"
+// import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import { H3, TextMd } from "#/components/shared/Typography"
-import { SEASON_CAP } from "#/constants"
+// import { SEASON_CAP } from "#/constants"
 import { LiveTag } from "#/components/shared/LiveTag"
 import { SeasonSectionBackground } from "#/components/shared/SeasonSectionBackground"
-import { useSeasonProgress } from "#/hooks"
+// import { useSeasonProgress } from "#/hooks"
 import { mezoLogoColor } from "#/assets/images/partner-logos"
 
 export default function CurrentSeasonSection() {
-  const { progress: seasonProgress, value: seasonTotalAssets } =
-    useSeasonProgress()
+  // const { progress: seasonProgress, value: seasonTotalAssets } =
+  //   useSeasonProgress()
 
   return (
     <Box position="relative" mb={5}>
