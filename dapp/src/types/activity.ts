@@ -1,7 +1,7 @@
 type CommonActivityData = {
   id: string
   initializedAt: number
-  finalizedAt: number
+  finalizedAt?: number
   amount: bigint
   status: "completed" | "pending"
 }

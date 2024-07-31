@@ -21,54 +21,56 @@ export default function TransactionTable() {
     <Pagination data={completedActivities} pageSize={10}>
       <PaginationPage direction="column" spacing={2} pageSpacing={6}>
         {(pageData: Activity[]) =>
-          pageData.map(({ id, finalizedAt, type, txHash, amount }) => (
-            <Card key={id} role="group" variant="elevated" colorScheme="gold">
-              <CardBody as={HStack} spacing={3} p={4}>
-                <TextSm color="grey.500" flex={1} fontWeight="medium">
-                  {displayBlockTimestamp(finalizedAt)}
-                </TextSm>
-
-                <HStack flexBasis="60%">
-                  <TextSm
-                    color="grey.700"
-                    flex={1}
-                    fontWeight="semibold"
-                    textTransform="capitalize"
-                  >
-                    {type}
+          pageData.map(
+            ({ id, initializedAt, finalizedAt, type, txHash, amount }) => (
+              <Card key={id} role="group" variant="elevated" colorScheme="gold">
+                <CardBody as={HStack} spacing={3} p={4}>
+                  <TextSm color="grey.500" flex={1} fontWeight="medium">
+                    {displayBlockTimestamp(finalizedAt ?? initializedAt)}
                   </TextSm>
 
-                  <Box flex={1}>
-                    <CurrencyBalance
+                  <HStack flexBasis="60%">
+                    <TextSm
                       color="grey.700"
-                      size="sm"
-                      fontWeight="bold"
-                      amount={amount}
-                      currency="bitcoin"
-                    />
-                  </Box>
-                </HStack>
-                {txHash && (
-                  <BlockExplorerLink
-                    id={txHash}
-                    chain="bitcoin"
-                    type="transaction"
-                    variant="ghost"
-                    color="grey.300"
-                    _groupHover={{ color: "brand.400" }}
-                    pl={6}
-                    pr={4}
-                    py={5}
-                    mx={-4}
-                    my={-5}
-                  >
-                    <IconArrowUpRight size={16} />
-                    <VisuallyHidden>View transaction details</VisuallyHidden>
-                  </BlockExplorerLink>
-                )}
-              </CardBody>
-            </Card>
-          ))
+                      flex={1}
+                      fontWeight="semibold"
+                      textTransform="capitalize"
+                    >
+                      {type}
+                    </TextSm>
+
+                    <Box flex={1}>
+                      <CurrencyBalance
+                        color="grey.700"
+                        size="sm"
+                        fontWeight="bold"
+                        amount={amount}
+                        currency="bitcoin"
+                      />
+                    </Box>
+                  </HStack>
+                  {txHash && (
+                    <BlockExplorerLink
+                      id={txHash}
+                      chain="bitcoin"
+                      type="transaction"
+                      variant="ghost"
+                      color="grey.300"
+                      _groupHover={{ color: "brand.400" }}
+                      pl={6}
+                      pr={4}
+                      py={5}
+                      mx={-4}
+                      my={-5}
+                    >
+                      <IconArrowUpRight size={16} />
+                      <VisuallyHidden>View transaction details</VisuallyHidden>
+                    </BlockExplorerLink>
+                  )}
+                </CardBody>
+              </Card>
+            ),
+          )
         }
       </PaginationPage>
 
