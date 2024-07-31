@@ -78,7 +78,8 @@ export default function CurrentSeasonSection() {
           Season 1 stakers will soon be able to earn Acre and Mezo points.
         </TextMd>
 
-        <TextMd fontWeight="semibold" mb={4}>
+        {/* TODO: Uncomment when TVL is higher */}
+        {/* <TextMd fontWeight="semibold" mb={4}>
           Total value locked
         </TextMd>
 
@@ -122,7 +123,7 @@ export default function CurrentSeasonSection() {
             currency="bitcoin"
             desiredDecimals={0}
           />
-        </TextMd>
+        </TextMd> */}
 
         {/* TODO: Uncomment in post-launch phases */}
         {/*  <Flex
