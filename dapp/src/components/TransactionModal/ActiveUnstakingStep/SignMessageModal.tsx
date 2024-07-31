@@ -126,6 +126,8 @@ export default function SignMessageModal() {
           // around: `amount - transactionFee.total`.
           amount: amount - transactionFee.acre,
           initializedAt: dateToUnixTimestamp(),
+          // The message is signed immediately after the initialization.
+          finalizedAt: dateToUnixTimestamp(),
         }),
       )
     },
