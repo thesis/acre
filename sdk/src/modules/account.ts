@@ -38,7 +38,11 @@ export type Deposit = {
   /**
    * Timestamp when the deposit was initialized.
    */
-  timestamp: number
+  initializedAt: number
+  /**
+   * Timestamp when the deposit was finalized.
+   */
+  finalizedAt?: number
 }
 
 /**
@@ -169,7 +173,8 @@ export default class Account {
         txHash: deposit.txHash,
         amount,
         status: deposit.status,
-        timestamp: deposit.timestamp,
+        initializedAt: deposit.initializedAt,
+        finalizedAt: depositFromSubgraph?.finalizedAt,
       }
     })
   }
@@ -223,7 +228,8 @@ export default class Account {
       amount: bigint
       bitcoinTransactionId?: string
       status: "initialized" | "finalized"
-      timestamp: number
+      initializedAt: number
+      finalizedAt: number
     }[]
   > {
     return (

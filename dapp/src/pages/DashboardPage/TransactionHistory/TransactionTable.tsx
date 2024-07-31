@@ -21,11 +21,11 @@ export default function TransactionTable() {
     <Pagination data={completedActivities} pageSize={10}>
       <PaginationPage direction="column" spacing={2} pageSpacing={6}>
         {(pageData: Activity[]) =>
-          pageData.map(({ id, timestamp, type, txHash, amount }) => (
+          pageData.map(({ id, finalizedAt, type, txHash, amount }) => (
             <Card key={id} role="group" variant="elevated" colorScheme="gold">
               <CardBody as={HStack} spacing={3} p={4}>
                 <TextSm color="grey.500" flex={1} fontWeight="medium">
-                  {displayBlockTimestamp(timestamp)}
+                  {displayBlockTimestamp(finalizedAt)}
                 </TextSm>
 
                 <HStack flexBasis="60%">

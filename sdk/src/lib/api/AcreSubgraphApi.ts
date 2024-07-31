@@ -66,7 +66,11 @@ type Deposit = {
   /**
    * Timestamp when the deposit was initialized.
    */
-  timestamp: number
+  initializedAt: number
+  /**
+   * Timestamp when the deposit was finalized.
+   */
+  finalizedAt: number
 }
 
 type WithdrawalsDataResponse = {
@@ -84,7 +88,8 @@ type Withdraw = {
   id: string
   amount: bigint
   bitcoinTransactionId?: string
-  timestamp: number
+  initializedAt: number
+  finalizedAt: number
 }
 
 export function buildGetDepositsByOwnerQuery(owner: ChainIdentifier) {
@@ -163,8 +168,9 @@ export default class AcreSubgraphApi extends HttpApi {
       const status = events.some(({ type }) => type === "Finalized")
         ? DepositStatus.Finalized
         : DepositStatus.Initialized
-
-      const timestamp = parseInt(events[0].timestamp, 10)
+      const [initializedEvent, finalizedEvent] = events
+      const initializedAt = parseInt(initializedEvent.timestamp, 10)
+      const finalizedAt = parseInt(finalizedEvent.timestamp, 10)
 
       return {
         depositKey: id,
@@ -173,7 +179,8 @@ export default class AcreSubgraphApi extends HttpApi {
         amountToDeposit: BigInt(amountToDeposit ?? 0),
         type: "deposit",
         status,
-        timestamp,
+        initializedAt,
+        finalizedAt,
       }
     })
   }
@@ -201,14 +208,16 @@ export default class AcreSubgraphApi extends HttpApi {
       const { id, events } = withdraw
       const bitcoinTransactionId = withdraw.bitcoinTransactionId ?? undefined
       const amount = BigInt(withdraw.amount)
-      const finalizedEvent = events.find((event) => event.type === "Finalized")! // The event is always present
-      const timestamp = parseInt(finalizedEvent.timestamp, 10)
+      const [initializedEvent, finalizedEvent] = events
+      const initializedAt = parseInt(initializedEvent.timestamp, 10)
+      const finalizedAt = parseInt(finalizedEvent.timestamp, 10)
 
       return {
         id,
         bitcoinTransactionId,
         amount,
-        timestamp,
+        initializedAt,
+        finalizedAt,
       }
     })
   }
