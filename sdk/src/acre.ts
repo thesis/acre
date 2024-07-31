@@ -1,5 +1,9 @@
 import { GelatoTransactionSender, OrangeKitSdk } from "@orangekit/sdk"
-import { getDefaultProvider, Provider as EthereumProvider } from "ethers"
+import {
+  getDefaultProvider,
+  Provider as EthereumProvider,
+  VoidSigner,
+} from "ethers"
 import {
   EthereumAddress,
   EthereumNetwork,
@@ -7,7 +11,6 @@ import {
 } from "./lib/ethereum"
 import Account from "./modules/account"
 import Tbtc from "./modules/tbtc"
-import { VoidSigner } from "./lib/utils"
 import { BitcoinProvider, BitcoinNetwork } from "./lib/bitcoin"
 import { getChainIdByNetwork } from "./lib/ethereum/network"
 import AcreSubgraphApi from "./lib/api/AcreSubgraphApi"
@@ -25,6 +28,8 @@ class Acre {
 
   readonly #ethereumProvider: EthereumProvider
 
+  readonly #ethereumRpcURL: string
+
   readonly #acreSubgraph: AcreSubgraphApi
 
   #account: Account | undefined
@@ -38,6 +43,7 @@ class Acre {
     tbtcApiUrl: string,
     acreSubgraphApi: AcreSubgraphApi,
     protocol: Protocol,
+    ethereumRpcURL: string,
   ) {
     this.#network = bitcoinNetwork
     this.#ethereumProvider = ethereumProvider
@@ -45,6 +51,7 @@ class Acre {
     this.#orangeKit = orangeKit
     this.#acreSubgraph = acreSubgraphApi
     this.protocol = protocol
+    this.#ethereumRpcURL = ethereumRpcURL
   }
 
   /**
@@ -52,13 +59,15 @@ class Acre {
    * @param network - Bitcoin network.
    * @param tbtcApiUrl - tBTC API URL.
    * @param ethereumRpcUrl - Ethereum RPC URL.
+   * @param gelatoApiKey - Gelato API key.
+   * @param subgraphApiKey - The subgraph API key.
    */
   static async initialize(
     network: BitcoinNetwork,
     tbtcApiUrl: string,
     ethereumRpcUrl: string,
     gelatoApiKey: string,
-    subgraphApi: string,
+    subgraphApiKey: string,
   ) {
     const ethereumNetwork: EthereumNetwork =
       Acre.resolveEthereumNetwork(network)
@@ -84,7 +93,12 @@ class Acre {
       ethereumNetwork,
     )
 
-    const subgraph = AcreSubgraphApi.init(network, subgraphApi)
+    const acreSubgraphApiUrl =
+      network === BitcoinNetwork.Mainnet
+        ? `https://gateway-arbitrum.network.thegraph.com/api/${subgraphApiKey}/subgraphs/id/DJfS9X5asHtFEdAPikBcSLw8jtKmFcbReQVEa2iY9C9`
+        : "https://api.studio.thegraph.com/query/73600/acre/version/latest"
+
+    const subgraph = new AcreSubgraphApi(acreSubgraphApiUrl)
 
     const protocol = new Protocol(contracts)
 
@@ -95,6 +109,7 @@ class Acre {
       tbtcApiUrl,
       subgraph,
       protocol,
+      ethereumRpcUrl,
     )
   }
 
@@ -107,7 +122,10 @@ class Acre {
     const accountBitcoinAddress = await bitcoinProvider.getAddress()
     const accountBitcoinPublicKey = await bitcoinProvider.getPublicKey()
     const accountEthereumAddress = EthereumAddress.from(
-      await this.#orangeKit.predictAddress(accountBitcoinAddress),
+      await this.#orangeKit.predictAddress(
+        accountBitcoinAddress,
+        accountBitcoinPublicKey,
+      ),
     )
 
     const signer = new VoidSigner(
@@ -120,8 +138,8 @@ class Acre {
     const contracts = await getEthereumContracts(signer, ethereumNetwork)
 
     const tbtc = await Tbtc.initialize(
-      signer,
       this.#network,
+      this.#ethereumRpcURL,
       this.#tbtcApiUrl,
       contracts.bitcoinDepositor,
     )

@@ -1,21 +1,26 @@
 import React from "react"
-import { useBitcoinPosition, useTriggerConnectWalletModal } from "#/hooks"
+import MobileModeBanner from "#/components/MobileModeBanner"
+import {
+  useBitcoinPosition,
+  useMobileMode,
+  useTriggerConnectWalletModal,
+} from "#/hooks"
 import { routerPath } from "#/router/path"
-import { PageLayout, PageLayoutColumn } from "./PageLayout"
 import DashboardCard from "./DashboardCard"
-import GrantedSeasonPassCard from "./GrantedSeasonPassCard"
+import { PageLayout, PageLayoutColumn } from "./PageLayout"
+// import GrantedSeasonPassCard from "./GrantedSeasonPassCard"
+import AcrePointsCard from "./AcrePointsCard"
 import { CurrentSeasonCard } from "./CurrentSeasonCard"
-import BeehiveCard from "./BeehiveCard"
-
-// TODO: Remove placeholder image and replace with actual gamification content
 
 export default function DashboardPage() {
   const { data } = useBitcoinPosition()
+  const isMobileMode = useMobileMode()
   const bitcoinWalletBalance = data?.estimatedBitcoinBalance ?? 0n
-
   useTriggerConnectWalletModal(routerPath.dashboard)
 
-  return (
+  return isMobileMode ? (
+    <MobileModeBanner forceOpen />
+  ) : (
     <PageLayout>
       <PageLayoutColumn isMain>
         <DashboardCard bitcoinAmount={bitcoinWalletBalance} />
@@ -23,11 +28,12 @@ export default function DashboardPage() {
 
       <PageLayoutColumn>
         <CurrentSeasonCard showSeasonStats={false} />
-        <GrantedSeasonPassCard />
+        {/* TODO: Uncomment in post-launch phases */}
+        {/* <GrantedSeasonPassCard /> */}
       </PageLayoutColumn>
 
       <PageLayoutColumn position="relative">
-        <BeehiveCard />
+        <AcrePointsCard />
       </PageLayoutColumn>
     </PageLayout>
   )

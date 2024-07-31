@@ -93,7 +93,7 @@ export default function DashboardCard(props: DashboardCardProps) {
         <HStack w="full" justify="center" spacing={2}>
           <UserDataSkeleton>
             <Button {...buttonStyles} onClick={openDepositModal}>
-              Deposit More
+              Deposit more
             </Button>
           </UserDataSkeleton>
           <UserDataSkeleton>
