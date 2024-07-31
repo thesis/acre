@@ -1,24 +1,24 @@
-import { Referral, REFERRALS } from "#/types"
-import { useMemo, useCallback } from "react"
+import { referrals } from "#/constants"
+import { useCallback, useMemo } from "react"
 import useLocalStorage from "./useLocalStorage"
 
 const PARAM_NAME = "ref"
 
-function isOfTypeReferral(keyInput: number): keyInput is Referral {
-  const referral = Object.values(REFERRALS) as number[]
-  return referral.includes(keyInput)
+function isExistingReferral(detectedReferral: number) {
+  const referral = Object.values(referrals)
+  return referral.includes(detectedReferral)
 }
 
 type UseReferralReturn = {
-  referral?: Referral
+  referral: number
   detectReferral: () => void
   resetReferral: () => void
 }
 
 export default function useReferral(): UseReferralReturn {
-  const [referral, setReferral] = useLocalStorage<Referral | undefined>(
+  const [referral, setReferral] = useLocalStorage<number>(
     "referral",
-    undefined,
+    referrals.DEFAULT,
   )
 
   const detectReferral = useCallback(() => {
@@ -26,13 +26,15 @@ export default function useReferral(): UseReferralReturn {
     const param = params.get(PARAM_NAME)
     const detectedReferral = param ? parseInt(param, 10) : null
 
-    if (detectedReferral && isOfTypeReferral(detectedReferral)) {
+    if (detectedReferral && isExistingReferral(detectedReferral)) {
       setReferral(detectedReferral)
+    } else {
+      setReferral(referrals.DEFAULT)
     }
   }, [setReferral])
 
   const resetReferral = useCallback(() => {
-    setReferral(undefined)
+    setReferral(referrals.DEFAULT)
   }, [setReferral])
 
   return useMemo(

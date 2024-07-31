@@ -4,7 +4,6 @@ import {
   useAcreContext,
   useStakeFlow,
 } from "#/acre-react/hooks"
-import { env } from "#/constants"
 import useBitcoinRecoveryAddress from "#/hooks/useBitcoinRecoveryAddress"
 import useReferral from "#/hooks/useReferral"
 
@@ -31,7 +30,7 @@ export function StakeFlowProvider({ children }: { children: React.ReactNode }) {
   const initStake = useCallback(async () => {
     if (!acre) throw new Error("Acre SDK not defined")
 
-    await acreInitStake(referral ?? env.REFERRAL, bitcoinRecoveryAddress)
+    await acreInitStake(referral, bitcoinRecoveryAddress)
   }, [acre, acreInitStake, bitcoinRecoveryAddress, referral])
 
   const context = useMemo(
