@@ -1,4 +1,4 @@
-import React, { useRef } from "react"
+import React, { forwardRef, useRef } from "react"
 import {
   Box,
   Button,
@@ -106,88 +106,95 @@ export type TokenBalanceInputProps = {
   HelperErrorTextProps &
   Pick<NumberFormatInputProps, "decimalScale">
 
-export default function TokenBalanceInput({
-  amount,
-  currency,
-  tokenBalance,
-  placeholder,
-  size = "lg",
-  setAmount,
-  errorMsgText,
-  helperText,
-  hasError = false,
-  fiatCurrency,
-  withMaxButton = false,
-  ...inputProps
-}: TokenBalanceInputProps) {
-  const valueRef = useRef<bigint | undefined>(amount)
-  const styles = useMultiStyleConfig("TokenBalanceInput", { size })
+const TokenBalanceInput = forwardRef<HTMLInputElement, TokenBalanceInputProps>(
+  (props, ref) => {
+    const {
+      amount,
+      currency,
+      tokenBalance,
+      placeholder,
+      size = "lg",
+      setAmount,
+      errorMsgText,
+      helperText,
+      hasError = false,
+      fiatCurrency,
+      withMaxButton = false,
+      ...inputProps
+    } = props
 
-  const { decimals } = getCurrencyByType(currency)
+    const valueRef = useRef<bigint | undefined>(amount)
+    const styles = useMultiStyleConfig("TokenBalanceInput", { size })
 
-  const handleValueChange = (value: string) => {
-    valueRef.current = value ? userAmountToBigInt(value, decimals) : undefined
-  }
+    const { decimals } = getCurrencyByType(currency)
 
-  return (
-    <FormControl isInvalid={hasError} isDisabled={inputProps.isDisabled}>
-      <FormLabel htmlFor={inputProps.name} size={size}>
-        <Box __css={styles.labelContainer}>
-          Amount
-          <Box __css={styles.balanceContainer}>
-            <Box as="span" __css={styles.balance}>
-              Balance
+    const handleValueChange = (value: string) => {
+      valueRef.current = value ? userAmountToBigInt(value, decimals) : undefined
+    }
+
+    return (
+      <FormControl isInvalid={hasError} isDisabled={inputProps.isDisabled}>
+        <FormLabel htmlFor={inputProps.name} size={size}>
+          <Box __css={styles.labelContainer}>
+            Amount
+            <Box __css={styles.balanceContainer}>
+              <Box as="span" __css={styles.balance}>
+                Balance
+              </Box>
+              <CurrencyBalance
+                size={size === "lg" ? "md" : "sm"}
+                amount={tokenBalance}
+                currency={currency}
+              />
             </Box>
-            <CurrencyBalance
-              size={size === "lg" ? "md" : "sm"}
-              amount={tokenBalance}
-              currency={currency}
-            />
           </Box>
-        </Box>
-      </FormLabel>
-      <InputGroup variant={VARIANT}>
-        <NumberFormatInput
-          size={size}
-          variant={VARIANT}
-          isInvalid={hasError}
-          placeholder={placeholder}
-          {...inputProps}
-          value={
-            amount ? fixedPointNumberToString(amount, decimals) : undefined
-          }
-          onValueChange={(values: NumberFormatInputValues) =>
-            handleValueChange(values.value)
-          }
-          onChange={() => {
-            setAmount(valueRef?.current)
-          }}
-          decimalScale={decimals}
-          allowNegative={false}
-        />
-
-        {withMaxButton && (
-          <InputRightElement>
-            <Button h="70%" onClick={() => setAmount(tokenBalance)}>
-              Max
-            </Button>
-          </InputRightElement>
-        )}
-      </InputGroup>
-      <HelperErrorText
-        helperText={helperText}
-        errorMsgText={errorMsgText}
-        hasError={hasError}
-      />
-      {!hasError && !helperText && !!fiatCurrency && (
-        <FormHelperText>
-          <FiatCurrencyBalance
-            amount={amount ?? 0n}
-            currency={currency}
-            fiatCurrency={fiatCurrency}
+        </FormLabel>
+        <InputGroup variant={VARIANT}>
+          <NumberFormatInput
+            size={size}
+            variant={VARIANT}
+            isInvalid={hasError}
+            placeholder={placeholder}
+            {...inputProps}
+            ref={ref}
+            value={
+              amount ? fixedPointNumberToString(amount, decimals) : undefined
+            }
+            onValueChange={(values: NumberFormatInputValues) =>
+              handleValueChange(values.value)
+            }
+            onChange={() => {
+              setAmount(valueRef?.current)
+            }}
+            decimalScale={decimals}
+            allowNegative={false}
           />
-        </FormHelperText>
-      )}
-    </FormControl>
-  )
-}
+
+          {withMaxButton && (
+            <InputRightElement>
+              <Button h="70%" onClick={() => setAmount(tokenBalance)}>
+                Max
+              </Button>
+            </InputRightElement>
+          )}
+        </InputGroup>
+        <HelperErrorText
+          helperText={helperText}
+          errorMsgText={errorMsgText}
+          hasError={hasError}
+        />
+        {!hasError && !helperText && !!fiatCurrency && (
+          <FormHelperText>
+            <FiatCurrencyBalance
+              amount={amount ?? 0n}
+              currency={currency}
+              fiatCurrency={fiatCurrency}
+            />
+          </FormHelperText>
+        )}
+      </FormControl>
+    )
+  },
+)
+
+export default TokenBalanceInput
