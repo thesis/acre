@@ -5,6 +5,7 @@ import {
   CurrencyBalanceProps,
 } from "#/components/shared/CurrencyBalance"
 import { TextSm } from "#/components/shared/Typography"
+import { DESIRED_DECIMALS_FOR_FEE } from "#/constants"
 
 export type FeesItemType = CurrencyBalanceProps & {
   label: string
@@ -20,6 +21,7 @@ export function FeesTooltipItem({ label, amount, ...props }: FeesItemType) {
         color="gold.300"
         balanceFontWeight="semibold"
         symbolFontWeight="semibold"
+        desiredDecimals={DESIRED_DECIMALS_FOR_FEE}
         {...props}
       />
     </ListItem>
