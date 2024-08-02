@@ -7,18 +7,18 @@ import {
   CardBody,
   Image,
 } from "@chakra-ui/react"
-import ProgressBar from "#/components/shared/ProgressBar"
-import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
+// import ProgressBar from "#/components/shared/ProgressBar"
+// import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import { H3, TextMd } from "#/components/shared/Typography"
-import { SEASON_CAP } from "#/constants"
+// import { SEASON_CAP } from "#/constants"
 import { LiveTag } from "#/components/shared/LiveTag"
 import { SeasonSectionBackground } from "#/components/shared/SeasonSectionBackground"
-import { useSeasonProgress } from "#/hooks"
+// import { useSeasonProgress } from "#/hooks"
 import { mezoLogoColor } from "#/assets/images/partner-logos"
 
 export default function CurrentSeasonSection() {
-  const { progress: seasonProgress, value: seasonTotalAssets } =
-    useSeasonProgress()
+  // const { progress: seasonProgress, value: seasonTotalAssets } =
+  //   useSeasonProgress()
 
   return (
     <Box position="relative" mb={5}>
@@ -78,7 +78,8 @@ export default function CurrentSeasonSection() {
           Season 1 stakers will soon be able to earn Acre and Mezo points.
         </TextMd>
 
-        <TextMd fontWeight="semibold" mb={4}>
+        {/* TODO: Uncomment when TVL is higher */}
+        {/* <TextMd fontWeight="semibold" mb={4}>
           Total value locked
         </TextMd>
 
@@ -122,7 +123,7 @@ export default function CurrentSeasonSection() {
             currency="bitcoin"
             desiredDecimals={0}
           />
-        </TextMd>
+        </TextMd> */}
 
         {/* TODO: Uncomment in post-launch phases */}
         {/*  <Flex
