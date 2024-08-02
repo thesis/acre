@@ -1,4 +1,4 @@
-import { ACTION_FLOW_TYPES } from "#/types"
+import { ACTION_FLOW_TYPES, MODAL_TYPES } from "#/types"
 import { useEffect } from "react"
 import {
   useAllActivitiesCount,
@@ -13,7 +13,7 @@ function useDepositCallToAction() {
   const hasFetchedActivities = useHasFetchedActivities()
   const hasActivities = activitiesCount > 0
   const openDepositModal = useTransactionModal(ACTION_FLOW_TYPES.STAKE)
-  const { closeModal } = useModal()
+  const { modalType, closeModal } = useModal()
   const isSignedMessage = useIsSignedMessage()
 
   useEffect(() => {
@@ -23,7 +23,9 @@ function useDepositCallToAction() {
     if (shouldOpenDepositModal) openDepositModal()
 
     return () => {
-      closeModal()
+      if (modalType === MODAL_TYPES.STAKE) {
+        closeModal()
+      }
     }
   }, [
     hasFetchedActivities,
@@ -31,6 +33,7 @@ function useDepositCallToAction() {
     isSignedMessage,
     openDepositModal,
     closeModal,
+    modalType,
   ])
 }
 

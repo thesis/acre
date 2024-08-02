@@ -8,7 +8,7 @@ import { useModal } from "./useModal"
 export default function useTriggerConnectWalletModal(pathname: Pathname) {
   const isSignedMessage = useIsSignedMessage()
   const location = useLocation()
-  const { openModal, closeModal } = useModal()
+  const { modalType, openModal, closeModal } = useModal()
 
   useEffect(() => {
     const isOnPage = pathname === location.pathname
@@ -20,7 +20,16 @@ export default function useTriggerConnectWalletModal(pathname: Pathname) {
       })
 
     return () => {
-      closeModal()
+      if (modalType === MODAL_TYPES.CONNECT_WALLET) {
+        closeModal()
+      }
     }
-  }, [closeModal, isSignedMessage, location.pathname, openModal, pathname])
+  }, [
+    closeModal,
+    isSignedMessage,
+    location.pathname,
+    modalType,
+    openModal,
+    pathname,
+  ])
 }
