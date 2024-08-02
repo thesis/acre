@@ -13,7 +13,7 @@ function useDepositCallToAction() {
   const activitiesCount = useAllActivitiesCount()
   const hasFetchedActivities = useHasFetchedActivities()
   const hasActivities = activitiesCount > 0
-  const { openModal, closeModal } = useModal()
+  const { modalType, openModal, closeModal } = useModal()
   const isSignedMessage = useIsSignedMessage()
   const navigate = useNavigate()
 
@@ -31,7 +31,9 @@ function useDepositCallToAction() {
       })
 
     return () => {
-      closeModal()
+      if (modalType === MODAL_TYPES.STAKE) {
+        closeModal()
+      }
     }
   }, [
     hasFetchedActivities,
@@ -40,6 +42,7 @@ function useDepositCallToAction() {
     openModal,
     closeModal,
     navigate,
+    modalType,
   ])
 }
 
