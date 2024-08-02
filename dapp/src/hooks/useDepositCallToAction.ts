@@ -1,7 +1,6 @@
 import { routerPath } from "#/router/path"
 import { ACTION_FLOW_TYPES, MODAL_TYPES } from "#/types"
 import { useEffect } from "react"
-import { useNavigate } from "react-router-dom"
 import {
   useAllActivitiesCount,
   useHasFetchedActivities,
@@ -15,7 +14,6 @@ function useDepositCallToAction() {
   const hasActivities = activitiesCount > 0
   const { modalType, openModal, closeModal } = useModal()
   const isSignedMessage = useIsSignedMessage()
-  const navigate = useNavigate()
 
   useEffect(() => {
     const shouldOpenDepositModal =
@@ -24,10 +22,7 @@ function useDepositCallToAction() {
     if (shouldOpenDepositModal)
       openModal(MODAL_TYPES.STAKE, {
         type: ACTION_FLOW_TYPES.STAKE,
-        closeModal: () => {
-          closeModal()
-          navigate(routerPath.home)
-        },
+        navigateToOnClose: routerPath.home,
       })
 
     return () => {
@@ -41,7 +36,6 @@ function useDepositCallToAction() {
     isSignedMessage,
     openModal,
     closeModal,
-    navigate,
     modalType,
   ])
 }
