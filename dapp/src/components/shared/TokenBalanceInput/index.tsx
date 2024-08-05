@@ -70,7 +70,6 @@ export type TokenBalanceInputProps = {
   tokenBalance: bigint
   placeholder?: string
   size?: "lg" | "md"
-  fiatCurrency?: CurrencyType
   setAmount: (value?: bigint) => void
   withMaxButton?: boolean
 } & InputProps &
