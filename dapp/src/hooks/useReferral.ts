@@ -22,7 +22,11 @@ export default function useReferral(): UseReferralReturn {
     const param = params.get(SEARCH_PARAMS_NAMES.referral)
     const detectedReferral = param ? parseInt(param, 10) : null
 
-    if (detectedReferral && detectedReferral <= MAX_UINT16) {
+    if (
+      detectedReferral &&
+      detectedReferral >= 0 &&
+      detectedReferral <= MAX_UINT16
+    ) {
       setReferral(detectedReferral)
     } else {
       setReferral(env.REFERRAL)
