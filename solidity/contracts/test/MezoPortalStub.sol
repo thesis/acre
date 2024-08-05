@@ -11,7 +11,17 @@ contract MezoPortalStub is IMezoPortal {
 
     uint256 public depositCount;
 
+    event WithdrawFully(address token, uint256 depositId);
+    event WithdrawPartially(address token, uint256 depositId, uint96 amount);
+
+    error DepositNotFound();
+
     function withdraw(address token, uint256 depositId) external {
+        if (depositCount == 0) {
+            revert DepositNotFound();
+        }
+
+        emit WithdrawFully(token, depositId);
         IERC20(token).safeTransfer(
             msg.sender,
             IERC20(token).balanceOf(address(this))
@@ -23,6 +33,11 @@ contract MezoPortalStub is IMezoPortal {
         uint256 depositId,
         uint96 amount
     ) external {
+        if (depositCount == 0) {
+            revert DepositNotFound();
+        }
+
+        emit WithdrawPartially(token, depositId, amount);
         IERC20(token).safeTransfer(msg.sender, amount);
     }
 
