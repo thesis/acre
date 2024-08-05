@@ -1,8 +1,7 @@
 import { env } from "#/constants"
 import { useCallback, useMemo } from "react"
+import { SEARCH_PARAMS_NAMES } from "#/router/path"
 import useLocalStorage from "./useLocalStorage"
-
-const PARAM_NAME = "ref"
 
 type UseReferralReturn = {
   referral: number
@@ -18,7 +17,7 @@ export default function useReferral(): UseReferralReturn {
 
   const detectReferral = useCallback(() => {
     const params = new URLSearchParams(window.location.search)
-    const param = params.get(PARAM_NAME)
+    const param = params.get(SEARCH_PARAMS_NAMES.referral)
     const detectedReferral = param ? parseInt(param, 10) : null
 
     if (detectedReferral) {
