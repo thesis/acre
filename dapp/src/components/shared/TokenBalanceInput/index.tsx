@@ -95,7 +95,7 @@ const TokenBalanceInput = forwardRef<HTMLInputElement, TokenBalanceInputProps>(
     const valueRef = useRef<bigint | undefined>(amount)
     const styles = useMultiStyleConfig("TokenBalanceInput", { size })
 
-    const { decimals } = getCurrencyByType(currency)
+    const { decimals, desiredDecimals } = getCurrencyByType(currency)
 
     const handleValueChange = (value: string) => {
       valueRef.current = value ? userAmountToBigInt(value, decimals) : undefined
@@ -131,7 +131,11 @@ const TokenBalanceInput = forwardRef<HTMLInputElement, TokenBalanceInputProps>(
             placeholder={placeholder}
             {...inputProps}
             ref={ref}
-            value={amount ? bigIntToUserAmount(amount, decimals) : undefined}
+            value={
+              amount
+                ? bigIntToUserAmount(amount, decimals, desiredDecimals)
+                : undefined
+            }
             onValueChange={(values: NumberFormatInputValues) =>
               handleValueChange(values.value)
             }
