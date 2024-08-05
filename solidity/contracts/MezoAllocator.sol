@@ -237,7 +237,7 @@ contract MezoAllocator is IDispatcher, Ownable2StepUpgradeable {
             mezoPortal.withdraw(address(tbtc), depositId);
         }
 
-        // slither-disable-next-line reentrancy-benign
+        // slither-disable-next-line reentrancy-no-eth
         depositBalance -= uint96(amount);
         tbtc.safeTransfer(address(stbtc), amount);
     }
