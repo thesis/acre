@@ -3,6 +3,8 @@ import { useCallback, useMemo } from "react"
 import { SEARCH_PARAMS_NAMES } from "#/router/path"
 import useLocalStorage from "./useLocalStorage"
 
+const MAX_UINT16 = 65535
+
 type UseReferralReturn = {
   referral: number
   detectReferral: () => void
@@ -20,7 +22,7 @@ export default function useReferral(): UseReferralReturn {
     const param = params.get(SEARCH_PARAMS_NAMES.referral)
     const detectedReferral = param ? parseInt(param, 10) : null
 
-    if (detectedReferral) {
+    if (detectedReferral && detectedReferral <= MAX_UINT16) {
       setReferral(detectedReferral)
     } else {
       setReferral(env.REFERRAL)
