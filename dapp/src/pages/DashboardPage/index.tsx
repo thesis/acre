@@ -6,11 +6,13 @@ import {
   useTriggerConnectWalletModal,
 } from "#/hooks"
 import { routerPath } from "#/router/path"
+import { featureFlags } from "#/constants"
 import DashboardCard from "./DashboardCard"
 import { PageLayout, PageLayoutColumn } from "./PageLayout"
 // import GrantedSeasonPassCard from "./GrantedSeasonPassCard"
 import AcrePointsCard from "./AcrePointsCard"
 import { CurrentSeasonCard } from "./CurrentSeasonCard"
+import BeehiveCard from "./BeehiveCard"
 
 export default function DashboardPage() {
   const { data } = useBitcoinPosition()
@@ -30,6 +32,7 @@ export default function DashboardPage() {
         <CurrentSeasonCard showSeasonStats={false} />
         {/* TODO: Uncomment in post-launch phases */}
         {/* <GrantedSeasonPassCard /> */}
+        {featureFlags.BEEHIVE_COMPONENT_ENABLED && <BeehiveCard />}
       </PageLayoutColumn>
 
       <PageLayoutColumn position="relative">

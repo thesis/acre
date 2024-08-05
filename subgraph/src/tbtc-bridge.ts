@@ -190,7 +190,7 @@ export function handleSubmitRedemptionProofCall(
       withdraw.bitcoinTransactionId = bitcoinTransactionId
 
       const redemptionCompletedEvent = getOrCreateEvent(
-        `${call.transaction.hash.toHexString()}_RedemptionCompleted`,
+        `${call.transaction.hash.toHexString()}_${withdraw.id.toString()}_RedemptionCompleted`,
       )
 
       redemptionCompletedEvent.activity = withdraw.id
