@@ -70,7 +70,7 @@ type Deposit = {
   /**
    * Timestamp when the deposit was finalized.
    */
-  finalizedAt: number
+  finalizedAt?: number
 }
 
 type WithdrawalsDataResponse = {
@@ -89,7 +89,7 @@ type Withdraw = {
   amount: bigint
   bitcoinTransactionId?: string
   initializedAt: number
-  finalizedAt: number
+  finalizedAt?: number
 }
 
 export function buildGetDepositsByOwnerQuery(owner: ChainIdentifier) {
@@ -170,7 +170,9 @@ export default class AcreSubgraphApi extends HttpApi {
         : DepositStatus.Initialized
       const [initializedEvent, finalizedEvent] = events
       const initializedAt = parseInt(initializedEvent.timestamp, 10)
-      const finalizedAt = parseInt(finalizedEvent.timestamp, 10)
+      const finalizedAt = finalizedEvent
+        ? parseInt(finalizedEvent.timestamp, 10)
+        : undefined
 
       return {
         depositKey: id,
@@ -210,7 +212,9 @@ export default class AcreSubgraphApi extends HttpApi {
       const amount = BigInt(withdraw.amount)
       const [initializedEvent, finalizedEvent] = events
       const initializedAt = parseInt(initializedEvent.timestamp, 10)
-      const finalizedAt = parseInt(finalizedEvent.timestamp, 10)
+      const finalizedAt = finalizedEvent
+        ? parseInt(finalizedEvent.timestamp, 10)
+        : undefined
 
       return {
         id,

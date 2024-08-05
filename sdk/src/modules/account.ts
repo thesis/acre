@@ -229,7 +229,7 @@ export default class Account {
       bitcoinTransactionId?: string
       status: "initialized" | "finalized"
       initializedAt: number
-      finalizedAt: number
+      finalizedAt?: number
     }[]
   > {
     return (
