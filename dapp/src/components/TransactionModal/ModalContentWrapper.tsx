@@ -3,7 +3,7 @@ import {
   useActionFlowTokenAmount,
   useActionFlowType,
 } from "#/hooks"
-import { PROCESS_STATUSES } from "#/types"
+import { BaseModalProps, PROCESS_STATUSES } from "#/types"
 import React from "react"
 import ActionFormModal from "./ActionFormModal"
 import ErrorModal from "./ErrorModal"
@@ -13,10 +13,11 @@ import SuccessModal from "./SuccessModal"
 import NotEnoughFundsModal from "./ActiveUnstakingStep/NotEnoughFundsModal"
 
 export default function ModalContentWrapper({
+  closeModal,
   children,
 }: {
   children: React.ReactNode
-}) {
+} & BaseModalProps) {
   const status = useActionFlowStatus()
   const type = useActionFlowType()
   const tokenAmount = useActionFlowTokenAmount()
@@ -30,7 +31,8 @@ export default function ModalContentWrapper({
 
   if (status === PROCESS_STATUSES.FAILED) return <ErrorModal type={type} />
 
-  if (status === PROCESS_STATUSES.PAUSED) return <ResumeModal />
+  if (status === PROCESS_STATUSES.PAUSED)
+    return <ResumeModal closeModal={closeModal} />
 
   if (status === PROCESS_STATUSES.NOT_ENOUGH_FUNDS)
     return <NotEnoughFundsModal />

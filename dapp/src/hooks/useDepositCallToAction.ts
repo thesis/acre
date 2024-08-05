@@ -1,3 +1,4 @@
+import { routerPath } from "#/router/path"
 import { ACTION_FLOW_TYPES, MODAL_TYPES } from "#/types"
 import { useEffect } from "react"
 import {
@@ -5,22 +6,24 @@ import {
   useHasFetchedActivities,
   useIsSignedMessage,
 } from "./store"
-import { useTransactionModal } from "./useTransactionModal"
 import { useModal } from "./useModal"
 
 function useDepositCallToAction() {
   const activitiesCount = useAllActivitiesCount()
   const hasFetchedActivities = useHasFetchedActivities()
   const hasActivities = activitiesCount > 0
-  const openDepositModal = useTransactionModal(ACTION_FLOW_TYPES.STAKE)
-  const { modalType, closeModal } = useModal()
+  const { modalType, openModal, closeModal } = useModal()
   const isSignedMessage = useIsSignedMessage()
 
   useEffect(() => {
     const shouldOpenDepositModal =
       hasFetchedActivities && isSignedMessage && !hasActivities
 
-    if (shouldOpenDepositModal) openDepositModal()
+    if (shouldOpenDepositModal)
+      openModal(MODAL_TYPES.STAKE, {
+        type: ACTION_FLOW_TYPES.STAKE,
+        navigateToOnClose: routerPath.home,
+      })
 
     return () => {
       if (modalType === MODAL_TYPES.STAKE) {
@@ -31,7 +34,7 @@ function useDepositCallToAction() {
     hasFetchedActivities,
     hasActivities,
     isSignedMessage,
-    openDepositModal,
+    openModal,
     closeModal,
     modalType,
   ])
