@@ -3,10 +3,11 @@ import { getCurrencyByType } from "./currency"
 import { fixedPointNumberToString } from "./numbers"
 
 const ERRORS = {
-  REQUIRED: "Required.",
-  EXCEEDED_VALUE: "The amount exceeds your current balance.",
+  REQUIRED: "Please enter an amount.",
+  EXCEEDED_VALUE:
+    "The amount exceeds your current wallet balance. Add more funds to your wallet or lower the deposit amount.",
   INSUFFICIENT_VALUE: (minValue: string) =>
-    `The minimum amount must be at least ${minValue} BTC.`,
+    `The amount is below the minimum required deposit of ${minValue} BTC.`,
 }
 
 export function getErrorsObj<T>(errors: { [key in keyof T]: string }) {

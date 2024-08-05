@@ -2,7 +2,7 @@ import React from "react"
 import { NumericFormat, NumericFormatProps } from "react-number-format"
 import { InputProps, chakra, useMultiStyleConfig } from "@chakra-ui/react"
 
-const ChakraWrapper = chakra(NumericFormat)
+const ChakraNumericFormat = chakra(NumericFormat)
 
 export type NumberFormatInputValues = {
   formattedValue: string
@@ -32,8 +32,7 @@ const NumberFormatInput = React.forwardRef<
   const { decimalScale, isDisabled, isInvalid, ...restProps } = props
 
   return (
-    <ChakraWrapper
-      allowLeadingZeros={false}
+    <ChakraNumericFormat
       thousandSeparator
       decimalScale={decimalScale}
       __css={css}

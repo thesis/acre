@@ -13,18 +13,18 @@ import {
   useMultiStyleConfig,
 } from "@chakra-ui/react"
 import {
-  fixedPointNumberToString,
+  bigIntToUserAmount,
   getCurrencyByType,
   userAmountToBigInt,
 } from "#/utils"
 import { CurrencyType } from "#/types"
 import { IconInfoCircle } from "@tabler/icons-react"
-import { useCurrencyConversion } from "#/hooks"
 import NumberFormatInput, {
   NumberFormatInputValues,
   NumberFormatInputProps,
 } from "../NumberFormatInput"
 import { CurrencyBalance } from "../CurrencyBalance"
+import { Alert, AlertIcon, AlertDescription } from "../Alert"
 
 const VARIANT = "balance"
 
@@ -42,7 +42,12 @@ function HelperErrorText({
   if (hasError) {
     return (
       <FormErrorMessage>
-        {errorMsgText || "Please enter a valid value"}
+        <Alert status="error">
+          <AlertIcon status="error" />
+          <AlertDescription>
+            {errorMsgText || "Please enter a valid value"}
+          </AlertDescription>
+        </Alert>
       </FormErrorMessage>
     )
   }
@@ -53,40 +58,6 @@ function HelperErrorText({
         <Icon as={IconInfoCircle} />
         {helperText}
       </FormHelperText>
-    )
-  }
-
-  return null
-}
-
-type FiatCurrencyBalanceProps = {
-  amount: bigint
-  currency: CurrencyType
-  fiatCurrency: CurrencyType
-}
-
-function FiatCurrencyBalance({
-  amount,
-  currency,
-  fiatCurrency,
-}: FiatCurrencyBalanceProps) {
-  const styles = useMultiStyleConfig("Form")
-  const { fontWeight } = styles.helperText
-
-  const fiatAmount = useCurrencyConversion({
-    from: { amount, currency },
-    to: { currency: fiatCurrency },
-  })
-
-  if (fiatAmount !== undefined) {
-    return (
-      <CurrencyBalance
-        currency={fiatCurrency}
-        amount={fiatAmount}
-        shouldBeFormatted={false}
-        fontWeight={fontWeight as string}
-        size="sm"
-      />
     )
   }
 
@@ -118,7 +89,6 @@ const TokenBalanceInput = forwardRef<HTMLInputElement, TokenBalanceInputProps>(
       errorMsgText,
       helperText,
       hasError = false,
-      fiatCurrency,
       withMaxButton = false,
       ...inputProps
     } = props
@@ -132,16 +102,21 @@ const TokenBalanceInput = forwardRef<HTMLInputElement, TokenBalanceInputProps>(
       valueRef.current = value ? userAmountToBigInt(value, decimals) : undefined
     }
 
+    // This is workaround, we should pass error codes along with error messages
+    const isBalanceExceeded =
+      hasError && errorMsgText?.toString().includes("exceeds")
+
     return (
       <FormControl isInvalid={hasError} isDisabled={inputProps.isDisabled}>
-        <FormLabel htmlFor={inputProps.name} size={size}>
+        <FormLabel htmlFor={inputProps.name} size={size} mr={0}>
           <Box __css={styles.labelContainer}>
             Amount
             <Box __css={styles.balanceContainer}>
               <Box as="span" __css={styles.balance}>
-                Balance
+                Wallet balance
               </Box>
               <CurrencyBalance
+                color={isBalanceExceeded ? "red.400" : "gray.700"}
                 size={size === "lg" ? "md" : "sm"}
                 amount={tokenBalance}
                 currency={currency}
@@ -157,9 +132,7 @@ const TokenBalanceInput = forwardRef<HTMLInputElement, TokenBalanceInputProps>(
             placeholder={placeholder}
             {...inputProps}
             ref={ref}
-            value={
-              amount ? fixedPointNumberToString(amount, decimals) : undefined
-            }
+            value={amount ? bigIntToUserAmount(amount, decimals) : undefined}
             onValueChange={(values: NumberFormatInputValues) =>
               handleValueChange(values.value)
             }
@@ -183,15 +156,6 @@ const TokenBalanceInput = forwardRef<HTMLInputElement, TokenBalanceInputProps>(
           errorMsgText={errorMsgText}
           hasError={hasError}
         />
-        {!hasError && !helperText && !!fiatCurrency && (
-          <FormHelperText>
-            <FiatCurrencyBalance
-              amount={amount ?? 0n}
-              currency={currency}
-              fiatCurrency={fiatCurrency}
-            />
-          </FormHelperText>
-        )}
       </FormControl>
     )
   },

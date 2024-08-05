@@ -8,6 +8,7 @@ const variantBalanceField = defineStyle({
   fontWeight: "bold",
   bg: "opacity.white.5",
   paddingRight: 20,
+  minH: 14,
   // TODO: Set the color correctly without using the chakra variable.
   caretColor: "var(--chakra-colors-brand-400)",
 
@@ -18,6 +19,7 @@ const variantBalanceField = defineStyle({
 
   _invalid: {
     color: "red.400",
+    borderColor: "red.400",
   },
 })
 

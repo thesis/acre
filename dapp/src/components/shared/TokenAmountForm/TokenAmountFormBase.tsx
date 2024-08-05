@@ -58,7 +58,6 @@ export default function TokenAmountFormBase({
         tokenBalance={tokenBalance}
         placeholder={tokenBalanceInputPlaceholder}
         currency={currency}
-        fiatCurrency={fiatCurrency}
         withMaxButton={withMaxButton}
         defaultValue={defaultAmount}
       />
