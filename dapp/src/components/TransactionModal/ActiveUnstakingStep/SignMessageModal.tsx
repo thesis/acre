@@ -153,7 +153,9 @@ export default function SignMessageModal() {
           // This is a requested amount. The amount of BTC received will be
           // around: `amount - transactionFee.total`.
           amount: amount - transactionFee.acre,
-          timestamp: dateToUnixTimestamp(),
+          initializedAt: dateToUnixTimestamp(),
+          // The message is signed immediately after the initialization.
+          finalizedAt: dateToUnixTimestamp(),
         }),
       )
     },
