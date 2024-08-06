@@ -33,7 +33,7 @@ export default function useReferral(): UseReferralReturn {
     if (referralProgram.isValidReferral(convertedReferral)) {
       setReferral(convertedReferral)
     } else {
-      setReferral(undefined)
+      setReferral(null)
       openModal(MODAL_TYPES.UNEXPECTED_ERROR, {
         withCloseButton: false,
         closeOnEsc: false,
