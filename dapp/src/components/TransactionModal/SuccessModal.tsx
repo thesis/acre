@@ -16,10 +16,10 @@ import {
   useModal,
   useAllActivitiesCount,
   useFetchActivities,
+  useAppNavigate,
 } from "#/hooks"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import { ACTION_FLOW_TYPES, ActionFlowType, MODAL_TYPES } from "#/types"
-import { useNavigate } from "react-router-dom"
 import { routerPath } from "#/router/path"
 import { IconArrowUpRight } from "@tabler/icons-react"
 import { logPromiseFailure } from "#/utils"
@@ -105,7 +105,7 @@ type SuccessModalProps = {
 export default function SuccessModal({ type }: SuccessModalProps) {
   const { closeModal, openModal } = useModal()
   const fetchActivities = useFetchActivities()
-  const navigate = useNavigate()
+  const navigate = useAppNavigate()
   const allActivitiesCount = useAllActivitiesCount()
 
   const { heading, footer, renderComponent } = CONTENT[type]
