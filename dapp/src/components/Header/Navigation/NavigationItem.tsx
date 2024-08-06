@@ -22,9 +22,7 @@ function NavigationItem(props: NavigationItemProps) {
   const referralParam = searchParams.get(SEARCH_PARAMS_NAMES.referral)
   const to: To = {
     pathname: href,
-    ...(referralParam && {
-      search: `?${SEARCH_PARAMS_NAMES.referral}=${referralParam}`,
-    }),
+    search: searchParams.toString(),
   }
 
   const isDisabled = !referralProgram.isValidReferral(Number(referralParam))
