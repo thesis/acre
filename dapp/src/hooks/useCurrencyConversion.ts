@@ -31,9 +31,9 @@ export function useCurrencyConversion({
     if (from.amount === undefined || !price) return undefined
 
     const { amount, currency } = from
-    const { decimals, desiredDecimals } = CURRENCIES_BY_TYPE[currency]
+    const { decimals } = CURRENCIES_BY_TYPE[currency]
 
-    return bigIntToUserAmount(BigInt(amount), decimals, desiredDecimals) * price
+    return bigIntToUserAmount(BigInt(amount), decimals, decimals - 1) * price
   }, [from, price])
 
   return conversionAmount
