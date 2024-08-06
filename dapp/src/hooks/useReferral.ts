@@ -1,6 +1,5 @@
 import { env } from "#/constants"
 import { useCallback, useMemo } from "react"
-import { SEARCH_PARAMS_NAMES } from "#/router/path"
 import { MODAL_TYPES } from "#/types"
 import { referralProgram } from "#/utils"
 import useLocalStorage from "./useLocalStorage"
@@ -20,8 +19,7 @@ export default function useReferral(): UseReferralReturn {
   const { openModal } = useModal()
 
   const detectReferral = useCallback(() => {
-    const params = new URLSearchParams(window.location.search)
-    const param = params.get(SEARCH_PARAMS_NAMES.referral)
+    const param = referralProgram.getReferralFromURL()
 
     if (param === null) {
       setReferral(env.REFERRAL)

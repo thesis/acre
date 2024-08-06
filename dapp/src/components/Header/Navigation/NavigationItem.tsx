@@ -8,7 +8,6 @@ import {
 import { motion } from "framer-motion"
 import { NavigationItemType } from "#/types/navigation"
 import { To, useSearchParams } from "react-router-dom"
-import { SEARCH_PARAMS_NAMES } from "#/router/path"
 import { referralProgram } from "#/utils"
 import { NavLink } from "../../shared/NavLink"
 
@@ -19,12 +18,12 @@ function NavigationItem(props: NavigationItemProps) {
   const styles = useMultiStyleConfig("Link", { variant: "navigation" })
   const [searchParams] = useSearchParams()
 
-  const referralParam = searchParams.get(SEARCH_PARAMS_NAMES.referral)
   const to: To = {
     pathname: href,
     search: searchParams.toString(),
   }
 
+  const referralParam = referralProgram.getReferralFromURL()
   const isDisabled = !referralProgram.isValidReferral(Number(referralParam))
 
   return (
