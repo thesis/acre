@@ -319,7 +319,7 @@ describe("Account", () => {
       {
         id: finalizedDeposit.subgraph.depositKey,
         txHash: finalizedDeposit.subgraph.txHash,
-        amount: 104000n,
+        amount: 53636n,
         status: DepositStatus.Finalized,
         initializedAt: 1715807188,
         finalizedAt: 1715807188,
