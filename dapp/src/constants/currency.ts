@@ -1,6 +1,8 @@
 import { Currency, CurrencyType } from "#/types"
 import env from "./env"
 
+export const DESIRED_DECIMALS_FOR_FEE = 5
+
 export const BITCOIN: Currency = {
   name: "Bitcoin",
   symbol: "BTC",
