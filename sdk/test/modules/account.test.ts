@@ -314,7 +314,7 @@ describe("Account", () => {
         amount: 105000n,
         status: DepositStatus.Queued,
         initializedAt: 1715851724,
-        finalizedAt: 1715851724,
+        finalizedAt: undefined,
       },
       {
         id: finalizedDeposit.subgraph.depositKey,
