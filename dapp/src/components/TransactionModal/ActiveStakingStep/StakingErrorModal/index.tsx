@@ -4,7 +4,6 @@ import {
   useAppDispatch,
   useExecuteFunction,
   useFetchActivities,
-  useModal,
   useStakeFlowContext,
 } from "#/hooks"
 import { PROCESS_STATUSES } from "#/types"
