@@ -4,7 +4,7 @@ import TransactionDetailsAmountItem from "#/components/shared/TransactionDetails
 import { useTokenAmountField } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { useMinWithdrawAmount, useTransactionDetails } from "#/hooks"
 import { ACTION_FLOW_TYPES, CurrencyType } from "#/types"
-import { featureFlags } from "#/constants"
+import { DESIRED_DECIMALS_FOR_FEE, featureFlags } from "#/constants"
 import FeesDetailsAmountItem from "#/components/shared/FeesDetails/FeesItem"
 import WithdrawWarning from "./WithdrawWarning"
 import { FeesTooltip } from "../../FeesTooltip"
@@ -48,6 +48,7 @@ function UnstakeDetails({
           from={{
             currency,
             amount: total,
+            desiredDecimals: DESIRED_DECIMALS_FOR_FEE,
           }}
           to={{
             currency: "usd",
