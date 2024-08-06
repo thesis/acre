@@ -41,7 +41,5 @@ export function UnexpectedErrorModalBase({ withCloseButton }: BaseModalProps) {
   )
 }
 
-const UnexpectedErrorModal = withBaseModal(UnexpectedErrorModalBase, {
-  size: "lg",
-})
+const UnexpectedErrorModal = withBaseModal(UnexpectedErrorModalBase)
 export default UnexpectedErrorModal
