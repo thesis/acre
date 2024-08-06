@@ -30,6 +30,8 @@ export function StakeFlowProvider({ children }: { children: React.ReactNode }) {
   const initStake = useCallback(async () => {
     if (!acre) throw new Error("Acre SDK not defined")
 
+    if (!referral) throw new Error("Referral not defined")
+
     await acreInitStake(referral, bitcoinRecoveryAddress)
   }, [acre, acreInitStake, bitcoinRecoveryAddress, referral])
 

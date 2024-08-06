@@ -45,7 +45,8 @@ export default function ConnectWallet() {
         pl={2}
         leftIcon={<Icon as={BitcoinIcon} boxSize={6} color="brand.400" />}
         onClick={handleConnectWallet}
-        {...(modalType === MODAL_TYPES.CONNECT_WALLET && {
+        {...((modalType === MODAL_TYPES.CONNECT_WALLET ||
+          modalType === MODAL_TYPES.UNEXPECTED_ERROR) && {
           pointerEvents: "none",
         })}
       >

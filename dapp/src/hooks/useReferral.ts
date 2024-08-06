@@ -1,12 +1,13 @@
 import { env } from "#/constants"
 import { useCallback, useMemo } from "react"
 import { SEARCH_PARAMS_NAMES } from "#/router/path"
+import { MODAL_TYPES } from "#/types"
+import { referralProgram } from "#/utils"
 import useLocalStorage from "./useLocalStorage"
-
-const MAX_UINT16 = 65535
+import { useModal } from "./useModal"
 
 type UseReferralReturn = {
-  referral: number
+  referral?: number
   detectReferral: () => void
   resetReferral: () => void
 }
@@ -16,22 +17,29 @@ export default function useReferral(): UseReferralReturn {
     "referral",
     env.REFERRAL,
   )
+  const { openModal } = useModal()
 
   const detectReferral = useCallback(() => {
     const params = new URLSearchParams(window.location.search)
     const param = params.get(SEARCH_PARAMS_NAMES.referral)
-    const detectedReferral = param ? parseInt(param, 10) : null
 
-    if (
-      detectedReferral &&
-      detectedReferral >= 0 &&
-      detectedReferral <= MAX_UINT16
-    ) {
-      setReferral(detectedReferral)
-    } else {
+    if (param === null) {
       setReferral(env.REFERRAL)
+      return
     }
-  }, [setReferral])
+
+    const convertedReferral = Number(param)
+
+    if (referralProgram.isValidReferral(convertedReferral)) {
+      setReferral(convertedReferral)
+    } else {
+      setReferral(undefined)
+      openModal(MODAL_TYPES.UNEXPECTED_ERROR, {
+        withCloseButton: false,
+        closeOnEsc: false,
+      })
+    }
+  }, [openModal, setReferral])
 
   const resetReferral = useCallback(() => {
     setReferral(env.REFERRAL)
