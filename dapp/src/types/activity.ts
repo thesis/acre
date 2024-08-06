@@ -1,6 +1,7 @@
 type CommonActivityData = {
   id: string
-  timestamp: number
+  initializedAt: number
+  finalizedAt?: number
   amount: bigint
   status: "completed" | "pending"
 }
