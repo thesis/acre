@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react"
+import React from "react"
 import { FormikProps, useField } from "formik"
 import { CurrencyType } from "#/types"
 import { Form, FormTokenBalanceInput } from "../Form"
@@ -40,24 +40,16 @@ export default function TokenAmountFormBase({
   defaultAmount,
   ...formikProps
 }: TokenAmountFormBaseProps & FormikProps<TokenAmountFormValues>) {
-  const inputRef = useRef<HTMLInputElement>(null)
-
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus()
-    }
-  }, [])
-
   return (
     <Form id={formId} onSubmit={formikProps.handleSubmit}>
       <FormTokenBalanceInput
-        ref={inputRef}
         name={TOKEN_AMOUNT_FIELD_NAME}
         tokenBalance={tokenBalance}
         placeholder={tokenBalanceInputPlaceholder}
         currency={currency}
         withMaxButton={withMaxButton}
         defaultValue={defaultAmount}
+        autoFocus
       />
       {children}
     </Form>

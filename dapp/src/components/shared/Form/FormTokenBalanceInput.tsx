@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useEffect } from "react"
+import React, { useCallback, useEffect } from "react"
 import { useField } from "formik"
 import { logPromiseFailure } from "#/utils"
 import TokenBalanceInput, { TokenBalanceInputProps } from "../TokenBalanceInput"
@@ -8,12 +8,11 @@ export type FormTokenBalanceInputProps = {
   defaultValue?: bigint
 } & Omit<TokenBalanceInputProps, "setAmount" | "defaultValue">
 
-export const FormTokenBalanceInput = forwardRef<
-  HTMLInputElement,
-  FormTokenBalanceInputProps
->((props, ref) => {
-  const { name, defaultValue, ...restProps } = props
-
+export function FormTokenBalanceInput({
+  name,
+  defaultValue,
+  ...restProps
+}: FormTokenBalanceInputProps) {
   const [field, meta, helpers] = useField(name)
 
   const setAmount = useCallback(
@@ -32,7 +31,6 @@ export const FormTokenBalanceInput = forwardRef<
 
   return (
     <TokenBalanceInput
-      ref={ref}
       {...restProps}
       {...field}
       amount={defaultValue ?? (meta.value as bigint)}
@@ -41,4 +39,4 @@ export const FormTokenBalanceInput = forwardRef<
       errorMsgText={meta.error}
     />
   )
-})
+}
