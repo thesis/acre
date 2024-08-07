@@ -1,5 +1,5 @@
 import { FormikErrors, withFormik } from "formik"
-import { getErrorsObj, logPromiseFailure, validateTokenAmount } from "#/utils"
+import { getErrorsObj, validateTokenAmount } from "#/utils"
 import { BaseFormProps } from "#/types"
 import TokenAmountFormBase, {
   TokenAmountFormBaseProps,
@@ -28,8 +28,7 @@ const TokenAmountForm = withFormik<TokenAmountFormProps, TokenAmountFormValues>(
 
       return getErrorsObj(errors)
     },
-    handleSubmit: (values, { props, validateForm }) => {
-      logPromiseFailure(validateForm(values))
+    handleSubmit: (values, { props }) => {
       props.onSubmitForm(values)
     },
     validateOnBlur: false,
