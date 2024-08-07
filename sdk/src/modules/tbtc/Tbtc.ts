@@ -133,7 +133,7 @@ export default class Tbtc {
       depositKey: string
       initialAmount: bigint
       status: DepositStatus
-      timestamp: number
+      initializedAt: number
     }[]
   > {
     const deposits = await this.#tbtcApi.getDepositsByOwner(depositOwner)
@@ -149,7 +149,7 @@ export default class Tbtc {
         ],
       ),
       txHash: deposit.txHash,
-      timestamp: deposit.createdAt,
+      initializedAt: deposit.createdAt,
     }))
   }
 
