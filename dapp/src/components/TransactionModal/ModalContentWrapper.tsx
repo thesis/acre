@@ -2,7 +2,6 @@ import {
   useActionFlowStatus,
   useActionFlowTokenAmount,
   useActionFlowType,
-  useModal,
 } from "#/hooks"
 import { BaseModalProps, PROCESS_STATUSES } from "#/types"
 import React from "react"
@@ -22,7 +21,6 @@ export default function ModalContentWrapper({
   const status = useActionFlowStatus()
   const type = useActionFlowType()
   const tokenAmount = useActionFlowTokenAmount()
-  const { closeModal } = useModal()
 
   if (!tokenAmount || status === PROCESS_STATUSES.REFINE_AMOUNT)
     return <ActionFormModal type={type} />
