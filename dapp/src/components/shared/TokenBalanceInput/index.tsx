@@ -1,4 +1,4 @@
-import React, { useRef } from "react"
+import React, { useMemo, useRef } from "react"
 import {
   Box,
   Button,
@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react"
 import {
   bigIntToUserAmount,
+  fixedPointNumberToString,
   getCurrencyByType,
   userAmountToBigInt,
 } from "#/utils"
@@ -101,13 +102,13 @@ function FiatCurrencyBalance({
 }
 
 export type TokenBalanceInputProps = {
-  amount?: bigint
+  amount?: bigint | string
   currency: CurrencyType
   tokenBalance: bigint
   placeholder?: string
   size?: "lg" | "md"
   fiatCurrency?: CurrencyType
-  setAmount: (value?: bigint) => void
+  setAmount: (value?: bigint | string) => void
   withMaxButton?: boolean
 } & InputProps &
   HelperErrorTextProps &
@@ -127,10 +128,23 @@ export default function TokenBalanceInput({
   withMaxButton = false,
   ...inputProps
 }: TokenBalanceInputProps) {
-  const valueRef = useRef<bigint | undefined>(amount)
+  const valueRef = useRef<bigint | string | undefined>(amount)
   const styles = useMultiStyleConfig("TokenBalanceInput", { size })
 
   const { decimals, desiredDecimals } = getCurrencyByType(currency)
+
+  const amountValue = useMemo(() => {
+    if (typeof amount === "string") {
+      return amount
+    }
+
+    return amount
+      ? bigIntToUserAmount(amount, decimals, desiredDecimals)
+      : undefined
+  }, [amount, decimals, desiredDecimals])
+
+  const bigIntAmount =
+    typeof amount === "string" ? userAmountToBigInt(amount, decimals) : amount
 
   const handleValueChange = (value: string) => {
     valueRef.current = value ? userAmountToBigInt(value, decimals) : undefined
@@ -164,11 +178,7 @@ export default function TokenBalanceInput({
           isInvalid={hasError}
           placeholder={placeholder}
           {...inputProps}
-          value={
-            amount
-              ? bigIntToUserAmount(amount, decimals, desiredDecimals)
-              : undefined
-          }
+          value={amountValue}
           onValueChange={(values: NumberFormatInputValues) =>
             handleValueChange(values.value)
           }
@@ -181,7 +191,12 @@ export default function TokenBalanceInput({
 
         {withMaxButton && (
           <InputRightElement>
-            <Button h="70%" onClick={() => setAmount(tokenBalance)}>
+            <Button
+              h="70%"
+              onClick={() =>
+                setAmount(fixedPointNumberToString(tokenBalance, decimals))
+              }
+            >
               Max
             </Button>
           </InputRightElement>
@@ -195,7 +210,7 @@ export default function TokenBalanceInput({
       {!hasError && !helperText && !!fiatCurrency && (
         <FormHelperText>
           <FiatCurrencyBalance
-            amount={amount ?? 0n}
+            amount={bigIntAmount ?? 0n}
             currency={currency}
             fiatCurrency={fiatCurrency}
           />

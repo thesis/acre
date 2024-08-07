@@ -6,7 +6,7 @@ import { Form, FormTokenBalanceInput } from "../Form"
 const TOKEN_AMOUNT_FIELD_NAME = "amount"
 
 export type TokenAmountFormValues = {
-  [TOKEN_AMOUNT_FIELD_NAME]?: bigint
+  [TOKEN_AMOUNT_FIELD_NAME]?: bigint | string
 }
 
 export const useTokenAmountField = () => {
