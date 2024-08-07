@@ -52,7 +52,8 @@ const expectedDepositData = [
     amountToDeposit: BigInt(0),
     type: "deposit",
     status: DepositStatus.Initialized,
-    timestamp: 1714058004,
+    initializedAt: 1714058004,
+    finalizedAt: undefined,
   },
   {
     depositKey:
@@ -62,7 +63,8 @@ const expectedDepositData = [
     amountToDeposit: BigInt("536361040000000"),
     type: "deposit",
     status: DepositStatus.Finalized,
-    timestamp: 1715856144,
+    initializedAt: 1715856144,
+    finalizedAt: 1715860572,
   },
 ]
 
@@ -102,13 +104,15 @@ const expectedWithdrawalsData = [
     bitcoinTransactionId:
       "01209B0641F4BBCE77292DB481AADE68742C99AD5D375E76BAAEEA3122474B84",
     amount: 10000000000000000n,
-    timestamp: 1718871276,
+    initializedAt: 1718871276,
+    finalizedAt: undefined,
   },
   {
     id: "0xa40df409c4e463cb0c7744df310ad8714a01c40bcf6807cb2b4266ffa0b860ea-1",
     bitcoinTransactionId: undefined,
     amount: 10000000000000000n,
-    timestamp: 1718889168,
+    initializedAt: 1718889168,
+    finalizedAt: undefined,
   },
 ]
 

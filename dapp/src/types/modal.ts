@@ -1,9 +1,12 @@
+import { Pathname } from "#/router/path"
+
 export type ModalProps = Record<string, unknown>
 
 export type BaseModalProps = {
   closeModal: () => void
   withCloseButton?: boolean
   closeOnEsc?: boolean
+  navigateToOnClose?: Pathname
 }
 
 export const MODAL_TYPES = {

@@ -10,12 +10,11 @@ import {
 import Spinner from "#/components/shared/Spinner"
 import { PauseIcon } from "#/assets/icons"
 import { TextMd } from "#/components/shared/Typography"
-import { useActionFlowPause, useActionFlowType, useModal } from "#/hooks"
-import { ACTION_FLOW_TYPES } from "#/types"
+import { useActionFlowPause, useActionFlowType } from "#/hooks"
+import { ACTION_FLOW_TYPES, BaseModalProps } from "#/types"
 
-export default function ResumeModal() {
+export default function ResumeModal({ closeModal }: BaseModalProps) {
   const { handleResume } = useActionFlowPause()
-  const { closeModal } = useModal()
   const type = useActionFlowType()
 
   const btnText =

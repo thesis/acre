@@ -228,7 +228,7 @@ describe("Tbtc", () => {
           depositKey:
             "0x9d7edf34dd3a687437ec637f7495cde408846d1308b5ca0ade907b06c07f0be7",
           txHash: deposit1.txHash,
-          timestamp: deposit1.createdAt,
+          initializedAt: deposit1.createdAt,
         },
         {
           status: deposit2.status,
@@ -236,7 +236,7 @@ describe("Tbtc", () => {
           depositKey:
             "0xcc465e44028f920712f67e48da2e2f6d1e28dacfa7d1e4c7c73cfec250c499d6",
           txHash: deposit2.txHash,
-          timestamp: deposit2.createdAt,
+          initializedAt: deposit2.createdAt,
         },
       ])
     })
