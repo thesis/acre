@@ -1,8 +1,7 @@
 import React, { ComponentType, useCallback } from "react"
 import { Modal, ModalContent, ModalOverlay, ModalProps } from "@chakra-ui/react"
 import { BaseModalProps } from "#/types"
-import { useSidebar } from "#/hooks"
-import { useNavigate } from "react-router-dom"
+import { useAppNavigate, useSidebar } from "#/hooks"
 
 const MODAL_BASE_SIZE = "lg"
 
@@ -14,7 +13,7 @@ function withBaseModal<T extends BaseModalProps>(
     const { closeModal, closeOnEsc, navigateToOnClose } = props
 
     const { isOpen: isSidebarOpen } = useSidebar()
-    const navigate = useNavigate()
+    const navigate = useAppNavigate()
 
     const handleCloseModal = useCallback(() => {
       closeModal()
