@@ -19,6 +19,7 @@ import {
 } from "#/utils"
 import { CurrencyType } from "#/types"
 import { IconInfoCircle } from "@tabler/icons-react"
+import { useCurrencyConversion } from "#/hooks"
 import NumberFormatInput, {
   NumberFormatInputValues,
   NumberFormatInputProps,
@@ -64,12 +65,47 @@ function HelperErrorText({
   return null
 }
 
+type FiatCurrencyBalanceProps = {
+  amount: bigint
+  currency: CurrencyType
+  fiatCurrency: CurrencyType
+}
+
+function FiatCurrencyBalance({
+  amount,
+  currency,
+  fiatCurrency,
+}: FiatCurrencyBalanceProps) {
+  const styles = useMultiStyleConfig("Form")
+  const { fontWeight } = styles.helperText
+
+  const fiatAmount = useCurrencyConversion({
+    from: { amount, currency },
+    to: { currency: fiatCurrency },
+  })
+
+  if (fiatAmount !== undefined) {
+    return (
+      <CurrencyBalance
+        currency={fiatCurrency}
+        amount={fiatAmount}
+        shouldBeFormatted={false}
+        fontWeight={fontWeight as string}
+        size="sm"
+      />
+    )
+  }
+
+  return null
+}
+
 export type TokenBalanceInputProps = {
   amount?: bigint
   currency: CurrencyType
   tokenBalance: bigint
   placeholder?: string
   size?: "lg" | "md"
+  fiatCurrency?: CurrencyType
   setAmount: (value?: bigint) => void
   withMaxButton?: boolean
 } & InputProps &
@@ -88,6 +124,7 @@ const TokenBalanceInput = forwardRef<HTMLInputElement, TokenBalanceInputProps>(
       errorMsgText,
       helperText,
       hasError = false,
+      fiatCurrency,
       withMaxButton = false,
       ...inputProps
     } = props
@@ -159,6 +196,15 @@ const TokenBalanceInput = forwardRef<HTMLInputElement, TokenBalanceInputProps>(
           errorMsgText={errorMsgText}
           hasError={hasError}
         />
+        {!hasError && !helperText && !!fiatCurrency && (
+          <FormHelperText>
+            <FiatCurrencyBalance
+              amount={amount ?? 0n}
+              currency={currency}
+              fiatCurrency={fiatCurrency}
+            />
+          </FormHelperText>
+        )}
       </FormControl>
     )
   },
