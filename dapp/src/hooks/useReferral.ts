@@ -6,7 +6,7 @@ import useLocalStorage from "./useLocalStorage"
 import { useModal } from "./useModal"
 
 type UseReferralReturn = {
-  referral?: number
+  referral: number | null
   detectReferral: () => void
   resetReferral: () => void
 }
