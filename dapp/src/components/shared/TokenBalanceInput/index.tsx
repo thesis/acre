@@ -20,6 +20,7 @@ import {
 import { CurrencyType } from "#/types"
 import { IconInfoCircle } from "@tabler/icons-react"
 import { useCurrencyConversion } from "#/hooks"
+import { TOKEN_FORM_ERRORS } from "#/constants"
 import NumberFormatInput, {
   NumberFormatInputValues,
   NumberFormatInputProps,
@@ -135,9 +136,8 @@ export default function TokenBalanceInput({
     valueRef.current = value ? userAmountToBigInt(value, decimals) : undefined
   }
 
-  // This is workaround, we should pass error codes along with error messages
   const isBalanceExceeded =
-    hasError && errorMsgText?.toString().includes("exceeds")
+    hasError && errorMsgText === TOKEN_FORM_ERRORS.EXCEEDED_VALUE
 
   return (
     <FormControl isInvalid={hasError} isDisabled={inputProps.isDisabled}>
