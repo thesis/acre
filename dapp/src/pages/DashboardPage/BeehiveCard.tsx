@@ -13,12 +13,10 @@ import {
 import { ArrowUpRight, MezoSignIcon } from "#/assets/icons"
 import { useAcreMats, useIsFetchedWalletData, useModal } from "#/hooks"
 import { MODAL_TYPES } from "#/types"
-import mezoBeehiveCardIllustrationSrc from "#/assets/images/mezo-beehive-card-illustration.svg"
 import beehiveIllustrationSrc from "#/assets/images/beehive-illustration.svg"
+import mezoBeesIllustrationSrc from "#/assets/images/mezo-bees.svg"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import { numberToLocaleString } from "#/utils"
-
-const MARGIN = 4
 
 export default function BeehiveCard(props: CardProps) {
   const { openModal } = useModal()
@@ -37,23 +35,22 @@ export default function BeehiveCard(props: CardProps) {
         </TextMd>
       </CardHeader>
 
-      <CardBody p={0} mx={-MARGIN}>
-        {isFetchedWalletData ? (
-          <Image
-            src={mezoBeehiveCardIllustrationSrc}
-            pl={MARGIN}
-            w="full"
-            maxW="24.75rem" // 396px
-            mx="auto"
-          />
-        ) : (
-          <HStack justifyContent="space-between" pl={MARGIN}>
+      <CardBody p={0}>
+        <HStack justifyContent="space-between">
+          {isFetchedWalletData ? (
+            <Image
+              src={mezoBeesIllustrationSrc}
+              w="full"
+              maxW="24.75rem" // 396px
+              mx="auto"
+            />
+          ) : (
             <UserDataSkeleton boxSize={24} rounded="100%" />
-            <Image src={beehiveIllustrationSrc} />
-          </HStack>
-        )}
+          )}
+          <Image src={beehiveIllustrationSrc} />
+        </HStack>
 
-        <UserDataSkeleton mx={MARGIN} mt={4}>
+        <UserDataSkeleton mt={4}>
           <Card
             borderWidth={0}
             variant="elevated"
