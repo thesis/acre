@@ -20,6 +20,7 @@ export type CurrencyBalanceProps = {
   size?: ResponsiveValue<string>
   variant?: ResponsiveValue<
     | "greater-balance-md"
+    | "greater-balance-lg"
     | "greater-balance-xl"
     | "greater-balance-xxl"
     | "unstyled"
