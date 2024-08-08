@@ -81,6 +81,10 @@ export default function LandingPage() {
           <CardButton href={EXTERNAL_HREF.FAQ} isExternal>
             FAQ
           </CardButton>
+
+          <CardButton href={EXTERNAL_HREF.BLOG} isExternal>
+            Blog
+          </CardButton>
         </VStack>
       </Flex>
     </>
