@@ -27,7 +27,7 @@ const getCustomDataByAccount = (
 
 export default function ConnectWallet() {
   const { isConnected, address, balance, onDisconnect } = useWallet()
-  const { modalType, openModal } = useModal()
+  const { isOpenGlobalErrorModal, modalType, openModal } = useModal()
   const { hasCopied, onCopy } = useClipboard(address ?? "")
 
   const customDataBtcAccount = getCustomDataByAccount(address)
@@ -46,7 +46,7 @@ export default function ConnectWallet() {
         leftIcon={<Icon as={BitcoinIcon} boxSize={6} color="brand.400" />}
         onClick={handleConnectWallet}
         {...((modalType === MODAL_TYPES.CONNECT_WALLET ||
-          modalType === MODAL_TYPES.UNEXPECTED_ERROR) && {
+          isOpenGlobalErrorModal) && {
           pointerEvents: "none",
         })}
       >
