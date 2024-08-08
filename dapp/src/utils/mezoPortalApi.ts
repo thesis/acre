@@ -1,0 +1,30 @@
+import { env } from "#/constants"
+import axios from "axios"
+
+const endpoint = "https://portal.api.mezo.org/api/v1"
+
+type AcreMats = {
+  totalMats: number
+  dailyMats: number
+}
+
+async function getAcreMats(): Promise<AcreMats> {
+  try {
+    const url = `${endpoint}/acre`
+    const response = await axios.get<{ totalMats: number; dailyMats: number }>(
+      url,
+      {
+        headers: { Authorization: `Bearer ${env.MEZO_PORTAL_API_KEY}` },
+      },
+    )
+
+    return response.data
+  } catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
+export default {
+  getAcreMats,
+}
