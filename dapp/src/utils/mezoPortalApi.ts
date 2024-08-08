@@ -1,7 +1,9 @@
 import { env } from "#/constants"
 import axios from "axios"
 
-const endpoint = "https://portal.api.mezo.org/api/v1"
+export const endpoint = env.USE_TESTNET
+  ? "https://portal.api.test.mezo.org/api/v1"
+  : "https://portal.api.mezo.org/api/v1"
 
 type AcreMats = {
   totalMats: number
