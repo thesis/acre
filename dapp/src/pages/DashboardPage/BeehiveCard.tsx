@@ -16,6 +16,7 @@ import { MODAL_TYPES } from "#/types"
 import mezoBeehiveCardIllustrationSrc from "#/assets/images/mezo-beehive-card-illustration.svg"
 import beehiveIllustrationSrc from "#/assets/images/beehive-illustration.svg"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
+import { numberToLocaleString } from "#/utils"
 
 const MARGIN = 4
 
@@ -77,7 +78,9 @@ export default function BeehiveCard(props: CardProps) {
             <CardBody p={0} display="flex" flexDir="column" gap={2}>
               {data && (
                 <HStack>
-                  <H6 fontWeight="bold">{data.totalMats}</H6>
+                  <H6 fontWeight="bold">
+                    {numberToLocaleString(data.totalMats, 0)}
+                  </H6>
                   <TextLg fontWeight="bold">MATS</TextLg>
                 </HStack>
               )}
