@@ -13,12 +13,9 @@ type AcreMats = {
 async function getAcreMats(): Promise<AcreMats> {
   try {
     const url = `${endpoint}/acre`
-    const response = await axios.get<{ totalMats: number; dailyMats: number }>(
-      url,
-      {
-        headers: { Authorization: `Bearer ${env.MEZO_PORTAL_API_KEY}` },
-      },
-    )
+    const response = await axios.get<AcreMats>(url, {
+      headers: { Authorization: `Bearer ${env.MEZO_PORTAL_API_KEY}` },
+    })
 
     return response.data
   } catch (error) {
