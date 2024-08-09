@@ -1,5 +1,5 @@
 import React from "react"
-import { TextMd } from "#/components/shared/Typography"
+import { H6, TextLg, TextMd } from "#/components/shared/Typography"
 import {
   Button,
   Card,
@@ -18,7 +18,7 @@ import { MODAL_TYPES } from "#/types"
 import beehiveIllustrationSrc from "#/assets/images/beehive-illustration.svg"
 import mezoBeesIllustrationSrc from "#/assets/images/mezo-bees.svg"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
-import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
+import { numberToLocaleString } from "#/utils"
 
 export default function BeehiveCard(props: CardProps) {
   const { openModal } = useModal()
@@ -92,12 +92,14 @@ export default function BeehiveCard(props: CardProps) {
 
             <CardBody p={0}>
               <VStack>
-                <CurrencyBalance
-                  amount={data?.totalMats}
-                  shouldBeFormatted={false}
-                  currency="mats"
-                  variant="greater-balance-lg"
-                />
+                {data && (
+                  <HStack>
+                    <H6 fontWeight="bold">
+                      {numberToLocaleString(data.totalMats, 0)}
+                    </H6>
+                    <TextLg fontWeight="bold">MATS</TextLg>
+                  </HStack>
+                )}
 
                 <Button
                   onClick={() => handleOpenBeehiveModal()}

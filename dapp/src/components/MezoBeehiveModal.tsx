@@ -14,14 +14,17 @@ import {
   Link,
   Flex,
 } from "@chakra-ui/react"
-import { TextLg, TextMd, TextXl } from "#/components/shared/Typography"
+import { H6, TextLg, TextMd, TextXl } from "#/components/shared/Typography"
 import { AcreSignIcon, MatsIcon, MezoSignIcon } from "#/assets/icons"
 import { IconArrowUpRight, IconChartPieFilled } from "@tabler/icons-react"
 import { EXTERNAL_HREF } from "#/constants"
+import { numberToLocaleString } from "#/utils"
 import withBaseModal from "./ModalRoot/withBaseModal"
-import { CurrencyBalance } from "./shared/CurrencyBalance"
+import { useAcreMats } from "#/hooks"
 
 function MezoBeehiveModalBase() {
+  const { data } = useAcreMats()
+
   return (
     <>
       <ModalCloseButton />
@@ -42,12 +45,14 @@ function MezoBeehiveModalBase() {
 
       <ModalBody gap={6} pb={8} overflowX="hidden">
         <VStack spacing={1}>
-          <CurrencyBalance
-            amount={4222749981} // TODO: Replace with fetched data
-            shouldBeFormatted={false}
-            currency="mats"
-            variant="greater-balance-xl"
-          />
+          {data && (
+            <HStack>
+              <H6 fontWeight="bold">
+                {numberToLocaleString(data.totalMats, 0)}
+              </H6>
+              <TextLg fontWeight="bold">MATS</TextLg>
+            </HStack>
+          )}
           <TextLg>
             <Highlight query="Mezo Points" styles={{ fontWeight: 700 }}>
               Acre users participate in Mezo points program automatically as a

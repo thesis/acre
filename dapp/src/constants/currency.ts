@@ -24,13 +24,6 @@ export const USD: Currency = {
   desiredDecimals: 2,
 }
 
-export const MATS: Currency = {
-  name: "Mats",
-  symbol: "MATS",
-  decimals: 0,
-  desiredDecimals: 0,
-}
-
 export const CURRENCY_ID_BITCOIN = env.USE_TESTNET
   ? "bitcoin_testnet"
   : "bitcoin"
@@ -39,5 +32,4 @@ export const CURRENCIES_BY_TYPE: Record<CurrencyType, Currency> = {
   bitcoin: BITCOIN,
   usd: USD,
   stbtc: STBTC,
-  mats: MATS,
 }
