@@ -19,8 +19,8 @@ import { AcreSignIcon, MatsIcon, MezoSignIcon } from "#/assets/icons"
 import { IconArrowUpRight, IconChartPieFilled } from "@tabler/icons-react"
 import { EXTERNAL_HREF } from "#/constants"
 import { numberToLocaleString } from "#/utils"
-import withBaseModal from "./ModalRoot/withBaseModal"
 import { useAcreMats } from "#/hooks"
+import withBaseModal from "./ModalRoot/withBaseModal"
 
 function MezoBeehiveModalBase() {
   const { data } = useAcreMats()
