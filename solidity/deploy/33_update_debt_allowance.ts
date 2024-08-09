@@ -24,7 +24,8 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 export default func
 
 func.tags = ["UpdateDebtAllowance"]
-func.dependencies = ["UpgradeStBTC"]
+func.dependencies = ["TransferOwnershipStBTC", "UpgradeStBTC"]
+func.runAtTheEnd = true
 func.skip = async (hre: HardhatRuntimeEnvironment): Promise<boolean> =>
   Promise.resolve(
     hre.network.name === "integration" || hre.network.name === "mainnet",
