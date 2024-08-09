@@ -54,10 +54,8 @@ function MezoBeehiveModalBase() {
             </HStack>
           )}
           <TextLg>
-            <Highlight query="Mezo Points" styles={{ fontWeight: 700 }}>
-              Acre users participate in Mezo points program automatically as a
-              group.
-            </Highlight>
+            Acre users participate in Mezo points program automatically as a
+            group.
           </TextLg>
         </VStack>
 
@@ -96,14 +94,9 @@ function MezoBeehiveModalBase() {
 
             <CardBody p={0}>
               <TextMd lineHeight={5}>
-                <Highlight
-                  query={["deposit amount and duration", "Acre"]}
-                  styles={{ fontWeight: "bold", color: "inherit" }}
-                >
-                  In the event of a reward distribution, your share will be
-                  calculated based on your deposit amount and duration. You will
-                  be able to claim your share directly from Acre.
-                </Highlight>
+                In the event of a reward distribution, your share will be
+                calculated based on your deposit amount and duration. You will
+                be able to claim your share directly from Acre.
               </TextMd>
             </CardBody>
           </Card>
@@ -122,10 +115,8 @@ function MezoBeehiveModalBase() {
               />
               <VStack align="start">
                 <TextMd lineHeight={5}>
-                  <Highlight query="Mezo" styles={{ fontWeight: "bold" }}>
-                    Mezo is the economic layer for Bitcoin with a mission to
-                    activate a trillion dollar opportunity.
-                  </Highlight>
+                  Mezo is the economic layer for Bitcoin with a mission to
+                  activate a trillion dollar opportunity.
                 </TextMd>
 
                 <Button
