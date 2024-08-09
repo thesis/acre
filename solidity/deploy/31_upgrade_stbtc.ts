@@ -5,7 +5,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { deployments, helpers } = hre
   let { governance } = await helpers.signers.getNamedSigners()
 
-  if (hre.network.name === "integration" || hre.network.name === "fork") {
+  if (hre.network.name === "integration") {
     governance = await helpers.account.impersonateAccount(governance.address)
   }
 
@@ -16,7 +16,10 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
   if (hre.network.name !== "mainnet") {
     deployments.log("Sending transaction to upgrade implementation...")
-    await governance.sendTransaction(preparedTransaction)
+    const tx = await governance.sendTransaction(preparedTransaction)
+    await tx.wait()
+
+    deployments.log(`Transaction completed: ${tx?.hash}`)
   }
 
   if (hre.network.tags.etherscan) {
