@@ -44,6 +44,7 @@ export default function DashboardCard(props: DashboardCardProps) {
   return (
     <Card px={5} py={10} gap={10} overflow="hidden" {...props}>
       <CardHeader p={0} textAlign="center">
+        <ActivitiesList />
         <TextMd fontWeight="bold">
           My position
           {/* TODO: Uncomment when position will be implemented */}
@@ -110,8 +111,6 @@ export default function DashboardCard(props: DashboardCardProps) {
             </ArrivingSoonTooltip>
           </UserDataSkeleton>
         </HStack>
-
-        <ActivitiesList />
         <TransactionHistory />
       </CardBody>
     </Card>

@@ -14,6 +14,12 @@ export const selectLatestActivities = createSelector(
     sortActivitiesByTimestamp(Object.values(latestActivities)),
 )
 
+export const selectLatestCompletedActivities = createSelector(
+  selectLatestActivities,
+  (latestActivities) =>
+    latestActivities.filter((activity) => isActivityCompleted(activity)),
+)
+
 export const selectActivities = createSelector(
   (state: RootState) => state.wallet.activities,
   (activities) => sortActivitiesByTimestamp(activities),

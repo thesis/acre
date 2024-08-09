@@ -1,7 +1,7 @@
 import React from "react"
 import { List, ListItem, ListProps } from "@chakra-ui/react"
 import { AnimatePresence, Variants, motion } from "framer-motion"
-import { useAppDispatch, useLatestActivities } from "#/hooks"
+import { useAppDispatch, useLatestCompletedActivities } from "#/hooks"
 import { deleteLatestActivity } from "#/store/wallet"
 import ActivitiesListItem from "./ActivitiesListItem"
 
@@ -15,18 +15,18 @@ const listItemVariants: Variants = {
 
 function ActivitiesList(props: ListProps) {
   const dispatch = useAppDispatch()
-  const latestActivities = useLatestActivities()
+  const activities = useLatestCompletedActivities()
 
   const handleItemDismiss = (activityId: string) => {
     dispatch(deleteLatestActivity(activityId))
   }
 
-  if (latestActivities.length === 0) return null
+  if (activities.length === 0) return null
 
   return (
     <MotionList pos="relative" w="full" {...props}>
       <AnimatePresence mode="popLayout">
-        {latestActivities.map((item) => (
+        {activities.map((item) => (
           <MotionListItem
             key={item.id}
             layout="position"
