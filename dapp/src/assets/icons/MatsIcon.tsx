@@ -1,7 +1,7 @@
 import React from "react"
 import { createIcon } from "@chakra-ui/react"
 
-export const MatsIcon = createIcon({
+export default createIcon({
   displayName: "MatsIcon",
   viewBox: "0 0 62 62",
   path: [
