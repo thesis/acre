@@ -37,6 +37,12 @@ const BUTTONS: Partial<ComponentProps<typeof ButtonLink>>[] = [
     href: EXTERNAL_HREF.CONTRACTS,
     isExternal: true,
   },
+  {
+    children: "Blog",
+    colorScheme: "gold",
+    href: EXTERNAL_HREF.BLOG,
+    isExternal: true,
+  },
 ]
 
 const BENEFITS = [
