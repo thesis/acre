@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardProps,
   Flex,
+  Grid,
   Highlight,
   HStack,
   Image,
@@ -38,7 +39,11 @@ export default function BeehiveCard(props: CardProps) {
       </CardHeader>
 
       <CardBody p={0}>
-        <HStack justifyContent="space-between">
+        <Grid
+          gridAutoFlow="column"
+          alignItems="center"
+          justifyContent="space-between"
+        >
           {isFetchedWalletData ? (
             <Image
               src={mezoBeesIllustrationSrc}
@@ -50,7 +55,7 @@ export default function BeehiveCard(props: CardProps) {
             <UserDataSkeleton boxSize={24} rounded="100%" />
           )}
           <Image src={beehiveIllustrationSrc} />
-        </HStack>
+        </Grid>
 
         <UserDataSkeleton mt={4}>
           <Card
