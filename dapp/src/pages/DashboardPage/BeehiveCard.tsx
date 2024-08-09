@@ -90,30 +90,28 @@ export default function BeehiveCard(props: CardProps) {
               </TextMd>
             </CardHeader>
 
-            <CardBody p={0}>
-              <VStack>
-                {data && (
-                  <HStack>
-                    <H6 fontWeight="bold">
-                      {numberToLocaleString(data.totalMats, 0)}
-                    </H6>
-                    <TextLg fontWeight="bold">MATS</TextLg>
-                  </HStack>
-                )}
+            <CardBody as={VStack} p={0}>
+              {data && (
+                <HStack>
+                  <H6 fontWeight="bold">
+                    {numberToLocaleString(data.totalMats, 0)}
+                  </H6>
+                  <TextLg fontWeight="bold">MATS</TextLg>
+                </HStack>
+              )}
 
-                <Button
-                  onClick={() => handleOpenBeehiveModal()}
-                  variant="ghost"
-                  rightIcon={<ArrowUpRight />}
-                  color="brand.400"
-                  iconSpacing={1}
-                  p={0}
-                  h="auto"
-                  lineHeight={5}
-                >
-                  More info
-                </Button>
-              </VStack>
+              <Button
+                onClick={() => handleOpenBeehiveModal()}
+                variant="ghost"
+                rightIcon={<ArrowUpRight />}
+                color="brand.400"
+                iconSpacing={1}
+                p={0}
+                h="auto"
+                lineHeight={5}
+              >
+                More info
+              </Button>
             </CardBody>
           </Card>
         </UserDataSkeleton>
