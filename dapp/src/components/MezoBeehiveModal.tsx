@@ -4,7 +4,6 @@ import {
   ModalHeader,
   HStack,
   VStack,
-  Highlight,
   Icon,
   Button,
   Card,
