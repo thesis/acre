@@ -210,8 +210,8 @@ importers:
         version: github.com/thesis/solidity-contracts/c315b9d
     devDependencies:
       '@keep-network/hardhat-helpers':
-        specifier: ^0.7.1
-        version: 0.7.1(@nomicfoundation/hardhat-ethers@3.0.6)(@nomicfoundation/hardhat-verify@2.0.8)(@openzeppelin/hardhat-upgrades@3.1.1)(ethers@6.10.0)(hardhat-deploy@0.11.45)(hardhat@2.22.5)
+        specifier: ^0.7.2-pre.2
+        version: 0.7.2-pre.2(@nomicfoundation/hardhat-ethers@3.0.6)(@nomicfoundation/hardhat-verify@2.0.8)(@openzeppelin/hardhat-upgrades@3.1.1)(ethers@6.10.0)(hardhat-deploy@0.11.45)(hardhat@2.22.5)
       '@nomicfoundation/hardhat-chai-matchers':
         specifier: ^2.0.2
         version: 2.0.7(@nomicfoundation/hardhat-ethers@3.0.6)(chai@4.4.1)(ethers@6.10.0)(hardhat@2.22.5)
@@ -4417,8 +4417,8 @@ packages:
       - '@keep-network/keep-core'
     dev: false
 
-  /@keep-network/hardhat-helpers@0.7.1(@nomicfoundation/hardhat-ethers@3.0.6)(@nomicfoundation/hardhat-verify@2.0.8)(@openzeppelin/hardhat-upgrades@3.1.1)(ethers@6.10.0)(hardhat-deploy@0.11.45)(hardhat@2.22.5):
-    resolution: {integrity: sha512-de6Gy45JukZwGgZqVuR+Zq5PSqnmvKLDJn0/KrKT5tFzGspARUf1WzhDgTTB/D7gTK04sxlrL6WJM3XQ/wZEkw==}
+  /@keep-network/hardhat-helpers@0.7.2-pre.2(@nomicfoundation/hardhat-ethers@3.0.6)(@nomicfoundation/hardhat-verify@2.0.8)(@openzeppelin/hardhat-upgrades@3.1.1)(ethers@6.10.0)(hardhat-deploy@0.11.45)(hardhat@2.22.5):
+    resolution: {integrity: sha512-EqVPdKMGcMBP1f2FJ1kblFK8UZ/BoPSnrEcfo3nMc6drBYGJPPFqTq4zDJASBjITQbW5kiEY15MnuTpBJycJoA==}
     peerDependencies:
       '@nomicfoundation/hardhat-ethers': ^3.0.5
       '@nomicfoundation/hardhat-verify': ^2.0.3

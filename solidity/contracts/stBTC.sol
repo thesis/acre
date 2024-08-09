@@ -528,8 +528,8 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         return convertToAssets(balanceOf(account));
     }
 
-    /// @notice Previews the amount of shares that will be burned for the given
-    ///         amount of repaid debt assets.
+    /// @notice Previews the amount of assets that will be burned for the given
+    ///         amount of repaid shares.
     function previewRepayDebt(uint256 shares) public view returns (uint256) {
         return convertToAssets(shares);
     }
