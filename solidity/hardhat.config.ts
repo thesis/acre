@@ -49,6 +49,9 @@ const config: HardhatUserConfig = {
 
   networks: {
     hardhat: {
+      // Set fixed initialBaseFeePerGas to avoid issues with maxFeePerGas
+      // being too low fo the next block.
+      initialBaseFeePerGas: 1000000000,
       forking:
         process.env.FORKING === "true"
           ? { url: MAINNET_RPC_URL, blockNumber: 20262761 }
