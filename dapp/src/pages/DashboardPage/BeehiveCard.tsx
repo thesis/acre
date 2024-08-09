@@ -1,5 +1,5 @@
 import React from "react"
-import { TextMd } from "#/components/shared/Typography"
+import { H6, TextLg, TextMd } from "#/components/shared/Typography"
 import {
   Button,
   Card,
@@ -11,17 +11,19 @@ import {
   Image,
 } from "@chakra-ui/react"
 import { ArrowUpRight, MezoSignIcon } from "#/assets/icons"
-import { useIsFetchedWalletData, useModal } from "#/hooks"
+import { useMats, useIsFetchedWalletData, useModal } from "#/hooks"
 import { MODAL_TYPES } from "#/types"
 import mezoBeehiveCardIllustrationSrc from "#/assets/images/mezo-beehive-card-illustration.svg"
 import beehiveIllustrationSrc from "#/assets/images/beehive-illustration.svg"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
+import { numberToLocaleString } from "#/utils"
 
 const MARGIN = 4
 
 export default function BeehiveCard(props: CardProps) {
   const { openModal } = useModal()
   const isFetchedWalletData = useIsFetchedWalletData()
+  const { data } = useMats()
 
   const handleOpenBeehiveModal = () => {
     openModal(MODAL_TYPES.MEZO_BEEHIVE)
@@ -60,7 +62,7 @@ export default function BeehiveCard(props: CardProps) {
             px={4}
             py={3}
           >
-            <CardHeader p={0} mb={1}>
+            <CardHeader p={0} mb={2}>
               <TextMd fontWeight="semibold" color="grey.500">
                 <Highlight
                   query="Mezo"
@@ -73,7 +75,15 @@ export default function BeehiveCard(props: CardProps) {
               </TextMd>
             </CardHeader>
 
-            <CardBody p={0}>
+            <CardBody p={0} display="flex" flexDir="column" gap={2}>
+              {data && (
+                <HStack>
+                  <H6 fontWeight="bold">
+                    {numberToLocaleString(data.totalMats, 0)}
+                  </H6>
+                  <TextLg fontWeight="bold">MATS</TextLg>
+                </HStack>
+              )}
               <Button
                 onClick={() => handleOpenBeehiveModal()}
                 variant="ghost"
@@ -84,7 +94,7 @@ export default function BeehiveCard(props: CardProps) {
                 h="auto"
                 lineHeight={5}
               >
-                What is Bibo&apos;s Beehive?
+                More info
               </Button>
             </CardBody>
           </Card>
