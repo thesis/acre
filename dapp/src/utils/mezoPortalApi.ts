@@ -5,17 +5,15 @@ export const endpoint = env.USE_TESTNET
   ? "https://portal.api.test.mezo.org/api/v1"
   : "https://portal.api.mezo.org/api/v1"
 
-type AcreMats = {
-  totalMats: number
-  dailyMats: number
-}
-
-async function getAcreMats(): Promise<AcreMats> {
+async function getMats() {
   try {
     const url = `${endpoint}/acre`
-    const response = await axios.get<AcreMats>(url, {
-      headers: { Authorization: `Bearer ${env.MEZO_PORTAL_API_KEY}` },
-    })
+    const response = await axios.get<{ totalMats: number; dailyMats: number }>(
+      url,
+      {
+        headers: { Authorization: `Bearer ${env.MEZO_PORTAL_API_KEY}` },
+      },
+    )
 
     return response.data
   } catch (error) {
@@ -25,5 +23,5 @@ async function getAcreMats(): Promise<AcreMats> {
 }
 
 export default {
-  getAcreMats,
+  getMats,
 }

@@ -4,10 +4,10 @@ import { mezoPortalAPI } from "#/utils"
 
 const { acreKeys } = queryKeysFactory
 
-export default function useAcreMats() {
+export default function useMats() {
   return useQuery({
     queryKey: [...acreKeys.mats()],
-    queryFn: async () => mezoPortalAPI.getAcreMats(),
+    queryFn: async () => mezoPortalAPI.getMats(),
     refetchInterval: REFETCH_INTERVAL_IN_MILLISECONDS,
   })
 }

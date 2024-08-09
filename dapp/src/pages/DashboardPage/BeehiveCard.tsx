@@ -14,7 +14,7 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { ArrowUpRight, MatsIcon, MezoSignIcon } from "#/assets/icons"
-import { useAcreMats, useIsFetchedWalletData, useModal } from "#/hooks"
+import { useMats, useIsFetchedWalletData, useModal } from "#/hooks"
 import { MODAL_TYPES } from "#/types"
 import beehiveIllustrationSrc from "#/assets/images/beehive-illustration.svg"
 import mezoBeesIllustrationSrc from "#/assets/images/mezo-bees.svg"
@@ -24,7 +24,7 @@ import { numberToLocaleString } from "#/utils"
 export default function BeehiveCard(props: CardProps) {
   const { openModal } = useModal()
   const isFetchedWalletData = useIsFetchedWalletData()
-  const { data } = useAcreMats()
+  const { data } = useMats()
 
   const handleOpenBeehiveModal = () => {
     openModal(MODAL_TYPES.MEZO_BEEHIVE)
