@@ -95,7 +95,7 @@ export default function TransactionTable() {
                         color="gold.400"
                         emptyColor="brand.400"
                       />
-                      <TagLabel>{`${staking.convertTypeToLabel(activity.type)} transaction pending...`}</TagLabel>
+                      <TagLabel>{`${staking.convertActivityTypeToLabel(activity.type)} transaction pending...`}</TagLabel>
                     </Tag>
                     <Tag variant="solid">
                       <TagLabel display="flex" gap={1}>

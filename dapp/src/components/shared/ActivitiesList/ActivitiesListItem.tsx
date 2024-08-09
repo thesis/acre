@@ -1,6 +1,7 @@
 import React from "react"
 import { ArrowUpRight, LoadingSpinnerSuccessIcon } from "#/assets/icons"
 import { Activity as ActivityType } from "#/types"
+import { staking } from "#/utils"
 import { Button, HStack, VStack, VisuallyHidden } from "@chakra-ui/react"
 import { CurrencyBalance } from "../CurrencyBalance"
 import BlockExplorerLink from "../BlockExplorerLink"
@@ -35,8 +36,8 @@ function ActivitiesListItem(props: ActivitiesListItemProps) {
         <AlertTitle justify="space-between" as={HStack}>
           <TextMd fontWeight="bold">
             {isCompleted
-              ? `${type === "withdraw" ? "Unstaking" : "Staking"} completed`
-              : `${type === "withdraw" ? "Unstaking" : "Staking"}...`}
+              ? `${staking.convertActivityTypeToLabel(type)} completed`
+              : `${staking.convertActivityTypeToLabel(type)}...`}
           </TextMd>
 
           <CurrencyBalance amount={amount} currency="bitcoin" />
