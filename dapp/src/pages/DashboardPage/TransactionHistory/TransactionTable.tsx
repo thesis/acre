@@ -1,5 +1,14 @@
 import React from "react"
-import { HStack, Card, CardBody, Box, VisuallyHidden } from "@chakra-ui/react"
+import {
+  HStack,
+  Card,
+  CardBody,
+  Box,
+  VisuallyHidden,
+  Flex,
+  Tag,
+  TagLabel,
+} from "@chakra-ui/react"
 import {
   Pagination,
   PaginationButton,
@@ -8,25 +17,33 @@ import {
 } from "#/components/shared/Pagination"
 import { TextSm } from "#/components/shared/Typography"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
-import { displayBlockTimestamp } from "#/utils"
+import { displayBlockTimestamp, isActivityCompleted, staking } from "#/utils"
 import { Activity } from "#/types"
 import BlockExplorerLink from "#/components/shared/BlockExplorerLink"
 import { IconArrowUpRight } from "@tabler/icons-react"
-import { useCompletedActivities } from "#/hooks"
+import { useActivities } from "#/hooks"
+import Spinner from "#/components/shared/Spinner"
 
 export default function TransactionTable() {
-  const completedActivities = useCompletedActivities()
+  const activities = useActivities()
 
   return (
-    <Pagination data={completedActivities} pageSize={10}>
+    <Pagination data={activities} pageSize={10}>
       <PaginationPage direction="column" spacing={2} pageSpacing={6}>
         {(pageData: Activity[]) =>
-          pageData.map(
-            ({ id, initializedAt, finalizedAt, type, txHash, amount }) => (
-              <Card key={id} role="group" variant="elevated" colorScheme="gold">
-                <CardBody as={HStack} spacing={3} p={4}>
+          pageData.map((activity) => (
+            <Card
+              key={activity.id}
+              role="group"
+              variant="elevated"
+              colorScheme="gold"
+            >
+              <CardBody as={Flex} flexDirection="column" gap={4} p={4}>
+                <HStack spacing={3}>
                   <TextSm color="grey.500" flex={1} fontWeight="medium">
-                    {displayBlockTimestamp(finalizedAt ?? initializedAt)}
+                    {displayBlockTimestamp(
+                      activity?.finalizedAt ?? activity.initializedAt,
+                    )}
                   </TextSm>
 
                   <HStack flexBasis="60%">
@@ -36,7 +53,7 @@ export default function TransactionTable() {
                       fontWeight="semibold"
                       textTransform="capitalize"
                     >
-                      {type}
+                      {activity.type}
                     </TextSm>
 
                     <Box flex={1}>
@@ -44,14 +61,14 @@ export default function TransactionTable() {
                         color="grey.700"
                         size="sm"
                         fontWeight="bold"
-                        amount={amount}
+                        amount={activity.amount}
                         currency="bitcoin"
                       />
                     </Box>
                   </HStack>
-                  {txHash && (
+                  {activity.txHash && (
                     <BlockExplorerLink
-                      id={txHash}
+                      id={activity.txHash}
                       chain="bitcoin"
                       type="transaction"
                       variant="ghost"
@@ -67,10 +84,35 @@ export default function TransactionTable() {
                       <VisuallyHidden>View transaction details</VisuallyHidden>
                     </BlockExplorerLink>
                   )}
-                </CardBody>
-              </Card>
-            ),
-          )
+                </HStack>
+                {!isActivityCompleted(activity) && (
+                  <HStack spacing={3}>
+                    <Tag variant="solid">
+                      <Spinner
+                        borderWidth={3}
+                        boxSize={6}
+                        mr={2}
+                        color="gold.400"
+                        emptyColor="brand.400"
+                      />
+                      <TagLabel>{`${staking.convertTypeToLabel(activity.type)} transaction pending...`}</TagLabel>
+                    </Tag>
+                    <Tag variant="solid">
+                      <TagLabel display="flex" gap={1}>
+                        Est. duration
+                        <Box as="span" color="brand.400">
+                          {staking.getEstimatedDuration(
+                            activity.amount,
+                            activity.type,
+                          )}
+                        </Box>
+                      </TagLabel>
+                    </Tag>
+                  </HStack>
+                )}
+              </CardBody>
+            </Card>
+          ))
         }
       </PaginationPage>
 
