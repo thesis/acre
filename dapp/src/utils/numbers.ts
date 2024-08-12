@@ -52,6 +52,7 @@ export const formatTokenAmount = (
   amount: number | string | bigint,
   decimals = 18,
   desiredDecimals = 2,
+  ceilPrecision = desiredDecimals,
 ) => {
   const fixedPoint = BigInt(amount)
 
@@ -59,11 +60,16 @@ export const formatTokenAmount = (
     return `0.${"0".repeat(desiredDecimals)}`
   }
 
-  const formattedAmount = bigIntToUserAmount(
+  let formattedAmount = bigIntToUserAmount(
     fixedPoint,
     decimals,
     desiredDecimals,
   )
+  if (ceilPrecision !== desiredDecimals) {
+    formattedAmount =
+      Math.ceil(formattedAmount * 10 ** ceilPrecision) / 10 ** ceilPrecision
+  }
+
   const minAmountToDisplay = 1 / 10 ** Math.min(desiredDecimals, decimals)
 
   if (minAmountToDisplay > formattedAmount) {
