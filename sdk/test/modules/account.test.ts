@@ -276,7 +276,8 @@ describe("Account", () => {
         amountToDeposit: BigInt("536361040000000"),
         type: "deposit",
         status: DepositStatus.Finalized,
-        timestamp: 1715807188,
+        initializedAt: 1715807188,
+        finalizedAt: 1715807188,
       },
       tbtc: {
         depositKey:
@@ -285,7 +286,8 @@ describe("Account", () => {
           "6bca75ba55334c25064e7bf5333a3b39ed5bb73fb17e73ea9e55e6294e3fbf65",
         initialAmount: BigInt("1040000000000000"),
         status: DepositStatus.Finalized,
-        timestamp: 1715807188,
+        initializedAt: 1715807188,
+        finalizedAt: 1715807188,
       },
     }
 
@@ -297,7 +299,8 @@ describe("Account", () => {
       outputIndex: 0,
       initialAmount: BigInt("1050000000000000"),
       status: DepositStatus.Queued,
-      timestamp: 1715851724,
+      initializedAt: 1715851724,
+      finalizedAt: 1715851724,
     }
 
     const spyOnSubgraphGetDeposits = jest
@@ -310,14 +313,16 @@ describe("Account", () => {
         txHash: queuedDeposit.txHash,
         amount: 105000n,
         status: DepositStatus.Queued,
-        timestamp: 1715851724,
+        initializedAt: 1715851724,
+        finalizedAt: undefined,
       },
       {
         id: finalizedDeposit.subgraph.depositKey,
         txHash: finalizedDeposit.subgraph.txHash,
-        amount: 104000n,
+        amount: 53636n,
         status: DepositStatus.Finalized,
-        timestamp: 1715807188,
+        initializedAt: 1715807188,
+        finalizedAt: 1715807188,
       },
     ]
 
@@ -438,13 +443,15 @@ describe("Account", () => {
           .reverse()
           .toString(),
         amount: 10000000000000000n,
-        timestamp: 1718871276,
+        initializedAt: 1718871276,
+        finalizedAt: 1718871276,
       },
       {
         id: "0xa40df409c4e463cb0c7744df310ad8714a01c40bcf6807cb2b4266ffa0b860ea-1",
         bitcoinTransactionId: undefined,
         amount: 10000000000000000n,
-        timestamp: 1718889168,
+        initializedAt: 1718889168,
+        finalizedAt: 1718889168,
       },
     ]
 

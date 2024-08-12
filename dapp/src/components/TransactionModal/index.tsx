@@ -3,7 +3,6 @@ import { StakeFlowProvider } from "#/contexts"
 import {
   useAppDispatch,
   useIsSignedMessage,
-  useModal,
   useSidebar,
   useTransactionModal,
 } from "#/hooks"
@@ -14,11 +13,9 @@ import { ActiveFlowStep } from "./ActiveFlowStep"
 import withBaseModal from "../ModalRoot/withBaseModal"
 import { ConnectWalletModalBase } from "../ConnectWalletModal"
 
-type TransactionModalProps = {
-  type: ActionFlowType
-}
+type TransactionModalProps = { type: ActionFlowType } & BaseModalProps
 
-function TransactionModalBase({ type }: TransactionModalProps) {
+function TransactionModalBase({ type, closeModal }: TransactionModalProps) {
   const { onOpen: openSideBar, onClose: closeSidebar } = useSidebar()
   const dispatch = useAppDispatch()
 
@@ -40,21 +37,19 @@ function TransactionModalBase({ type }: TransactionModalProps) {
 
   return (
     <StakeFlowProvider>
-      <ModalContentWrapper>
+      <ModalContentWrapper closeModal={closeModal}>
         <ActiveFlowStep />
       </ModalContentWrapper>
     </StakeFlowProvider>
   )
 }
 
-function TransactionModalWrapper({
-  type,
-}: TransactionModalProps & BaseModalProps) {
+function TransactionModalWrapper({ type, closeModal }: TransactionModalProps) {
   const openModal = useTransactionModal(type)
-  const { closeModal } = useModal()
   const isSignedMessage = useIsSignedMessage()
 
-  if (isSignedMessage) return <TransactionModalBase type={type} />
+  if (isSignedMessage)
+    return <TransactionModalBase type={type} closeModal={closeModal} />
 
   return (
     <ConnectWalletModalBase onSuccess={openModal} closeModal={closeModal} />

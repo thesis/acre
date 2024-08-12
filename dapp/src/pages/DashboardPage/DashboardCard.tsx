@@ -1,8 +1,8 @@
 import React from "react"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import { TextMd } from "#/components/shared/Typography"
-import { useTransactionModal } from "#/hooks"
-import { ACTION_FLOW_TYPES, AmountType } from "#/types"
+import { useBitcoinPosition, useTransactionModal } from "#/hooks"
+import { ACTION_FLOW_TYPES } from "#/types"
 import {
   Button,
   ButtonProps,
@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardProps,
   HStack,
-  Tag,
+  // Tag,
   VStack,
 } from "@chakra-ui/react"
 import { ActivitiesList } from "#/components/shared/ActivitiesList"
@@ -32,23 +32,22 @@ const buttonStyles: ButtonProps = {
   h: "auto",
 }
 
-type DashboardCardProps = CardProps & {
-  bitcoinAmount: AmountType
-  positionPercentage?: number // TODO: Make this required in post MVP phase
-}
+type DashboardCardProps = CardProps
 
 export default function DashboardCard(props: DashboardCardProps) {
-  const { bitcoinAmount, positionPercentage, ...restProps } = props
+  const { data } = useBitcoinPosition()
+  const bitcoinAmount = data?.estimatedBitcoinBalance ?? 0n
 
   const openDepositModal = useTransactionModal(ACTION_FLOW_TYPES.STAKE)
   const openWithdrawModal = useTransactionModal(ACTION_FLOW_TYPES.UNSTAKE)
 
   return (
-    <Card px={5} py={10} gap={10} overflow="hidden" {...restProps}>
+    <Card px={5} py={10} gap={10} overflow="hidden" {...props}>
       <CardHeader p={0} textAlign="center">
         <TextMd fontWeight="bold">
           My position
-          {positionPercentage && (
+          {/* TODO: Uncomment when position will be implemented */}
+          {/* {positionPercentage && (
             <Tag
               px={3}
               py={1}
@@ -62,7 +61,7 @@ export default function DashboardCard(props: DashboardCardProps) {
             >
               Top {positionPercentage}%
             </Tag>
-          )}
+          )} */}
         </TextMd>
       </CardHeader>
       <CardBody as={VStack} p={0} spacing={10}>

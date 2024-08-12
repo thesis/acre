@@ -264,9 +264,9 @@ describe("MezoAllocator", () => {
     context("when the caller is stBTC contract", () => {
       context("when there is no deposit", () => {
         it("should revert", async () => {
-          await expect(stbtc.withdraw(1n, depositor, depositor))
-            .to.be.revertedWithCustomError(tbtc, "ERC20InsufficientBalance")
-            .withArgs(await mezoPortal.getAddress(), 0, 1n)
+          await expect(
+            stbtc.withdraw(1n, depositor, depositor),
+          ).to.be.revertedWithCustomError(mezoPortal, "DepositNotFound")
         })
       })
 
@@ -311,6 +311,12 @@ describe("MezoAllocator", () => {
               [-to1e18(2)],
             )
           })
+
+          it("should call MezoPortal.withdrawPartially function", async () => {
+            await expect(tx)
+              .to.emit(mezoPortal, "WithdrawPartially")
+              .withArgs(await tbtc.getAddress(), 1, to1e18(2))
+          })
         })
 
         context("when the deposit is fully withdrawn", () => {
@@ -343,6 +349,12 @@ describe("MezoAllocator", () => {
               [await mezoPortal.getAddress()],
               [-to1e18(3)],
             )
+          })
+
+          it("should call MezoPortal.withdraw function", async () => {
+            await expect(tx)
+              .to.emit(mezoPortal, "WithdrawFully")
+              .withArgs(await tbtc.getAddress(), 1)
           })
         })
       })

@@ -87,8 +87,8 @@ importers:
         specifier: ^9.1.0
         version: 9.1.2(@types/react@18.3.3)(react@18.3.1)(redux@5.0.1)
       react-router-dom:
-        specifier: ^6.22.0
-        version: 6.23.1(react-dom@18.3.1)(react@18.3.1)
+        specifier: ^6.26.0
+        version: 6.26.0(react-dom@18.3.1)(react@18.3.1)
       viem:
         specifier: ^2.13.8
         version: 2.14.0(typescript@5.4.5)
@@ -210,8 +210,8 @@ importers:
         version: github.com/thesis/solidity-contracts/c315b9d
     devDependencies:
       '@keep-network/hardhat-helpers':
-        specifier: ^0.7.1
-        version: 0.7.1(@nomicfoundation/hardhat-ethers@3.0.6)(@nomicfoundation/hardhat-verify@2.0.8)(@openzeppelin/hardhat-upgrades@3.1.1)(ethers@6.10.0)(hardhat-deploy@0.11.45)(hardhat@2.22.5)
+        specifier: 0.7.2
+        version: 0.7.2(@nomicfoundation/hardhat-ethers@3.0.6)(@nomicfoundation/hardhat-verify@2.0.8)(@openzeppelin/hardhat-upgrades@3.1.1)(ethers@6.10.0)(hardhat-deploy@0.11.45)(hardhat@2.22.5)
       '@nomicfoundation/hardhat-chai-matchers':
         specifier: ^2.0.2
         version: 2.0.7(@nomicfoundation/hardhat-ethers@3.0.6)(chai@4.4.1)(ethers@6.10.0)(hardhat@2.22.5)
@@ -4417,8 +4417,8 @@ packages:
       - '@keep-network/keep-core'
     dev: false
 
-  /@keep-network/hardhat-helpers@0.7.1(@nomicfoundation/hardhat-ethers@3.0.6)(@nomicfoundation/hardhat-verify@2.0.8)(@openzeppelin/hardhat-upgrades@3.1.1)(ethers@6.10.0)(hardhat-deploy@0.11.45)(hardhat@2.22.5):
-    resolution: {integrity: sha512-de6Gy45JukZwGgZqVuR+Zq5PSqnmvKLDJn0/KrKT5tFzGspARUf1WzhDgTTB/D7gTK04sxlrL6WJM3XQ/wZEkw==}
+  /@keep-network/hardhat-helpers@0.7.2(@nomicfoundation/hardhat-ethers@3.0.6)(@nomicfoundation/hardhat-verify@2.0.8)(@openzeppelin/hardhat-upgrades@3.1.1)(ethers@6.10.0)(hardhat-deploy@0.11.45)(hardhat@2.22.5):
+    resolution: {integrity: sha512-AOMn2eK+pB+znRQ5pnkxBX6r95pRkHUtj86TAWz1CKqXfPXYv/YjnpqlcLdbGO+NP2IeJkBrEBxCMzLD2mYOAg==}
     peerDependencies:
       '@nomicfoundation/hardhat-ethers': ^3.0.5
       '@nomicfoundation/hardhat-verify': ^2.0.3
@@ -6503,8 +6503,8 @@ packages:
       reselect: 5.1.1
     dev: false
 
-  /@remix-run/router@1.16.1:
-    resolution: {integrity: sha512-es2g3dq6Nb07iFxGk5GuHN20RwBZOsuDQN7izWIisUcv9r+d2C5jQxqmgkdebXgReWfiyUabcki6Fg77mSNrig==}
+  /@remix-run/router@1.19.0:
+    resolution: {integrity: sha512-zDICCLKEwbVYTS6TjYaWtHXxkdoUvD/QXvyVZjGCsWz5vyH7aFeONlPffPdW+Y/t6KT0MgXb2Mfjun9YpWN1dA==}
     engines: {node: '>=14.0.0'}
     dev: false
 
@@ -18230,26 +18230,26 @@ packages:
       use-sidecar: 1.1.2(@types/react@18.3.3)(react@18.3.1)
     dev: false
 
-  /react-router-dom@6.23.1(react-dom@18.3.1)(react@18.3.1):
-    resolution: {integrity: sha512-utP+K+aSTtEdbWpC+4gxhdlPFwuEfDKq8ZrPFU65bbRJY+l706qjR7yaidBpo3MSeA/fzwbXWbKBI6ftOnP3OQ==}
+  /react-router-dom@6.26.0(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-RRGUIiDtLrkX3uYcFiCIxKFWMcWQGMojpYZfcstc63A1+sSnVgILGIm9gNUA6na3Fm1QuPGSBQH2EMbAZOnMsQ==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       react: '>=16.8'
       react-dom: '>=16.8'
     dependencies:
-      '@remix-run/router': 1.16.1
+      '@remix-run/router': 1.19.0
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
-      react-router: 6.23.1(react@18.3.1)
+      react-router: 6.26.0(react@18.3.1)
     dev: false
 
-  /react-router@6.23.1(react@18.3.1):
-    resolution: {integrity: sha512-fzcOaRF69uvqbbM7OhvQyBTFDVrrGlsFdS3AL+1KfIBtGETibHzi3FkoTRyiDJnWNc2VxrfvR+657ROHjaNjqQ==}
+  /react-router@6.26.0(react@18.3.1):
+    resolution: {integrity: sha512-wVQq0/iFYd3iZ9H2l3N3k4PL8EEHcb0XlU2Na8nEwmiXgIUElEH6gaJDtUQxJ+JFzmIXaQjfdpcGWaM6IoQGxg==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       react: '>=16.8'
     dependencies:
-      '@remix-run/router': 1.16.1
+      '@remix-run/router': 1.19.0
       react: 18.3.1
     dev: false
 
