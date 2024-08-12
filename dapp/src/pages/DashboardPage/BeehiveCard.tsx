@@ -99,7 +99,7 @@ export default function BeehiveCard(props: CardProps) {
 
             <CardBody as={VStack} p={0}>
               {data && (
-                <HStack>
+                <HStack align="baseline">
                   <H6 fontWeight="bold">
                     {numberToLocaleString(data.totalMats, 0)}
                   </H6>
