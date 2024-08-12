@@ -1,116 +1,15 @@
 import React from "react"
-import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
-import { TextMd } from "#/components/shared/Typography"
-import { useBitcoinPosition, useTransactionModal } from "#/hooks"
-import { ACTION_FLOW_TYPES } from "#/types"
-import {
-  Button,
-  ButtonProps,
-  Card,
-  CardBody,
-  CardHeader,
-  CardProps,
-  HStack,
-  // Tag,
-  VStack,
-} from "@chakra-ui/react"
+import { Card, CardBody, CardProps, VStack } from "@chakra-ui/react"
 import { ActivitiesList } from "#/components/shared/ActivitiesList"
-import ArrivingSoonTooltip from "#/components/ArrivingSoonTooltip"
-import { featureFlags } from "#/constants"
-import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import TransactionHistory from "./TransactionHistory"
+import PositionDetails from "./PositionDetails"
 
-const isWithdrawalFlowEnabled = featureFlags.WITHDRAWALS_ENABLED
-
-const buttonStyles: ButtonProps = {
-  size: "lg",
-  flex: 1,
-  maxW: "12.5rem", // 200px
-  fontWeight: "bold",
-  lineHeight: 6,
-  px: 7,
-  h: "auto",
-}
-
-type DashboardCardProps = CardProps
-
-export default function DashboardCard(props: DashboardCardProps) {
-  const { data } = useBitcoinPosition()
-  const bitcoinAmount = data?.estimatedBitcoinBalance ?? 0n
-
-  const openDepositModal = useTransactionModal(ACTION_FLOW_TYPES.STAKE)
-  const openWithdrawModal = useTransactionModal(ACTION_FLOW_TYPES.UNSTAKE)
-
+export default function DashboardCard(props: CardProps) {
   return (
-    <Card px={5} py={10} gap={10} overflow="hidden" {...props}>
-      <CardHeader p={0} textAlign="center">
+    <Card p={5} overflow="hidden" {...props}>
+      <CardBody as={VStack} spacing={10} p={0}>
         <ActivitiesList />
-        <TextMd fontWeight="bold">
-          My position
-          {/* TODO: Uncomment when position will be implemented */}
-          {/* {positionPercentage && (
-            <Tag
-              px={3}
-              py={1}
-              ml={2}
-              borderWidth={0}
-              color="gold.100"
-              bg="gold.700"
-              fontWeight="bold"
-              lineHeight={5}
-              verticalAlign="baseline"
-            >
-              Top {positionPercentage}%
-            </Tag>
-          )} */}
-        </TextMd>
-      </CardHeader>
-      <CardBody as={VStack} p={0} spacing={10}>
-        <VStack justify="center" spacing={6}>
-          <UserDataSkeleton>
-            <VStack justify="center" spacing={0}>
-              <CurrencyBalanceWithConversion
-                from={{
-                  amount: bitcoinAmount,
-                  currency: "bitcoin",
-                  fontSize: "6xl",
-                  lineHeight: 1.2,
-                  letterSpacing: "-0.075rem", // -1.2px
-                  fontWeight: "bold",
-                  color: "grey.700",
-                }}
-                to={{
-                  currency: "usd",
-                  shouldBeFormatted: false,
-                  color: "grey.500",
-                  fontWeight: "medium",
-                }}
-              />
-            </VStack>
-          </UserDataSkeleton>
-        </VStack>
-
-        <HStack w="full" justify="center" spacing={2}>
-          <UserDataSkeleton>
-            <Button {...buttonStyles} onClick={openDepositModal}>
-              Deposit more
-            </Button>
-          </UserDataSkeleton>
-          <UserDataSkeleton>
-            <ArrivingSoonTooltip
-              shouldDisplayTooltip={!isWithdrawalFlowEnabled}
-            >
-              <Button
-                variant="outline"
-                {...buttonStyles}
-                onClick={openWithdrawModal}
-                isDisabled={!isWithdrawalFlowEnabled}
-              >
-                Withdraw
-              </Button>
-            </ArrivingSoonTooltip>
-          </UserDataSkeleton>
-        </HStack>
+        <PositionDetails />
         <TransactionHistory />
       </CardBody>
     </Card>
