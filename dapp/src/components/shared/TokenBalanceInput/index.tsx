@@ -16,12 +16,12 @@ import {
   bigIntToUserAmount,
   fixedPointNumberToString,
   getCurrencyByType,
+  getTokenAmountErrorKey,
   userAmountToBigInt,
 } from "#/utils"
 import { CurrencyType } from "#/types"
 import { IconInfoCircle } from "@tabler/icons-react"
 import { useCurrencyConversion } from "#/hooks"
-import { TOKEN_FORM_ERRORS } from "#/constants"
 import NumberFormatInput, {
   NumberFormatInputValues,
   NumberFormatInputProps,
@@ -151,7 +151,8 @@ export default function TokenBalanceInput({
   }
 
   const isBalanceExceeded =
-    hasError && errorMsgText === TOKEN_FORM_ERRORS.EXCEEDED_VALUE
+    typeof errorMsgText === "string" &&
+    getTokenAmountErrorKey(errorMsgText) === "EXCEEDED_VALUE"
 
   return (
     <FormControl isInvalid={hasError} isDisabled={inputProps.isDisabled}>

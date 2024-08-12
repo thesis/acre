@@ -3,7 +3,7 @@ import TokenAmountForm from "#/components/shared/TokenAmountForm"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { useMinDepositAmount, useWallet } from "#/hooks"
 import { FormSubmitButton } from "#/components/shared/Form"
-import { BaseFormProps } from "#/types"
+import { ACTION_FLOW_TYPES, BaseFormProps } from "#/types"
 import { formatTokenAmount, getCurrencyByType } from "#/utils"
 import StakeDetails from "./StakeDetails"
 
@@ -18,6 +18,7 @@ function StakeFormModal({
 
   return (
     <TokenAmountForm
+      actionType={ACTION_FLOW_TYPES.STAKE}
       tokenBalanceInputPlaceholder={inputPlaceholder}
       currency="bitcoin"
       tokenBalance={tokenBalance ?? 0n}

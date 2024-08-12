@@ -25,10 +25,16 @@ export const CONNECTION_ERRORS: Record<string, ConnectionErrorData> = {
   },
 }
 
-export const TOKEN_FORM_ERRORS = {
+const ACTION_FORM_ERRORS = {
   REQUIRED: "Please enter an amount.",
   EXCEEDED_VALUE:
     "The amount exceeds your current wallet balance. Add more funds to your wallet or lower the deposit amount.",
   INSUFFICIENT_VALUE: (minValue: string) =>
     `The amount is below the minimum required deposit of ${minValue} BTC.`,
+}
+
+export const STAKE_FORM_ERRORS = ACTION_FORM_ERRORS
+export const UNSTAKE_FORM_ERRORS = {
+  ...ACTION_FORM_ERRORS,
+  EXCEEDED_VALUE: "Your Acre balance is insufficient.",
 }

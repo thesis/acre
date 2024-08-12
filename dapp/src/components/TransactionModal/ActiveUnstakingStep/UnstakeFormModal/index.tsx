@@ -2,7 +2,7 @@ import React from "react"
 import TokenAmountForm from "#/components/shared/TokenAmountForm"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { FormSubmitButton } from "#/components/shared/Form"
-import { BaseFormProps, PROCESS_STATUSES } from "#/types"
+import { ACTION_FLOW_TYPES, BaseFormProps, PROCESS_STATUSES } from "#/types"
 import {
   useActionFlowStatus,
   useBitcoinPosition,
@@ -24,6 +24,7 @@ function UnstakeFormModal({
 
   return (
     <TokenAmountForm
+      actionType={ACTION_FLOW_TYPES.UNSTAKE}
       tokenBalanceInputPlaceholder={inputPlaceholder}
       currency="bitcoin"
       tokenBalance={balance}
