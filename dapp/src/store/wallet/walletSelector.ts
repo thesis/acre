@@ -29,11 +29,6 @@ export const selectLatestCompletedActivities = createSelector(
   (latestActivities) => filterCompletedActivities(latestActivities),
 )
 
-export const selectCompletedActivities = createSelector(
-  selectActivities,
-  (activities) => filterCompletedActivities(activities),
-)
-
 export const selectIsSignedMessage = (state: RootState): boolean =>
   state.wallet.isSignedMessage
 
