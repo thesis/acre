@@ -1,14 +1,5 @@
 import React from "react"
-import {
-  HStack,
-  Card,
-  CardBody,
-  Box,
-  VisuallyHidden,
-  Flex,
-  Tag,
-  TagLabel,
-} from "@chakra-ui/react"
+import { HStack, Card, CardBody, Box, Flex, Icon } from "@chakra-ui/react"
 import {
   Pagination,
   PaginationButton,
@@ -17,12 +8,12 @@ import {
 } from "#/components/shared/Pagination"
 import { TextSm } from "#/components/shared/Typography"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
-import { displayBlockTimestamp, isActivityCompleted, staking } from "#/utils"
+import { displayBlockTimestamp } from "#/utils"
 import { Activity } from "#/types"
 import BlockExplorerLink from "#/components/shared/BlockExplorerLink"
 import { IconArrowUpRight } from "@tabler/icons-react"
 import { useActivities } from "#/hooks"
-import Spinner from "#/components/shared/Spinner"
+import EstimatedDuration from "./EstimatedDuration"
 
 export default function TransactionTable() {
   const activities = useActivities()
@@ -63,6 +54,7 @@ export default function TransactionTable() {
                         fontWeight="bold"
                         amount={activity.amount}
                         currency="bitcoin"
+                        withDots
                       />
                     </Box>
                   </HStack>
@@ -71,45 +63,24 @@ export default function TransactionTable() {
                       id={activity.txHash}
                       chain="bitcoin"
                       type="transaction"
-                      variant="ghost"
-                      color="grey.300"
-                      _groupHover={{ color: "brand.400" }}
-                      pl={6}
-                      pr={4}
-                      py={5}
-                      mx={-4}
-                      my={-5}
+                      color="grey.600"
+                      _groupHover={{
+                        color: "brand.400",
+                        textDecoration: "none",
+                      }}
                     >
-                      <IconArrowUpRight size={16} />
-                      <VisuallyHidden>View transaction details</VisuallyHidden>
+                      <HStack spacing={1}>
+                        <TextSm>Details</TextSm>
+                        <Icon
+                          as={IconArrowUpRight}
+                          color="brand.400"
+                          boxSize={4}
+                        />
+                      </HStack>
                     </BlockExplorerLink>
                   )}
                 </HStack>
-                {!isActivityCompleted(activity) && (
-                  <HStack spacing={3}>
-                    <Tag variant="solid">
-                      <Spinner
-                        borderWidth={3}
-                        boxSize={6}
-                        mr={2}
-                        color="gold.400"
-                        emptyColor="brand.400"
-                      />
-                      <TagLabel>{`${staking.convertActivityTypeToLabel(activity.type)} transaction pending...`}</TagLabel>
-                    </Tag>
-                    <Tag variant="solid">
-                      <TagLabel display="flex" gap={1}>
-                        Est. duration
-                        <Box as="span" color="brand.400">
-                          {staking.getEstimatedDuration(
-                            activity.amount,
-                            activity.type,
-                          )}
-                        </Box>
-                      </TagLabel>
-                    </Tag>
-                  </HStack>
-                )}
+                <EstimatedDuration activity={activity} />
               </CardBody>
             </Card>
           ))
