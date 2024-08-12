@@ -27,6 +27,7 @@ export type CurrencyBalanceProps = {
   balanceFontWeight?: string
   symbolFontWeight?: string
   symbolPosition?: "prefix" | "suffix"
+  withDots?: boolean
 } & TextProps
 
 export function CurrencyBalance({
@@ -39,6 +40,7 @@ export function CurrencyBalance({
   balanceFontWeight = "bold",
   symbolFontWeight = "bold",
   symbolPosition = "suffix",
+  withDots = false,
   as,
   ...textProps
 }: CurrencyBalanceProps) {
@@ -72,6 +74,7 @@ export function CurrencyBalance({
         {...textProps}
       >
         {balance}
+        {withDots && ".."}
       </Box>
       <Box
         as="span"
