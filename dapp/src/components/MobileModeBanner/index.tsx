@@ -13,7 +13,7 @@ import { IconChevronDown } from "@tabler/icons-react"
 import { AnimatePresence, motion } from "framer-motion"
 import { EXTERNAL_HREF } from "#/constants"
 import { LiveTag } from "../shared/LiveTag"
-import { H5, TextMd, TextXl } from "../shared/Typography"
+import { H4, TextMd, TextXl } from "../shared/Typography"
 import AcreAnimatedBadge from "./AcreAnimatedBadge"
 
 const MotionIcon = motion(Icon)
@@ -91,10 +91,10 @@ function MobileModeBanner(props: MobileModeBannerProps) {
             >
               <AcreAnimatedBadge mx="auto" mb={12} />
 
-              <H5 mb={9} fontWeight="500">
+              <H4 mb={9} fontWeight="500">
                 Staking is live only on desktop for now. We&apos;re working with
                 partners to bring it to mobile soon.
-              </H5>
+              </H4>
 
               <TextXl lineHeight={9}>
                 Stay tuned on{" "}

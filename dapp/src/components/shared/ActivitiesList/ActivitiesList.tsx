@@ -1,7 +1,11 @@
 import React from "react"
 import { List, ListItem, ListProps } from "@chakra-ui/react"
 import { AnimatePresence, Variants, motion } from "framer-motion"
-import { useAppDispatch, useLatestCompletedActivities } from "#/hooks"
+import {
+  useAppDispatch,
+  useLatestCompletedActivities,
+  useIsFetchedWalletData,
+} from "#/hooks"
 import { deleteLatestActivity } from "#/store/wallet"
 import ActivitiesListItem from "./ActivitiesListItem"
 
@@ -16,12 +20,13 @@ const listItemVariants: Variants = {
 function ActivitiesList(props: ListProps) {
   const dispatch = useAppDispatch()
   const activities = useLatestCompletedActivities()
+  const isFetchedWalletData = useIsFetchedWalletData()
 
   const handleItemDismiss = (activityId: string) => {
     dispatch(deleteLatestActivity(activityId))
   }
 
-  if (activities.length === 0) return null
+  if (!isFetchedWalletData || activities.length === 0) return null
 
   return (
     <MotionList pos="relative" w="full" {...props}>
