@@ -32,7 +32,7 @@
     "test:integration": "hardhat test --deploy-fixture ./test/integration/*.test.ts --network integration"
   },
   "devDependencies": {
-    "@keep-network/hardhat-helpers": "^0.7.2-pre.2",
+    "@keep-network/hardhat-helpers": "0.7.2",
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.2",
     "@nomicfoundation/hardhat-ethers": "^3.0.5",
     "@nomicfoundation/hardhat-network-helpers": "^1.0.9",
