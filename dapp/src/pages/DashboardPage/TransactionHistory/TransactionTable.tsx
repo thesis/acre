@@ -3,6 +3,7 @@ import { HStack, Card, CardBody, Box, Flex, Icon } from "@chakra-ui/react"
 import {
   Pagination,
   PaginationButton,
+  PaginationFooter,
   PaginationPage,
   PaginationStatus,
 } from "#/components/shared/Pagination"
@@ -13,13 +14,14 @@ import { Activity } from "#/types"
 import BlockExplorerLink from "#/components/shared/BlockExplorerLink"
 import { IconArrowUpRight } from "@tabler/icons-react"
 import { useActivities } from "#/hooks"
+import { semanticTokens } from "#/theme/utils"
 import EstimatedDuration from "./EstimatedDuration"
 
 export default function TransactionTable() {
   const activities = useActivities()
 
   return (
-    <Pagination data={activities} pageSize={10}>
+    <Pagination data={activities} pageSize={10} spacing={6}>
       <PaginationPage direction="column" spacing={2} pageSpacing={6}>
         {(pageData: Activity[]) =>
           pageData.map((activity) => (
@@ -87,15 +89,16 @@ export default function TransactionTable() {
         }
       </PaginationPage>
 
-      <HStack
+      <PaginationFooter
         spacing={2}
-        mx={-5}
-        mt={-6}
-        mb={-10}
-        p={5}
-        pt={6}
-        bgGradient="linear(to-b, transparent, gold.200 20%)"
-        zIndex={2}
+        // TODO: Temporary solution - Animation should be fixed in such a way
+        // that it does not affect other elements. Currently, when we add some
+        // new element under the `PaginationPage` or `Pagination` tag,
+        // the list of activities will overlap it when we switch pages.
+        //
+        // The `containerPadding` property does not solve the problem
+        // but hides it for the `PaginationFooter` component.
+        containerPadding={semanticTokens.space.dashboard_card_padding}
       >
         <HStack spacing={2}>
           <PaginationButton mode="previous" />
@@ -103,7 +106,7 @@ export default function TransactionTable() {
         </HStack>
 
         <PaginationStatus dataLabel="transactions" color="grey.500" />
-      </HStack>
+      </PaginationFooter>
     </Pagination>
   )
 }
