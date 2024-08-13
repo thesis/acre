@@ -1,4 +1,4 @@
-import { STAKE_FORM_ERRORS, UNSTAKE_FORM_ERRORS } from "#/constants"
+import { ACTION_FORM_ERRORS, TOKEN_FORM_ERRORS } from "#/constants"
 import { ACTION_FLOW_TYPES, ActionFlowType, CurrencyType } from "#/types"
 import { getCurrencyByType } from "./currency"
 import { fixedPointNumberToString } from "./numbers"
@@ -16,36 +16,33 @@ export function validateTokenAmount(
   minValue: bigint,
   currency: CurrencyType,
 ): string | undefined {
-  const TOKEN_FORM_ERRORS =
-    actionType === ACTION_FLOW_TYPES.STAKE
-      ? STAKE_FORM_ERRORS
-      : UNSTAKE_FORM_ERRORS
+  const ERRORS_BY_ACTION_TYPE = ACTION_FORM_ERRORS[actionType]
 
-  if (value === undefined) return TOKEN_FORM_ERRORS.REQUIRED
+  if (value === undefined) return ERRORS_BY_ACTION_TYPE.REQUIRED
 
   const { decimals } = getCurrencyByType(currency)
 
   const isMaximumValueExceeded = value > maxValue
   const isMinimumValueFulfilled = value >= minValue
 
-  if (isMaximumValueExceeded) return TOKEN_FORM_ERRORS.EXCEEDED_VALUE
+  if (isMaximumValueExceeded) return ERRORS_BY_ACTION_TYPE.EXCEEDED_VALUE
   if (!isMinimumValueFulfilled)
-    return TOKEN_FORM_ERRORS.INSUFFICIENT_VALUE(
+    return ERRORS_BY_ACTION_TYPE.INSUFFICIENT_VALUE(
       fixedPointNumberToString(minValue, decimals),
     )
 
   return undefined
 }
 
-type GetTokenAmountErrorKeyReturnType = keyof typeof STAKE_FORM_ERRORS | null
+type GetTokenAmountErrorKeyReturnType = keyof typeof TOKEN_FORM_ERRORS | null
 export const getTokenAmountErrorKey = (
   errorMessage: string,
 ): GetTokenAmountErrorKeyReturnType => {
-  const errorKeys = Object.keys(STAKE_FORM_ERRORS)
+  const errorKeys = Object.keys(ACTION_FORM_ERRORS)
   const errorKeyValuePairs = [
     ...new Set([
-      ...Object.entries(STAKE_FORM_ERRORS),
-      ...Object.entries(UNSTAKE_FORM_ERRORS),
+      ...Object.entries(ACTION_FORM_ERRORS[ACTION_FLOW_TYPES.STAKE]),
+      ...Object.entries(ACTION_FORM_ERRORS[ACTION_FLOW_TYPES.UNSTAKE]),
     ]),
   ]
   const errorKey =
