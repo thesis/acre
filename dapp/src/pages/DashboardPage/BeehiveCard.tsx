@@ -68,19 +68,21 @@ export default function BeehiveCard(props: CardProps) {
             gap={1}
           >
             <CardHeader p={0} mb={1}>
-              <TextMd
-                fontWeight="semibold"
-                color="grey.500"
-                display="flex"
-                whiteSpace="pre"
-                alignItems="center"
-              >
-                <Highlight
-                  query="Mezo"
-                  styles={{ fontWeight: "bold", color: "grey.700" }}
+              <Flex alignItems="center">
+                <TextMd
+                  fontWeight="semibold"
+                  color="grey.500"
+                  display="flex"
+                  whiteSpace="pre"
+                  alignItems="center"
                 >
-                  Collecting mats from Mezo
-                </Highlight>
+                  <Highlight
+                    query="Mezo"
+                    styles={{ fontWeight: "bold", color: "grey.700" }}
+                  >
+                    Collecting mats from Mezo
+                  </Highlight>
+                </TextMd>
 
                 <Flex display="inline-flex" ml={1}>
                   <MezoSignIcon boxSize={5} rounded="full" />
@@ -92,12 +94,12 @@ export default function BeehiveCard(props: CardProps) {
                     ringColor="gold.100"
                   />
                 </Flex>
-              </TextMd>
+              </Flex>
             </CardHeader>
 
             <CardBody as={VStack} p={0}>
               {data && (
-                <HStack>
+                <HStack align="baseline">
                   <H6 fontWeight="bold">
                     {numberToLocaleString(data.totalMats, 0)}
                   </H6>
