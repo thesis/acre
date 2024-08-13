@@ -11,11 +11,13 @@ import {
 import { TextMd } from "#/components/shared/Typography"
 import { EXTERNAL_HREF } from "#/constants"
 import { IconBrandDiscordFilled } from "@tabler/icons-react"
+import { BaseModalProps } from "#/types"
+import withBaseModal from "./ModalRoot/withBaseModal"
 
-export default function UnexpectedErrorModal() {
+export function UnexpectedErrorModalBase({ withCloseButton }: BaseModalProps) {
   return (
     <>
-      <ModalCloseButton />
+      {withCloseButton && <ModalCloseButton />}
       <ModalHeader color="red.400" textAlign="center">
         Unexpected error...
       </ModalHeader>
@@ -38,3 +40,6 @@ export default function UnexpectedErrorModal() {
     </>
   )
 }
+
+const UnexpectedErrorModal = withBaseModal(UnexpectedErrorModalBase)
+export default UnexpectedErrorModal

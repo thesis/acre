@@ -1,6 +1,7 @@
 import {
   closeModal,
   openModal,
+  selectIsOpenGlobalErrorModal,
   selectModalProps,
   selectModalType,
 } from "#/store/modal"
@@ -12,13 +13,17 @@ import { useAppSelector } from "./store/useAppSelector"
 export function useModal() {
   const modalType = useAppSelector(selectModalType)
   const modalProps = useAppSelector(selectModalProps)
+  const isOpenGlobalErrorModal = useAppSelector(selectIsOpenGlobalErrorModal)
   const dispatch = useAppDispatch()
 
   const handleOpenModal = useCallback(
     (type: ModalType, props?: ModalProps) => {
+      // We should not allow to open other modal windows when the global error modal is displayed.
+      if (isOpenGlobalErrorModal) return
+
       dispatch(openModal({ modalType: type, props }))
     },
-    [dispatch],
+    [dispatch, isOpenGlobalErrorModal],
   )
 
   const handleCloseModal = useCallback(() => dispatch(closeModal()), [dispatch])
@@ -26,6 +31,7 @@ export function useModal() {
   return {
     modalType,
     modalProps,
+    isOpenGlobalErrorModal,
     openModal: handleOpenModal,
     closeModal: handleCloseModal,
   }
