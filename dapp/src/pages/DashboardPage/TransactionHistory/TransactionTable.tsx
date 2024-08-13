@@ -17,6 +17,8 @@ import { useActivities } from "#/hooks"
 import { semanticTokens } from "#/theme/utils"
 import EstimatedDuration from "./EstimatedDuration"
 
+const BLOCK_EXPLORER_CELL_MIN_WIDTH = 16
+
 export default function TransactionTable() {
   const activities = useActivities()
 
@@ -60,7 +62,7 @@ export default function TransactionTable() {
                       />
                     </Box>
                   </HStack>
-                  {activity.txHash && (
+                  {activity.txHash ? (
                     <BlockExplorerLink
                       id={activity.txHash}
                       chain="bitcoin"
@@ -70,6 +72,7 @@ export default function TransactionTable() {
                         color: "brand.400",
                         textDecoration: "none",
                       }}
+                      minW={BLOCK_EXPLORER_CELL_MIN_WIDTH}
                     >
                       <HStack spacing={1}>
                         <TextSm>Details</TextSm>
@@ -80,6 +83,8 @@ export default function TransactionTable() {
                         />
                       </HStack>
                     </BlockExplorerLink>
+                  ) : (
+                    <Box minW={BLOCK_EXPLORER_CELL_MIN_WIDTH} />
                   )}
                 </HStack>
                 <EstimatedDuration activity={activity} />
