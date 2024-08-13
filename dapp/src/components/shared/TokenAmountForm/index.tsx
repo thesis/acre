@@ -1,10 +1,5 @@
 import { FormikErrors, withFormik } from "formik"
-import {
-  getCurrencyByType,
-  getErrorsObj,
-  userAmountToBigInt,
-  validateTokenAmount,
-} from "#/utils"
+import { getErrorsObj, validateTokenAmount } from "#/utils"
 import { ActionFlowType, BaseFormProps } from "#/types"
 import TokenAmountFormBase, {
   TokenAmountFormBaseProps,
@@ -28,15 +23,9 @@ const TokenAmountForm = withFormik<TokenAmountFormProps, TokenAmountFormValues>(
     ) => {
       const errors: FormikErrors<TokenAmountFormValues> = {}
 
-      const { decimals } = getCurrencyByType(currency)
-      const bigIntAmount =
-        typeof amount === "string"
-          ? userAmountToBigInt(amount, decimals)
-          : amount
-
       errors.amount = validateTokenAmount(
         actionType,
-        bigIntAmount,
+        amount,
         tokenBalance,
         minTokenAmount,
         currency,

@@ -213,10 +213,3 @@ export const addLeadingZero = (num: number): string =>
 
 export const getPercentValue = (value: number, maxValue: number) =>
   (value * 100) / maxValue
-
-export const getBigIntDecimalsLength = (value: bigint, decimals: number) => {
-  const valueStr = fixedPointNumberToString(value, decimals)
-  const decimalIndex = valueStr.indexOf(".")
-
-  return decimalIndex === -1 ? 0 : valueStr.length - decimalIndex - 1
-}

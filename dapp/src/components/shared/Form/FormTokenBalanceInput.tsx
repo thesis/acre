@@ -16,7 +16,7 @@ export function FormTokenBalanceInput({
   const [field, meta, helpers] = useField(name)
 
   const setAmount = useCallback(
-    (value?: bigint | string) => {
+    (value?: bigint) => {
       if (!meta.touched) logPromiseFailure(helpers.setTouched(true))
       logPromiseFailure(helpers.setValue(value))
     },
