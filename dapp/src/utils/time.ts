@@ -94,3 +94,8 @@ export const getExpirationTimestamp = (duration: number, startDate?: Date) => {
 
   return dateToUnixTimestamp(expirationDate)
 }
+
+export const isWithinPeriod = (
+  timestamp: number,
+  periodInMilliseconds: number,
+) => Date.now() - timestamp <= periodInMilliseconds && timestamp <= Date.now()

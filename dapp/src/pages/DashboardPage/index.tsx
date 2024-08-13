@@ -13,6 +13,7 @@ import { PageLayout, PageLayoutColumn } from "./PageLayout"
 import AcrePointsCard from "./AcrePointsCard"
 import { CurrentSeasonCard } from "./CurrentSeasonCard"
 import BeehiveCard from "./BeehiveCard"
+import AcreRankCard from "./AcreRankCard"
 
 export default function DashboardPage() {
   const isMobileMode = useMobileMode()
@@ -36,6 +37,7 @@ export default function DashboardPage() {
 
       <PageLayoutColumn position="relative">
         <AcrePointsCard />
+        <AcreRankCard />
       </PageLayoutColumn>
     </PageLayout>
   )
