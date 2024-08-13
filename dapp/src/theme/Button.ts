@@ -23,21 +23,31 @@ export const buttonTheme: ComponentSingleStyleConfig = {
     },
   },
   variants: {
-    solid: {
-      bg: "brand.400",
-      color: "white",
-      _hover: {
-        bg: "brand.500",
-      },
-      _active: {
-        bg: "brand.400",
-      },
-      _loading: {
-        _disabled: {
-          background: "gold.300",
-          opacity: 1,
+    solid: ({ colorScheme }: StyleFunctionProps) => {
+      let baseBg = `${colorScheme}.400`
+      let hoverBg = `${colorScheme}.500`
+
+      if (colorScheme === "green") {
+        baseBg = `${colorScheme}.500`
+        hoverBg = `${colorScheme}.600`
+      }
+
+      return {
+        bg: baseBg,
+        color: "white",
+        _hover: {
+          bg: hoverBg,
         },
-      },
+        _active: {
+          bg: baseBg,
+        },
+        _loading: {
+          _disabled: {
+            background: "gold.300",
+            opacity: 1,
+          },
+        },
+      }
     },
     outline: ({ colorScheme }: StyleFunctionProps) => {
       const defaultStyles = {
@@ -152,5 +162,8 @@ export const buttonTheme: ComponentSingleStyleConfig = {
       textDecoration: "underline",
       fontWeight: "medium",
     },
+  },
+  defaultProps: {
+    colorScheme: "brand",
   },
 }
