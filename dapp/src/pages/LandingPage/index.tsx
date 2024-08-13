@@ -12,8 +12,8 @@ import { EXTERNAL_HREF, PARTNER_LOGOS } from "#/constants"
 import {
   CurrentSeasonSection,
   HeroSection,
-  CardButton,
 } from "#/pages/LandingPage/components"
+import CardButton from "#/components/shared/CardButton"
 import MobileModeBanner from "#/components/MobileModeBanner"
 import { H4 } from "#/components/shared/Typography"
 

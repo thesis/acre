@@ -17,7 +17,7 @@ function PageLayout(props: GridProps) {
         base: "1fr",
         md: "repeat(2, 1fr)",
         lg: "1fr 0.6fr",
-        "2xl": "minmax(396px, auto) 1fr minmax(396px, auto)",
+        "2xl": "minmax(396px, auto) 1fr minmax(480px, auto)",
       }}
       {...restProps}
     >

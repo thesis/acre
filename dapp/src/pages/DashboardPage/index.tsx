@@ -6,7 +6,9 @@ import {
 } from "#/hooks"
 import MobileModeBanner from "#/components/MobileModeBanner"
 import { routerPath } from "#/router/path"
-import { featureFlags } from "#/constants"
+import { EXTERNAL_HREF, featureFlags } from "#/constants"
+import { VStack } from "@chakra-ui/react"
+import CardButton from "#/components/shared/CardButton"
 import DashboardCard from "./DashboardCard"
 import { PageLayout, PageLayoutColumn } from "./PageLayout"
 // import GrantedSeasonPassCard from "./GrantedSeasonPassCard"
@@ -38,6 +40,17 @@ export default function DashboardPage() {
       <PageLayoutColumn position="relative">
         <AcrePointsCard />
         <AcreRankCard />
+        <VStack spacing={2} align="stretch">
+          <CardButton href={EXTERNAL_HREF.DOCS} isExternal>
+            Documentation
+          </CardButton>
+          <CardButton href={EXTERNAL_HREF.BLOG} isExternal>
+            Blog
+          </CardButton>
+          <CardButton href={EXTERNAL_HREF.FAQ} isExternal>
+            FAQ
+          </CardButton>
+        </VStack>
       </PageLayoutColumn>
     </PageLayout>
   )
