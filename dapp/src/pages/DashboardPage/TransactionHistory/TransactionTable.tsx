@@ -9,7 +9,7 @@ import {
 } from "#/components/shared/Pagination"
 import { TextSm } from "#/components/shared/Typography"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
-import { displayBlockTimestamp } from "#/utils"
+import { displayBlockTimestamp, getActivityTimestamp } from "#/utils"
 import { Activity } from "#/types"
 import BlockExplorerLink from "#/components/shared/BlockExplorerLink"
 import { IconArrowUpRight } from "@tabler/icons-react"
@@ -36,9 +36,7 @@ export default function TransactionTable() {
               <CardBody as={Flex} flexDirection="column" gap={4} p={4}>
                 <HStack spacing={3}>
                   <TextSm color="grey.500" flex={1} fontWeight="medium">
-                    {displayBlockTimestamp(
-                      activity?.finalizedAt ?? activity.initializedAt,
-                    )}
+                    {displayBlockTimestamp(getActivityTimestamp(activity))}
                   </TextSm>
 
                   <HStack flexBasis="60%">
