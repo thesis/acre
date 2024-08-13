@@ -6,7 +6,7 @@ import { useTokenAmountField } from "#/components/shared/TokenAmountForm/TokenAm
 import { FeesTooltip } from "#/components/TransactionModal/FeesTooltip"
 import { useMinDepositAmount, useTransactionDetails } from "#/hooks"
 import { CurrencyType } from "#/types"
-import { DESIRED_DECIMALS_FOR_FEE, FEE_CEIL_PRECISION } from "#/constants"
+import { DESIRED_DECIMALS_FOR_FEE } from "#/constants"
 
 function StakeDetails({ currency }: { currency: CurrencyType }) {
   const { value = 0n } = useTokenAmountField()
@@ -36,7 +36,6 @@ function StakeDetails({ currency }: { currency: CurrencyType }) {
           currency,
           amount: total,
           desiredDecimals: DESIRED_DECIMALS_FOR_FEE,
-          ceilPrecision: FEE_CEIL_PRECISION,
         }}
         to={{
           currency: "usd",
