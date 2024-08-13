@@ -62,15 +62,12 @@ export default function PositionDetails() {
               from={{
                 amount: bitcoinAmount,
                 currency: "bitcoin",
-                fontSize: "6xl",
-                lineHeight: 1.2,
+                size: "6xl",
                 letterSpacing: "-0.075rem", // -1.2px
-                fontWeight: "bold",
                 color: "grey.700",
               }}
               to={{
                 currency: "usd",
-                shouldBeFormatted: false,
                 color: "grey.500",
                 fontWeight: "medium",
               }}
