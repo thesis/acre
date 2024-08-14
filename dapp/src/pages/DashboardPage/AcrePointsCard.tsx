@@ -1,7 +1,6 @@
 import React from "react"
 import { H4, TextMd } from "#/components/shared/Typography"
 import {
-  Box,
   Button,
   Card,
   CardBody,
@@ -30,12 +29,7 @@ export default function AcrePointsCard(props: CardProps) {
 
       <CardBody p={0}>
         <UserDataSkeleton>
-          <H4 mb={2}>
-            {formatted.totalPointsAmount}
-            <Box as="span" color="gold.500">
-              &nbsp;PTS
-            </Box>
-          </H4>
+          <H4 mb={2}>{formatted.totalPointsAmount}&nbsp;PTS</H4>
           <TextMd color="grey.500" mb={4}>
             + {formatted.dailyPointsAmount} PTS/day
           </TextMd>
