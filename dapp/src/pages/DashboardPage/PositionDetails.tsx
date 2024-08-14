@@ -65,6 +65,9 @@ export default function PositionDetails() {
                 size: "6xl",
                 letterSpacing: "-0.075rem", // -1.2px
                 color: "grey.700",
+                symbolTextProps: {
+                  color: "gold.500",
+                },
               }}
               to={{
                 currency: "usd",
