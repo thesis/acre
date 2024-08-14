@@ -96,6 +96,7 @@ export const buttonTheme: ComponentSingleStyleConfig = {
       return defaultStyles
     },
     ghost: {
+      color: "inherit",
       _hover: {
         bg: "transparent",
       },
