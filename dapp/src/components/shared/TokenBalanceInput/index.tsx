@@ -13,7 +13,7 @@ import {
   useMultiStyleConfig,
 } from "@chakra-ui/react"
 import {
-  bigIntToUserAmount,
+  fixedPointNumberToString,
   getCurrencyByType,
   isFormError,
   userAmountToBigInt,
@@ -130,7 +130,7 @@ export default function TokenBalanceInput({
   const valueRef = useRef<bigint | undefined>(amount)
   const styles = useMultiStyleConfig("TokenBalanceInput", { size })
 
-  const { decimals, desiredDecimals } = getCurrencyByType(currency)
+  const { decimals } = getCurrencyByType(currency)
 
   const handleValueChange = (value: string) => {
     valueRef.current = value ? userAmountToBigInt(value, decimals) : undefined
@@ -166,9 +166,7 @@ export default function TokenBalanceInput({
           placeholder={placeholder}
           {...inputProps}
           value={
-            amount
-              ? bigIntToUserAmount(amount, decimals, desiredDecimals)
-              : undefined
+            amount ? fixedPointNumberToString(amount, decimals) : undefined
           }
           onValueChange={(values: NumberFormatInputValues) =>
             handleValueChange(values.value)
