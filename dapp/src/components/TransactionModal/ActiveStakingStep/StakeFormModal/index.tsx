@@ -5,6 +5,7 @@ import { useMinDepositAmount, useWallet } from "#/hooks"
 import { FormSubmitButton } from "#/components/shared/Form"
 import { BaseFormProps } from "#/types"
 import StakeDetails from "./StakeDetails"
+import AcrePointsRewardEstimation from "./AcrePointsRewardEstimation"
 
 function StakeFormModal({
   onSubmitForm,
@@ -22,6 +23,7 @@ function StakeFormModal({
       onSubmitForm={onSubmitForm}
       withMaxButton={false}
     >
+      <AcrePointsRewardEstimation />
       <StakeDetails currency="bitcoin" />
       <FormSubmitButton mt={10}>Deposit</FormSubmitButton>
     </TokenAmountForm>
