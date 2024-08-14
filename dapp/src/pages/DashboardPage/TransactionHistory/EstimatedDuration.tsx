@@ -1,7 +1,11 @@
 import React from "react"
 import { HStack, Box, Tag, TagLabel } from "@chakra-ui/react"
 import Spinner from "#/components/shared/Spinner"
-import { isActivityCompleted, staking } from "#/utils"
+import {
+  convertActivityTypeToLabel,
+  getEstimatedDuration,
+  isActivityCompleted,
+} from "#/utils"
 import { Activity } from "#/types"
 
 export default function EstimatedDuration({
@@ -21,13 +25,13 @@ export default function EstimatedDuration({
           color="gold.400"
           emptyColor="brand.400"
         />
-        <TagLabel>{`${staking.convertActivityTypeToLabel(activity.type)} transaction pending...`}</TagLabel>
+        <TagLabel>{`${convertActivityTypeToLabel(activity.type)} transaction pending...`}</TagLabel>
       </Tag>
       <Tag variant="solid">
         <TagLabel display="flex" gap={1}>
           Est. duration
           <Box as="span" color="brand.400">
-            {staking.getEstimatedDuration(activity.amount, activity.type)}
+            {getEstimatedDuration(activity.amount, activity.type)}
           </Box>
         </TagLabel>
       </Tag>

@@ -1,4 +1,7 @@
-import { Activity } from "#/types"
+import { Activity, ActivityType } from "#/types"
+
+const MIN_LIMIT_VALUE_DURATION = BigInt(String(1e7)) // 0.1 BTC
+const MAX_LIMIT_VALUE_DURATION = BigInt(String(1e8)) // 1 BTC
 
 export const isActivityCompleted = (activity: Activity): boolean =>
   activity.status === "completed"
@@ -14,3 +17,25 @@ export const sortActivitiesByTimestamp = (activities: Activity[]): Activity[] =>
 
 export const filterCompletedActivities = (activities: Activity[]): Activity[] =>
   activities.filter((activity) => isActivityCompleted(activity))
+
+export const isWithdrawType = (type: ActivityType) => type === "withdraw"
+
+export function getEstimatedDuration(
+  amount: bigint,
+  type: ActivityType,
+): string {
+  if (isWithdrawType(type)) return "6 hours"
+
+  if (amount < MIN_LIMIT_VALUE_DURATION) return "1 hours"
+
+  if (amount >= MIN_LIMIT_VALUE_DURATION && amount < MAX_LIMIT_VALUE_DURATION)
+    return "2 hours"
+
+  return "3 hours"
+}
+
+export function convertActivityTypeToLabel(type: ActivityType): string {
+  if (isWithdrawType(type)) return "Unstaking"
+
+  return "Staking"
+}
