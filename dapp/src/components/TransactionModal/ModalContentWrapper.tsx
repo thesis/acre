@@ -29,7 +29,8 @@ export default function ModalContentWrapper({
 
   if (status === PROCESS_STATUSES.SUCCEEDED) return <SuccessModal type={type} />
 
-  if (status === PROCESS_STATUSES.FAILED) return <ErrorModal type={type} />
+  if (status === PROCESS_STATUSES.FAILED)
+    return <ErrorModal type={type} closeModal={closeModal} />
 
   if (status === PROCESS_STATUSES.PAUSED)
     return <ResumeModal closeModal={closeModal} />

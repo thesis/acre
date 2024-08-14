@@ -9,12 +9,16 @@ import {
 import { PROCESS_STATUSES } from "#/types"
 import { logPromiseFailure } from "#/utils"
 import { setStatus } from "#/store/action-flow"
+import { UnexpectedErrorModalBase } from "#/components/UnexpectedErrorModal"
 import ServerErrorModal from "./ServerErrorModal"
 import RetryModal from "./RetryModal"
 import LoadingModal from "../../LoadingModal"
-import UnexpectedErrorModal from "../../UnexpectedErrorModal"
 
-export default function StakingErrorModal() {
+export default function StakingErrorModal({
+  closeModal,
+}: {
+  closeModal: () => void
+}) {
   const { stake } = useStakeFlowContext()
   const dispatch = useAppDispatch()
   const fetchActivities = useFetchActivities()
@@ -54,5 +58,5 @@ export default function StakingErrorModal() {
 
   if (txHash) return <RetryModal retry={handleRetryWrapper} />
 
-  return <UnexpectedErrorModal />
+  return <UnexpectedErrorModalBase closeModal={closeModal} withCloseButton />
 }
