@@ -15,7 +15,7 @@ import {
 import {
   bigIntToUserAmount,
   getCurrencyByType,
-  getTokenAmountErrorKey,
+  isFormError,
   userAmountToBigInt,
 } from "#/utils"
 import { CurrencyType } from "#/types"
@@ -138,7 +138,7 @@ export default function TokenBalanceInput({
 
   const isBalanceExceeded =
     typeof errorMsgText === "string" &&
-    getTokenAmountErrorKey(errorMsgText) === "EXCEEDED_VALUE"
+    isFormError("EXCEEDED_VALUE", errorMsgText)
 
   return (
     <FormControl isInvalid={hasError} isDisabled={inputProps.isDisabled}>

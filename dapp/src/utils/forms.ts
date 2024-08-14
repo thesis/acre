@@ -1,5 +1,5 @@
 import { ACTION_FORM_ERRORS, TOKEN_FORM_ERRORS } from "#/constants"
-import { ACTION_FLOW_TYPES, ActionFlowType, CurrencyType } from "#/types"
+import { ActionFlowType, CurrencyType } from "#/types"
 import { getCurrencyByType } from "./currency"
 import { fixedPointNumberToString } from "./numbers"
 
@@ -34,24 +34,30 @@ export function validateTokenAmount(
   return undefined
 }
 
-type GetTokenAmountErrorKeyReturnType = keyof typeof TOKEN_FORM_ERRORS | null
-export const getTokenAmountErrorKey = (
-  errorMessage: string,
-): GetTokenAmountErrorKeyReturnType => {
-  const errorKeys = Object.keys(ACTION_FORM_ERRORS)
-  const errorKeyValuePairs = [
-    ...new Set([
-      ...Object.entries(ACTION_FORM_ERRORS[ACTION_FLOW_TYPES.STAKE]),
-      ...Object.entries(ACTION_FORM_ERRORS[ACTION_FLOW_TYPES.UNSTAKE]),
-    ]),
+type ParametrizedError = (value: number) => string
+export const isFormError = (
+  type: keyof typeof TOKEN_FORM_ERRORS,
+  message: string,
+) => {
+  let errorPredicates = [
+    ACTION_FORM_ERRORS.STAKE[type],
+    ACTION_FORM_ERRORS.UNSTAKE[type],
   ]
-  const errorKey =
-    errorKeys.find((key) => {
-      const errorValue = errorKeyValuePairs.find(
-        ([_, value]) => value === errorMessage,
-      )
-      return errorValue && errorValue[0] === key
-    }) ?? null
 
-  return errorKey as GetTokenAmountErrorKeyReturnType
+  const isParametrizedError = errorPredicates.every(
+    (predicate) => typeof predicate === "function",
+  )
+
+  if (isParametrizedError) {
+    const errorParameter = (message.match(/\d*\.\d+|\d+/g) ?? []).map(
+      parseFloat,
+    )[0]
+
+    // Already checked that all predicates are functions
+    errorPredicates = (errorPredicates as unknown as ParametrizedError[]).map(
+      (predicate) => predicate(errorParameter),
+    )
+  }
+
+  return errorPredicates.includes(message)
 }
