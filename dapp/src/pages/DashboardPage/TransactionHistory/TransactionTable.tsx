@@ -39,7 +39,7 @@ export default function TransactionTable() {
                     {displayBlockTimestamp(getActivityTimestamp(activity))}
                   </TextSm>
 
-                  <HStack flexBasis="60%">
+                  <HStack flexBasis="55%">
                     <TextSm
                       color="grey.700"
                       flex={1}
