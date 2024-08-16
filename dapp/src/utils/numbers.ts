@@ -1,3 +1,7 @@
+export function roundUp(amount: number, desiredDecimals = 2): number {
+  return Math.ceil(amount * 10 ** desiredDecimals) / 10 ** desiredDecimals
+}
+
 export const numberToLocaleString = (
   value: string | number,
   desiredDecimals = 2,
@@ -52,7 +56,7 @@ export const formatTokenAmount = (
   amount: number | string | bigint,
   decimals = 18,
   desiredDecimals = 2,
-  ceilPrecision = desiredDecimals,
+  withRoundUp = false,
 ) => {
   const fixedPoint = BigInt(amount)
 
@@ -60,15 +64,11 @@ export const formatTokenAmount = (
     return `0.${"0".repeat(desiredDecimals)}`
   }
 
-  let formattedAmount = bigIntToUserAmount(
+  const formattedAmount = bigIntToUserAmount(
     fixedPoint,
     decimals,
-    desiredDecimals,
+    withRoundUp ? desiredDecimals + 1 : desiredDecimals,
   )
-  if (ceilPrecision !== desiredDecimals) {
-    formattedAmount =
-      Math.ceil(formattedAmount * 10 ** ceilPrecision) / 10 ** ceilPrecision
-  }
 
   const minAmountToDisplay = 1 / 10 ** Math.min(desiredDecimals, decimals)
 
@@ -76,7 +76,10 @@ export const formatTokenAmount = (
     return `<0.${"0".repeat(desiredDecimals - 1)}1`
   }
 
-  return numberToLocaleString(formattedAmount, desiredDecimals)
+  const finalFormattedAmount = withRoundUp
+    ? roundUp(formattedAmount, desiredDecimals)
+    : formattedAmount
+  return numberToLocaleString(finalFormattedAmount, desiredDecimals)
 }
 
 export const formatSatoshiAmount = (
