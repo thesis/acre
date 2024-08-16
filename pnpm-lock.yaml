@@ -44,6 +44,9 @@ importers:
       '@reduxjs/toolkit':
         specifier: ^2.2.0
         version: 2.2.5(react-redux@9.1.2)(react@18.3.1)
+      '@rehooks/local-storage':
+        specifier: ^2.4.5
+        version: 2.4.5(react@18.3.1)
       '@safe-global/safe-core-sdk-types':
         specifier: ^5.0.1
         version: 5.0.1(typescript@5.4.5)
@@ -210,8 +213,8 @@ importers:
         version: github.com/thesis/solidity-contracts/c315b9d
     devDependencies:
       '@keep-network/hardhat-helpers':
-        specifier: ^0.7.2-pre.2
-        version: 0.7.2-pre.2(@nomicfoundation/hardhat-ethers@3.0.6)(@nomicfoundation/hardhat-verify@2.0.8)(@openzeppelin/hardhat-upgrades@3.1.1)(ethers@6.10.0)(hardhat-deploy@0.11.45)(hardhat@2.22.5)
+        specifier: 0.7.2
+        version: 0.7.2(@nomicfoundation/hardhat-ethers@3.0.6)(@nomicfoundation/hardhat-verify@2.0.8)(@openzeppelin/hardhat-upgrades@3.1.1)(ethers@6.10.0)(hardhat-deploy@0.11.45)(hardhat@2.22.5)
       '@nomicfoundation/hardhat-chai-matchers':
         specifier: ^2.0.2
         version: 2.0.7(@nomicfoundation/hardhat-ethers@3.0.6)(chai@4.4.1)(ethers@6.10.0)(hardhat@2.22.5)
@@ -4417,8 +4420,8 @@ packages:
       - '@keep-network/keep-core'
     dev: false
 
-  /@keep-network/hardhat-helpers@0.7.2-pre.2(@nomicfoundation/hardhat-ethers@3.0.6)(@nomicfoundation/hardhat-verify@2.0.8)(@openzeppelin/hardhat-upgrades@3.1.1)(ethers@6.10.0)(hardhat-deploy@0.11.45)(hardhat@2.22.5):
-    resolution: {integrity: sha512-EqVPdKMGcMBP1f2FJ1kblFK8UZ/BoPSnrEcfo3nMc6drBYGJPPFqTq4zDJASBjITQbW5kiEY15MnuTpBJycJoA==}
+  /@keep-network/hardhat-helpers@0.7.2(@nomicfoundation/hardhat-ethers@3.0.6)(@nomicfoundation/hardhat-verify@2.0.8)(@openzeppelin/hardhat-upgrades@3.1.1)(ethers@6.10.0)(hardhat-deploy@0.11.45)(hardhat@2.22.5):
+    resolution: {integrity: sha512-AOMn2eK+pB+znRQ5pnkxBX6r95pRkHUtj86TAWz1CKqXfPXYv/YjnpqlcLdbGO+NP2IeJkBrEBxCMzLD2mYOAg==}
     peerDependencies:
       '@nomicfoundation/hardhat-ethers': ^3.0.5
       '@nomicfoundation/hardhat-verify': ^2.0.3
@@ -6501,6 +6504,15 @@ packages:
       redux: 5.0.1
       redux-thunk: 3.1.0(redux@5.0.1)
       reselect: 5.1.1
+    dev: false
+
+  /@rehooks/local-storage@2.4.5(react@18.3.1):
+    resolution: {integrity: sha512-3Q4KtiUBaKoIDRK72BWfAy50ul6hbw29f/M7tyCzlMe2FbSsiQNok0WGeBLaYj4T2PJ7JMSJlSbUGY8RNsImmw==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      react: '>=16.8.0'
+    dependencies:
+      react: 18.3.1
     dev: false
 
   /@remix-run/router@1.19.0:
