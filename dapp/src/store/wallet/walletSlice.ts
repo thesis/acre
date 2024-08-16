@@ -108,6 +108,7 @@ export const walletSlice = createSlice({
         ...state.latestActivities,
         [activity.id]: activity,
       }
+      state.activities = [...state.activities, activity]
     },
   },
 })
