@@ -14,7 +14,7 @@ import {
 import { TextMd } from "../Typography"
 
 type ActivitiesListItemProps = Omit<AlertProps, "status"> &
-  ActivityType & {
+  Omit<ActivityType, "id" | "finalizedAt" | "initializedAt"> & {
     handleDismiss?: () => void
   }
 
