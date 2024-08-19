@@ -21,11 +21,13 @@ function UnstakeFormModal({
 
   const { decimals } = getCurrencyByType("bitcoin")
   const inputPlaceholder = `Minimum ${fixedPointNumberToString(minTokenAmount, decimals)} BTC`
+  const tokenAmountLabel = "Acre balance"
 
   return (
     <TokenAmountForm
       actionType={ACTION_FLOW_TYPES.UNSTAKE}
       tokenBalanceInputPlaceholder={inputPlaceholder}
+      tokenAmountLabel={tokenAmountLabel}
       currency="bitcoin"
       tokenBalance={balance}
       minTokenAmount={minTokenAmount}

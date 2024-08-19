@@ -24,6 +24,7 @@ export type TokenAmountFormBaseProps = {
   formId?: string
   tokenBalance: bigint
   tokenBalanceInputPlaceholder: string
+  tokenAmountLabel?: string
   currency: CurrencyType
   withMaxButton: boolean
   children?: React.ReactNode
@@ -35,6 +36,7 @@ export default function TokenAmountFormBase({
   tokenBalance,
   currency,
   tokenBalanceInputPlaceholder,
+  tokenAmountLabel,
   withMaxButton,
   children,
   defaultAmount,
@@ -46,6 +48,7 @@ export default function TokenAmountFormBase({
         name={TOKEN_AMOUNT_FIELD_NAME}
         tokenBalance={tokenBalance}
         placeholder={tokenBalanceInputPlaceholder}
+        tokenAmountLabel={tokenAmountLabel}
         currency={currency}
         withMaxButton={withMaxButton}
         defaultValue={defaultAmount}

@@ -109,6 +109,7 @@ export type TokenBalanceInputProps = {
   fiatCurrency?: CurrencyType
   setAmount: (value?: bigint) => void
   withMaxButton?: boolean
+  tokenAmountLabel?: string
 } & InputProps &
   HelperErrorTextProps &
   Pick<NumberFormatInputProps, "decimalScale">
@@ -125,6 +126,7 @@ export default function TokenBalanceInput({
   hasError = false,
   fiatCurrency,
   withMaxButton = false,
+  tokenAmountLabel = "Amount",
   ...inputProps
 }: TokenBalanceInputProps) {
   const valueRef = useRef<bigint | undefined>(amount)
@@ -152,7 +154,7 @@ export default function TokenBalanceInput({
           Amount
           <Box __css={styles.balanceContainer}>
             <Box as="span" __css={styles.balance}>
-              Wallet balance
+              {tokenAmountLabel}
             </Box>
             <CurrencyBalance
               color={isBalanceExceeded ? "red.400" : "gray.700"}

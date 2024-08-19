@@ -15,11 +15,13 @@ function StakeFormModal({
 
   const { decimals } = getCurrencyByType("bitcoin")
   const inputPlaceholder = `Minimum ${fixedPointNumberToString(minDepositAmount, decimals)} BTC`
+  const tokenAmountLabel = "Wallet balance"
 
   return (
     <TokenAmountForm
       actionType={ACTION_FLOW_TYPES.STAKE}
       tokenBalanceInputPlaceholder={inputPlaceholder}
+      tokenAmountLabel={tokenAmountLabel}
       currency="bitcoin"
       tokenBalance={tokenBalance ?? 0n}
       minTokenAmount={minDepositAmount}
