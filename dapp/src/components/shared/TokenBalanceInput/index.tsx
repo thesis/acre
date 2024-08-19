@@ -1,4 +1,4 @@
-import React, { useRef } from "react"
+import React, { ChangeEventHandler, useRef } from "react"
 import {
   Box,
   Button,
@@ -136,6 +136,11 @@ export default function TokenBalanceInput({
     valueRef.current = value ? userAmountToBigInt(value, decimals) : undefined
   }
 
+  const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    inputProps.onChange?.(event)
+    setAmount(valueRef?.current)
+  }
+
   const isBalanceExceeded =
     typeof errorMsgText === "string" &&
     isFormError("EXCEEDED_VALUE", errorMsgText)
@@ -171,9 +176,7 @@ export default function TokenBalanceInput({
           onValueChange={(values: NumberFormatInputValues) =>
             handleValueChange(values.value)
           }
-          onChange={() => {
-            setAmount(valueRef?.current)
-          }}
+          onChange={handleChange}
           decimalScale={decimals}
           allowNegative={false}
         />

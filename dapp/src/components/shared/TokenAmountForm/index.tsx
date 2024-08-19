@@ -37,6 +37,7 @@ const TokenAmountForm = withFormik<TokenAmountFormProps, TokenAmountFormValues>(
       props.onSubmitForm(values)
     },
     validateOnBlur: false,
+    validateOnChange: false,
   },
 )(TokenAmountFormBase)
 
