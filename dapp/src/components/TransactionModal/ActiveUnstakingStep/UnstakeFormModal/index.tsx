@@ -8,7 +8,7 @@ import {
   useBitcoinPosition,
   useMinWithdrawAmount,
 } from "#/hooks"
-import { formatTokenAmount, getCurrencyByType } from "#/utils"
+import { fixedPointNumberToString, getCurrencyByType } from "#/utils"
 import UnstakeDetails from "./UnstakeDetails"
 
 function UnstakeFormModal({
@@ -19,8 +19,8 @@ function UnstakeFormModal({
   const minTokenAmount = useMinWithdrawAmount()
   const status = useActionFlowStatus()
 
-  const { decimals, desiredDecimals } = getCurrencyByType("bitcoin")
-  const inputPlaceholder = `Minimum ${formatTokenAmount(minTokenAmount, decimals, desiredDecimals)} BTC`
+  const { decimals } = getCurrencyByType("bitcoin")
+  const inputPlaceholder = `Minimum ${fixedPointNumberToString(minTokenAmount, decimals)} BTC`
 
   return (
     <TokenAmountForm
