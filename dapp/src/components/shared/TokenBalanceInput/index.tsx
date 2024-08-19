@@ -1,4 +1,4 @@
-import React, { useRef } from "react"
+import React, { useRef, useState } from "react"
 import {
   Box,
   Button,
@@ -121,12 +121,24 @@ export default function TokenBalanceInput({
   ...inputProps
 }: TokenBalanceInputProps) {
   const valueRef = useRef<bigint | undefined>(amount)
+  const [inputValue, setInputValue] = useState<string | undefined>()
   const styles = useMultiStyleConfig("TokenBalanceInput", { size })
-
   const { decimals } = getCurrencyByType(currency)
 
-  const handleValueChange = (value: string) => {
+  const onValueChange = (values: NumberFormatInputValues) => {
+    const { value } = values
+
     valueRef.current = value ? userAmountToBigInt(value, decimals) : undefined
+    setInputValue(value)
+  }
+
+  const onChange = () => {
+    setAmount(valueRef.current)
+  }
+
+  const onClickMaxButton = () => {
+    setAmount(tokenBalance)
+    setInputValue(fixedPointNumberToString(tokenBalance, decimals))
   }
 
   return (
@@ -152,23 +164,17 @@ export default function TokenBalanceInput({
           variant={VARIANT}
           isInvalid={hasError}
           placeholder={placeholder}
-          {...inputProps}
-          value={
-            amount ? fixedPointNumberToString(amount, decimals) : undefined
-          }
-          onValueChange={(values: NumberFormatInputValues) =>
-            handleValueChange(values.value)
-          }
-          onChange={() => {
-            setAmount(valueRef?.current)
-          }}
           decimalScale={decimals}
           allowNegative={false}
+          {...inputProps}
+          value={inputValue}
+          onValueChange={onValueChange}
+          onChange={onChange}
         />
 
         {withMaxButton && (
           <InputRightElement>
-            <Button h="70%" onClick={() => setAmount(tokenBalance)}>
+            <Button h="70%" onClick={onClickMaxButton}>
               Max
             </Button>
           </InputRightElement>
