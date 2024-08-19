@@ -67,6 +67,8 @@ export const formatTokenAmount = (
   const formattedAmount = bigIntToUserAmount(
     fixedPoint,
     decimals,
+    // To round the amount up, let's increase the precision by one.
+    // The desired decimal numbers will be set later anyway.
     withRoundUp ? desiredDecimals + 1 : desiredDecimals,
   )
 
