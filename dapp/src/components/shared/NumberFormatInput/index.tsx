@@ -13,7 +13,7 @@ export type NumberFormatInputValues = {
 export type NumberFormatInputProps = {
   onValueChange: (values: NumberFormatInputValues) => void
 } & InputProps &
-  Pick<NumericFormatProps, "decimalScale" | "allowNegative">
+  Pick<NumericFormatProps, "decimalScale" | "allowNegative" | "suffix">
 
 /**
  * Component is from the Threshold Network React Components repository.

@@ -130,7 +130,7 @@ export default function TokenBalanceInput({
   const valueRef = useRef<bigint | undefined>(amount)
   const styles = useMultiStyleConfig("TokenBalanceInput", { size })
 
-  const { decimals } = getCurrencyByType(currency)
+  const { decimals, symbol } = getCurrencyByType(currency)
 
   const handleValueChange = (value: string) => {
     valueRef.current = value ? userAmountToBigInt(value, decimals) : undefined
@@ -169,6 +169,7 @@ export default function TokenBalanceInput({
           variant={VARIANT}
           isInvalid={hasError}
           placeholder={placeholder}
+          suffix={` ${symbol}`}
           {...inputProps}
           value={
             amount ? fixedPointNumberToString(amount, decimals) : undefined
