@@ -18,7 +18,6 @@ const variantBalanceField = defineStyle({
   },
 
   _invalid: {
-    color: "red.400",
     borderColor: "red.400",
   },
 })
