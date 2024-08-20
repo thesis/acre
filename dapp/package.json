@@ -16,7 +16,8 @@
     "test": "vitest",
     "prepare:dev": "mustache config/development.json ledger-manifest-template.json > ledger-manifest-development.json",
     "prepare:testnet": "mustache config/testnet.json ledger-manifest-template.json > ledger-manifest-testnet.json",
-    "prepare:mainnet": "mustache config/mainnet.json ledger-manifest-template.json > ledger-manifest-mainnet.json"
+    "prepare:mainnet": "mustache config/mainnet.json ledger-manifest-template.json > ledger-manifest-mainnet.json",
+    "prepare:all-env": "pnpm prepare:dev && pnpm prepare:testnet && pnpm prepare:mainnet"
   },
   "dependencies": {
     "@acre-btc/sdk": "workspace:*",
