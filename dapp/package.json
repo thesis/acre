@@ -13,7 +13,10 @@
     "lint:js:fix": "eslint . --fix",
     "lint:config": "prettier -c '**/*.@(json|yaml|toml)'",
     "lint:config:fix": "prettier -w '**/*.@(json|yaml|toml)'",
-    "test": "vitest"
+    "test": "vitest",
+    "prepare:dev": "mustache config/development.json ledger-manifest-template.json > ledger-manifest-development.json",
+    "prepare:testnet": "mustache config/testnet.json ledger-manifest-template.json > ledger-manifest-testnet.json",
+    "prepare:mainnet": "mustache config/mainnet.json ledger-manifest-template.json > ledger-manifest-mainnet.json"
   },
   "dependencies": {
     "@acre-btc/sdk": "workspace:*",
@@ -34,6 +37,7 @@
     "ethers": "^6.10.0",
     "formik": "^2.4.5",
     "framer-motion": "^10.16.5",
+    "mustache": "^4.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-number-format": "^5.3.1",
