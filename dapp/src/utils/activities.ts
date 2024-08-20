@@ -26,7 +26,7 @@ export function getEstimatedDuration(
 ): string {
   if (isWithdrawType(type)) return "6 hours"
 
-  if (amount < MIN_LIMIT_VALUE_DURATION) return "1 hours"
+  if (amount < MIN_LIMIT_VALUE_DURATION) return "1 hour"
 
   if (amount >= MIN_LIMIT_VALUE_DURATION && amount < MAX_LIMIT_VALUE_DURATION)
     return "2 hours"
