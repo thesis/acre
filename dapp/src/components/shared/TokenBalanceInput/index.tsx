@@ -121,7 +121,7 @@ export default function TokenBalanceInput({
   ...inputProps
 }: TokenBalanceInputProps) {
   const valueRef = useRef<bigint | undefined>(amount)
-  const [inputValue, setInputValue] = useState<string | undefined>()
+  const [displayedValue, setDisplayedValue] = useState<string | undefined>()
   const styles = useMultiStyleConfig("TokenBalanceInput", { size })
   const { decimals } = getCurrencyByType(currency)
 
@@ -129,7 +129,7 @@ export default function TokenBalanceInput({
     const { value } = values
 
     valueRef.current = value ? userAmountToBigInt(value, decimals) : undefined
-    setInputValue(value)
+    setDisplayedValue(value)
   }
 
   const onChange = () => {
@@ -138,7 +138,7 @@ export default function TokenBalanceInput({
 
   const onClickMaxButton = () => {
     setAmount(tokenBalance)
-    setInputValue(fixedPointNumberToString(tokenBalance, decimals))
+    setDisplayedValue(fixedPointNumberToString(tokenBalance, decimals))
   }
 
   return (
@@ -167,7 +167,7 @@ export default function TokenBalanceInput({
           decimalScale={decimals}
           allowNegative={false}
           {...inputProps}
-          value={inputValue}
+          value={displayedValue}
           onValueChange={onValueChange}
           onChange={onChange}
         />
