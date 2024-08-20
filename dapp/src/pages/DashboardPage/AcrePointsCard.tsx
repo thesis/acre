@@ -11,9 +11,17 @@ import {
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import Countdown from "#/components/shared/Countdown"
 import useAcrePoints from "#/hooks/useAcrePoints"
+import { MODAL_TYPES } from "#/types"
+import { useModal } from "#/hooks"
 
 export default function AcrePointsCard(props: CardProps) {
   const { data, formatted } = useAcrePoints()
+  const { openModal } = useModal()
+
+  const handleClaim = () => {
+    // TODO: Call API endpoint to claim points
+    openModal(MODAL_TYPES.ACRE_POINTS_CLAIM)
+  }
 
   return (
     <Card
@@ -48,6 +56,7 @@ export default function AcrePointsCard(props: CardProps) {
 
             {data.claimablePointsAmount && (
               <Button
+                onClick={handleClaim}
                 w="full"
                 colorScheme="green"
                 color="gold.200"
