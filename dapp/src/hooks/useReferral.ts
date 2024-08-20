@@ -4,6 +4,7 @@ import { MODAL_TYPES } from "#/types"
 import { referralProgram } from "#/utils"
 import useLocalStorage from "./useLocalStorage"
 import { useModal } from "./useModal"
+import useIsEmbed from "./useIsEmbed"
 
 type UseReferralReturn = {
   referral: number | null
@@ -17,9 +18,16 @@ export default function useReferral(): UseReferralReturn {
     env.REFERRAL,
   )
   const { openModal } = useModal()
+  const { isEmbed } = useIsEmbed()
 
   const detectReferral = useCallback(() => {
     const param = referralProgram.getReferralFromURL()
+
+    if (isEmbed) {
+      // TODO: Set correct referral for embedded dApp
+      setReferral(0)
+      return
+    }
 
     if (param === null) {
       setReferral(env.REFERRAL)
@@ -38,7 +46,7 @@ export default function useReferral(): UseReferralReturn {
         closeOnEsc: false,
       })
     }
-  }, [openModal, setReferral])
+  }, [isEmbed, openModal, setReferral])
 
   const resetReferral = useCallback(() => {
     setReferral(env.REFERRAL)
