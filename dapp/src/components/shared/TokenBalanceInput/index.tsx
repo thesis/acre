@@ -138,8 +138,7 @@ export default function TokenBalanceInput({
     valueRef.current = value ? userAmountToBigInt(value, decimals) : undefined
   }
 
-  const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
-    inputProps.onChange?.(event)
+  const handleChange: ChangeEventHandler = () => {
     setAmount(valueRef?.current)
   }
 

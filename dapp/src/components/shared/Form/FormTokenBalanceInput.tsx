@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler, useCallback, useEffect } from "react"
+import React, { useCallback, useEffect } from "react"
 import { useField } from "formik"
 import { logPromiseFailure } from "#/utils"
 import TokenBalanceInput, { TokenBalanceInputProps } from "../TokenBalanceInput"
@@ -18,9 +18,11 @@ export function FormTokenBalanceInput({
   const setAmount = useCallback(
     (value?: bigint) => {
       if (!meta.touched) logPromiseFailure(helpers.setTouched(true))
+      if (meta.error) helpers.setError(undefined)
+
       logPromiseFailure(helpers.setValue(value))
     },
-    [helpers, meta.touched],
+    [helpers, meta.touched, meta.error],
   )
 
   useEffect(() => {
@@ -28,19 +30,6 @@ export function FormTokenBalanceInput({
       setAmount(defaultValue)
     }
   }, [defaultValue, setAmount])
-
-  const handleChange = useCallback<ChangeEventHandler>(
-    (event) => {
-      field?.onChange(event)
-
-      if (!meta.error) {
-        return
-      }
-
-      helpers.setError(undefined)
-    },
-    [field, meta, helpers],
-  )
 
   return (
     <TokenBalanceInput
@@ -50,7 +39,6 @@ export function FormTokenBalanceInput({
       setAmount={setAmount}
       hasError={Boolean(meta.error)}
       errorMsgText={meta.error}
-      onChange={handleChange}
     />
   )
 }
