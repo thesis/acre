@@ -181,6 +181,8 @@ export default function TokenBalanceInput({
           onChange={handleChange}
           decimalScale={decimals}
           allowNegative={false}
+          maxIntegerLength={10}
+          maxDecimalLength={decimals}
         />
 
         {withMaxButton && (
