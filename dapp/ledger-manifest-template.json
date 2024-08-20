@@ -1,7 +1,7 @@
 {
   "id": "acre-{{id}}",
   "name": "{{name}}",
-  "url": "{{{url}}}",
+  "url": "{{{url}}}?embed=ledger-live",
   "homepageUrl": "https:/acre.fi/",
   "icon": "{{{url}}}acre.svg",
   "platforms": "desktop",
