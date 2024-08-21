@@ -1,42 +1,52 @@
 import React from "react"
-import { HStack, Card, CardBody, Box, VisuallyHidden } from "@chakra-ui/react"
+import { HStack, Card, CardBody, Box, Flex, Icon } from "@chakra-ui/react"
 import {
   Pagination,
   PaginationButton,
+  PaginationFooter,
   PaginationPage,
   PaginationStatus,
 } from "#/components/shared/Pagination"
 import { TextSm } from "#/components/shared/Typography"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
-import { displayBlockTimestamp } from "#/utils"
+import { displayBlockTimestamp, getActivityTimestamp } from "#/utils"
 import { Activity } from "#/types"
 import BlockExplorerLink from "#/components/shared/BlockExplorerLink"
 import { IconArrowUpRight } from "@tabler/icons-react"
-import { useCompletedActivities } from "#/hooks"
+import { useActivities } from "#/hooks"
+import { semanticTokens } from "#/theme/utils"
+import EstimatedDuration from "./EstimatedDuration"
+
+const BLOCK_EXPLORER_CELL_MIN_WIDTH = 16
 
 export default function TransactionTable() {
-  const completedActivities = useCompletedActivities()
+  const activities = useActivities()
 
   return (
-    <Pagination data={completedActivities} pageSize={10}>
+    <Pagination data={activities} pageSize={10} spacing={6}>
       <PaginationPage direction="column" spacing={2} pageSpacing={6}>
         {(pageData: Activity[]) =>
-          pageData.map(
-            ({ id, initializedAt, finalizedAt, type, txHash, amount }) => (
-              <Card key={id} role="group" variant="elevated" colorScheme="gold">
-                <CardBody as={HStack} spacing={3} p={4}>
+          pageData.map((activity) => (
+            <Card
+              key={activity.id}
+              role="group"
+              variant="elevated"
+              colorScheme="gold"
+            >
+              <CardBody as={Flex} flexDirection="column" gap={4} p={4}>
+                <HStack spacing={3}>
                   <TextSm color="grey.500" flex={1} fontWeight="medium">
-                    {displayBlockTimestamp(finalizedAt ?? initializedAt)}
+                    {displayBlockTimestamp(getActivityTimestamp(activity))}
                   </TextSm>
 
-                  <HStack flexBasis="60%">
+                  <HStack flexBasis="55%">
                     <TextSm
                       color="grey.700"
                       flex={1}
                       fontWeight="semibold"
                       textTransform="capitalize"
                     >
-                      {type}
+                      {activity.type}
                     </TextSm>
 
                     <Box flex={1}>
@@ -44,45 +54,54 @@ export default function TransactionTable() {
                         color="grey.700"
                         size="sm"
                         fontWeight="bold"
-                        amount={amount}
+                        amount={activity.amount}
                         currency="bitcoin"
+                        withDots
                       />
                     </Box>
                   </HStack>
-                  {txHash && (
+                  {activity.txHash ? (
                     <BlockExplorerLink
-                      id={txHash}
+                      id={activity.txHash}
                       chain="bitcoin"
                       type="transaction"
-                      variant="ghost"
-                      color="grey.300"
-                      _groupHover={{ color: "brand.400" }}
-                      pl={6}
-                      pr={4}
-                      py={5}
-                      mx={-4}
-                      my={-5}
+                      color="grey.600"
+                      _groupHover={{
+                        color: "brand.400",
+                        textDecoration: "none",
+                      }}
+                      minW={BLOCK_EXPLORER_CELL_MIN_WIDTH}
                     >
-                      <IconArrowUpRight size={16} />
-                      <VisuallyHidden>View transaction details</VisuallyHidden>
+                      <HStack spacing={1}>
+                        <TextSm>Details</TextSm>
+                        <Icon
+                          as={IconArrowUpRight}
+                          color="brand.400"
+                          boxSize={4}
+                        />
+                      </HStack>
                     </BlockExplorerLink>
+                  ) : (
+                    <Box minW={BLOCK_EXPLORER_CELL_MIN_WIDTH} />
                   )}
-                </CardBody>
-              </Card>
-            ),
-          )
+                </HStack>
+                <EstimatedDuration activity={activity} />
+              </CardBody>
+            </Card>
+          ))
         }
       </PaginationPage>
 
-      <HStack
+      <PaginationFooter
         spacing={2}
-        mx={-5}
-        mt={-6}
-        mb={-10}
-        p={5}
-        pt={6}
-        bgGradient="linear(to-b, transparent, gold.200 20%)"
-        zIndex={2}
+        // TODO: Temporary solution - Animation should be fixed in such a way
+        // that it does not affect other elements. Currently, when we add some
+        // new element under the `PaginationPage` or `Pagination` tag,
+        // the list of activities will overlap it when we switch pages.
+        //
+        // The `containerPadding` property does not solve the problem
+        // but hides it for the `PaginationFooter` component.
+        containerPadding={semanticTokens.space.dashboard_card_padding}
       >
         <HStack spacing={2}>
           <PaginationButton mode="previous" />
@@ -90,7 +109,7 @@ export default function TransactionTable() {
         </HStack>
 
         <PaginationStatus dataLabel="transactions" color="grey.500" />
-      </HStack>
+      </PaginationFooter>
     </Pagination>
   )
 }
