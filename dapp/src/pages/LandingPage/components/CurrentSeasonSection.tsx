@@ -99,7 +99,7 @@ export default function CurrentSeasonSection() {
                   base: "greater-balance-md",
                   md: "greater-balance-xl",
                 }}
-                symbolFontWeight="black"
+                symbolTextProps={{ fontWeight: "black" }}
                 desiredDecimals={2}
                 // TODO: Refactor `CurrencyBalance` to make font styles truely adjustable
               />
