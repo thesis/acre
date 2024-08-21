@@ -31,9 +31,9 @@ function ActivitiesList(props: ListProps) {
   return (
     <MotionList pos="relative" w="full" {...props}>
       <AnimatePresence mode="popLayout">
-        {latestActivities.map((item) => (
+        {latestActivities.map(({ id, amount, status, type, txHash }) => (
           <MotionListItem
-            key={item.id}
+            key={id}
             layout="position"
             variants={listItemVariants}
             initial={false}
@@ -43,8 +43,11 @@ function ActivitiesList(props: ListProps) {
             _last={{ pb: 0 }}
           >
             <ActivitiesListItem
-              {...item}
-              handleDismiss={() => handleItemDismiss(item.id)}
+              amount={amount}
+              status={status}
+              type={type}
+              txHash={txHash}
+              handleDismiss={() => handleItemDismiss(id)}
             />
           </MotionListItem>
         ))}
