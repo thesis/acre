@@ -33,7 +33,7 @@ function Pagination<T>(props: PaginationProps<T>) {
 
   return (
     <PaginationContext.Provider value={contextValue}>
-      <VStack spacing={6} align="stretch" w="full" {...restProps}>
+      <VStack align="stretch" w="full" {...restProps}>
         {children}
       </VStack>
     </PaginationContext.Provider>
