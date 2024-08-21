@@ -21,6 +21,7 @@ export function FeesTooltipItem({ label, amount, ...props }: FeesItemType) {
         color="gold.300"
         fontWeight="semibold"
         desiredDecimals={DESIRED_DECIMALS_FOR_FEE}
+        withRoundUp
         {...props}
       />
     </ListItem>

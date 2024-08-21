@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler, useRef } from "react"
+import React, { useRef, useState } from "react"
 import {
   Box,
   Button,
@@ -130,16 +130,25 @@ export default function TokenBalanceInput({
   ...inputProps
 }: TokenBalanceInputProps) {
   const valueRef = useRef<bigint | undefined>(amount)
+  const [displayedValue, setDisplayedValue] = useState<string | undefined>()
   const styles = useMultiStyleConfig("TokenBalanceInput", { size })
 
   const { decimals, symbol } = getCurrencyByType(currency)
 
-  const handleValueChange = (value: string) => {
+  const onValueChange = (values: NumberFormatInputValues) => {
+    const { value } = values
+
     valueRef.current = value ? userAmountToBigInt(value, decimals) : undefined
+    setDisplayedValue(value)
   }
 
-  const handleChange: ChangeEventHandler = () => {
-    setAmount(valueRef?.current)
+  const onChange = () => {
+    setAmount(valueRef.current)
+  }
+
+  const onClickMaxButton = () => {
+    setAmount(tokenBalance)
+    setDisplayedValue(fixedPointNumberToString(tokenBalance, decimals))
   }
 
   const isBalanceExceeded =
@@ -169,24 +178,20 @@ export default function TokenBalanceInput({
           size={size}
           variant={VARIANT}
           isInvalid={hasError}
-          placeholder={placeholder}
           suffix={` ${symbol}`}
-          {...inputProps}
-          value={
-            amount ? fixedPointNumberToString(amount, decimals) : undefined
-          }
-          onValueChange={(values: NumberFormatInputValues) =>
-            handleValueChange(values.value)
-          }
-          onChange={handleChange}
+          placeholder={placeholder}
+          integerScale={10}
           decimalScale={decimals}
           allowNegative={false}
-          integerScale={10}
+          {...inputProps}
+          value={displayedValue}
+          onValueChange={onValueChange}
+          onChange={onChange}
         />
 
         {withMaxButton && (
           <InputRightElement>
-            <Button h="70%" onClick={() => setAmount(tokenBalance)}>
+            <Button h="70%" onClick={onClickMaxButton}>
               Max
             </Button>
           </InputRightElement>

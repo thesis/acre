@@ -36,6 +36,7 @@ function StakeDetails({ currency }: { currency: CurrencyType }) {
           currency,
           amount: total,
           desiredDecimals: DESIRED_DECIMALS_FOR_FEE,
+          withRoundUp: true,
         }}
         to={{
           currency: "usd",

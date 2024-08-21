@@ -16,6 +16,7 @@ export type CurrencyBalanceProps = {
   currency: CurrencyType
   amount?: AmountType
   shouldBeFormatted?: boolean
+  withRoundUp?: boolean
   desiredDecimals?: number
   size?: ResponsiveValue<string>
   variant?: ResponsiveValue<
@@ -34,6 +35,7 @@ export function CurrencyBalance({
   currency,
   amount,
   shouldBeFormatted = true,
+  withRoundUp = false,
   desiredDecimals: customDesiredDecimals,
   size,
   variant,
@@ -60,10 +62,10 @@ export function CurrencyBalance({
   const balance = useMemo(() => {
     const value = amount ?? 0
     if (shouldBeFormatted || typeof value === "bigint")
-      return formatTokenAmount(value, decimals, desiredDecimals)
+      return formatTokenAmount(value, decimals, desiredDecimals, withRoundUp)
 
     return numberToLocaleString(value, desiredDecimals)
-  }, [amount, decimals, desiredDecimals, shouldBeFormatted])
+  }, [amount, decimals, desiredDecimals, shouldBeFormatted, withRoundUp])
 
   return (
     <Box as={as} __css={styles.container}>
