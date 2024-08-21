@@ -16,8 +16,7 @@ export type NumberFormatInputValues = {
 
 export type NumberFormatInputProps = {
   onValueChange: (values: NumberFormatInputValues) => void
-  maxIntegerLength?: number
-  maxDecimalLength?: number
+  integerScale?: number
 } & InputProps &
   Pick<NumericFormatProps, "decimalScale" | "allowNegative" | "suffix">
 
@@ -35,24 +34,20 @@ const NumberFormatInput = React.forwardRef<
 >((props, ref) => {
   const { field: css } = useMultiStyleConfig("Input", props)
 
-  const {
-    decimalScale,
-    isDisabled,
-    isInvalid,
-    maxIntegerLength,
-    maxDecimalLength,
-    ...restProps
-  } = props
+  const { decimalScale, isDisabled, isInvalid, integerScale, ...restProps } =
+    props
 
   const handleLengthValidation = (values: NumberFormatValues) => {
-    const { value } = values
-    if (!value || !maxIntegerLength || !maxDecimalLength) return true
+    const { value, floatValue } = values
+    if (
+      floatValue === undefined ||
+      value === undefined ||
+      integerScale === undefined
+    )
+      return true
 
-    const [integer, decimal] = value.split(".")
-    const isValidIntegerLength = integer && integer.length <= maxIntegerLength
-    const isValidDecimalLength = decimal && decimal.length <= maxDecimalLength
-
-    return decimal ? isValidDecimalLength : isValidIntegerLength
+    const [integerPart] = value.split(".")
+    return integerPart.length <= integerScale
   }
 
   return (
