@@ -28,7 +28,9 @@ export default function DashboardPage() {
       </PageLayoutColumn>
 
       <PageLayoutColumn>
-        <CurrentSeasonCard showSeasonStats={false} />
+        {featureFlags.SEASON_CARD_COMPONENT_ENABLED && (
+          <CurrentSeasonCard showSeasonStats={false} />
+        )}
         {/* TODO: Uncomment in post-launch phases */}
         {/* <GrantedSeasonPassCard /> */}
         {featureFlags.BEEHIVE_COMPONENT_ENABLED && <BeehiveCard />}
