@@ -2,12 +2,13 @@ import React from "react"
 import TokenAmountForm from "#/components/shared/TokenAmountForm"
 import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { FormSubmitButton } from "#/components/shared/Form"
-import { BaseFormProps, PROCESS_STATUSES } from "#/types"
+import { ACTION_FLOW_TYPES, BaseFormProps, PROCESS_STATUSES } from "#/types"
 import {
   useActionFlowStatus,
   useBitcoinPosition,
   useMinWithdrawAmount,
 } from "#/hooks"
+import { fixedPointNumberToString, getCurrencyByType } from "#/utils"
 import UnstakeDetails from "./UnstakeDetails"
 
 function UnstakeFormModal({
@@ -18,11 +19,16 @@ function UnstakeFormModal({
   const minTokenAmount = useMinWithdrawAmount()
   const status = useActionFlowStatus()
 
+  const { decimals } = getCurrencyByType("bitcoin")
+  const inputPlaceholder = `Minimum ${fixedPointNumberToString(minTokenAmount, decimals)} BTC`
+  const tokenAmountLabel = "Acre balance"
+
   return (
     <TokenAmountForm
-      tokenBalanceInputPlaceholder="BTC"
+      actionType={ACTION_FLOW_TYPES.UNSTAKE}
+      tokenBalanceInputPlaceholder={inputPlaceholder}
+      tokenAmountLabel={tokenAmountLabel}
       currency="bitcoin"
-      fiatCurrency="usd"
       tokenBalance={balance}
       minTokenAmount={minTokenAmount}
       onSubmitForm={onSubmitForm}

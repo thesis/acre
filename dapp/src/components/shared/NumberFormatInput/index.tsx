@@ -1,8 +1,12 @@
 import React from "react"
-import { NumericFormat, NumericFormatProps } from "react-number-format"
+import {
+  NumberFormatValues,
+  NumericFormat,
+  NumericFormatProps,
+} from "react-number-format"
 import { InputProps, chakra, useMultiStyleConfig } from "@chakra-ui/react"
 
-const ChakraWrapper = chakra(NumericFormat)
+const ChakraNumericFormat = chakra(NumericFormat)
 
 export type NumberFormatInputValues = {
   formattedValue: string
@@ -12,8 +16,9 @@ export type NumberFormatInputValues = {
 
 export type NumberFormatInputProps = {
   onValueChange: (values: NumberFormatInputValues) => void
+  integerScale?: number
 } & InputProps &
-  Pick<NumericFormatProps, "decimalScale" | "allowNegative">
+  Pick<NumericFormatProps, "decimalScale" | "allowNegative" | "suffix">
 
 /**
  * Component is from the Threshold Network React Components repository.
@@ -29,17 +34,31 @@ const NumberFormatInput = React.forwardRef<
 >((props, ref) => {
   const { field: css } = useMultiStyleConfig("Input", props)
 
-  const { decimalScale, isDisabled, isInvalid, ...restProps } = props
+  const { decimalScale, isDisabled, isInvalid, integerScale, ...restProps } =
+    props
+
+  const handleLengthValidation = (values: NumberFormatValues) => {
+    const { value, floatValue } = values
+    if (
+      floatValue === undefined ||
+      value === undefined ||
+      integerScale === undefined
+    )
+      return true
+
+    const [integerPart] = value.split(".")
+    return integerPart.length <= integerScale
+  }
 
   return (
-    <ChakraWrapper
-      allowLeadingZeros={false}
+    <ChakraNumericFormat
       thousandSeparator
       decimalScale={decimalScale}
       __css={css}
       disabled={isDisabled}
       aria-invalid={isInvalid}
       getInputRef={ref}
+      isAllowed={handleLengthValidation}
       {...restProps}
     />
   )
