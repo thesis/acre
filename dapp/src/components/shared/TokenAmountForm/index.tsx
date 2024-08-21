@@ -1,12 +1,13 @@
 import { FormikErrors, withFormik } from "formik"
 import { getErrorsObj, validateTokenAmount } from "#/utils"
-import { BaseFormProps } from "#/types"
+import { ActionFlowType, BaseFormProps } from "#/types"
 import TokenAmountFormBase, {
   TokenAmountFormBaseProps,
   TokenAmountFormValues,
 } from "./TokenAmountFormBase"
 
 type TokenAmountFormProps = {
+  actionType: ActionFlowType
   minTokenAmount: bigint
 } & TokenAmountFormBaseProps &
   BaseFormProps<TokenAmountFormValues>
@@ -16,10 +17,14 @@ const TokenAmountForm = withFormik<TokenAmountFormProps, TokenAmountFormValues>(
     mapPropsToValues: () => ({
       amount: undefined,
     }),
-    validate: ({ amount }, { tokenBalance, currency, minTokenAmount }) => {
+    validate: (
+      { amount },
+      { tokenBalance, currency, minTokenAmount, actionType },
+    ) => {
       const errors: FormikErrors<TokenAmountFormValues> = {}
 
       errors.amount = validateTokenAmount(
+        actionType,
         amount,
         tokenBalance,
         minTokenAmount,
@@ -31,6 +36,8 @@ const TokenAmountForm = withFormik<TokenAmountFormProps, TokenAmountFormValues>(
     handleSubmit: (values, { props }) => {
       props.onSubmitForm(values)
     },
+    validateOnBlur: false,
+    validateOnChange: false,
   },
 )(TokenAmountFormBase)
 

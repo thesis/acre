@@ -1,4 +1,4 @@
-import { ConnectionErrorData } from "#/types"
+import { ACTION_FLOW_TYPES, ConnectionErrorData } from "#/types"
 
 export const CONNECTION_ERRORS: Record<string, ConnectionErrorData> = {
   REJECTED: {
@@ -22,5 +22,21 @@ export const CONNECTION_ERRORS: Record<string, ConnectionErrorData> = {
   INVALID_SIWW_SIGNATURE: {
     title: "Invalid Sign In With Wallet signature",
     description: "We encountered an error. Please try again.",
+  },
+}
+
+export const TOKEN_FORM_ERRORS = {
+  REQUIRED: "Please enter an amount.",
+  EXCEEDED_VALUE:
+    "The amount exceeds your current wallet balance. Add more funds to your wallet or lower the deposit amount.",
+  INSUFFICIENT_VALUE: (minValue: string) =>
+    `The amount is below the minimum required deposit of ${minValue} BTC.`,
+}
+
+export const ACTION_FORM_ERRORS = {
+  [ACTION_FLOW_TYPES.STAKE]: TOKEN_FORM_ERRORS,
+  [ACTION_FLOW_TYPES.UNSTAKE]: {
+    ...TOKEN_FORM_ERRORS,
+    EXCEEDED_VALUE: "Your Acre balance is insufficient.",
   },
 }
