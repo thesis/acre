@@ -28,7 +28,9 @@ export default function DashboardPage() {
       </PageLayoutColumn>
 
       <PageLayoutColumn>
-        <CurrentSeasonCard showSeasonStats={false} />
+        {featureFlags.TVL_ENABLED && (
+          <CurrentSeasonCard showSeasonStats={false} />
+        )}
         {/* TODO: Uncomment in post-launch phases */}
         {/* <GrantedSeasonPassCard /> */}
         {featureFlags.BEEHIVE_COMPONENT_ENABLED && <BeehiveCard />}
