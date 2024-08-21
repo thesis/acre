@@ -28,7 +28,7 @@ export default function DashboardPage() {
       </PageLayoutColumn>
 
       <PageLayoutColumn>
-        {featureFlags.SEASON_CARD_COMPONENT_ENABLED && (
+        {featureFlags.TVL_ENABLED && (
           <CurrentSeasonCard showSeasonStats={false} />
         )}
         {/* TODO: Uncomment in post-launch phases */}

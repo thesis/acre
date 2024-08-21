@@ -7,18 +7,18 @@ import {
   CardBody,
   Image,
 } from "@chakra-ui/react"
-// import ProgressBar from "#/components/shared/ProgressBar"
-// import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
+import ProgressBar from "#/components/shared/ProgressBar"
+import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import { H3, TextMd } from "#/components/shared/Typography"
-// import { SEASON_CAP } from "#/constants"
+import { featureFlags, SEASON_CAP } from "#/constants"
 import { LiveTag } from "#/components/shared/LiveTag"
 import { SeasonSectionBackground } from "#/components/shared/SeasonSectionBackground"
-// import { useSeasonProgress } from "#/hooks"
+import { useSeasonProgress } from "#/hooks"
 import { mezoLogoColor } from "#/assets/images/partner-logos"
 
 export default function CurrentSeasonSection() {
-  // const { progress: seasonProgress, value: seasonTotalAssets } =
-  //   useSeasonProgress()
+  const { progress: seasonProgress, value: seasonTotalAssets } =
+    useSeasonProgress()
 
   return (
     <Box position="relative" mb={5}>
@@ -78,52 +78,55 @@ export default function CurrentSeasonSection() {
           Season 1 stakers will soon be able to earn Acre and Mezo points.
         </TextMd>
 
-        {/* TODO: Uncomment when TVL is higher */}
-        {/* <TextMd fontWeight="semibold" mb={4}>
-          Total value locked
-        </TextMd>
+        {featureFlags.TVL_ENABLED && (
+          <>
+            <TextMd fontWeight="semibold" mb={4}>
+              Total value locked
+            </TextMd>
 
-        <ProgressBar
-          size={{
-            base: "xl",
-            md: "2xl",
-          }}
-          value={seasonProgress}
-          maxW="50rem" // 800px
-        >
-          <CurrencyBalance
-            amount={seasonTotalAssets}
-            currency="bitcoin"
-            variant={{
-              base: "greater-balance-md",
-              md: "greater-balance-xl",
-            }}
-            symbolFontWeight="black"
-            desiredDecimals={2}
-            // TODO: Refactor `CurrencyBalance` to make font styles truely adjustable
-          />
-        </ProgressBar>
+            <ProgressBar
+              size={{
+                base: "xl",
+                md: "2xl",
+              }}
+              value={seasonProgress}
+              maxW="50rem" // 800px
+            >
+              <CurrencyBalance
+                amount={seasonTotalAssets}
+                currency="bitcoin"
+                variant={{
+                  base: "greater-balance-md",
+                  md: "greater-balance-xl",
+                }}
+                symbolFontWeight="black"
+                desiredDecimals={2}
+                // TODO: Refactor `CurrencyBalance` to make font styles truely adjustable
+              />
+            </ProgressBar>
 
-        <TextMd
-          fontSize={{ md: "xl" }}
-          lineHeight={{ md: "xl" }}
-          display="flex"
-          whiteSpace="pre"
-          mt={2}
-          mb={{
-            base: 10,
-            md: "7.5rem", // 120px
-          }}
-        >
-          Season 1 cap{" "}
-          <CurrencyBalance
-            as="span"
-            size={{ base: "", md: "xl" }}
-            amount={SEASON_CAP}
-            currency="bitcoin"
-            desiredDecimals={0}
-          />
-        </TextMd> */}
+            <TextMd
+              fontSize={{ md: "xl" }}
+              lineHeight={{ md: "xl" }}
+              display="flex"
+              whiteSpace="pre"
+              mt={2}
+              mb={{
+                base: 10,
+                md: "7.5rem", // 120px
+              }}
+            >
+              Season 1 cap{" "}
+              <CurrencyBalance
+                as="span"
+                size={{ base: "", md: "xl" }}
+                amount={SEASON_CAP}
+                currency="bitcoin"
+                desiredDecimals={0}
+              />
+            </TextMd>
+          </>
+        )}
 
         {/* TODO: Uncomment in post-launch phases */}
         {/*  <Flex
