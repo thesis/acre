@@ -4,7 +4,7 @@ import { ButtonProps } from "@chakra-ui/react"
 import { LoadingButton } from "../LoadingButton"
 
 export function FormSubmitButton({ children, ...props }: ButtonProps) {
-  const { isSubmitting } = useFormikContext()
+  const { isSubmitting, isValid } = useFormikContext()
 
   return (
     <LoadingButton
@@ -12,6 +12,7 @@ export function FormSubmitButton({ children, ...props }: ButtonProps) {
       size="lg"
       width="100%"
       isLoading={isSubmitting}
+      isDisabled={!isValid}
       {...props}
     >
       {children}
