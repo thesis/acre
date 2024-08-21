@@ -25,13 +25,19 @@ type AcreRankCardProps = CardProps & {
 export default function AcreRankCard(props: AcreRankCardProps) {
   const { withTrendingIcon = true, ...restProps } = props
 
-  const { data } = useAcrePoints()
+  const {
+    lastClaimedTimestamp,
+    estimatedRankPosition,
+    rankPosition,
+    userId,
+    userName,
+  } = useAcrePoints()
 
   const hasClaimedLastWeek = isWithinPeriod(
-    data.lastClaimedTimestamp,
+    lastClaimedTimestamp,
     ONE_WEEK_IN_SECONDS * ONE_SEC_IN_MILLISECONDS,
   )
-  const isRankTrendingUp = data.estimatedRankPosition > data.rankPosition
+  const isRankTrendingUp = estimatedRankPosition > rankPosition
 
   return (
     <Card
@@ -77,7 +83,7 @@ export default function AcreRankCard(props: AcreRankCardProps) {
             bg="gold.300"
           >
             <HStack spacing={1}>
-              <TextXl fontWeight="bold">#{data.estimatedRankPosition}</TextXl>
+              <TextXl fontWeight="bold">#{rankPosition}</TextXl>
 
               {withTrendingIcon && hasClaimedLastWeek && (
                 <Icon
@@ -89,7 +95,7 @@ export default function AcreRankCard(props: AcreRankCardProps) {
             </HStack>
 
             <HStack>
-              <TextXl fontWeight="semibold">{data.userName}</TextXl>
+              <TextXl fontWeight="semibold">{userName}</TextXl>
 
               <Tag px={3} py={1} bg="gold.200" borderColor="gold.100">
                 <TagLabel
@@ -97,7 +103,7 @@ export default function AcreRankCard(props: AcreRankCardProps) {
                   fontWeight="semibold"
                   lineHeight="sm"
                 >
-                  #{data.rankPosition}
+                  #{userId}
                 </TagLabel>
               </Tag>
             </HStack>

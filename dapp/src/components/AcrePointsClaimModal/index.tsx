@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react"
+import React, { ReactNode, useEffect, useMemo } from "react"
 import { useAcrePoints } from "#/hooks"
 import { Box, ModalBody, Text, VStack } from "@chakra-ui/react"
 import {
@@ -8,9 +8,12 @@ import {
   useAnimate,
   useMotionValue,
 } from "framer-motion"
-import { getNumberWithSign } from "#/utils"
+import { acrePoints as acrePointsUtils } from "#/utils"
 import withBaseModal from "../ModalRoot/withBaseModal"
 import { TextXl } from "../shared/Typography"
+import { AnimatedNumber } from "../shared/AnimatedNumber"
+
+const { getFormattedAmount } = acrePointsUtils
 
 const MotionVStack = motion(VStack)
 
@@ -40,25 +43,67 @@ const getStepOffsets = (
     )
 
 export function AcrePointsClaimModalBase() {
-  const { formatted, data } = useAcrePoints()
-  const rankDifference = getNumberWithSign(
-    data.estimatedRankPosition - data.rankPosition,
-  )
+  const {
+    claimablePointsAmount,
+    totalPointsAmount,
+    rankPosition,
+    estimatedRankPosition,
+  } = useAcrePoints()
 
-  const steps = useMemo(
+  const formattedClaimablePointsAmount = getFormattedAmount(
+    claimablePointsAmount,
+  )
+  const formattedUpdatedPointsAmount = getFormattedAmount(
+    claimablePointsAmount + totalPointsAmount,
+  )
+  const rankPositionDifference = estimatedRankPosition - rankPosition
+
+  const steps = useMemo<[string, ReactNode][]>(
     () => [
-      ["You earned", `+${formatted.claimablePointsAmount} PTS`],
       [
-        "Updating points balance..." /* Staggered text component: current points + claimed */,
-        "2,749,993",
+        "You earned",
+        <AnimatedNumber
+          value={formattedClaimablePointsAmount}
+          prefix="+"
+          suffix=" PTS"
+          animateMode="whileInView"
+          color="brand.400"
+        />,
       ],
-      ["Calculating rank...", rankDifference],
       [
-        "Updating rank..." /* Staggered text component: current rank + difference */,
-        "#4923",
+        "Updating points balance...",
+        <AnimatedNumber
+          value={formattedUpdatedPointsAmount}
+          suffix=" PTS"
+          animateMode="whileInView"
+          indicationColor="brand.400"
+        />,
+      ],
+      [
+        "Calculating rank...",
+        <AnimatedNumber
+          value={rankPositionDifference}
+          prefix={rankPositionDifference > 0 ? "+" : "-"}
+          animateMode="whileInView"
+          color={rankPositionDifference > 0 ? "green.500" : "red.500"}
+        />,
+      ],
+      [
+        "Updating rank...",
+        <AnimatedNumber
+          value={estimatedRankPosition}
+          prefix="#"
+          animateMode="whileInView"
+          indicationColor="brand.400"
+        />,
       ],
     ],
-    [formatted, rankDifference],
+    [
+      formattedClaimablePointsAmount,
+      estimatedRankPosition,
+      formattedUpdatedPointsAmount,
+      rankPositionDifference,
+    ],
   )
 
   const containerHeight = useMotionValue(INITIAL_CONTAINER_HEIGHT)
@@ -97,7 +142,7 @@ export function AcrePointsClaimModalBase() {
           style={{ height: containerHeight }}
         >
           {steps.map(([currentStepLabel, currentStepValue]) => (
-            <Box key={currentStepValue}>
+            <Box key={currentStepLabel}>
               <TextXl
                 fontWeight="semibold"
                 mb="5.25rem" // 84px
@@ -111,7 +156,7 @@ export function AcrePointsClaimModalBase() {
                 fontSize="8xl"
                 lineHeight="6.25rem" // 100px
                 fontWeight="bold"
-                color="brand.400"
+                color="grey.700"
               >
                 {currentStepValue}
               </Text>
