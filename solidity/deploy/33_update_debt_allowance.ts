@@ -8,7 +8,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
   const mezoPortal = await deployments.get("MezoPortal")
 
-  const debtAllowance = 250000000000000000000n // 250 stBTC
+  const debtAllowance = 500000000000000000000n // 500 stBTC
 
   log(`updating debt allowance for ${mezoPortal.address}`)
 
