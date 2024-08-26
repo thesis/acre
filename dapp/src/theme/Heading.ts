@@ -23,7 +23,7 @@ export const headingTheme: ComponentSingleStyleConfig = {
       lineHeight: "3xl",
     },
     "2xl": {
-      fontSize: "3xl",
+      fontSize: "2xl",
       lineHeight: "2xl",
     },
   },

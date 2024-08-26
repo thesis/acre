@@ -67,7 +67,7 @@ export const walletSlice = createSlice({
           .filter(
             (activity) =>
               activity.id.includes(latestActivity.id) &&
-              activity.status === "completed",
+              isActivityCompleted(activity),
           )
           .sort((first, second) => {
             // The withdraw id is: `<redemptionKey>-<count>`
@@ -108,6 +108,7 @@ export const walletSlice = createSlice({
         ...state.latestActivities,
         [activity.id]: activity,
       }
+      state.activities = [...state.activities, activity]
     },
   },
 })

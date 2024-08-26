@@ -1,6 +1,7 @@
 import React from "react"
 import { ArrowUpRight, LoadingSpinnerSuccessIcon } from "#/assets/icons"
 import { Activity as ActivityType } from "#/types"
+import { convertActivityTypeToLabel } from "#/utils"
 import { Button, HStack, VStack, VisuallyHidden } from "@chakra-ui/react"
 import { CurrencyBalance } from "../CurrencyBalance"
 import BlockExplorerLink from "../BlockExplorerLink"
@@ -14,7 +15,7 @@ import {
 import { TextMd } from "../Typography"
 
 type ActivitiesListItemProps = Omit<AlertProps, "status"> &
-  ActivityType & {
+  Omit<ActivityType, "id" | "finalizedAt" | "initializedAt"> & {
     handleDismiss?: () => void
   }
 
@@ -35,8 +36,8 @@ function ActivitiesListItem(props: ActivitiesListItemProps) {
         <AlertTitle justify="space-between" as={HStack}>
           <TextMd fontWeight="bold">
             {isCompleted
-              ? `${type === "withdraw" ? "Unstaking" : "Staking"} completed`
-              : `${type === "withdraw" ? "Unstaking" : "Staking"}...`}
+              ? `${convertActivityTypeToLabel(type)} completed`
+              : `${convertActivityTypeToLabel(type)}...`}
           </TextMd>
 
           <CurrencyBalance amount={amount} currency="bitcoin" />

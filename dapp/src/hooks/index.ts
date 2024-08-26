@@ -30,3 +30,7 @@ export { default as useTriggerConnectWalletModal } from "./useTriggerConnectWall
 export { default as useMobileMode } from "./useMobileMode"
 export { default as useBitcoinRecoveryAddress } from "./useBitcoinRecoveryAddress"
 export { default as useIsFetchedWalletData } from "./useIsFetchedWalletData"
+export { default as useLocalStorage } from "./useLocalStorage"
+export { default as useDetectReferral } from "./useDetectReferral"
+export { default as useReferral } from "./useReferral"
+export { default as useMats } from "./useMats"

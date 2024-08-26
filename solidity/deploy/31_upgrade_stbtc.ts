@@ -3,11 +3,7 @@ import type { DeployFunction } from "hardhat-deploy/types"
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { deployments, helpers } = hre
-  let { governance } = await helpers.signers.getNamedSigners()
-
-  if (hre.network.name === "integration") {
-    governance = await helpers.account.impersonateAccount(governance.address)
-  }
+  const { governance } = await helpers.signers.getNamedSigners()
 
   const { newImplementationAddress, preparedTransaction } =
     await helpers.upgrades.prepareProxyUpgrade("stBTC", "stBTC", {
