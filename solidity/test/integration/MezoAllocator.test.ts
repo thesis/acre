@@ -164,7 +164,9 @@ describe("MezoAllocator", () => {
           beforeAfterSnapshotWrapper()
 
           before(async () => {
-            tx = await stbtc.withdraw(to1e18(2), depositor, depositor)
+            tx = await stbtc
+              .connect(depositor)
+              .withdraw(to1e18(2), depositor, depositor)
           })
 
           it("should transfer 2 tBTC back to a depositor", async () => {
@@ -200,15 +202,17 @@ describe("MezoAllocator", () => {
           beforeAfterSnapshotWrapper()
 
           it("should revert", async () => {
-            await expect(stbtc.withdraw(to1e18(6), depositor, depositor))
+            const mezoDepositAmount =
+              existingDepositAmount + existingUnallocatedFunds + to1e18(5)
+
+            await expect(
+              stbtc.withdraw(mezoDepositAmount + 1n, depositor, depositor),
+            )
               .to.be.revertedWithCustomError(
-                mezoPortal,
-                "InsufficientDepositAmount",
+                mezoAllocator,
+                "WithdrawalAmountExceedsDepositBalance",
               )
-              .withArgs(
-                to1e18(6),
-                existingDepositAmount + existingUnallocatedFunds + to1e18(5),
-              )
+              .withArgs(mezoDepositAmount + 1n, mezoDepositAmount)
           })
         })
       })
