@@ -264,78 +264,93 @@ describe("MezoAllocator", () => {
     context("when the caller is stBTC contract", () => {
       context("when there is no deposit", () => {
         it("should revert", async () => {
-          await expect(
-            stbtc.withdraw(1n, depositor, depositor),
-          ).to.be.revertedWithCustomError(mezoPortal, "DepositNotFound")
+          await expect(stbtc.withdraw(1n, depositor, depositor))
+            .to.be.revertedWithCustomError(
+              mezoAllocator,
+              "WithdrawalAmountExceedsDepositBalance",
+            )
+            .withArgs(1n, 0n)
         })
       })
 
       context("when there is a deposit", () => {
+        beforeAfterSnapshotWrapper()
+
+        const depositAmount = to1e18(5)
+
         let tx: ContractTransactionResponse
 
         before(async () => {
-          await tbtc.mint(depositor, to1e18(5))
-          await tbtc.approve(await stbtc.getAddress(), to1e18(5))
-          await stbtc.connect(depositor).deposit(to1e18(5), depositor)
+          await tbtc.mint(depositor, depositAmount)
+          await tbtc.approve(await stbtc.getAddress(), depositAmount)
+          await stbtc.connect(depositor).deposit(depositAmount, depositor)
           await mezoAllocator.connect(maintainer).allocate()
         })
 
         context("when the deposit is not fully withdrawn", () => {
+          beforeAfterSnapshotWrapper()
+
+          const withdrawalAmount = to1e18(2)
+
           before(async () => {
-            tx = await stbtc.withdraw(to1e18(2), depositor, depositor)
+            tx = await stbtc.withdraw(withdrawalAmount, depositor, depositor)
           })
 
           it("should transfer 2 tBTC back to a depositor", async () => {
             await expect(tx).to.changeTokenBalances(
               tbtc,
               [depositor.address],
-              [to1e18(2)],
+              [withdrawalAmount],
             )
           })
 
           it("should emit DepositWithdrawn event", async () => {
             await expect(tx)
               .to.emit(mezoAllocator, "DepositWithdrawn")
-              .withArgs(1, to1e18(2))
+              .withArgs(1, withdrawalAmount)
           })
 
           it("should decrease tracked deposit balance amount", async () => {
             const depositBalance = await mezoAllocator.depositBalance()
-            expect(depositBalance).to.equal(to1e18(3))
+            expect(depositBalance).to.equal(depositAmount - withdrawalAmount)
           })
 
           it("should decrease Mezo Portal balance", async () => {
             await expect(tx).to.changeTokenBalances(
               tbtc,
               [await mezoPortal.getAddress()],
-              [-to1e18(2)],
+              [-withdrawalAmount],
             )
           })
 
           it("should call MezoPortal.withdrawPartially function", async () => {
             await expect(tx)
               .to.emit(mezoPortal, "WithdrawPartially")
-              .withArgs(await tbtc.getAddress(), 1, to1e18(2))
+              .withArgs(await tbtc.getAddress(), 1, withdrawalAmount)
           })
         })
 
         context("when the deposit is fully withdrawn", () => {
+          beforeAfterSnapshotWrapper()
+
+          const withdrawalAmount = depositAmount
+
           before(async () => {
-            tx = await stbtc.withdraw(to1e18(3), depositor, depositor)
+            tx = await stbtc.withdraw(withdrawalAmount, depositor, depositor)
           })
 
           it("should transfer 3 tBTC back to a depositor", async () => {
             await expect(tx).to.changeTokenBalances(
               tbtc,
               [depositor.address],
-              [to1e18(3)],
+              [withdrawalAmount],
             )
           })
 
           it("should emit DepositWithdrawn event", async () => {
             await expect(tx)
               .to.emit(mezoAllocator, "DepositWithdrawn")
-              .withArgs(1, to1e18(3))
+              .withArgs(1, withdrawalAmount)
           })
 
           it("should decrease tracked deposit balance amount to zero", async () => {
@@ -347,7 +362,7 @@ describe("MezoAllocator", () => {
             await expect(tx).to.changeTokenBalances(
               tbtc,
               [await mezoPortal.getAddress()],
-              [-to1e18(3)],
+              [-withdrawalAmount],
             )
           })
 
@@ -355,6 +370,21 @@ describe("MezoAllocator", () => {
             await expect(tx)
               .to.emit(mezoPortal, "WithdrawFully")
               .withArgs(await tbtc.getAddress(), 1)
+          })
+        })
+
+        context("when requested amount exceeds the deposit balance", () => {
+          beforeAfterSnapshotWrapper()
+
+          const withdrawalAmount = depositAmount + 1n
+
+          it("should revert", async () => {
+            await expect(stbtc.withdraw(withdrawalAmount, depositor, depositor))
+              .to.be.revertedWithCustomError(
+                mezoAllocator,
+                "WithdrawalAmountExceedsDepositBalance",
+              )
+              .withArgs(withdrawalAmount, depositAmount)
           })
         })
       })
