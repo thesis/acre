@@ -142,6 +142,12 @@ contract MezoAllocator is IDispatcher, Ownable2StepUpgradeable {
     error MaintainerNotRegistered();
     /// @notice Reverts if the maintainer has been already registered.
     error MaintainerAlreadyRegistered();
+    /// @notice Reverts if the requested amount to withdraw exceeds the amount
+    ///         deposited in the Mezo Portal.
+    error WithdrawalAmountExceedsDepositBalance(
+        uint256 requestedAmount,
+        uint256 depositAmount
+    );
 
     modifier onlyMaintainer() {
         if (!isMaintainer[msg.sender]) {
@@ -232,6 +238,11 @@ contract MezoAllocator is IDispatcher, Ownable2StepUpgradeable {
                 address(tbtc),
                 depositId,
                 uint96(amount)
+            );
+        } else if (amount > depositBalance) {
+            revert WithdrawalAmountExceedsDepositBalance(
+                amount,
+                depositBalance
             );
         } else {
             mezoPortal.withdraw(address(tbtc), depositId);
