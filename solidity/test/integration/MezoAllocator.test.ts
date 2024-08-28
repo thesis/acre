@@ -24,9 +24,9 @@ describe("MezoAllocator", () => {
   // tokens that can be used for testing purposes after impersonation.
   const whaleAddress = "0x84eA3907b9206427F45c7b2614925a2B86D12611"
 
-  // As of a forked block, the deposit id was 11369 before the new allocation.
+  // As of a forked block, the deposit id was 17469 before the new allocation.
   // The deposit id should be incremented by 1.
-  const expectedDepositId = 11369n
+  const expectedDepositId = 17470n
 
   let tbtc: TestERC20
   let stbtc: stBTC
