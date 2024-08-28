@@ -231,25 +231,32 @@ contract MezoAllocator is IDispatcher, Ownable2StepUpgradeable {
     function withdraw(uint256 amount) external {
         if (msg.sender != address(stbtc)) revert CallerNotStbtc();
 
-        emit DepositWithdrawn(depositId, amount);
+        uint256 unallocatedBalance = tbtc.balanceOf(address(this));
 
-        if (amount < depositBalance) {
-            mezoPortal.withdrawPartially(
-                address(tbtc),
-                depositId,
-                uint96(amount)
-            );
-        } else if (amount > depositBalance) {
-            revert WithdrawalAmountExceedsDepositBalance(
-                amount,
-                depositBalance
-            );
-        } else {
-            mezoPortal.withdraw(address(tbtc), depositId);
+        if (amount > unallocatedBalance) {
+            uint256 amountToWithdraw = amount - unallocatedBalance;
+
+            emit DepositWithdrawn(depositId, amountToWithdraw);
+
+            if (amountToWithdraw < depositBalance) {
+                mezoPortal.withdrawPartially(
+                    address(tbtc),
+                    depositId,
+                    uint96(amountToWithdraw)
+                );
+            } else if (amountToWithdraw > depositBalance) {
+                revert WithdrawalAmountExceedsDepositBalance(
+                    amountToWithdraw,
+                    depositBalance
+                );
+            } else {
+                mezoPortal.withdraw(address(tbtc), depositId);
+            }
+
+            // slither-disable-next-line reentrancy-no-eth
+            depositBalance -= uint96(amountToWithdraw);
         }
 
-        // slither-disable-next-line reentrancy-no-eth
-        depositBalance -= uint96(amount);
         tbtc.safeTransfer(address(stbtc), amount);
     }
 
