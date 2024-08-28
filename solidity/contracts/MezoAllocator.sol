@@ -268,9 +268,12 @@ contract MezoAllocator is IDispatcher, Ownable2StepUpgradeable {
             .getDeposit(address(this), address(tbtc), depositId)
             .balance;
 
-        emit DepositReleased(depositId, amount);
-        depositBalance = 0;
-        mezoPortal.withdraw(address(tbtc), depositId);
+        if (amount > 0) {
+            emit DepositReleased(depositId, amount);
+            depositBalance = 0;
+            mezoPortal.withdraw(address(tbtc), depositId);
+        }
+
         tbtc.safeTransfer(address(stbtc), tbtc.balanceOf(address(this)));
     }
 

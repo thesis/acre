@@ -733,32 +733,142 @@ describe("MezoAllocator", () => {
     })
 
     context("when the caller is governance", () => {
+      beforeAfterSnapshotWrapper()
+
+      context("when there is no deposit", () => {
+        beforeAfterSnapshotWrapper()
+
+        context("when there is no donation", () => {
+          beforeAfterSnapshotWrapper()
+
+          let tx: ContractTransactionResponse
+
+          before(async () => {
+            tx = await mezoAllocator.connect(governance).releaseDeposit()
+          })
+
+          it("should not emit DepositReleased event", async () => {
+            await expect(tx).to.not.emit(mezoAllocator, "DepositReleased")
+          })
+
+          it("should not call MezoPortal.withdraw function", async () => {
+            await expect(tx).to.not.emit(mezoPortal, "WithdrawFully")
+          })
+        })
+
+        context("when there is a donation", () => {
+          beforeAfterSnapshotWrapper()
+
+          const donationAmount = to1e18(2)
+
+          let tx: ContractTransactionResponse
+
+          before(async () => {
+            await tbtc.mint(await mezoAllocator.getAddress(), donationAmount)
+
+            tx = await mezoAllocator.connect(governance).releaseDeposit()
+          })
+
+          it("should not emit DepositReleased event", async () => {
+            await expect(tx).to.not.emit(mezoAllocator, "DepositReleased")
+          })
+
+          it("should transfer tBTC to stBTC contract", async () => {
+            await expect(tx).to.changeTokenBalances(
+              tbtc,
+              [mezoAllocator, stbtc],
+              [-donationAmount, donationAmount],
+            )
+          })
+
+          it("should not call MezoPortal.withdraw function", async () => {
+            await expect(tx).to.not.emit(mezoPortal, "WithdrawFully")
+          })
+        })
+      })
+
       context("when there is a deposit", () => {
-        let tx: ContractTransactionResponse
+        beforeAfterSnapshotWrapper()
+
+        const depositAmount = to1e18(5)
 
         before(async () => {
-          await tbtc.mint(await stbtc.getAddress(), to1e18(5))
+          await tbtc.mint(await stbtc.getAddress(), depositAmount)
           await mezoAllocator.connect(maintainer).allocate()
-          tx = await mezoAllocator.connect(governance).releaseDeposit()
         })
 
-        it("should emit DepositReleased event", async () => {
-          await expect(tx)
-            .to.emit(mezoAllocator, "DepositReleased")
-            .withArgs(1, to1e18(5))
+        context("when there is no donation", () => {
+          beforeAfterSnapshotWrapper()
+
+          let tx: ContractTransactionResponse
+
+          before(async () => {
+            tx = await mezoAllocator.connect(governance).releaseDeposit()
+          })
+
+          it("should emit DepositReleased event", async () => {
+            await expect(tx)
+              .to.emit(mezoAllocator, "DepositReleased")
+              .withArgs(1, depositAmount)
+          })
+
+          it("should decrease tracked deposit balance amount to zero", async () => {
+            const depositBalance = await mezoAllocator.depositBalance()
+            expect(depositBalance).to.equal(0)
+          })
+
+          it("should transfer tBTC to stBTC contract", async () => {
+            await expect(tx).to.changeTokenBalances(
+              tbtc,
+              [mezoPortal, stbtc],
+              [-depositAmount, depositAmount],
+            )
+          })
+
+          it("should call MezoPortal.withdraw function", async () => {
+            await expect(tx)
+              .to.emit(mezoPortal, "WithdrawFully")
+              .withArgs(await tbtc.getAddress(), 1)
+          })
         })
 
-        it("should decrease tracked deposit balance amount to zero", async () => {
-          const depositBalance = await mezoAllocator.depositBalance()
-          expect(depositBalance).to.equal(0)
-        })
+        context("when there is a donation", () => {
+          beforeAfterSnapshotWrapper()
 
-        it("should decrease Mezo Portal balance", async () => {
-          await expect(tx).to.changeTokenBalances(
-            tbtc,
-            [mezoPortal, stbtc],
-            [-to1e18(5), to1e18(5)],
-          )
+          const donationAmount = to1e18(2)
+
+          let tx: ContractTransactionResponse
+
+          before(async () => {
+            await tbtc.mint(await mezoAllocator.getAddress(), donationAmount)
+
+            tx = await mezoAllocator.connect(governance).releaseDeposit()
+          })
+
+          it("should emit DepositReleased event", async () => {
+            await expect(tx)
+              .to.emit(mezoAllocator, "DepositReleased")
+              .withArgs(1, depositAmount)
+          })
+
+          it("should decrease tracked deposit balance amount to zero", async () => {
+            const depositBalance = await mezoAllocator.depositBalance()
+            expect(depositBalance).to.equal(0)
+          })
+
+          it("should transfer tBTC to stBTC contract", async () => {
+            await expect(tx).to.changeTokenBalances(
+              tbtc,
+              [mezoPortal, mezoAllocator, stbtc],
+              [-depositAmount, -donationAmount, depositAmount + donationAmount],
+            )
+          })
+
+          it("should call MezoPortal.withdraw function", async () => {
+            await expect(tx)
+              .to.emit(mezoPortal, "WithdrawFully")
+              .withArgs(await tbtc.getAddress(), 1)
+          })
         })
       })
     })
