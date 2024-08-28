@@ -1,7 +1,12 @@
-import { helpers } from "hardhat"
+import { helpers, ethers } from "hardhat"
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
 import { expect } from "chai"
-import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers"
+import {
+  impersonateAccount,
+  loadFixture,
+  setBalance,
+  stopImpersonatingAccount,
+} from "@nomicfoundation/hardhat-toolbox/network-helpers"
 
 import { ContractTransactionResponse, ZeroAddress } from "ethers"
 import { beforeAfterSnapshotWrapper, deployment } from "./helpers"
@@ -46,6 +51,7 @@ describe("MezoAllocator", () => {
   let depositor2: HardhatEthersSigner
   let maintainer: HardhatEthersSigner
   let governance: HardhatEthersSigner
+  let stbtcFakeSigner: HardhatEthersSigner
 
   before(async () => {
     ;({
@@ -62,6 +68,15 @@ describe("MezoAllocator", () => {
 
     await stbtc.connect(governance).updateEntryFeeBasisPoints(0)
     await stbtc.connect(governance).updateExitFeeBasisPoints(0)
+
+    // Impersonate stBTC contract to be able to fake msg.sender.
+    await impersonateAccount(await stbtc.getAddress())
+    stbtcFakeSigner = await ethers.getSigner(await stbtc.getAddress())
+    await setBalance(stbtcFakeSigner.address, to1e18(1))
+  })
+
+  after(async () => {
+    await stopImpersonatingAccount(await stbtc.getAddress())
   })
 
   describe("allocate", () => {
@@ -264,7 +279,7 @@ describe("MezoAllocator", () => {
     context("when the caller is stBTC contract", () => {
       context("when there is no deposit", () => {
         it("should revert", async () => {
-          await expect(stbtc.withdraw(1n, depositor, depositor))
+          await expect(mezoAllocator.connect(stbtcFakeSigner).withdraw(1n))
             .to.be.revertedWithCustomError(
               mezoAllocator,
               "WithdrawalAmountExceedsDepositBalance",
@@ -274,6 +289,140 @@ describe("MezoAllocator", () => {
       })
 
       context("when there is a deposit", () => {
+        const testWithdrawalFromMezoPortal = ({
+          initialDepositBalance,
+          partialWithdrawal,
+          fullWithdrawal,
+        }: {
+          initialDepositBalance: bigint
+          partialWithdrawal: {
+            requestedAmount: bigint
+            expectedWithdrawnAmount: bigint
+          }
+          fullWithdrawal: {
+            requestedAmount: bigint
+            expectedWithdrawnAmount: bigint
+            expectMaxWithdrawalExceeded?: boolean
+          }
+        }) =>
+          // eslint-disable-next-line func-names
+          function () {
+            beforeAfterSnapshotWrapper()
+
+            context("when the deposit is partially withdrawn", () => {
+              beforeAfterSnapshotWrapper()
+
+              before(async () => {
+                tx = await mezoAllocator
+                  .connect(stbtcFakeSigner)
+                  .withdraw(partialWithdrawal.requestedAmount)
+              })
+
+              it("should transfer tBTC to stBTC contract", async () => {
+                await expect(tx).to.changeTokenBalances(
+                  tbtc,
+                  [await stbtc.getAddress()],
+                  [partialWithdrawal.requestedAmount],
+                )
+              })
+
+              it("should emit DepositWithdrawn event", async () => {
+                await expect(tx)
+                  .to.emit(mezoAllocator, "DepositWithdrawn")
+                  .withArgs(1, partialWithdrawal.expectedWithdrawnAmount)
+              })
+
+              it("should decrease tracked deposit balance amount", async () => {
+                const depositBalance = await mezoAllocator.depositBalance()
+                expect(depositBalance).to.equal(
+                  initialDepositBalance -
+                    partialWithdrawal.expectedWithdrawnAmount,
+                )
+              })
+
+              it("should decrease Mezo Portal balance", async () => {
+                await expect(tx).to.changeTokenBalances(
+                  tbtc,
+                  [await mezoPortal.getAddress()],
+                  [-partialWithdrawal.expectedWithdrawnAmount],
+                )
+              })
+
+              it("should call MezoPortal.withdrawPartially function", async () => {
+                await expect(tx)
+                  .to.emit(mezoPortal, "WithdrawPartially")
+                  .withArgs(
+                    await tbtc.getAddress(),
+                    1,
+                    partialWithdrawal.expectedWithdrawnAmount,
+                  )
+              })
+            })
+
+            context("when the deposit is fully withdrawn", () => {
+              beforeAfterSnapshotWrapper()
+
+              before(async () => {
+                tx = await mezoAllocator
+                  .connect(stbtcFakeSigner)
+                  .withdraw(fullWithdrawal.requestedAmount)
+              })
+
+              it("should transfer tBTC to stBTC contract", async () => {
+                await expect(tx).to.changeTokenBalances(
+                  tbtc,
+                  [await stbtc.getAddress()],
+                  [fullWithdrawal.requestedAmount],
+                )
+              })
+
+              it("should emit DepositWithdrawn event", async () => {
+                await expect(tx)
+                  .to.emit(mezoAllocator, "DepositWithdrawn")
+                  .withArgs(1, fullWithdrawal.expectedWithdrawnAmount)
+              })
+
+              it("should decrease tracked deposit balance amount to zero", async () => {
+                const depositBalance = await mezoAllocator.depositBalance()
+                expect(depositBalance).to.equal(0)
+              })
+
+              it("should decrease Mezo Portal balance", async () => {
+                await expect(tx).to.changeTokenBalances(
+                  tbtc,
+                  [await mezoPortal.getAddress()],
+                  [-fullWithdrawal.expectedWithdrawnAmount],
+                )
+              })
+
+              it("should call MezoPortal.withdraw function", async () => {
+                await expect(tx)
+                  .to.emit(mezoPortal, "WithdrawFully")
+                  .withArgs(await tbtc.getAddress(), 1)
+              })
+            })
+
+            context("when requested amount exceeds the deposit balance", () => {
+              beforeAfterSnapshotWrapper()
+
+              it("should revert", async () => {
+                await expect(
+                  mezoAllocator
+                    .connect(stbtcFakeSigner)
+                    .withdraw(fullWithdrawal.requestedAmount + 1n),
+                )
+                  .to.be.revertedWithCustomError(
+                    mezoAllocator,
+                    "WithdrawalAmountExceedsDepositBalance",
+                  )
+                  .withArgs(
+                    fullWithdrawal.expectedWithdrawnAmount + 1n,
+                    initialDepositBalance,
+                  )
+              })
+            })
+          }
+
         beforeAfterSnapshotWrapper()
 
         const depositAmount = to1e18(5)
@@ -287,105 +436,117 @@ describe("MezoAllocator", () => {
           await mezoAllocator.connect(maintainer).allocate()
         })
 
-        context("when the deposit is not fully withdrawn", () => {
+        context(
+          "when there is no donation made",
+          testWithdrawalFromMezoPortal({
+            initialDepositBalance: depositAmount,
+            partialWithdrawal: {
+              requestedAmount: depositAmount - 1n,
+              expectedWithdrawnAmount: depositAmount - 1n,
+            },
+            fullWithdrawal: {
+              requestedAmount: depositAmount,
+              expectedWithdrawnAmount: depositAmount,
+            },
+          }),
+        )
+
+        context("when there is a donation made", () => {
           beforeAfterSnapshotWrapper()
 
-          const withdrawalAmount = to1e18(2)
+          const donationAmount = to1e18(1n)
 
           before(async () => {
-            tx = await stbtc.withdraw(withdrawalAmount, depositor, depositor)
+            await tbtc.mint(await mezoAllocator.getAddress(), donationAmount)
           })
 
-          it("should transfer 2 tBTC back to a depositor", async () => {
-            await expect(tx).to.changeTokenBalances(
-              tbtc,
-              [depositor.address],
-              [withdrawalAmount],
-            )
-          })
+          context(
+            "when requested amount is lower than unallocated balance",
+            () => {
+              beforeAfterSnapshotWrapper()
 
-          it("should emit DepositWithdrawn event", async () => {
-            await expect(tx)
-              .to.emit(mezoAllocator, "DepositWithdrawn")
-              .withArgs(1, withdrawalAmount)
-          })
+              const withdrawalAmount = donationAmount - 1n
 
-          it("should decrease tracked deposit balance amount", async () => {
-            const depositBalance = await mezoAllocator.depositBalance()
-            expect(depositBalance).to.equal(depositAmount - withdrawalAmount)
-          })
+              before(async () => {
+                tx = await mezoAllocator
+                  .connect(stbtcFakeSigner)
+                  .withdraw(withdrawalAmount)
+              })
 
-          it("should decrease Mezo Portal balance", async () => {
-            await expect(tx).to.changeTokenBalances(
-              tbtc,
-              [await mezoPortal.getAddress()],
-              [-withdrawalAmount],
-            )
-          })
+              it("should transfer tBTC to stBTC contract", async () => {
+                await expect(tx).to.changeTokenBalances(
+                  tbtc,
+                  [await stbtc.getAddress()],
+                  [withdrawalAmount],
+                )
+              })
 
-          it("should call MezoPortal.withdrawPartially function", async () => {
-            await expect(tx)
-              .to.emit(mezoPortal, "WithdrawPartially")
-              .withArgs(await tbtc.getAddress(), 1, withdrawalAmount)
-          })
-        })
+              it("should NOT emit DepositWithdrawn event", async () => {
+                await expect(tx).to.not.emit(mezoAllocator, "DepositWithdrawn")
+              })
 
-        context("when the deposit is fully withdrawn", () => {
-          beforeAfterSnapshotWrapper()
+              it("should NOT decrease tracked deposit balance amount", async () => {
+                const depositBalance = await mezoAllocator.depositBalance()
+                expect(depositBalance).to.equal(depositAmount)
+              })
 
-          const withdrawalAmount = depositAmount
+              it("should NOT call MezoPortal.withdrawPartially function", async () => {
+                await expect(tx).to.not.emit(mezoPortal, "WithdrawPartially")
+              })
+            },
+          )
 
-          before(async () => {
-            tx = await stbtc.withdraw(withdrawalAmount, depositor, depositor)
-          })
+          context(
+            "when requested amount is equal to unallocated balance",
+            () => {
+              beforeAfterSnapshotWrapper()
 
-          it("should transfer 3 tBTC back to a depositor", async () => {
-            await expect(tx).to.changeTokenBalances(
-              tbtc,
-              [depositor.address],
-              [withdrawalAmount],
-            )
-          })
+              const withdrawalAmount = donationAmount
 
-          it("should emit DepositWithdrawn event", async () => {
-            await expect(tx)
-              .to.emit(mezoAllocator, "DepositWithdrawn")
-              .withArgs(1, withdrawalAmount)
-          })
+              before(async () => {
+                tx = await mezoAllocator
+                  .connect(stbtcFakeSigner)
+                  .withdraw(withdrawalAmount)
+              })
 
-          it("should decrease tracked deposit balance amount to zero", async () => {
-            const depositBalance = await mezoAllocator.depositBalance()
-            expect(depositBalance).to.equal(0)
-          })
+              it("should transfer tBTC to stBTC contract", async () => {
+                await expect(tx).to.changeTokenBalances(
+                  tbtc,
+                  [await stbtc.getAddress()],
+                  [withdrawalAmount],
+                )
+              })
 
-          it("should decrease Mezo Portal balance", async () => {
-            await expect(tx).to.changeTokenBalances(
-              tbtc,
-              [await mezoPortal.getAddress()],
-              [-withdrawalAmount],
-            )
-          })
+              it("should NOT emit DepositWithdrawn event", async () => {
+                await expect(tx).to.not.emit(mezoAllocator, "DepositWithdrawn")
+              })
 
-          it("should call MezoPortal.withdraw function", async () => {
-            await expect(tx)
-              .to.emit(mezoPortal, "WithdrawFully")
-              .withArgs(await tbtc.getAddress(), 1)
-          })
-        })
+              it("should NOT decrease tracked deposit balance amount", async () => {
+                const depositBalance = await mezoAllocator.depositBalance()
+                expect(depositBalance).to.equal(depositAmount)
+              })
 
-        context("when requested amount exceeds the deposit balance", () => {
-          beforeAfterSnapshotWrapper()
+              it("should NOT call MezoPortal.withdrawPartially function", async () => {
+                await expect(tx).to.not.emit(mezoPortal, "WithdrawPartially")
+              })
+            },
+          )
 
-          const withdrawalAmount = depositAmount + 1n
-
-          it("should revert", async () => {
-            await expect(stbtc.withdraw(withdrawalAmount, depositor, depositor))
-              .to.be.revertedWithCustomError(
-                mezoAllocator,
-                "WithdrawalAmountExceedsDepositBalance",
-              )
-              .withArgs(withdrawalAmount, depositAmount)
-          })
+          context(
+            "when requested amount exceeds the unallocated balance",
+            testWithdrawalFromMezoPortal({
+              initialDepositBalance: depositAmount,
+              partialWithdrawal: {
+                requestedAmount: donationAmount + 1n,
+                expectedWithdrawnAmount: 1n,
+              },
+              fullWithdrawal: {
+                requestedAmount: donationAmount + depositAmount,
+                expectedWithdrawnAmount: depositAmount,
+                expectMaxWithdrawalExceeded: true,
+              },
+            }),
+          )
         })
       })
     })
