@@ -127,7 +127,15 @@ contract MezoAllocator is IDispatcher, Ownable2StepUpgradeable {
         uint256 newDepositAmount
     );
     /// @notice Emitted when tBTC is withdrawn from MezoPortal.
-    event DepositWithdrawn(uint256 indexed depositId, uint256 amount);
+    /// If MezoAllocator has a positive balance part of the requested amount
+    /// is withdrawn from MezoAllocator and the rest from MezoPortal.
+    event WithdrawFromMezoPortal(
+        uint256 indexed depositId,
+        uint256 requestedAmount,
+        uint256 amountWithdrawnFromPortal
+    );
+    /// @notice Emitted when tBTC is withdrawn from MezoAllocator.
+    event WithdrawFromMezoAllocator(uint256 amount);
     /// @notice Emitted when the maintainer address is updated.
     event MaintainerAdded(address indexed maintainer);
     /// @notice Emitted when the maintainer address is updated.
@@ -236,7 +244,7 @@ contract MezoAllocator is IDispatcher, Ownable2StepUpgradeable {
         if (amount > unallocatedBalance) {
             uint256 amountToWithdraw = amount - unallocatedBalance;
 
-            emit DepositWithdrawn(depositId, amountToWithdraw);
+            emit WithdrawFromMezoPortal(depositId, amount, amountToWithdraw);
 
             if (amountToWithdraw < depositBalance) {
                 mezoPortal.withdrawPartially(
@@ -255,6 +263,8 @@ contract MezoAllocator is IDispatcher, Ownable2StepUpgradeable {
 
             // slither-disable-next-line reentrancy-no-eth
             depositBalance -= uint96(amountToWithdraw);
+        } else {
+            emit WithdrawFromMezoAllocator(amount);
         }
 
         tbtc.safeTransfer(address(stbtc), amount);

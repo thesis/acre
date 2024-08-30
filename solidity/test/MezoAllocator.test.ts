@@ -341,11 +341,12 @@ describe("MezoAllocator", () => {
                 )
               })
 
-              it("should emit DepositWithdrawn event", async () => {
+              it("should emit WithdrawFromMezoPortal event", async () => {
                 await expect(tx)
-                  .to.emit(mezoAllocator, "DepositWithdrawn")
+                  .to.emit(mezoAllocator, "WithdrawFromMezoPortal")
                   .withArgs(
                     depositId,
+                    partialWithdrawal.requestedAmount,
                     partialWithdrawal.expectedWithdrawnAmount,
                   )
               })
@@ -394,10 +395,14 @@ describe("MezoAllocator", () => {
                 )
               })
 
-              it("should emit DepositWithdrawn event", async () => {
+              it("should emit WithdrawFromMezoPortal event", async () => {
                 await expect(tx)
-                  .to.emit(mezoAllocator, "DepositWithdrawn")
-                  .withArgs(depositId, fullWithdrawal.expectedWithdrawnAmount)
+                  .to.emit(mezoAllocator, "WithdrawFromMezoPortal")
+                  .withArgs(
+                    depositId,
+                    fullWithdrawal.requestedAmount,
+                    fullWithdrawal.expectedWithdrawnAmount,
+                  )
               })
 
               it("should decrease tracked deposit balance amount to zero", async () => {
@@ -499,8 +504,17 @@ describe("MezoAllocator", () => {
                 )
               })
 
-              it("should NOT emit DepositWithdrawn event", async () => {
-                await expect(tx).to.not.emit(mezoAllocator, "DepositWithdrawn")
+              it("should emit WithdrawFromMezoAllocator event", async () => {
+                await expect(tx)
+                  .to.emit(mezoAllocator, "WithdrawFromMezoAllocator")
+                  .withArgs(withdrawalAmount)
+              })
+
+              it("should NOT emit WithdrawFromMezoPortal event", async () => {
+                await expect(tx).to.not.emit(
+                  mezoAllocator,
+                  "WithdrawFromMezoPortal",
+                )
               })
 
               it("should NOT decrease tracked deposit balance amount", async () => {
@@ -535,8 +549,17 @@ describe("MezoAllocator", () => {
                 )
               })
 
-              it("should NOT emit DepositWithdrawn event", async () => {
-                await expect(tx).to.not.emit(mezoAllocator, "DepositWithdrawn")
+              it("should emit WithdrawFromMezoAllocator event", async () => {
+                await expect(tx)
+                  .to.emit(mezoAllocator, "WithdrawFromMezoAllocator")
+                  .withArgs(withdrawalAmount)
+              })
+
+              it("should NOT emit WithdrawFromMezoPortal event", async () => {
+                await expect(tx).to.not.emit(
+                  mezoAllocator,
+                  "WithdrawFromMezoPortal",
+                )
               })
 
               it("should NOT decrease tracked deposit balance amount", async () => {
