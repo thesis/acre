@@ -94,6 +94,9 @@ describe("MezoAllocator", () => {
       context("when two consecutive deposits are made", () => {
         beforeAfterSnapshotWrapper()
 
+        const initialDepositId = 0
+        const expectedDepositId = 1
+
         context("when a first deposit is made", () => {
           let tx: ContractTransactionResponse
 
@@ -118,7 +121,7 @@ describe("MezoAllocator", () => {
 
           it("should increment the deposit id", async () => {
             const actualDepositId = await mezoAllocator.depositId()
-            expect(actualDepositId).to.equal(1)
+            expect(actualDepositId).to.equal(expectedDepositId)
           })
 
           it("should increase tracked deposit balance amount", async () => {
@@ -129,7 +132,12 @@ describe("MezoAllocator", () => {
           it("should emit DepositAllocated event", async () => {
             await expect(tx)
               .to.emit(mezoAllocator, "DepositAllocated")
-              .withArgs(0, 1, to1e18(6), to1e18(6))
+              .withArgs(
+                initialDepositId,
+                expectedDepositId,
+                to1e18(6),
+                to1e18(6),
+              )
           })
         })
 
@@ -144,13 +152,18 @@ describe("MezoAllocator", () => {
 
           it("should increment the deposit id", async () => {
             const actualDepositId = await mezoAllocator.depositId()
-            expect(actualDepositId).to.equal(2)
+            expect(actualDepositId).to.equal(expectedDepositId + 1)
           })
 
           it("should emit DepositAllocated event", async () => {
             await expect(tx)
               .to.emit(mezoAllocator, "DepositAllocated")
-              .withArgs(1, 2, to1e18(5), to1e18(11))
+              .withArgs(
+                expectedDepositId,
+                expectedDepositId + 1,
+                to1e18(5),
+                to1e18(11),
+              )
           })
 
           it("should deposit and transfer tBTC to Mezo Portal", async () => {
@@ -289,6 +302,8 @@ describe("MezoAllocator", () => {
       })
 
       context("when there is a deposit", () => {
+        const depositId = 1
+
         const testWithdrawalFromMezoPortal = ({
           initialDepositBalance,
           partialWithdrawal,
@@ -329,7 +344,10 @@ describe("MezoAllocator", () => {
               it("should emit DepositWithdrawn event", async () => {
                 await expect(tx)
                   .to.emit(mezoAllocator, "DepositWithdrawn")
-                  .withArgs(1, partialWithdrawal.expectedWithdrawnAmount)
+                  .withArgs(
+                    depositId,
+                    partialWithdrawal.expectedWithdrawnAmount,
+                  )
               })
 
               it("should decrease tracked deposit balance amount", async () => {
@@ -353,7 +371,7 @@ describe("MezoAllocator", () => {
                   .to.emit(mezoPortal, "WithdrawPartially")
                   .withArgs(
                     await tbtc.getAddress(),
-                    1,
+                    depositId,
                     partialWithdrawal.expectedWithdrawnAmount,
                   )
               })
@@ -379,7 +397,7 @@ describe("MezoAllocator", () => {
               it("should emit DepositWithdrawn event", async () => {
                 await expect(tx)
                   .to.emit(mezoAllocator, "DepositWithdrawn")
-                  .withArgs(1, fullWithdrawal.expectedWithdrawnAmount)
+                  .withArgs(depositId, fullWithdrawal.expectedWithdrawnAmount)
               })
 
               it("should decrease tracked deposit balance amount to zero", async () => {
@@ -398,7 +416,7 @@ describe("MezoAllocator", () => {
               it("should call MezoPortal.withdraw function", async () => {
                 await expect(tx)
                   .to.emit(mezoPortal, "WithdrawFully")
-                  .withArgs(await tbtc.getAddress(), 1)
+                  .withArgs(await tbtc.getAddress(), depositId)
               })
             })
 
@@ -809,7 +827,7 @@ describe("MezoAllocator", () => {
           it("should emit DepositReleased event", async () => {
             await expect(tx)
               .to.emit(mezoAllocator, "DepositReleased")
-              .withArgs(1, depositAmount)
+              .withArgs(depositId, depositAmount)
           })
 
           it("should decrease tracked deposit balance amount to zero", async () => {
@@ -828,7 +846,7 @@ describe("MezoAllocator", () => {
           it("should call MezoPortal.withdraw function", async () => {
             await expect(tx)
               .to.emit(mezoPortal, "WithdrawFully")
-              .withArgs(await tbtc.getAddress(), 1)
+              .withArgs(await tbtc.getAddress(), depositId)
           })
         })
 
@@ -848,7 +866,7 @@ describe("MezoAllocator", () => {
           it("should emit DepositReleased event", async () => {
             await expect(tx)
               .to.emit(mezoAllocator, "DepositReleased")
-              .withArgs(1, depositAmount)
+              .withArgs(depositId, depositAmount)
           })
 
           it("should decrease tracked deposit balance amount to zero", async () => {
@@ -867,7 +885,7 @@ describe("MezoAllocator", () => {
           it("should call MezoPortal.withdraw function", async () => {
             await expect(tx)
               .to.emit(mezoPortal, "WithdrawFully")
-              .withArgs(await tbtc.getAddress(), 1)
+              .withArgs(await tbtc.getAddress(), depositId)
           })
         })
       })
