@@ -808,6 +808,7 @@ describe("MezoAllocator", () => {
       context("when there is a deposit", () => {
         beforeAfterSnapshotWrapper()
 
+        const depositId = 1
         const depositAmount = to1e18(5)
 
         before(async () => {
