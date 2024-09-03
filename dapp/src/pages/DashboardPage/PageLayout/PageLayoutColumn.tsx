@@ -10,7 +10,7 @@ function PageLayoutColumn(props: PageLayoutColumnProps) {
 
   return (
     <VStack
-      spacing={4}
+      spacing={5}
       gridArea={
         isMain
           ? {
