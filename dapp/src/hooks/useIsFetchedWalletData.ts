@@ -12,5 +12,8 @@ export default function useIsFetchedWalletData() {
     predicate: (query) => query.state.data === undefined,
   })
 
-  return isSignedMessage && fetchingQueries === 0 && hasFetchedActivities
+  return (
+    (isSignedMessage && fetchingQueries === 0 && hasFetchedActivities) ||
+    !isSignedMessage
+  )
 }

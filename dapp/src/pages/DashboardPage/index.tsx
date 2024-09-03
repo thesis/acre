@@ -1,11 +1,6 @@
 import React from "react"
-import {
-  useDepositCallToAction,
-  useTriggerConnectWalletModal,
-  useMobileMode,
-} from "#/hooks"
+import { useMobileMode } from "#/hooks"
 import MobileModeBanner from "#/components/MobileModeBanner"
-import { routerPath } from "#/router/path"
 import { featureFlags } from "#/constants"
 import DashboardCard from "./DashboardCard"
 import { PageLayout, PageLayoutColumn } from "./PageLayout"
@@ -16,8 +11,6 @@ import BeehiveCard from "./BeehiveCard"
 
 export default function DashboardPage() {
   const isMobileMode = useMobileMode()
-  useTriggerConnectWalletModal(routerPath.dashboard)
-  useDepositCallToAction()
 
   return isMobileMode ? (
     <MobileModeBanner forceOpen />
