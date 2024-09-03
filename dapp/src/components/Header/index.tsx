@@ -9,8 +9,7 @@ import ConnectWallet from "./ConnectWallet"
 import { Navigation } from "./Navigation"
 
 const NAVIGATION_ITEMS: NavigationItemType[] = [
-  { label: "Season 1", href: routerPath.home },
-  { label: "Dashboard", href: routerPath.dashboard },
+  { label: "Dashboard", href: routerPath.home },
 ]
 
 export default function Header() {

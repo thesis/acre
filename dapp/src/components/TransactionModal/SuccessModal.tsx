@@ -112,7 +112,7 @@ export default function SuccessModal({ type }: SuccessModalProps) {
 
   const handleCloseModal = () => {
     closeModal()
-    navigate(routerPath.dashboard)
+    navigate(routerPath.home)
 
     if (featureFlags.GAMIFICATION_ENABLED) {
       // TODO: Temporary solution - Showing the welcome window should be done
