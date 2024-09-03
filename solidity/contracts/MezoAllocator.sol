@@ -252,6 +252,7 @@ contract MezoAllocator is IDispatcher, Ownable2StepUpgradeable {
                     depositId,
                     uint96(amountToWithdraw)
                 );
+                // slither-disable-next-line incorrect-equality
             } else if (amountToWithdraw == depositBalance) {
                 mezoPortal.withdraw(address(tbtc), depositId);
             } else {
