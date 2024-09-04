@@ -1,13 +1,13 @@
 import React from "react"
 import { StackProps, VStack, Image } from "@chakra-ui/react"
 import { TextMd } from "#/components/shared/Typography"
-import { useCompletedActivities, useIsFetchedWalletData } from "#/hooks"
+import { useAllActivitiesCount, useIsFetchedWalletData } from "#/hooks"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import emptyStateIllustration from "#/assets/images/empty-state.svg"
 import TransactionTable from "./TransactionTable"
 
 function TransactionHistoryContent() {
-  const completedActivities = useCompletedActivities()
+  const activitiesCount = useAllActivitiesCount()
   const isFetchedWalletData = useIsFetchedWalletData()
 
   if (!isFetchedWalletData)
@@ -19,7 +19,7 @@ function TransactionHistoryContent() {
       </VStack>
     )
 
-  if (completedActivities.length === 0)
+  if (activitiesCount === 0)
     return (
       <VStack w="100%">
         <Image

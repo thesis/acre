@@ -36,8 +36,8 @@ importers:
         specifier: ^11.11.0
         version: 11.11.5(@emotion/react@11.11.4)(@types/react@18.3.3)(react@18.3.1)
       '@orangekit/react':
-        specifier: 1.0.0-beta.29
-        version: 1.0.0-beta.29(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5)(valibot@0.33.2)
+        specifier: 1.0.0-beta.30
+        version: 1.0.0-beta.30(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5)(valibot@0.33.2)
       '@orangekit/sign-in-with-wallet':
         specifier: 1.0.0-beta.6
         version: 1.0.0-beta.6(bech32@2.0.0)(ethers@6.13.0)
@@ -157,8 +157,8 @@ importers:
         specifier: 1.5.0
         version: 1.5.0
       '@orangekit/sdk':
-        specifier: 1.0.0-beta.14
-        version: 1.0.0-beta.14
+        specifier: 1.0.0-beta.16
+        version: 1.0.0-beta.16
       '@swan-bitcoin/xpub-lib':
         specifier: 0.1.5
         version: 0.1.5
@@ -5754,10 +5754,10 @@ packages:
       - ethers
     dev: false
 
-  /@orangekit/react@1.0.0-beta.29(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5)(valibot@0.33.2):
-    resolution: {integrity: sha512-NEN+OpZkelWX+4qcEzGMH4NJ8o+Kz+eyr8d6Iu+5LJDJOp9THHmO/pezDdT9rhGm9mcFXIF8JMADsbnxnJiKog==}
+  /@orangekit/react@1.0.0-beta.30(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5)(valibot@0.33.2):
+    resolution: {integrity: sha512-hH5rRTDy0rDuVvgZKb53/fiQHHMjUlOL0pufMbv4fuy0AzrnNHu4ohFEJCyANpiL/FppdBZiFa/paqv+9obotg==}
     dependencies:
-      '@orangekit/sdk': 1.0.0-beta.15
+      '@orangekit/sdk': 1.0.0-beta.16
       '@rainbow-me/rainbowkit': 2.0.2(@types/react@18.3.3)(react-dom@18.3.1)(react@18.3.1)(viem@2.8.16)(wagmi@2.5.12)
       ethers: 6.12.1
       react: 18.3.1
@@ -5796,26 +5796,8 @@ packages:
       - zod
     dev: false
 
-  /@orangekit/sdk@1.0.0-beta.14:
-    resolution: {integrity: sha512-HDgKClpuAn5u3xwIYyoTjF/ZkF2f20f64pAORGrTohnkqIErp38tXg1YGAMIFL2eIAhyQKV2JvPHB6BXCmEstA==}
-    dependencies:
-      '@gelatonetwork/relay-sdk': 5.5.6
-      '@noble/curves': 1.4.0
-      '@noble/hashes': 1.4.0
-      '@orangekit/contracts': 1.0.0-beta.3(ethers@6.12.1)
-      '@safe-global/protocol-kit': 3.1.1
-      bitcoinjs-lib: 6.1.5
-      ethers: 6.12.1
-    transitivePeerDependencies:
-      - bufferutil
-      - debug
-      - encoding
-      - supports-color
-      - utf-8-validate
-    dev: false
-
-  /@orangekit/sdk@1.0.0-beta.15:
-    resolution: {integrity: sha512-G5uor7rJ7c/2N77rd+8smlxXP6d7/SXLS6HTSbSx7fko3v/LVi1/TGqHyYpEvvz1tYrfnl6z46zW8u1fLdWFrw==}
+  /@orangekit/sdk@1.0.0-beta.16:
+    resolution: {integrity: sha512-0tU/p9iRw3JDbJjvWLjrbyqLEKBUUUX/q6ccNw9MtIPiHGVvr0wnaZvgs7c1shGJGIREhNMBRbwgS9782Yr/SQ==}
     dependencies:
       '@gelatonetwork/relay-sdk': 5.5.6
       '@noble/curves': 1.4.0
@@ -9425,7 +9407,7 @@ packages:
   /axios@0.27.2:
     resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
     dependencies:
-      follow-redirects: 1.15.5
+      follow-redirects: 1.15.6(debug@4.3.4)
       form-data: 4.0.0
     transitivePeerDependencies:
       - debug

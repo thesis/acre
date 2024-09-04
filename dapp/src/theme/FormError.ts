@@ -4,7 +4,9 @@ import { formErrorAnatomy as parts } from "@chakra-ui/anatomy"
 
 const baseStyleText = defineStyle({
   fontWeight: "medium",
-  color: "red.400",
+  color: "grey.700",
+  mt: 4,
+  fontSize: "md",
 })
 
 const multiStyleConfig = createMultiStyleConfigHelpers(parts.keys)

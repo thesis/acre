@@ -16,6 +16,7 @@ export type CurrencyBalanceProps = {
   currency: CurrencyType
   amount?: AmountType
   shouldBeFormatted?: boolean
+  withRoundUp?: boolean
   desiredDecimals?: number
   size?: ResponsiveValue<string>
   variant?: ResponsiveValue<
@@ -24,22 +25,25 @@ export type CurrencyBalanceProps = {
     | "greater-balance-xxl"
     | "unstyled"
   >
-  balanceFontWeight?: string
-  symbolFontWeight?: string
   symbolPosition?: "prefix" | "suffix"
+  withDots?: boolean
+  balanceTextProps?: TextProps
+  symbolTextProps?: TextProps
 } & TextProps
 
 export function CurrencyBalance({
   currency,
   amount,
   shouldBeFormatted = true,
+  withRoundUp = false,
   desiredDecimals: customDesiredDecimals,
   size,
   variant,
-  balanceFontWeight = "bold",
-  symbolFontWeight = "bold",
   symbolPosition = "suffix",
+  withDots = false,
   as,
+  balanceTextProps,
+  symbolTextProps,
   ...textProps
 }: CurrencyBalanceProps) {
   const styles = useMultiStyleConfig("CurrencyBalance", {
@@ -58,27 +62,23 @@ export function CurrencyBalance({
   const balance = useMemo(() => {
     const value = amount ?? 0
     if (shouldBeFormatted || typeof value === "bigint")
-      return formatTokenAmount(value, decimals, desiredDecimals)
+      return formatTokenAmount(value, decimals, desiredDecimals, withRoundUp)
 
     return numberToLocaleString(value, desiredDecimals)
-  }, [amount, decimals, desiredDecimals, shouldBeFormatted])
+  }, [amount, decimals, desiredDecimals, shouldBeFormatted, withRoundUp])
 
   return (
     <Box as={as} __css={styles.container}>
       <Box
         as="span"
-        fontWeight={balanceFontWeight}
         __css={styles.balance}
         {...textProps}
+        {...balanceTextProps}
       >
         {balance}
+        {withDots && ".."}
       </Box>
-      <Box
-        as="span"
-        fontWeight={symbolFontWeight}
-        __css={styles.symbol}
-        {...textProps}
-      >
+      <Box as="span" __css={styles.symbol} {...textProps} {...symbolTextProps}>
         {symbol}
       </Box>
     </Box>

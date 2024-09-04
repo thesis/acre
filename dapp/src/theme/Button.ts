@@ -28,6 +28,9 @@ export const buttonTheme: ComponentSingleStyleConfig = {
       color: "white",
       _hover: {
         bg: "brand.500",
+        _disabled: {
+          bg: "grey.400",
+        },
       },
       _active: {
         bg: "brand.400",
@@ -37,6 +40,10 @@ export const buttonTheme: ComponentSingleStyleConfig = {
           background: "gold.300",
           opacity: 1,
         },
+      },
+      _disabled: {
+        bg: "grey.500",
+        color: "gold.200",
       },
     },
     outline: ({ colorScheme }: StyleFunctionProps) => {
