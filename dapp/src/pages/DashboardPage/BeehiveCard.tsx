@@ -20,6 +20,7 @@ import beehiveIllustrationSrc from "#/assets/images/beehive-illustration.svg"
 import mezoBeesIllustrationSrc from "#/assets/images/mezo-bees.svg"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import { numberToLocaleString } from "#/utils"
+import InfoTooltip from "#/components/shared/InfoTooltip"
 
 export default function BeehiveCard(props: CardProps) {
   const { openModal } = useModal()
@@ -32,10 +33,15 @@ export default function BeehiveCard(props: CardProps) {
 
   return (
     <Card p={4} {...props}>
-      <CardHeader p={0}>
+      <CardHeader p={0} as={Flex} alignItems="center" gap={2}>
         <TextMd fontWeight="bold" color="grey.700">
-          Beehive
+          L2 Rewards
         </TextMd>
+        <InfoTooltip
+          label="Earn rewards from our L2 partners within the Acre Beehive. The rewards are calculated based on amount and time staked. No hassle and automatic participation across each of our launch partners."
+          color="gold.300"
+          w={56}
+        />
       </CardHeader>
 
       <CardBody p={0}>

@@ -1,6 +1,6 @@
 import React from "react"
-import { Info } from "#/assets/icons"
-import { Icon, Tooltip, List } from "@chakra-ui/react"
+import { List } from "@chakra-ui/react"
+import InfoTooltip from "#/components/shared/InfoTooltip"
 import { FeesTooltipItem } from "./FeesTooltipItem"
 import { Fee as AcreFee } from "../../../types/fee"
 
@@ -21,7 +21,7 @@ const mapFeeToLabel = (feeId: keyof AcreFee) => {
 
 export function FeesTooltip({ fees }: Props) {
   return (
-    <Tooltip
+    <InfoTooltip
       placement="right"
       label={
         <List spacing={0.5} minW={60}>
@@ -35,8 +35,6 @@ export function FeesTooltip({ fees }: Props) {
           ))}
         </List>
       }
-    >
-      <Icon as={Info} ml={2} boxSize={4} cursor="pointer" color="grey.400" />
-    </Tooltip>
+    />
   )
 }

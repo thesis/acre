@@ -1,6 +1,0 @@
-export { default as thresholdLogo } from "#/assets/images/partner-logos/threshold-logo.svg"
-export { default as mezoLogo } from "#/assets/images/partner-logos/mezo-logo.svg"
-export { default as mezoLogoColor } from "#/assets/images/partner-logos/mezo-logo-color.svg"
-export { default as tbtcLogo } from "#/assets/images/partner-logos/tbtc-logo.svg"
-export { default as xverseLogo } from "#/assets/images/partner-logos/xverse-logo.svg"
-export { default as thesisLogo } from "#/assets/images/partner-logos/thesis-logo.svg"

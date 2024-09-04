@@ -1,6 +1,6 @@
 import React from "react"
-import { ListItem, ListItemProps, VStack } from "@chakra-ui/react"
-import { TextMd, TextSm } from "../Typography"
+import { HStack, ListItem, ListItemProps } from "@chakra-ui/react"
+import { TextMd } from "../Typography"
 
 export type FeesDetailsItemProps = {
   label: string
@@ -12,7 +12,6 @@ export type FeesDetailsItemProps = {
 
 function FeesDetailsItem({
   label,
-  sublabel,
   tooltip,
   value,
   children,
@@ -25,7 +24,7 @@ function FeesDetailsItem({
       alignItems="center"
       {...listItemProps}
     >
-      <VStack alignItems="start" gap={0}>
+      <HStack alignItems="center" gap={2}>
         <TextMd
           display="flex"
           alignItems="center"
@@ -33,10 +32,9 @@ function FeesDetailsItem({
           color="grey.700"
         >
           {label}
-          {tooltip}
         </TextMd>
-        {sublabel && <TextSm color="grey.400">{sublabel}</TextSm>}
-      </VStack>
+        {tooltip}
+      </HStack>
       {value ? <TextMd color="grey.700">{value}</TextMd> : children}
     </ListItem>
   )
