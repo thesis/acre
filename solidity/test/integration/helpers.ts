@@ -7,6 +7,7 @@ export async function integrationTestFixture() {
 
   const { deployer } = await helpers.signers.getNamedSigners()
 
+  // Impersonate accounts.
   const governance = await helpers.account.impersonateAccount(
     expectedMainnetAddresses.governance,
     {
@@ -20,6 +21,18 @@ export async function integrationTestFixture() {
     {
       from: deployer,
       value: 10n,
+    },
+  )
+
+  // Upgrade contracts to the latest development version.
+  ;[contracts.stbtc] = await helpers.upgrades.upgradeProxy("stBTC", "stBTC", {
+    factoryOpts: { signer: governance },
+  })
+  ;[contracts.mezoAllocator] = await helpers.upgrades.upgradeProxy(
+    "MezoAllocator",
+    "MezoAllocator",
+    {
+      factoryOpts: { signer: governance },
     },
   )
 
