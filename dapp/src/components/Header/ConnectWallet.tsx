@@ -19,14 +19,6 @@ import { motion } from "framer-motion"
 import { MODAL_TYPES } from "#/types"
 import { IconCopy, IconLogout, IconWallet } from "@tabler/icons-react"
 
-const getCustomDataByAccount = (
-  address?: string,
-): { text: string; colorScheme?: string } => {
-  if (!address) return { text: "Not connected", colorScheme: "error" }
-
-  return { text: truncateAddress(address) }
-}
-
 export default function ConnectWallet() {
   const { isConnected, address, balance, onDisconnect } = useWallet()
   const { isOpenGlobalErrorModal, modalType, openModal } = useModal()
@@ -36,13 +28,11 @@ export default function ConnectWallet() {
     size: "lg",
   })
 
-  const customDataBtcAccount = getCustomDataByAccount(address)
-
   const handleConnectWallet = () => {
     openModal(MODAL_TYPES.CONNECT_WALLET)
   }
 
-  if (!isConnected) {
+  if (!isConnected || !address) {
     return (
       <Button
         size="lg"
@@ -85,7 +75,7 @@ export default function ConnectWallet() {
           spacing={3}
         >
           <Icon as={BitcoinIcon} boxSize={6} color="brand.400" />
-          <TextMd color="brand.400">{customDataBtcAccount.text}</TextMd>
+          <TextMd color="brand.400">{truncateAddress(address)}</TextMd>
         </HStack>
 
         <HStack
