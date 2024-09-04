@@ -24,9 +24,9 @@ describe("MezoAllocator", () => {
   // tokens that can be used for testing purposes after impersonation.
   const whaleAddress = "0x84eA3907b9206427F45c7b2614925a2B86D12611"
 
-  // As of a forked block, the deposit id was 11369 before the new allocation.
+  // As of a forked block, the deposit id was 17469 before the new allocation.
   // The deposit id should be incremented by 1.
-  const expectedDepositId = 11369n
+  const expectedDepositId = 17470n
 
   let tbtc: TestERC20
   let stbtc: stBTC
@@ -151,39 +151,59 @@ describe("MezoAllocator", () => {
       context("when there is a deposit", () => {
         beforeAfterSnapshotWrapper()
 
+        const depositAmount = to1e18(6)
+        const donationAmount = to1e18(2)
+
         let tx: ContractTransactionResponse
 
         before(async () => {
           await tbtc.connect(tbtcHolder).transfer(depositor.address, to1e18(11))
-          await tbtc.approve(await stbtc.getAddress(), to1e18(5))
-          await stbtc.connect(depositor).deposit(to1e18(5), depositor)
+          await tbtc.approve(await stbtc.getAddress(), depositAmount)
+          await stbtc.connect(depositor).deposit(depositAmount, depositor)
           await mezoAllocator.connect(maintainer).allocate()
+
+          // Donate 1 tBTC to the MezoAllocator.
+          await tbtc
+            .connect(tbtcHolder)
+            .transfer(await mezoAllocator.getAddress(), donationAmount)
         })
 
         context("when withdrawing less than was deposited", () => {
           beforeAfterSnapshotWrapper()
 
+          const withdrawAmount = to1e18(3)
+
           before(async () => {
-            tx = await stbtc.withdraw(to1e18(2), depositor, depositor)
+            tx = await stbtc
+              .connect(depositor)
+              .withdraw(withdrawAmount, depositor, depositor)
           })
 
-          it("should transfer 2 tBTC back to a depositor", async () => {
+          it("should transfer tBTC back to a depositor", async () => {
             await expect(tx).to.changeTokenBalances(
               tbtc,
               [depositor.address],
-              [to1e18(2)],
+              [withdrawAmount],
             )
           })
 
           it("should emit DepositWithdrawn event", async () => {
             await expect(tx)
-              .to.emit(mezoAllocator, "DepositWithdrawn")
-              .withArgs(expectedDepositId, to1e18(2))
+              .to.emit(mezoAllocator, "WithdrawFromMezoPortal")
+              .withArgs(expectedDepositId, withdrawAmount, to1e18(1))
           })
 
           it("should decrease tracked deposit balance amount", async () => {
             expect(await mezoAllocator.depositBalance()).to.equal(
-              existingDepositAmount + existingUnallocatedFunds + to1e18(3),
+              existingDepositAmount + existingUnallocatedFunds + to1e18(5),
+            )
+          })
+
+          it("should decrease MezoAllocator balance", async () => {
+            await expect(tx).to.changeTokenBalances(
+              tbtc,
+              [await mezoAllocator.getAddress()],
+              [-donationAmount],
             )
           })
 
@@ -191,7 +211,7 @@ describe("MezoAllocator", () => {
             await expect(tx).to.changeTokenBalances(
               tbtc,
               [await mezoPortal.getAddress()],
-              [-to1e18(2)],
+              [-to1e18(1)],
             )
           })
         })
@@ -200,15 +220,17 @@ describe("MezoAllocator", () => {
           beforeAfterSnapshotWrapper()
 
           it("should revert", async () => {
-            await expect(stbtc.withdraw(to1e18(6), depositor, depositor))
+            const mezoDepositAmount =
+              existingDepositAmount + existingUnallocatedFunds + depositAmount
+
+            const withdrawAmount = mezoDepositAmount + donationAmount + 1n
+
+            await expect(stbtc.withdraw(withdrawAmount, depositor, depositor))
               .to.be.revertedWithCustomError(
-                mezoPortal,
-                "InsufficientDepositAmount",
+                mezoAllocator,
+                "WithdrawalAmountExceedsDepositBalance",
               )
-              .withArgs(
-                to1e18(6),
-                existingDepositAmount + existingUnallocatedFunds + to1e18(5),
-              )
+              .withArgs(withdrawAmount - donationAmount, mezoDepositAmount)
           })
         })
       })
