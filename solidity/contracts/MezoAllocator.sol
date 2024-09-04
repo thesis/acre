@@ -127,7 +127,15 @@ contract MezoAllocator is IDispatcher, Ownable2StepUpgradeable {
         uint256 newDepositAmount
     );
     /// @notice Emitted when tBTC is withdrawn from MezoPortal.
-    event DepositWithdrawn(uint256 indexed depositId, uint256 amount);
+    /// If MezoAllocator has a positive balance part of the requested amount
+    /// is withdrawn from MezoAllocator and the rest from MezoPortal.
+    event WithdrawFromMezoPortal(
+        uint256 indexed depositId,
+        uint256 requestedAmount,
+        uint256 amountWithdrawnFromPortal
+    );
+    /// @notice Emitted when tBTC is withdrawn from MezoAllocator.
+    event WithdrawFromMezoAllocator(uint256 amount);
     /// @notice Emitted when the maintainer address is updated.
     event MaintainerAdded(address indexed maintainer);
     /// @notice Emitted when the maintainer address is updated.
@@ -142,6 +150,12 @@ contract MezoAllocator is IDispatcher, Ownable2StepUpgradeable {
     error MaintainerNotRegistered();
     /// @notice Reverts if the maintainer has been already registered.
     error MaintainerAlreadyRegistered();
+    /// @notice Reverts if the requested amount to withdraw exceeds the amount
+    ///         deposited in the Mezo Portal.
+    error WithdrawalAmountExceedsDepositBalance(
+        uint256 requestedAmount,
+        uint256 depositAmount
+    );
 
     modifier onlyMaintainer() {
         if (!isMaintainer[msg.sender]) {
@@ -225,20 +239,35 @@ contract MezoAllocator is IDispatcher, Ownable2StepUpgradeable {
     function withdraw(uint256 amount) external {
         if (msg.sender != address(stbtc)) revert CallerNotStbtc();
 
-        emit DepositWithdrawn(depositId, amount);
+        uint256 unallocatedBalance = tbtc.balanceOf(address(this));
 
-        if (amount < depositBalance) {
-            mezoPortal.withdrawPartially(
-                address(tbtc),
-                depositId,
-                uint96(amount)
-            );
+        if (amount > unallocatedBalance) {
+            uint256 amountToWithdraw = amount - unallocatedBalance;
+
+            emit WithdrawFromMezoPortal(depositId, amount, amountToWithdraw);
+
+            if (amountToWithdraw < depositBalance) {
+                mezoPortal.withdrawPartially(
+                    address(tbtc),
+                    depositId,
+                    uint96(amountToWithdraw)
+                );
+                // slither-disable-next-line incorrect-equality
+            } else if (amountToWithdraw == depositBalance) {
+                mezoPortal.withdraw(address(tbtc), depositId);
+            } else {
+                revert WithdrawalAmountExceedsDepositBalance(
+                    amountToWithdraw,
+                    depositBalance
+                );
+            }
+
+            // slither-disable-next-line reentrancy-no-eth
+            depositBalance -= uint96(amountToWithdraw);
         } else {
-            mezoPortal.withdraw(address(tbtc), depositId);
+            emit WithdrawFromMezoAllocator(amount);
         }
 
-        // slither-disable-next-line reentrancy-no-eth
-        depositBalance -= uint96(amount);
         tbtc.safeTransfer(address(stbtc), amount);
     }
 
@@ -250,9 +279,12 @@ contract MezoAllocator is IDispatcher, Ownable2StepUpgradeable {
             .getDeposit(address(this), address(tbtc), depositId)
             .balance;
 
-        emit DepositReleased(depositId, amount);
-        depositBalance = 0;
-        mezoPortal.withdraw(address(tbtc), depositId);
+        if (amount > 0) {
+            emit DepositReleased(depositId, amount);
+            depositBalance = 0;
+            mezoPortal.withdraw(address(tbtc), depositId);
+        }
+
         tbtc.safeTransfer(address(stbtc), tbtc.balanceOf(address(this)));
     }
 

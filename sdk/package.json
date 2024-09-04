@@ -28,7 +28,7 @@
     "@acre-btc/contracts": "workspace:*",
     "@keep-network/tbtc-v2.ts": "2.5.0-dev.3",
     "@ledgerhq/wallet-api-client": "1.5.0",
-    "@orangekit/sdk": "1.0.0-beta.14",
+    "@orangekit/sdk": "1.0.0-beta.16",
     "@swan-bitcoin/xpub-lib": "0.1.5",
     "ethers": "6.10.0",
     "ethers-v5": "npm:ethers@^5.5.2"
