@@ -15,10 +15,7 @@ export default function UsefulLinks() {
           key={url}
           href={url}
           isExternal
-          color="brand.400"
           w="100%"
-          size="lg"
-          fontWeight="semibold"
           variant="card"
           justifyContent="center"
         >

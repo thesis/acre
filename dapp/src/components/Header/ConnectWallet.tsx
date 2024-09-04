@@ -1,12 +1,14 @@
 import React from "react"
 import {
   Button,
+  Flex,
   HStack,
   Icon,
   IconButton,
   StackDivider,
   Tooltip,
   useClipboard,
+  useMultiStyleConfig,
 } from "@chakra-ui/react"
 import { useModal, useWallet } from "#/hooks"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
@@ -29,6 +31,10 @@ export default function ConnectWallet() {
   const { isConnected, address, balance, onDisconnect } = useWallet()
   const { isOpenGlobalErrorModal, modalType, openModal } = useModal()
   const { hasCopied, onCopy } = useClipboard(address ?? "")
+  const styles = useMultiStyleConfig("Button", {
+    variant: "card",
+    size: "lg",
+  })
 
   const customDataBtcAccount = getCustomDataByAccount(address)
 
@@ -39,10 +45,9 @@ export default function ConnectWallet() {
   if (!isConnected) {
     return (
       <Button
-        fontWeight="medium"
-        variant="ghost"
-        iconSpacing={3}
-        pl={2}
+        size="lg"
+        variant="card"
+        color="grey.700"
         leftIcon={<Icon as={BitcoinIcon} boxSize={6} color="brand.400" />}
         onClick={handleConnectWallet}
         {...((modalType === MODAL_TYPES.CONNECT_WALLET ||
@@ -62,16 +67,14 @@ export default function ConnectWallet() {
         <Icon as={IconWallet} boxSize={5} />
       </HStack>
 
-      <HStack
+      <Flex
         as={motion.div}
         whileHover="expanded"
         initial="collapsed"
         animate="collapsed"
-        rounded="full"
-        bg="gold.200"
-        spacing={0}
-        px={1}
         overflow="hidden"
+        {...styles}
+        pr={0}
       >
         <HStack
           as={motion.div}
@@ -80,8 +83,6 @@ export default function ConnectWallet() {
             collapsed: { paddingRight: 16 },
           }}
           spacing={3}
-          pl={1}
-          py={2}
         >
           <Icon as={BitcoinIcon} boxSize={6} color="brand.400" />
           <TextMd color="brand.400">{customDataBtcAccount.text}</TextMd>
@@ -131,7 +132,7 @@ export default function ConnectWallet() {
             />
           </Tooltip>
         </HStack>
-      </HStack>
+      </Flex>
     </HStack>
   )
 }
