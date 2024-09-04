@@ -20,7 +20,7 @@ import { MODAL_TYPES } from "#/types"
 import { IconCopy, IconLogout, IconWallet } from "@tabler/icons-react"
 
 export default function ConnectWallet() {
-  const { isConnected, address, balance, onDisconnect } = useWallet()
+  const { address, balance, onDisconnect } = useWallet()
   const { isOpenGlobalErrorModal, modalType, openModal } = useModal()
   const { hasCopied, onCopy } = useClipboard(address ?? "")
   const styles = useMultiStyleConfig("Button", {
@@ -32,7 +32,7 @@ export default function ConnectWallet() {
     openModal(MODAL_TYPES.CONNECT_WALLET)
   }
 
-  if (!isConnected || !address) {
+  if (!address) {
     return (
       <Button
         size="lg"
