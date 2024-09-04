@@ -7,13 +7,13 @@ export default function UsefulLinks() {
   return (
     <VStack>
       {[
-        { label: "Documentation", url: EXTERNAL_HREF.DOCS },
-        { label: "Blog", url: EXTERNAL_HREF.BLOG },
-        { label: "FAQ", url: EXTERNAL_HREF.FAQ },
-      ].map(({ label, url }) => (
+        { label: "Documentation", href: EXTERNAL_HREF.DOCS },
+        { label: "Blog", href: EXTERNAL_HREF.BLOG },
+        { label: "FAQ", href: EXTERNAL_HREF.FAQ },
+      ].map(({ label, href }) => (
         <ButtonLink
-          key={url}
-          href={url}
+          key={href}
+          href={href}
           isExternal
           w="100%"
           variant="card"
