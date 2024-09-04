@@ -10,7 +10,15 @@ export default function Header() {
   const isMobileMode = useMobileMode()
 
   return (
-    <HStack as="header" px={10} py={7} justify="center">
+    <HStack
+      as="header"
+      w="full"
+      mx="auto"
+      justify="center"
+      py={7}
+      px="page_content_padding_x"
+      maxW="page_content_max_width"
+    >
       <Link href={EXTERNAL_HREF.WEBSITE} isExternal>
         <Icon as={AcreLogo} w={20} h={12} />
       </Link>
