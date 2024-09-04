@@ -2,7 +2,7 @@ import React from "react"
 import { ListItem, useMultiStyleConfig } from "@chakra-ui/react"
 import { To, useSearchParams } from "react-router-dom"
 import { useModal } from "#/hooks"
-import { isString } from "#/utils"
+import { router } from "#/utils"
 import { NavLink, NavLinkProps } from "../../shared/NavLink"
 
 export type NavigationItemProps = NavLinkProps
@@ -20,7 +20,7 @@ function NavigationItem(props: NavigationItemProps) {
   const to: To = isExternal
     ? defaultTo
     : {
-        pathname: isString(defaultTo) ? defaultTo : defaultTo.pathname,
+        pathname: router.getURLPath(defaultTo),
         search: searchParams.toString(),
       }
 

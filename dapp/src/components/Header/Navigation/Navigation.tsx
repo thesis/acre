@@ -2,7 +2,7 @@ import React from "react"
 import { Box, BoxProps, HStack, List } from "@chakra-ui/react"
 import { EXTERNAL_HREF } from "#/constants"
 import { routerPath } from "#/router/path"
-import { isString } from "#/utils"
+import { router } from "#/utils"
 import NavigationItem, { NavigationItemProps } from "./NavigationItem"
 
 const NAVIGATION_ITEMS: NavigationItemProps[] = [
@@ -20,10 +20,7 @@ function Navigation(props: BoxProps) {
     <Box as="nav" {...props}>
       <HStack as={List} spacing={5} ml={12}>
         {NAVIGATION_ITEMS.map((item) => (
-          <NavigationItem
-            key={isString(item.to) ? item.to : item.to.pathname}
-            {...item}
-          />
+          <NavigationItem key={router.getURLPath(item.to)} {...item} />
         ))}
       </HStack>
     </Box>
