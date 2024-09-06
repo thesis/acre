@@ -3141,9 +3141,7 @@ describe("stBTC", () => {
                   const earnedYield = to1e18(6)
 
                   // assets = shares * total assets / total supply
-                  // the -1n comes from convertToAssets implementation in
-                  // ERC4626Upgradeable
-                  const expectedDebt = to1e18(15) - 1n
+                  const expectedDebt = to1e18(15)
 
                   before(async () => {
                     await tbtc.mint(await stbtc.getAddress(), earnedYield)
@@ -3154,6 +3152,53 @@ describe("stBTC", () => {
                     newDebtShares,
                     expectedDebt,
                   )
+                })
+
+                describe("when there is loss generated", () => {
+                  beforeAfterSnapshotWrapper()
+
+                  const lossAmount = to1e18(4)
+
+                  before(async () => {
+                    await stbtc.workaround_transfer(
+                      thirdParty.address,
+                      lossAmount,
+                    )
+                  })
+
+                  describe("for big amounts", () => {
+                    beforeAfterSnapshotWrapper()
+
+                    // Initial state:
+                    //   Deposited assets: 24
+                    //   Debt: 0
+                    //   Loss: 4
+                    // New mint:
+                    //   Shares: 12
+                    //   Expected debt: 12 * (24 - 4) / 24 = 10
+
+                    const sharesAmount = newDebtShares
+                    const expectedDebt = to1e18(10) + 1n
+
+                    testMintDebt(
+                      () => sharesOwner1.address,
+                      sharesAmount,
+                      expectedDebt,
+                    )
+                  })
+
+                  describe("for minimum amount", () => {
+                    beforeAfterSnapshotWrapper()
+
+                    const sharesAmount = 1n
+                    const expectedDebt = 1n
+
+                    testMintDebt(
+                      () => sharesOwner1.address,
+                      sharesAmount,
+                      expectedDebt,
+                    )
+                  })
                 })
               })
             })
@@ -3225,6 +3270,8 @@ describe("stBTC", () => {
           let initialTotalDebt: bigint
           let initialTotalSupply: bigint
           let initialTotalAssets: bigint
+
+          let mintDebtResult: bigint
           let tx: ContractTransactionResponse
 
           before(async () => {
@@ -3236,6 +3283,9 @@ describe("stBTC", () => {
             initialTotalSupply = await stbtc.totalSupply()
             initialTotalAssets = await stbtc.totalAssets()
 
+            mintDebtResult = await stbtc
+              .connect(minter)
+              .mintDebt.staticCall(newShares, receiverAddress)
             tx = await stbtc
               .connect(minter)
               .mintDebt(newShares, receiverAddress)
@@ -3470,11 +3520,11 @@ describe("stBTC", () => {
 
                     // Initial state:
                     //   Deposited assets: 24
-                    //   Debt: 10
+                    //   Debt: 12
                     //   Yield: 6
                     // Repayment:
                     //   Shares: 6
-                    //   Expected asset repayment: 6 * (24 + 10 + 6) / (24 + 10) = ~7
+                    //   Expected asset repayment: 6 * (24 + 12 + 6) / (24 + 12) = 7
 
                     const earnedYield = to1e18(6)
 
@@ -3487,6 +3537,45 @@ describe("stBTC", () => {
                     })
 
                     testRepayDebt(requestedRepayAmount, expectedDebtRepay)
+                  })
+
+                  describe("when there is loss generated", () => {
+                    beforeAfterSnapshotWrapper()
+
+                    const lossAmount = to1e18(4)
+
+                    before(async () => {
+                      await stbtc.workaround_transfer(
+                        thirdParty.address,
+                        lossAmount,
+                      )
+                    })
+
+                    describe("for big amounts", () => {
+                      beforeAfterSnapshotWrapper()
+
+                      // Initial state:
+                      //   Deposited assets: 24
+                      //   Debt: 12
+                      //   Loss: 4
+                      // Repayment:
+                      //   Shares: 6
+                      //   Expected asset repayment: 6 * (24 + 12 - 4) / (24 + 12) ~= 5.33
+
+                      const sharesAmount = requestedRepayAmount
+                      const expectedDebtRepay = 5333333333333333333n
+
+                      testRepayDebt(sharesAmount, expectedDebtRepay)
+                    })
+
+                    describe("for minimum amount", () => {
+                      beforeAfterSnapshotWrapper()
+
+                      const sharesAmount = 1n
+                      const expectedDebtRepay = 0n
+
+                      testRepayDebt(sharesAmount, expectedDebtRepay)
+                    })
                   })
                 })
               })
@@ -3595,9 +3684,8 @@ describe("stBTC", () => {
 
         testRoundTrip(
           10n,
-          10n,
-          { totalAssets: 10n, totalSupply: 10n },
-          { totalAssets: 0n, totalSupply: 0n },
+          { totalDebt: 10n, totalAssets: 10n, totalSupply: 10n },
+          { totalDebt: 0n, totalAssets: 0n, totalSupply: 0n },
         )
       })
 
@@ -3621,13 +3709,13 @@ describe("stBTC", () => {
 
           testRoundTrip(
             10n,
-            10n,
+            // totalDebt = 10 * 23 / 23 = 10
             // totalAssets = 23 + 10 = 33
             // totalSupply = 23 + 10 = 33
-            { totalAssets: 33n, totalSupply: 33n },
+            { totalDebt: 10n, totalAssets: 33n, totalSupply: 33n },
             // totalAssets = 33 - 10 = 23
             // totalSupply = 33 - 10 = 23
-            { totalAssets: 23n, totalSupply: 23n },
+            { totalDebt: 0n, totalAssets: 23n, totalSupply: 23n },
           )
         })
 
@@ -3642,26 +3730,29 @@ describe("stBTC", () => {
 
           testRoundTrip(
             10n,
-            // 10 * (23 + 5) / 23 = 12
-            12n,
-            // totalAssets = 23 + 5 + 12 = 40
+            // totalDebt = 10 * (23 + 5) / 23 = ceil(12,17) = 13
+            // totalAssets = 23 + 5 + 13 = 41
             // totalSupply = 23 + 10 = 33
-            { totalAssets: 40n, totalSupply: 33n },
-            // totalAssets = 40 - 12 = 28
+            { totalDebt: 13n, totalAssets: 41n, totalSupply: 33n },
+            // assets = 10 * 41 / 33 = floor(12,17) = 12
+            // totalDebt = 1 due to rounding
+            // totalAssets = 41 - 12 = 29
             // totalSupply = 33 - 10 = 23
-            { totalAssets: 28n, totalSupply: 23n },
+            { totalDebt: 1n, totalAssets: 29n, totalSupply: 23n },
           )
         })
       })
 
       function testRoundTrip(
         shares: bigint,
-        expectedDebtAmount: bigint,
+
         expectedMintDebtResult: {
+          totalDebt: bigint
           totalAssets: bigint
           totalSupply: bigint
         },
         expectedRepayDebtResults: {
+          totalDebt: bigint
           totalAssets: bigint
           totalSupply: bigint
         },
@@ -3684,7 +3775,9 @@ describe("stBTC", () => {
           })
 
           it("should increase total debt", async () => {
-            expect(await stbtc.totalDebt()).to.be.eq(expectedDebtAmount)
+            expect(await stbtc.totalDebt()).to.be.eq(
+              expectedMintDebtResult.totalDebt,
+            )
           })
 
           it("should increase total assets", async () => {
@@ -3716,7 +3809,9 @@ describe("stBTC", () => {
           })
 
           it("should decrease total debt", async () => {
-            expect(await stbtc.totalDebt()).to.be.eq(0)
+            expect(await stbtc.totalDebt()).to.be.eq(
+              expectedRepayDebtResults.totalDebt,
+            )
           })
 
           it("should decrease total assets", async () => {
