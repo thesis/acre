@@ -125,6 +125,10 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     /// Reverts if the dispatcher address is the same.
     error SameDispatcher();
 
+    /// Reverts if a conversion between shares and assets results in zero, which
+    /// may happen for small amounts division with rounding.
+    error ConvertedToZero(uint256 shares, uint256 assets);
+
     /// @notice Emitted when the debt allowance of a debtor is insufficient.
     /// @dev Used in the debt minting function.
     /// @param debtor Address of the debtor.
@@ -305,7 +309,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         uint256 shares,
         address receiver
     ) public whenNotPaused returns (uint256 assets) {
-        assets = convertToAssets(shares);
+        assets = previewMintDebt(shares);
 
         // Increase the debt of the debtor.
         currentDebt[msg.sender] += assets;
@@ -331,10 +335,13 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     /// @dev This function proxies `mintDebt` call and provides compatibility
     ///      with Mezo IReceiptToken interface.
     function mintReceipt(address to, uint256 amount) external {
-        mintDebt(amount, to);
+        uint256 assets = mintDebt(amount, to);
+        if (assets == 0) {
+            revert ConvertedToZero(amount, assets);
+        }
     }
 
-    /// @notice Repay the asset debt, fully of partially with the provided shares.
+    /// @notice Repay the asset debt, fully or partially with the provided shares.
     /// @dev The debt to be repaid is calculated based on the current conversion
     ///      rate from the shares to assets.
     /// @dev The debtor has to approve the transfer of the shares. To determine
@@ -345,7 +352,7 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     function repayDebt(
         uint256 shares
     ) public whenNotPaused returns (uint256 assets) {
-        assets = convertToAssets(shares);
+        assets = previewRepayDebt(shares);
 
         // Check the current debt of the debtor.
         if (currentDebt[msg.sender] < assets) {
@@ -371,7 +378,10 @@ contract stBTC is ERC4626Fees, PausableOwnable {
     /// @notice This function proxies `repayDebt` call and provides
     ///         compatibility with Mezo IReceiptToken interface.
     function burnReceipt(uint256 amount) external {
-        repayDebt(amount);
+        uint256 assets = repayDebt(amount);
+        if (assets == 0) {
+            revert ConvertedToZero(amount, assets);
+        }
     }
 
     /// @notice Mints shares to receiver by depositing exactly amount of
@@ -524,10 +534,18 @@ contract stBTC is ERC4626Fees, PausableOwnable {
         return convertToAssets(balanceOf(account));
     }
 
-    /// @notice Previews the amount of assets that will be burned for the given
-    ///         amount of repaid shares.
+    /// @notice Previews the amount of assets that will be added to debt when
+    ///         minting the given amount of shares.
+    /// @dev Rounds the assets up in favor of the vault.
+    function previewMintDebt(uint256 shares) public view returns (uint256) {
+        return _convertToAssets(shares, Math.Rounding.Ceil);
+    }
+
+    /// @notice Previews the amount of assets that will be repaid when returning
+    ///         the given amount of shares.
+    /// @dev Rounds the assets down in favor of the vault.
     function previewRepayDebt(uint256 shares) public view returns (uint256) {
-        return convertToAssets(shares);
+        return _convertToAssets(shares, Math.Rounding.Floor);
     }
 
     /// @return Returns entry fee basis point used in deposits.
