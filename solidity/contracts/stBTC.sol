@@ -326,8 +326,6 @@ contract stBTC is ERC4626Fees, PausableOwnable {
 
         // Mint the shares to the receiver.
         super._mint(receiver, shares);
-
-        return shares;
     }
 
     /// @dev This function proxies `mintDebt` call and provides compatibility
@@ -368,8 +366,6 @@ contract stBTC is ERC4626Fees, PausableOwnable {
 
         // Burn the shares from the debtor.
         super._burn(msg.sender, shares);
-
-        return shares;
     }
 
     /// @notice This function proxies `repayDebt` call and provides

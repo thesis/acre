@@ -3287,6 +3287,10 @@ describe("stBTC", () => {
                 newShares,
               )
           })
+
+          it("should return the expected debt in assets", () => {
+            expect(mintDebtResult).to.be.eq(expectedNewDebt)
+          })
         })
       }
     })
@@ -3496,6 +3500,8 @@ describe("stBTC", () => {
               let initialTotalDebt: bigint
               let initialTotalSupply: bigint
               let initialTotalAssets: bigint
+
+              let repayDebtResult: bigint
               let tx: ContractTransactionResponse
 
               before(async () => {
@@ -3506,6 +3512,9 @@ describe("stBTC", () => {
                 initialTotalSupply = await stbtc.totalSupply()
                 initialTotalAssets = await stbtc.totalAssets()
 
+                repayDebtResult = await stbtc
+                  .connect(externalMinter)
+                  .repayDebt.staticCall(repaySharesAmount)
                 tx = await stbtc
                   .connect(externalMinter)
                   .repayDebt(repaySharesAmount)
@@ -3552,6 +3561,10 @@ describe("stBTC", () => {
                     expectedDebtRepayment,
                     repaySharesAmount,
                   )
+              })
+
+              it("should return the expected debt in assets", () => {
+                expect(repayDebtResult).to.be.eq(expectedDebtRepayment)
               })
             }
           })
