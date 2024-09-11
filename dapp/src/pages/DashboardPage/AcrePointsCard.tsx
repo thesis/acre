@@ -24,6 +24,7 @@ export default function AcrePointsCard(props: CardProps) {
     totalPointsAmount,
     dailyPointsAmount,
   } = useAcrePoints()
+
   const { openModal } = useModal()
 
   const handleClaim = () => {

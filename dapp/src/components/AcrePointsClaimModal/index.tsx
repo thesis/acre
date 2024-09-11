@@ -12,6 +12,7 @@ import { acrePoints as acrePointsUtils } from "#/utils"
 import withBaseModal from "../ModalRoot/withBaseModal"
 import { TextXl } from "../shared/Typography"
 import { AnimatedNumber } from "../shared/AnimatedNumber"
+import ArrowAnimatedBackground from "./ArrowAnimatedBackground"
 
 const { getFormattedAmount } = acrePointsUtils
 
@@ -26,7 +27,7 @@ const TRANSITION: Transition = {
   type: "spring",
   damping: 14,
   stiffness: 86,
-  delay: 4, // step duration
+  delay: 2, // step duration
 }
 
 const getStepOffsets = (
@@ -43,12 +44,7 @@ const getStepOffsets = (
     )
 
 export function AcrePointsClaimModalBase() {
-  const {
-    claimablePointsAmount,
-    totalPointsAmount,
-    rankPosition,
-    estimatedRankPosition,
-  } = useAcrePoints()
+  const { claimablePointsAmount, totalPointsAmount } = useAcrePoints()
 
   const formattedClaimablePointsAmount = getFormattedAmount(
     claimablePointsAmount,
@@ -56,7 +52,6 @@ export function AcrePointsClaimModalBase() {
   const formattedUpdatedPointsAmount = getFormattedAmount(
     claimablePointsAmount + totalPointsAmount,
   )
-  const rankPositionDifference = estimatedRankPosition - rankPosition
 
   const steps = useMemo<[string, ReactNode][]>(
     () => [
@@ -79,31 +74,26 @@ export function AcrePointsClaimModalBase() {
           indicationColor="brand.400"
         />,
       ],
-      [
-        "Calculating rank...",
-        <AnimatedNumber
-          value={rankPositionDifference}
-          prefix={rankPositionDifference > 0 ? "+" : "-"}
-          animateMode="whileInView"
-          color={rankPositionDifference > 0 ? "green.500" : "red.500"}
-        />,
-      ],
-      [
-        "Updating rank...",
-        <AnimatedNumber
-          value={estimatedRankPosition}
-          prefix="#"
-          animateMode="whileInView"
-          indicationColor="brand.400"
-        />,
-      ],
+      // [
+      //   "Calculating rank...",
+      //   <AnimatedNumber
+      //     value={rankPositionDifference}
+      //     prefix={rankPositionDifference > 0 ? "+" : "-"}
+      //     animateMode="whileInView"
+      //     color={rankPositionDifference > 0 ? "green.500" : "red.500"}
+      //   />,
+      // ],
+      // [
+      //   "Updating rank...",
+      //   <AnimatedNumber
+      //     value={estimatedRankPosition}
+      //     prefix="#"
+      //     animateMode="whileInView"
+      //     indicationColor="brand.400"
+      //   />,
+      // ],
     ],
-    [
-      formattedClaimablePointsAmount,
-      estimatedRankPosition,
-      formattedUpdatedPointsAmount,
-      rankPositionDifference,
-    ],
+    [formattedClaimablePointsAmount, formattedUpdatedPointsAmount],
   )
 
   const containerHeight = useMotionValue(INITIAL_CONTAINER_HEIGHT)
@@ -164,6 +154,8 @@ export function AcrePointsClaimModalBase() {
           ))}
         </MotionVStack>
       </Box>
+
+      <ArrowAnimatedBackground />
     </ModalBody>
   )
 }

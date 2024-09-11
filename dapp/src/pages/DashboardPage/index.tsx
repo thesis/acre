@@ -11,11 +11,9 @@ import { VStack } from "@chakra-ui/react"
 import CardButton from "#/components/shared/CardButton"
 import DashboardCard from "./DashboardCard"
 import { PageLayout, PageLayoutColumn } from "./PageLayout"
-// import GrantedSeasonPassCard from "./GrantedSeasonPassCard"
 import AcrePointsCard from "./AcrePointsCard"
 import { CurrentSeasonCard } from "./CurrentSeasonCard"
 import BeehiveCard from "./BeehiveCard"
-import AcreRankCard from "./AcreRankCard"
 
 export default function DashboardPage() {
   const isMobileMode = useMobileMode()
@@ -32,14 +30,12 @@ export default function DashboardPage() {
 
       <PageLayoutColumn>
         <CurrentSeasonCard showSeasonStats={false} />
-        {/* TODO: Uncomment in post-launch phases */}
-        {/* <GrantedSeasonPassCard /> */}
         {featureFlags.BEEHIVE_COMPONENT_ENABLED && <BeehiveCard />}
       </PageLayoutColumn>
 
       <PageLayoutColumn position="relative">
-        <AcrePointsCard />
-        <AcreRankCard />
+        {featureFlags.ACRE_POINTS_ENABLED && <AcrePointsCard />}
+
         <VStack spacing={2} align="stretch">
           <CardButton href={EXTERNAL_HREF.DOCS} isExternal>
             Documentation
