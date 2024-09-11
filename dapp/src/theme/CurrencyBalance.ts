@@ -16,6 +16,7 @@ const baseStyleBalance = defineStyle(({ symbolPosition }) => ({
 }))
 
 const baseStyleSymbol = defineStyle({
+  fontWeight: "bold",
   fontSize: "md",
   lineHeight: "md",
 })

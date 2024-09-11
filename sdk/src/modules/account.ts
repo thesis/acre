@@ -165,7 +165,7 @@ export default class Account {
       )
 
       const amount = toSatoshi(
-        depositFromSubgraph?.amountToDeposit ?? deposit.initialAmount,
+        depositFromSubgraph?.amountToDeposit || deposit.initialAmount,
       )
 
       return {

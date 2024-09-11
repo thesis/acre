@@ -1,4 +1,4 @@
-import React, { useRef } from "react"
+import React, { useRef, useState } from "react"
 import {
   Box,
   Button,
@@ -15,6 +15,7 @@ import {
 import {
   fixedPointNumberToString,
   getCurrencyByType,
+  isFormError,
   userAmountToBigInt,
 } from "#/utils"
 import { CurrencyType } from "#/types"
@@ -25,6 +26,7 @@ import NumberFormatInput, {
   NumberFormatInputProps,
 } from "../NumberFormatInput"
 import { CurrencyBalance } from "../CurrencyBalance"
+import { Alert, AlertIcon, AlertDescription } from "../Alert"
 
 const VARIANT = "balance"
 
@@ -42,7 +44,12 @@ function HelperErrorText({
   if (hasError) {
     return (
       <FormErrorMessage>
-        {errorMsgText || "Please enter a valid value"}
+        <Alert status="error">
+          <AlertIcon status="error" />
+          <AlertDescription>
+            {errorMsgText || "Please enter a valid value"}
+          </AlertDescription>
+        </Alert>
       </FormErrorMessage>
     )
   }
@@ -102,6 +109,7 @@ export type TokenBalanceInputProps = {
   fiatCurrency?: CurrencyType
   setAmount: (value?: bigint) => void
   withMaxButton?: boolean
+  tokenAmountLabel?: string
 } & InputProps &
   HelperErrorTextProps &
   Pick<NumberFormatInputProps, "decimalScale">
@@ -118,27 +126,46 @@ export default function TokenBalanceInput({
   hasError = false,
   fiatCurrency,
   withMaxButton = false,
+  tokenAmountLabel = "Amount",
   ...inputProps
 }: TokenBalanceInputProps) {
   const valueRef = useRef<bigint | undefined>(amount)
+  const [displayedValue, setDisplayedValue] = useState<string | undefined>()
   const styles = useMultiStyleConfig("TokenBalanceInput", { size })
 
-  const { decimals } = getCurrencyByType(currency)
+  const { decimals, symbol } = getCurrencyByType(currency)
 
-  const handleValueChange = (value: string) => {
+  const onValueChange = (values: NumberFormatInputValues) => {
+    const { value } = values
+
     valueRef.current = value ? userAmountToBigInt(value, decimals) : undefined
+    setDisplayedValue(value)
   }
+
+  const onChange = () => {
+    setAmount(valueRef.current)
+  }
+
+  const onClickMaxButton = () => {
+    setAmount(tokenBalance)
+    setDisplayedValue(fixedPointNumberToString(tokenBalance, decimals))
+  }
+
+  const isBalanceExceeded =
+    typeof errorMsgText === "string" &&
+    isFormError("EXCEEDED_VALUE", errorMsgText)
 
   return (
     <FormControl isInvalid={hasError} isDisabled={inputProps.isDisabled}>
-      <FormLabel htmlFor={inputProps.name} size={size}>
+      <FormLabel htmlFor={inputProps.name} size={size} mr={0}>
         <Box __css={styles.labelContainer}>
           Amount
           <Box __css={styles.balanceContainer}>
             <Box as="span" __css={styles.balance}>
-              Balance
+              {tokenAmountLabel}
             </Box>
             <CurrencyBalance
+              color={isBalanceExceeded ? "red.400" : "gray.700"}
               size={size === "lg" ? "md" : "sm"}
               amount={tokenBalance}
               currency={currency}
@@ -151,24 +178,20 @@ export default function TokenBalanceInput({
           size={size}
           variant={VARIANT}
           isInvalid={hasError}
+          suffix={` ${symbol}`}
           placeholder={placeholder}
-          {...inputProps}
-          value={
-            amount ? fixedPointNumberToString(amount, decimals) : undefined
-          }
-          onValueChange={(values: NumberFormatInputValues) =>
-            handleValueChange(values.value)
-          }
-          onChange={() => {
-            setAmount(valueRef?.current)
-          }}
+          integerScale={10}
           decimalScale={decimals}
           allowNegative={false}
+          {...inputProps}
+          value={displayedValue}
+          onValueChange={onValueChange}
+          onChange={onChange}
         />
 
         {withMaxButton && (
           <InputRightElement>
-            <Button h="70%" onClick={() => setAmount(tokenBalance)}>
+            <Button h="70%" onClick={onClickMaxButton}>
               Max
             </Button>
           </InputRightElement>

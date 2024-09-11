@@ -19,9 +19,9 @@ export function FeesTooltipItem({ label, amount, ...props }: FeesItemType) {
         size="sm"
         amount={amount}
         color="gold.300"
-        balanceFontWeight="semibold"
-        symbolFontWeight="semibold"
+        fontWeight="semibold"
         desiredDecimals={DESIRED_DECIMALS_FOR_FEE}
+        withRoundUp
         {...props}
       />
     </ListItem>

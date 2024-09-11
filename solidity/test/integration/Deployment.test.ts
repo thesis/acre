@@ -9,10 +9,12 @@ import type {
   MezoAllocator,
   BitcoinDepositor,
   BitcoinRedeemer,
+  IMezoPortal,
 } from "../../typechain"
 import { getDeployedContract } from "../helpers"
 
 import { expectedMainnetAddresses, integrationTestFixture } from "./helpers"
+import { to1e18 } from "../utils"
 
 describe("Deployment", () => {
   let stbtc: stBTC
@@ -20,10 +22,17 @@ describe("Deployment", () => {
   let tbtc: TestERC20
   let bitcoinDepositor: BitcoinDepositor
   let bitcoinRedeemer: BitcoinRedeemer
+  let mezoPortal: IMezoPortal
 
   before(async () => {
-    ;({ stbtc, mezoAllocator, bitcoinDepositor, bitcoinRedeemer, tbtc } =
-      await loadFixture(integrationTestFixture))
+    ;({
+      stbtc,
+      mezoAllocator,
+      bitcoinDepositor,
+      bitcoinRedeemer,
+      tbtc,
+      mezoPortal,
+    } = await loadFixture(integrationTestFixture))
   })
 
   function testUpgradeableInitialization(
@@ -106,6 +115,14 @@ describe("Deployment", () => {
         )
 
         expect(allowance).to.be.equal(MaxUint256)
+      })
+    })
+
+    describe("updateDebtAllowance", () => {
+      it("should set value", async () => {
+        expect(
+          await stbtc.allowedDebt(await mezoPortal.getAddress()),
+        ).to.be.equal(to1e18(1000))
       })
     })
   })

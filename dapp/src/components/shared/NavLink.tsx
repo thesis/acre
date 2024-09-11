@@ -8,7 +8,7 @@ import {
   NavLinkProps as RouterNavLinkProps,
 } from "react-router-dom"
 
-type NavLinkProps = Omit<ChakraLinkProps, "as" | "href" | "children"> &
+export type NavLinkProps = Omit<ChakraLinkProps, "as" | "href" | "children"> &
   Pick<RouterNavLinkProps, "to" | "children">
 
 export function NavLink(props: NavLinkProps) {

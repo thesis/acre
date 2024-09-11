@@ -15,6 +15,7 @@ const BEEHIVE_COMPONENT_ENABLED =
 
 const ACRE_POINTS_ENABLED =
   import.meta.env.VITE_FEATURE_FLAG_ACRE_POINTS_ENABLED === "true"
+const TVL_ENABLED = import.meta.env.VITE_FEATURE_FLAG_TVL_ENABLED === "true"
 
 const featureFlags = {
   GAMIFICATION_ENABLED,
@@ -23,6 +24,7 @@ const featureFlags = {
   WITHDRAWALS_ENABLED,
   BEEHIVE_COMPONENT_ENABLED,
   ACRE_POINTS_ENABLED,
+  TVL_ENABLED,
 }
 
 export default featureFlags
