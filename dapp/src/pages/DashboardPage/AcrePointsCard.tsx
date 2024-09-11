@@ -18,12 +18,8 @@ import { acrePoints as acrePointsUtils } from "#/utils"
 const { getFormattedAmount } = acrePointsUtils
 
 export default function AcrePointsCard(props: CardProps) {
-  const {
-    claimablePointsAmount,
-    nextDropTimestamp,
-    totalPointsAmount,
-    dailyPointsAmount,
-  } = useAcrePoints()
+  const { claimablePointsAmount, nextDropTimestamp, totalPointsAmount } =
+    useAcrePoints()
 
   const { openModal } = useModal()
 
@@ -33,7 +29,6 @@ export default function AcrePointsCard(props: CardProps) {
   }
 
   const formattedTotalPointsAmount = getFormattedAmount(totalPointsAmount)
-  const formattedDailyPointsAmount = getFormattedAmount(dailyPointsAmount)
   const formattedClaimablePointsAmount = getFormattedAmount(
     claimablePointsAmount,
   )
@@ -53,9 +48,6 @@ export default function AcrePointsCard(props: CardProps) {
       <CardBody p={0}>
         <UserDataSkeleton>
           <H4 mb={2}>{formattedTotalPointsAmount}&nbsp;PTS</H4>
-          <TextMd color="grey.500" mb={4}>
-            + {formattedDailyPointsAmount} PTS/day
-          </TextMd>
 
           <VStack px={4} py={3} spacing={3} rounded="lg" bg="gold.100">
             <TextMd color="grey.700" textAlign="center">
