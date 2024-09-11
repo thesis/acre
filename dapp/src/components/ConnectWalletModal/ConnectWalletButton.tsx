@@ -8,7 +8,13 @@ import {
 } from "#/hooks"
 import { setIsSignedMessage } from "#/store/wallet"
 import { OrangeKitConnector, OrangeKitError, OnSuccessCallback } from "#/types"
-import { logPromiseFailure, orangeKit } from "#/utils"
+import {
+  createSession,
+  deleteSession,
+  getSession,
+  logPromiseFailure,
+  orangeKit,
+} from "#/utils"
 import {
   Button,
   Card,
@@ -21,9 +27,9 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { useSignMessage } from "wagmi"
+import { isAddressEqual } from "viem"
 import { IconArrowNarrowRight } from "@tabler/icons-react"
 import { AnimatePresence, Variants, motion } from "framer-motion"
-import axios from "axios"
 import ArrivingSoonTooltip from "../ArrivingSoonTooltip"
 import { TextLg, TextMd } from "../shared/Typography"
 import ConnectWalletStatusLabel from "./ConnectWalletStatusLabel"
@@ -86,39 +92,44 @@ export default function ConnectWalletButton({
   const handleSignMessage = useCallback(
     async (connectedConnector: OrangeKitConnector, btcAddress: string) => {
       try {
-        const response = await axios.get<
-          { nonce: string } | { address: string }
-        >("http://localhost:8788/api/v1/session", { withCredentials: true })
+        const session = await getSession()
+        const [ethAddress] = await connectedConnector.getAccounts()
 
-        if ("address" in response.data) {
-          console.log("Nothing to sign. Session already exists")
+        const hasSessionAddress = "address" in session
+
+        const isSessionAddressEqual = hasSessionAddress
+          ? isAddressEqual(ethAddress, session.address as `0x${string}`)
+          : false
+
+        if (hasSessionAddress && isSessionAddressEqual) {
           onSuccessSignMessage()
           return
         }
 
-        const { nonce } = response.data
-        console.log("nonce", nonce)
+        if (!hasSessionAddress && !isAddressEqual) {
+          await deleteSession()
+        }
+
+        const hasNonce = "nonce" in session
+        if (!hasNonce) {
+          throw new Error("Session nonce not available")
+        }
 
         const message = orangeKit.createSignInWithWalletMessage(
           btcAddress,
-          nonce,
+          session.nonce,
         )
-        console.log("message", message)
+
         const signedMessage = await signMessageAsync({
           message,
           connector: orangeKit.typeConversionToConnector(connectedConnector),
         })
-        const createSessionResponse = await axios.post<{ success: boolean }>(
-          "http://localhost:8788/api/v1/session",
-          { message, signature: signedMessage },
-          { withCredentials: true },
-        )
 
-        if (createSessionResponse.data.success) {
-          onSuccessSignMessage()
-        }
+        await createSession(message, signedMessage)
+
+        onSuccessSignMessage()
       } catch (error) {
-        console.error("error", error)
+        console.error("Failed to sign siww message", error)
         setConnectionError(CONNECTION_ERRORS.INVALID_SIWW_SIGNATURE)
       }
     },

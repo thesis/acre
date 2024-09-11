@@ -1,4 +1,8 @@
-import { CONNECTION_ERRORS, wallets } from "#/constants"
+import {
+  ACRE_SESSION_EXPIRATION_TIME,
+  CONNECTION_ERRORS,
+  wallets,
+} from "#/constants"
 import {
   ConnectionErrorData,
   OrangeKitError,
@@ -23,8 +27,6 @@ const getWalletInfo = (connector: OrangeKitConnector) => {
       return null
   }
 }
-
-const ACRE_SESSION_EXPIRATION_TIME = 10800000
 
 const isWalletInstalled = (connector: OrangeKitConnector) => {
   const provider = connector.getBitcoinProvider()
