@@ -1,22 +1,20 @@
 import React, { ReactNode, useEffect, useMemo } from "react"
-import { useAcrePoints } from "#/hooks"
-import { Box, ModalBody, Text, VStack } from "@chakra-ui/react"
+import { useAcrePoints, useModal } from "#/hooks"
+import { Box, Button, ModalBody, Text, VStack } from "@chakra-ui/react"
 import {
   AnimationSequence,
   motion,
   Transition,
   useAnimate,
-  useMotionValue,
 } from "framer-motion"
 import { acrePoints as acrePointsUtils } from "#/utils"
 import withBaseModal from "../ModalRoot/withBaseModal"
 import { TextXl } from "../shared/Typography"
 import { AnimatedNumber } from "../shared/AnimatedNumber"
-import ArrowAnimatedBackground from "./ArrowAnimatedBackground"
 
 const { getFormattedAmount } = acrePointsUtils
 
-const MotionVStack = motion(VStack)
+const MotionBox = motion(Box)
 
 const INITIAL_CONTAINER_HEIGHT = 214
 const CONTAINER_HEIGHT = 288
@@ -27,7 +25,7 @@ const TRANSITION: Transition = {
   type: "spring",
   damping: 14,
   stiffness: 86,
-  delay: 2, // step duration
+  delay: 4, // step duration
 }
 
 const getStepOffsets = (
@@ -96,7 +94,6 @@ export function AcrePointsClaimModalBase() {
     [formattedClaimablePointsAmount, formattedUpdatedPointsAmount],
   )
 
-  const containerHeight = useMotionValue(INITIAL_CONTAINER_HEIGHT)
   const [scope, animate] = useAnimate()
 
   useEffect(() => {
@@ -107,12 +104,22 @@ export function AcrePointsClaimModalBase() {
 
     const sequence = [
       ["[data-steps-list]", { y: offsets[0] }, TRANSITION],
-      [containerHeight, CONTAINER_HEIGHT, { at: "<", ...TRANSITION }],
+      [
+        "[data-container]",
+        {
+          clipPath: `polygon(0 0, 100% 0, 100% ${CONTAINER_HEIGHT}px, 0 ${CONTAINER_HEIGHT}px)`,
+        },
+        { at: "<", ...TRANSITION },
+      ],
+
       [valueElements[0], { scale: VALUE_SCALE }, { at: "<", ...TRANSITION }],
-      ["[data-steps-list]", { y: offsets[1] }, TRANSITION],
-      [valueElements[1], { scale: VALUE_SCALE }, { at: "<", ...TRANSITION }],
-      ["[data-steps-list]", { y: offsets[2] }, TRANSITION],
-      [valueElements[2], { scale: VALUE_SCALE }, { at: "<", ...TRANSITION }],
+      ["[data-close-button]", { opacity: 1 }, { at: "<", ...TRANSITION }],
+
+      // ["[data-steps-list]", { y: offsets[1] }, TRANSITION],
+      // [valueElements[1], { scale: VALUE_SCALE }, { at: "<", ...TRANSITION }],
+
+      // ["[data-steps-list]", { y: offsets[2] }, TRANSITION],
+      // [valueElements[2], { scale: VALUE_SCALE }, { at: "<", ...TRANSITION }],
     ] as AnimationSequence
 
     const handleAnimation = async () => {
@@ -121,16 +128,18 @@ export function AcrePointsClaimModalBase() {
 
     // eslint-disable-next-line no-void
     void handleAnimation()
-  }, [scope, animate, containerHeight, steps])
+  }, [scope, animate, steps])
+
+  const { closeModal } = useModal()
 
   return (
-    <ModalBody gap={0} p={0}>
-      <Box py={6} ref={scope}>
-        <MotionVStack
-          spacing={STEP_SPACING / 4} // to get 8th token value -> 32px
-          data-steps-list
-          style={{ height: containerHeight }}
-        >
+    <ModalBody gap={0} p={0} ref={scope}>
+      <MotionBox
+        data-container
+        clipPath={`polygon(0 0, 100% 0, 100% ${INITIAL_CONTAINER_HEIGHT}px, 0 ${INITIAL_CONTAINER_HEIGHT}px)`}
+        overflow="hidden"
+      >
+        <VStack data-steps-list spacing={8}>
           {steps.map(([currentStepLabel, currentStepValue]) => (
             <Box key={currentStepLabel}>
               <TextXl
@@ -152,10 +161,18 @@ export function AcrePointsClaimModalBase() {
               </Text>
             </Box>
           ))}
-        </MotionVStack>
-      </Box>
+        </VStack>
+      </MotionBox>
 
-      <ArrowAnimatedBackground />
+      <Button
+        mt="12.5rem" // 200px
+        opacity={0}
+        onClick={closeModal}
+        data-close-button
+        variant="outline"
+      >
+        Yay!
+      </Button>
     </ModalBody>
   )
 }
