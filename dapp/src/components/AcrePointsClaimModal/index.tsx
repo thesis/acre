@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useMemo } from "react"
+import React, { ReactNode, useEffect, useMemo, useState } from "react"
 import { useAcrePoints, useModal, useTimeout } from "#/hooks"
 import { Box, Button, ModalBody, Text, VStack } from "@chakra-ui/react"
 import {
@@ -9,6 +9,7 @@ import {
 } from "framer-motion"
 import { acrePoints as acrePointsUtils } from "#/utils"
 import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
+import ConfettiExplosion from "react-confetti-explosion"
 import withBaseModal from "../ModalRoot/withBaseModal"
 import { TextXl } from "../shared/Typography"
 import { AnimatedNumber } from "../shared/AnimatedNumber"
@@ -29,6 +30,7 @@ const TRANSITION: Transition = {
   delay: 4, // step duration
 }
 const AUTOCLOSE_DELAY = 12 * ONE_SEC_IN_MILLISECONDS
+const CONFETTI_DURATION = 4 * ONE_SEC_IN_MILLISECONDS
 
 const getStepOffsets = (
   stepCount: number,
@@ -135,9 +137,10 @@ export function AcrePointsClaimModalBase() {
   const { closeModal } = useModal()
 
   useTimeout(closeModal, AUTOCLOSE_DELAY)
+  const [isCofettiExploded, setIsCofettiExploded] = useState(false)
 
   return (
-    <ModalBody gap={0} p={0} ref={scope}>
+    <ModalBody gap={0} p={0} pos="relative" ref={scope}>
       <MotionBox
         data-container
         clipPath={`polygon(0 0, 100% 0, 100% ${INITIAL_CONTAINER_HEIGHT}px, 0 ${INITIAL_CONTAINER_HEIGHT}px)`}
@@ -176,6 +179,25 @@ export function AcrePointsClaimModalBase() {
       >
         Yay!
       </Button>
+
+      {!isCofettiExploded && (
+        <Box
+          pos="absolute"
+          top={0}
+          left="50%"
+          translateX="-50%"
+          transform="auto"
+        >
+          <ConfettiExplosion
+            zIndex={1410} // Chakra's modal has a z-index of 1400
+            width={768}
+            height="100vh"
+            duration={CONFETTI_DURATION}
+            force={0.2}
+            onComplete={() => setIsCofettiExploded(true)}
+          />
+        </Box>
+      )}
     </ModalBody>
   )
 }
