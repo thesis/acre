@@ -1,5 +1,5 @@
 import React, { ReactNode, useEffect, useMemo } from "react"
-import { useAcrePoints, useModal } from "#/hooks"
+import { useAcrePoints, useModal, useTimeout } from "#/hooks"
 import { Box, Button, ModalBody, Text, VStack } from "@chakra-ui/react"
 import {
   AnimationSequence,
@@ -8,6 +8,7 @@ import {
   useAnimate,
 } from "framer-motion"
 import { acrePoints as acrePointsUtils } from "#/utils"
+import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import withBaseModal from "../ModalRoot/withBaseModal"
 import { TextXl } from "../shared/Typography"
 import { AnimatedNumber } from "../shared/AnimatedNumber"
@@ -27,6 +28,7 @@ const TRANSITION: Transition = {
   stiffness: 86,
   delay: 4, // step duration
 }
+const AUTOCLOSE_DELAY = 12 * ONE_SEC_IN_MILLISECONDS
 
 const getStepOffsets = (
   stepCount: number,
@@ -132,6 +134,8 @@ export function AcrePointsClaimModalBase() {
 
   const { closeModal } = useModal()
 
+  useTimeout(closeModal, AUTOCLOSE_DELAY)
+
   return (
     <ModalBody gap={0} p={0} ref={scope}>
       <MotionBox
@@ -165,7 +169,6 @@ export function AcrePointsClaimModalBase() {
       </MotionBox>
 
       <Button
-        mt="12.5rem" // 200px
         opacity={0}
         onClick={closeModal}
         data-close-button
