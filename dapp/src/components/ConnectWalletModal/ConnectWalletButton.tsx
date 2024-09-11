@@ -23,6 +23,7 @@ import {
 import { useSignMessage } from "wagmi"
 import { IconArrowNarrowRight } from "@tabler/icons-react"
 import { AnimatePresence, Variants, motion } from "framer-motion"
+import axios from "axios"
 import ArrivingSoonTooltip from "../ArrivingSoonTooltip"
 import { TextLg, TextMd } from "../shared/Typography"
 import ConnectWalletStatusLabel from "./ConnectWalletStatusLabel"
@@ -84,16 +85,40 @@ export default function ConnectWalletButton({
 
   const handleSignMessage = useCallback(
     async (connectedConnector: OrangeKitConnector, btcAddress: string) => {
-      const message = orangeKit.createSignInWithWalletMessage(btcAddress)
-      const signedMessage = await signMessageAsync({
-        message,
-        connector: orangeKit.typeConversionToConnector(connectedConnector),
-      })
-
       try {
-        await orangeKit.verifySignInWithWalletMessage(message, signedMessage)
-        onSuccessSignMessage()
+        const response = await axios.get<
+          { nonce: string } | { address: string }
+        >("http://localhost:8788/api/v1/session", { withCredentials: true })
+
+        if ("address" in response.data) {
+          console.log("Nothing to sign. Session already exists")
+          onSuccessSignMessage()
+          return
+        }
+
+        const { nonce } = response.data
+        console.log("nonce", nonce)
+
+        const message = orangeKit.createSignInWithWalletMessage(
+          btcAddress,
+          nonce,
+        )
+        console.log("message", message)
+        const signedMessage = await signMessageAsync({
+          message,
+          connector: orangeKit.typeConversionToConnector(connectedConnector),
+        })
+        const createSessionResponse = await axios.post<{ success: boolean }>(
+          "http://localhost:8788/api/v1/session",
+          { message, signature: signedMessage },
+          { withCredentials: true },
+        )
+
+        if (createSessionResponse.data.success) {
+          onSuccessSignMessage()
+        }
       } catch (error) {
+        console.error("error", error)
         setConnectionError(CONNECTION_ERRORS.INVALID_SIWW_SIGNATURE)
       }
     },

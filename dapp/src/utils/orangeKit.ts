@@ -24,6 +24,8 @@ const getWalletInfo = (connector: OrangeKitConnector) => {
   }
 }
 
+const ACRE_SESSION_EXPIRATION_TIME = 10800000
+
 const isWalletInstalled = (connector: OrangeKitConnector) => {
   const provider = connector.getBitcoinProvider()
   return provider.isInstalled()
@@ -37,7 +39,7 @@ const isConnectedStatus = (status: string) => status === "connected"
 const isOrangeKitConnector = (connector?: Connector) =>
   connector?.type === "orangekit"
 
-const createSignInWithWalletMessage = (address: string) => {
+const createSignInWithWalletMessage = (address: string, nonce: string) => {
   const { host: domain, origin: uri } = window.location
 
   const message = new SignInWithWalletMessage({
@@ -47,6 +49,10 @@ const createSignInWithWalletMessage = (address: string) => {
     issuedAt: new Date().toISOString(),
     version: "1",
     networkFamily: "bitcoin",
+    expirationTime: new Date(
+      Date.now() + ACRE_SESSION_EXPIRATION_TIME,
+    ).toISOString(),
+    nonce,
   })
 
   return message.prepareMessage()
