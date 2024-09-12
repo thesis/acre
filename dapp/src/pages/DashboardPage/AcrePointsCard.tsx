@@ -56,10 +56,12 @@ export default function AcrePointsCard(props: CardProps) {
         <UserDataSkeleton>
           <H4 mb={2}>{formattedTotalPointsAmount}&nbsp;PTS</H4>
 
-          <VStack px={4} py={3} spacing={3} rounded="lg" bg="gold.100">
+          <VStack px={4} py={3} spacing={0} rounded="lg" bg="gold.100">
             {nextDropTimestamp && (
-              <TextMd color="grey.700" textAlign="center">
-                Next drop in
+              <>
+                <TextMd color="grey.700" textAlign="center">
+                  Next drop in
+                </TextMd>
                 <Countdown
                   timestamp={nextDropTimestamp}
                   onCountdownEnd={handleOnCountdownEnd}
@@ -68,11 +70,12 @@ export default function AcrePointsCard(props: CardProps) {
                   ml={claimableBalance ? 2 : 0}
                   mt={claimableBalance ? 0 : 2}
                 />
-              </TextMd>
+              </>
             )}
 
             {claimableBalance && (
               <Button
+                mt={3}
                 onClick={onClaimButtonClick}
                 w="full"
                 colorScheme="green"
