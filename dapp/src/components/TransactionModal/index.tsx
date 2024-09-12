@@ -2,12 +2,14 @@ import React, { useEffect } from "react"
 import { StakeFlowProvider } from "#/contexts"
 import {
   useAppDispatch,
+  useConnector,
   useIsSignedMessage,
   useSidebar,
   useTransactionModal,
 } from "#/hooks"
-import { ActionFlowType, BaseModalProps } from "#/types"
+import { ACTION_FLOW_TYPES, ActionFlowType, BaseModalProps } from "#/types"
 import { resetState, setType } from "#/store/action-flow"
+import { featureFlags, wallets } from "#/constants"
 import ModalContentWrapper from "./ModalContentWrapper"
 import { ActiveFlowStep } from "./ActiveFlowStep"
 import withBaseModal from "../ModalRoot/withBaseModal"
@@ -18,6 +20,21 @@ type TransactionModalProps = { type: ActionFlowType } & BaseModalProps
 function TransactionModalBase({ type, closeModal }: TransactionModalProps) {
   const { onOpen: openSideBar, onClose: closeSidebar } = useSidebar()
   const dispatch = useAppDispatch()
+
+  // TODO: Temporary solution - Should be removed when the error for Xverse is resolved.
+  const isSignedMessage = useIsSignedMessage()
+  const connector = useConnector()
+
+  useEffect(() => {
+    if (
+      !featureFlags.XVERSE_WALLET_DEPOSIT_ENABLED &&
+      type === ACTION_FLOW_TYPES.STAKE &&
+      isSignedMessage &&
+      connector?.id === wallets.XVERSE.id
+    ) {
+      closeModal()
+    }
+  }, [closeModal, connector?.id, isSignedMessage, type])
 
   useEffect(() => {
     dispatch(setType(type))
