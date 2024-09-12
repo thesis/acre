@@ -14,6 +14,7 @@ import {
 } from "@orangekit/react"
 import { Connector } from "wagmi"
 import { SignInWithWalletMessage } from "@orangekit/sign-in-with-wallet"
+import { getExpirationDate } from "./time"
 
 const getWalletInfo = (connector: OrangeKitConnector) => {
   switch (connector.id) {
@@ -51,8 +52,8 @@ const createSignInWithWalletMessage = (address: string, nonce: string) => {
     issuedAt: new Date().toISOString(),
     version: "1",
     networkFamily: "bitcoin",
-    expirationTime: new Date(
-      Date.now() + ACRE_SESSION_EXPIRATION_TIME,
+    expirationTime: getExpirationDate(
+      ACRE_SESSION_EXPIRATION_TIME,
     ).toISOString(),
     nonce,
   })
