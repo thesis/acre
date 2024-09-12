@@ -53,7 +53,9 @@ export function AcrePointsClaimModalBase() {
   } = useAcrePoints()
 
   const formattedClaimablePointsAmount = getFormattedAmount(claimedPointsAmount)
-  const formattedTotalPointsAmount = getFormattedAmount(totalBalance)
+  const formattedTotalPointsAmount = getFormattedAmount(
+    totalBalance + claimedPointsAmount,
+  )
 
   const steps = useMemo<[string, ReactNode][]>(
     () => [
