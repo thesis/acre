@@ -106,7 +106,7 @@ export default function ConnectWalletButton({
           return
         }
 
-        if (!hasSessionAddress && !isAddressEqual) {
+        if (hasSessionAddress && !isSessionAddressEqual) {
           await deleteSession()
         }
 
