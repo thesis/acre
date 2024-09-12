@@ -3,12 +3,13 @@ import { CONNECTION_ERRORS, ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import {
   useAppDispatch,
   useModal,
+  useSignMessageAndCreateSession,
   useWallet,
   useWalletConnectionError,
 } from "#/hooks"
 import { setIsSignedMessage } from "#/store/wallet"
 import { OrangeKitConnector, OrangeKitError, OnSuccessCallback } from "#/types"
-import { acreApi, logPromiseFailure, orangeKit } from "#/utils"
+import { logPromiseFailure, orangeKit } from "#/utils"
 import {
   Button,
   Card,
@@ -20,7 +21,6 @@ import {
   ImageProps,
   VStack,
 } from "@chakra-ui/react"
-import { useSignMessage } from "wagmi"
 import { IconArrowNarrowRight } from "@tabler/icons-react"
 import { AnimatePresence, Variants, motion } from "framer-motion"
 import ArrivingSoonTooltip from "../ArrivingSoonTooltip"
@@ -61,7 +61,8 @@ export default function ConnectWalletButton({
     onDisconnect,
     status: connectionStatus,
   } = useWallet()
-  const { signMessageAsync, status: signMessageStatus } = useSignMessage()
+  const { signMessageStatus, signMessageAndCreateSession } =
+    useSignMessageAndCreateSession()
   const { closeModal } = useModal()
   const dispatch = useAppDispatch()
 
@@ -82,46 +83,10 @@ export default function ConnectWalletButton({
     }
   }, [closeModal, dispatch, onSuccess])
 
-  const handleSignMessage = useCallback(
+  const handleSignMessageAndCreateSession = useCallback(
     async (connectedConnector: OrangeKitConnector, btcAddress: string) => {
       try {
-        let session = await acreApi.getSession()
-        const publicKey = await connectedConnector
-          .getBitcoinProvider()
-          .getPublicKey()
-        const hasSessionAddress = "address" in session
-
-        const isSessionAddressEqual = hasSessionAddress
-          ? (session as { address: string }).address === btcAddress
-          : false
-
-        if (hasSessionAddress && isSessionAddressEqual) {
-          onSuccessSignMessage()
-          return
-        }
-
-        if (hasSessionAddress && !isSessionAddressEqual) {
-          // Delete session.
-          await acreApi.deleteSession()
-          // Ask for nonce to create new session.
-          session = await acreApi.getSession()
-        }
-
-        if (!("nonce" in session)) {
-          throw new Error("Session nonce not available")
-        }
-
-        const message = orangeKit.createSignInWithWalletMessage(
-          btcAddress,
-          session.nonce,
-        )
-
-        const signedMessage = await signMessageAsync({
-          message,
-          connector: orangeKit.typeConversionToConnector(connectedConnector),
-        })
-
-        await acreApi.createSession(message, signedMessage, publicKey)
+        await signMessageAndCreateSession(connectedConnector, btcAddress)
 
         onSuccessSignMessage()
       } catch (error) {
@@ -129,7 +94,7 @@ export default function ConnectWalletButton({
         setConnectionError(CONNECTION_ERRORS.INVALID_SIWW_SIGNATURE)
       }
     },
-    [signMessageAsync, onSuccessSignMessage, setConnectionError],
+    [signMessageAndCreateSession, onSuccessSignMessage, setConnectionError],
   )
 
   const onSuccessConnection = useCallback(
@@ -138,9 +103,9 @@ export default function ConnectWalletButton({
 
       if (!btcAddress) return
 
-      await handleSignMessage(connector, btcAddress)
+      await handleSignMessageAndCreateSession(connector, btcAddress)
     },
-    [connector, handleSignMessage],
+    [connector, handleSignMessageAndCreateSession],
   )
 
   const handleConnection = useCallback(() => {
@@ -273,7 +238,9 @@ export default function ConnectWalletButton({
                     size="lg"
                     variant="outline"
                     onClick={() =>
-                      logPromiseFailure(handleSignMessage(connector, address))
+                      logPromiseFailure(
+                        handleSignMessageAndCreateSession(connector, address),
+                      )
                     }
                   >
                     Resume and try again
