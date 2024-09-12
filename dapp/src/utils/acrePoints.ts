@@ -1,9 +1,9 @@
-import { ACRE_POINTS_REWARDS_MULTIPLERS } from "#/constants"
+import { ACRE_POINTS_REWARDS_MULTIPLERS, env } from "#/constants"
 import { AcrePointsClaimTier } from "#/types"
 import axios from "axios"
 import { bigIntStringToNumber, numberToLocaleString } from "./numbers"
 
-const acreApiEndpoint = "http://localhost:8788/api/v1"
+const { ACRE_API_ENDPOINT } = env
 
 const estimateRewardAmountPerTier = (
   baseReward: number,
@@ -26,7 +26,7 @@ type ClaimedAcrePointsResponse = {
   dropAt: number
 }
 const getAcrePoints = async (address = "") => {
-  const url = `${acreApiEndpoint}/points/${address}`
+  const url = `${ACRE_API_ENDPOINT}/points/${address}`
   const response = await axios.get<ClaimedAcrePointsResponse>(url)
 
   return {
@@ -43,7 +43,7 @@ type ClaimAcrePointsResponse = {
   claimedAt: number
 }
 const handleClaimAcrePoints = async (address: string) => {
-  const url = `${acreApiEndpoint}/points/claim/${address}`
+  const url = `${ACRE_API_ENDPOINT}/points/claim/${address}`
   const response = await axios.post<ClaimAcrePointsResponse>(url)
 
   return {
