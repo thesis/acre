@@ -12,7 +12,6 @@ import {
   TagLabel,
 } from "@chakra-ui/react"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
-import useAcrePoints from "#/hooks/useAcrePoints"
 import ButtonLink from "#/components/shared/ButtonLink"
 import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react"
 import { isWithinPeriod } from "#/utils"
@@ -25,13 +24,12 @@ type AcreRankCardProps = CardProps & {
 export default function AcreRankCard(props: AcreRankCardProps) {
   const { withTrendingIcon = true, ...restProps } = props
 
-  const {
-    lastClaimedTimestamp,
-    estimatedRankPosition,
-    rankPosition,
-    userId,
-    userName,
-  } = useAcrePoints()
+  // TODO: To implement
+  const lastClaimedTimestamp = 0
+  const estimatedRankPosition = 0
+  const rankPosition = 0
+  const userId = 0
+  const userName = ""
 
   const hasClaimedLastWeek = isWithinPeriod(
     lastClaimedTimestamp,
