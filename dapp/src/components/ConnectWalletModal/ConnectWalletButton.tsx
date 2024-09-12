@@ -27,7 +27,6 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { useSignMessage } from "wagmi"
-import { isAddressEqual } from "viem"
 import { IconArrowNarrowRight } from "@tabler/icons-react"
 import { AnimatePresence, Variants, motion } from "framer-motion"
 import ArrivingSoonTooltip from "../ArrivingSoonTooltip"
@@ -92,13 +91,14 @@ export default function ConnectWalletButton({
   const handleSignMessage = useCallback(
     async (connectedConnector: OrangeKitConnector, btcAddress: string) => {
       try {
-        const session = await getSession()
-        const [ethAddress] = await connectedConnector.getAccounts()
-
+        let session = await getSession()
+        const publicKey = await connectedConnector
+          .getBitcoinProvider()
+          .getPublicKey()
         const hasSessionAddress = "address" in session
 
         const isSessionAddressEqual = hasSessionAddress
-          ? isAddressEqual(ethAddress, session.address as `0x${string}`)
+          ? (session as { address: string }).address === btcAddress
           : false
 
         if (hasSessionAddress && isSessionAddressEqual) {
@@ -107,11 +107,13 @@ export default function ConnectWalletButton({
         }
 
         if (hasSessionAddress && !isSessionAddressEqual) {
+          // Delete session.
           await deleteSession()
+          // Ask for nonce to create new session.
+          session = await getSession()
         }
 
-        const hasNonce = "nonce" in session
-        if (!hasNonce) {
+        if (!("nonce" in session)) {
           throw new Error("Session nonce not available")
         }
 
@@ -125,7 +127,7 @@ export default function ConnectWalletButton({
           connector: orangeKit.typeConversionToConnector(connectedConnector),
         })
 
-        await createSession(message, signedMessage)
+        await createSession(message, signedMessage, publicKey)
 
         onSuccessSignMessage()
       } catch (error) {
