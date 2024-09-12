@@ -6,7 +6,7 @@ const axios = axiosStatic.create({
   withCredentials: true,
 })
 
-export async function getSession() {
+async function getSession() {
   const response = await axios.get<{ nonce: string } | { address: string }>(
     "session",
   )
@@ -14,7 +14,7 @@ export async function getSession() {
   return response.data
 }
 
-export async function createSession(
+async function createSession(
   message: string,
   signature: string,
   publicKey: string,
@@ -30,6 +30,12 @@ export async function createSession(
   }
 }
 
-export async function deleteSession() {
+async function deleteSession() {
   await axios.delete("session")
+}
+
+export default {
+  createSession,
+  getSession,
+  deleteSession,
 }

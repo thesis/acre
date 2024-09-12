@@ -8,13 +8,7 @@ import {
 } from "#/hooks"
 import { setIsSignedMessage } from "#/store/wallet"
 import { OrangeKitConnector, OrangeKitError, OnSuccessCallback } from "#/types"
-import {
-  createSession,
-  deleteSession,
-  getSession,
-  logPromiseFailure,
-  orangeKit,
-} from "#/utils"
+import { acreApi, logPromiseFailure, orangeKit } from "#/utils"
 import {
   Button,
   Card,
@@ -91,7 +85,7 @@ export default function ConnectWalletButton({
   const handleSignMessage = useCallback(
     async (connectedConnector: OrangeKitConnector, btcAddress: string) => {
       try {
-        let session = await getSession()
+        let session = await acreApi.getSession()
         const publicKey = await connectedConnector
           .getBitcoinProvider()
           .getPublicKey()
@@ -108,9 +102,9 @@ export default function ConnectWalletButton({
 
         if (hasSessionAddress && !isSessionAddressEqual) {
           // Delete session.
-          await deleteSession()
+          await acreApi.deleteSession()
           // Ask for nonce to create new session.
-          session = await getSession()
+          session = await acreApi.getSession()
         }
 
         if (!("nonce" in session)) {
@@ -127,7 +121,7 @@ export default function ConnectWalletButton({
           connector: orangeKit.typeConversionToConnector(connectedConnector),
         })
 
-        await createSession(message, signedMessage, publicKey)
+        await acreApi.createSession(message, signedMessage, publicKey)
 
         onSuccessSignMessage()
       } catch (error) {
