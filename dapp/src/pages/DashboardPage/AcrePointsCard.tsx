@@ -13,25 +13,32 @@ import Countdown from "#/components/shared/Countdown"
 import useAcrePoints from "#/hooks/useAcrePoints"
 import { MODAL_TYPES } from "#/types"
 import { useModal } from "#/hooks"
-import { acrePoints as acrePointsUtils } from "#/utils"
+import { acrePoints as acrePointsUtils, logPromiseFailure } from "#/utils"
 
 const { getFormattedAmount } = acrePointsUtils
 
 export default function AcrePointsCard(props: CardProps) {
-  const { claimablePointsAmount, nextDropTimestamp, totalPointsAmount } =
-    useAcrePoints()
+  const {
+    claimableBalance,
+    nextDropTimestamp,
+    totalBalance,
+    handleClaim,
+    updateBalance,
+  } = useAcrePoints()
 
   const { openModal } = useModal()
 
-  const handleClaim = () => {
-    // TODO: Call API endpoint to claim points
+  const onClaimButtonClick = () => {
+    handleClaim()
     openModal(MODAL_TYPES.ACRE_POINTS_CLAIM)
   }
 
-  const formattedTotalPointsAmount = getFormattedAmount(totalPointsAmount)
-  const formattedClaimablePointsAmount = getFormattedAmount(
-    claimablePointsAmount,
-  )
+  const formattedTotalPointsAmount = getFormattedAmount(totalBalance)
+  const formattedClaimablePointsAmount = getFormattedAmount(claimableBalance)
+
+  const handleOnCountdownEnd = () => {
+    logPromiseFailure(updateBalance())
+  }
 
   return (
     <Card
@@ -50,20 +57,23 @@ export default function AcrePointsCard(props: CardProps) {
           <H4 mb={2}>{formattedTotalPointsAmount}&nbsp;PTS</H4>
 
           <VStack px={4} py={3} spacing={3} rounded="lg" bg="gold.100">
-            <TextMd color="grey.700" textAlign="center">
-              Next drop in
-              <Countdown
-                timestamp={nextDropTimestamp}
-                size={claimablePointsAmount ? "md" : "2xl"}
-                display={claimablePointsAmount ? "inline" : "block"}
-                ml={claimablePointsAmount ? 2 : 0}
-                mt={claimablePointsAmount ? 0 : 2}
-              />
-            </TextMd>
+            {nextDropTimestamp && (
+              <TextMd color="grey.700" textAlign="center">
+                Next drop in
+                <Countdown
+                  timestamp={nextDropTimestamp}
+                  onCountdownEnd={handleOnCountdownEnd}
+                  size={claimableBalance ? "md" : "2xl"}
+                  display={claimableBalance ? "inline" : "block"}
+                  ml={claimableBalance ? 2 : 0}
+                  mt={claimableBalance ? 0 : 2}
+                />
+              </TextMd>
+            )}
 
-            {claimablePointsAmount && (
+            {claimableBalance && (
               <Button
-                onClick={handleClaim}
+                onClick={onClaimButtonClick}
                 w="full"
                 colorScheme="green"
                 color="gold.200"

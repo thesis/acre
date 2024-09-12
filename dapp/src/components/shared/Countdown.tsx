@@ -8,6 +8,7 @@ type CountdownProps = {
   addLeadingZeros?: boolean
   units?: (keyof TimeUnits)[]
   size?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl"
+  onCountdownEnd?: () => void
 } & BoxProps
 
 function Countdown(props: CountdownProps) {
@@ -16,12 +17,13 @@ function Countdown(props: CountdownProps) {
     addLeadingZeros = true,
     units = ["hours", "minutes", "seconds"],
     size = "md",
+    onCountdownEnd,
     ...restProps
   } = props
 
   const styles = useMultiStyleConfig("Countdown", { size })
 
-  const timeUnits = useCountdown(timestamp, addLeadingZeros)
+  const timeUnits = useCountdown(timestamp, addLeadingZeros, onCountdownEnd)
 
   return (
     <Box __css={styles.container} {...restProps}>

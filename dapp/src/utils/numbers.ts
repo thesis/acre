@@ -8,7 +8,8 @@ export const numberToLocaleString = (
 ): string => {
   const number = typeof value === "number" ? value : parseFloat(value)
 
-  if (number === 0) return `0.${"0".repeat(desiredDecimals)}`
+  if (number === 0)
+    return desiredDecimals ? `0.${"0".repeat(desiredDecimals)}` : "0"
 
   return number.toLocaleString("default", {
     minimumFractionDigits: desiredDecimals,
@@ -223,3 +224,6 @@ export const getNumberWithSign = (number: number) =>
   new Intl.NumberFormat("en-US", {
     signDisplay: "exceptZero",
   }).format(number)
+
+export const bigIntStringToNumber = (bigIntString: string) =>
+  Number(BigInt(bigIntString))

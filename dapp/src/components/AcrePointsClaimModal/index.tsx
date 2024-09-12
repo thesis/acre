@@ -7,7 +7,7 @@ import {
   Transition,
   useAnimate,
 } from "framer-motion"
-import { acrePoints as acrePointsUtils } from "#/utils"
+import { acrePoints as acrePointsUtils, logPromiseFailure } from "#/utils"
 import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import ConfettiExplosion from "react-confetti-explosion"
 import withBaseModal from "../ModalRoot/withBaseModal"
@@ -46,14 +46,14 @@ const getStepOffsets = (
     )
 
 export function AcrePointsClaimModalBase() {
-  const { claimablePointsAmount, totalPointsAmount } = useAcrePoints()
+  const {
+    claimableBalance: claimedPointsAmount,
+    totalBalance,
+    updateBalance,
+  } = useAcrePoints()
 
-  const formattedClaimablePointsAmount = getFormattedAmount(
-    claimablePointsAmount,
-  )
-  const formattedUpdatedPointsAmount = getFormattedAmount(
-    claimablePointsAmount + totalPointsAmount,
-  )
+  const formattedClaimablePointsAmount = getFormattedAmount(claimedPointsAmount)
+  const formattedTotalPointsAmount = getFormattedAmount(totalBalance)
 
   const steps = useMemo<[string, ReactNode][]>(
     () => [
@@ -70,7 +70,7 @@ export function AcrePointsClaimModalBase() {
       [
         "Updating points balance...",
         <AnimatedNumber
-          value={formattedUpdatedPointsAmount}
+          value={formattedTotalPointsAmount}
           suffix=" PTS"
           animateMode="whileInView"
           indicationColor="brand.400"
@@ -95,7 +95,7 @@ export function AcrePointsClaimModalBase() {
       //   />,
       // ],
     ],
-    [formattedClaimablePointsAmount, formattedUpdatedPointsAmount],
+    [formattedClaimablePointsAmount, formattedTotalPointsAmount],
   )
 
   const [scope, animate] = useAnimate()
@@ -136,8 +136,14 @@ export function AcrePointsClaimModalBase() {
 
   const { closeModal } = useModal()
 
-  useTimeout(closeModal, AUTOCLOSE_DELAY)
   const [isCofettiExploded, setIsCofettiExploded] = useState(false)
+
+  const handleClose = () => {
+    logPromiseFailure(updateBalance())
+    closeModal()
+  }
+
+  useTimeout(handleClose, AUTOCLOSE_DELAY)
 
   return (
     <ModalBody gap={0} p={0} pos="relative" ref={scope}>
@@ -173,7 +179,7 @@ export function AcrePointsClaimModalBase() {
 
       <Button
         opacity={0}
-        onClick={closeModal}
+        onClick={handleClose}
         data-close-button
         variant="outline"
       >
@@ -205,6 +211,6 @@ export function AcrePointsClaimModalBase() {
 const AcrePointsClaimModal = withBaseModal(AcrePointsClaimModalBase, {
   returnFocusOnClose: false,
   variant: "unstyled",
-  size: "xl",
+  size: "full",
 })
 export default AcrePointsClaimModal

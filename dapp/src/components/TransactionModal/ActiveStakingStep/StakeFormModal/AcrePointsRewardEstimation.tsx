@@ -11,12 +11,12 @@ import {
 } from "@chakra-ui/react"
 import { H4, TextMd } from "#/components/shared/Typography"
 import { AcrePointsClaimTier } from "#/types"
-import { useAcrePoints } from "#/hooks"
 import { acrePoints, numberToLocaleString } from "#/utils"
 import { IconChevronDown } from "@tabler/icons-react"
 import { ACRE_POINTS_TIER_LABELS } from "#/constants"
+import { useTokenAmountField } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 
-const { estimateRewardAmountPerTier } = acrePoints
+const { estimateRewardAmountPerTier, getPointsFromAmount } = acrePoints
 
 function AcrePointsRewardEstimation(props: StackProps) {
   const [selectedTierItem, setSelectedTierItem] = useState<AcrePointsClaimTier>(
@@ -34,11 +34,12 @@ function AcrePointsRewardEstimation(props: StackProps) {
       .map(([, tierLabel]) => tierLabel),
   ]
 
-  const { data } = useAcrePoints()
+  const { value = 0n } = useTokenAmountField()
+  const baseReward = getPointsFromAmount(value)
 
   const estimatedReward = useMemo(
-    () => estimateRewardAmountPerTier(data.dailyPointsAmount, selectedTierItem),
-    [data, selectedTierItem],
+    () => estimateRewardAmountPerTier(baseReward, selectedTierItem),
+    [baseReward, selectedTierItem],
   )
 
   return (
@@ -50,6 +51,7 @@ function AcrePointsRewardEstimation(props: StackProps) {
           {({ isOpen }) => (
             <>
               <MenuButton
+                type="button"
                 h="auto"
                 px={3}
                 py={1}
@@ -84,6 +86,7 @@ function AcrePointsRewardEstimation(props: StackProps) {
               >
                 {tierItems.map((tierItem) => (
                   <MenuItem
+                    type="button"
                     px={3}
                     py={1}
                     rounded="2xl"

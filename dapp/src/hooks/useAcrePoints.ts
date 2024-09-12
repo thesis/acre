@@ -1,37 +1,55 @@
-const DEFAULT_USERNAME = "Stacrer"
+import { useMutation, useQuery } from "@tanstack/react-query"
+import {
+  acrePoints as acrePointsUtils,
+  bigIntToUserAmount,
+  dateToUnixTimestamp,
+} from "#/utils"
+import { queryKeysFactory } from "#/constants"
+import { useWallet } from "./useWallet"
+
+const { acreKeys } = queryKeysFactory
 
 type UseAcrePointsReturnType = {
-  totalPointsAmount: number
-  dailyPointsAmount: number
-  claimablePointsAmount: number
-  nextDropTimestamp: number
-  lastClaimedTimestamp: number
-  rankPosition: number
-  estimatedRankPosition: number
-  userName: string
-  userId: number
+  totalBalance: number
+  claimableBalance: number
+  nextDropTimestamp?: number
+  handleClaim: () => void
+  updateBalance: () => Promise<unknown>
 }
 
 export default function useAcrePoints(): UseAcrePointsReturnType {
-  const totalPointsAmount = 2749993 // TODO: Fetch from the API
-  const dailyPointsAmount = 1201 // From deposit form as user input
-  const claimablePointsAmount = 2402 // TODO: Fetch from the API
-  const nextDropTimestamp = 1634160000000 // To be established
-  const lastClaimedTimestamp = 1634160000000 // TODO: Fetch from the API
-  const rankPosition = 2082 // TODO: Fetch from the API
-  const estimatedRankPosition = 2085 // TODO: Fetch from the API
-  const userName = DEFAULT_USERNAME // Eventually an entry point for future implementation
-  const userId = 8724 // TODO: Fetch from the API
+  const { address = "" } = useWallet()
+
+  const acrePointsQuery = useQuery({
+    queryKey: [...acreKeys.claimedAcrePoints(), address],
+    queryFn: async () => acrePointsUtils.getAcrePoints(address),
+  })
+
+  const { mutate: handleClaim } = useMutation({
+    mutationFn: async () => acrePointsUtils.handleClaimAcrePoints(address),
+    onSettled: async () => {
+      await acrePointsQuery.refetch()
+    },
+  })
+
+  const totalBalance = bigIntToUserAmount(
+    BigInt(acrePointsQuery.data?.claimed ?? 0),
+    0,
+  )
+  const claimableBalance = bigIntToUserAmount(
+    BigInt(acrePointsQuery.data?.unclaimed ?? 0),
+    0,
+  )
+
+  const nextDropTimestamp = dateToUnixTimestamp(
+    new Date(acrePointsQuery.data?.dropAt ?? 0),
+  )
 
   return {
-    totalPointsAmount,
-    dailyPointsAmount,
-    claimablePointsAmount,
+    totalBalance,
+    claimableBalance,
     nextDropTimestamp,
-    lastClaimedTimestamp,
-    rankPosition,
-    estimatedRankPosition,
-    userName,
-    userId,
+    handleClaim,
+    updateBalance: acrePointsQuery.refetch,
   }
 }
