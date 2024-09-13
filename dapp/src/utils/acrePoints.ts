@@ -23,16 +23,26 @@ type ClaimedAcrePointsResponse = {
   isEligible: boolean
   claimed: string
   unclaimed: string
-  dropAt: number
 }
 const getAcrePoints = async (address = "") => {
-  const url = `${ACRE_API_ENDPOINT}/points/${address}`
+  const url = `${ACRE_API_ENDPOINT}/users/${address}/points`
   const response = await axios.get<ClaimedAcrePointsResponse>(url)
 
   return {
     claimed: bigIntStringToNumber(response.data.claimed),
     unclaimed: bigIntStringToNumber(response.data.unclaimed),
     isEligible: response.data.isEligible,
+  }
+}
+
+type AcrePointsDropTimeResponse = {
+  dropAt: number
+}
+const getAcrePointsDropTime = async () => {
+  const url = `${ACRE_API_ENDPOINT}/users/points/drop-time`
+  const response = await axios.get<AcrePointsDropTimeResponse>(url)
+
+  return {
     dropAt: response.data.dropAt,
   }
 }
@@ -43,7 +53,7 @@ type ClaimAcrePointsResponse = {
   claimedAt: number
 }
 const handleClaimAcrePoints = async (address: string) => {
-  const url = `${ACRE_API_ENDPOINT}/points/claim/${address}`
+  const url = `${ACRE_API_ENDPOINT}/users/points/${address}/claim`
   const response = await axios.post<ClaimAcrePointsResponse>(url)
 
   return {
@@ -59,4 +69,5 @@ export default {
   getAcrePoints,
   handleClaimAcrePoints,
   getPointsFromAmount,
+  getAcrePointsDropTime,
 }

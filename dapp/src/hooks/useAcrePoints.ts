@@ -15,34 +15,41 @@ type UseAcrePointsReturnType = {
   nextDropTimestamp?: number
   handleClaim: () => void
   updateBalance: () => Promise<unknown>
+  updateDropTime: () => Promise<unknown>
 }
 
 export default function useAcrePoints(): UseAcrePointsReturnType {
   const { address = "" } = useWallet()
 
-  const acrePointsQuery = useQuery({
+  const pointsQuery = useQuery({
     queryKey: [...acreKeys.claimedAcrePoints(), address],
+    enabled: !!address,
     queryFn: async () => acrePointsUtils.getAcrePoints(address),
+  })
+
+  const dropTimeQuery = useQuery({
+    queryKey: [...acreKeys.pointsDropTime()],
+    queryFn: async () => acrePointsUtils.getAcrePointsDropTime(),
   })
 
   const { mutate: handleClaim } = useMutation({
     mutationFn: async () => acrePointsUtils.handleClaimAcrePoints(address),
     onSettled: async () => {
-      await acrePointsQuery.refetch()
+      await pointsQuery.refetch()
     },
   })
 
   const totalBalance = bigIntToUserAmount(
-    BigInt(acrePointsQuery.data?.claimed ?? 0),
+    BigInt(pointsQuery.data?.claimed ?? 0),
     0,
   )
   const claimableBalance = bigIntToUserAmount(
-    BigInt(acrePointsQuery.data?.unclaimed ?? 0),
+    BigInt(pointsQuery.data?.unclaimed ?? 0),
     0,
   )
 
   const nextDropTimestamp = dateToUnixTimestamp(
-    new Date(acrePointsQuery.data?.dropAt ?? 0),
+    new Date(dropTimeQuery.data?.dropAt ?? 0),
   )
 
   return {
@@ -50,6 +57,7 @@ export default function useAcrePoints(): UseAcrePointsReturnType {
     claimableBalance,
     nextDropTimestamp,
     handleClaim,
-    updateBalance: acrePointsQuery.refetch,
+    updateBalance: pointsQuery.refetch,
+    updateDropTime: dropTimeQuery.refetch,
   }
 }

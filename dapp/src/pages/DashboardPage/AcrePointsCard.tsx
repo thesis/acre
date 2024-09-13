@@ -24,6 +24,7 @@ export default function AcrePointsCard(props: CardProps) {
     totalBalance,
     handleClaim,
     updateBalance,
+    updateDropTime,
   } = useAcrePoints()
 
   const { openModal } = useModal()
@@ -37,6 +38,7 @@ export default function AcrePointsCard(props: CardProps) {
   const formattedClaimablePointsAmount = getFormattedAmount(claimableBalance)
 
   const handleOnCountdownEnd = () => {
+    logPromiseFailure(updateDropTime())
     logPromiseFailure(updateBalance())
   }
 
