@@ -220,10 +220,5 @@ export const addLeadingZero = (num: number): string =>
 export const getPercentValue = (value: number, maxValue: number) =>
   (value * 100) / maxValue
 
-export const getNumberWithSign = (number: number) =>
-  new Intl.NumberFormat("en-US", {
-    signDisplay: "exceptZero",
-  }).format(number)
-
 export const bigIntStringToNumber = (bigIntString: string) =>
   Number(BigInt(bigIntString))
