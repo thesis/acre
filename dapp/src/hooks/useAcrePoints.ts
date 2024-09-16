@@ -7,7 +7,7 @@ import {
 import { queryKeysFactory } from "#/constants"
 import { useWallet } from "./useWallet"
 
-const { acreKeys } = queryKeysFactory
+const { userKeys, acreKeys } = queryKeysFactory
 
 type UseAcrePointsReturnType = {
   totalBalance: number
@@ -22,7 +22,7 @@ export default function useAcrePoints(): UseAcrePointsReturnType {
   const { address = "" } = useWallet()
 
   const pointsQuery = useQuery({
-    queryKey: [...acreKeys.claimedAcrePoints(), address],
+    queryKey: [...userKeys.claimedAcrePoints(), address],
     enabled: !!address,
     queryFn: async () => acrePointsUtils.getAcrePoints(address),
   })
