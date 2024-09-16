@@ -8,8 +8,9 @@ export const numberToLocaleString = (
 ): string => {
   const number = typeof value === "number" ? value : parseFloat(value)
 
-  if (number === 0)
-    return desiredDecimals ? `0.${"0".repeat(desiredDecimals)}` : "0"
+  if (number === 0 && desiredDecimals === 0) return "0"
+
+  if (number === 0) return `0.${"0".repeat(desiredDecimals)}`
 
   return number.toLocaleString("default", {
     minimumFractionDigits: desiredDecimals,
