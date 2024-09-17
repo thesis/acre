@@ -19,7 +19,6 @@ import ArrivingSoonTooltip from "#/components/ArrivingSoonTooltip"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import { featureFlags, wallets } from "#/constants"
 import { TextMd } from "#/components/shared/Typography"
-import CurrentlyUnavailableTooltip from "#/components/CurrentlyUnavailableTooltip"
 
 const isWithdrawalFlowEnabled = featureFlags.WITHDRAWALS_ENABLED
 
@@ -95,17 +94,13 @@ export default function PositionDetails() {
 
       <HStack w="full" justify="center" spacing={2}>
         <UserDataSkeleton>
-          <CurrentlyUnavailableTooltip
-            shouldDisplayTooltip={isDisabledDepositButton}
+          <Button
+            {...buttonStyles}
+            onClick={openDepositModal}
+            isDisabled={isDisabledDepositButton}
           >
-            <Button
-              {...buttonStyles}
-              onClick={openDepositModal}
-              isDisabled={isDisabledDepositButton}
-            >
-              Deposit more
-            </Button>
-          </CurrentlyUnavailableTooltip>
+            Deposit more
+          </Button>
         </UserDataSkeleton>
         <UserDataSkeleton>
           <ArrivingSoonTooltip shouldDisplayTooltip={!isWithdrawalFlowEnabled}>
