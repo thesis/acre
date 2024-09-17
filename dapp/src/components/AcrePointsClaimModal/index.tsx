@@ -131,8 +131,7 @@ export function AcrePointsClaimModalBase() {
       await animate(sequence)
     }
 
-    // eslint-disable-next-line no-void
-    void handleAnimation()
+    logPromiseFailure(handleAnimation())
   }, [scope, animate, steps])
 
   const { closeModal } = useModal()
