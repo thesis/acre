@@ -1,9 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
-import {
-  acrePoints as acrePointsUtils,
-  bigIntToUserAmount,
-  dateToUnixTimestamp,
-} from "#/utils"
+import { acrePoints as acrePointsUtils, bigIntToUserAmount } from "#/utils"
 import { queryKeysFactory } from "#/constants"
 import { useWallet } from "./useWallet"
 
@@ -29,7 +25,7 @@ export default function useAcrePoints(): UseAcrePointsReturnType {
 
   const dropTimeQuery = useQuery({
     queryKey: [...acreKeys.pointsDropTime()],
-    queryFn: async () => acrePointsUtils.getAcrePointsDropTime(),
+    queryFn: async () => acrePointsUtils.getPointsData(),
   })
 
   const { mutate: handleClaim } = useMutation({
@@ -48,14 +44,10 @@ export default function useAcrePoints(): UseAcrePointsReturnType {
     0,
   )
 
-  const nextDropTimestamp = dateToUnixTimestamp(
-    new Date(dropTimeQuery.data?.dropAt ?? 0),
-  )
-
   return {
     totalBalance,
     claimableBalance,
-    nextDropTimestamp,
+    nextDropTimestamp: dropTimeQuery.data?.dropAt,
     handleClaim,
     updateBalance: pointsQuery.refetch,
     updateDropTime: dropTimeQuery.refetch,
