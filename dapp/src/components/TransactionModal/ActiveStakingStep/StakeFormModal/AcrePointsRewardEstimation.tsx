@@ -43,7 +43,7 @@ function AcrePointsRewardEstimation(props: StackProps) {
   )
 
   return (
-    <VStack spacing={2} mt={5} {...props}>
+    <VStack spacing={2} {...props}>
       <HStack>
         <TextMd fontWeight="semibold">Acre points you&apos;ll earn</TextMd>
 

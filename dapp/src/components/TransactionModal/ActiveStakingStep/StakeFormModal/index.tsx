@@ -30,7 +30,9 @@ function StakeFormModal({
       onSubmitForm={onSubmitForm}
       withMaxButton={false}
     >
-      {featureFlags.ACRE_POINTS_ENABLED && <AcrePointsRewardEstimation />}
+      {featureFlags.ACRE_POINTS_ENABLED && (
+        <AcrePointsRewardEstimation mt={5} />
+      )}
       <StakeDetails currency="bitcoin" />
       <FormSubmitButton mt={10}>Deposit</FormSubmitButton>
     </TokenAmountForm>
