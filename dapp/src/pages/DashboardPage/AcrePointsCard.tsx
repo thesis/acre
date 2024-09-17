@@ -29,6 +29,7 @@ export default function AcrePointsCard(props: CardProps) {
 
   const onClaimButtonClick = () => {
     claimPoints()
+    // TODO: The modal window should be opened when the claim action succeeds.
     openModal(MODAL_TYPES.ACRE_POINTS_CLAIM)
   }
 
