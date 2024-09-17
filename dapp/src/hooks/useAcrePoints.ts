@@ -15,12 +15,12 @@ type UseAcrePointsReturnType = {
 }
 
 export default function useAcrePoints(): UseAcrePointsReturnType {
-  const { address = "" } = useWallet()
+  const { address = "", ethAddress = "" } = useWallet()
 
   const userPointsDataQuery = useQuery({
-    queryKey: [...userKeys.pointsData(), address],
-    enabled: !!address,
-    queryFn: async () => acreApi.getPointsDataByUser(address),
+    queryKey: [...userKeys.pointsData(), ethAddress],
+    enabled: !!ethAddress,
+    queryFn: async () => acreApi.getPointsDataByUser(ethAddress),
   })
 
   const pointsDataQuery = useQuery({
@@ -37,7 +37,7 @@ export default function useAcrePoints(): UseAcrePointsReturnType {
 
   const { data } = userPointsDataQuery
   const totalBalance = bigIntToUserAmount(data?.claimed ?? 0n, 0)
-  const claimableBalance = bigIntToUserAmount(data?.claimed ?? 0n, 0)
+  const claimableBalance = bigIntToUserAmount(data?.unclaimed ?? 0n, 0)
 
   return {
     totalBalance,
