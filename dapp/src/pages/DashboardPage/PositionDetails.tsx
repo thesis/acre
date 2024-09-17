@@ -1,11 +1,6 @@
 import React from "react"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
-import {
-  useBitcoinPosition,
-  useConnector,
-  useIsSignedMessage,
-  useTransactionModal,
-} from "#/hooks"
+import { useBitcoinPosition, useTransactionModal } from "#/hooks"
 import { ACTION_FLOW_TYPES } from "#/types"
 import {
   Button,
@@ -17,7 +12,7 @@ import {
 } from "@chakra-ui/react"
 import ArrivingSoonTooltip from "#/components/ArrivingSoonTooltip"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
-import { featureFlags, wallets } from "#/constants"
+import { featureFlags } from "#/constants"
 import { TextMd } from "#/components/shared/Typography"
 
 const isWithdrawalFlowEnabled = featureFlags.WITHDRAWALS_ENABLED
@@ -38,14 +33,6 @@ export default function PositionDetails() {
 
   const openDepositModal = useTransactionModal(ACTION_FLOW_TYPES.STAKE)
   const openWithdrawModal = useTransactionModal(ACTION_FLOW_TYPES.UNSTAKE)
-
-  // TODO: Temporary solution - Should be removed when the error for Xverse is resolved.
-  const isSignedMessage = useIsSignedMessage()
-  const connector = useConnector()
-  const isDisabledDepositButton =
-    isSignedMessage &&
-    connector?.id === wallets.XVERSE.id &&
-    !featureFlags.XVERSE_WALLET_DEPOSIT_ENABLED
 
   return (
     <Flex flexDirection="column" gap={5}>
@@ -94,11 +81,7 @@ export default function PositionDetails() {
 
       <HStack w="full" justify="center" spacing={2}>
         <UserDataSkeleton>
-          <Button
-            {...buttonStyles}
-            onClick={openDepositModal}
-            isDisabled={isDisabledDepositButton}
-          >
+          <Button {...buttonStyles} onClick={openDepositModal}>
             Deposit more
           </Button>
         </UserDataSkeleton>
