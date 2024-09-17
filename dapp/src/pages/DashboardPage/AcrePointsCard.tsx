@@ -32,11 +32,8 @@ export default function AcrePointsCard(props: CardProps) {
     openModal(MODAL_TYPES.ACRE_POINTS_CLAIM)
   }
 
-  const formattedTotalPointsAmount = numberToLocaleString(totalBalance, 0)
-  const formattedClaimablePointsAmount = numberToLocaleString(
-    claimableBalance,
-    0,
-  )
+  const formattedTotalPointsAmount = numberToLocaleString(totalBalance)
+  const formattedClaimablePointsAmount = numberToLocaleString(claimableBalance)
 
   const handleOnCountdownEnd = () => {
     logPromiseFailure(updatePointsData())

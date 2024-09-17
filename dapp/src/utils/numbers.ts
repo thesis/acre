@@ -4,7 +4,7 @@ export function roundUp(amount: number, desiredDecimals = 2): number {
 
 export const numberToLocaleString = (
   value: string | number,
-  desiredDecimals = 2,
+  desiredDecimals = 0,
 ): string => {
   const number = typeof value === "number" ? value : parseFloat(value)
 

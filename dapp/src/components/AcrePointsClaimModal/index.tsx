@@ -50,13 +50,10 @@ export function AcrePointsClaimModalBase() {
     updateUserPointsData,
   } = useAcrePoints()
 
-  const formattedClaimablePointsAmount = numberToLocaleString(
-    claimedPointsAmount,
-    0,
-  )
+  const formattedClaimablePointsAmount =
+    numberToLocaleString(claimedPointsAmount)
   const formattedTotalPointsAmount = numberToLocaleString(
     totalBalance + claimedPointsAmount,
-    0,
   )
 
   const steps = useMemo<[string, ReactNode][]>(

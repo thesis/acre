@@ -120,7 +120,7 @@ function AcrePointsRewardEstimation(props: StackProps) {
         </Menu>
       </HStack>
 
-      <H4>+{numberToLocaleString(estimatedReward, 0)} PTS</H4>
+      <H4>+{numberToLocaleString(estimatedReward)} PTS</H4>
     </VStack>
   )
 }
