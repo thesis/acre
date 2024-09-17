@@ -220,6 +220,3 @@ export const addLeadingZero = (num: number): string =>
 
 export const getPercentValue = (value: number, maxValue: number) =>
   (value * 100) / maxValue
-
-export const bigIntStringToNumber = (bigIntString: string) =>
-  Number(BigInt(bigIntString))

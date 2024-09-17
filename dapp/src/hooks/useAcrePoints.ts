@@ -35,14 +35,9 @@ export default function useAcrePoints(): UseAcrePointsReturnType {
     },
   })
 
-  const totalBalance = bigIntToUserAmount(
-    BigInt(userPointsDataQuery.data?.claimed ?? 0),
-    0,
-  )
-  const claimableBalance = bigIntToUserAmount(
-    BigInt(userPointsDataQuery.data?.unclaimed ?? 0),
-    0,
-  )
+  const { data } = userPointsDataQuery
+  const totalBalance = bigIntToUserAmount(data?.claimed ?? 0n, 0)
+  const claimableBalance = bigIntToUserAmount(data?.claimed ?? 0n, 0)
 
   return {
     totalBalance,

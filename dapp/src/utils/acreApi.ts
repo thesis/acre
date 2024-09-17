@@ -1,6 +1,5 @@
 import { env } from "#/constants"
 import axios from "axios"
-import { bigIntStringToNumber } from "./numbers"
 
 const { ACRE_API_ENDPOINT } = env
 
@@ -28,8 +27,8 @@ const getPointsDataByUser = async (address: string) => {
   const response = await axios.get<PointsDataByUserResponse>(url)
 
   return {
-    claimed: bigIntStringToNumber(response.data.claimed),
-    unclaimed: bigIntStringToNumber(response.data.unclaimed),
+    claimed: BigInt(response.data.claimed),
+    unclaimed: BigInt(response.data.unclaimed),
     isEligible: response.data.isEligible,
   }
 }
@@ -45,7 +44,7 @@ const claimPoints = async (address: string) => {
 
   return {
     claimed: response.data.claimed,
-    total: bigIntStringToNumber(response.data.total),
+    total: BigInt(response.data.total),
     claimedAt: response.data.claimedAt,
   }
 }
