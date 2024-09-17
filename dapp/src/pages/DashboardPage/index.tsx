@@ -8,6 +8,7 @@ import AcrePointsCard from "./AcrePointsCard"
 import { CurrentSeasonCard } from "./CurrentSeasonCard"
 import BeehiveCard from "./BeehiveCard"
 import UsefulLinks from "./UsefulLinks"
+import AcrePointsTemplateCard from "./AcrePointsTemplateCard"
 
 export default function DashboardPage() {
   const isMobileMode = useMobileMode()
@@ -29,8 +30,11 @@ export default function DashboardPage() {
       </PageLayoutColumn>
 
       <PageLayoutColumn position="relative">
-        {featureFlags.ACRE_POINTS_ENABLED && <AcrePointsCard />}
-
+        {featureFlags.ACRE_POINTS_ENABLED ? (
+          <AcrePointsCard />
+        ) : (
+          <AcrePointsTemplateCard />
+        )}
         <UsefulLinks />
       </PageLayoutColumn>
     </PageLayout>
