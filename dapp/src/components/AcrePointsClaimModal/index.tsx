@@ -1,6 +1,6 @@
 import React, { ReactNode, useEffect, useMemo, useState } from "react"
 import { useAcrePoints, useModal, useTimeout } from "#/hooks"
-import { Box, Button, ModalBody, Text, VStack } from "@chakra-ui/react"
+import { Box, Button, ModalBody, VStack } from "@chakra-ui/react"
 import {
   AnimationSequence,
   motion,
@@ -163,7 +163,7 @@ export function AcrePointsClaimModalBase() {
                 {currentStepLabel}
               </TextXl>
 
-              <Text
+              <Box
                 data-step-value
                 transformOrigin="bottom"
                 fontSize="8xl"
@@ -172,7 +172,7 @@ export function AcrePointsClaimModalBase() {
                 color="grey.700"
               >
                 {currentStepValue}
-              </Text>
+              </Box>
             </Box>
           ))}
         </VStack>
