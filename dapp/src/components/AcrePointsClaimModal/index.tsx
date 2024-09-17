@@ -7,14 +7,12 @@ import {
   Transition,
   useAnimate,
 } from "framer-motion"
-import { acrePoints as acrePointsUtils, logPromiseFailure } from "#/utils"
+import { logPromiseFailure, numberToLocaleString } from "#/utils"
 import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import ConfettiExplosion from "react-confetti-explosion"
 import withBaseModal from "../ModalRoot/withBaseModal"
 import { TextXl } from "../shared/Typography"
 import { AnimatedNumber } from "../shared/AnimatedNumber"
-
-const { getFormattedAmount } = acrePointsUtils
 
 const MotionBox = motion(Box)
 
@@ -49,12 +47,16 @@ export function AcrePointsClaimModalBase() {
   const {
     claimableBalance: claimedPointsAmount,
     totalBalance,
-    updateBalance,
+    updateUserPointsData,
   } = useAcrePoints()
 
-  const formattedClaimablePointsAmount = getFormattedAmount(claimedPointsAmount)
-  const formattedTotalPointsAmount = getFormattedAmount(
+  const formattedClaimablePointsAmount = numberToLocaleString(
+    claimedPointsAmount,
+    0,
+  )
+  const formattedTotalPointsAmount = numberToLocaleString(
     totalBalance + claimedPointsAmount,
+    0,
   )
 
   const steps = useMemo<[string, ReactNode][]>(
@@ -141,7 +143,7 @@ export function AcrePointsClaimModalBase() {
   const [isCofettiExploded, setIsCofettiExploded] = useState(false)
 
   const handleClose = () => {
-    logPromiseFailure(updateBalance())
+    logPromiseFailure(updateUserPointsData())
     closeModal()
   }
 

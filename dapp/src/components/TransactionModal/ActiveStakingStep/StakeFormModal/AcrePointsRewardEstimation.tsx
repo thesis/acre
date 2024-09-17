@@ -11,12 +11,21 @@ import {
 } from "@chakra-ui/react"
 import { H4, TextMd } from "#/components/shared/Typography"
 import { AcrePointsClaimTier } from "#/types"
-import { acrePoints, numberToLocaleString } from "#/utils"
+import { numberToLocaleString } from "#/utils"
 import { IconChevronDown } from "@tabler/icons-react"
-import { ACRE_POINTS_TIER_LABELS } from "#/constants"
+import {
+  ACRE_POINTS_REWARDS_MULTIPLERS,
+  ACRE_POINTS_TIER_LABELS,
+} from "#/constants"
 import { useTokenAmountField } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 
-const { estimateRewardAmountPerTier, getPointsFromAmount } = acrePoints
+const estimateRewardAmountPerTier = (
+  baseReward: number,
+  tier: AcrePointsClaimTier,
+) => {
+  const multipler = ACRE_POINTS_REWARDS_MULTIPLERS[tier]
+  return baseReward * multipler
+}
 
 function AcrePointsRewardEstimation(props: StackProps) {
   const [selectedTierItem, setSelectedTierItem] = useState<AcrePointsClaimTier>(
@@ -35,7 +44,7 @@ function AcrePointsRewardEstimation(props: StackProps) {
   ]
 
   const { value = 0n } = useTokenAmountField()
-  const baseReward = getPointsFromAmount(value)
+  const baseReward = Number(value)
 
   const estimatedReward = useMemo(
     () => estimateRewardAmountPerTier(baseReward, selectedTierItem),

@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { acrePoints as acrePointsUtils, bigIntToUserAmount } from "#/utils"
+import { acreApi, bigIntToUserAmount } from "#/utils"
 import { queryKeysFactory } from "#/constants"
 import { useWallet } from "./useWallet"
 
@@ -9,38 +9,38 @@ type UseAcrePointsReturnType = {
   totalBalance: number
   claimableBalance: number
   nextDropTimestamp?: number
-  handleClaim: () => void
-  updateBalance: () => Promise<unknown>
+  claimPoints: () => void
+  updateUserPointsData: () => Promise<unknown>
   updatePointsData: () => Promise<unknown>
 }
 
 export default function useAcrePoints(): UseAcrePointsReturnType {
   const { address = "" } = useWallet()
 
-  const pointsQuery = useQuery({
+  const userPointsDataQuery = useQuery({
     queryKey: [...userKeys.claimedAcrePoints(), address],
     enabled: !!address,
-    queryFn: async () => acrePointsUtils.getAcrePoints(address),
+    queryFn: async () => acreApi.getPointsDataByUser(address),
   })
 
   const pointsDataQuery = useQuery({
     queryKey: [...acreKeys.pointsData()],
-    queryFn: async () => acrePointsUtils.getPointsData(),
+    queryFn: async () => acreApi.getPointsData(),
   })
 
-  const { mutate: handleClaim } = useMutation({
-    mutationFn: async () => acrePointsUtils.handleClaimAcrePoints(address),
+  const { mutate: claimPoints } = useMutation({
+    mutationFn: async () => acreApi.claimPoints(address),
     onSettled: async () => {
-      await pointsQuery.refetch()
+      await userPointsDataQuery.refetch()
     },
   })
 
   const totalBalance = bigIntToUserAmount(
-    BigInt(pointsQuery.data?.claimed ?? 0),
+    BigInt(userPointsDataQuery.data?.claimed ?? 0),
     0,
   )
   const claimableBalance = bigIntToUserAmount(
-    BigInt(pointsQuery.data?.unclaimed ?? 0),
+    BigInt(userPointsDataQuery.data?.unclaimed ?? 0),
     0,
   )
 
@@ -48,8 +48,8 @@ export default function useAcrePoints(): UseAcrePointsReturnType {
     totalBalance,
     claimableBalance,
     nextDropTimestamp: pointsDataQuery.data?.dropAt,
-    handleClaim,
-    updateBalance: pointsQuery.refetch,
+    claimPoints,
+    updateUserPointsData: userPointsDataQuery.refetch,
     updatePointsData: pointsDataQuery.refetch,
   }
 }

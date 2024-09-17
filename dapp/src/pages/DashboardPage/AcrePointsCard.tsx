@@ -13,33 +13,34 @@ import Countdown from "#/components/shared/Countdown"
 import useAcrePoints from "#/hooks/useAcrePoints"
 import { MODAL_TYPES } from "#/types"
 import { useModal } from "#/hooks"
-import { acrePoints as acrePointsUtils, logPromiseFailure } from "#/utils"
-
-const { getFormattedAmount } = acrePointsUtils
+import { logPromiseFailure, numberToLocaleString } from "#/utils"
 
 export default function AcrePointsCard(props: CardProps) {
   const {
     claimableBalance,
     nextDropTimestamp,
     totalBalance,
-    handleClaim,
-    updateBalance,
+    claimPoints,
+    updateUserPointsData,
     updatePointsData,
   } = useAcrePoints()
 
   const { openModal } = useModal()
 
   const onClaimButtonClick = () => {
-    handleClaim()
+    claimPoints()
     openModal(MODAL_TYPES.ACRE_POINTS_CLAIM)
   }
 
-  const formattedTotalPointsAmount = getFormattedAmount(totalBalance)
-  const formattedClaimablePointsAmount = getFormattedAmount(claimableBalance)
+  const formattedTotalPointsAmount = numberToLocaleString(totalBalance, 0)
+  const formattedClaimablePointsAmount = numberToLocaleString(
+    claimableBalance,
+    0,
+  )
 
   const handleOnCountdownEnd = () => {
     logPromiseFailure(updatePointsData())
-    logPromiseFailure(updateBalance())
+    logPromiseFailure(updateUserPointsData())
   }
 
   return (
