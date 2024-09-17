@@ -9,7 +9,7 @@ const acreKeys = {
   all: ["acre"] as const,
   totalAssets: () => [...acreKeys.all, "total-assets"] as const,
   mats: () => [...acreKeys.all, "mats"] as const,
-  pointsDropTime: () => [...acreKeys.all, "points-drop-time"] as const,
+  pointsData: () => [...acreKeys.all, "points-data"] as const,
 }
 
 export default {

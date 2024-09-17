@@ -11,7 +11,7 @@ type UseAcrePointsReturnType = {
   nextDropTimestamp?: number
   handleClaim: () => void
   updateBalance: () => Promise<unknown>
-  updateDropTime: () => Promise<unknown>
+  updatePointsData: () => Promise<unknown>
 }
 
 export default function useAcrePoints(): UseAcrePointsReturnType {
@@ -23,8 +23,8 @@ export default function useAcrePoints(): UseAcrePointsReturnType {
     queryFn: async () => acrePointsUtils.getAcrePoints(address),
   })
 
-  const dropTimeQuery = useQuery({
-    queryKey: [...acreKeys.pointsDropTime()],
+  const pointsDataQuery = useQuery({
+    queryKey: [...acreKeys.pointsData()],
     queryFn: async () => acrePointsUtils.getPointsData(),
   })
 
@@ -47,9 +47,9 @@ export default function useAcrePoints(): UseAcrePointsReturnType {
   return {
     totalBalance,
     claimableBalance,
-    nextDropTimestamp: dropTimeQuery.data?.dropAt,
+    nextDropTimestamp: pointsDataQuery.data?.dropAt,
     handleClaim,
     updateBalance: pointsQuery.refetch,
-    updateDropTime: dropTimeQuery.refetch,
+    updatePointsData: pointsDataQuery.refetch,
   }
 }
