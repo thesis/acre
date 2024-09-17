@@ -10,44 +10,49 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { H4, TextMd } from "#/components/shared/Typography"
-import { AcrePointsClaimTier } from "#/types"
 import { numberToLocaleString } from "#/utils"
 import { IconChevronDown } from "@tabler/icons-react"
-import {
-  ACRE_POINTS_REWARDS_MULTIPLERS,
-  ACRE_POINTS_TIER_LABELS,
-} from "#/constants"
 import { useTokenAmountField } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
+import {
+  ONE_MONTH_IN_DAYS,
+  ONE_WEEK_IN_DAYS,
+  ONE_YEAR_IN_DAYS,
+} from "#/constants"
 
-const estimateRewardAmountPerTier = (
-  baseReward: number,
-  tier: AcrePointsClaimTier,
-) => {
-  const multipler = ACRE_POINTS_REWARDS_MULTIPLERS[tier]
-  return baseReward * multipler
+const ACRE_POINTS_DATA = {
+  week: {
+    label: "Per week",
+    multipler: ONE_WEEK_IN_DAYS,
+  },
+  month: {
+    label: "Per month",
+    multipler: ONE_MONTH_IN_DAYS,
+  },
+  year: {
+    label: "Per year",
+    multipler: ONE_YEAR_IN_DAYS,
+  },
 }
 
 function AcrePointsRewardEstimation(props: StackProps) {
-  const [selectedTierItem, setSelectedTierItem] = useState<AcrePointsClaimTier>(
-    AcrePointsClaimTier.Weekly,
-  )
-  const selectedTierItemLabel = useMemo(
-    () => ACRE_POINTS_TIER_LABELS[selectedTierItem],
-    [selectedTierItem],
+  const [selectedTierItem, setSelectedTierItem] = useState(
+    ACRE_POINTS_DATA.week,
   )
 
   const tierItems = [
     selectedTierItem,
-    ...Object.entries(AcrePointsClaimTier)
-      .filter(([, tierValue]) => tierValue !== selectedTierItem)
-      .map(([, tierLabel]) => tierLabel),
+    ...Object.values(ACRE_POINTS_DATA).filter(
+      ({ label, multipler }) =>
+        label !== selectedTierItem.label &&
+        multipler !== selectedTierItem.multipler,
+    ),
   ]
 
   const { value = 0n } = useTokenAmountField()
   const baseReward = Number(value)
 
   const estimatedReward = useMemo(
-    () => estimateRewardAmountPerTier(baseReward, selectedTierItem),
+    () => selectedTierItem.multipler * baseReward,
     [baseReward, selectedTierItem],
   )
 
@@ -69,7 +74,7 @@ function AcrePointsRewardEstimation(props: StackProps) {
                 _hover={{ bg: "gold.200" }}
               >
                 <HStack spacing={1}>
-                  <TextMd>{selectedTierItemLabel}</TextMd>
+                  <TextMd>{selectedTierItem.label}</TextMd>
                   <Icon
                     as={IconChevronDown}
                     boxSize={4}
@@ -102,11 +107,11 @@ function AcrePointsRewardEstimation(props: StackProps) {
                     bg="gold.300"
                     _active={{ bg: "gold.200" }}
                     _hover={{ bg: "gold.200" }}
-                    key={tierItem}
+                    key={tierItem.label}
                     onClick={() => setSelectedTierItem(tierItem)}
                     fontWeight="semibold"
                   >
-                    {ACRE_POINTS_TIER_LABELS[tierItem]}
+                    {tierItem.label}
                   </MenuItem>
                 ))}
               </MenuList>
