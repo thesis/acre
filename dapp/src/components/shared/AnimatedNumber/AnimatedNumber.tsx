@@ -50,19 +50,22 @@ function AnimatedNumber(props: AnimatedNumberProps) {
     >
       {suffix && <Box as="span">{suffix}</Box>}
 
-      {numberSegments.map((segment, index) =>
-        isSeparatorSegment(segment) ? (
-          <AnimatedNumberSeparator>{segment}</AnimatedNumberSeparator>
-        ) : (
-          <AnimatedNumberColumn
-            // eslint-disable-next-line react/no-array-index-key
-            key={segment + index}
-            digit={segment}
-            animateWhileInView={animateMode === "whileInView"}
-            indicationColor={indicationColor}
-          />
-        ),
-      )}
+      {numberSegments.map((segment, index) => {
+        const key = `${segment}-${index}`
+        return (
+          <React.Fragment key={key}>
+            {isSeparatorSegment(segment) ? (
+              <AnimatedNumberSeparator>{segment}</AnimatedNumberSeparator>
+            ) : (
+              <AnimatedNumberColumn
+                digit={segment}
+                animateWhileInView={animateMode === "whileInView"}
+                indicationColor={indicationColor}
+              />
+            )}
+          </React.Fragment>
+        )
+      })}
 
       {prefix && <Box as="span">{prefix}</Box>}
     </MotionFlex>
