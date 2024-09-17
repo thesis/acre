@@ -18,7 +18,7 @@ export default function useAcrePoints(): UseAcrePointsReturnType {
   const { address = "" } = useWallet()
 
   const userPointsDataQuery = useQuery({
-    queryKey: [...userKeys.claimedAcrePoints(), address],
+    queryKey: [...userKeys.pointsData(), address],
     enabled: !!address,
     queryFn: async () => acreApi.getPointsDataByUser(address),
   })

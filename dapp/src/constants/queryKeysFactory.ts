@@ -2,7 +2,7 @@ const userKeys = {
   all: ["user"] as const,
   balance: () => [...userKeys.all, "balance"] as const,
   position: () => [...userKeys.all, "position"] as const,
-  claimedAcrePoints: () => [...userKeys.all, "claimed-acre-points"] as const,
+  pointsData: () => [...userKeys.all, "points-data"] as const,
 }
 
 const acreKeys = {
