@@ -6,6 +6,34 @@ const axios = axiosStatic.create({
   withCredentials: true,
 })
 
+async function getSession() {
+  const response = await axios.get<{ nonce: string } | { address: string }>(
+    "session",
+  )
+
+  return response.data
+}
+
+async function createSession(
+  message: string,
+  signature: string,
+  publicKey: string,
+) {
+  const response = await axios.post<{ success: boolean }>("session", {
+    message,
+    signature,
+    publicKey,
+  })
+
+  if (!response.data.success) {
+    throw new Error("Failed to create Acre session")
+  }
+}
+
+async function deleteSession() {
+  await axios.delete("session")
+}
+
 type PointsDataResponse = {
   dropAt: number
 }
@@ -53,6 +81,9 @@ const claimPoints = async (address: string) => {
 }
 
 export default {
+  createSession,
+  getSession,
+  deleteSession,
   getPointsData,
   getPointsDataByUser,
   claimPoints,
