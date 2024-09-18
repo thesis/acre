@@ -84,13 +84,14 @@ export const displayBlockTimestamp = (blockTimestamp: number) => {
   return getRelativeTime(blockTimestamp)
 }
 
+export const getExpirationDate = (duration: number, startDate?: Date) => {
+  const date = startDate ?? new Date()
+  return new Date(date.getTime() + duration)
+}
+
 /**
  * Returns the expiration timestamp from the start date considering the specified duration.
  * If the startDate is not passed, the function will take the current time as the start date.
  */
-export const getExpirationTimestamp = (duration: number, startDate?: Date) => {
-  const date = startDate ?? new Date()
-  const expirationDate = new Date(date.getTime() + duration)
-
-  return dateToUnixTimestamp(expirationDate)
-}
+export const getExpirationTimestamp = (duration: number, startDate?: Date) =>
+  dateToUnixTimestamp(getExpirationDate(duration, startDate))

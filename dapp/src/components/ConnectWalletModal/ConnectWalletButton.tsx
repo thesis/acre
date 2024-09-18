@@ -3,6 +3,7 @@ import { CONNECTION_ERRORS, ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import {
   useAppDispatch,
   useModal,
+  useSignMessageAndCreateSession,
   useWallet,
   useWalletConnectionError,
 } from "#/hooks"
@@ -20,7 +21,6 @@ import {
   ImageProps,
   VStack,
 } from "@chakra-ui/react"
-import { useSignMessage } from "wagmi"
 import { IconArrowNarrowRight } from "@tabler/icons-react"
 import { AnimatePresence, Variants, motion } from "framer-motion"
 import ArrivingSoonTooltip from "../ArrivingSoonTooltip"
@@ -61,7 +61,8 @@ export default function ConnectWalletButton({
     onDisconnect,
     status: connectionStatus,
   } = useWallet()
-  const { signMessageAsync, status: signMessageStatus } = useSignMessage()
+  const { signMessageStatus, signMessageAndCreateSession } =
+    useSignMessageAndCreateSession()
   const { closeModal } = useModal()
   const dispatch = useAppDispatch()
 
@@ -82,22 +83,18 @@ export default function ConnectWalletButton({
     }
   }, [closeModal, dispatch, onSuccess])
 
-  const handleSignMessage = useCallback(
+  const handleSignMessageAndCreateSession = useCallback(
     async (connectedConnector: OrangeKitConnector, btcAddress: string) => {
-      const message = orangeKit.createSignInWithWalletMessage(btcAddress)
-      const signedMessage = await signMessageAsync({
-        message,
-        connector: orangeKit.typeConversionToConnector(connectedConnector),
-      })
-
       try {
-        await orangeKit.verifySignInWithWalletMessage(message, signedMessage)
+        await signMessageAndCreateSession(connectedConnector, btcAddress)
+
         onSuccessSignMessage()
       } catch (error) {
+        console.error("Failed to sign siww message", error)
         setConnectionError(CONNECTION_ERRORS.INVALID_SIWW_SIGNATURE)
       }
     },
-    [signMessageAsync, onSuccessSignMessage, setConnectionError],
+    [signMessageAndCreateSession, onSuccessSignMessage, setConnectionError],
   )
 
   const onSuccessConnection = useCallback(
@@ -106,9 +103,9 @@ export default function ConnectWalletButton({
 
       if (!btcAddress) return
 
-      await handleSignMessage(connector, btcAddress)
+      await handleSignMessageAndCreateSession(connector, btcAddress)
     },
-    [connector, handleSignMessage],
+    [connector, handleSignMessageAndCreateSession],
   )
 
   const handleConnection = useCallback(() => {
@@ -241,7 +238,9 @@ export default function ConnectWalletButton({
                     size="lg"
                     variant="outline"
                     onClick={() =>
-                      logPromiseFailure(handleSignMessage(connector, address))
+                      logPromiseFailure(
+                        handleSignMessageAndCreateSession(connector, address),
+                      )
                     }
                   >
                     Resume and try again
