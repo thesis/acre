@@ -8,7 +8,7 @@ type PointsDataResponse = {
 }
 
 const getPointsData = async () => {
-  const url = `${ACRE_API_ENDPOINT}/points`
+  const url = `${ACRE_API_ENDPOINT}points`
   const response = await axios.get<PointsDataResponse>(url)
 
   return {
@@ -23,7 +23,7 @@ type PointsDataByUserResponse = {
 }
 
 const getPointsDataByUser = async (address: string) => {
-  const url = `${ACRE_API_ENDPOINT}/users/${address}/points`
+  const url = `${ACRE_API_ENDPOINT}users/${address}/points`
   const response = await axios.get<PointsDataByUserResponse>(url)
 
   return {
@@ -39,7 +39,7 @@ type ClaimAcrePointsResponse = {
   claimedAt: number
 }
 const claimPoints = async (address: string) => {
-  const url = `${ACRE_API_ENDPOINT}/users/points/${address}/claim`
+  const url = `${ACRE_API_ENDPOINT}users/points/${address}/claim`
   const response = await axios.post<ClaimAcrePointsResponse>(url)
 
   return {
