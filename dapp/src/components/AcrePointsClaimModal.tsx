@@ -11,9 +11,9 @@ import { logPromiseFailure, numberToLocaleString } from "#/utils"
 import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import ConfettiExplosion from "react-confetti-explosion"
 import { BaseModalProps } from "#/types"
-import withBaseModal from "../ModalRoot/withBaseModal"
-import { TextXl } from "../shared/Typography"
-import { AnimatedNumber } from "../shared/AnimatedNumber"
+import { AnimatedNumber } from "./shared/AnimatedNumber"
+import { TextXl } from "./shared/Typography"
+import withBaseModal from "./ModalRoot/withBaseModal"
 
 const MotionBox = motion(Box)
 
@@ -49,7 +49,7 @@ type AcrePointsClaimModalBaseProps = {
   totalAmount: number
 } & BaseModalProps
 
-export function AcrePointsClaimModalBase({
+function AcrePointsClaimModalBase({
   claimedAmount,
   totalAmount,
   closeModal,
@@ -207,4 +207,5 @@ const AcrePointsClaimModal = withBaseModal(AcrePointsClaimModalBase, {
   variant: "unstyled",
   size: "full",
 })
+
 export default AcrePointsClaimModal
