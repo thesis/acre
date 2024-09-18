@@ -10,8 +10,8 @@ import {
 } from "@chakra-ui/react"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import Countdown from "#/components/shared/Countdown"
-import useAcrePoints from "#/hooks/useAcrePoints"
 import { logPromiseFailure, numberToLocaleString } from "#/utils"
+import { useAcrePoints } from "#/hooks"
 
 export default function AcrePointsCard(props: CardProps) {
   const {
