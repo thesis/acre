@@ -74,7 +74,7 @@ const claimPoints = async (address: string) => {
   const response = await axios.post<ClaimAcrePointsResponse>(url)
 
   return {
-    claimed: response.data.claimed,
+    claimed: BigInt(response.data.claimed),
     total: BigInt(response.data.total),
     claimedAt: response.data.claimedAt,
   }

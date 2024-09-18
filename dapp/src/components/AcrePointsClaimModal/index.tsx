@@ -1,5 +1,5 @@
 import React, { ReactNode, useEffect, useMemo, useState } from "react"
-import { useAcrePoints, useModal, useTimeout } from "#/hooks"
+import { useTimeout } from "#/hooks"
 import { Box, Button, ModalBody, VStack } from "@chakra-ui/react"
 import {
   AnimationSequence,
@@ -10,6 +10,7 @@ import {
 import { logPromiseFailure, numberToLocaleString } from "#/utils"
 import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import ConfettiExplosion from "react-confetti-explosion"
+import { BaseModalProps } from "#/types"
 import withBaseModal from "../ModalRoot/withBaseModal"
 import { TextXl } from "../shared/Typography"
 import { AnimatedNumber } from "../shared/AnimatedNumber"
@@ -43,25 +44,25 @@ const getStepOffsets = (
         : (index + 1) * -stepHeight - spacing * 2 ** index,
     )
 
-export function AcrePointsClaimModalBase() {
-  const {
-    claimableBalance: claimedPointsAmount,
-    totalBalance,
-    updateUserPointsData,
-  } = useAcrePoints()
+type AcrePointsClaimModalBaseProps = {
+  claimedAmount: number
+  totalAmount: number
+} & BaseModalProps
 
-  const formattedClaimablePointsAmount =
-    numberToLocaleString(claimedPointsAmount)
-  const formattedTotalPointsAmount = numberToLocaleString(
-    totalBalance + claimedPointsAmount,
-  )
+export function AcrePointsClaimModalBase({
+  claimedAmount,
+  totalAmount,
+  closeModal,
+}: AcrePointsClaimModalBaseProps) {
+  const formattedClaimedAmount = numberToLocaleString(claimedAmount)
+  const formattedTotalAmount = numberToLocaleString(totalAmount)
 
   const steps = useMemo<[string, ReactNode][]>(
     () => [
       [
         "You earned",
         <AnimatedNumber
-          value={formattedClaimablePointsAmount}
+          value={formattedClaimedAmount}
           prefix="+"
           suffix=" PTS"
           animateMode="whileInView"
@@ -71,7 +72,7 @@ export function AcrePointsClaimModalBase() {
       [
         "Updating points balance...",
         <AnimatedNumber
-          value={formattedTotalPointsAmount}
+          value={formattedTotalAmount}
           suffix=" PTS"
           animateMode="whileInView"
           indicationColor="brand.400"
@@ -96,7 +97,7 @@ export function AcrePointsClaimModalBase() {
       //   />,
       // ],
     ],
-    [formattedClaimablePointsAmount, formattedTotalPointsAmount],
+    [formattedClaimedAmount, formattedTotalAmount],
   )
 
   const [scope, animate] = useAnimate()
@@ -134,16 +135,9 @@ export function AcrePointsClaimModalBase() {
     logPromiseFailure(handleAnimation())
   }, [scope, animate, steps])
 
-  const { closeModal } = useModal()
-
   const [isCofettiExploded, setIsCofettiExploded] = useState(false)
 
-  const handleClose = () => {
-    logPromiseFailure(updateUserPointsData())
-    closeModal()
-  }
-
-  useTimeout(handleClose, AUTOCLOSE_DELAY)
+  useTimeout(closeModal, AUTOCLOSE_DELAY)
 
   return (
     <ModalBody gap={0} p={0} pos="relative" ref={scope}>
@@ -179,7 +173,7 @@ export function AcrePointsClaimModalBase() {
 
       <Button
         opacity={0}
-        onClick={handleClose}
+        onClick={closeModal}
         data-close-button
         variant="outline"
       >

@@ -11,8 +11,6 @@ import {
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import Countdown from "#/components/shared/Countdown"
 import useAcrePoints from "#/hooks/useAcrePoints"
-import { MODAL_TYPES } from "#/types"
-import { useModal } from "#/hooks"
 import { logPromiseFailure, numberToLocaleString } from "#/utils"
 
 export default function AcrePointsCard(props: CardProps) {
@@ -24,14 +22,6 @@ export default function AcrePointsCard(props: CardProps) {
     updateUserPointsData,
     updatePointsData,
   } = useAcrePoints()
-
-  const { openModal } = useModal()
-
-  const onClaimButtonClick = () => {
-    claimPoints()
-    // TODO: The modal window should be opened when the claim action succeeds.
-    openModal(MODAL_TYPES.ACRE_POINTS_CLAIM)
-  }
 
   const formattedTotalPointsAmount = numberToLocaleString(totalBalance)
   const formattedClaimablePointsAmount = numberToLocaleString(claimableBalance)
@@ -77,7 +67,7 @@ export default function AcrePointsCard(props: CardProps) {
             {claimableBalance && (
               <Button
                 mt={3}
-                onClick={onClaimButtonClick}
+                onClick={claimPoints}
                 w="full"
                 colorScheme="green"
                 color="gold.200"

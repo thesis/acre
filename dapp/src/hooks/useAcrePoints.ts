@@ -1,7 +1,9 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { acreApi, bigIntToUserAmount } from "#/utils"
 import { queryKeysFactory } from "#/constants"
+import { MODAL_TYPES } from "#/types"
 import { useWallet } from "./useWallet"
+import { useModal } from "./useModal"
 
 const { userKeys, acreKeys } = queryKeysFactory
 
@@ -16,6 +18,7 @@ type UseAcrePointsReturnType = {
 
 export default function useAcrePoints(): UseAcrePointsReturnType {
   const { ethAddress = "" } = useWallet()
+  const { openModal } = useModal()
 
   const userPointsDataQuery = useQuery({
     queryKey: [...userKeys.pointsData(), ethAddress],
@@ -33,6 +36,17 @@ export default function useAcrePoints(): UseAcrePointsReturnType {
     onSettled: async () => {
       await userPointsDataQuery.refetch()
     },
+    onSuccess: (data) => {
+      const claimedAmount = bigIntToUserAmount(data.claimed, 0)
+      const totalAmount = bigIntToUserAmount(data.total, 0)
+
+      openModal(MODAL_TYPES.ACRE_POINTS_CLAIM, {
+        claimedAmount,
+        totalAmount,
+      })
+    },
+    // TODO: Add the case when something goes wrong
+    // onError: (error) => {},
   })
 
   const { data } = userPointsDataQuery
