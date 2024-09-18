@@ -1,14 +1,17 @@
 import { env } from "#/constants"
-import axios from "axios"
+import axiosStatic from "axios"
 
-const { ACRE_API_ENDPOINT } = env
+const axios = axiosStatic.create({
+  baseURL: env.ACRE_API_ENDPOINT,
+  withCredentials: true,
+})
 
 type PointsDataResponse = {
   dropAt: number
 }
 
 const getPointsData = async () => {
-  const url = `${ACRE_API_ENDPOINT}points`
+  const url = "points"
   const response = await axios.get<PointsDataResponse>(url)
 
   return {
@@ -23,7 +26,7 @@ type PointsDataByUserResponse = {
 }
 
 const getPointsDataByUser = async (address: string) => {
-  const url = `${ACRE_API_ENDPOINT}users/${address}/points`
+  const url = `users/${address}/points`
   const response = await axios.get<PointsDataByUserResponse>(url)
 
   return {
@@ -39,7 +42,7 @@ type ClaimAcrePointsResponse = {
   claimedAt: number
 }
 const claimPoints = async (address: string) => {
-  const url = `${ACRE_API_ENDPOINT}users/points/${address}/claim`
+  const url = `users/${address}/points/claim`
   const response = await axios.post<ClaimAcrePointsResponse>(url)
 
   return {
