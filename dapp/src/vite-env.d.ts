@@ -16,6 +16,7 @@ interface ImportMetaEnv {
   readonly VITE_SUBGRAPH_API_KEY: string
   readonly VITE_MEZO_PORTAL_API_KEY: string
   readonly VITE_LATEST_COMMIT_HASH: string
+  readonly VITE_ACRE_API_ENDPOINT: string
 }
 
 interface ImportMeta {

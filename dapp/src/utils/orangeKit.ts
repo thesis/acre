@@ -1,4 +1,8 @@
-import { CONNECTION_ERRORS, wallets } from "#/constants"
+import {
+  ACRE_SESSION_EXPIRATION_TIME,
+  CONNECTION_ERRORS,
+  wallets,
+} from "#/constants"
 import {
   ConnectionErrorData,
   OrangeKitError,
@@ -10,6 +14,7 @@ import {
 } from "@orangekit/react"
 import { Connector } from "wagmi"
 import { SignInWithWalletMessage } from "@orangekit/sign-in-with-wallet"
+import { getExpirationDate } from "./time"
 
 const getWalletInfo = (connector: OrangeKitConnector) => {
   switch (connector.id) {
@@ -37,7 +42,7 @@ const isConnectedStatus = (status: string) => status === "connected"
 const isOrangeKitConnector = (connector?: Connector) =>
   connector?.type === "orangekit"
 
-const createSignInWithWalletMessage = (address: string) => {
+const createSignInWithWalletMessage = (address: string, nonce: string) => {
   const { host: domain, origin: uri } = window.location
 
   const message = new SignInWithWalletMessage({
@@ -47,6 +52,10 @@ const createSignInWithWalletMessage = (address: string) => {
     issuedAt: new Date().toISOString(),
     version: "1",
     networkFamily: "bitcoin",
+    expirationTime: getExpirationDate(
+      ACRE_SESSION_EXPIRATION_TIME,
+    ).toISOString(),
+    nonce,
   })
 
   return message.prepareMessage()
