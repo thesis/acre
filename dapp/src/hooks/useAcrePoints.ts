@@ -15,7 +15,7 @@ type UseAcrePointsReturnType = {
 }
 
 export default function useAcrePoints(): UseAcrePointsReturnType {
-  const { address = "", ethAddress = "" } = useWallet()
+  const { ethAddress = "" } = useWallet()
 
   const userPointsDataQuery = useQuery({
     queryKey: [...userKeys.pointsData(), ethAddress],
@@ -29,7 +29,7 @@ export default function useAcrePoints(): UseAcrePointsReturnType {
   })
 
   const { mutate: claimPoints } = useMutation({
-    mutationFn: async () => acreApi.claimPoints(address),
+    mutationFn: async () => acreApi.claimPoints(ethAddress),
     onSettled: async () => {
       await userPointsDataQuery.refetch()
     },
