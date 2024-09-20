@@ -6,9 +6,12 @@ import {
   getOrangeKitXverseConnector,
 } from "@orangekit/react"
 import { env } from "./constants"
+import { router } from "./utils"
+import { SEARCH_PARAMS_NAMES } from "./router/path"
 
 const isTestnet = env.USE_TESTNET
 const CHAIN_ID = isTestnet ? sepolia.id : mainnet.id
+const IsEmbed = router.getURLParam(SEARCH_PARAMS_NAMES.embed)
 
 const chains: [Chain, ...Chain[]] = isTestnet ? [sepolia] : [mainnet]
 const connectorConfig = {
@@ -25,10 +28,18 @@ const orangeKitUnisatConnector = getOrangeKitUnisatConnector(connectorConfig)
 const orangeKitOKXConnector = getOrangeKitOKXConnector(connectorConfig)
 const orangeKitXverseConnector = getOrangeKitXverseConnector(connectorConfig)
 
-const connectors = [
+const embedConnectors = [orangeKitXverseConnector()]
+const defaultConnectors = [
   orangeKitOKXConnector(),
   orangeKitUnisatConnector(),
   orangeKitXverseConnector(),
+]
+
+const connectors = [
+  ...(IsEmbed
+    ? // TODO: Use correct connector
+      embedConnectors
+    : defaultConnectors),
 ] as unknown as CreateConnectorFn[]
 
 const wagmiConfig = createConfig({
