@@ -10,7 +10,7 @@ import {
   useClipboard,
   useMultiStyleConfig,
 } from "@chakra-ui/react"
-import { useModal, useWallet } from "#/hooks"
+import { useIsEmbed, useModal, useWallet } from "#/hooks"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import { TextMd } from "#/components/shared/Typography"
 import { BitcoinIcon } from "#/assets/icons"
@@ -20,6 +20,7 @@ import { MODAL_TYPES } from "#/types"
 import { IconCopy, IconLogout, IconWallet } from "@tabler/icons-react"
 
 export default function ConnectWallet() {
+  const { isEmbed } = useIsEmbed()
   const { address, balance, onDisconnect } = useWallet()
   const { isOpenGlobalErrorModal, modalType, openModal } = useModal()
   const { hasCopied, onCopy } = useClipboard(address ?? "")
@@ -45,7 +46,7 @@ export default function ConnectWallet() {
           pointerEvents: "none",
         })}
       >
-        Connect wallet
+        {`Connect ${isEmbed ? "account" : "wallet"}`}
       </Button>
     )
   }
