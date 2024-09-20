@@ -1,4 +1,6 @@
 import { useCallback } from "react"
+import { router } from "#/utils"
+import { SEARCH_PARAMS_NAMES } from "#/router/path"
 import useLocalStorage from "./useLocalStorage"
 
 export default function useIsEmbed() {
@@ -8,9 +10,7 @@ export default function useIsEmbed() {
   )
 
   const enableIsEmbed = useCallback(() => {
-    const params = new URLSearchParams(window.location.search)
-
-    if (params.get("embed")) {
+    if (router.getURLParam(SEARCH_PARAMS_NAMES.embed)) {
       setIsEmbed(true)
     }
   }, [setIsEmbed])
