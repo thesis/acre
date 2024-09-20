@@ -1,7 +1,6 @@
 import React from "react"
 import Layout from "#/components/Layout"
 import DashboardPage from "#/pages/DashboardPage"
-import LandingPage from "#/pages/LandingPage"
 import { createBrowserRouter } from "react-router-dom"
 import { routerPath } from "./path"
 
@@ -13,10 +12,6 @@ export const router = createBrowserRouter([
       {
         index: true,
         path: routerPath.home,
-        element: <LandingPage />,
-      },
-      {
-        path: routerPath.dashboard,
         element: <DashboardPage />,
       },
     ],

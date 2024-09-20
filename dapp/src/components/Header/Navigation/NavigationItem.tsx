@@ -1,49 +1,41 @@
 import React from "react"
-import {
-  Box,
-  ListItem,
-  ListItemProps,
-  useMultiStyleConfig,
-} from "@chakra-ui/react"
-import { motion } from "framer-motion"
-import { NavigationItemType } from "#/types/navigation"
+import { ListItem, useMultiStyleConfig } from "@chakra-ui/react"
 import { To, useSearchParams } from "react-router-dom"
 import { useModal } from "#/hooks"
-import { NavLink } from "../../shared/NavLink"
+import { router } from "#/utils"
+import { NavLink, NavLinkProps } from "../../shared/NavLink"
 
-type NavigationItemProps = ListItemProps & NavigationItemType
+export type NavigationItemProps = NavLinkProps
 
 function NavigationItem(props: NavigationItemProps) {
-  const { label, href, ...restProps } = props
-  const styles = useMultiStyleConfig("Link", { variant: "navigation" })
+  const { children, to: defaultTo, isExternal, ...restProps } = props
+  const styles = useMultiStyleConfig("Link", {
+    variant: "navigation",
+    size: "md",
+  })
   const [searchParams] = useSearchParams()
   const { isOpenGlobalErrorModal } = useModal()
   const isDisabled = isOpenGlobalErrorModal
 
-  const to: To = {
-    pathname: href,
-    search: searchParams.toString(),
-  }
+  const to: To = isExternal
+    ? defaultTo
+    : {
+        pathname: router.getURLPath(defaultTo),
+        search: searchParams.toString(),
+      }
 
   return (
-    <ListItem pos="relative" {...restProps}>
+    <ListItem>
       <NavLink
         to={to}
         sx={styles.container}
         pointerEvents={isDisabled ? "none" : "auto"}
+        {...(isExternal && {
+          target: "_blank",
+        })}
+        {...restProps}
       >
-        {({ isActive }) => (
-          <>
-            {label}
-            {isActive && (
-              <Box
-                as={motion.span}
-                layoutId="active-route-indicator"
-                sx={styles.indicator}
-              />
-            )}
-          </>
-        )}
+        {children}
       </NavLink>
     </ListItem>
   )

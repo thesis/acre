@@ -7,9 +7,9 @@ function PageLayout(props: GridProps) {
   return (
     <Grid
       w="full"
-      maxW="110rem" // 1760px -> content width + x-axis padding
       mx="auto"
-      px={10}
+      maxW="page_content_max_width"
+      px="page_content_padding_x"
       py={9}
       gap={8}
       alignItems="start"

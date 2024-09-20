@@ -22,6 +22,8 @@ const NETWORK_TYPE = USE_TESTNET ? "testnet" : "mainnet"
 
 const LATEST_COMMIT_HASH = import.meta.env.VITE_LATEST_COMMIT_HASH
 
+const ACRE_API_ENDPOINT = import.meta.env.VITE_ACRE_API_ENDPOINT
+
 export default {
   PROD,
   USE_TESTNET,
@@ -35,4 +37,5 @@ export default {
   MEZO_PORTAL_API_KEY,
   NETWORK_TYPE,
   LATEST_COMMIT_HASH,
+  ACRE_API_ENDPOINT,
 }
