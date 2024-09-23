@@ -4,7 +4,11 @@ import { useCallback } from "react"
 import { useSignMessage } from "wagmi"
 
 function useSignMessageAndCreateSession() {
-  const { signMessageAsync, status: signMessageStatus } = useSignMessage()
+  const {
+    signMessageAsync,
+    status: signMessageStatus,
+    reset: resetMessageStatus,
+  } = useSignMessage()
 
   const signMessageAndCreateSession = useCallback(
     async (connectedConnector: OrangeKitConnector, btcAddress: string) => {
@@ -50,8 +54,9 @@ function useSignMessageAndCreateSession() {
   )
 
   return {
-    signMessageAndCreateSession,
     signMessageStatus,
+    resetMessageStatus,
+    signMessageAndCreateSession,
   }
 }
 export default useSignMessageAndCreateSession

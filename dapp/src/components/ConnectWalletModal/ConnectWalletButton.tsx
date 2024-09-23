@@ -60,7 +60,7 @@ export default function ConnectWalletButton({
     onDisconnect,
     status: connectionStatus,
   } = useWallet()
-  const { signMessageStatus, signMessageAndCreateSession } =
+  const { signMessageStatus, resetMessageStatus, signMessageAndCreateSession } =
     useSignMessageAndCreateSession()
   const { setConnectionError } = useWalletConnectionError()
   const { closeModal } = useModal()
@@ -137,6 +137,8 @@ export default function ConnectWalletButton({
 
   const handleButtonClick = () => {
     onDisconnect()
+    onClick()
+    resetMessageStatus()
 
     const isInstalled = orangeKit.isWalletInstalled(connector)
 
@@ -146,7 +148,6 @@ export default function ConnectWalletButton({
     }
 
     handleConnection()
-    onClick()
   }
 
   return (
