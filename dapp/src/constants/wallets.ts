@@ -32,7 +32,7 @@ const XVERSE: WalletInfo = {
 }
 
 const LEDGER: WalletInfo = {
-  id: "orangekit-ledger",
+  id: "orangekit-ledger-live",
   downloadUrls: {
     desktop: "https://www.ledger.com/ledger-live",
   },

@@ -4,6 +4,7 @@ import {
   getOrangeKitUnisatConnector,
   getOrangeKitOKXConnector,
   getOrangeKitXverseConnector,
+  getOrangeKitLedgerLiveConnector,
 } from "@orangekit/react"
 import { env } from "./constants"
 import { router } from "./utils"
@@ -27,8 +28,10 @@ const transports = chains.reduce(
 const orangeKitUnisatConnector = getOrangeKitUnisatConnector(connectorConfig)
 const orangeKitOKXConnector = getOrangeKitOKXConnector(connectorConfig)
 const orangeKitXverseConnector = getOrangeKitXverseConnector(connectorConfig)
+const orangeKitLedgerLiveConnector =
+  getOrangeKitLedgerLiveConnector(connectorConfig)
 
-const embedConnectors = [orangeKitXverseConnector()]
+const embedConnectors = [orangeKitLedgerLiveConnector()]
 const defaultConnectors = [
   orangeKitOKXConnector(),
   orangeKitUnisatConnector(),
