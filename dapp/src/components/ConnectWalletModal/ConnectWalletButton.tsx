@@ -62,14 +62,14 @@ export default function ConnectWalletButton({
   } = useWallet()
   const { signMessageStatus, resetMessageStatus, signMessageAndCreateSession } =
     useSignMessageAndCreateSession()
-  const { setConnectionError, resetConnectionError } =
+  const { connectionError, setConnectionError, resetConnectionError } =
     useWalletConnectionError()
   const { closeModal } = useModal()
   const dispatch = useAppDispatch()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const hasConnectionError = connectionStatus === "error"
+  const hasConnectionError = connectionError || connectionStatus === "error"
   const hasSignMessageStatus = signMessageStatus === "error"
   const showStatuses = isSelected && !hasConnectionError
   const showRetryButton = address && hasSignMessageStatus
@@ -92,11 +92,17 @@ export default function ConnectWalletButton({
       } catch (error) {
         if (eip1193.didUserRejectRequest(error)) return
 
+        onDisconnect()
         console.error("Failed to sign siww message", error)
         setConnectionError(CONNECTION_ERRORS.INVALID_SIWW_SIGNATURE)
       }
     },
-    [signMessageAndCreateSession, onSuccessSignMessage, setConnectionError],
+    [
+      signMessageAndCreateSession,
+      onSuccessSignMessage,
+      onDisconnect,
+      setConnectionError,
+    ],
   )
 
   const onSuccessConnection = useCallback(
