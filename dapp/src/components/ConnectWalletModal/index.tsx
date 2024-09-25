@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import { ModalBody, ModalHeader, ModalCloseButton } from "@chakra-ui/react"
 import { useConnectors, useIsEmbed, useWalletConnectionError } from "#/hooks"
 import { OrangeKitConnector, BaseModalProps, OnSuccessCallback } from "#/types"
-import { wallets } from "#/constants"
+// import { wallets } from "#/constants"
 import withBaseModal from "../ModalRoot/withBaseModal"
 import ConnectWalletButton from "./ConnectWalletButton"
 import ConnectWalletErrorAlert from "./ConnectWalletErrorAlert"
@@ -17,7 +17,7 @@ export function ConnectWalletModalBase({
   const connectors = useConnectors()
   const enabledConnectors = connectors.map((connector) => ({
     ...connector,
-    isDisabled: !wallets.SUPPORTED_WALLET_IDS.includes(connector.id),
+    isDisabled: false,
   }))
 
   const [selectedConnectorId, setSelectedConnectorId] = useState<string>()
