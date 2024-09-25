@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react"
 import { CONNECTION_ERRORS, ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import {
   useAppDispatch,
+  useIsEmbed,
   useModal,
   useSignMessageAndCreateSession,
   useWallet,
@@ -54,6 +55,7 @@ export default function ConnectWalletButton({
   connector,
   onSuccess,
 }: ConnectWalletButtonProps) {
+  const { isEmbed } = useIsEmbed()
   const {
     address,
     isConnected,
@@ -226,7 +228,7 @@ export default function ConnectWalletButton({
                 </TextMd>
                 <ConnectWalletStatusLabel
                   status={connectionStatus}
-                  label="Connect wallet"
+                  label={`Connect ${isEmbed ? "account" : "wallet"}`}
                 />
                 <ConnectWalletStatusLabel
                   status={signMessageStatus}

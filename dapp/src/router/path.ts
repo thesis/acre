@@ -1,5 +1,7 @@
 export const SEARCH_PARAMS_NAMES = {
   referral: "ref",
+  embed: "embed",
+  themeMode: "theme",
 }
 
 export const routerPath = {

@@ -36,8 +36,8 @@ importers:
         specifier: ^11.11.0
         version: 11.11.5(@emotion/react@11.11.4)(@types/react@18.3.3)(react@18.3.1)
       '@orangekit/react':
-        specifier: 1.0.0-beta.30
-        version: 1.0.0-beta.30(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5)(valibot@0.33.2)
+        specifier: 1.0.0-beta.32-dev.0
+        version: 1.0.0-beta.32-dev.0(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5)
       '@orangekit/sign-in-with-wallet':
         specifier: 1.0.0-beta.6
         version: 1.0.0-beta.6(bech32@2.0.0)(ethers@6.13.0)
@@ -4715,6 +4715,23 @@ packages:
       bignumber.js: 9.1.2
     dev: false
 
+  /@ledgerhq/wallet-api-client@1.5.10:
+    resolution: {integrity: sha512-cSTdNKBjlzium1tRS2+Q8Ev6T8MM0v8WtOF34+I/+GfkcerA9wR6l4ISGWP9fPneur3r+uGF1k4Y5LPbMN5pdw==}
+    dependencies:
+      '@ledgerhq/hw-transport': 6.30.6
+      '@ledgerhq/wallet-api-core': 1.11.0
+      bignumber.js: 9.1.2
+    dev: false
+
+  /@ledgerhq/wallet-api-core@1.11.0:
+    resolution: {integrity: sha512-QB4Inky3HadsB246CMH4t+KWvJ6qLu/M2nDuUZZ5e27XMAVDe/XI2CzndYmRq8rjW8pCfytGdQrdH9aVcBK6Kg==}
+    dependencies:
+      '@ledgerhq/errors': 6.16.4
+      bignumber.js: 9.1.2
+      uuid: 9.0.1
+      zod: 3.23.8
+    dev: false
+
   /@ledgerhq/wallet-api-core@1.6.0:
     resolution: {integrity: sha512-nVPN3yu5+5pbhfFYh0iKmij5U7KVKZfpDkusXbj4yKvueKY8ZXU1wgvw1rDhgxlqu+s7JTA50MX56doyhm46Qg==}
     dependencies:
@@ -5754,14 +5771,16 @@ packages:
       - ethers
     dev: false
 
-  /@orangekit/react@1.0.0-beta.30(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5)(valibot@0.33.2):
-    resolution: {integrity: sha512-hH5rRTDy0rDuVvgZKb53/fiQHHMjUlOL0pufMbv4fuy0AzrnNHu4ohFEJCyANpiL/FppdBZiFa/paqv+9obotg==}
+  /@orangekit/react@1.0.0-beta.32-dev.0(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5):
+    resolution: {integrity: sha512-3yllsWIjqEmgOEYIHiazv4sYDsb3KD1t9Ts8tOG0/By67e2r2yXDQ+ahq7gIJqVWj9qEeo6HMiUSq6ttZL90YA==}
     dependencies:
+      '@ledgerhq/wallet-api-client': 1.5.10
       '@orangekit/sdk': 1.0.0-beta.16
       '@rainbow-me/rainbowkit': 2.0.2(@types/react@18.3.3)(react-dom@18.3.1)(react@18.3.1)(viem@2.8.16)(wagmi@2.5.12)
+      '@swan-bitcoin/xpub-lib': 0.1.5
       ethers: 6.12.1
       react: 18.3.1
-      sats-connect: 2.5.0(typescript@5.4.5)(valibot@0.33.2)
+      sats-connect: 2.8.0(typescript@5.4.5)
       viem: 2.8.16(typescript@5.4.5)
       wagmi: 2.5.12(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(react@18.3.1)(typescript@5.4.5)(viem@2.8.16)
     transitivePeerDependencies:
@@ -5792,7 +5811,6 @@ packages:
       - typescript
       - uWebSockets.js
       - utf-8-validate
-      - valibot
       - zod
     dev: false
 
@@ -6787,12 +6805,10 @@ packages:
     engines: {node: '>=16'}
     dev: false
 
-  /@sats-connect/core@0.0.15(valibot@0.33.2):
-    resolution: {integrity: sha512-f+s+uM4BnjLs+I8AHp4Tf4GG8kMLGn44RalNZqlo/OkTeZj+llQEsMEwfKkIM8f45gA3jSWqmn4q/LsjMpWlVw==}
-    peerDependencies:
-      valibot: 0.33.2
+  /@sats-connect/core@0.2.2:
+    resolution: {integrity: sha512-nl3zPnV1UBllYAniDfhM/oSFGQ2qy4cCg1YwxJZ+RQMwlTMrVh2f3lJ//dIIo9RgQPrtHpwrAaaWW0VpfqDQbg==}
     dependencies:
-      axios: 1.6.8
+      axios: 1.7.4
       bitcoin-address-validation: 2.2.3
       buffer: 6.0.3
       jsontokens: 4.0.1
@@ -6802,13 +6818,13 @@ packages:
       - debug
     dev: false
 
-  /@sats-connect/make-default-provider-config@0.0.5(@sats-connect/core@0.0.15)(typescript@5.4.5):
+  /@sats-connect/make-default-provider-config@0.0.5(@sats-connect/core@0.2.2)(typescript@5.4.5):
     resolution: {integrity: sha512-b/v4IeDEde5DqFOdMbMmf3B0t/lxlKnY04f3YIUWe1khOg3S6VdcK9Mqva+WUOsJHBTIA5b4hK7CqfMjx1Ic+w==}
     peerDependencies:
       '@sats-connect/core': '*'
       typescript: 5.4.4
     dependencies:
-      '@sats-connect/core': 0.0.15(valibot@0.33.2)
+      '@sats-connect/core': 0.2.2
       '@sats-connect/ui': 0.0.6
       bowser: 2.11.0
       typescript: 5.4.5
@@ -9423,16 +9439,6 @@ packages:
       - debug
     dev: false
 
-  /axios@1.6.8:
-    resolution: {integrity: sha512-v/ZHtJDU39mDpyBoFVkETcd/uNdxrWRrg3bKpOKzXFA6Bvqopts6ALSMU3y6ijYxbw2B+wPrIv46egTzJXCLGQ==}
-    dependencies:
-      follow-redirects: 1.15.6(debug@4.3.4)
-      form-data: 4.0.0
-      proxy-from-env: 1.1.0
-    transitivePeerDependencies:
-      - debug
-    dev: false
-
   /axios@1.7.2:
     resolution: {integrity: sha512-2A8QhOMrbomlDuiLeK9XibIBzuHeRcqqNOHp0Cyp5EoJ1IFDh+XZH3A6BkXtv0K4gFGCI0Y4BM7B1wOEi0Rmgw==}
     dependencies:
@@ -9452,6 +9458,16 @@ packages:
     transitivePeerDependencies:
       - debug
     dev: true
+
+  /axios@1.7.4:
+    resolution: {integrity: sha512-DukmaFRnY6AzAALSH4J2M3k6PkaC+MfaAGdEERRWcC9q3/TWQwLpHR8ZRLKTdQ3aBDL64EdluRDjJqKw+BPZEw==}
+    dependencies:
+      follow-redirects: 1.15.6(debug@4.3.4)
+      form-data: 4.0.0
+      proxy-from-env: 1.1.0
+    transitivePeerDependencies:
+      - debug
+    dev: false
 
   /axobject-query@3.2.1:
     resolution: {integrity: sha512-jsyHu61e6N4Vbz/v18DHwWYKK0bSWLqn47eeDSKPB7m8tqMHF9YJ+mhIk2lVteyZrY8tnSj/jHOv4YiTCuCJgg==}
@@ -18764,16 +18780,15 @@ packages:
   /safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
 
-  /sats-connect@2.5.0(typescript@5.4.5)(valibot@0.33.2):
-    resolution: {integrity: sha512-oyKQMH07dvXv/UCUlbHWoLsfycnDgsyipyaUovnFBsG85t1jF6wlXcGDPwiD8fIUmplDD6UmHlyAfCL8ai5b3w==}
+  /sats-connect@2.8.0(typescript@5.4.5):
+    resolution: {integrity: sha512-eYdpPoAXn6ud1hMZnQGowO1F0f9fS3jmE5Hq1F3VxXUbAvT2YmA72PBtG6QN/cdMuFZ5x1ce6I/fl270WSXqjw==}
     dependencies:
-      '@sats-connect/core': 0.0.15(valibot@0.33.2)
-      '@sats-connect/make-default-provider-config': 0.0.5(@sats-connect/core@0.0.15)(typescript@5.4.5)
+      '@sats-connect/core': 0.2.2
+      '@sats-connect/make-default-provider-config': 0.0.5(@sats-connect/core@0.2.2)(typescript@5.4.5)
       '@sats-connect/ui': 0.0.6
     transitivePeerDependencies:
       - debug
       - typescript
-      - valibot
     dev: false
 
   /sc-istanbul@0.4.6:
