@@ -14,10 +14,6 @@ import { LAST_USED_BTC_ADDRESS_KEY } from "./hooks/useLastUsedBtcAddress"
 const isTestnet = env.USE_TESTNET
 const CHAIN_ID = isTestnet ? sepolia.id : mainnet.id
 const IsEmbed = router.getURLParam(SEARCH_PARAMS_NAMES.embed)
-// TODO: Push address to connector
-const lastUsedBtcAddress = localStorage.getItem(LAST_USED_BTC_ADDRESS_KEY)
-// eslint-disable-next-line no-console
-console.log("lastUsedBtcAddress=", lastUsedBtcAddress)
 
 const chains: [Chain, ...Chain[]] = isTestnet ? [sepolia] : [mainnet]
 const connectorConfig = {
@@ -33,8 +29,14 @@ const transports = chains.reduce(
 const orangeKitUnisatConnector = getOrangeKitUnisatConnector(connectorConfig)
 const orangeKitOKXConnector = getOrangeKitOKXConnector(connectorConfig)
 const orangeKitXverseConnector = getOrangeKitXverseConnector(connectorConfig)
-const orangeKitLedgerLiveConnector =
-  getOrangeKitLedgerLiveConnector(connectorConfig)
+const orangeKitLedgerLiveConnector = getOrangeKitLedgerLiveConnector({
+  ...connectorConfig,
+  options: {
+    shouldConnectToFirstAccountByDefault: true,
+    tryToConnectToAddress:
+      localStorage.getItem(LAST_USED_BTC_ADDRESS_KEY) ?? undefined,
+  },
+})
 
 const embedConnectors = [orangeKitLedgerLiveConnector()]
 const defaultConnectors = [
