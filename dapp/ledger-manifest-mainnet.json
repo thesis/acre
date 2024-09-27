@@ -1,9 +1,9 @@
 {
-  "id": "acre-dev",
-  "name": "Acre [dev]",
-  "url": "http://localhost:5173/?embed=ledger-live",
+  "id": "acre-mainnet",
+  "name": "Acre",
+  "url": "https://stake.acre.fi/?embed=ledger-live",
   "homepageUrl": "https:/acre.fi/",
-  "icon": "http://localhost:5173/acre.svg",
+  "icon": "https://stake.acre.fi/acre.svg",
   "platforms": "desktop",
   "apiVersion": "^2.0.0",
   "manifestVersion": "2",

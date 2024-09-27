@@ -13,14 +13,18 @@
     "lint:js:fix": "eslint . --fix",
     "lint:config": "prettier -c '**/*.@(json|yaml|toml)'",
     "lint:config:fix": "prettier -w '**/*.@(json|yaml|toml)'",
-    "test": "vitest"
+    "test": "vitest",
+    "prepare:dev": "mustache config/development.json ledger-manifest-template.json > ledger-manifest-development.json",
+    "prepare:testnet": "mustache config/testnet.json ledger-manifest-template.json > ledger-manifest-testnet.json",
+    "prepare:mainnet": "mustache config/mainnet.json ledger-manifest-template.json > ledger-manifest-mainnet.json",
+    "prepare:all-env": "pnpm prepare:dev && pnpm prepare:testnet && pnpm prepare:mainnet"
   },
   "dependencies": {
     "@acre-btc/sdk": "workspace:*",
     "@chakra-ui/react": "^2.8.2",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
-    "@orangekit/react": "1.0.0-beta.30",
+    "@orangekit/react": "1.0.0-beta.32-dev.0",
     "@orangekit/sign-in-with-wallet": "1.0.0-beta.6",
     "@reduxjs/toolkit": "^2.2.0",
     "@rehooks/local-storage": "^2.4.5",
@@ -34,6 +38,7 @@
     "ethers": "^6.10.0",
     "formik": "^2.4.5",
     "framer-motion": "^10.16.5",
+    "mustache": "^4.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-number-format": "^5.3.1",
