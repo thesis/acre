@@ -24,7 +24,6 @@ export function ConnectWalletModalBase({
   const { connectionError, resetConnectionError } = useWalletConnectionError()
 
   const handleButtonOnClick = (connector: OrangeKitConnector) => {
-    resetConnectionError()
     setSelectedConnectorId(connector.id)
   }
 
