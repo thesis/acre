@@ -10,7 +10,7 @@ export function useAccountsChangedOKX() {
 
     if (!provider || !featureFlags.OKX_WALLET_ENABLED) return undefined
 
-    const handleAccountsChanged = (accounts: string) => {
+    const handleAccountsChanged = (accounts: string[]) => {
       if (isConnected && accounts.length === 0) {
         onDisconnect()
       }
