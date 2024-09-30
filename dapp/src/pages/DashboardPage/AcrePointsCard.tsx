@@ -6,6 +6,7 @@ import {
   CardBody,
   CardHeader,
   CardProps,
+  Stack,
   VStack,
 } from "@chakra-ui/react"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
@@ -49,7 +50,10 @@ export default function AcrePointsCard(props: CardProps) {
 
           <VStack px={4} py={3} spacing={0} rounded="lg" bg="gold.100">
             {nextDropTimestamp && (
-              <>
+              <Stack
+                direction={claimableBalance ? "row" : "column"}
+                spacing={0}
+              >
                 <TextMd color="grey.500" textAlign="center">
                   Next drop in
                 </TextMd>
@@ -61,7 +65,7 @@ export default function AcrePointsCard(props: CardProps) {
                   ml={claimableBalance ? 2 : 0}
                   mt={claimableBalance ? 0 : 2}
                 />
-              </>
+              </Stack>
             )}
 
             {claimableBalance && (
