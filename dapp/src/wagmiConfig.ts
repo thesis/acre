@@ -33,8 +33,7 @@ const orangeKitXverseConnector = getOrangeKitXverseConnector(connectorConfig)
 const orangeKitLedgerLiveConnector = getOrangeKitLedgerLiveConnector({
   ...connectorConfig,
   options: {
-    shouldConnectToFirstAccountByDefault: true,
-    tryToConnectToAddress: getLocalStorageItem(LAST_USED_BTC_ADDRESS_KEY),
+    tryConnectToAddress: getLocalStorageItem(LAST_USED_BTC_ADDRESS_KEY),
   },
 })
 
