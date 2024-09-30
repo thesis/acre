@@ -10,6 +10,7 @@ import { env } from "./constants"
 import { router } from "./utils"
 import { SEARCH_PARAMS_NAMES } from "./router/path"
 import { LAST_USED_BTC_ADDRESS_KEY } from "./hooks/useLastUsedBtcAddress"
+import { getLocalStorageItem } from "./hooks/useLocalStorage"
 
 const isTestnet = env.USE_TESTNET
 const CHAIN_ID = isTestnet ? sepolia.id : mainnet.id
@@ -33,8 +34,7 @@ const orangeKitLedgerLiveConnector = getOrangeKitLedgerLiveConnector({
   ...connectorConfig,
   options: {
     shouldConnectToFirstAccountByDefault: true,
-    tryToConnectToAddress:
-      localStorage.getItem(LAST_USED_BTC_ADDRESS_KEY) ?? undefined,
+    tryToConnectToAddress: getLocalStorageItem(LAST_USED_BTC_ADDRESS_KEY),
   },
 })
 
