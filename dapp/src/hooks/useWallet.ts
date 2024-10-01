@@ -85,6 +85,7 @@ export function useWallet(): UseWalletReturn {
 
   const onDisconnect = useCallback(() => {
     disconnect()
+    setAddress(undefined)
     resetWalletState()
     removeAddressFromLocalStorage()
   }, [disconnect, removeAddressFromLocalStorage, resetWalletState])

@@ -8,7 +8,8 @@ export function useBitcoinProvider(): UseBitcoinProviderReturn {
   const connector = useConnector()
 
   return useMemo(() => {
-    if (!connector) return undefined
+    if (!connector || typeof connector.getBitcoinProvider !== "function")
+      return undefined
 
     return connector.getBitcoinProvider()
   }, [connector])
