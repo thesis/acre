@@ -1,4 +1,4 @@
-import { useQueryClient } from "@tanstack/react-query"
+import { QueryFilters, useQueryClient } from "@tanstack/react-query"
 import { useCallback } from "react"
 import { resetState } from "#/store/wallet"
 import { queryKeysFactory } from "#/constants"
@@ -12,8 +12,10 @@ export default function useResetWalletState() {
   const dispatch = useAppDispatch()
 
   const resetQueries = useCallback(async () => {
-    queryClient.removeQueries({ queryKey: userKeys.all })
-    await queryClient.resetQueries({ queryKey: userKeys.all })
+    const filters: QueryFilters = { queryKey: userKeys.all, exact: true }
+
+    queryClient.removeQueries(filters)
+    await queryClient.resetQueries(filters)
   }, [queryClient])
 
   return useCallback(() => {
