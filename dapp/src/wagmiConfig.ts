@@ -9,6 +9,8 @@ import {
 import { env } from "./constants"
 import { router } from "./utils"
 import { SEARCH_PARAMS_NAMES } from "./router/path"
+import { LAST_USED_BTC_ADDRESS_KEY } from "./hooks/useLastUsedBtcAddress"
+import { getLocalStorageItem } from "./hooks/useLocalStorage"
 
 const isTestnet = env.USE_TESTNET
 const CHAIN_ID = isTestnet ? sepolia.id : mainnet.id
@@ -28,8 +30,12 @@ const transports = chains.reduce(
 const orangeKitUnisatConnector = getOrangeKitUnisatConnector(connectorConfig)
 const orangeKitOKXConnector = getOrangeKitOKXConnector(connectorConfig)
 const orangeKitXverseConnector = getOrangeKitXverseConnector(connectorConfig)
-const orangeKitLedgerLiveConnector =
-  getOrangeKitLedgerLiveConnector(connectorConfig)
+const orangeKitLedgerLiveConnector = getOrangeKitLedgerLiveConnector({
+  ...connectorConfig,
+  options: {
+    tryConnectToAddress: getLocalStorageItem(LAST_USED_BTC_ADDRESS_KEY),
+  },
+})
 
 const embedConnectors = [orangeKitLedgerLiveConnector()]
 const defaultConnectors = [

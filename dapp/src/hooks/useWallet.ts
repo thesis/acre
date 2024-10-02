@@ -11,6 +11,7 @@ import { useConnector } from "./orangeKit/useConnector"
 import { useBitcoinProvider } from "./orangeKit/useBitcoinProvider"
 import useBitcoinBalance from "./orangeKit/useBitcoinBalance"
 import useResetWalletState from "./useResetWalletState"
+import useLastUsedBtcAddress from "./useLastUsedBtcAddress"
 
 const { typeConversionToConnector, typeConversionToOrangeKitConnector } =
   orangeKit
@@ -39,6 +40,8 @@ export function useWallet(): UseWalletReturn {
   const provider = useBitcoinProvider()
   const { data: balance } = useBitcoinBalance()
   const resetWalletState = useResetWalletState()
+  const { setAddressInLocalStorage, removeAddressFromLocalStorage } =
+    useLastUsedBtcAddress()
 
   const [address, setAddress] = useState<string | undefined>(undefined)
 
@@ -82,8 +85,10 @@ export function useWallet(): UseWalletReturn {
 
   const onDisconnect = useCallback(() => {
     disconnect()
+    setAddress(undefined)
     resetWalletState()
-  }, [disconnect, resetWalletState])
+    removeAddressFromLocalStorage()
+  }, [disconnect, removeAddressFromLocalStorage, resetWalletState])
 
   useEffect(() => {
     const fetchBitcoinAddress = async () => {
@@ -91,13 +96,14 @@ export function useWallet(): UseWalletReturn {
         const btcAddress = await connector.getBitcoinAddress()
 
         setAddress(btcAddress)
+        setAddressInLocalStorage(btcAddress)
       } else {
         setAddress(undefined)
       }
     }
 
     logPromiseFailure(fetchBitcoinAddress())
-  }, [connector, provider])
+  }, [connector, provider, setAddressInLocalStorage])
 
   return useMemo(
     () => ({

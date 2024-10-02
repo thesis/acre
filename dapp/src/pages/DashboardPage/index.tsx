@@ -1,5 +1,5 @@
 import React from "react"
-import { useMobileMode } from "#/hooks"
+import { useMobileMode, useTriggerConnectWalletModal } from "#/hooks"
 import MobileModeBanner from "#/components/MobileModeBanner"
 import { featureFlags } from "#/constants"
 import DashboardCard from "./DashboardCard"
@@ -12,6 +12,8 @@ import UsefulLinks from "./UsefulLinks"
 
 export default function DashboardPage() {
   const isMobileMode = useMobileMode()
+
+  useTriggerConnectWalletModal()
 
   return isMobileMode ? (
     <MobileModeBanner forceOpen />
