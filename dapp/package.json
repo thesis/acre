@@ -14,10 +14,7 @@
     "lint:config": "prettier -c '**/*.@(json|yaml|toml)'",
     "lint:config:fix": "prettier -w '**/*.@(json|yaml|toml)'",
     "test": "vitest",
-    "prepare:dev": "mustache config/development.json ledger-manifest-template.json > ledger-manifest-development.json",
-    "prepare:testnet": "mustache config/testnet.json ledger-manifest-template.json > ledger-manifest-testnet.json",
-    "prepare:mainnet": "mustache config/mainnet.json ledger-manifest-template.json > ledger-manifest-mainnet.json",
-    "prepare:all-env": "pnpm prepare:dev && pnpm prepare:testnet && pnpm prepare:mainnet"
+    "generate:manifests": "for env in development testnet mainnet; do mustache config/$env.json ./manifests/ledger-live/ledger-manifest-template.json > ./manifests/ledger-live/ledger-live-manifest-$env.json; done"
   },
   "dependencies": {
     "@acre-btc/sdk": "workspace:*",
