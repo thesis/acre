@@ -36,8 +36,8 @@ importers:
         specifier: ^11.11.0
         version: 11.11.5(@emotion/react@11.11.4)(@types/react@18.3.3)(react@18.3.1)
       '@orangekit/react':
-        specifier: 1.0.0-beta.33-dev.3
-        version: 1.0.0-beta.33-dev.3(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5)
+        specifier: 1.0.0-beta.33-dev.4
+        version: 1.0.0-beta.33-dev.4(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5)
       '@orangekit/sign-in-with-wallet':
         specifier: 1.0.0-beta.6
         version: 1.0.0-beta.6(bech32@2.0.0)(ethers@6.13.0)
@@ -5778,8 +5778,8 @@ packages:
       - ethers
     dev: false
 
-  /@orangekit/react@1.0.0-beta.33-dev.3(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5):
-    resolution: {integrity: sha512-oZ6kIF9rgoXqfxCN5akJ/wxp0wedc8X8l+pLcz+wqY5HGf/RTOqSMkH/lFLx38AFGVJGueMgwNz1nllFYfFsiA==}
+  /@orangekit/react@1.0.0-beta.33-dev.4(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5):
+    resolution: {integrity: sha512-BrrylBjF9vM5szm+PdIcXDoj9vr+Ci3GoEW1idh4LCRIDxodBpB4CnAFpXZfhZsP0i3umEPO3IGwmPG+baR4Xg==}
     dependencies:
       '@ledgerhq/wallet-api-client': 1.5.10
       '@orangekit/sdk': 1.0.0-beta.18-dev.0(typescript@5.4.5)
