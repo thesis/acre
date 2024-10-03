@@ -1,7 +1,11 @@
 import { useCallback } from "react"
-import useLocalStorage from "./useLocalStorage"
+import useLocalStorage, { getLocalStorageItem } from "./useLocalStorage"
 
-export const LAST_USED_BTC_ADDRESS_KEY = "lastUsedBtcAddress"
+const LAST_USED_BTC_ADDRESS_KEY = "acre.lastUsedBtcAddress"
+
+export function getLastUsedBtcAddress() {
+  return getLocalStorageItem(LAST_USED_BTC_ADDRESS_KEY)
+}
 
 export default function useLastUsedBtcAddress() {
   const [address, setAddress] = useLocalStorage<string | undefined>(
