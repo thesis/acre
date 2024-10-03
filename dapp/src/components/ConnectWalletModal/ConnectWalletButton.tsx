@@ -127,8 +127,6 @@ export default function ConnectWalletButton({
       onError: (error: OrangeKitError) => {
         const errorData = orangeKit.parseOrangeKitConnectionError(error)
         setConnectionError(errorData)
-        if (connector.id === "orangekit-ledger-live")
-          logPromiseFailure(connector.disconnect())
       },
     })
   }, [onConnect, connector, onSuccessConnection, setConnectionError])
