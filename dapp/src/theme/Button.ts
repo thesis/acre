@@ -86,7 +86,7 @@ export const buttonTheme: ComponentSingleStyleConfig = {
         _loading: {
           _disabled: {
             borderColor: "white",
-            background: "opacity.white.5",
+            background: "grey.300",
             opacity: 1,
           },
         },
