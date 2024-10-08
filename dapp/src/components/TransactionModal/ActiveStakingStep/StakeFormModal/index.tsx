@@ -6,6 +6,7 @@ import { FormSubmitButton } from "#/components/shared/Form"
 import { ACTION_FLOW_TYPES, BaseFormProps } from "#/types"
 import { fixedPointNumberToString, getCurrencyByType } from "#/utils"
 import { featureFlags } from "#/constants"
+import { Box } from "@chakra-ui/react"
 import StakeDetails from "./StakeDetails"
 import AcrePointsRewardEstimation from "./AcrePointsRewardEstimation"
 
@@ -33,8 +34,20 @@ function StakeFormModal({
       {featureFlags.ACRE_POINTS_ENABLED && (
         <AcrePointsRewardEstimation mt={5} />
       )}
+
       <StakeDetails currency="bitcoin" />
-      <FormSubmitButton mt={10}>Deposit</FormSubmitButton>
+
+      <Box
+        pos="sticky"
+        bottom={-10}
+        m={-10}
+        mt={10}
+        p={10}
+        pt={0}
+        bg="gold.100"
+      >
+        <FormSubmitButton>Deposit</FormSubmitButton>
+      </Box>
     </TokenAmountForm>
   )
 }
