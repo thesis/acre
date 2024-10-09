@@ -13,10 +13,9 @@ export default function Header() {
     <HStack
       as="header"
       w="full"
+      mb="4.75rem" // 76px
       mx="auto"
       justify="center"
-      py={7}
-      px="page_content_padding_x"
       maxW="page_content_max_width"
     >
       <Link href={EXTERNAL_HREF.WEBSITE} isExternal>

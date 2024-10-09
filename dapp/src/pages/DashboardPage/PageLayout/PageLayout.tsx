@@ -9,8 +9,6 @@ function PageLayout(props: GridProps) {
       w="full"
       mx="auto"
       maxW="page_content_max_width"
-      px="page_content_padding_x"
-      py={9}
       gap={8}
       alignItems="start"
       gridTemplateColumns={{

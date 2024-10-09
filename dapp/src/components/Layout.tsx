@@ -6,22 +6,21 @@ import DocsDrawer from "./DocsDrawer"
 import Header from "./Header"
 import ModalRoot from "./ModalRoot"
 import Sidebar from "./Sidebar"
+import MobileModeBanner from "./MobileModeBanner"
 
 function Layout() {
   const isMobileMode = useMobileMode()
 
+  if (isMobileMode) return <MobileModeBanner forceOpen />
+
   return (
-    <Flex flexFlow="column">
+    <Flex flexFlow="column" p={10}>
       <Header />
       <Outlet />
 
-      {!isMobileMode && (
-        <>
-          <Sidebar />
-          <DocsDrawer />
-          <ModalRoot />
-        </>
-      )}
+      <Sidebar />
+      <DocsDrawer />
+      <ModalRoot />
     </Flex>
   )
 }

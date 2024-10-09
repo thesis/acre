@@ -1,6 +1,5 @@
 import React from "react"
-import { useMobileMode, useTriggerConnectWalletModal } from "#/hooks"
-import MobileModeBanner from "#/components/MobileModeBanner"
+import { useTriggerConnectWalletModal } from "#/hooks"
 import { featureFlags } from "#/constants"
 import DashboardCard from "./DashboardCard"
 import { PageLayout, PageLayoutColumn } from "./PageLayout"
@@ -11,13 +10,9 @@ import BeehiveCard from "./BeehiveCard"
 import UsefulLinks from "./UsefulLinks"
 
 export default function DashboardPage() {
-  const isMobileMode = useMobileMode()
-
   useTriggerConnectWalletModal()
 
-  return isMobileMode ? (
-    <MobileModeBanner forceOpen />
-  ) : (
+  return (
     <PageLayout>
       <PageLayoutColumn isMain>
         <DashboardCard />

@@ -3,7 +3,6 @@ export const semanticTokens = {
     header_height: 24,
     modal_shift: "9.75rem", // 156px
     dashboard_card_padding: 5,
-    page_content_padding_x: 10,
   },
   sizes: {
     sidebar_width: 80,
