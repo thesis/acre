@@ -37,6 +37,7 @@ export function AcreSdkProvider({ children }: { children: React.ReactNode }) {
       )
 
       if (bitcoinProvider) {
+        setIsConnected(false)
         sdk = await sdk.connect(bitcoinProvider)
         setIsConnected(true)
       } else {

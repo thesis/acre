@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { useAccount, useChainId, useConnect, useDisconnect } from "wagmi"
+import {
+  useAccount,
+  useChainId,
+  useConfig,
+  useConnect,
+  useDisconnect,
+} from "wagmi"
 import { logPromiseFailure, orangeKit } from "#/utils"
 import {
   OnErrorCallback,
@@ -34,7 +40,8 @@ type UseWalletReturn = {
 
 export function useWallet(): UseWalletReturn {
   const chainId = useChainId()
-  const { status: accountStatus } = useAccount()
+  const config = useConfig()
+  const { status: accountStatus, address: account } = useAccount()
   const { connect, status } = useConnect()
   const { disconnect } = useDisconnect()
   const connector = useConnector()
@@ -64,10 +71,21 @@ export function useWallet(): UseWalletReturn {
     ) => {
       try {
         if (!selectedConnector.connect) return
-
-        await selectedConnector.connect({ chainId, isReconnecting: true })
+        const {
+          accounts: [newAccount],
+        } = await selectedConnector.connect({ chainId, isReconnecting: true })
         const newAddress = await selectedConnector.getBitcoinAddress()
         if (newAddress === address) return
+
+        config.setState((prevState) => ({
+          ...prevState,
+          connections: new Map(prevState.connections).set(prevState.current!, {
+            // Update accounts to force update of wagmi hooks.
+            accounts: [newAccount],
+            connector: orangeKit.typeConversionToConnector(selectedConnector),
+            chainId,
+          }),
+        }))
 
         if (options?.onSuccess && typeof selectedConnector !== "function") {
           options.onSuccess(selectedConnector)
@@ -75,12 +93,11 @@ export function useWallet(): UseWalletReturn {
         setAddress(newAddress)
         resetWalletState()
       } catch (error) {
-        console.error("error in reconnect", error)
-        // @ts-expect-error test
-        if (options?.onError) options.onError(error)
+        console.error("Failed to reconnect", error)
+        if (options?.onError) options.onError(error as Error)
       }
     },
-    [address, chainId, resetWalletState],
+    [chainId, config, address, resetWalletState],
   )
 
   const onConnect = useCallback(
@@ -145,7 +162,7 @@ export function useWallet(): UseWalletReturn {
     }
 
     logPromiseFailure(fetchBitcoinAddress())
-  }, [connector, setAddressInLocalStorage, provider])
+  }, [connector, setAddressInLocalStorage, provider, account])
 
   return useMemo(
     () => ({
