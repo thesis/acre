@@ -81,8 +81,14 @@ export function useWallet(): UseWalletReturn {
   )
 
   const onDisconnect = useCallback(() => {
-    disconnect()
-    resetWalletState()
+    disconnect(
+      {},
+      {
+        onSuccess: () => {
+          resetWalletState()
+        },
+      },
+    )
   }, [disconnect, resetWalletState])
 
   useEffect(() => {

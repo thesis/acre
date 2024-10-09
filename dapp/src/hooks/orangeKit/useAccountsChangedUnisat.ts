@@ -14,7 +14,11 @@ export function useAccountsChangedUnisat() {
 
     const handleAccountsChanged = (accounts: string[]) => {
       if (isConnected && accounts.length === 0) {
-        onDisconnect()
+        // TODO: Temporary solution - Uncomment when we find a solution
+        // The `handleAccountsChanged` function runs even when a user
+        // disconnects from the dApp level. Then when the user is disconnected
+        // and the `onDisconnect` is called again unisat will open a wallet window.
+        // onDisconnect()
       } else if (isConnected && address !== accounts[0]) {
         onDisconnect()
         openModal(MODAL_TYPES.CONNECT_WALLET)
