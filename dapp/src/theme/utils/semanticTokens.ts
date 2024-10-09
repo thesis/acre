@@ -6,6 +6,5 @@ export const semanticTokens = {
   },
   sizes: {
     sidebar_width: 80,
-    page_content_max_width: "110rem", // 1760px -> content width + x-axis padding
   },
 }

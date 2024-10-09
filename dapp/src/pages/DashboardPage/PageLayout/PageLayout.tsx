@@ -7,8 +7,6 @@ function PageLayout(props: GridProps) {
   return (
     <Grid
       w="full"
-      mx="auto"
-      maxW="page_content_max_width"
       gap={8}
       alignItems="start"
       gridTemplateColumns={{

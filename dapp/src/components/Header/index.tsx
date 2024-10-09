@@ -14,9 +14,7 @@ export default function Header() {
       as="header"
       w="full"
       mb="4.75rem" // 76px
-      mx="auto"
       justify="center"
-      maxW="page_content_max_width"
     >
       <Link href={EXTERNAL_HREF.WEBSITE} isExternal>
         <Icon as={AcreLogo} w={20} h={12} />
