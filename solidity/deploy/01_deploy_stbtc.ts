@@ -10,7 +10,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const tbtc = await deployments.get("TBTC")
 
   const [, stbtcDeployment] = await helpers.upgrades.deployProxy("stBTC", {
-    contractName: "stBTC",
+    contractName: hre.network.name === "hardhat" ? "stBTCStub" : "stBTC",
     initializerArgs: [tbtc.address, treasury],
     factoryOpts: {
       signer: deployerSigner,
