@@ -12,6 +12,7 @@ const depositTestData: {
   bitcoinRecoveryAddress: string
   referral: number
   extraData: Hex
+  loggedInUser: string
 } = {
   depositOwner: EthereumAddress.from(
     "0xa9B38eA6435c8941d6eDa6a46b68E3e211719699",
@@ -21,6 +22,7 @@ const depositTestData: {
   extraData: Hex.from(
     "0xa9b38ea6435c8941d6eda6a46b68e3e2117196995bd100000000000000000000",
   ),
+  loggedInUser: "bc1qyulqtdwqkx055hje0sft59hhd7xqurnquhaghe",
 }
 
 const receiptTestData: DepositReceipt = {
@@ -47,6 +49,7 @@ const revealTestData: SaveRevealRequest = {
     referral: depositTestData.referral,
   },
   application: "acre",
+  loggedInUser: depositTestData.loggedInUser,
 }
 
 const fundingUtxo: {

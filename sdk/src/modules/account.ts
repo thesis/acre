@@ -122,6 +122,7 @@ export default class Account {
       this.#ethereumAddress,
       finalBitcoinRecoveryAddress,
       referral,
+      this.#bitcoinAddress,
     )
 
     return new StakeInitialization(tbtcDeposit)
