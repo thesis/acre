@@ -6,8 +6,7 @@ export type EmbedApp = (typeof embeddedApps)[number]
 
 const MAX_UINT16 = 65535
 const EMBEDDED_APP_TO_REFERRAL: Record<EmbedApp, number> = {
-  // TODO: set correct referral code
-  "ledger-live": 123,
+  "ledger-live": 2083,
 }
 
 const isValidReferral = (value: number) => {
