@@ -24,6 +24,7 @@ type UseWalletReturn = {
   onConnect: (
     connector: OrangeKitConnector,
     options?: {
+      isReconnecting?: boolean
       onSuccess?: (connector: OrangeKitConnector) => void
       onError?: OnErrorCallback<OrangeKitError>
     },
@@ -38,12 +39,12 @@ export function useWallet(): UseWalletReturn {
   const { disconnect } = useDisconnect()
   const connector = useConnector()
   const provider = useBitcoinProvider()
-  const { data: balance } = useBitcoinBalance()
   const resetWalletState = useResetWalletState()
   const { setAddressInLocalStorage, removeAddressFromLocalStorage } =
     useLastUsedBtcAddress()
 
   const [address, setAddress] = useState<string | undefined>(undefined)
+  const { data: balance } = useBitcoinBalance(address)
 
   // `isConnected` is variable derived from `status` but does not guarantee us a set `address`.
   // When `status` is 'connected' properties like `address` are guaranteed to be defined.
@@ -53,14 +54,56 @@ export function useWallet(): UseWalletReturn {
     [accountStatus],
   )
 
+  const onReconnect = useCallback(
+    async (
+      selectedConnector: OrangeKitConnector,
+      options: {
+        onSuccess: (connector: OrangeKitConnector) => void
+        onError?: OnErrorCallback<OrangeKitError>
+      },
+    ) => {
+      try {
+        if (!selectedConnector.connect) return
+
+        await selectedConnector.connect({ chainId, isReconnecting: true })
+        const newAddress = await selectedConnector.getBitcoinAddress()
+        if (newAddress === address) return
+
+        if (options?.onSuccess && typeof selectedConnector !== "function") {
+          options.onSuccess(selectedConnector)
+        }
+        setAddress(newAddress)
+        resetWalletState()
+      } catch (error) {
+        console.error("error in reconnect", error)
+        // @ts-expect-error test
+        if (options?.onError) options.onError(error)
+      }
+    },
+    [address, chainId, resetWalletState],
+  )
+
   const onConnect = useCallback(
     (
       selectedConnector: OrangeKitConnector,
       options?: {
         onSuccess?: (connector: OrangeKitConnector) => void
         onError?: OnErrorCallback<OrangeKitError>
+        isReconnecting?: boolean
       },
     ) => {
+      if (options?.isReconnecting) {
+        logPromiseFailure(
+          onReconnect(selectedConnector, {
+            onSuccess: () => {
+              if (options?.onSuccess) options.onSuccess(selectedConnector)
+            },
+            onError: options.onError,
+          }),
+        )
+        return
+      }
+
       connect(
         { connector: typeConversionToConnector(selectedConnector), chainId },
         {
@@ -80,7 +123,7 @@ export function useWallet(): UseWalletReturn {
         },
       )
     },
-    [connect, chainId],
+    [connect, chainId, onReconnect],
   )
 
   const onDisconnect = useCallback(() => {
@@ -88,13 +131,12 @@ export function useWallet(): UseWalletReturn {
     setAddress(undefined)
     resetWalletState()
     removeAddressFromLocalStorage()
-  }, [disconnect, removeAddressFromLocalStorage, resetWalletState])
+  }, [disconnect, resetWalletState, removeAddressFromLocalStorage])
 
   useEffect(() => {
     const fetchBitcoinAddress = async () => {
       if (connector) {
         const btcAddress = await connector.getBitcoinAddress()
-
         setAddress(btcAddress)
         setAddressInLocalStorage(btcAddress)
       } else {
@@ -103,7 +145,7 @@ export function useWallet(): UseWalletReturn {
     }
 
     logPromiseFailure(fetchBitcoinAddress())
-  }, [connector, provider, setAddressInLocalStorage])
+  }, [connector, setAddressInLocalStorage, provider])
 
   return useMemo(
     () => ({

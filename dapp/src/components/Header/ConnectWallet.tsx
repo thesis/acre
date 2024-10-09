@@ -17,7 +17,12 @@ import { BitcoinIcon } from "#/assets/icons"
 import { truncateAddress } from "#/utils"
 import { motion } from "framer-motion"
 import { MODAL_TYPES } from "#/types"
-import { IconCopy, IconLogout, IconWallet } from "@tabler/icons-react"
+import {
+  IconCopy,
+  IconLogout,
+  IconWallet,
+  IconUserCode,
+} from "@tabler/icons-react"
 
 export default function ConnectWallet() {
   const { isEmbed } = useIsEmbed()
@@ -29,8 +34,8 @@ export default function ConnectWallet() {
     size: "lg",
   })
 
-  const handleConnectWallet = () => {
-    openModal(MODAL_TYPES.CONNECT_WALLET)
+  const handleConnectWallet = (isReconnecting: boolean = false) => {
+    openModal(MODAL_TYPES.CONNECT_WALLET, { isReconnecting })
   }
 
   if (!address) {
@@ -40,7 +45,7 @@ export default function ConnectWallet() {
         variant="card"
         color="grey.700"
         leftIcon={<Icon as={BitcoinIcon} boxSize={6} color="brand.400" />}
-        onClick={handleConnectWallet}
+        onClick={() => handleConnectWallet(false)}
         {...((modalType === MODAL_TYPES.CONNECT_WALLET ||
           isOpenGlobalErrorModal) && {
           pointerEvents: "none",
@@ -103,6 +108,23 @@ export default function ConnectWallet() {
               px={2}
               boxSize={5}
               onClick={onCopy}
+            />
+          </Tooltip>
+
+          <Tooltip
+            fontSize="xs"
+            label="Change account"
+            color="gold.200"
+            px={3}
+            py={2}
+          >
+            <IconButton
+              variant="ghost"
+              aria-label="Disconnect"
+              icon={<Icon as={IconUserCode} boxSize={5} />}
+              px={2}
+              boxSize={5}
+              onClick={() => handleConnectWallet(true)}
             />
           </Tooltip>
 
