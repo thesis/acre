@@ -14,7 +14,7 @@ import { useIsEmbed, useModal, useWallet } from "#/hooks"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import { TextMd } from "#/components/shared/Typography"
 import { BitcoinIcon } from "#/assets/icons"
-import { truncateAddress } from "#/utils"
+import { referralProgram, truncateAddress } from "#/utils"
 import { motion } from "framer-motion"
 import { MODAL_TYPES } from "#/types"
 import {
@@ -24,8 +24,12 @@ import {
   IconUserCode,
 } from "@tabler/icons-react"
 
+function isChangeAccountFeatureSupported(embeddedApp: string | undefined) {
+  return referralProgram.isEmbedApp(embeddedApp)
+}
+
 export default function ConnectWallet() {
-  const { isEmbed } = useIsEmbed()
+  const { isEmbed, embeddedApp } = useIsEmbed()
   const { address, balance, onDisconnect } = useWallet()
   const { isOpenGlobalErrorModal, modalType, openModal } = useModal()
   const { hasCopied, onCopy } = useClipboard(address ?? "")
@@ -110,23 +114,24 @@ export default function ConnectWallet() {
               onClick={onCopy}
             />
           </Tooltip>
-
-          <Tooltip
-            fontSize="xs"
-            label="Change account"
-            color="gold.200"
-            px={3}
-            py={2}
-          >
-            <IconButton
-              variant="ghost"
-              aria-label="Disconnect"
-              icon={<Icon as={IconUserCode} boxSize={5} />}
-              px={2}
-              boxSize={5}
-              onClick={() => handleConnectWallet(true)}
-            />
-          </Tooltip>
+          {isChangeAccountFeatureSupported(embeddedApp) && (
+            <Tooltip
+              fontSize="xs"
+              label="Change account"
+              color="gold.200"
+              px={3}
+              py={2}
+            >
+              <IconButton
+                variant="ghost"
+                aria-label="Disconnect"
+                icon={<Icon as={IconUserCode} boxSize={5} />}
+                px={2}
+                boxSize={5}
+                onClick={() => handleConnectWallet(true)}
+              />
+            </Tooltip>
+          )}
 
           <Tooltip
             fontSize="xs"
