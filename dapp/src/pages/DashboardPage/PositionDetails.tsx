@@ -35,10 +35,10 @@ export default function PositionDetails() {
   const openWithdrawModal = useTransactionModal(ACTION_FLOW_TYPES.UNSTAKE)
 
   return (
-    <Flex flexDirection="column" gap={5}>
-      <VStack justify="center" spacing={0}>
+    <Flex w="100%" flexDirection="column" gap={5}>
+      <VStack alignItems="start" spacing={0}>
         <TextMd fontWeight="bold">
-          My position
+          Acre balance
           {/* TODO: Uncomment when position will be implemented */}
           {/* {positionPercentage && (
             <Tag
@@ -57,17 +57,14 @@ export default function PositionDetails() {
           )} */}
         </TextMd>
         <UserDataSkeleton>
-          <VStack justify="center" spacing={0}>
+          <VStack alignItems="start" spacing={0}>
             <CurrencyBalanceWithConversion
               from={{
                 amount: bitcoinAmount,
                 currency: "bitcoin",
-                size: "6xl",
+                size: "4xl",
                 letterSpacing: "-0.075rem", // -1.2px
                 color: "grey.700",
-                symbolTextProps: {
-                  color: "gold.500",
-                },
               }}
               to={{
                 currency: "usd",
@@ -79,7 +76,7 @@ export default function PositionDetails() {
         </UserDataSkeleton>
       </VStack>
 
-      <HStack w="full" justify="center" spacing={2}>
+      <HStack w="full" justify="start" flexWrap="wrap" spacing={2}>
         <UserDataSkeleton>
           <Button {...buttonStyles} onClick={openDepositModal}>
             Deposit more
