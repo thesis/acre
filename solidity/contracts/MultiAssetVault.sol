@@ -36,7 +36,10 @@ contract MultiAssetVault is Ownable2StepUpgradeable {
     /// @notice Reverts when the amount withdrawn from the Mezo Portal doesn't
     ///         match the deposited amount. This indicates an unexpected problem
     ///         with the Mezo Portal integration.
-    error WithdrawnAndDepositAmountMismatch();
+    error UnexpectedWithdrawnAmount(
+        uint256 withdrawnAmount,
+        uint256 depositedAmount
+    );
 
     /// @notice Emitted when an asset is added to the list of supported assets.
     event SupportedAssetAdded(address asset);
@@ -217,7 +220,7 @@ contract MultiAssetVault is Ownable2StepUpgradeable {
             initialBalance;
 
         if (withdrawnAmount != depositedAmount) {
-            revert WithdrawnAndDepositAmountMismatch();
+            revert UnexpectedWithdrawnAmount(withdrawnAmount, depositedAmount);
         }
 
         // slither-disable-next-line reentrancy-events
