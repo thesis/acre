@@ -13,6 +13,7 @@ function PageLayout(props: GridProps) {
       py={9}
       gap={8}
       alignItems="start"
+      gridTemplateRows="auto 1fr"
       gridTemplateColumns={{
         base: "1fr",
         md: "repeat(2, 1fr)",

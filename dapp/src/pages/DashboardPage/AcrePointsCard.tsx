@@ -1,78 +1,82 @@
 import React from "react"
-import { TextLg, TextMd, TextSm } from "#/components/shared/Typography"
+import { H4, TextMd } from "#/components/shared/Typography"
 import {
   Button,
   Card,
   CardBody,
   CardHeader,
   CardProps,
-  Icon,
-  Link,
-  Tag,
-  TagLeftIcon,
   VStack,
 } from "@chakra-ui/react"
-import acrePointsCardPlaceholderSrc from "#/assets/images/acre-points-card-placeholder.png"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
-import {
-  IconArrowUpRight,
-  IconPlayerTrackNextFilled,
-} from "@tabler/icons-react"
-import { EXTERNAL_HREF } from "#/constants"
+import Countdown from "#/components/shared/Countdown"
+import { logPromiseFailure, numberToLocaleString } from "#/utils"
+import { useAcrePoints } from "#/hooks"
 
 export default function AcrePointsCard(props: CardProps) {
+  const {
+    claimableBalance,
+    nextDropTimestamp,
+    totalBalance,
+    claimPoints,
+    updateUserPointsData,
+    updatePointsData,
+  } = useAcrePoints()
+
+  const formattedTotalPointsAmount = numberToLocaleString(totalBalance)
+  const formattedClaimablePointsAmount = numberToLocaleString(claimableBalance)
+
+  const handleOnCountdownEnd = () => {
+    logPromiseFailure(updatePointsData())
+    logPromiseFailure(updateUserPointsData())
+  }
+
   return (
     <Card
       px="1.875rem" // 30px
       py={5}
       {...props}
     >
-      <CardHeader p={0} mb={8}>
-        <TextMd fontWeight="bold" color="grey.700" textAlign="center">
-          Acre points
+      <CardHeader p={0} mb={2}>
+        <TextMd fontWeight="bold" color="grey.700">
+          Acre points balance
         </TextMd>
       </CardHeader>
 
       <CardBody p={0}>
         <UserDataSkeleton>
-          <VStack
-            bgImg={acrePointsCardPlaceholderSrc}
-            bgSize="cover"
-            spacing={0}
-            pt={16}
-            pb="8.5rem" // 136px (156px - y-axis padding)
-          >
-            <Tag px={3} py={1} bg="grey.700" color="gold.300" mb={6} border={0}>
-              <TagLeftIcon as={IconPlayerTrackNextFilled} color="brand.300" />
-              <TextSm
-                textTransform="uppercase"
+          <H4 mb={2}>{formattedTotalPointsAmount}&nbsp;PTS</H4>
+
+          <VStack px={4} py={3} spacing={0} rounded="lg" bg="gold.100">
+            {nextDropTimestamp && (
+              <>
+                <TextMd color="grey.700" textAlign="center">
+                  Next drop in
+                </TextMd>
+                <Countdown
+                  timestamp={nextDropTimestamp}
+                  onCountdownEnd={handleOnCountdownEnd}
+                  size={claimableBalance ? "md" : "2xl"}
+                  display={claimableBalance ? "inline" : "block"}
+                  ml={claimableBalance ? 2 : 0}
+                  mt={claimableBalance ? 0 : 2}
+                />
+              </>
+            )}
+
+            {claimableBalance && (
+              <Button
+                mt={3}
+                onClick={claimPoints}
+                w="full"
+                colorScheme="green"
+                color="gold.200"
                 fontWeight="bold"
-                fontStyle="italic"
+                size="lg"
               >
-                Coming soon
-              </TextSm>
-            </Tag>
-            <TextLg color="grey.700" fontWeight="semibold">
-              Acre Points will be live soon!
-            </TextLg>
-            <TextMd color="grey.500" fontWeight="medium">
-              Stake now to secure your spot
-            </TextMd>
-            {/* TODO: Update `ButtonLink` component and 'link' Button theme variant */}
-            <Button
-              as={Link}
-              href={`${EXTERNAL_HREF.DOCS}/acre-points-program`}
-              isExternal
-              variant="ghost"
-              color="brand.400"
-              iconSpacing={1}
-              rightIcon={
-                <Icon as={IconArrowUpRight} boxSize={4} color="brand.400" />
-              }
-              mt={4}
-            >
-              Read documentation
-            </Button>
+                Claim {formattedClaimablePointsAmount} PTS
+              </Button>
+            )}
           </VStack>
         </UserDataSkeleton>
       </CardBody>
