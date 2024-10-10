@@ -228,13 +228,11 @@ contract AcreMultiAssetVault is Ownable2StepUpgradeable {
             revert DepositNotFound();
         }
 
-        // Delete the deposit info, as the deposit is being fully withdrawn.
-        delete deposits[msg.sender][asset][depositId];
-
         // Withdraw the assets from the MezoPortal. Check if the withdrawn amount
         // matches the deposited amount.
         uint256 initialBalance = IERC20(asset).balanceOf(address(this));
 
+        // slither-disable-next-line reentrancy-no-eth
         mezoPortal.withdraw(
             address(asset),
             deposits[msg.sender][asset][depositId].mezoDepositId
@@ -246,6 +244,9 @@ contract AcreMultiAssetVault is Ownable2StepUpgradeable {
         if (withdrawnAmount != depositedAmount) {
             revert UnexpectedWithdrawnAmount(withdrawnAmount, depositedAmount);
         }
+
+        // Delete the deposit info, as the deposit is being fully withdrawn.
+        delete deposits[msg.sender][asset][depositId];
 
         // slither-disable-next-line reentrancy-events
         emit DepositWithdrawn(
