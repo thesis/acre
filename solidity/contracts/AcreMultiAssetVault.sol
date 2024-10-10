@@ -89,12 +89,20 @@ contract AcreMultiAssetVault is Ownable2StepUpgradeable {
         _disableInitializers();
     }
 
-    function initialize(address _mezoPortal) public initializer {
+    function initialize(
+        address _owner,
+        address _mezoPortal,
+        address[] memory _supportedAssets
+    ) public initializer {
         __Ownable2Step_init();
-        __Ownable_init(msg.sender);
+        __Ownable_init(_owner);
 
         if (_mezoPortal == address(0)) {
             revert ZeroAddress();
+        }
+
+        for (uint256 i = 0; i < _supportedAssets.length; i++) {
+            _addSupportedAsset(_supportedAssets[i]);
         }
 
         mezoPortal = IMezoPortal(_mezoPortal);
@@ -104,6 +112,12 @@ contract AcreMultiAssetVault is Ownable2StepUpgradeable {
     /// @dev This function can only be called by the owner.
     /// @param asset Address of the asset to be added to the supported assets.
     function addSupportedAsset(address asset) external onlyOwner {
+        return _addSupportedAsset(asset);
+    }
+
+    /// @notice Adds an asset to the list of assets supported by the vault.
+    /// @param asset Address of the asset to be added to the supported assets.
+    function _addSupportedAsset(address asset) internal {
         if (asset == address(0)) {
             revert ZeroAddress();
         }
