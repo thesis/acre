@@ -54,7 +54,7 @@ const config: HardhatUserConfig = {
       initialBaseFeePerGas: 1000000000,
       forking:
         process.env.FORKING === "true"
-          ? { url: MAINNET_RPC_URL, blockNumber: 20614139 }
+          ? { url: MAINNET_RPC_URL, blockNumber: 20937910 }
           : undefined,
     },
     integration: {
