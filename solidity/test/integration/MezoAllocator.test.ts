@@ -24,10 +24,6 @@ describe("MezoAllocator", () => {
   // tokens that can be used for testing purposes after impersonation.
   const whaleAddress = "0x84eA3907b9206427F45c7b2614925a2B86D12611"
 
-  // As of a forked block, the deposit id was 17469 before the new allocation.
-  // The deposit id should be incremented by 1.
-  const expectedDepositId = 17470n
-
   let tbtc: TestERC20
   let stbtc: stBTC
   let mezoAllocator: MezoAllocator
@@ -45,6 +41,8 @@ describe("MezoAllocator", () => {
   let existingDepositAmount: bigint
   // Unallocated funds in stBTC contract.
   let existingUnallocatedFunds: bigint
+  // Expected deposit ID after allocation.
+  let expectedDepositId: bigint
 
   before(async () => {
     ;({ maintainer, governance, tbtc, stbtc, mezoAllocator, mezoPortal } =
@@ -58,6 +56,8 @@ describe("MezoAllocator", () => {
 
     existingDepositAmount = await mezoAllocator.depositBalance()
     existingUnallocatedFunds = await tbtc.balanceOf(await stbtc.getAddress())
+
+    expectedDepositId = (await mezoPortal.depositCount()) + 1n
   })
 
   describe("allocate", () => {

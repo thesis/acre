@@ -9,23 +9,36 @@ import {IMezoPortal} from "../MezoAllocator.sol";
 contract MezoPortalStub is IMezoPortal {
     using SafeERC20 for IERC20;
 
-    uint256 public depositCount;
-
     event WithdrawFully(address token, uint256 depositId);
     event WithdrawPartially(address token, uint256 depositId, uint96 amount);
 
     error DepositNotFound();
 
+    uint256 public depositCount;
+
+    mapping(address => mapping(address => mapping(uint256 => DepositInfo)))
+        public deposits;
+
+    function setDepositCount(uint256 _depositCount) external {
+        depositCount = _depositCount;
+    }
+
     function withdraw(address token, uint256 depositId) external {
-        if (depositCount == 0) {
+        DepositInfo storage selectedDeposit = deposits[msg.sender][token][
+            depositId
+        ];
+
+        uint256 depositBalance = selectedDeposit.balance;
+
+        if (depositBalance == 0) {
             revert DepositNotFound();
         }
 
+        delete deposits[msg.sender][token][depositId];
+
         emit WithdrawFully(token, depositId);
-        IERC20(token).safeTransfer(
-            msg.sender,
-            IERC20(token).balanceOf(address(this))
-        );
+
+        IERC20(token).safeTransfer(msg.sender, depositBalance);
     }
 
     function withdrawPartially(
@@ -33,16 +46,26 @@ contract MezoPortalStub is IMezoPortal {
         uint256 depositId,
         uint96 amount
     ) external {
-        if (depositCount == 0) {
+        DepositInfo storage selectedDeposit = deposits[msg.sender][token][
+            depositId
+        ];
+
+        if (selectedDeposit.balance == 0) {
             revert DepositNotFound();
         }
 
+        selectedDeposit.balance -= amount;
+
         emit WithdrawPartially(token, depositId, amount);
+
         IERC20(token).safeTransfer(msg.sender, amount);
     }
 
     function deposit(address token, uint96 amount, uint32 lockPeriod) external {
-        depositCount++;
+        uint256 depositId = ++depositCount;
+
+        deposits[msg.sender][token][depositId].balance = amount;
+
         IERC20(token).safeTransferFrom(msg.sender, address(this), amount);
     }
 
@@ -51,13 +74,6 @@ contract MezoPortalStub is IMezoPortal {
         address token,
         uint256 depositId
     ) external view returns (IMezoPortal.DepositInfo memory) {
-        return
-            IMezoPortal.DepositInfo({
-                balance: uint96(IERC20(token).balanceOf(address(this))),
-                unlockAt: uint32(block.timestamp),
-                receiptMinted: uint96(0),
-                feeOwed: uint96(0),
-                lastFeeIntegral: uint88(0)
-            });
+        return deposits[depositor][token][depositId];
     }
 }
