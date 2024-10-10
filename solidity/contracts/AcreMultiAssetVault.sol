@@ -177,7 +177,7 @@ contract AcreMultiAssetVault is Ownable2StepUpgradeable {
         }
 
         // Generate a new deposit ID.
-        uint256 depositId = depositCount++;
+        uint256 depositId = ++depositCount;
 
         emit DepositCreated(depositOwner, asset, depositId, amount);
 
