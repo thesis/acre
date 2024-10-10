@@ -6,7 +6,7 @@ import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 import { ContractTransactionResponse, ZeroAddress } from "ethers"
 import { beforeAfterSnapshotWrapper, deployment } from "./helpers"
 
-import { TestERC20, AcreMultiAssetVault, IMezoPortal } from "../typechain"
+import { TestERC20, AcreMultiAssetVault, MezoPortalStub } from "../typechain"
 
 import { to1e18 } from "./utils"
 
@@ -51,7 +51,7 @@ describe("AcreMultiAssetVault", () => {
   let multiAssetVault: AcreMultiAssetVault
   let asset1: TestERC20
   let asset2: TestERC20
-  let mezoPortal: IMezoPortal
+  let mezoPortal: MezoPortalStub
 
   let governance: HardhatEthersSigner
   let depositor1: HardhatEthersSigner

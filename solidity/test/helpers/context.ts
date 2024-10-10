@@ -6,11 +6,11 @@ import type {
   BridgeStub,
   TBTCVaultStub,
   MezoAllocator,
-  IMezoPortal,
   BitcoinDepositor,
   BitcoinRedeemer,
   TestTBTC,
   AcreMultiAssetVault,
+  MezoPortalStub,
 } from "../../typechain"
 
 // eslint-disable-next-line import/prefer-default-export
@@ -33,7 +33,7 @@ export async function deployment() {
 
   const mezoAllocator: MezoAllocator =
     await getDeployedContract("MezoAllocator")
-  const mezoPortal: IMezoPortal = await getDeployedContract("MezoPortal")
+  const mezoPortal: MezoPortalStub = await getDeployedContract("MezoPortal")
 
   return {
     tbtc,
