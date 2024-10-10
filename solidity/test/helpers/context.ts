@@ -10,6 +10,7 @@ import type {
   BitcoinDepositor,
   BitcoinRedeemer,
   TestTBTC,
+  AcreMultiAssetVault,
 } from "../../typechain"
 
 // eslint-disable-next-line import/prefer-default-export
@@ -21,6 +22,10 @@ export async function deployment() {
     await getDeployedContract("BitcoinDepositor")
   const bitcoinRedeemer: BitcoinRedeemer =
     await getDeployedContract("BitcoinRedeemer")
+
+  const multiAssetVault: AcreMultiAssetVault = await getDeployedContract(
+    "AcreMultiAssetVault",
+  )
 
   const tbtc: TestTBTC = await getDeployedContract("TBTC")
   const tbtcBridge: BridgeStub = await getDeployedContract("Bridge")
@@ -35,6 +40,7 @@ export async function deployment() {
     stbtc,
     bitcoinDepositor,
     bitcoinRedeemer,
+    multiAssetVault,
     tbtcBridge,
     tbtcVault,
     mezoAllocator,
