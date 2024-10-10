@@ -9,6 +9,7 @@ import type {
   MezoAllocator,
   BitcoinDepositor,
   BitcoinRedeemer,
+  AcreMultiAssetVault,
   IMezoPortal,
 } from "../../typechain"
 import { getDeployedContract } from "../helpers"
@@ -22,6 +23,7 @@ describe("Deployment", () => {
   let tbtc: TestERC20
   let bitcoinDepositor: BitcoinDepositor
   let bitcoinRedeemer: BitcoinRedeemer
+  let multiAssetVault: AcreMultiAssetVault
   let mezoPortal: IMezoPortal
 
   before(async () => {
@@ -30,6 +32,7 @@ describe("Deployment", () => {
       mezoAllocator,
       bitcoinDepositor,
       bitcoinRedeemer,
+      multiAssetVault,
       tbtc,
       mezoPortal,
     } = await loadFixture(integrationTestFixture))
@@ -232,6 +235,42 @@ describe("Deployment", () => {
 
     it("should set owner", async () => {
       expect(await bitcoinDepositor.owner()).to.be.equal(
+        expectedMainnetAddresses.governance,
+      )
+    })
+  })
+
+  describe("AcreMultiAssetVault", () => {
+    testUpgradeableInitialization(
+      "AcreMultiAssetVault",
+      ZeroAddress,
+      ZeroAddress,
+      [ZeroAddress],
+    )
+
+    it("should set mezoPortal", async () => {
+      expect(await multiAssetVault.mezoPortal()).to.be.equal(
+        expectedMainnetAddresses.mezoPortal,
+      )
+    })
+
+    it("should set supportedAssets", async () => {
+      const expectedSupportedAssets = [
+        "0x7A56E1C57C7475CCf742a1832B028F0456652F97", // SolvBTC
+        "0xd9D920AA40f578ab794426F5C90F6C731D159DEf", // SolvBTC.BBN
+      ]
+
+      for (let i = 0; i < expectedSupportedAssets.length; i += 1) {
+        expect(
+          // eslint-disable-next-line no-await-in-loop
+          await multiAssetVault.supportedAssets(expectedSupportedAssets[i]),
+          `asset ${i}/${expectedSupportedAssets.length} is not supported: ${expectedSupportedAssets[i]}`,
+        ).to.be.true
+      }
+    })
+
+    it("should set owner", async () => {
+      expect(await multiAssetVault.owner()).to.be.equal(
         expectedMainnetAddresses.governance,
       )
     })
