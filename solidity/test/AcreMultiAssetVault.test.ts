@@ -423,7 +423,7 @@ describe("AcreMultiAssetVault", () => {
             )
         })
 
-        it("should transfer the asset to the vault", async () => {
+        it("should transfer the asset to the Mezo Portal", async () => {
           await expect(tx).to.changeTokenBalances(
             asset1,
             [caller, multiAssetVault, mezoPortal],
@@ -776,6 +776,23 @@ describe("AcreMultiAssetVault", () => {
               [mezoPortal, multiAssetVault, receiver],
               [-deposit1.depositAmount, 0, deposit1.depositAmount],
             )
+          })
+
+          context("when tries to withdraw the same deposit again", () => {
+            it("should revert", async () => {
+              await expect(
+                multiAssetVault
+                  .connect(deposit1.depositOwner)
+                  .withdraw(
+                    await deposit1.asset.getAddress(),
+                    deposit1.depositId,
+                    await receiver.getAddress(),
+                  ),
+              ).to.be.revertedWithCustomError(
+                multiAssetVault,
+                "DepositNotFound",
+              )
+            })
           })
         })
       })
