@@ -1,11 +1,11 @@
 import React from "react"
-import { VStack } from "@chakra-ui/react"
+import { StackProps, VStack } from "@chakra-ui/react"
 import ButtonLink from "#/components/shared/ButtonLink"
 import { EXTERNAL_HREF } from "#/constants"
 
-export default function UsefulLinks() {
+export default function UsefulLinks(props: StackProps) {
   return (
-    <VStack>
+    <VStack {...props}>
       {[
         { label: "Documentation", href: EXTERNAL_HREF.DOCS },
         { label: "Blog", href: EXTERNAL_HREF.BLOG },
