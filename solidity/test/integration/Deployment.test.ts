@@ -256,8 +256,8 @@ describe("Deployment", () => {
 
     it("should set supportedAssets", async () => {
       const expectedSupportedAssets = [
-        "0x7A56E1C57C7475CCf742a1832B028F0456652F97", // SolvBTC
-        "0xd9D920AA40f578ab794426F5C90F6C731D159DEf", // SolvBTC.BBN
+        expectedMainnetAddresses.solvBtc,
+        expectedMainnetAddresses.solvBtcBbn,
       ]
 
       for (let i = 0; i < expectedSupportedAssets.length; i += 1) {
