@@ -7,9 +7,9 @@ import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol
 import {IMezoPortal} from "./interfaces/IMezoPortal.sol";
 import {ZeroAddress} from "./utils/Errors.sol";
 
-/// @notice MultiAssetVault is a contract that allows users to deposit and withdraw
+/// @notice AcreMultiAssetVault is a contract that allows users to deposit and withdraw
 ///         multiple assets. It uses MezoPortal to deposit and withdraw assets.
-contract MultiAssetVault is Ownable2StepUpgradeable {
+contract AcreMultiAssetVault is Ownable2StepUpgradeable {
     using SafeERC20 for IERC20;
 
     /// @notice Address of the MezoPortal contract.

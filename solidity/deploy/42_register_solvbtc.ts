@@ -11,17 +11,17 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   // SolvBTC.BBN token address
   const solvBtcBbnTokenAddress = "0xd9D920AA40f578ab794426F5C90F6C731D159DEf"
 
-  log(`adding ${solvBtcTokenAddress} as asset supported by MultiAssetVault`)
+  log(`adding ${solvBtcTokenAddress} as asset supported by AcreMultiAssetVault`)
   await deployments.execute(
-    "MultiAssetVault",
+    "AcreMultiAssetVault",
     { from: deployer, log: true, waitConfirmations: 1 },
     "addSupportedAsset",
     solvBtcTokenAddress,
   )
 
-  log(`adding ${solvBtcBbnTokenAddress} as asset supported by MultiAssetVault`)
+  log(`adding ${solvBtcBbnTokenAddress} as asset supported by AcreMultiAssetVault`)
   await deployments.execute(
-    "MultiAssetVault",
+    "AcreMultiAssetVault",
     { from: deployer, log: true, waitConfirmations: 1 },
     "addSupportedAsset",
     solvBtcBbnTokenAddress,
@@ -30,8 +30,8 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
 export default func
 
-func.tags = ["MultiAssetVaultRegisterSolvBTC"]
-func.dependencies = ["MultiAssetVault"]
+func.tags = ["AcreMultiAssetVaultRegisterSolvBTC"]
+func.dependencies = ["AcreMultiAssetVault"]
 // TODO: Uncomment after contracts are deployed to mainnet.
 // func.skip = async (hre: HardhatRuntimeEnvironment): Promise<boolean> =>
 //   Promise.resolve(hre.network.name === "integration")

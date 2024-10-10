@@ -7,10 +7,10 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { deployer, governance } = await getNamedAccounts()
   const { log } = deployments
 
-  log(`transferring ownership of MultiAssetVault contract to ${governance}`)
+  log(`transferring ownership of AcreMultiAssetVault contract to ${governance}`)
 
   await deployments.execute(
-    "MultiAssetVault",
+    "AcreMultiAssetVault",
     {
       from: deployer,
       log: true,
@@ -22,7 +22,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
   if (hre.network.name !== "mainnet" && hre.network.name !== "integration") {
     await deployments.execute(
-      "MultiAssetVault",
+      "AcreMultiAssetVault",
       {
         from: governance,
         log: true,
@@ -35,8 +35,8 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
 export default func
 
-func.tags = ["TransferOwnershipMultiAssetVault"]
-func.dependencies = ["MultiAssetVault"]
+func.tags = ["TransferOwnershipAcreMultiAssetVault"]
+func.dependencies = ["AcreMultiAssetVault"]
 // TODO: Uncomment after contracts are deployed to mainnet.
 // func.skip = async (hre: HardhatRuntimeEnvironment): Promise<boolean> =>
 //   Promise.resolve(hre.network.name === "integration")

@@ -9,9 +9,9 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const mezoPortal = await deployments.get("MezoPortal")
 
   const [_, deployment] = await helpers.upgrades.deployProxy(
-    "MultiAssetVault",
+    "AcreMultiAssetVault",
     {
-      contractName: "MultiAssetVault",
+      contractName: "AcreMultiAssetVault",
       initializerArgs: [mezoPortal.address],
       factoryOpts: { signer: deployer },
       proxyOpts: {
@@ -30,7 +30,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
 export default func
 
-func.tags = ["MultiAssetVault"]
+func.tags = ["AcreMultiAssetVault"]
 func.dependencies = ["MezoPortal"]
 // TODO: Uncomment after contracts are deployed to mainnet.
 // func.skip = async (hre: HardhatRuntimeEnvironment): Promise<boolean> =>
