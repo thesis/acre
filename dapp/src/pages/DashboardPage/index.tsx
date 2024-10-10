@@ -23,8 +23,12 @@ export default function DashboardPage() {
   if (isEmbed)
     return (
       <Grid
-        gridGap={{ base: 4, lg: 8 }}
-        gridTemplateColumns={{ base: "1fr 1fr", lg: "1fr 30%" }}
+        gridGap={{ base: 4, "2xl": 8 }}
+        gridTemplateColumns={{
+          base: "1fr 1fr",
+          lg: "1fr 31%",
+          "2xl": "1fr 36%",
+        }}
         templateAreas={TEMPLATE_AREAS_LEDGER_LIVE}
       >
         <DashboardCard gridArea="dashboard" h="fit-content" />
