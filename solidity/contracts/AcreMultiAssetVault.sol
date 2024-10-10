@@ -67,13 +67,19 @@ contract AcreMultiAssetVault is Ownable2StepUpgradeable {
     /// @notice Details of a deposit.
     struct DepositInfo {
         uint256 balance;
+        uint256 mezoDepositId;
     }
+
+    /// @notice The number of deposits created. Includes the deposits that
+    ///         were fully withdrawn. This is also the identifier of the most
+    ///         recently created deposit.
+    uint256 public depositCount;
 
     mapping(address => bool) public supportedAssets;
 
     /// @notice Mapping of the details of deposits:
     ///         deposit owner -> asset -> deposit id -> DepositInfo
-    /// @dev The deposit ID matches the ID assigned by MezoPortal.
+    /// @dev The deposit ID is unique for each deposit.
     /// @dev When a deposit is withdrawn, the DepositInfo is deleted.
     mapping(address => mapping(address => mapping(uint256 => DepositInfo)))
         public deposits;
@@ -155,6 +161,11 @@ contract AcreMultiAssetVault is Ownable2StepUpgradeable {
             revert DepositOwnerCannotBeAsset();
         }
 
+        // Generate a new deposit ID.
+        uint256 depositId = depositCount++;
+
+        emit DepositCreated(depositOwner, asset, depositId, amount);
+
         // Transfer the asset from the deposit owner to the vault and approve
         // Mezo Portal to pull them.
         IERC20(asset).safeTransferFrom(msg.sender, address(this), amount);
@@ -166,15 +177,13 @@ contract AcreMultiAssetVault is Ownable2StepUpgradeable {
 
         // MezoPortal doesn't return depositId, so we have to read depositCounter
         // which assigns depositId to the current deposit.
-        uint256 depositId = mezoPortal.depositCount();
-
-        // slither-disable-next-line reentrancy-events
-        emit DepositCreated(depositOwner, asset, depositId, amount);
+        uint256 mezoDepositId = mezoPortal.depositCount();
 
         // Register the deposit info.
         // slither-disable-next-line reentrancy-benign
         deposits[depositOwner][asset][depositId] = DepositInfo({
-            balance: amount
+            balance: amount,
+            mezoDepositId: mezoDepositId
         });
 
         return depositId;
@@ -214,7 +223,10 @@ contract AcreMultiAssetVault is Ownable2StepUpgradeable {
         // matches the deposited amount.
         uint256 initialBalance = IERC20(asset).balanceOf(address(this));
 
-        mezoPortal.withdraw(address(asset), depositId);
+        mezoPortal.withdraw(
+            address(asset),
+            deposits[msg.sender][asset][depositId].mezoDepositId
+        );
 
         uint256 withdrawnAmount = IERC20(asset).balanceOf(address(this)) -
             initialBalance;
@@ -236,5 +248,19 @@ contract AcreMultiAssetVault is Ownable2StepUpgradeable {
         IERC20(asset).safeTransfer(receiver, withdrawnAmount);
 
         return withdrawnAmount;
+    }
+
+    /// @notice Get details of a deposit.
+    /// @dev If the deposit was not created or was already withdrawn, the
+    ///      function will return a DepositInfo with balance 0.
+    /// @param depositOwner Address of the deposit owner.
+    /// @param asset Address of the asset used in the deposit.
+    /// @param depositId ID of the deposit.
+    function getDeposit(
+        address depositOwner,
+        address asset,
+        uint256 depositId
+    ) external view returns (DepositInfo memory) {
+        return deposits[depositOwner][asset][depositId];
     }
 }
