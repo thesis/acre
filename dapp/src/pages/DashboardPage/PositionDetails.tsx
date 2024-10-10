@@ -79,7 +79,7 @@ export default function PositionDetails() {
       <HStack w="full" justify="start" flexWrap="wrap" spacing={2}>
         <UserDataSkeleton>
           <Button {...buttonStyles} onClick={openDepositModal}>
-            Deposit more
+            Deposit
           </Button>
         </UserDataSkeleton>
         <UserDataSkeleton>
