@@ -24,14 +24,18 @@ contract AcreMultiAssetVault is Ownable2StepUpgradeable {
     /// @notice Reverts when a checked amount is invalid.
     error InvalidAmount(uint256 amount);
 
+    /// @notice Reverts when the deposit owner is invalid:
+    ///         - the deposit owner is the zero address,
+    ///         - the deposit owner is the asset itself.
+    error InvalidDepositOwner(address depositOwner);
+
+    /// @notice Reverts when the receiver is invalid:
+    ///         - the receiver is the zero address,
+    ///         - the receiver is the asset itself.
+    error InvalidReceiver(address receiver);
+
     /// @notice Reverts when a deposit is not found.
     error DepositNotFound();
-
-    /// @notice Reverts when the deposit owner is the same as the asset.
-    error DepositOwnerCannotBeAsset();
-
-    /// @notice Reverts when the receiver is the same as the asset.
-    error ReceiverCannotBeAsset();
 
     /// @notice Reverts when the amount withdrawn from the Mezo Portal doesn't
     ///         match the deposited amount. This indicates an unexpected problem
@@ -168,11 +172,8 @@ contract AcreMultiAssetVault is Ownable2StepUpgradeable {
         if (amount == 0) {
             revert InvalidAmount(amount);
         }
-        if (depositOwner == address(0)) {
-            revert ZeroAddress();
-        }
-        if (depositOwner == asset) {
-            revert DepositOwnerCannotBeAsset();
+        if (depositOwner == address(0) || depositOwner == asset) {
+            revert InvalidDepositOwner(depositOwner);
         }
 
         // Generate a new deposit ID.
@@ -214,11 +215,8 @@ contract AcreMultiAssetVault is Ownable2StepUpgradeable {
         uint256 depositId,
         address receiver
     ) external returns (uint256) {
-        if (receiver == address(0)) {
-            revert ZeroAddress();
-        }
-        if (receiver == asset) {
-            revert ReceiverCannotBeAsset();
+        if (receiver == address(0) || receiver == asset) {
+            revert InvalidReceiver(receiver);
         }
 
         uint256 depositedAmount = deposits[msg.sender][asset][depositId]
