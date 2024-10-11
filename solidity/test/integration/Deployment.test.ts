@@ -1,7 +1,7 @@
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 import { expect } from "chai"
 import { Contract, MaxUint256, ZeroAddress } from "ethers"
-import { deployments, ethers } from "hardhat"
+import { deployments, ethers, upgrades } from "hardhat"
 
 import type {
   StBTC as stBTC,
@@ -11,6 +11,7 @@ import type {
   BitcoinRedeemer,
   AcreMultiAssetVault,
   IMezoPortal,
+  ProxyAdmin,
 } from "../../typechain"
 import { getDeployedContract } from "../helpers"
 
@@ -65,6 +66,23 @@ describe("Deployment", () => {
       await expect(proxy.initialize(...initArgs)).to.be.revertedWithCustomError(
         proxy,
         "InvalidInitialization",
+      )
+    })
+
+    it("should set the governance as the proxy admin owner", async () => {
+      const proxy: Contract = await getDeployedContract(contractName)
+
+      const proxyAdminAddress = await upgrades.erc1967.getAdminAddress(
+        await proxy.getAddress(),
+      )
+
+      const proxyAdmin: ProxyAdmin = await ethers.getContractAt(
+        "ProxyAdmin",
+        proxyAdminAddress,
+      )
+
+      expect(await proxyAdmin.owner()).to.be.equal(
+        expectedMainnetAddresses.governance,
       )
     })
   }
