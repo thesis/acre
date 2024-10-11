@@ -3,8 +3,9 @@ import type { HardhatRuntimeEnvironment } from "hardhat/types"
 import { waitForTransaction } from "../helpers/deployment"
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
-  const { deployments, helpers } = hre
-  const { deployer, governance } = await helpers.signers.getNamedSigners()
+  const { deployments, helpers, getNamedAccounts } = hre
+  const { governance } = await getNamedAccounts()
+  const { deployer } = await helpers.signers.getNamedSigners()
   const { log } = deployments
 
   const mezoPortal = await deployments.get("MezoPortal")
@@ -23,13 +24,14 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
       {
         contractName: "AcreMultiAssetVault",
         initializerArgs: [
-          await governance.getAddress(),
+          governance,
           mezoPortal.address,
           initialSupportedAssets,
         ],
         factoryOpts: { signer: deployer },
         proxyOpts: {
           kind: "transparent",
+          initialOwner: governance,
         },
       },
     )

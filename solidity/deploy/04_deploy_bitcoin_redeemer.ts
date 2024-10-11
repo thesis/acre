@@ -3,7 +3,8 @@ import type { HardhatRuntimeEnvironment } from "hardhat/types"
 import { waitForTransaction } from "../helpers/deployment"
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
-  const { deployments, helpers } = hre
+  const { deployments, helpers, getNamedAccounts } = hre
+  const { governance } = await getNamedAccounts()
   const { deployer } = await helpers.signers.getNamedSigners()
   const { log } = deployments
 
@@ -21,6 +22,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
       factoryOpts: { signer: deployer },
       proxyOpts: {
         kind: "transparent",
+        initialOwner: governance,
       },
     })
 
