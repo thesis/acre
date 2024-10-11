@@ -2,6 +2,7 @@
 pragma solidity 0.8.24;
 
 import {Ownable2StepUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
+import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IMezoPortal} from "./interfaces/IMezoPortal.sol";
@@ -9,7 +10,10 @@ import {ZeroAddress} from "./utils/Errors.sol";
 
 /// @notice AcreMultiAssetVault is a contract that allows users to deposit and withdraw
 ///         multiple assets. It uses MezoPortal to deposit and withdraw assets.
-contract AcreMultiAssetVault is Ownable2StepUpgradeable {
+contract AcreMultiAssetVault is
+    Ownable2StepUpgradeable,
+    ReentrancyGuardUpgradeable
+{
     using SafeERC20 for IERC20;
 
     /// @notice Address of the MezoPortal contract.
@@ -103,6 +107,7 @@ contract AcreMultiAssetVault is Ownable2StepUpgradeable {
     ) public initializer {
         __Ownable2Step_init();
         __Ownable_init(_owner);
+        __ReentrancyGuard_init();
 
         if (_mezoPortal == address(0)) {
             revert ZeroAddress();
@@ -170,7 +175,7 @@ contract AcreMultiAssetVault is Ownable2StepUpgradeable {
         address asset,
         uint256 amount,
         address depositOwner
-    ) public returns (uint256) {
+    ) public nonReentrant returns (uint256) {
         if (!supportedAssets[asset]) {
             revert AssetNotSupported();
         }
@@ -219,13 +224,19 @@ contract AcreMultiAssetVault is Ownable2StepUpgradeable {
         address asset,
         uint256 depositId,
         address receiver
-    ) external returns (uint256) {
+    ) external nonReentrant returns (uint256) {
         if (receiver == address(0) || supportedAssets[receiver]) {
             revert InvalidReceiver(receiver);
         }
 
-        uint256 depositedAmount = deposits[msg.sender][asset][depositId]
-            .balance;
+        // Read the deposit info before it gets deleted from the storage.
+        DepositInfo storage selectedDeposit = deposits[msg.sender][asset][
+            depositId
+        ];
+        uint256 depositedAmount = selectedDeposit.balance;
+
+        // Delete the deposit info, as the deposit is being fully withdrawn.
+        delete deposits[msg.sender][asset][depositId];
 
         // Check if the deposit exists. If the deposit was not created or was
         // already withdrawn, the depositedAmount will be 0.
@@ -238,10 +249,7 @@ contract AcreMultiAssetVault is Ownable2StepUpgradeable {
         uint256 initialBalance = IERC20(asset).balanceOf(address(this));
 
         // slither-disable-next-line reentrancy-no-eth
-        mezoPortal.withdraw(
-            asset,
-            deposits[msg.sender][asset][depositId].mezoDepositId
-        );
+        mezoPortal.withdraw(asset, selectedDeposit.mezoDepositId);
 
         uint256 withdrawnAmount = IERC20(asset).balanceOf(address(this)) -
             initialBalance;
@@ -249,9 +257,6 @@ contract AcreMultiAssetVault is Ownable2StepUpgradeable {
         if (withdrawnAmount != depositedAmount) {
             revert UnexpectedWithdrawnAmount(withdrawnAmount, depositedAmount);
         }
-
-        // Delete the deposit info, as the deposit is being fully withdrawn.
-        delete deposits[msg.sender][asset][depositId];
 
         // slither-disable-next-line reentrancy-events
         emit DepositWithdrawn(
