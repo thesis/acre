@@ -108,11 +108,11 @@ contract AcreMultiAssetVault is Ownable2StepUpgradeable {
             revert ZeroAddress();
         }
 
+        mezoPortal = IMezoPortal(_mezoPortal);
+
         for (uint256 i = 0; i < _supportedAssets.length; i++) {
             _addSupportedAsset(_supportedAssets[i]);
         }
-
-        mezoPortal = IMezoPortal(_mezoPortal);
     }
 
     /// @notice Adds an asset to the list of assets supported by the vault.
