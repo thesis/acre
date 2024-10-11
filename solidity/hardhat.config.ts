@@ -85,6 +85,9 @@ const config: HardhatUserConfig = {
 
   dependencyCompiler: {
     paths: ["@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol"],
+    // Keep the source files after compilation. Removing the source files
+    // causes slither to fail.
+    keep: true,
   },
 
   external: {
