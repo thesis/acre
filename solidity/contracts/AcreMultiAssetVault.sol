@@ -239,7 +239,7 @@ contract AcreMultiAssetVault is Ownable2StepUpgradeable {
 
         // slither-disable-next-line reentrancy-no-eth
         mezoPortal.withdraw(
-            address(asset),
+            asset,
             deposits[msg.sender][asset][depositId].mezoDepositId
         );
 
