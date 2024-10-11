@@ -18,7 +18,10 @@ contract AcreMultiAssetVault is Ownable2StepUpgradeable {
     /// @notice Reverts when a new asset is added to the list of supported assets.
     error AssetAlreadySupported();
 
-    /// @notice Reverts when an asset is removed from the list of supported assets.
+    /// @notice Reverts when the asset being deposited is not on the supported
+    ///         assets list.
+    ///         Also reverts when the asset being removed from the supported
+    ///         assets list is not on the supported assets list.
     error AssetNotSupported();
 
     /// @notice Reverts when a checked amount is invalid.
@@ -155,9 +158,11 @@ contract AcreMultiAssetVault is Ownable2StepUpgradeable {
         return depositFor(asset, amount, msg.sender);
     }
 
-    /// @notice Deposits assets into the vault on behalf of a specified account.
+    /// @notice Deposits assets into the vault on behalf of a specified account,
+    ///         which will become the owner of the deposit. Only the owner of the
+    ///         deposit can withdraw the assets.
     /// @param asset Address of the asset to be deposited.
-    /// @param amount The amount of assets to deposit.
+    /// @param amount The amount of deposit.
     /// @param depositOwner The address of the account for which the deposit is
     ///        being made.
     /// @return The ID of the deposit.
