@@ -254,7 +254,7 @@ describe("AcreMultiAssetVault", () => {
         )
     })
 
-    it("should transfer the asset to the vault", async () => {
+    it("should transfer the asset to the Mezo Portal", async () => {
       await expect(tx).to.changeTokenBalances(
         asset1,
         [caller, multiAssetVault, mezoPortal],
@@ -508,7 +508,7 @@ describe("AcreMultiAssetVault", () => {
             )
         })
 
-        it("should transfer the asset to the vault", async () => {
+        it("should transfer the asset to the Mezo Portal", async () => {
           await expect(tx).to.changeTokenBalances(
             asset1,
             [caller, multiAssetVault, mezoPortal],
