@@ -379,7 +379,7 @@ describe("AcreMultiAssetVault", () => {
         let initialDepositCount: bigint
         let expectedDepositId: bigint
 
-        let callResult: bigint
+        let depositId: bigint
         let tx: ContractTransactionResponse
 
         before(async () => {
@@ -394,7 +394,7 @@ describe("AcreMultiAssetVault", () => {
           await asset1
             .connect(caller)
             .approve(await multiAssetVault.getAddress(), depositAmount)
-          ;({ callResult, tx } = await createDepositFor({
+          ;({ depositId, tx } = await createDepositFor({
             caller,
             asset: asset1,
             depositAmount,
@@ -403,7 +403,7 @@ describe("AcreMultiAssetVault", () => {
         })
 
         it("should return the deposit id", () => {
-          expect(callResult).to.be.equal(expectedDepositId)
+          expect(depositId).to.be.equal(expectedDepositId)
         })
 
         it("should increment deposit count", async () => {
@@ -565,14 +565,14 @@ describe("AcreMultiAssetVault", () => {
         depositOwner: HardhatEthersSigner,
         expectedDepositId: bigint,
       ) {
-        const { callResult, tx } = await createDepositFor({
+        const { depositId, tx } = await createDepositFor({
           caller,
           asset,
           depositAmount,
           depositOwner,
         })
 
-        expect(callResult, "invalid returned value").to.be.equal(
+        expect(depositId, "invalid returned value").to.be.equal(
           expectedDepositId,
         )
 
@@ -652,23 +652,15 @@ describe("AcreMultiAssetVault", () => {
       context("when a deposit exists", () => {
         beforeAfterSnapshotWrapper()
 
-        let deposit1: {
-          caller: HardhatEthersSigner
-          asset: TestERC20
-          depositAmount: bigint
-          depositOwner: HardhatEthersSigner
-          depositId: bigint
-        }
+        let deposit1: Deposit
 
         before(async () => {
-          deposit1 = {
+          deposit1 = await createDepositFor({
             caller: depositor1,
             asset: asset1,
             depositAmount: to1e18(10),
             depositOwner: depositor2,
-            depositId: 1n,
-          }
-          await createDepositFor({ ...deposit1, caller: depositor1 })
+          })
         })
 
         context("when the caller is a third party", () => {
@@ -806,32 +798,26 @@ describe("AcreMultiAssetVault", () => {
       let deposit3: Deposit
 
       before(async () => {
-        deposit1 = {
+        deposit1 = await createDepositFor({
           caller: depositor1,
           asset: asset1,
           depositAmount: to1e18(10),
           depositOwner: depositor2,
-          depositId: 1n,
-        }
-        await createDepositFor(deposit1)
+        })
 
-        deposit2 = {
+        deposit2 = await createDepositFor({
           caller: depositor2,
           asset: asset2,
           depositAmount: to1e18(11),
           depositOwner: depositor1,
-          depositId: 2n,
-        }
-        await createDepositFor(deposit2)
+        })
 
-        deposit3 = {
+        deposit3 = await createDepositFor({
           caller: depositor1,
           asset: asset1,
           depositAmount: to1e18(12),
           depositOwner: depositor1,
-          depositId: 3n,
-        }
-        await createDepositFor(deposit3)
+        })
       })
 
       it("should withdraw correct deposit 2", async () => {
@@ -851,7 +837,7 @@ describe("AcreMultiAssetVault", () => {
         depositAmount: expectedWithdrawAmount,
         depositOwner,
         depositId,
-      }: Deposit & { depositId: bigint; receiver: HardhatEthersSigner }) {
+      }: Deposit) {
         const callResult = await multiAssetVault
           .connect(depositOwner)
           .withdraw.staticCall(
@@ -910,11 +896,16 @@ describe("AcreMultiAssetVault", () => {
     })
   })
 
-  type Deposit = {
+  type DepositRequest = {
     caller: HardhatEthersSigner
     asset: TestERC20
     depositAmount: bigint
     depositOwner: HardhatEthersSigner
+  }
+
+  type Deposit = DepositRequest & {
+    tx: ContractTransactionResponse
+    depositId: bigint
   }
 
   async function createDepositFor({
@@ -922,13 +913,13 @@ describe("AcreMultiAssetVault", () => {
     asset,
     depositAmount,
     depositOwner,
-  }: Deposit) {
+  }: DepositRequest): Promise<Deposit> {
     await asset.mint(await caller.getAddress(), depositAmount)
     await asset
       .connect(caller)
       .approve(await multiAssetVault.getAddress(), depositAmount)
 
-    const callResult = await multiAssetVault
+    const depositId = await multiAssetVault
       .connect(caller)
       .depositFor.staticCall(
         await asset.getAddress(),
@@ -944,6 +935,13 @@ describe("AcreMultiAssetVault", () => {
         await depositOwner.getAddress(),
       )
 
-    return { callResult, tx }
+    return {
+      caller,
+      asset,
+      depositAmount,
+      depositOwner,
+      tx,
+      depositId,
+    }
   }
 })
