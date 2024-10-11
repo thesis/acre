@@ -177,7 +177,7 @@ contract AcreMultiAssetVault is Ownable2StepUpgradeable {
         if (amount == 0) {
             revert InvalidAmount(amount);
         }
-        if (depositOwner == address(0) || depositOwner == asset) {
+        if (depositOwner == address(0) || supportedAssets[depositOwner]) {
             revert InvalidDepositOwner(depositOwner);
         }
 
@@ -220,7 +220,7 @@ contract AcreMultiAssetVault is Ownable2StepUpgradeable {
         uint256 depositId,
         address receiver
     ) external returns (uint256) {
-        if (receiver == address(0) || receiver == asset) {
+        if (receiver == address(0) || supportedAssets[receiver]) {
             revert InvalidReceiver(receiver);
         }
 
