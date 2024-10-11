@@ -230,7 +230,7 @@ contract AcreMultiAssetVault is
         }
 
         // Read the deposit info before it gets deleted from the storage.
-        DepositInfo storage selectedDeposit = deposits[msg.sender][asset][
+        DepositInfo memory selectedDeposit = deposits[msg.sender][asset][
             depositId
         ];
         uint256 depositedAmount = selectedDeposit.balance;
