@@ -248,7 +248,6 @@ contract AcreMultiAssetVault is
         // matches the deposited amount.
         uint256 initialBalance = IERC20(asset).balanceOf(address(this));
 
-        // slither-disable-next-line reentrancy-no-eth
         mezoPortal.withdraw(asset, selectedDeposit.mezoDepositId);
 
         uint256 withdrawnAmount = IERC20(asset).balanceOf(address(this)) -
@@ -258,7 +257,6 @@ contract AcreMultiAssetVault is
             revert UnexpectedWithdrawnAmount(withdrawnAmount, depositedAmount);
         }
 
-        // slither-disable-next-line reentrancy-events
         emit DepositWithdrawn(
             msg.sender,
             asset,
