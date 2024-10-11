@@ -3,6 +3,7 @@ import type { HardhatUserConfig } from "hardhat/config"
 import "@nomicfoundation/hardhat-toolbox"
 import "hardhat-contract-sizer"
 import "hardhat-deploy"
+import "hardhat-dependency-compiler"
 import "solidity-docgen"
 import "@keep-network/hardhat-helpers"
 import dotenv from "dotenv-safer"
@@ -72,6 +73,10 @@ const config: HardhatUserConfig = {
       accounts: MAINNET_PRIVATE_KEY,
       tags: ["etherscan"],
     },
+  },
+
+  dependencyCompiler: {
+    paths: ["@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol"],
   },
 
   external: {
