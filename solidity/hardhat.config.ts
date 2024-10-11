@@ -55,7 +55,15 @@ const config: HardhatUserConfig = {
       initialBaseFeePerGas: 1000000000,
       forking:
         process.env.FORKING === "true"
-          ? { url: MAINNET_RPC_URL, blockNumber: 20937910 }
+          ? {
+              url: MAINNET_RPC_URL,
+              // Points to the mainnet block that has a state important for the
+              // integration tests:
+              // 20941745 - the block where BitcoinRedeemer's ProxyAdmin ownership
+              // has been transferred to the governance account in transaction:
+              // https://etherscan.io/address/0x989cE5eD1ab7d0cb85450599D165E17bD86D93CA
+              blockNumber: 20941745,
+            }
           : undefined,
     },
     integration: {
