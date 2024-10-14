@@ -6,15 +6,18 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { deployments, helpers, getNamedAccounts } = hre
   const { governance } = await getNamedAccounts()
   const { deployer } = await helpers.signers.getNamedSigners()
+  const { log } = deployments
 
   const tbtc = await deployments.get("TBTC")
   const bridge = await deployments.get("Bridge")
   const tbtcVault = await deployments.get("TBTCVault")
   const stbtc = await deployments.get("stBTC")
 
-  const [, deployment] = await helpers.upgrades.deployProxy(
-    "BitcoinDepositor",
-    {
+  let deployment = await deployments.getOrNull("BitcoinDepositor")
+  if (deployment && helpers.address.isValid(deployment.address)) {
+    log(`using BitcoinDepositor at ${deployment.address}`)
+  } else {
+    ;[, deployment] = await helpers.upgrades.deployProxy("BitcoinDepositor", {
       factoryOpts: {
         signer: deployer,
       },
@@ -28,20 +31,18 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
         kind: "transparent",
         initialOwner: governance,
       },
-    },
-  )
+    })
 
-  if (deployment.transactionHash && hre.network.tags.etherscan) {
-    await waitForTransaction(hre, deployment.transactionHash)
-    await helpers.etherscan.verify(deployment)
+    if (deployment.transactionHash && hre.network.tags.etherscan) {
+      await waitForTransaction(hre, deployment.transactionHash)
+      await helpers.etherscan.verify(deployment)
+    }
+
+    // TODO: Add Tenderly verification
   }
-
-  // TODO: Add Tenderly verification
 }
 
 export default func
 
 func.tags = ["BitcoinDepositor"]
 func.dependencies = ["TBTC", "stBTC"]
-func.skip = async (hre: HardhatRuntimeEnvironment): Promise<boolean> =>
-  Promise.resolve(hre.network.name === "integration")
