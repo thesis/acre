@@ -6,35 +6,37 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { getNamedAccounts, deployments, helpers } = hre
   const { governance } = await getNamedAccounts()
   const { deployer } = await helpers.signers.getNamedSigners()
+  const { log } = deployments
 
   const stbtc = await deployments.get("stBTC")
   const tbtc = await deployments.get("TBTC")
   const mezoPortal = await deployments.get("MezoPortal")
 
-  console.log("mezoPortal", mezoPortal.address)
+  let deployment = await deployments.getOrNull("MezoAllocator")
+  if (deployment && helpers.address.isValid(deployment.address)) {
+    log(`using MezoAllocator at ${deployment.address}`)
+  } else {
+    ;[, deployment] = await helpers.upgrades.deployProxy("MezoAllocator", {
+      factoryOpts: {
+        signer: deployer,
+      },
+      initializerArgs: [mezoPortal.address, tbtc.address, stbtc.address],
+      proxyOpts: {
+        kind: "transparent",
+        initialOwner: governance,
+      },
+    })
 
-  const [, deployment] = await helpers.upgrades.deployProxy("MezoAllocator", {
-    factoryOpts: {
-      signer: deployer,
-    },
-    initializerArgs: [mezoPortal.address, tbtc.address, stbtc.address],
-    proxyOpts: {
-      kind: "transparent",
-      initialOwner: governance,
-    },
-  })
+    if (deployment.transactionHash && hre.network.tags.etherscan) {
+      await waitForTransaction(hre, deployment.transactionHash)
+      await helpers.etherscan.verify(deployment)
+    }
 
-  if (deployment.transactionHash && hre.network.tags.etherscan) {
-    await waitForTransaction(hre, deployment.transactionHash)
-    await helpers.etherscan.verify(deployment)
+    // TODO: Add Tenderly verification
   }
-
-  // TODO: Add Tenderly verification
 }
 
 export default func
 
 func.tags = ["MezoAllocator"]
 func.dependencies = ["TBTC", "stBTC", "MezoPortal"]
-func.skip = async (hre: HardhatRuntimeEnvironment): Promise<boolean> =>
-  Promise.resolve(hre.network.name === "integration")

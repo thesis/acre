@@ -6,10 +6,11 @@ import type {
   BridgeStub,
   TBTCVaultStub,
   MezoAllocator,
-  IMezoPortal,
   BitcoinDepositor,
   BitcoinRedeemer,
   TestTBTC,
+  AcreMultiAssetVault,
+  MezoPortalStub,
 } from "../../typechain"
 
 // eslint-disable-next-line import/prefer-default-export
@@ -22,19 +23,24 @@ export async function deployment() {
   const bitcoinRedeemer: BitcoinRedeemer =
     await getDeployedContract("BitcoinRedeemer")
 
+  const multiAssetVault: AcreMultiAssetVault = await getDeployedContract(
+    "AcreMultiAssetVault",
+  )
+
   const tbtc: TestTBTC = await getDeployedContract("TBTC")
   const tbtcBridge: BridgeStub = await getDeployedContract("Bridge")
   const tbtcVault: TBTCVaultStub = await getDeployedContract("TBTCVault")
 
   const mezoAllocator: MezoAllocator =
     await getDeployedContract("MezoAllocator")
-  const mezoPortal: IMezoPortal = await getDeployedContract("MezoPortal")
+  const mezoPortal: MezoPortalStub = await getDeployedContract("MezoPortal")
 
   return {
     tbtc,
     stbtc,
     bitcoinDepositor,
     bitcoinRedeemer,
+    multiAssetVault,
     tbtcBridge,
     tbtcVault,
     mezoAllocator,

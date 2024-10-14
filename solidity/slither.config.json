@@ -1,5 +1,5 @@
 {
   "detectors_to_exclude": "assembly,naming-convention,timestamp,pragma,solc-version",
   "hardhat_artifacts_directory": "build",
-  "filter_paths": "contracts/test|node_modules"
+  "filter_paths": "contracts/hardhat-dependency-compiler|contracts/test|node_modules"
 }
