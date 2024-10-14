@@ -120,7 +120,7 @@ export default function ConnectWallet() {
           >
             <IconButton
               variant="ghost"
-              aria-label="Disconnect"
+              aria-label="Change account"
               icon={<Icon as={IconUserCode} boxSize={5} />}
               px={2}
               boxSize={5}
