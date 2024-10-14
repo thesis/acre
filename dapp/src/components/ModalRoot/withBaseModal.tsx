@@ -27,7 +27,6 @@ function withBaseModal<T extends BaseModalProps>(
       <Modal
         isOpen
         onClose={handleCloseModal}
-        scrollBehavior="inside"
         closeOnOverlayClick={false}
         size={MODAL_BASE_SIZE}
         closeOnEsc={closeOnEsc}
