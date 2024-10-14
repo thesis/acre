@@ -71,33 +71,40 @@ export function useWallet(): UseWalletReturn {
     ) => {
       try {
         if (!selectedConnector.connect) return
+        const prevAddress = await selectedConnector.getBitcoinAddress()
         const {
           accounts: [newAccount],
         } = await selectedConnector.connect({ chainId, isReconnecting: true })
         const newAddress = await selectedConnector.getBitcoinAddress()
-        if (newAddress === address) return
 
-        config.setState((prevState) => ({
-          ...prevState,
-          connections: new Map(prevState.connections).set(prevState.current!, {
-            // Update accounts to force update of wagmi hooks.
-            accounts: [newAccount],
-            connector: orangeKit.typeConversionToConnector(selectedConnector),
-            chainId,
-          }),
-        }))
+        if (newAddress !== prevAddress) {
+          config.setState((prevState) => ({
+            ...prevState,
+            connections: new Map(prevState.connections).set(
+              prevState.current!,
+              {
+                // Update accounts to force update of wagmi hooks.
+                accounts: [newAccount],
+                connector:
+                  orangeKit.typeConversionToConnector(selectedConnector),
+                chainId,
+              },
+            ),
+          }))
+
+          setAddress(newAddress)
+          resetWalletState()
+        }
 
         if (options?.onSuccess && typeof selectedConnector !== "function") {
           options.onSuccess(selectedConnector)
         }
-        setAddress(newAddress)
-        resetWalletState()
       } catch (error) {
         console.error("Failed to reconnect", error)
         if (options?.onError) options.onError(error as Error)
       }
     },
-    [chainId, config, address, resetWalletState],
+    [chainId, config, resetWalletState],
   )
 
   const onConnect = useCallback(
