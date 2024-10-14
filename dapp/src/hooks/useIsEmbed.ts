@@ -9,9 +9,10 @@ export default function useIsEmbed() {
   )
 
   const enableIsEmbed = useCallback(() => {
-    const embeddedAppParam = referralProgram.getEmbeddedApp()
-    if (embeddedAppParam && referralProgram.isEmbedApp(embeddedAppParam)) {
-      setEmbeddedApp(embeddedAppParam)
+    const app = referralProgram.getEmbeddedApp()
+
+    if (app) {
+      setEmbeddedApp(app)
     }
   }, [setEmbeddedApp])
 
