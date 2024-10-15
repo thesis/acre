@@ -11,7 +11,7 @@ type UseAcrePointsReturnType = {
   totalBalance: number
   claimableBalance: number
   nextDropTimestamp?: number
-  isPreparingDrop?: boolean
+  isCalculationInProgress?: boolean
   claimPoints: () => void
   updateUserPointsData: () => Promise<unknown>
   updatePointsData: () => Promise<unknown>
@@ -58,7 +58,7 @@ export default function useAcrePoints(): UseAcrePointsReturnType {
     totalBalance,
     claimableBalance,
     nextDropTimestamp: pointsDataQuery.data?.dropAt,
-    isPreparingDrop: pointsDataQuery.data?.isPreparingDrop,
+    isCalculationInProgress: pointsDataQuery.data?.isCalculationInProgress,
     claimPoints,
     updateUserPointsData: userPointsDataQuery.refetch,
     updatePointsData: pointsDataQuery.refetch,

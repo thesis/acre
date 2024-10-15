@@ -27,7 +27,7 @@ export default function AcrePointsCard(props: CardProps) {
     claimPoints,
     updateUserPointsData,
     updatePointsData,
-    isPreparingDrop,
+    isCalculationInProgress,
   } = useAcrePoints()
 
   const formattedTotalPointsAmount = numberToLocaleString(totalBalance)
@@ -39,7 +39,7 @@ export default function AcrePointsCard(props: CardProps) {
   }
 
   const isDataReady =
-    !!nextDropTimestamp || isPreparingDrop || !!claimableBalance
+    isCalculationInProgress || !!nextDropTimestamp || !!claimableBalance
 
   return (
     <Card
@@ -59,26 +59,7 @@ export default function AcrePointsCard(props: CardProps) {
 
           {isDataReady && (
             <VStack px={4} py={3} spacing={0} rounded="lg" bg="gold.100">
-              {nextDropTimestamp && (
-                <Stack
-                  direction={claimableBalance ? "row" : "column"}
-                  spacing={0}
-                >
-                  <TextMd color="grey.500" textAlign="center">
-                    Next drop in
-                  </TextMd>
-                  <Countdown
-                    timestamp={nextDropTimestamp}
-                    onCountdownEnd={handleOnCountdownEnd}
-                    size={claimableBalance ? "md" : "2xl"}
-                    display={claimableBalance ? "inline" : "block"}
-                    ml={claimableBalance ? 2 : 0}
-                    mt={claimableBalance ? 0 : 2}
-                  />
-                </Stack>
-              )}
-
-              {isPreparingDrop && (
+              {isCalculationInProgress ? (
                 <VStack spacing={4}>
                   {!claimableBalance && (
                     <TextMd color="grey.500">Please wait...</TextMd>
@@ -98,6 +79,23 @@ export default function AcrePointsCard(props: CardProps) {
                     </Tooltip>
                   </HStack>
                 </VStack>
+              ) : (
+                <Stack
+                  direction={claimableBalance ? "row" : "column"}
+                  spacing={0}
+                >
+                  <TextMd color="grey.500" textAlign="center">
+                    Next drop in
+                  </TextMd>
+                  <Countdown
+                    timestamp={nextDropTimestamp!} // Timestamp presence already checked
+                    onCountdownEnd={handleOnCountdownEnd}
+                    size={claimableBalance ? "md" : "2xl"}
+                    display={claimableBalance ? "inline" : "block"}
+                    ml={claimableBalance ? 2 : 0}
+                    mt={claimableBalance ? 0 : 2}
+                  />
+                </Stack>
               )}
 
               {claimableBalance && (
