@@ -11,9 +11,11 @@ type UseAcrePointsReturnType = {
   totalBalance: number
   claimableBalance: number
   nextDropTimestamp?: number
+  isPreparingDrop?: boolean
   claimPoints: () => void
   updateUserPointsData: () => Promise<unknown>
   updatePointsData: () => Promise<unknown>
+  isLoading: boolean
 }
 
 export default function useAcrePoints(): UseAcrePointsReturnType {
@@ -53,12 +55,16 @@ export default function useAcrePoints(): UseAcrePointsReturnType {
   const totalBalance = bigIntToUserAmount(data?.claimed ?? 0n, 0)
   const claimableBalance = bigIntToUserAmount(data?.unclaimed ?? 0n, 0)
 
+  const isLoading = userPointsDataQuery.isLoading || pointsDataQuery.isLoading
+
   return {
     totalBalance,
     claimableBalance,
     nextDropTimestamp: pointsDataQuery.data?.dropAt,
+    isPreparingDrop: pointsDataQuery.data?.isPreparingDrop,
     claimPoints,
     updateUserPointsData: userPointsDataQuery.refetch,
     updatePointsData: pointsDataQuery.refetch,
+    isLoading,
   }
 }

@@ -6,13 +6,18 @@ import {
   CardBody,
   CardHeader,
   CardProps,
+  HStack,
+  Icon,
+  Skeleton,
   Stack,
+  Tooltip,
   VStack,
 } from "@chakra-ui/react"
-import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import Countdown from "#/components/shared/Countdown"
 import { logPromiseFailure, numberToLocaleString } from "#/utils"
 import { useAcrePoints } from "#/hooks"
+import Spinner from "#/components/shared/Spinner"
+import { IconInfoCircle } from "@tabler/icons-react"
 
 export default function AcrePointsCard(props: CardProps) {
   const {
@@ -22,6 +27,8 @@ export default function AcrePointsCard(props: CardProps) {
     claimPoints,
     updateUserPointsData,
     updatePointsData,
+    isPreparingDrop,
+    isLoading,
   } = useAcrePoints()
 
   const formattedTotalPointsAmount = numberToLocaleString(totalBalance)
@@ -45,11 +52,11 @@ export default function AcrePointsCard(props: CardProps) {
       </CardHeader>
 
       <CardBody p={0}>
-        <UserDataSkeleton>
+        <Skeleton isLoaded={!isLoading}>
           <H4 mb={2}>{formattedTotalPointsAmount}&nbsp;PTS</H4>
 
           <VStack px={4} py={3} spacing={0} rounded="lg" bg="gold.100">
-            {nextDropTimestamp && (
+            {!isPreparingDrop && nextDropTimestamp ? (
               <Stack
                 direction={claimableBalance ? "row" : "column"}
                 spacing={0}
@@ -66,6 +73,26 @@ export default function AcrePointsCard(props: CardProps) {
                   mt={claimableBalance ? 0 : 2}
                 />
               </Stack>
+            ) : (
+              <VStack spacing={4}>
+                {!claimableBalance && (
+                  <TextMd color="grey.500">Please wait...</TextMd>
+                )}
+
+                <HStack spacing={0}>
+                  <Spinner mr={3} size="sm" />
+                  <TextMd>Your drop is being prepared.</TextMd>
+                  <Tooltip
+                    label={`
+                      We need some time to calculate your points. It may take up to 30 minutes. 
+                      ${claimableBalance ? "You can still claim points from previous drops." : ""}
+                    `}
+                    maxW={72}
+                  >
+                    <Icon ml={1.5} as={IconInfoCircle} />
+                  </Tooltip>
+                </HStack>
+              </VStack>
             )}
 
             {claimableBalance && (
@@ -82,7 +109,7 @@ export default function AcrePointsCard(props: CardProps) {
               </Button>
             )}
           </VStack>
-        </UserDataSkeleton>
+        </Skeleton>
       </CardBody>
     </Card>
   )
