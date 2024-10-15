@@ -15,7 +15,6 @@ type UseAcrePointsReturnType = {
   claimPoints: () => void
   updateUserPointsData: () => Promise<unknown>
   updatePointsData: () => Promise<unknown>
-  isLoading: boolean
 }
 
 export default function useAcrePoints(): UseAcrePointsReturnType {
@@ -55,8 +54,6 @@ export default function useAcrePoints(): UseAcrePointsReturnType {
   const totalBalance = bigIntToUserAmount(data?.claimed ?? 0n, 0)
   const claimableBalance = bigIntToUserAmount(data?.unclaimed ?? 0n, 0)
 
-  const isLoading = userPointsDataQuery.isLoading || pointsDataQuery.isLoading
-
   return {
     totalBalance,
     claimableBalance,
@@ -65,6 +62,5 @@ export default function useAcrePoints(): UseAcrePointsReturnType {
     claimPoints,
     updateUserPointsData: userPointsDataQuery.refetch,
     updatePointsData: pointsDataQuery.refetch,
-    isLoading,
   }
 }

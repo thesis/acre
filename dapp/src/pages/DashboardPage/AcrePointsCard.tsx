@@ -8,7 +8,6 @@ import {
   CardProps,
   HStack,
   Icon,
-  Skeleton,
   Stack,
   Tooltip,
   VStack,
@@ -18,6 +17,7 @@ import { logPromiseFailure, numberToLocaleString } from "#/utils"
 import { useAcrePoints } from "#/hooks"
 import Spinner from "#/components/shared/Spinner"
 import { IconInfoCircle } from "@tabler/icons-react"
+import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 
 export default function AcrePointsCard(props: CardProps) {
   const {
@@ -28,7 +28,6 @@ export default function AcrePointsCard(props: CardProps) {
     updateUserPointsData,
     updatePointsData,
     isPreparingDrop,
-    isLoading,
   } = useAcrePoints()
 
   const formattedTotalPointsAmount = numberToLocaleString(totalBalance)
@@ -52,11 +51,11 @@ export default function AcrePointsCard(props: CardProps) {
       </CardHeader>
 
       <CardBody p={0}>
-        <Skeleton isLoaded={!isLoading}>
+        <UserDataSkeleton>
           <H4 mb={2}>{formattedTotalPointsAmount}&nbsp;PTS</H4>
 
           <VStack px={4} py={3} spacing={0} rounded="lg" bg="gold.100">
-            {!isPreparingDrop && nextDropTimestamp ? (
+            {nextDropTimestamp && (
               <Stack
                 direction={claimableBalance ? "row" : "column"}
                 spacing={0}
@@ -73,7 +72,9 @@ export default function AcrePointsCard(props: CardProps) {
                   mt={claimableBalance ? 0 : 2}
                 />
               </Stack>
-            ) : (
+            )}
+
+            {isPreparingDrop && (
               <VStack spacing={4}>
                 {!claimableBalance && (
                   <TextMd color="grey.500">Please wait...</TextMd>
@@ -109,7 +110,7 @@ export default function AcrePointsCard(props: CardProps) {
               </Button>
             )}
           </VStack>
-        </Skeleton>
+        </UserDataSkeleton>
       </CardBody>
     </Card>
   )
