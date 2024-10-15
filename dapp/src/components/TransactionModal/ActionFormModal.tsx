@@ -108,7 +108,7 @@ function ActionFormModal({ type }: { type: ActionFlowType }) {
       {!isLoading && <ModalCloseButton />}
       <ModalHeader>{heading}</ModalHeader>
       <ModalBody px={10}>
-        <Box boxSize="full">
+        <Box w="100%">
           <FormComponent onSubmitForm={handleSubmitFormWrapper} />
         </Box>
       </ModalBody>
