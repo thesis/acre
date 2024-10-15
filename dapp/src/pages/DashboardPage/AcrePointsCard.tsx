@@ -38,6 +38,9 @@ export default function AcrePointsCard(props: CardProps) {
     logPromiseFailure(updateUserPointsData())
   }
 
+  const isDataReady =
+    !!nextDropTimestamp || isPreparingDrop || !!claimableBalance
+
   return (
     <Card
       px="1.875rem" // 30px
@@ -54,62 +57,64 @@ export default function AcrePointsCard(props: CardProps) {
         <UserDataSkeleton>
           <H4 mb={2}>{formattedTotalPointsAmount}&nbsp;PTS</H4>
 
-          <VStack px={4} py={3} spacing={0} rounded="lg" bg="gold.100">
-            {nextDropTimestamp && (
-              <Stack
-                direction={claimableBalance ? "row" : "column"}
-                spacing={0}
-              >
-                <TextMd color="grey.500" textAlign="center">
-                  Next drop in
-                </TextMd>
-                <Countdown
-                  timestamp={nextDropTimestamp}
-                  onCountdownEnd={handleOnCountdownEnd}
-                  size={claimableBalance ? "md" : "2xl"}
-                  display={claimableBalance ? "inline" : "block"}
-                  ml={claimableBalance ? 2 : 0}
-                  mt={claimableBalance ? 0 : 2}
-                />
-              </Stack>
-            )}
+          {isDataReady && (
+            <VStack px={4} py={3} spacing={0} rounded="lg" bg="gold.100">
+              {nextDropTimestamp && (
+                <Stack
+                  direction={claimableBalance ? "row" : "column"}
+                  spacing={0}
+                >
+                  <TextMd color="grey.500" textAlign="center">
+                    Next drop in
+                  </TextMd>
+                  <Countdown
+                    timestamp={nextDropTimestamp}
+                    onCountdownEnd={handleOnCountdownEnd}
+                    size={claimableBalance ? "md" : "2xl"}
+                    display={claimableBalance ? "inline" : "block"}
+                    ml={claimableBalance ? 2 : 0}
+                    mt={claimableBalance ? 0 : 2}
+                  />
+                </Stack>
+              )}
 
-            {isPreparingDrop && (
-              <VStack spacing={4}>
-                {!claimableBalance && (
-                  <TextMd color="grey.500">Please wait...</TextMd>
-                )}
+              {isPreparingDrop && (
+                <VStack spacing={4}>
+                  {!claimableBalance && (
+                    <TextMd color="grey.500">Please wait...</TextMd>
+                  )}
 
-                <HStack spacing={0}>
-                  <Spinner mr={3} size="sm" />
-                  <TextMd>Your drop is being prepared.</TextMd>
-                  <Tooltip
-                    label={`
+                  <HStack spacing={0}>
+                    <Spinner mr={3} size="sm" />
+                    <TextMd>Your drop is being prepared.</TextMd>
+                    <Tooltip
+                      label={`
                       We need some time to calculate your points. It may take up to 30 minutes. 
                       ${claimableBalance ? "You can still claim points from previous drops." : ""}
                     `}
-                    maxW={72}
-                  >
-                    <Icon ml={1.5} as={IconInfoCircle} />
-                  </Tooltip>
-                </HStack>
-              </VStack>
-            )}
+                      maxW={72}
+                    >
+                      <Icon ml={1.5} as={IconInfoCircle} />
+                    </Tooltip>
+                  </HStack>
+                </VStack>
+              )}
 
-            {claimableBalance && (
-              <Button
-                mt={3}
-                onClick={claimPoints}
-                w="full"
-                colorScheme="green"
-                color="gold.200"
-                fontWeight="bold"
-                size="lg"
-              >
-                Claim {formattedClaimablePointsAmount} PTS
-              </Button>
-            )}
-          </VStack>
+              {claimableBalance && (
+                <Button
+                  mt={3}
+                  onClick={claimPoints}
+                  w="full"
+                  colorScheme="green"
+                  color="gold.200"
+                  fontWeight="bold"
+                  size="lg"
+                >
+                  Claim {formattedClaimablePointsAmount} PTS
+                </Button>
+              )}
+            </VStack>
+          )}
         </UserDataSkeleton>
       </CardBody>
     </Card>
