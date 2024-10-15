@@ -13,12 +13,14 @@ export function useAccountChangedOKX() {
 
     if (!provider || !featureFlags.OKX_WALLET_ENABLED) return undefined
 
-    const handleAccountChanged = (addressInfo: {
-      address: string
-      publicKey: string
-      compressedPublicKey: string
-    }) => {
-      if (isConnected && address !== addressInfo.address) {
+    const handleAccountChanged = (
+      addressInfo: {
+        address: string
+        publicKey: string
+        compressedPublicKey: string
+      } | null,
+    ) => {
+      if (isConnected && address !== addressInfo?.address) {
         onDisconnect()
         openModal(MODAL_TYPES.CONNECT_WALLET)
       }
