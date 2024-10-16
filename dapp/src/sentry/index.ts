@@ -4,7 +4,7 @@ import { Primitive } from "@sentry/types"
 export const initializeSentry = (dsn: string) => {
   Sentry.init({
     dsn,
-    integrations: [new Sentry.BrowserTracing()],
+    integrations: [Sentry.browserTracingIntegration()],
     // Performance Monitoring
     tracesSampleRate: 0.5,
   })
