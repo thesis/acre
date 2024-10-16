@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useAccount, useChainId, useConnect, useDisconnect } from "wagmi"
 import { logPromiseFailure, orangeKit } from "#/utils"
+import sentry from "#/sentry"
 import {
   OnErrorCallback,
   OrangeKitConnector,
@@ -86,6 +87,7 @@ export function useWallet(): UseWalletReturn {
       {
         onSuccess: () => {
           resetWalletState()
+          sentry.setUser(undefined)
         },
       },
     )
@@ -97,6 +99,7 @@ export function useWallet(): UseWalletReturn {
         const btcAddress = await connector.getBitcoinAddress()
 
         setAddress(btcAddress)
+        sentry.setUser(btcAddress)
       } else {
         setAddress(undefined)
       }
