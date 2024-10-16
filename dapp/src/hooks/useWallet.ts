@@ -13,6 +13,7 @@ import {
   OrangeKitError,
   Status,
 } from "#/types"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useConnector } from "./orangeKit/useConnector"
 import { useBitcoinProvider } from "./orangeKit/useBitcoinProvider"
 import useBitcoinBalance from "./orangeKit/useBitcoinBalance"
@@ -36,6 +37,7 @@ type UseWalletReturn = {
     },
   ) => void
   onDisconnect: () => void
+  reconnectStatus: Status
 }
 
 export function useWallet(): UseWalletReturn {
@@ -61,15 +63,10 @@ export function useWallet(): UseWalletReturn {
     [accountStatus],
   )
 
-  const onReconnect = useCallback(
-    async (
-      selectedConnector: OrangeKitConnector,
-      options: {
-        onSuccess: (connector: OrangeKitConnector) => void
-        onError?: OnErrorCallback<OrangeKitError>
-      },
-    ) => {
-      try {
+  const queryClient = useQueryClient()
+  const { mutate: reconnect, status: reconnectStatus } = useMutation(
+    {
+      mutationFn: async (selectedConnector: OrangeKitConnector) => {
         if (!selectedConnector.connect) return
         const prevAddress = await selectedConnector.getBitcoinAddress()
         const {
@@ -80,6 +77,7 @@ export function useWallet(): UseWalletReturn {
         if (newAddress !== prevAddress) {
           config.setState((prevState) => ({
             ...prevState,
+            status: "connected",
             connections: new Map(prevState.connections).set(
               prevState.current!,
               {
@@ -95,16 +93,10 @@ export function useWallet(): UseWalletReturn {
           setAddress(newAddress)
           resetWalletState()
         }
-
-        if (options?.onSuccess && typeof selectedConnector !== "function") {
-          options.onSuccess(selectedConnector)
-        }
-      } catch (error) {
-        console.error("Failed to reconnect", error)
-        if (options?.onError) options.onError(error as Error)
-      }
+      },
+      mutationKey: ["reconnect"],
     },
-    [chainId, config, resetWalletState],
+    queryClient,
   )
 
   const onConnect = useCallback(
@@ -117,14 +109,11 @@ export function useWallet(): UseWalletReturn {
       },
     ) => {
       if (options?.isReconnecting) {
-        logPromiseFailure(
-          onReconnect(selectedConnector, {
-            onSuccess: () => {
-              if (options?.onSuccess) options.onSuccess(selectedConnector)
-            },
-            onError: options.onError,
-          }),
-        )
+        reconnect(selectedConnector, {
+          onSuccess: (_, connectedConnector) =>
+            options?.onSuccess?.(connectedConnector),
+          onError: options.onError,
+        })
         return
       }
 
@@ -147,7 +136,7 @@ export function useWallet(): UseWalletReturn {
         },
       )
     },
-    [connect, chainId, onReconnect],
+    [connect, chainId, reconnect],
   )
 
   const onDisconnect = useCallback(() => {
@@ -179,7 +168,16 @@ export function useWallet(): UseWalletReturn {
       status,
       onConnect,
       onDisconnect,
+      reconnectStatus,
     }),
-    [address, balance, isConnected, onConnect, onDisconnect, status],
+    [
+      address,
+      balance,
+      isConnected,
+      onConnect,
+      onDisconnect,
+      status,
+      reconnectStatus,
+    ],
   )
 }
