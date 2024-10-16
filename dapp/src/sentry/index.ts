@@ -1,7 +1,7 @@
 import * as Sentry from "@sentry/react"
 import { Primitive } from "@sentry/types"
 
-export const initializeSentry = (dsn: string) => {
+const initialize = (dsn: string) => {
   Sentry.init({
     dsn,
     integrations: [Sentry.browserTracingIntegration()],
@@ -10,10 +10,10 @@ export const initializeSentry = (dsn: string) => {
   })
 }
 
-export const captureException = (exception: unknown) =>
+const captureException = (exception: unknown) =>
   Sentry.captureException(exception)
 
-export const captureMessage = (
+const captureMessage = (
   message: string,
   params?: { [key: string]: unknown },
   tags?: { [key: string]: Primitive },
@@ -29,4 +29,10 @@ export const captureMessage = (
 
     Sentry.captureMessage(message)
   })
+}
+
+export default {
+  initialize,
+  captureException,
+  captureMessage,
 }
