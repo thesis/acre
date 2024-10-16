@@ -68,17 +68,7 @@ jobs:
         run: pnpm install --prefer-offline --frozen-lockfile
 
       - name: Build
-        if: github.event_name != 'push'
         run: pnpm run build
-
-      - name: Build and upload to Sentry
-        if: github.event_name == 'push'
-        env:
-          SENTRY_ORG: ${{ vars.SENTRY_ORG }}
-          SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT }}
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-        run: pnpm run build
-
   dapp-test:
     needs: [sdk-build]
     runs-on: ubuntu-latest
