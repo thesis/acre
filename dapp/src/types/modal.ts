@@ -16,6 +16,7 @@ export const MODAL_TYPES = {
   MEZO_BEEHIVE: "MEZO_BEEHIVE",
   CONNECT_WALLET: "CONNECT_WALLET",
   UNEXPECTED_ERROR: "UNEXPECTED_ERROR",
+  GATE: "GATE",
 } as const
 
 export type ModalType = (typeof MODAL_TYPES)[keyof typeof MODAL_TYPES]
