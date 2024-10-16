@@ -43,6 +43,7 @@
     "wagmi": "^2.9.11"
   },
   "devDependencies": {
+    "@sentry/vite-plugin": "^2.22.5",
     "@thesis-co/eslint-config": "github:thesis/eslint-config#7b9bc8c",
     "@types/react": "^18.2.38",
     "@types/react-dom": "^18.2.17",
