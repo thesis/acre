@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { useAccount, useChainId, useConnect, useDisconnect } from "wagmi"
+import {
+  useAccount,
+  useChainId,
+  useConfig,
+  useConnect,
+  useDisconnect,
+} from "wagmi"
 import { logPromiseFailure, orangeKit } from "#/utils"
 import {
   OnErrorCallback,
@@ -7,6 +13,7 @@ import {
   OrangeKitError,
   Status,
 } from "#/types"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useConnector } from "./orangeKit/useConnector"
 import { useBitcoinProvider } from "./orangeKit/useBitcoinProvider"
 import useBitcoinBalance from "./orangeKit/useBitcoinBalance"
@@ -30,11 +37,13 @@ type UseWalletReturn = {
     },
   ) => void
   onDisconnect: () => void
+  reconnectStatus: Status
 }
 
 export function useWallet(): UseWalletReturn {
   const chainId = useChainId()
-  const { status: accountStatus } = useAccount()
+  const config = useConfig()
+  const { status: accountStatus, address: account } = useAccount()
   const { connect, status } = useConnect()
   const { disconnect } = useDisconnect()
   const connector = useConnector()
@@ -54,33 +63,40 @@ export function useWallet(): UseWalletReturn {
     [accountStatus],
   )
 
-  const onReconnect = useCallback(
-    async (
-      selectedConnector: OrangeKitConnector,
-      options: {
-        onSuccess: (connector: OrangeKitConnector) => void
-        onError?: OnErrorCallback<OrangeKitError>
-      },
-    ) => {
-      try {
+  const queryClient = useQueryClient()
+  const { mutate: reconnect, status: reconnectStatus } = useMutation(
+    {
+      mutationFn: async (selectedConnector: OrangeKitConnector) => {
         if (!selectedConnector.connect) return
-
-        await selectedConnector.connect({ chainId, isReconnecting: true })
+        const prevAddress = await selectedConnector.getBitcoinAddress()
+        const {
+          accounts: [newAccount],
+        } = await selectedConnector.connect({ chainId, isReconnecting: true })
         const newAddress = await selectedConnector.getBitcoinAddress()
-        if (newAddress === address) return
 
-        if (options?.onSuccess && typeof selectedConnector !== "function") {
-          options.onSuccess(selectedConnector)
+        if (newAddress !== prevAddress) {
+          config.setState((prevState) => ({
+            ...prevState,
+            status: "connected",
+            connections: new Map(prevState.connections).set(
+              prevState.current!,
+              {
+                // Update accounts to force update of wagmi hooks.
+                accounts: [newAccount],
+                connector:
+                  orangeKit.typeConversionToConnector(selectedConnector),
+                chainId,
+              },
+            ),
+          }))
+
+          setAddress(newAddress)
+          resetWalletState()
         }
-        setAddress(newAddress)
-        resetWalletState()
-      } catch (error) {
-        console.error("error in reconnect", error)
-        // @ts-expect-error test
-        if (options?.onError) options.onError(error)
-      }
+      },
+      mutationKey: ["reconnect"],
     },
-    [address, chainId, resetWalletState],
+    queryClient,
   )
 
   const onConnect = useCallback(
@@ -93,14 +109,11 @@ export function useWallet(): UseWalletReturn {
       },
     ) => {
       if (options?.isReconnecting) {
-        logPromiseFailure(
-          onReconnect(selectedConnector, {
-            onSuccess: () => {
-              if (options?.onSuccess) options.onSuccess(selectedConnector)
-            },
-            onError: options.onError,
-          }),
-        )
+        reconnect(selectedConnector, {
+          onSuccess: (_, connectedConnector) =>
+            options?.onSuccess?.(connectedConnector),
+          onError: options.onError,
+        })
         return
       }
 
@@ -123,7 +136,7 @@ export function useWallet(): UseWalletReturn {
         },
       )
     },
-    [connect, chainId, onReconnect],
+    [connect, chainId, reconnect],
   )
 
   const onDisconnect = useCallback(() => {
@@ -145,7 +158,7 @@ export function useWallet(): UseWalletReturn {
     }
 
     logPromiseFailure(fetchBitcoinAddress())
-  }, [connector, setAddressInLocalStorage, provider])
+  }, [connector, setAddressInLocalStorage, provider, account])
 
   return useMemo(
     () => ({
@@ -155,7 +168,16 @@ export function useWallet(): UseWalletReturn {
       status,
       onConnect,
       onDisconnect,
+      reconnectStatus,
     }),
-    [address, balance, isConnected, onConnect, onDisconnect, status],
+    [
+      address,
+      balance,
+      isConnected,
+      onConnect,
+      onDisconnect,
+      status,
+      reconnectStatus,
+    ],
   )
 }

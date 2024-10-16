@@ -63,6 +63,7 @@ export default function ConnectWalletButton({
     onConnect,
     onDisconnect,
     status: connectionStatus,
+    reconnectStatus,
   } = useWallet()
   const { signMessageStatus, resetMessageStatus, signMessageAndCreateSession } =
     useSignMessageAndCreateSession()
@@ -157,7 +158,8 @@ export default function ConnectWalletButton({
   const handleButtonClick = () => {
     // Do not trigger action again when wallet connection is in progress
     if (showStatuses) return
-    onDisconnect()
+
+    if (!isReconnecting) onDisconnect()
     resetConnectionError()
     resetMessageStatus()
 
@@ -248,7 +250,11 @@ export default function ConnectWalletButton({
                   Requires 2 actions:
                 </TextMd>
                 <ConnectWalletStatusLabel
-                  status={connectionStatus}
+                  status={
+                    connectionStatus === "idle" && reconnectStatus !== "idle"
+                      ? reconnectStatus
+                      : connectionStatus
+                  }
                   label={`Connect ${isEmbed ? "account" : "wallet"}`}
                 />
                 <ConnectWalletStatusLabel
