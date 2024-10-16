@@ -39,15 +39,20 @@ const embedConnectorsMap: Record<EmbedApp, () => CreateOrangeKitConnectorFn> = {
   "ledger-live": orangeKitLedgerLiveConnector,
 }
 
+let createEmbedConnectorFn
+const embeddedApp = referralProgram.getEmbeddedApp()
+if (referralProgram.isEmbedApp(embeddedApp)) {
+  createEmbedConnectorFn = embedConnectorsMap[embeddedApp as EmbedApp]
+}
+
 const defaultConnectors = [
   orangeKitOKXConnector(),
   orangeKitUnisatConnector(),
   orangeKitXverseConnector(),
 ]
 
-const embeddedApp = referralProgram.getEmbeddedApp()
-const connectors = (embeddedApp !== undefined
-  ? [embedConnectorsMap[embeddedApp]()]
+const connectors = (createEmbedConnectorFn !== undefined
+  ? [createEmbedConnectorFn()]
   : defaultConnectors) as unknown as CreateConnectorFn[]
 
 const wagmiConfig = createConfig({

@@ -4,12 +4,23 @@ import router from "./router"
 const embeddedApps = ["ledger-live"] as const
 export type EmbedApp = (typeof embeddedApps)[number]
 
+const MAX_UINT16 = 65535
 const EMBEDDED_APP_TO_REFERRAL: Record<EmbedApp, number> = {
   "ledger-live": 2083,
 }
 
+const isValidReferral = (value: number) => {
+  const isInteger = Number.isInteger(value)
+  return isInteger && value >= 0 && value <= MAX_UINT16
+}
+
+const getReferralFromURL = () =>
+  router.getURLParam(SEARCH_PARAMS_NAMES.referral)
+
 const getReferralByEmbeddedApp = (embedApp: EmbedApp) =>
   EMBEDDED_APP_TO_REFERRAL[embedApp]
+
+const getEmbeddedApp = () => router.getURLParam(SEARCH_PARAMS_NAMES.embed)
 
 function isEmbedApp(embedApp: unknown): embedApp is EmbedApp {
   return (
@@ -17,14 +28,9 @@ function isEmbedApp(embedApp: unknown): embedApp is EmbedApp {
     embeddedApps.findIndex((app) => app === embedApp) >= 0
   )
 }
-
-const getEmbeddedApp = () => {
-  const app = router.getURLParam(SEARCH_PARAMS_NAMES.embed)
-
-  return isEmbedApp(app) ? app : undefined
-}
-
 export default {
+  isValidReferral,
+  getReferralFromURL,
   getEmbeddedApp,
   isEmbedApp,
   getReferralByEmbeddedApp,

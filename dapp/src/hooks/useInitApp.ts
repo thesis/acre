@@ -4,6 +4,7 @@ import { useDisconnectOKX } from "./orangeKit/useDisconnectOKX"
 import { useInitDataFromSdk, useInitializeAcreSdk } from "./sdk"
 import { useSentry } from "./sentry"
 import useDetectEmbed from "./useDetectEmbed"
+import useDetectReferral from "./useDetectReferral"
 import { useDisconnectWallet } from "./useDisconnectWallet"
 import { useFetchBTCPriceUSD } from "./useFetchBTCPriceUSD"
 
@@ -12,6 +13,7 @@ export function useInitApp() {
   // useDetectThemeMode()
   useSentry()
   useDetectEmbed()
+  useDetectReferral()
   useInitializeAcreSdk()
   useInitDataFromSdk()
   useFetchBTCPriceUSD()
