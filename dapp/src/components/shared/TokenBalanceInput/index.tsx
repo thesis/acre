@@ -25,8 +25,6 @@ import NumberFormatInput, {
 import { CurrencyBalance } from "../CurrencyBalance"
 import HelperErrorText, { HelperErrorTextProps } from "../Form/HelperErrorText"
 
-const VARIANT = "balance"
-
 type FiatCurrencyBalanceProps = {
   amount: bigint
   currency: CurrencyType
@@ -134,10 +132,10 @@ export default function TokenBalanceInput({
           </Box>
         </Box>
       </FormLabel>
-      <InputGroup variant={VARIANT}>
+      <InputGroup>
         <NumberFormatInput
+          variant="outline"
           size={size}
-          variant={VARIANT}
           isInvalid={hasError}
           suffix={` ${symbol}`}
           placeholder={placeholder}
