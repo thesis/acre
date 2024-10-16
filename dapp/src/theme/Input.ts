@@ -1,7 +1,8 @@
 import { inputAnatomy as parts } from "@chakra-ui/anatomy"
 import { createMultiStyleConfigHelpers, defineStyle } from "@chakra-ui/react"
 
-const variantBalanceField = defineStyle({
+const variantOutlineField = defineStyle({
+  boxShadow: "none !important",
   border: "1px solid",
   borderColor: "gold.300",
   color: "grey.700",
@@ -17,12 +18,20 @@ const variantBalanceField = defineStyle({
     fontWeight: "medium",
   },
 
+  _hover: {
+    borderColor: "gold.300",
+  },
+
+  _focus: {
+    borderColor: "gold.300",
+  },
+
   _invalid: {
-    borderColor: "red.400",
+    borderColor: "red.400 !important",
   },
 })
 
-const variantBalanceElement = defineStyle({
+const variantOutlineElement = defineStyle({
   h: "100%",
   width: 14,
   mr: 2,
@@ -30,13 +39,18 @@ const variantBalanceElement = defineStyle({
 
 const multiStyleConfig = createMultiStyleConfigHelpers(parts.keys)
 
-const variantBalance = multiStyleConfig.definePartsStyle({
-  field: variantBalanceField,
-  element: variantBalanceElement,
+const variantOutline = multiStyleConfig.definePartsStyle({
+  field: variantOutlineField,
+  element: variantOutlineElement,
 })
 
 const variants = {
-  balance: variantBalance,
+  outline: variantOutline,
 }
 
-export const inputTheme = multiStyleConfig.defineMultiStyleConfig({ variants })
+export const inputTheme = multiStyleConfig.defineMultiStyleConfig({
+  variants,
+  defaultProps: {
+    variant: "outline",
+  },
+})

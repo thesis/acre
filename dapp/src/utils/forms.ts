@@ -1,4 +1,8 @@
-import { ACTION_FORM_ERRORS, TOKEN_FORM_ERRORS } from "#/constants"
+import {
+  ACTION_FORM_ERRORS,
+  PASSWORD_FORM_ERRORS,
+  TOKEN_FORM_ERRORS,
+} from "#/constants"
 import { ActionFlowType, CurrencyType } from "#/types"
 import { getCurrencyByType } from "./currency"
 import { fixedPointNumberToString } from "./numbers"
@@ -7,6 +11,15 @@ export function getErrorsObj<T>(errors: { [key in keyof T]: string }) {
   return (Object.keys(errors) as Array<keyof T>).every((name) => !errors[name])
     ? {}
     : errors
+}
+
+export function validatePassword(
+  value: string | undefined,
+): string | undefined {
+  // TODO: Use correct values
+  if (value !== "bibo") return PASSWORD_FORM_ERRORS.INCORRECT_VALUE
+
+  return undefined
 }
 
 export function validateTokenAmount(
@@ -35,6 +48,7 @@ export function validateTokenAmount(
 }
 
 type ParametrizedError = (value: number) => string
+
 export const isFormError = (
   type: keyof typeof TOKEN_FORM_ERRORS,
   message: string,
