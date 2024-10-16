@@ -3,10 +3,8 @@ import {
   Box,
   Button,
   FormControl,
-  FormErrorMessage,
   FormHelperText,
   FormLabel,
-  Icon,
   InputGroup,
   InputProps,
   InputRightElement,
@@ -19,52 +17,15 @@ import {
   userAmountToBigInt,
 } from "#/utils"
 import { CurrencyType } from "#/types"
-import { IconInfoCircle } from "@tabler/icons-react"
 import { useCurrencyConversion } from "#/hooks"
 import NumberFormatInput, {
   NumberFormatInputValues,
   NumberFormatInputProps,
 } from "../NumberFormatInput"
 import { CurrencyBalance } from "../CurrencyBalance"
-import { Alert, AlertIcon, AlertDescription } from "../Alert"
+import HelperErrorText, { HelperErrorTextProps } from "../Form/HelperErrorText"
 
 const VARIANT = "balance"
-
-type HelperErrorTextProps = {
-  errorMsgText?: string | JSX.Element
-  hasError?: boolean
-  helperText?: string | JSX.Element
-}
-
-function HelperErrorText({
-  helperText,
-  errorMsgText,
-  hasError,
-}: HelperErrorTextProps) {
-  if (hasError) {
-    return (
-      <FormErrorMessage>
-        <Alert status="error">
-          <AlertIcon status="error" />
-          <AlertDescription>
-            {errorMsgText || "Please enter a valid value"}
-          </AlertDescription>
-        </Alert>
-      </FormErrorMessage>
-    )
-  }
-
-  if (helperText) {
-    return (
-      <FormHelperText>
-        <Icon as={IconInfoCircle} />
-        {helperText}
-      </FormHelperText>
-    )
-  }
-
-  return null
-}
 
 type FiatCurrencyBalanceProps = {
   amount: bigint
