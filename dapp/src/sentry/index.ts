@@ -10,6 +10,9 @@ export const initializeSentry = (dsn: string) => {
   })
 }
 
+export const captureException = (exception: unknown) =>
+  Sentry.captureException(exception)
+
 export const captureMessage = (
   message: string,
   params?: { [key: string]: unknown },
