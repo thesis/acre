@@ -157,7 +157,8 @@ export default function ConnectWalletButton({
   const handleButtonClick = () => {
     // Do not trigger action again when wallet connection is in progress
     if (showStatuses) return
-    onDisconnect()
+
+    if (!isReconnecting) onDisconnect()
     resetConnectionError()
     resetMessageStatus()
 
