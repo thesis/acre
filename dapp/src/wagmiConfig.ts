@@ -6,14 +6,13 @@ import {
   getOrangeKitXverseConnector,
   getOrangeKitLedgerLiveConnector,
 } from "@orangekit/react"
+import { CreateOrangeKitConnectorFn } from "@orangekit/react/dist/src/wallet/connector"
 import { env } from "./constants"
-import { router } from "./utils"
-import { SEARCH_PARAMS_NAMES } from "./router/path"
 import { getLastUsedBtcAddress } from "./hooks/useLastUsedBtcAddress"
+import referralProgram, { EmbedApp } from "./utils/referralProgram"
 
 const isTestnet = env.USE_TESTNET
 const CHAIN_ID = isTestnet ? sepolia.id : mainnet.id
-const IsEmbed = router.getURLParam(SEARCH_PARAMS_NAMES.embed)
 
 const chains: [Chain, ...Chain[]] = isTestnet ? [sepolia] : [mainnet]
 const connectorConfig = {
@@ -36,19 +35,25 @@ const orangeKitLedgerLiveConnector = getOrangeKitLedgerLiveConnector({
   },
 })
 
-const embedConnectors = [orangeKitLedgerLiveConnector()]
+const embedConnectorsMap: Record<EmbedApp, () => CreateOrangeKitConnectorFn> = {
+  "ledger-live": orangeKitLedgerLiveConnector,
+}
+
+let createEmbedConnectorFn
+const embeddedApp = referralProgram.getEmbeddedApp()
+if (referralProgram.isEmbedApp(embeddedApp)) {
+  createEmbedConnectorFn = embedConnectorsMap[embeddedApp as EmbedApp]
+}
+
 const defaultConnectors = [
   orangeKitOKXConnector(),
   orangeKitUnisatConnector(),
   orangeKitXverseConnector(),
 ]
 
-const connectors = [
-  ...(IsEmbed
-    ? // TODO: Use correct connector
-      embedConnectors
-    : defaultConnectors),
-] as unknown as CreateConnectorFn[]
+const connectors = (createEmbedConnectorFn !== undefined
+  ? [createEmbedConnectorFn()]
+  : defaultConnectors) as unknown as CreateConnectorFn[]
 
 const wagmiConfig = createConfig({
   chains,

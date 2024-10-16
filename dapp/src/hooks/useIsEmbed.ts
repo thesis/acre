@@ -1,27 +1,28 @@
 import { useCallback } from "react"
-import { router } from "#/utils"
-import { SEARCH_PARAMS_NAMES } from "#/router/path"
+import referralProgram, { EmbedApp } from "#/utils/referralProgram"
 import useLocalStorage from "./useLocalStorage"
 
 export default function useIsEmbed() {
-  const [isEmbed, setIsEmbed] = useLocalStorage<boolean | undefined>(
-    "isEmbed",
+  const [embeddedApp, setEmbeddedApp] = useLocalStorage<EmbedApp | undefined>(
+    "acre.embeddedApp",
     undefined,
   )
 
   const enableIsEmbed = useCallback(() => {
-    if (router.getURLParam(SEARCH_PARAMS_NAMES.embed)) {
-      setIsEmbed(true)
+    const embeddedAppParam = referralProgram.getEmbeddedApp()
+    if (embeddedAppParam && referralProgram.isEmbedApp(embeddedAppParam)) {
+      setEmbeddedApp(embeddedAppParam)
     }
-  }, [setIsEmbed])
+  }, [setEmbeddedApp])
 
   const disableIsEmbed = useCallback(() => {
-    setIsEmbed(false)
-  }, [setIsEmbed])
+    setEmbeddedApp(undefined)
+  }, [setEmbeddedApp])
 
   return {
     enableIsEmbed,
     disableIsEmbed,
-    isEmbed,
+    isEmbed: !!embeddedApp,
+    embeddedApp,
   }
 }
