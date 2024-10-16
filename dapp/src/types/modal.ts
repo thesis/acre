@@ -17,6 +17,7 @@ export const MODAL_TYPES = {
   CONNECT_WALLET: "CONNECT_WALLET",
   UNEXPECTED_ERROR: "UNEXPECTED_ERROR",
   ACRE_POINTS_CLAIM: "ACRE_POINTS_CLAIM",
+  GATE: "GATE",
 } as const
 
 export type ModalType = (typeof MODAL_TYPES)[keyof typeof MODAL_TYPES]
