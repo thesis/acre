@@ -6,7 +6,7 @@ export const initializeSentry = (dsn: string) => {
     dsn,
     integrations: [Sentry.browserTracingIntegration()],
     // Performance Monitoring
-    tracesSampleRate: 0.5,
+    tracesSampleRate: 0.1,
   })
 }
 
