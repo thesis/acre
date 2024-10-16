@@ -36,6 +36,7 @@ async function deleteSession() {
 
 type PointsDataResponse = {
   dropAt: number
+  isCalculationInProgress: boolean
 }
 
 const getPointsData = async () => {
@@ -44,6 +45,7 @@ const getPointsData = async () => {
 
   return {
     dropAt: response.data.dropAt,
+    isCalculationInProgress: response.data.isCalculationInProgress,
   }
 }
 
