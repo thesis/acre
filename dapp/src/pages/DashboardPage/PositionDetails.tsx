@@ -20,7 +20,7 @@ const isWithdrawalFlowEnabled = featureFlags.WITHDRAWALS_ENABLED
 const buttonStyles: ButtonProps = {
   size: "lg",
   flex: 1,
-  maxW: "12.5rem", // 200px
+  w: { base: "auto", lg: 40 },
   fontWeight: "bold",
   lineHeight: 6,
   px: 7,
