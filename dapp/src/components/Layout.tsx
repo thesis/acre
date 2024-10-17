@@ -10,7 +10,7 @@ import MobileModeBanner from "./MobileModeBanner"
 
 const PAGE_MAX_WIDTH = {
   standalone: "110rem", // 1760px
-  embed: "68rem", // 1088px
+  "ledger-live": "68rem", // 1088px
 }
 
 function Layout() {
@@ -19,13 +19,13 @@ function Layout() {
 
   if (isMobileMode) return <MobileModeBanner forceOpen />
 
+  const maxWidth = isEmbed
+    ? // TODO: Select correct max-width by `embeddedApp`
+      PAGE_MAX_WIDTH["ledger-live"]
+    : PAGE_MAX_WIDTH.standalone
+
   return (
-    <Flex
-      flexFlow="column"
-      p={10}
-      mx="auto"
-      maxW={isEmbed ? PAGE_MAX_WIDTH.embed : PAGE_MAX_WIDTH.standalone}
-    >
+    <Flex flexFlow="column" p={10} mx="auto" maxWidth={maxWidth}>
       <Header />
       <Outlet />
 
