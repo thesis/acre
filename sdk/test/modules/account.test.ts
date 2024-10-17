@@ -150,6 +150,7 @@ describe("Account", () => {
             predictedEthereumDepositorAddress,
             bitcoinRecoveryAddress,
             referral,
+            bitcoinDepositorAddress,
           )
         })
 

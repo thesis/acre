@@ -76,11 +76,13 @@ export default class Tbtc {
    * @param bitcoinRecoveryAddress P2PKH or P2WPKH Bitcoin address that can be
    *        used for emergency recovery of the deposited funds.
    * @param referral Deposit referral number.
+   * @param loggedInUser Identifier of the user who initiated the deposit.
    */
   async initiateDeposit(
     depositOwner: ChainIdentifier,
     bitcoinRecoveryAddress: string,
     referral: number,
+    loggedInUser: string,
   ): Promise<Deposit> {
     if (!depositOwner || !bitcoinRecoveryAddress) {
       throw new Error("Ethereum or Bitcoin address is not available")
@@ -114,6 +116,7 @@ export default class Tbtc {
         referral,
       },
       application: "acre",
+      loggedInUser,
     }
 
     const revealSaved: boolean = await this.#tbtcApi.saveReveal(revealData)

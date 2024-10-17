@@ -32,7 +32,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v4
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -53,13 +53,12 @@ jobs:
         run: pnpm run format
 
   solidity-slither:
-    needs: [solidity-build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v4
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -76,17 +75,11 @@ jobs:
 
       - name: Install Slither
         env:
-          SLITHER_VERSION: 0.9.6
+          SLITHER_VERSION: 0.10.4
         run: pip3 install slither-analyzer==$SLITHER_VERSION
 
-      - name: Download Build Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: solidity-build
-          path: solidity/
-
       - name: Run Slither
-        run: slither --hardhat-ignore-compile .
+        run: slither .
 
   solidity-test:
     needs: [solidity-build]
@@ -95,7 +88,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v4
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -122,7 +115,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v4
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -156,7 +149,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v4
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -184,7 +177,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup PNPM
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v4
 
       - name: Setup Node
         uses: actions/setup-node@v4

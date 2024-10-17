@@ -36,8 +36,8 @@ importers:
         specifier: ^11.11.0
         version: 11.11.5(@emotion/react@11.11.4)(@types/react@18.3.3)(react@18.3.1)
       '@orangekit/react':
-        specifier: 1.0.0-beta.30
-        version: 1.0.0-beta.30(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5)(valibot@0.33.2)
+        specifier: 1.0.0-beta.32
+        version: 1.0.0-beta.32(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5)
       '@orangekit/sign-in-with-wallet':
         specifier: 1.0.0-beta.6
         version: 1.0.0-beta.6(bech32@2.0.0)(ethers@6.13.0)
@@ -281,6 +281,9 @@ importers:
       hardhat-contract-sizer:
         specifier: ^2.10.0
         version: 2.10.0(hardhat@2.22.5)
+      hardhat-dependency-compiler:
+        specifier: ^1.2.1
+        version: 1.2.1(hardhat@2.22.5)
       hardhat-deploy:
         specifier: ^0.11.43
         version: 0.11.45
@@ -5764,14 +5767,14 @@ packages:
       - ethers
     dev: false
 
-  /@orangekit/react@1.0.0-beta.30(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5)(valibot@0.33.2):
-    resolution: {integrity: sha512-hH5rRTDy0rDuVvgZKb53/fiQHHMjUlOL0pufMbv4fuy0AzrnNHu4ohFEJCyANpiL/FppdBZiFa/paqv+9obotg==}
+  /@orangekit/react@1.0.0-beta.32(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5):
+    resolution: {integrity: sha512-/ztJG0QjGoRDhs7sBCFxsAeTs5eVnm6e5qFKlDTwSbTP5AIQRTdjlQL+ThuTPjeZJBtyCTC+OvEFvt3PfVXEog==}
     dependencies:
-      '@orangekit/sdk': 1.0.0-beta.16
+      '@orangekit/sdk': 1.0.0-beta.17
       '@rainbow-me/rainbowkit': 2.0.2(@types/react@18.3.3)(react-dom@18.3.1)(react@18.3.1)(viem@2.8.16)(wagmi@2.5.12)
       ethers: 6.12.1
       react: 18.3.1
-      sats-connect: 2.5.0(typescript@5.4.5)(valibot@0.33.2)
+      sats-connect: 2.8.3(typescript@5.4.5)
       viem: 2.8.16(typescript@5.4.5)
       wagmi: 2.5.12(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(react@18.3.1)(typescript@5.4.5)(viem@2.8.16)
     transitivePeerDependencies:
@@ -5802,12 +5805,29 @@ packages:
       - typescript
       - uWebSockets.js
       - utf-8-validate
-      - valibot
       - zod
     dev: false
 
   /@orangekit/sdk@1.0.0-beta.16:
     resolution: {integrity: sha512-0tU/p9iRw3JDbJjvWLjrbyqLEKBUUUX/q6ccNw9MtIPiHGVvr0wnaZvgs7c1shGJGIREhNMBRbwgS9782Yr/SQ==}
+    dependencies:
+      '@gelatonetwork/relay-sdk': 5.5.6
+      '@noble/curves': 1.4.0
+      '@noble/hashes': 1.4.0
+      '@orangekit/contracts': 1.0.0-beta.3(ethers@6.12.1)
+      '@safe-global/protocol-kit': 3.1.1
+      bitcoinjs-lib: 6.1.5
+      ethers: 6.12.1
+    transitivePeerDependencies:
+      - bufferutil
+      - debug
+      - encoding
+      - supports-color
+      - utf-8-validate
+    dev: false
+
+  /@orangekit/sdk@1.0.0-beta.17:
+    resolution: {integrity: sha512-SWGWbsidxe9qRGTzRcvVxNVC//HBEj7L0QIqduFAu2RVe1Khi4HlS1jEkfcvLTxwjY0qzDQwUyxWovSmnJKZNw==}
     dependencies:
       '@gelatonetwork/relay-sdk': 5.5.6
       '@noble/curves': 1.4.0
@@ -6797,28 +6817,25 @@ packages:
     engines: {node: '>=16'}
     dev: false
 
-  /@sats-connect/core@0.0.15(valibot@0.33.2):
-    resolution: {integrity: sha512-f+s+uM4BnjLs+I8AHp4Tf4GG8kMLGn44RalNZqlo/OkTeZj+llQEsMEwfKkIM8f45gA3jSWqmn4q/LsjMpWlVw==}
-    peerDependencies:
-      valibot: 0.33.2
+  /@sats-connect/core@0.3.1:
+    resolution: {integrity: sha512-xMOEYUdEcJn8skWmlJLzcJXW7LK0z/8x2oUoly4yWnohZp9ynoZqTYlAe3QtVq72aUjVaX0kzbdB58GUKsixCg==}
     dependencies:
-      axios: 1.6.8
+      axios: 1.7.4
       bitcoin-address-validation: 2.2.3
       buffer: 6.0.3
       jsontokens: 4.0.1
-      lodash.omit: 4.5.0
       valibot: 0.33.2
     transitivePeerDependencies:
       - debug
     dev: false
 
-  /@sats-connect/make-default-provider-config@0.0.5(@sats-connect/core@0.0.15)(typescript@5.4.5):
-    resolution: {integrity: sha512-b/v4IeDEde5DqFOdMbMmf3B0t/lxlKnY04f3YIUWe1khOg3S6VdcK9Mqva+WUOsJHBTIA5b4hK7CqfMjx1Ic+w==}
+  /@sats-connect/make-default-provider-config@0.0.9(@sats-connect/core@0.3.1)(typescript@5.4.5):
+    resolution: {integrity: sha512-7aNHrexYif5e4817YfMINgvUy1G8sKZJxwOSQ23kq4YTYze4wh+rsgJCl5oF1//sL3EXwheDVCn5NJe8tUH1rA==}
     peerDependencies:
-      '@sats-connect/core': '*'
-      typescript: 5.4.4
+      '@sats-connect/core': ^0.3.0
+      typescript: ^5.0.0
     dependencies:
-      '@sats-connect/core': 0.0.15(valibot@0.33.2)
+      '@sats-connect/core': 0.3.1
       '@sats-connect/ui': 0.0.6
       bowser: 2.11.0
       typescript: 5.4.5
@@ -6826,6 +6843,10 @@ packages:
 
   /@sats-connect/ui@0.0.6:
     resolution: {integrity: sha512-H3bFFhr9CcY1oNosNi/QJszmMHSht4U19bUWfM3vzayAKgV4ebY6iUnRK5g3p2rVLLWVzlpaw1J9m+7JWwyBfA==}
+    dev: false
+
+  /@sats-connect/ui@0.0.7:
+    resolution: {integrity: sha512-dq02JxvTSAkfgFzEz4iWDSamm6Dte1omzxK0F1yytRZbIrbjjz1KmlMHM+uuxnFN9+EzHIHNsA4aS2dEDwh0xw==}
     dev: false
 
   /@scure/base@1.1.7:
@@ -9433,16 +9454,6 @@ packages:
       - debug
     dev: false
 
-  /axios@1.6.8:
-    resolution: {integrity: sha512-v/ZHtJDU39mDpyBoFVkETcd/uNdxrWRrg3bKpOKzXFA6Bvqopts6ALSMU3y6ijYxbw2B+wPrIv46egTzJXCLGQ==}
-    dependencies:
-      follow-redirects: 1.15.6(debug@4.3.4)
-      form-data: 4.0.0
-      proxy-from-env: 1.1.0
-    transitivePeerDependencies:
-      - debug
-    dev: false
-
   /axios@1.7.2:
     resolution: {integrity: sha512-2A8QhOMrbomlDuiLeK9XibIBzuHeRcqqNOHp0Cyp5EoJ1IFDh+XZH3A6BkXtv0K4gFGCI0Y4BM7B1wOEi0Rmgw==}
     dependencies:
@@ -9462,6 +9473,16 @@ packages:
     transitivePeerDependencies:
       - debug
     dev: true
+
+  /axios@1.7.4:
+    resolution: {integrity: sha512-DukmaFRnY6AzAALSH4J2M3k6PkaC+MfaAGdEERRWcC9q3/TWQwLpHR8ZRLKTdQ3aBDL64EdluRDjJqKw+BPZEw==}
+    dependencies:
+      follow-redirects: 1.15.6(debug@4.3.4)
+      form-data: 4.0.0
+      proxy-from-env: 1.1.0
+    transitivePeerDependencies:
+      - debug
+    dev: false
 
   /axobject-query@3.2.1:
     resolution: {integrity: sha512-jsyHu61e6N4Vbz/v18DHwWYKK0bSWLqn47eeDSKPB7m8tqMHF9YJ+mhIk2lVteyZrY8tnSj/jHOv4YiTCuCJgg==}
@@ -13805,6 +13826,15 @@ packages:
       strip-ansi: 6.0.1
     dev: true
 
+  /hardhat-dependency-compiler@1.2.1(hardhat@2.22.5):
+    resolution: {integrity: sha512-xG5iwbspTtxOEiP5UsPngEYQ1Hg+fjTjliapIjdTQmwGkCPofrsDhQDV2O/dopcYzcR68nTx2X8xTewYHgA2rQ==}
+    engines: {node: '>=14.14.0'}
+    peerDependencies:
+      hardhat: ^2.0.0
+    dependencies:
+      hardhat: 2.22.5(ts-node@10.9.2)(typescript@5.4.5)
+    dev: true
+
   /hardhat-deploy@0.11.45:
     resolution: {integrity: sha512-aC8UNaq3JcORnEUIwV945iJuvBwi65tjHVDU3v6mOcqik7WAzHVCJ7cwmkkipsHrWysrB5YvGF1q9S1vIph83w==}
     dependencies:
@@ -15973,10 +16003,6 @@ packages:
 
   /lodash.mergewith@4.6.2:
     resolution: {integrity: sha512-GK3g5RPZWTRSeLSpgP8Xhra+pnjBC56q9FZYe1d5RN3TJ35dbkGy3YqBSMbyCrlbi+CM9Z3Jk5yTL7RCsqboyQ==}
-    dev: false
-
-  /lodash.omit@4.5.0:
-    resolution: {integrity: sha512-XeqSp49hNGmlkj2EJlfrQFIzQ6lXdNro9sddtQzcJY8QaoC2GO0DT7xaIokHeyM+mIT0mPMlPvkYzg2xCuHdZg==}
     dev: false
 
   /lodash.pad@4.5.1:
@@ -18953,16 +18979,15 @@ packages:
   /safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
 
-  /sats-connect@2.5.0(typescript@5.4.5)(valibot@0.33.2):
-    resolution: {integrity: sha512-oyKQMH07dvXv/UCUlbHWoLsfycnDgsyipyaUovnFBsG85t1jF6wlXcGDPwiD8fIUmplDD6UmHlyAfCL8ai5b3w==}
+  /sats-connect@2.8.3(typescript@5.4.5):
+    resolution: {integrity: sha512-9qQj4s/5Rj2OImygbs856AwWm7kAx6w19nUru43Dl4zDGv20uy3xHCBEUrKbBDcmE95bE5/SW+iAe89nU+irIw==}
     dependencies:
-      '@sats-connect/core': 0.0.15(valibot@0.33.2)
-      '@sats-connect/make-default-provider-config': 0.0.5(@sats-connect/core@0.0.15)(typescript@5.4.5)
-      '@sats-connect/ui': 0.0.6
+      '@sats-connect/core': 0.3.1
+      '@sats-connect/make-default-provider-config': 0.0.9(@sats-connect/core@0.3.1)(typescript@5.4.5)
+      '@sats-connect/ui': 0.0.7
     transitivePeerDependencies:
       - debug
       - typescript
-      - valibot
     dev: false
 
   /sc-istanbul@0.4.6:
