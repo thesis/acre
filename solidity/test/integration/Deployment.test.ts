@@ -1,7 +1,7 @@
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers"
 import { expect } from "chai"
 import { Contract, MaxUint256, ZeroAddress } from "ethers"
-import { deployments, ethers } from "hardhat"
+import { deployments, ethers, upgrades } from "hardhat"
 
 import type {
   StBTC as stBTC,
@@ -9,7 +9,9 @@ import type {
   MezoAllocator,
   BitcoinDepositor,
   BitcoinRedeemer,
+  AcreMultiAssetVault,
   IMezoPortal,
+  ProxyAdmin,
 } from "../../typechain"
 import { getDeployedContract } from "../helpers"
 
@@ -22,6 +24,7 @@ describe("Deployment", () => {
   let tbtc: TestERC20
   let bitcoinDepositor: BitcoinDepositor
   let bitcoinRedeemer: BitcoinRedeemer
+  let multiAssetVault: AcreMultiAssetVault
   let mezoPortal: IMezoPortal
 
   before(async () => {
@@ -30,6 +33,7 @@ describe("Deployment", () => {
       mezoAllocator,
       bitcoinDepositor,
       bitcoinRedeemer,
+      multiAssetVault,
       tbtc,
       mezoPortal,
     } = await loadFixture(integrationTestFixture))
@@ -62,6 +66,23 @@ describe("Deployment", () => {
       await expect(proxy.initialize(...initArgs)).to.be.revertedWithCustomError(
         proxy,
         "InvalidInitialization",
+      )
+    })
+
+    it("should set the governance as the proxy admin owner", async () => {
+      const proxy: Contract = await getDeployedContract(contractName)
+
+      const proxyAdminAddress = await upgrades.erc1967.getAdminAddress(
+        await proxy.getAddress(),
+      )
+
+      const proxyAdmin: ProxyAdmin = await ethers.getContractAt(
+        "ProxyAdmin",
+        proxyAdminAddress,
+      )
+
+      expect(await proxyAdmin.owner()).to.be.equal(
+        expectedMainnetAddresses.governance,
       )
     })
   }
@@ -232,6 +253,42 @@ describe("Deployment", () => {
 
     it("should set owner", async () => {
       expect(await bitcoinDepositor.owner()).to.be.equal(
+        expectedMainnetAddresses.governance,
+      )
+    })
+  })
+
+  describe("AcreMultiAssetVault", () => {
+    testUpgradeableInitialization(
+      "AcreMultiAssetVault",
+      ZeroAddress,
+      ZeroAddress,
+      [ZeroAddress],
+    )
+
+    it("should set mezoPortal", async () => {
+      expect(await multiAssetVault.mezoPortal()).to.be.equal(
+        expectedMainnetAddresses.mezoPortal,
+      )
+    })
+
+    it("should set supportedAssets", async () => {
+      const expectedSupportedAssets = [
+        expectedMainnetAddresses.solvBtc,
+        expectedMainnetAddresses.solvBtcBbn,
+      ]
+
+      for (let i = 0; i < expectedSupportedAssets.length; i += 1) {
+        expect(
+          // eslint-disable-next-line no-await-in-loop
+          await multiAssetVault.supportedAssets(expectedSupportedAssets[i]),
+          `asset ${i}/${expectedSupportedAssets.length} is not supported: ${expectedSupportedAssets[i]}`,
+        ).to.be.true
+      }
+    })
+
+    it("should set owner", async () => {
+      expect(await multiAssetVault.owner()).to.be.equal(
         expectedMainnetAddresses.governance,
       )
     })
