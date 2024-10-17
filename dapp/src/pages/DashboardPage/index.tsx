@@ -9,7 +9,7 @@ import { CurrentSeasonCard } from "./CurrentSeasonCard"
 import BeehiveCard from "./BeehiveCard"
 import UsefulLinks from "./UsefulLinks"
 
-const TEMPLATE_AREAS_LEDGER_LIVE = `${featureFlags.TVL_ENABLED ? '"dashboard current-season"' : ""}
+const TEMPLATE_AREAS = `${featureFlags.TVL_ENABLED ? '"dashboard current-season"' : ""}
                                     ${featureFlags.BEEHIVE_COMPONENT_ENABLED ? '"dashboard beehive"' : ""}
                                     "dashboard acre-points"
                                     "dashboard useful-links"`
@@ -25,7 +25,7 @@ export default function DashboardPage() {
         lg: "1fr 31%",
         "2xl": "1fr 36%",
       }}
-      templateAreas={TEMPLATE_AREAS_LEDGER_LIVE}
+      templateAreas={TEMPLATE_AREAS}
     >
       <DashboardCard gridArea="dashboard" h="fit-content" />
       {/* TODO: Uncomment in post-launch phases + add `gridArea` and update  `templateAreas` */}
