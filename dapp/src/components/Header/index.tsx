@@ -13,11 +13,8 @@ export default function Header() {
     <HStack
       as="header"
       w="full"
-      mx="auto"
+      mb="4.75rem" // 76px
       justify="center"
-      py={7}
-      px="page_content_padding_x"
-      maxW="page_content_max_width"
     >
       <Link href={EXTERNAL_HREF.WEBSITE} isExternal>
         <Icon as={AcreLogo} w={20} h={12} />

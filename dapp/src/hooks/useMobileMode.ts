@@ -2,11 +2,13 @@ import { screen } from "#/constants"
 import { userAgent as userAgentUtils } from "#/utils"
 import { useMediaQuery } from "@chakra-ui/react"
 import { useMemo } from "react"
+import useIsEmbed from "./useIsEmbed"
 
 const { MAX_MOBILE_SCREEN_WIDTH } = screen
 const { getDeviceDetect } = userAgentUtils
 
 const useMobileMode = () => {
+  const { isEmbed } = useIsEmbed()
   const [isMobileScreen] = useMediaQuery(
     `(max-width: ${MAX_MOBILE_SCREEN_WIDTH})`,
   )
@@ -28,7 +30,7 @@ const useMobileMode = () => {
     return isMobileDevice()
   }, [isMobileScreen])
 
-  return isMobile
+  return !isEmbed && isMobile
 }
 
 export default useMobileMode
