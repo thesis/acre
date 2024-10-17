@@ -77,6 +77,15 @@ const baseStyle = multiStyleConfig.definePartsStyle({
   footer: baseStyleFooter,
 })
 
+const unstyledVariant = multiStyleConfig.definePartsStyle({
+  dialog: { bg: "none", borderWidth: 0 },
+  overlay: { bg: "opacity.gold.300.75" },
+})
+
+const variants = {
+  unstyled: unstyledVariant,
+}
+
 const sizeXl = multiStyleConfig.definePartsStyle({
   dialog: { maxW: "46.75rem" },
 })
@@ -85,7 +94,12 @@ const sizeLg = multiStyleConfig.definePartsStyle({
   dialog: { w: "30rem" },
 })
 
+const sizeFull = multiStyleConfig.definePartsStyle({
+  dialog: { w: "100%", h: "100%" },
+})
+
 const sizes = {
+  full: sizeFull,
   xl: sizeXl,
   lg: sizeLg,
 }
@@ -93,4 +107,5 @@ const sizes = {
 export const modalTheme = multiStyleConfig.defineMultiStyleConfig({
   baseStyle,
   sizes,
+  variants,
 })

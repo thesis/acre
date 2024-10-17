@@ -46,9 +46,7 @@ function MezoBeehiveModalBase() {
         <VStack spacing={1}>
           {data && (
             <HStack>
-              <H6 fontWeight="bold">
-                {numberToLocaleString(data.totalMats, 0)}
-              </H6>
+              <H6 fontWeight="bold">{numberToLocaleString(data.totalMats)}</H6>
               <TextLg fontWeight="bold">MATS</TextLg>
             </HStack>
           )}

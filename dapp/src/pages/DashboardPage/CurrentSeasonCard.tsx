@@ -58,7 +58,7 @@ export function CurrentSeasonCard(props: CurrentSeasonCardProps) {
           <TextMd fontWeight="medium">
             Total joined&nbsp;
             <TextMd as="span" fontWeight="bold">
-              {numberToLocaleString(totalJoined)}
+              {numberToLocaleString(totalJoined, 2)}
             </TextMd>
           </TextMd>
 
