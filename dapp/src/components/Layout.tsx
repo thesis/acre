@@ -8,9 +8,10 @@ import ModalRoot from "./ModalRoot"
 import Sidebar from "./Sidebar"
 import MobileModeBanner from "./MobileModeBanner"
 
+const PADDING = "2.5rem" // 40px
 const PAGE_MAX_WIDTH = {
-  standalone: "110rem", // 1760px
-  "ledger-live": "68rem", // 1088px
+  standalone: "90rem", // 1440px
+  "ledger-live": "63rem", // 1008px
 }
 
 function Layout() {
@@ -25,7 +26,12 @@ function Layout() {
     : PAGE_MAX_WIDTH.standalone
 
   return (
-    <Flex flexFlow="column" p={10} mx="auto" maxWidth={maxWidth}>
+    <Flex
+      flexFlow="column"
+      mx="auto"
+      p={PADDING}
+      maxWidth={`calc(${maxWidth} + 2*${PADDING})`}
+    >
       <Header />
       <Outlet />
 
