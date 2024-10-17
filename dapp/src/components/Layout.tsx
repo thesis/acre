@@ -10,7 +10,7 @@ import MobileModeBanner from "./MobileModeBanner"
 
 const PADDING = "2.5rem" // 40px
 const PAGE_MAX_WIDTH = {
-  standalone: "90rem", // 1440px
+  standalone: "63rem", // 1008px
   "ledger-live": "63rem", // 1008px
 }
 
