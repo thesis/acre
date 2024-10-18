@@ -18,7 +18,7 @@ import { rewardsBoostArrowImage } from "#/assets/images/benefits"
 import ButtonLink from "./shared/ButtonLink"
 import { TextSm } from "./shared/Typography"
 
-const CHAKRA_MODAL_CONTAINER = "chakra-modal__content-container"
+const CHAKRA_MODAL_CONTAINER_SELECTOR = ".chakra-modal__content-container"
 
 const BUTTONS: Partial<ComponentProps<typeof ButtonLink>>[] = [
   {
@@ -55,7 +55,7 @@ const BENEFITS = [
 export default function Sidebar() {
   const { isOpen } = useSidebar()
   const { isVisible, scrollbarWidth, refetch } = useScrollbarVisibility(
-    CHAKRA_MODAL_CONTAINER,
+    CHAKRA_MODAL_CONTAINER_SELECTOR,
   )
   const styles = useMultiStyleConfig("Sidebar")
 
