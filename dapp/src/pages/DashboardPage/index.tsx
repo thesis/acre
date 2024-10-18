@@ -14,18 +14,21 @@ const TEMPLATE_AREAS = `${featureFlags.TVL_ENABLED ? '"dashboard current-season"
                                     "dashboard acre-points"
                                     "dashboard useful-links"`
 
+const GRID_TEMPLATE_ROWS = `${featureFlags.TVL_ENABLED ? "auto" : ""} ${featureFlags.BEEHIVE_COMPONENT_ENABLED ? "auto" : ""} auto 1fr`
+
 export default function DashboardPage() {
   useTriggerConnectWalletModal()
 
   return (
     <Grid
       gridGap={{ base: 4, "2xl": 8 }}
+      templateAreas={TEMPLATE_AREAS}
       gridTemplateColumns={{
         base: "1fr 1fr",
         lg: "1fr 31%",
         "2xl": "1fr 36%",
       }}
-      templateAreas={TEMPLATE_AREAS}
+      gridTemplateRows={GRID_TEMPLATE_ROWS}
     >
       <DashboardCard gridArea="dashboard" h="fit-content" />
       {/* TODO: Uncomment in post-launch phases + add `gridArea` and update  `templateAreas` */}
