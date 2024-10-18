@@ -1,4 +1,4 @@
-import React, { ComponentProps } from "react"
+import React, { ComponentProps, useEffect } from "react"
 import {
   Box,
   Card,
@@ -7,7 +7,7 @@ import {
   useMultiStyleConfig,
   Image,
 } from "@chakra-ui/react"
-import { useSidebar } from "#/hooks"
+import { useScrollbarVisibility, useSidebar } from "#/hooks"
 import {
   EXTERNAL_HREF,
   REWARD_BOOST,
@@ -17,6 +17,8 @@ import {
 import { rewardsBoostArrowImage } from "#/assets/images/benefits"
 import ButtonLink from "./shared/ButtonLink"
 import { TextSm } from "./shared/Typography"
+
+const CHAKRA_MODAL_CONTAINER_SELECTOR = ".chakra-modal__content-container"
 
 const BUTTONS: Partial<ComponentProps<typeof ButtonLink>>[] = [
   {
@@ -52,9 +54,15 @@ const BENEFITS = [
 
 export default function Sidebar() {
   const { isOpen } = useSidebar()
-  // TODO Bring back when dApp embedded docs are ready
-  // const { onOpen: openDocsDrawer } = useDocsDrawer()
+  const { isVisible, scrollbarWidth, refreshState } = useScrollbarVisibility(
+    CHAKRA_MODAL_CONTAINER_SELECTOR,
+  )
   const styles = useMultiStyleConfig("Sidebar")
+
+  useEffect(() => {
+    if (!isOpen) return
+    refreshState()
+  }, [isOpen, refreshState])
 
   return (
     <Box
@@ -62,6 +70,7 @@ export default function Sidebar() {
       mt="header_height"
       w={isOpen ? "sidebar_width" : "0"}
       __css={styles.sidebarContainer}
+      mr={isVisible ? scrollbarWidth : 0}
     >
       <Box __css={styles.sidebar}>
         {featureFlags.GAMIFICATION_ENABLED && (
