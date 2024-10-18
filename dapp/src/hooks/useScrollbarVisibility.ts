@@ -24,9 +24,9 @@ export default function useScrollbarVisibility(selector: string) {
     }
   }, [selector])
 
-  const refetch = useCallback(() => {
+  const refreshState = useCallback(() => {
     setIsVisible(isScrollbarVisible(selector))
   }, [selector])
 
-  return { isVisible, scrollbarWidth: SCROLLBAR_WIDTH, refetch }
+  return { isVisible, scrollbarWidth: SCROLLBAR_WIDTH, refreshState }
 }

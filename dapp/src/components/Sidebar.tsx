@@ -54,15 +54,15 @@ const BENEFITS = [
 
 export default function Sidebar() {
   const { isOpen } = useSidebar()
-  const { isVisible, scrollbarWidth, refetch } = useScrollbarVisibility(
+  const { isVisible, scrollbarWidth, refreshState } = useScrollbarVisibility(
     CHAKRA_MODAL_CONTAINER_SELECTOR,
   )
   const styles = useMultiStyleConfig("Sidebar")
 
   useEffect(() => {
     if (!isOpen) return
-    refetch()
-  }, [isOpen, refetch])
+    refreshState()
+  }, [isOpen, refreshState])
 
   return (
     <Box
