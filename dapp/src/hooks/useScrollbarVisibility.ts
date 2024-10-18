@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react"
 
 const SCROLLBAR_WIDTH = `${window.innerWidth - document.body.offsetWidth}px`
 
-function scrollbarVisible(className: string) {
+function isScrollbarVisible(className: string) {
   const element = document.getElementsByClassName(className)[0]
   return element?.scrollHeight > element?.clientHeight
 }
@@ -12,7 +12,7 @@ export default function useScrollbarVisibility(className: string) {
 
   useEffect(() => {
     const handleResize = () => {
-      setIsVisible(scrollbarVisible(className))
+      setIsVisible(isScrollbarVisible(className))
     }
     window.addEventListener("resize", handleResize)
 
@@ -22,7 +22,7 @@ export default function useScrollbarVisibility(className: string) {
   }, [className])
 
   const refetch = useCallback(() => {
-    setIsVisible(scrollbarVisible(className))
+    setIsVisible(isScrollbarVisible(className))
   }, [className])
 
   return { isVisible, scrollbarWidth: SCROLLBAR_WIDTH, refetch }
