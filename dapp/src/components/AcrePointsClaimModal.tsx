@@ -78,6 +78,7 @@ function AcrePointsClaimModalBase({
           indicationColor="brand.400"
         />,
       ],
+      // TODO: Uncomment when the leaderboard feature is ready
       // [
       //   "Calculating rank...",
       //   <AnimatedNumber
@@ -120,6 +121,8 @@ function AcrePointsClaimModalBase({
 
       [valueElements[0], { scale: VALUE_SCALE }, { at: "<", ...TRANSITION }],
       ["[data-close-button]", { opacity: 1 }, { at: "<", ...TRANSITION }],
+
+      // TODO: Uncomment when the leaderboard feature is ready
 
       // ["[data-steps-list]", { y: offsets[1] }, TRANSITION],
       // [valueElements[1], { scale: VALUE_SCALE }, { at: "<", ...TRANSITION }],
