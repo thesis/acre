@@ -4,13 +4,15 @@ import { useAcreContext } from "#/acre-react/hooks"
 import { Activity } from "#/types"
 import { DepositStatus } from "@acre-btc/sdk"
 import { useAppDispatch } from "../store/useAppDispatch"
+import { useWallet } from "../useWallet"
 
 export function useFetchActivities() {
   const dispatch = useAppDispatch()
+  const { address } = useWallet()
   const { acre, isConnected } = useAcreContext()
 
   return useCallback(async () => {
-    if (!acre || !isConnected) return
+    if (!acre || !isConnected || !address) return
 
     const deposits: Activity[] = (await acre.account.getDeposits()).map(
       (deposit) => ({
@@ -35,5 +37,5 @@ export function useFetchActivities() {
     )
 
     dispatch(setActivities([...deposits, ...withdrawals]))
-  }, [acre, dispatch, isConnected])
+  }, [acre, dispatch, isConnected, address])
 }

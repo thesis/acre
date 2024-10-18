@@ -10,8 +10,10 @@ import ConnectWalletErrorAlert from "./ConnectWalletErrorAlert"
 export function ConnectWalletModalBase({
   onSuccess,
   withCloseButton = true,
+  isReconnecting,
 }: {
   onSuccess?: OnSuccessCallback
+  isReconnecting?: boolean
 } & BaseModalProps) {
   const { isEmbed } = useIsEmbed()
   const connectors = useConnectors()
@@ -51,6 +53,7 @@ export function ConnectWalletModalBase({
             onClick={() => handleButtonOnClick(connector)}
             isSelected={selectedConnectorId === connector.id}
             onSuccess={onSuccess}
+            isReconnecting={isReconnecting}
           />
         ))}
       </ModalBody>
