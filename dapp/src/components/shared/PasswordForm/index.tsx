@@ -11,7 +11,7 @@ type PasswordFormProps = PasswordFormBaseProps &
 
 const PasswordForm = withFormik<PasswordFormProps, PasswordFormValues>({
   mapPropsToValues: () => ({
-    password: undefined,
+    password: "",
   }),
   validate: ({ password }) => {
     const errors: FormikErrors<PasswordFormValues> = {}

@@ -16,7 +16,7 @@ export default function FormInput({
   helperText,
   ...inputProps
 }: FormInputProps) {
-  const [field, meta, helpers] = useField<string | undefined>(name)
+  const [field, meta, helpers] = useField<string>(name)
 
   const hasError = Boolean(meta.error)
   const errorMsgText = meta.error
