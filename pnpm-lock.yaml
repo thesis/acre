@@ -36,8 +36,8 @@ importers:
         specifier: ^11.11.0
         version: 11.11.5(@emotion/react@11.11.4)(@types/react@18.3.3)(react@18.3.1)
       '@orangekit/react':
-        specifier: 1.0.0-beta.33-dev.5
-        version: 1.0.0-beta.33-dev.5(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5)
+        specifier: 1.0.0-beta.33-dev.6
+        version: 1.0.0-beta.33-dev.6(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5)
       '@orangekit/sign-in-with-wallet':
         specifier: 1.0.0-beta.6
         version: 1.0.0-beta.6(bech32@2.0.0)(ethers@6.13.0)
@@ -5794,11 +5794,11 @@ packages:
       - ethers
     dev: false
 
-  /@orangekit/react@1.0.0-beta.33-dev.5(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5):
-    resolution: {integrity: sha512-Vm2ArRbEpP+REm+aZgdsp648mvYzZ8/rVPjKmrJhvZi6erVGx0lpSM5p8vd42hmF402zUkg4Kwafh5ocpz5P0g==}
+  /@orangekit/react@1.0.0-beta.33-dev.6(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5):
+    resolution: {integrity: sha512-xmWEd8OIf4xQ1+9CA60bcnh13oyBjVQdqXUeT8ZppT5i79hNmUutkW3y27gQPYDH/mhGCZIhJxj5SYx8PGJcBg==}
     dependencies:
       '@ledgerhq/wallet-api-client': 1.5.10
-      '@orangekit/sdk': 1.0.0-beta.18-dev.1(typescript@5.4.5)
+      '@orangekit/sdk': 1.0.0-beta.18-dev.2(typescript@5.4.5)
       '@rainbow-me/rainbowkit': 2.0.2(@types/react@18.3.3)(react-dom@18.3.1)(react@18.3.1)(viem@2.8.16)(wagmi@2.5.12)
       ethers: 6.12.1
       react: 18.3.1
@@ -5854,8 +5854,8 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@orangekit/sdk@1.0.0-beta.18-dev.1(typescript@5.4.5):
-    resolution: {integrity: sha512-gREDbURdpEMfpkbSDhYpWEiEvDTdLjXbVM0DnZgRMqzFEvUmGZ5M1DkP1eCCNOiU06tWsAhp2Xg6wxl2qfsFpQ==}
+  /@orangekit/sdk@1.0.0-beta.18-dev.2(typescript@5.4.5):
+    resolution: {integrity: sha512-cOzQ13P8qKpV2C0Gv2iS5r9F1ku1Y1creKFVq9ihLp1CSZBkTVBsBjsG1pPPcGaLSBTW3P+kKrxy6Y/Ct9yJTg==}
     dependencies:
       '@bitcoin-js/tiny-secp256k1-asmjs': 2.2.3
       '@gelatonetwork/relay-sdk': 5.5.6
