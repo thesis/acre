@@ -34,6 +34,7 @@ export const TOKEN_FORM_ERRORS = {
 }
 
 export const PASSWORD_FORM_ERRORS = {
+  REQUIRED: "Please enter a password.",
   INCORRECT_VALUE: "Incorrect password. Please try again.",
 }
 

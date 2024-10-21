@@ -16,6 +16,7 @@ export function getErrorsObj<T>(errors: { [key in keyof T]: string }) {
 export function validatePassword(
   value: string | undefined,
 ): string | undefined {
+  if (value === undefined) return PASSWORD_FORM_ERRORS.REQUIRED
   // TODO: Use correct values
   if (value !== "bibo") return PASSWORD_FORM_ERRORS.INCORRECT_VALUE
 
