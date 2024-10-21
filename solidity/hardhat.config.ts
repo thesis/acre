@@ -59,10 +59,10 @@ const config: HardhatUserConfig = {
               url: MAINNET_RPC_URL,
               // Points to the mainnet block that has a state important for the
               // integration tests:
-              // 20941745 - the block where BitcoinRedeemer's ProxyAdmin ownership
-              // has been transferred to the governance account in transaction:
-              // https://etherscan.io/address/0x989cE5eD1ab7d0cb85450599D165E17bD86D93CA
-              blockNumber: 20941745,
+              // 20971177 - the block where AcreMultiAssetVault was deployed in
+              // transaction:
+              // https://etherscan.io/tx/0x2ae30e59643e70aa074bdef089b2cd76dc2a4bf5ee5fa671c8fca9d5f37e022f
+              blockNumber: 20971177,
             }
           : undefined,
     },
