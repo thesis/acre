@@ -10,10 +10,12 @@ import BeehiveCard from "./BeehiveCard"
 import UsefulLinks from "./UsefulLinks"
 import AcrePointsTemplateCard from "./AcrePointsTemplateCard"
 
-const TEMPLATE_AREAS = `${featureFlags.TVL_ENABLED ? '"dashboard current-season"' : ""}
-                                    ${featureFlags.BEEHIVE_COMPONENT_ENABLED ? '"dashboard beehive"' : ""}
-                                    "dashboard acre-points"
-                                    "dashboard useful-links"`
+const TEMPLATE_AREAS = `
+  ${featureFlags.TVL_ENABLED ? '"dashboard current-season"' : ""}
+  "dashboard acre-points"
+  ${featureFlags.BEEHIVE_COMPONENT_ENABLED ? '"dashboard beehive"' : ""}
+  "dashboard useful-links"
+`
 
 const GRID_TEMPLATE_ROWS = `${featureFlags.TVL_ENABLED ? "auto" : ""} ${featureFlags.BEEHIVE_COMPONENT_ENABLED ? "auto" : ""} auto 1fr`
 
@@ -37,13 +39,13 @@ export default function DashboardPage() {
       {featureFlags.TVL_ENABLED && (
         <CurrentSeasonCard showSeasonStats={false} gridArea="current-season" />
       )}
-      {featureFlags.BEEHIVE_COMPONENT_ENABLED && (
-        <BeehiveCard gridArea="beehive" />
-      )}
       {featureFlags.ACRE_POINTS_ENABLED ? (
         <AcrePointsCard gridArea="acre-points" />
       ) : (
         <AcrePointsTemplateCard gridArea="acre-points" />
+      )}
+      {featureFlags.BEEHIVE_COMPONENT_ENABLED && (
+        <BeehiveCard gridArea="beehive" />
       )}
       <UsefulLinks gridArea="useful-links" />
     </Grid>
