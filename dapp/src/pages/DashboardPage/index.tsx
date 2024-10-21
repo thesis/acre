@@ -8,6 +8,7 @@ import AcrePointsCard from "./AcrePointsCard"
 import { CurrentSeasonCard } from "./CurrentSeasonCard"
 import BeehiveCard from "./BeehiveCard"
 import UsefulLinks from "./UsefulLinks"
+import AcrePointsTemplateCard from "./AcrePointsTemplateCard"
 
 const TEMPLATE_AREAS = `${featureFlags.TVL_ENABLED ? '"dashboard current-season"' : ""}
                                     ${featureFlags.BEEHIVE_COMPONENT_ENABLED ? '"dashboard beehive"' : ""}
@@ -39,7 +40,11 @@ export default function DashboardPage() {
       {featureFlags.BEEHIVE_COMPONENT_ENABLED && (
         <BeehiveCard gridArea="beehive" />
       )}
-      <AcrePointsCard gridArea="acre-points" />
+      {featureFlags.ACRE_POINTS_ENABLED ? (
+        <AcrePointsCard gridArea="acre-points" />
+      ) : (
+        <AcrePointsTemplateCard gridArea="acre-points" />
+      )}
       <UsefulLinks gridArea="useful-links" />
     </Grid>
   )

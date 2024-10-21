@@ -110,6 +110,7 @@ describe("Tbtc", () => {
             depositTestData.depositOwner,
             emptyBitcoinRecoveryAddress,
             depositTestData.referral,
+            depositTestData.loggedInUser,
           ),
         ).rejects.toThrow("Ethereum or Bitcoin address is not available")
       })
@@ -141,6 +142,7 @@ describe("Tbtc", () => {
             depositTestData.depositOwner,
             depositTestData.bitcoinRecoveryAddress,
             depositTestData.referral,
+            depositTestData.loggedInUser,
           )
         })
 
@@ -164,6 +166,7 @@ describe("Tbtc", () => {
               depositTestData.depositOwner,
               depositTestData.bitcoinRecoveryAddress,
               depositTestData.referral,
+              depositTestData.loggedInUser,
             ),
           ).rejects.toThrow("Reveal not saved properly in the database")
         })

@@ -26,6 +26,7 @@ const { typeConversionToConnector, typeConversionToOrangeKitConnector } =
 type UseWalletReturn = {
   isConnected: boolean
   address?: string
+  ethAddress?: string
   balance?: bigint
   status: Status
   onConnect: (
@@ -53,6 +54,7 @@ export function useWallet(): UseWalletReturn {
 
   const [address, setAddress] = useState<string | undefined>(undefined)
   const { data: balance } = useBitcoinBalance(address)
+  const [ethAddress, setEthAddress] = useState<string | undefined>(undefined)
 
   // `isConnected` is variable derived from `status` but does not guarantee us a set `address`.
   // When `status` is 'connected' properties like `address` are guaranteed to be defined.
@@ -139,20 +141,30 @@ export function useWallet(): UseWalletReturn {
   )
 
   const onDisconnect = useCallback(() => {
-    disconnect()
-    setAddress(undefined)
-    resetWalletState()
-    removeAddressFromLocalStorage()
+    disconnect(
+      {},
+      {
+        onSuccess: () => {
+          resetWalletState()
+          setAddress(undefined)
+          removeAddressFromLocalStorage()
+        },
+      },
+    )
   }, [disconnect, resetWalletState, removeAddressFromLocalStorage])
 
   useEffect(() => {
     const fetchBitcoinAddress = async () => {
       if (connector) {
         const btcAddress = await connector.getBitcoinAddress()
+        const accounts = await connector.getAccounts()
+
         setAddress(btcAddress)
         setAddressInLocalStorage(btcAddress)
+        setEthAddress(accounts[0])
       } else {
         setAddress(undefined)
+        setEthAddress(undefined)
       }
     }
 
@@ -163,6 +175,7 @@ export function useWallet(): UseWalletReturn {
     () => ({
       isConnected,
       address,
+      ethAddress,
       balance,
       status:
         status === "idle" && reconnectStatus !== "idle"
@@ -174,6 +187,7 @@ export function useWallet(): UseWalletReturn {
     [
       address,
       balance,
+      ethAddress,
       isConnected,
       onConnect,
       onDisconnect,

@@ -1,6 +1,6 @@
 import { useAccountChangedOKX } from "./orangeKit/useAccountChangedOKX"
 import { useAccountsChangedUnisat } from "./orangeKit/useAccountsChangedUnisat"
-import { useDisconnectOKX } from "./orangeKit/useDisconnectOKX"
+import { useAccountsChangedOKX } from "./orangeKit/useAccountsChangedOKX"
 import { useInitDataFromSdk, useInitializeAcreSdk } from "./sdk"
 import { useSentry } from "./sentry"
 import useDetectEmbed from "./useDetectEmbed"
@@ -19,6 +19,6 @@ export function useInitApp() {
   useFetchBTCPriceUSD()
   useDisconnectWallet()
   useAccountChangedOKX()
+  useAccountsChangedOKX()
   useAccountsChangedUnisat()
-  useDisconnectOKX()
 }

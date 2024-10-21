@@ -1,79 +1,118 @@
 import React from "react"
-import { TextLg, TextMd, TextSm } from "#/components/shared/Typography"
+import { H4, TextMd } from "#/components/shared/Typography"
 import {
   Button,
   Card,
   CardBody,
   CardHeader,
   CardProps,
+  HStack,
   Icon,
-  Link,
-  Tag,
-  TagLeftIcon,
+  Stack,
+  Tooltip,
   VStack,
 } from "@chakra-ui/react"
-import acrePointsCardPlaceholderSrc from "#/assets/images/acre-points-card-placeholder.png"
+import Countdown from "#/components/shared/Countdown"
+import { logPromiseFailure, numberToLocaleString } from "#/utils"
+import { useAcrePoints } from "#/hooks"
+import Spinner from "#/components/shared/Spinner"
+import { IconInfoCircle } from "@tabler/icons-react"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
-import {
-  IconArrowUpRight,
-  IconPlayerTrackNextFilled,
-} from "@tabler/icons-react"
-import { EXTERNAL_HREF } from "#/constants"
 
 export default function AcrePointsCard(props: CardProps) {
+  const {
+    claimableBalance,
+    nextDropTimestamp,
+    totalBalance,
+    claimPoints,
+    updateUserPointsData,
+    updatePointsData,
+    isCalculationInProgress,
+  } = useAcrePoints()
+
+  const formattedTotalPointsAmount = numberToLocaleString(totalBalance)
+  const formattedClaimablePointsAmount = numberToLocaleString(claimableBalance)
+
+  const handleOnCountdownEnd = () => {
+    logPromiseFailure(updatePointsData())
+    logPromiseFailure(updateUserPointsData())
+  }
+
+  const isDataReady =
+    isCalculationInProgress || !!nextDropTimestamp || !!claimableBalance
+
   return (
     <Card
       px="1.875rem" // 30px
       py={5}
       {...props}
     >
-      <CardHeader p={0} mb={8}>
-        <TextMd fontWeight="bold" color="grey.700" textAlign="center">
-          Acre points
+      <CardHeader p={0} mb={2}>
+        <TextMd fontWeight="bold" color="grey.700">
+          Your Acre points balance
         </TextMd>
       </CardHeader>
 
       <CardBody p={0}>
         <UserDataSkeleton>
-          <VStack
-            bgImg={acrePointsCardPlaceholderSrc}
-            bgSize="cover"
-            spacing={0}
-            pt={16}
-            pb="8.5rem" // 136px (156px - y-axis padding)
-          >
-            <Tag px={3} py={1} bg="grey.700" color="gold.300" mb={6} border={0}>
-              <TagLeftIcon as={IconPlayerTrackNextFilled} color="brand.300" />
-              <TextSm
-                textTransform="uppercase"
-                fontWeight="bold"
-                fontStyle="italic"
-              >
-                Coming soon
-              </TextSm>
-            </Tag>
-            <TextLg color="grey.700" fontWeight="semibold">
-              Acre Points will be live soon!
-            </TextLg>
-            <TextMd color="grey.500" fontWeight="medium">
-              Stake now to secure your spot
-            </TextMd>
-            {/* TODO: Update `ButtonLink` component and 'link' Button theme variant */}
-            <Button
-              as={Link}
-              href={`${EXTERNAL_HREF.DOCS}/acre-points-program`}
-              isExternal
-              variant="ghost"
-              color="brand.400"
-              iconSpacing={1}
-              rightIcon={
-                <Icon as={IconArrowUpRight} boxSize={4} color="brand.400" />
-              }
-              mt={4}
-            >
-              Read documentation
-            </Button>
-          </VStack>
+          <H4 mb={2}>{formattedTotalPointsAmount}&nbsp;PTS</H4>
+
+          {isDataReady && (
+            <VStack px={4} py={3} spacing={0} rounded="lg" bg="gold.100">
+              {isCalculationInProgress ? (
+                <VStack spacing={4}>
+                  {!claimableBalance && (
+                    <TextMd color="grey.500">Please wait...</TextMd>
+                  )}
+
+                  <HStack spacing={0}>
+                    <Spinner mr={3} size="sm" />
+                    <TextMd>Your drop is being prepared.</TextMd>
+                    <Tooltip
+                      label={`
+                      We need some time to calculate your points. It may take up to 30 minutes. 
+                      ${claimableBalance ? "You can still claim points from previous drops." : ""}
+                    `}
+                      maxW={72}
+                    >
+                      <Icon ml={1.5} as={IconInfoCircle} />
+                    </Tooltip>
+                  </HStack>
+                </VStack>
+              ) : (
+                <Stack
+                  direction={claimableBalance ? "row" : "column"}
+                  spacing={0}
+                >
+                  <TextMd color="grey.500" textAlign="center">
+                    Next drop in
+                  </TextMd>
+                  <Countdown
+                    timestamp={nextDropTimestamp!} // Timestamp presence already checked
+                    onCountdownEnd={handleOnCountdownEnd}
+                    size={claimableBalance ? "md" : "2xl"}
+                    display={claimableBalance ? "inline" : "block"}
+                    ml={claimableBalance ? 2 : 0}
+                    mt={claimableBalance ? 0 : 2}
+                  />
+                </Stack>
+              )}
+
+              {claimableBalance && (
+                <Button
+                  mt={3}
+                  onClick={claimPoints}
+                  w="full"
+                  colorScheme="green"
+                  color="gold.200"
+                  fontWeight="bold"
+                  size="lg"
+                >
+                  Claim {formattedClaimablePointsAmount} PTS
+                </Button>
+              )}
+            </VStack>
+          )}
         </UserDataSkeleton>
       </CardBody>
     </Card>

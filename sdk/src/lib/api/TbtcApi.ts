@@ -113,6 +113,7 @@ export type SaveRevealRequest = {
   revealInfo: BitcoinDepositReceiptJson
   metadata: RevealMetadata
   application: string
+  loggedInUser?: string
 }
 
 // TODO: This type is copied from tbtc-api, we should consider exporting it from there.

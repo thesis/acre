@@ -1,6 +1,7 @@
 # Hardhat
 build/
 cache/
+contracts/hardhat-dependency-compiler/
 export.json
 export/
 gen/
