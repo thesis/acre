@@ -1,7 +1,9 @@
 import { env } from "#/constants"
+import { referralProgram } from "#/utils"
+
 import { useCallback, useMemo } from "react"
 import { MODAL_TYPES } from "#/types"
-import { referralProgram } from "#/utils"
+import useIsEmbed from "./useIsEmbed"
 import useLocalStorage from "./useLocalStorage"
 import { useModal } from "./useModal"
 
@@ -13,13 +15,19 @@ type UseReferralReturn = {
 
 export default function useReferral(): UseReferralReturn {
   const [referral, setReferral] = useLocalStorage<number>(
-    "referral",
+    "acre.referral",
     env.REFERRAL,
   )
   const { openModal } = useModal()
+  const { isEmbed, embeddedApp } = useIsEmbed()
 
   const detectReferral = useCallback(() => {
     const param = referralProgram.getReferralFromURL()
+
+    if (isEmbed && embeddedApp) {
+      setReferral(referralProgram.getReferralByEmbeddedApp(embeddedApp))
+      return
+    }
 
     if (param === null) {
       setReferral(env.REFERRAL)
@@ -38,7 +46,7 @@ export default function useReferral(): UseReferralReturn {
         closeOnEsc: false,
       })
     }
-  }, [openModal, setReferral])
+  }, [isEmbed, embeddedApp, openModal, setReferral])
 
   const resetReferral = useCallback(() => {
     setReferral(env.REFERRAL)

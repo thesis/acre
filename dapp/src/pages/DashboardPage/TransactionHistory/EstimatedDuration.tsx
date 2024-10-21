@@ -1,5 +1,5 @@
 import React from "react"
-import { HStack, Box, Tag, TagLabel } from "@chakra-ui/react"
+import { Box, Tag, TagLabel, Flex, TagLeftIcon } from "@chakra-ui/react"
 import Spinner from "#/components/shared/Spinner"
 import {
   convertActivityTypeToLabel,
@@ -16,12 +16,13 @@ export default function EstimatedDuration({
   if (isActivityCompleted(activity)) return null
 
   return (
-    <HStack spacing={3}>
+    <Flex gap={3} flexWrap="wrap">
       <Tag variant="solid">
-        <Spinner
+        <TagLeftIcon
+          as={Spinner}
+          mr={2}
           borderWidth={3}
           boxSize={6}
-          mr={2}
           color="gold.400"
           emptyColor="brand.400"
         />
@@ -35,6 +36,6 @@ export default function EstimatedDuration({
           </Box>
         </TagLabel>
       </Tag>
-    </HStack>
+    </Flex>
   )
 }

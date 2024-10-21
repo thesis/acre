@@ -1,7 +1,8 @@
-import React, { useCallback, useState } from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
 import { CONNECTION_ERRORS, ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import {
   useAppDispatch,
+  useIsEmbed,
   useModal,
   useSignMessageAndCreateSession,
   useWallet,
@@ -34,6 +35,7 @@ type ConnectWalletButtonProps = {
   isSelected: boolean
   connector: OrangeKitConnector & { isDisabled: boolean }
   onSuccess?: OnSuccessCallback
+  isReconnecting?: boolean
 }
 
 const iconStyles: Record<string, ImageProps> = {
@@ -53,7 +55,9 @@ export default function ConnectWalletButton({
   isSelected,
   connector,
   onSuccess,
+  isReconnecting,
 }: ConnectWalletButtonProps) {
+  const { isEmbed } = useIsEmbed()
   const {
     address,
     onConnect,
@@ -66,6 +70,7 @@ export default function ConnectWalletButton({
     useWalletConnectionError()
   const { closeModal } = useModal()
   const dispatch = useAppDispatch()
+  const isMounted = useRef(false)
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -118,6 +123,7 @@ export default function ConnectWalletButton({
 
   const handleConnection = useCallback(() => {
     onConnect(connector, {
+      isReconnecting,
       onSuccess: () => {
         logPromiseFailure(onSuccessConnection(connector))
       },
@@ -126,7 +132,13 @@ export default function ConnectWalletButton({
         setConnectionError(errorData)
       },
     })
-  }, [onConnect, connector, onSuccessConnection, setConnectionError])
+  }, [
+    onConnect,
+    connector,
+    onSuccessConnection,
+    setConnectionError,
+    isReconnecting,
+  ])
 
   const handleRedirectUser = useCallback(() => {
     setIsLoading(true)
@@ -146,7 +158,7 @@ export default function ConnectWalletButton({
     // Do not trigger action again when wallet connection is in progress
     if (showStatuses) return
 
-    onDisconnect()
+    if (!isReconnecting) onDisconnect()
     resetConnectionError()
     resetMessageStatus()
 
@@ -160,6 +172,13 @@ export default function ConnectWalletButton({
     onClick()
     handleConnection()
   }
+
+  useEffect(() => {
+    if (!isMounted.current && isEmbed && isSelected) {
+      isMounted.current = true
+      handleConnection()
+    }
+  }, [handleConnection, isEmbed, isSelected])
 
   return (
     <Card
@@ -231,7 +250,7 @@ export default function ConnectWalletButton({
                 </TextMd>
                 <ConnectWalletStatusLabel
                   status={connectionStatus}
-                  label="Connect wallet"
+                  label={`Connect ${isEmbed ? "account" : "wallet"}`}
                 />
                 <ConnectWalletStatusLabel
                   status={signMessageStatus}

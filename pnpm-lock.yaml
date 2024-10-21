@@ -36,8 +36,8 @@ importers:
         specifier: ^11.11.0
         version: 11.11.5(@emotion/react@11.11.4)(@types/react@18.3.3)(react@18.3.1)
       '@orangekit/react':
-        specifier: 1.0.0-beta.32
-        version: 1.0.0-beta.32(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5)
+        specifier: 1.0.0-beta.33-dev.6
+        version: 1.0.0-beta.33-dev.6(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5)
       '@orangekit/sign-in-with-wallet':
         specifier: 1.0.0-beta.6
         version: 1.0.0-beta.6(bech32@2.0.0)(ethers@6.13.0)
@@ -77,6 +77,9 @@ importers:
       framer-motion:
         specifier: ^10.16.5
         version: 10.18.0(react-dom@18.3.1)(react@18.3.1)
+      mustache:
+        specifier: ^4.2.0
+        version: 4.2.0
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -1910,6 +1913,13 @@ packages:
   /@bcoe/v8-coverage@0.2.3:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
     dev: true
+
+  /@bitcoin-js/tiny-secp256k1-asmjs@2.2.3:
+    resolution: {integrity: sha512-arFPdEZi9RIiaG76OZswTnAU0KfuiLwGw2VNfD66LKhzlbfOnX1o1WI/GI3qm9UbjG/0QOzZu/KmTNvL79x/DQ==}
+    engines: {node: '>=14.0.0'}
+    dependencies:
+      uint8array-tools: 0.0.7
+    dev: false
 
   /@bitcoinerlab/secp256k1@1.1.1:
     resolution: {integrity: sha512-uhjW51WfVLpnHN7+G0saDcM/k9IqcyTbZ+bDgLF3AX8V/a3KXSE9vn7UPBrcdU72tp0J4YPR7BHp2m7MLAZ/1Q==}
@@ -4728,6 +4738,23 @@ packages:
       bignumber.js: 9.1.2
     dev: false
 
+  /@ledgerhq/wallet-api-client@1.5.10:
+    resolution: {integrity: sha512-cSTdNKBjlzium1tRS2+Q8Ev6T8MM0v8WtOF34+I/+GfkcerA9wR6l4ISGWP9fPneur3r+uGF1k4Y5LPbMN5pdw==}
+    dependencies:
+      '@ledgerhq/hw-transport': 6.30.6
+      '@ledgerhq/wallet-api-core': 1.11.0
+      bignumber.js: 9.1.2
+    dev: false
+
+  /@ledgerhq/wallet-api-core@1.11.0:
+    resolution: {integrity: sha512-QB4Inky3HadsB246CMH4t+KWvJ6qLu/M2nDuUZZ5e27XMAVDe/XI2CzndYmRq8rjW8pCfytGdQrdH9aVcBK6Kg==}
+    dependencies:
+      '@ledgerhq/errors': 6.16.4
+      bignumber.js: 9.1.2
+      uuid: 9.0.1
+      zod: 3.23.8
+    dev: false
+
   /@ledgerhq/wallet-api-core@1.6.0:
     resolution: {integrity: sha512-nVPN3yu5+5pbhfFYh0iKmij5U7KVKZfpDkusXbj4yKvueKY8ZXU1wgvw1rDhgxlqu+s7JTA50MX56doyhm46Qg==}
     dependencies:
@@ -5767,14 +5794,15 @@ packages:
       - ethers
     dev: false
 
-  /@orangekit/react@1.0.0-beta.32(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5):
-    resolution: {integrity: sha512-/ztJG0QjGoRDhs7sBCFxsAeTs5eVnm6e5qFKlDTwSbTP5AIQRTdjlQL+ThuTPjeZJBtyCTC+OvEFvt3PfVXEog==}
+  /@orangekit/react@1.0.0-beta.33-dev.6(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(typescript@5.4.5):
+    resolution: {integrity: sha512-xmWEd8OIf4xQ1+9CA60bcnh13oyBjVQdqXUeT8ZppT5i79hNmUutkW3y27gQPYDH/mhGCZIhJxj5SYx8PGJcBg==}
     dependencies:
-      '@orangekit/sdk': 1.0.0-beta.17
+      '@ledgerhq/wallet-api-client': 1.5.10
+      '@orangekit/sdk': 1.0.0-beta.18-dev.2(typescript@5.4.5)
       '@rainbow-me/rainbowkit': 2.0.2(@types/react@18.3.3)(react-dom@18.3.1)(react@18.3.1)(viem@2.8.16)(wagmi@2.5.12)
       ethers: 6.12.1
       react: 18.3.1
-      sats-connect: 2.8.3(typescript@5.4.5)
+      sats-connect: 2.8.0(typescript@5.4.5)
       viem: 2.8.16(typescript@5.4.5)
       wagmi: 2.5.12(@tanstack/react-query@5.45.0)(@types/react@18.3.3)(react-dom@18.3.1)(react-native@0.74.2)(react@18.3.1)(typescript@5.4.5)(viem@2.8.16)
     transitivePeerDependencies:
@@ -5826,14 +5854,16 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@orangekit/sdk@1.0.0-beta.17:
-    resolution: {integrity: sha512-SWGWbsidxe9qRGTzRcvVxNVC//HBEj7L0QIqduFAu2RVe1Khi4HlS1jEkfcvLTxwjY0qzDQwUyxWovSmnJKZNw==}
+  /@orangekit/sdk@1.0.0-beta.18-dev.2(typescript@5.4.5):
+    resolution: {integrity: sha512-cOzQ13P8qKpV2C0Gv2iS5r9F1ku1Y1creKFVq9ihLp1CSZBkTVBsBjsG1pPPcGaLSBTW3P+kKrxy6Y/Ct9yJTg==}
     dependencies:
+      '@bitcoin-js/tiny-secp256k1-asmjs': 2.2.3
       '@gelatonetwork/relay-sdk': 5.5.6
       '@noble/curves': 1.4.0
       '@noble/hashes': 1.4.0
       '@orangekit/contracts': 1.0.0-beta.3(ethers@6.12.1)
       '@safe-global/protocol-kit': 3.1.1
+      bip32: 5.0.0-rc.0(typescript@5.4.5)
       bitcoinjs-lib: 6.1.5
       ethers: 6.12.1
     transitivePeerDependencies:
@@ -5841,6 +5871,7 @@ packages:
       - debug
       - encoding
       - supports-color
+      - typescript
       - utf-8-validate
     dev: false
 
@@ -6817,25 +6848,26 @@ packages:
     engines: {node: '>=16'}
     dev: false
 
-  /@sats-connect/core@0.3.1:
-    resolution: {integrity: sha512-xMOEYUdEcJn8skWmlJLzcJXW7LK0z/8x2oUoly4yWnohZp9ynoZqTYlAe3QtVq72aUjVaX0kzbdB58GUKsixCg==}
+  /@sats-connect/core@0.2.2:
+    resolution: {integrity: sha512-nl3zPnV1UBllYAniDfhM/oSFGQ2qy4cCg1YwxJZ+RQMwlTMrVh2f3lJ//dIIo9RgQPrtHpwrAaaWW0VpfqDQbg==}
     dependencies:
       axios: 1.7.4
       bitcoin-address-validation: 2.2.3
       buffer: 6.0.3
       jsontokens: 4.0.1
+      lodash.omit: 4.5.0
       valibot: 0.33.2
     transitivePeerDependencies:
       - debug
     dev: false
 
-  /@sats-connect/make-default-provider-config@0.0.9(@sats-connect/core@0.3.1)(typescript@5.4.5):
-    resolution: {integrity: sha512-7aNHrexYif5e4817YfMINgvUy1G8sKZJxwOSQ23kq4YTYze4wh+rsgJCl5oF1//sL3EXwheDVCn5NJe8tUH1rA==}
+  /@sats-connect/make-default-provider-config@0.0.5(@sats-connect/core@0.2.2)(typescript@5.4.5):
+    resolution: {integrity: sha512-b/v4IeDEde5DqFOdMbMmf3B0t/lxlKnY04f3YIUWe1khOg3S6VdcK9Mqva+WUOsJHBTIA5b4hK7CqfMjx1Ic+w==}
     peerDependencies:
-      '@sats-connect/core': ^0.3.0
-      typescript: ^5.0.0
+      '@sats-connect/core': '*'
+      typescript: 5.4.4
     dependencies:
-      '@sats-connect/core': 0.3.1
+      '@sats-connect/core': 0.2.2
       '@sats-connect/ui': 0.0.6
       bowser: 2.11.0
       typescript: 5.4.5
@@ -6843,10 +6875,6 @@ packages:
 
   /@sats-connect/ui@0.0.6:
     resolution: {integrity: sha512-H3bFFhr9CcY1oNosNi/QJszmMHSht4U19bUWfM3vzayAKgV4ebY6iUnRK5g3p2rVLLWVzlpaw1J9m+7JWwyBfA==}
-    dev: false
-
-  /@sats-connect/ui@0.0.7:
-    resolution: {integrity: sha512-dq02JxvTSAkfgFzEz4iWDSamm6Dte1omzxK0F1yytRZbIrbjjz1KmlMHM+uuxnFN9+EzHIHNsA4aS2dEDwh0xw==}
     dev: false
 
   /@scure/base@1.1.7:
@@ -9635,6 +9663,10 @@ packages:
     resolution: {integrity: sha512-FuwxlW4H5kh37X/oW59pwTzzTKRzfrrQwhmyspRM7swOEZcHtDZSCt45U6oKgtuFE+WYPblePMVIPR4RZrh/hw==}
     dev: false
 
+  /base-x@5.0.0:
+    resolution: {integrity: sha512-sMW3VGSX1QWVFA6l8U62MLKz29rRfpTlYdCqLdpLo1/Yd4zZwSbnUaDfciIAowAqvq7YFnWq9hrhdg1KYgc1lQ==}
+    dev: false
+
   /base58-js@1.0.5:
     resolution: {integrity: sha512-LkkAPP8Zu+c0SVNRTRVDyMfKVORThX+rCViget00xdgLRrKkClCTz1T7cIrpr69ShwV5XJuuoZvMvJ43yURwkA==}
     engines: {node: '>= 8'}
@@ -9749,6 +9781,19 @@ packages:
       tiny-secp256k1: 1.1.6
       typeforce: 1.18.0
       wif: 2.0.6
+    dev: false
+
+  /bip32@5.0.0-rc.0(typescript@5.4.5):
+    resolution: {integrity: sha512-5hVFGrdCnF8GB1Lj2eEo4PRE7+jp+3xBLnfNjydivOkMvKmUKeJ9GG8uOy8prmWl3Oh154uzgfudR1FRkNBudA==}
+    engines: {node: '>=18.0.0'}
+    dependencies:
+      '@noble/hashes': 1.4.0
+      '@scure/base': 1.1.7
+      uint8array-tools: 0.0.8
+      valibot: 0.37.0(typescript@5.4.5)
+      wif: 5.0.0
+    transitivePeerDependencies:
+      - typescript
     dev: false
 
   /bip39@3.0.2:
@@ -10043,6 +10088,12 @@ packages:
       base-x: 4.0.0
     dev: false
 
+  /bs58@6.0.0:
+    resolution: {integrity: sha512-PD0wEnEYg6ijszw/u8s+iI3H17cTymlrwkKhDhPZq+Sokl3AU4htyBFTjAeNAlCCmg0f53g6ih3jATyCKftTfw==}
+    dependencies:
+      base-x: 5.0.0
+    dev: false
+
   /bs58check@2.1.2:
     resolution: {integrity: sha512-0TS1jicxdU09dwJMNZtVAfzPi6Q6QeN0pM1Fkzrjn+XYHvzMKPU3pHVpva+769iNVSfIYWf7LJ6WR+BuuMf8cA==}
     dependencies:
@@ -10055,6 +10106,13 @@ packages:
     dependencies:
       '@noble/hashes': 1.4.0
       bs58: 5.0.0
+    dev: false
+
+  /bs58check@4.0.0:
+    resolution: {integrity: sha512-FsGDOnFg9aVI9erdriULkd/JjEWONV/lQE5aYziB5PoBsXRind56lh8doIZIc9X4HoxT5x4bLjMWN1/NB8Zp5g==}
+    dependencies:
+      '@noble/hashes': 1.4.0
+      bs58: 6.0.0
     dev: false
 
   /bser@2.1.1:
@@ -16005,6 +16063,10 @@ packages:
     resolution: {integrity: sha512-GK3g5RPZWTRSeLSpgP8Xhra+pnjBC56q9FZYe1d5RN3TJ35dbkGy3YqBSMbyCrlbi+CM9Z3Jk5yTL7RCsqboyQ==}
     dev: false
 
+  /lodash.omit@4.5.0:
+    resolution: {integrity: sha512-XeqSp49hNGmlkj2EJlfrQFIzQ6lXdNro9sddtQzcJY8QaoC2GO0DT7xaIokHeyM+mIT0mPMlPvkYzg2xCuHdZg==}
+    dev: false
+
   /lodash.pad@4.5.1:
     resolution: {integrity: sha512-mvUHifnLqM+03YNzeTBS1/Gr6JRFjd3rRx88FHWUvamVaT9k2O/kXha3yBSOwB9/DTQrSTLJNHvLBBt2FdX7Mg==}
     dev: false
@@ -16867,7 +16929,6 @@ packages:
   /mustache@4.2.0:
     resolution: {integrity: sha512-71ippSywq5Yb7/tVYyGbkBggbU8H3u5Rz56fH60jGFgr8uHwxs+aSKeqmluIVzM0m0kB7xQjKS6qPfd0b2ZoqQ==}
     hasBin: true
-    dev: true
 
   /nan@2.20.0:
     resolution: {integrity: sha512-bk3gXBZDGILuuo/6sKtr0DQmSThYHLtNCdSdXk9YkxD/jK6X2vmCyyXBBxyqZ4XcnzTyYEAThfX3DCEnLf6igw==}
@@ -18979,12 +19040,12 @@ packages:
   /safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
 
-  /sats-connect@2.8.3(typescript@5.4.5):
-    resolution: {integrity: sha512-9qQj4s/5Rj2OImygbs856AwWm7kAx6w19nUru43Dl4zDGv20uy3xHCBEUrKbBDcmE95bE5/SW+iAe89nU+irIw==}
+  /sats-connect@2.8.0(typescript@5.4.5):
+    resolution: {integrity: sha512-eYdpPoAXn6ud1hMZnQGowO1F0f9fS3jmE5Hq1F3VxXUbAvT2YmA72PBtG6QN/cdMuFZ5x1ce6I/fl270WSXqjw==}
     dependencies:
-      '@sats-connect/core': 0.3.1
-      '@sats-connect/make-default-provider-config': 0.0.9(@sats-connect/core@0.3.1)(typescript@5.4.5)
-      '@sats-connect/ui': 0.0.7
+      '@sats-connect/core': 0.2.2
+      '@sats-connect/make-default-provider-config': 0.0.5(@sats-connect/core@0.2.2)(typescript@5.4.5)
+      '@sats-connect/ui': 0.0.6
     transitivePeerDependencies:
       - debug
       - typescript
@@ -20500,6 +20561,16 @@ packages:
     dev: true
     optional: true
 
+  /uint8array-tools@0.0.7:
+    resolution: {integrity: sha512-vrrNZJiusLWoFWBqz5Y5KMCgP9W9hnjZHzZiZRT8oNAkq3d5Z5Oe76jAvVVSRh4U8GGR90N2X1dWtrhvx6L8UQ==}
+    engines: {node: '>=14.0.0'}
+    dev: false
+
+  /uint8array-tools@0.0.8:
+    resolution: {integrity: sha512-xS6+s8e0Xbx++5/0L+yyexukU7pz//Yg6IHg3BKhXotg1JcYtgxVcUctQ0HxLByiJzpAkNFawz1Nz5Xadzo82g==}
+    engines: {node: '>=14.0.0'}
+    dev: false
+
   /uint8arrays@3.1.0:
     resolution: {integrity: sha512-ei5rfKtoRO8OyOIor2Rz5fhzjThwIHJZ3uyDPnDHTXbP0aMQ1RN/6AI5B5d9dBxJOU+BvOAk7ZQ1xphsX8Lrog==}
     dependencies:
@@ -20875,6 +20946,17 @@ packages:
 
   /valibot@0.33.2:
     resolution: {integrity: sha512-ZpFWuI+bs5+PP66q4zVFn4e4t/s5jmMw5iPBZmGUoi8iQqXyU9YY/BLCAyk62Z/bNS8qdUNBEyx52952qdqW3w==}
+    dev: false
+
+  /valibot@0.37.0(typescript@5.4.5):
+    resolution: {integrity: sha512-FQz52I8RXgFgOHym3XHYSREbNtkgSjF9prvMFH1nBsRyfL6SfCzoT1GuSDTlbsuPubM7/6Kbw0ZMQb8A+V+VsQ==}
+    peerDependencies:
+      typescript: '>=5'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      typescript: 5.4.5
     dev: false
 
   /valid-url@1.0.9:
@@ -22500,6 +22582,12 @@ packages:
     resolution: {integrity: sha512-HIanZn1zmduSF+BQhkE+YXIbEiH0xPr1012QbFEGB0xsKqJii0/SqJjyn8dFv6y36kOznMgMB+LGcbZTJ1xACQ==}
     dependencies:
       bs58check: 2.1.2
+    dev: false
+
+  /wif@5.0.0:
+    resolution: {integrity: sha512-iFzrC/9ne740qFbNjTZ2FciSRJlHIXoxqk/Y5EnE08QOXu1WjJyCCswwDTYbohAOEnlCtLaAAQBhyaLRFh2hMA==}
+    dependencies:
+      bs58check: 4.0.0
     dev: false
 
   /word-wrap@1.2.5:

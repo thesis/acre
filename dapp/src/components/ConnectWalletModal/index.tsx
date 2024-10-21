@@ -1,8 +1,7 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { ModalBody, ModalHeader, ModalCloseButton } from "@chakra-ui/react"
-import { useConnectors, useWalletConnectionError } from "#/hooks"
+import { useConnectors, useIsEmbed, useWalletConnectionError } from "#/hooks"
 import { OrangeKitConnector, BaseModalProps, OnSuccessCallback } from "#/types"
-import { wallets } from "#/constants"
 import withBaseModal from "../ModalRoot/withBaseModal"
 import ConnectWalletButton from "./ConnectWalletButton"
 import ConnectWalletErrorAlert from "./ConnectWalletErrorAlert"
@@ -10,13 +9,16 @@ import ConnectWalletErrorAlert from "./ConnectWalletErrorAlert"
 export function ConnectWalletModalBase({
   onSuccess,
   withCloseButton = true,
+  isReconnecting,
 }: {
   onSuccess?: OnSuccessCallback
+  isReconnecting?: boolean
 } & BaseModalProps) {
+  const { isEmbed } = useIsEmbed()
   const connectors = useConnectors()
   const enabledConnectors = connectors.map((connector) => ({
     ...connector,
-    isDisabled: !wallets.SUPPORTED_WALLET_IDS.includes(connector.id),
+    isDisabled: false,
   }))
 
   const [selectedConnectorId, setSelectedConnectorId] = useState<string>()
@@ -26,12 +28,18 @@ export function ConnectWalletModalBase({
     setSelectedConnectorId(connector.id)
   }
 
+  useEffect(() => {
+    if (!isEmbed) return
+
+    setSelectedConnectorId(enabledConnectors[0].id)
+  }, [enabledConnectors, isEmbed])
+
   return (
     <>
       {withCloseButton && (
         <ModalCloseButton onClick={() => resetConnectionError()} />
       )}
-      <ModalHeader>Select your wallet</ModalHeader>
+      <ModalHeader>{`Select your ${isEmbed ? "account" : "wallet"}`}</ModalHeader>
 
       <ModalBody gap={0}>
         <ConnectWalletErrorAlert {...connectionError} />
@@ -44,6 +52,7 @@ export function ConnectWalletModalBase({
             onClick={() => handleButtonOnClick(connector)}
             isSelected={selectedConnectorId === connector.id}
             onSuccess={onSuccess}
+            isReconnecting={isReconnecting}
           />
         ))}
       </ModalBody>

@@ -13,14 +13,15 @@
     "lint:js:fix": "eslint . --fix",
     "lint:config": "prettier -c '**/*.@(json|yaml|toml)'",
     "lint:config:fix": "prettier -w '**/*.@(json|yaml|toml)'",
-    "test": "vitest"
+    "test": "vitest",
+    "generate:manifests": "for env in development testnet mainnet; do mustache config/$env.json ./manifests/ledger-live/ledger-manifest-template.json > ./manifests/ledger-live/ledger-live-manifest-$env.json; done"
   },
   "dependencies": {
     "@acre-btc/sdk": "workspace:*",
     "@chakra-ui/react": "^2.8.2",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
-    "@orangekit/react": "1.0.0-beta.32",
+    "@orangekit/react": "1.0.0-beta.33-dev.6",
     "@orangekit/sign-in-with-wallet": "1.0.0-beta.6",
     "@reduxjs/toolkit": "^2.2.0",
     "@rehooks/local-storage": "^2.4.5",
@@ -34,6 +35,7 @@
     "ethers": "^6.10.0",
     "formik": "^2.4.5",
     "framer-motion": "^10.16.5",
+    "mustache": "^4.2.0",
     "react": "^18.2.0",
     "react-confetti-explosion": "^2.1.2",
     "react-dom": "^18.2.0",
