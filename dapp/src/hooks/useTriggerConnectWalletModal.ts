@@ -14,7 +14,7 @@ export default function useTriggerConnectWalletModal() {
     if (!isMounted.current && isEmbed && !isSignedMessage) {
       isMounted.current = true
       openModal(MODAL_TYPES.CONNECT_WALLET, {
-        withCloseButton: false,
+        withCloseButton: true,
         closeOnEsc: false,
       })
     }
