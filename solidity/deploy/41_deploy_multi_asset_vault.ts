@@ -19,9 +19,9 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
           "0x64d92C98793C4a55B9a88c2BB9E356650D0d83F5", // Mocked SolvBTC.BBN
         ]
       : [
-    "0x7A56E1C57C7475CCf742a1832B028F0456652F97", // SolvBTC
-    "0xd9D920AA40f578ab794426F5C90F6C731D159DEf", // SolvBTC.BBN
-  ]
+          "0x7A56E1C57C7475CCf742a1832B028F0456652F97", // SolvBTC
+          "0xd9D920AA40f578ab794426F5C90F6C731D159DEf", // SolvBTC.BBN
+        ]
 
   let deployment = await deployments.getOrNull("AcreMultiAssetVault")
   if (deployment && helpers.address.isValid(deployment.address)) {
