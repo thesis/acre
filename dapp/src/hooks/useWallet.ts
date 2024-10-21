@@ -37,7 +37,6 @@ type UseWalletReturn = {
     },
   ) => void
   onDisconnect: () => void
-  reconnectStatus: Status
 }
 
 export function useWallet(): UseWalletReturn {
@@ -165,10 +164,12 @@ export function useWallet(): UseWalletReturn {
       isConnected,
       address,
       balance,
-      status,
+      status:
+        status === "idle" && reconnectStatus !== "idle"
+          ? reconnectStatus
+          : status,
       onConnect,
       onDisconnect,
-      reconnectStatus,
     }),
     [
       address,
