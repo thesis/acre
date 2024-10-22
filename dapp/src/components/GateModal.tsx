@@ -2,15 +2,16 @@ import React from "react"
 import { Link, ModalBody, ModalFooter, ModalHeader } from "@chakra-ui/react"
 import { TextSm } from "#/components/shared/Typography"
 import { EXTERNAL_HREF } from "#/constants"
+import { BaseModalProps } from "#/types"
 import withBaseModal from "./ModalRoot/withBaseModal"
 import PasswordForm from "./shared/PasswordForm"
 
-export function GateModalBase() {
+export function GateModalBase({ closeModal }: BaseModalProps) {
   return (
     <>
       <ModalHeader>Enter password</ModalHeader>
       <ModalBody>
-        <PasswordForm submitButtonText="Connect" onSubmitForm={() => {}} />
+        <PasswordForm submitButtonText="Connect" onSubmitForm={closeModal} />
       </ModalBody>
       <ModalFooter pt={0}>
         <TextSm>

@@ -82,6 +82,15 @@ const claimPoints = async (address: string) => {
   }
 }
 
+const verifyAccessCode = async (value: string) => {
+  const encodedCode = window.btoa(value)
+  const response = await axios.post<{ isValid: boolean }>("access/verify", {
+    encodedCode,
+  })
+
+  return response.data
+}
+
 export default {
   createSession,
   getSession,
@@ -89,4 +98,5 @@ export default {
   getPointsData,
   getPointsDataByUser,
   claimPoints,
+  verifyAccessCode,
 }

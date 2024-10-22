@@ -13,10 +13,10 @@ const PasswordForm = withFormik<PasswordFormProps, PasswordFormValues>({
   mapPropsToValues: () => ({
     password: "",
   }),
-  validate: ({ password }) => {
+  validate: async ({ password }) => {
     const errors: FormikErrors<PasswordFormValues> = {}
 
-    errors.password = validatePassword(password)
+    errors.password = await validatePassword(password)
 
     return getErrorsObj(errors)
   },

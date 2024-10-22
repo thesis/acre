@@ -4,6 +4,7 @@ import {
   TOKEN_FORM_ERRORS,
 } from "#/constants"
 import { ActionFlowType, CurrencyType } from "#/types"
+import acreApi from "./acreApi"
 import { getCurrencyByType } from "./currency"
 import { fixedPointNumberToString } from "./numbers"
 
@@ -13,12 +14,13 @@ export function getErrorsObj<T>(errors: { [key in keyof T]: string }) {
     : errors
 }
 
-export function validatePassword(
+export async function validatePassword(
   value: string | undefined,
-): string | undefined {
+): Promise<string | undefined> {
   if (value === undefined || value === "") return PASSWORD_FORM_ERRORS.REQUIRED
-  // TODO: Use correct values
-  if (value !== "bibo") return PASSWORD_FORM_ERRORS.INCORRECT_VALUE
+
+  const { isValid } = await acreApi.verifyAccessCode(value)
+  if (!isValid) return PASSWORD_FORM_ERRORS.INCORRECT_VALUE
 
   return undefined
 }
