@@ -16,13 +16,12 @@ const PAGE_MAX_WIDTH = {
 
 function Layout() {
   const isMobileMode = useMobileMode()
-  const { isEmbed } = useIsEmbed()
+  const { embeddedApp } = useIsEmbed()
 
   if (isMobileMode) return <MobileModeBanner forceOpen />
 
-  const maxWidth = isEmbed
-    ? // TODO: Select correct max-width by `embeddedApp`
-      PAGE_MAX_WIDTH["ledger-live"]
+  const maxWidth = embeddedApp
+    ? PAGE_MAX_WIDTH[embeddedApp]
     : PAGE_MAX_WIDTH.standalone
 
   return (
