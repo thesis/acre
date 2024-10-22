@@ -7,6 +7,7 @@ import Header from "./Header"
 import ModalRoot from "./ModalRoot"
 import Sidebar from "./Sidebar"
 import MobileModeBanner from "./MobileModeBanner"
+import Footer from "./Footer"
 
 const PADDING = "2.5rem" // 40px
 const PAGE_MAX_WIDTH = {
@@ -38,6 +39,8 @@ function Layout() {
       <Sidebar />
       <DocsDrawer />
       <ModalRoot />
+
+      <Footer />
     </Flex>
   )
 }
