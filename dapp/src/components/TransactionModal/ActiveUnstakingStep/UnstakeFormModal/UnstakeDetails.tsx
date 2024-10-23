@@ -1,8 +1,12 @@
 import React from "react"
 import { Flex, List } from "@chakra-ui/react"
 import TransactionDetailsAmountItem from "#/components/shared/TransactionDetails/AmountItem"
-import { useTokenAmountField } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
-import { useMinWithdrawAmount, useTransactionDetails } from "#/hooks"
+import { TOKEN_AMOUNT_FIELD_NAME } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
+import {
+  useFormField,
+  useMinWithdrawAmount,
+  useTransactionDetails,
+} from "#/hooks"
 import { ACTION_FLOW_TYPES, CurrencyType } from "#/types"
 import { DESIRED_DECIMALS_FOR_FEE, featureFlags } from "#/constants"
 import FeesDetailsAmountItem from "#/components/shared/FeesDetails/FeesItem"
@@ -16,7 +20,9 @@ function UnstakeDetails({
   balance: bigint
   currency: CurrencyType
 }) {
-  const { value = 0n } = useTokenAmountField()
+  const { value = 0n } = useFormField<bigint | undefined>(
+    TOKEN_AMOUNT_FIELD_NAME,
+  )
   const minWithdrawAmount = useMinWithdrawAmount()
   const amount = value >= minWithdrawAmount ? value : 0n
   const details = useTransactionDetails(amount, ACTION_FLOW_TYPES.UNSTAKE)

@@ -1,7 +1,6 @@
-import React, { ChangeEvent, useCallback } from "react"
+import React from "react"
 import { FormControl, FormLabel, Input, InputProps } from "@chakra-ui/react"
-import { useField } from "formik"
-import { logPromiseFailure } from "#/utils"
+import { useFormField } from "#/hooks"
 import HelperErrorText from "./HelperErrorText"
 
 export type FormInputProps = {
@@ -16,20 +15,8 @@ export default function FormInput({
   helperText,
   ...inputProps
 }: FormInputProps) {
-  const [field, meta, helpers] = useField<string>(name)
-
-  const hasError = Boolean(meta.error)
-  const errorMsgText = meta.error
-
-  const handleChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      if (!meta.touched) logPromiseFailure(helpers.setTouched(true))
-      if (meta.error) helpers.setError(undefined)
-
-      logPromiseFailure(helpers.setValue(event.target.value))
-    },
-    [helpers, meta.touched, meta.error],
-  )
+  const { field, value, errorMsgText, hasError, onChange } =
+    useFormField<string>(name)
 
   return (
     <FormControl isInvalid={hasError} isDisabled={inputProps.isDisabled}>
@@ -39,8 +26,8 @@ export default function FormInput({
         {...field}
         id={name}
         isInvalid={hasError}
-        value={meta.value}
-        onChange={handleChange}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
       />
       <HelperErrorText
         helperText={helperText}

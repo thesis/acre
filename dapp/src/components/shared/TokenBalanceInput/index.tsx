@@ -69,7 +69,7 @@ export type TokenBalanceInputProps = {
   setAmount: (value?: bigint) => void
   withMaxButton?: boolean
   tokenAmountLabel?: string
-} & InputProps &
+} & Omit<InputProps, "isInvalid" | "value" | "onValueChange" | "onChange"> &
   HelperErrorTextProps &
   Pick<NumberFormatInputProps, "decimalScale">
 
@@ -136,13 +136,13 @@ export default function TokenBalanceInput({
         <NumberFormatInput
           variant="outline"
           size={size}
-          isInvalid={hasError}
           suffix={` ${symbol}`}
           placeholder={placeholder}
           integerScale={10}
           decimalScale={decimals}
           allowNegative={false}
           {...inputProps}
+          isInvalid={hasError}
           value={displayedValue}
           onValueChange={onValueChange}
           onChange={onChange}
