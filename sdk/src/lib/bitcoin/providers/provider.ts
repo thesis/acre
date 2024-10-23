@@ -26,4 +26,9 @@ export interface BitcoinProvider {
    * @returns The public key of the Bitcoin account.
    */
   getPublicKey(): Promise<string>
+
+  /**
+   * Signs withdraw message.
+   */
+  signWithdrawMessage?(message: string, data: unknown): Promise<string>
 }
