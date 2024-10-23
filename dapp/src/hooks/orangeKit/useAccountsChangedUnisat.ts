@@ -2,10 +2,13 @@ import { useEffect } from "react"
 import { MODAL_TYPES } from "#/types"
 import { useWallet } from "../useWallet"
 import { useModal } from "../useModal"
+import { useConfig } from "wagmi"
+import useResetWalletState from "../useResetWalletState"
 
 export function useAccountsChangedUnisat() {
   const { isConnected, address, onDisconnect } = useWallet()
   const { openModal } = useModal()
+  const config = useConfig()
 
   useEffect(() => {
     const provider = window.unisat
@@ -20,8 +23,30 @@ export function useAccountsChangedUnisat() {
         // and the `onDisconnect` is called again unisat will open a wallet window.
         // onDisconnect()
       } else if (isConnected && address !== accounts[0]) {
-        onDisconnect()
-        openModal(MODAL_TYPES.CONNECT_WALLET)
+        // onDisconnect()
+        const current = config.state.current
+        if (!current) {
+          onDisconnect()
+          openModal(MODAL_TYPES.CONNECT_WALLET)
+
+          return
+        }
+
+        const currentConnection = config.state.connections.get(current)
+        if (!currentConnection) {
+          onDisconnect()
+          openModal(MODAL_TYPES.CONNECT_WALLET)
+          return
+        }
+
+        config.setState((prevState) => ({
+          ...prevState,
+          connections: new Map(prevState.connections).set(current, {
+            ...currentConnection,
+            // @ts-expect-error test
+            accounts,
+          }),
+        }))
       }
     }
     provider.on("accountsChanged", handleAccountsChanged)

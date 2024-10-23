@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { useAccount, useChainId, useConnect, useDisconnect } from "wagmi"
+import { useAccount, useChainId, useConfig, useConnect, useDisconnect } from "wagmi"
 import { logPromiseFailure, orangeKit } from "#/utils"
 import {
   OnErrorCallback,
@@ -33,7 +33,8 @@ type UseWalletReturn = {
 
 export function useWallet(): UseWalletReturn {
   const chainId = useChainId()
-  const { status: accountStatus } = useAccount()
+  const config = useConfig()
+  const { status: accountStatus, address: accountAddress } = useAccount()
   const { connect, status } = useConnect()
   const { disconnect } = useDisconnect()
   const connector = useConnector()
@@ -95,7 +96,7 @@ export function useWallet(): UseWalletReturn {
 
   useEffect(() => {
     const fetchBitcoinAddress = async () => {
-      if (connector) {
+      if (connector && accountAddress) {
         const btcAddress = await connector.getBitcoinAddress()
         const accounts = await connector.getAccounts()
 
@@ -108,7 +109,7 @@ export function useWallet(): UseWalletReturn {
     }
 
     logPromiseFailure(fetchBitcoinAddress())
-  }, [connector, provider])
+  }, [connector, accountAddress])
 
   return useMemo(
     () => ({
