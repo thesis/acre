@@ -82,8 +82,7 @@ const claimPoints = async (address: string) => {
   }
 }
 
-const verifyAccessCode = async (value: string) => {
-  const encodedCode = window.btoa(value)
+const verifyAccessCode = async (encodedCode: string) => {
   const response = await axios.post<{ isValid: boolean }>("access/verify", {
     encodedCode,
   })

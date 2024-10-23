@@ -19,7 +19,8 @@ export async function validatePassword(
 ): Promise<string | undefined> {
   if (value === undefined || value === "") return PASSWORD_FORM_ERRORS.REQUIRED
 
-  const { isValid } = await acreApi.verifyAccessCode(value)
+  const encodedCode = window.btoa(value)
+  const { isValid } = await acreApi.verifyAccessCode(encodedCode)
   if (!isValid) return PASSWORD_FORM_ERRORS.INCORRECT_VALUE
 
   return undefined

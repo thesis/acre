@@ -1,15 +1,23 @@
-import React, { useCallback } from "react"
+import React, { useCallback, useEffect } from "react"
 import { Link, ModalBody, ModalFooter, ModalHeader } from "@chakra-ui/react"
 import { TextSm } from "#/components/shared/Typography"
 import { EXTERNAL_HREF } from "#/constants"
 import { BaseModalProps } from "#/types"
 import { useAccessCode } from "#/hooks"
+import { acreApi } from "#/utils"
+import { useQuery } from "@tanstack/react-query"
 import withBaseModal from "./ModalRoot/withBaseModal"
 import PasswordForm from "./shared/PasswordForm"
 import { PasswordFormValues } from "./shared/PasswordForm/PasswordFormBase"
+import LoadingModal from "./TransactionModal/LoadingModal"
 
 export function GateModalBase({ closeModal }: BaseModalProps) {
-  const { saveAccessCode } = useAccessCode()
+  const { encodedCode, saveAccessCode } = useAccessCode()
+  const { data, isLoading } = useQuery({
+    queryKey: ["verify-access-code"],
+    enabled: !!encodedCode,
+    queryFn: async () => acreApi.verifyAccessCode(encodedCode!),
+  })
 
   const onSubmitForm = useCallback(
     (values: PasswordFormValues) => {
@@ -21,6 +29,12 @@ export function GateModalBase({ closeModal }: BaseModalProps) {
     },
     [closeModal, saveAccessCode],
   )
+
+  useEffect(() => {
+    if (data?.isValid) closeModal()
+  }, [closeModal, data?.isValid])
+
+  if (isLoading) return <LoadingModal />
 
   return (
     <>
