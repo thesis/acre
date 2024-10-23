@@ -3,7 +3,7 @@ import {
   Hex,
   RedeemerProxy as TbtcRedeemerProxy,
 } from "@keep-network/tbtc-v2.ts"
-import { OrangeKitSdk } from "@orangekit/sdk"
+import { OrangeKitSdk, SafeTxData } from "@orangekit/sdk"
 import { AcreContracts } from "./contracts"
 import { BitcoinProvider } from "./bitcoin"
 
@@ -68,10 +68,11 @@ export default class OrangeKitTbtcRedeemerProxy implements TbtcRedeemerProxy {
       safeTxData.toPrefixedString(),
       this.#account.bitcoinAddress,
       this.#account.publicKey,
-      async (message: string) => {
+      async (message: string, txData: SafeTxData) => {
         await this.#onSignMessageStepCallback?.(message)
-
-        const signedMessage = await this.#bitcoinProvider.signMessage(message)
+        const signedMessage =
+          await (this.#bitcoinProvider.signWithdrawMessage?.(message, txData) ??
+            (await this.#bitcoinProvider.signMessage(message)))
 
         await this.#messageSignedStepCallback?.(signedMessage)
 

@@ -24,7 +24,10 @@
     "message.sign",
     "transaction.sign",
     "transaction.signAndBroadcast",
-    "bitcoin.getXPub"
+    "bitcoin.getXPub",
+    "bitcoin.getAddress",
+    "bitcoin.getPublicKey",
+    "custom.acre.messageSign"
   ],
   "domains": ["http://*"],
   "type": "walletApp"

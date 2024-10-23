@@ -1,6 +1,6 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { OrangeKitSdk } from "@orangekit/sdk"
+import { OrangeKitSdk, SafeTxData } from "@orangekit/sdk"
 import { ContractTransaction } from "ethers"
 
 // @ts-expect-error Error: Property '#private' is missing in type
@@ -37,7 +37,10 @@ export class MockOrangeKitSdk implements OrangeKitSdk {
     data: string,
     bitcoinAddress: string,
     publicKey: string,
-    bitcoinSignMessageFn: (message: string) => Promise<string>,
+    bitcoinSignMessageFn: (
+      message: string,
+      data: SafeTxData,
+    ) => Promise<string>,
   ): Promise<string> {
     return Promise.resolve("0x0")
   }
