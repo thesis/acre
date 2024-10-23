@@ -4,21 +4,22 @@ const PARTS = ["container", "wrapper", "logo", "list", "link"]
 
 const containerStyles = defineStyle({
   w: "full",
-  pos: "fixed",
+  pos: "sticky",
   bottom: 0,
   left: 0,
   borderTop: "1px",
   borderColor: "gold.500",
   bgColor: "gold.300",
+  zIndex: 1000,
 })
 
 const wrapperStyles = defineStyle({
   display: "flex",
   alignItems: "center",
-  gap: 10,
-  maxW: "page_content_max_width",
+  gap: { base: 4, xl: 10 },
+  maxW: "120rem", // 1920px
   py: 3,
-  px: 10,
+  px: { base: 10, xl: 30 },
   mx: "auto",
 })
 
@@ -28,7 +29,7 @@ const logoStyles = defineStyle({
 
 const listStyles = defineStyle({
   display: "flex",
-  gap: 5,
+  gap: { base: 2, xl: 5 },
   _last: {
     ml: "auto",
   },
@@ -40,6 +41,7 @@ const linkStyles = defineStyle({
   fontWeight: "medium",
   m: -2,
   p: 2,
+  whiteSpace: "nowrap",
 })
 
 const multiStyleConfig = createMultiStyleConfigHelpers(PARTS)

@@ -12,9 +12,12 @@ export default function Header() {
     <HStack
       as="header"
       w="full"
+      maxW="120rem" // 1920px
+      mx="auto"
       justify="space-between"
-      py={7}
-      px="page_content_padding_x"
+      pt={12}
+      pb={{ base: 4, xl: 16 }}
+      px={{ base: 10, xl: 30 }}
     >
       <Link href={EXTERNAL_HREF.WEBSITE} isExternal>
         <Icon as={AcreLogo} w={20} h={12} />
