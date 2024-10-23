@@ -4,12 +4,12 @@ import {
   getOrangeKitUnisatConnector,
   getOrangeKitOKXConnector,
   getOrangeKitXverseConnector,
-  getOrangeKitLedgerLiveConnector,
 } from "@orangekit/react"
 import { CreateOrangeKitConnectorFn } from "@orangekit/react/dist/src/wallet/connector"
 import { env } from "./constants"
 import { getLastUsedBtcAddress } from "./hooks/useLastUsedBtcAddress"
 import referralProgram, { EmbedApp } from "./utils/referralProgram"
+import { orangeKit } from "./utils"
 
 const isTestnet = env.USE_TESTNET
 const CHAIN_ID = isTestnet ? sepolia.id : mainnet.id
@@ -28,7 +28,7 @@ const transports = chains.reduce(
 const orangeKitUnisatConnector = getOrangeKitUnisatConnector(connectorConfig)
 const orangeKitOKXConnector = getOrangeKitOKXConnector(connectorConfig)
 const orangeKitXverseConnector = getOrangeKitXverseConnector(connectorConfig)
-const orangeKitLedgerLiveConnector = getOrangeKitLedgerLiveConnector({
+const orangeKitLedgerLiveConnector = orangeKit.getOrangeKitLedgerLiveConnector({
   ...connectorConfig,
   options: {
     tryConnectToAddress: getLastUsedBtcAddress(),
