@@ -82,6 +82,17 @@ const claimPoints = async (address: string) => {
   }
 }
 
+async function getMats() {
+  const response = await axios.get<{ totalMats: number; dailyMats: number }>(
+    "mezo/points",
+  )
+
+  return {
+    totalMats: response.data.totalMats,
+    dailyMats: response.data.dailyMats,
+  }
+}
+
 export default {
   createSession,
   getSession,
@@ -89,4 +100,5 @@ export default {
   getPointsData,
   getPointsDataByUser,
   claimPoints,
+  getMats,
 }
