@@ -1,5 +1,6 @@
 import { RedeemerProxy } from "@keep-network/tbtc-v2.ts"
 import { ethers } from "ethers"
+import { SafeTxData } from "@orangekit/sdk"
 import { EthereumAddress } from "../../src/lib/ethereum"
 import { ChainIdentifier } from "../../src/lib/contracts"
 import { Hex } from "../../src/lib/utils"
@@ -61,7 +62,10 @@ describe("OrangeKitTbtcRedeemerProxy", () => {
         data: string,
         bitcoinAddress: string,
         publicKey: string,
-        bitcoinSignMessageFn: (message: string) => Promise<string>,
+        bitcoinSignMessageFn: (
+          message: string,
+          data: SafeTxData,
+        ) => Promise<string>,
       ]
     >
     let spyOnBitcoinRedeemerIdentifier: jest.SpyInstance<ChainIdentifier, []>
@@ -74,7 +78,6 @@ describe("OrangeKitTbtcRedeemerProxy", () => {
     >
 
     beforeAll(async () => {
-      // @ts-expect-error test
       spyOnSendTransaction = jest
         .spyOn(orangeKitSdk, "sendTransaction")
         .mockResolvedValueOnce(mockedTxHash)
@@ -121,8 +124,9 @@ describe("OrangeKitTbtcRedeemerProxy", () => {
     it("the sign message function passed to the orange kit should call the bitcoin provider", async () => {
       const signMessageFn = spyOnSendTransaction.mock.calls[0][5]
       const mockedMessage = "test"
+      const mockedSafeTxData = { to: "test" } as SafeTxData
 
-      await signMessageFn(mockedMessage)
+      await signMessageFn(mockedMessage, mockedSafeTxData)
 
       expect(bitcoinProvider.signMessage).toHaveBeenCalledWith(mockedMessage)
     })
