@@ -32,7 +32,7 @@ function withBaseModal<T extends BaseModalProps>(
         closeOnEsc={closeOnEsc}
         {...modalProps}
       >
-        <ModalOverlay mt="header_height" />
+        <ModalOverlay />
         <ModalContent
           mr={{
             base: isSidebarOpen ? "var(--chakra-sizes-sidebar_width)" : 0,

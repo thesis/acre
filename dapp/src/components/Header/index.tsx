@@ -15,8 +15,9 @@ export default function Header() {
       maxW="120rem" // 1920px
       mx="auto"
       justify="space-between"
+      zIndex="header"
       pt={12}
-      pb={{ base: 4, xl: 16 }}
+      pb={{ base: 4, xl: 12 }}
       px={{ base: 10, xl: 30 }}
     >
       <Link href={EXTERNAL_HREF.WEBSITE} isExternal>

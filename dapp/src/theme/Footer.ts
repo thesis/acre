@@ -10,7 +10,7 @@ const containerStyles = defineStyle({
   borderTop: "1px",
   borderColor: "gold.500",
   bgColor: "gold.300",
-  zIndex: 1000,
+  zIndex: "footer",
 })
 
 const wrapperStyles = defineStyle({
