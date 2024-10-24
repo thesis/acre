@@ -12,14 +12,16 @@ import {
   BitcoinTxHash,
   OrangeKitBitcoinWalletProvider,
 } from "@orangekit/react/src/wallet/bitcoin-wallet-provider"
-import { BitcoinAddressHelper, BitcoinProvider } from "@acre-btc/sdk"
+import {
+  BitcoinAddressHelper,
+  BitcoinNetwork,
+  BitcoinProvider,
+} from "@acre-btc/sdk"
 import {
   AcreMessageType,
   AcreModule,
   AcreWithdrawalData,
 } from "@ledgerhq/wallet-api-acre-module"
-
-type Network = "mainnet" | "testnet"
 
 export type TryRequestFn<T> = (fn: () => Promise<T>) => Promise<T>
 
@@ -62,14 +64,14 @@ export default class AcreLedgerLiveBitcoinProvider
 
   #account: Account | undefined
 
-  readonly #network: Network
+  readonly #network: BitcoinNetwork
 
   #hasConnectFunctionBeenCalled: boolean = false
 
   readonly #options: LedgerLiveWalletApiBitcoinProviderOptions
 
   constructor(
-    network: Network,
+    network: BitcoinNetwork,
     options: LedgerLiveWalletApiBitcoinProviderOptions = {
       tryConnectToAddress: undefined,
     },
@@ -121,7 +123,9 @@ export default class AcreLedgerLiveBitcoinProvider
     const account = (
       await this.#walletApiClient.account.list({
         currencyIds: [
-          this.#network === "mainnet" ? "bitcoin" : "bitcoin_testnet",
+          this.#network === BitcoinNetwork.Mainnet
+            ? "bitcoin"
+            : "bitcoin_testnet",
         ],
       })
     ).find((acc) => acc.id === this.#account!.id)
@@ -146,7 +150,7 @@ export default class AcreLedgerLiveBitcoinProvider
     this.#windowMessageTransport.connect()
 
     const currencyIds = [
-      this.#network === "mainnet" ? "bitcoin" : "bitcoin_testnet",
+      this.#network === BitcoinNetwork.Mainnet ? "bitcoin" : "bitcoin_testnet",
     ]
 
     if (!this.#hasConnectFunctionBeenCalled) {
