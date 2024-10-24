@@ -22,7 +22,7 @@ export async function validatePassword(
 
   try {
     const encodedCode = window.btoa(value)
-    const { isValid } = await acreApi.verifyAccessCode(encodedCode)
+    const isValid = await acreApi.verifyAccessCode(encodedCode)
     if (!isValid) return PASSWORD_FORM_ERRORS.INCORRECT_VALUE
   } catch (error) {
     sentry.captureException(error)

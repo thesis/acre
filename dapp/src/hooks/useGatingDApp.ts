@@ -10,7 +10,7 @@ export default function useGatingDApp() {
   const { encodedCode } = useAccessCode()
   const { openModal, closeModal, modalType } = useModal()
   const isMounted = useRef(false)
-  const { data, isLoading } = useQuery({
+  const { data: isValid, isLoading } = useQuery({
     queryKey: ["verify-access-code"],
     enabled: !!encodedCode,
     queryFn: async () => acreApi.verifyAccessCode(encodedCode!),
@@ -23,9 +23,9 @@ export default function useGatingDApp() {
 
     if (modalType === MODAL_TYPES.LOADING && !isLoading) {
       closeModal()
-      if (!data?.isValid) openModal(MODAL_TYPES.GATE)
+      if (!isValid) openModal(MODAL_TYPES.GATE)
     }
-  }, [closeModal, data?.isValid, encodedCode, isLoading, modalType, openModal])
+  }, [closeModal, isValid, encodedCode, isLoading, modalType, openModal])
 
   useEffect(() => {
     if (!featureFlags.GATING_DAPP_ENABLED) return
