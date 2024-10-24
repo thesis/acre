@@ -39,6 +39,10 @@ const linkStyles = defineStyle({
   display: "flex",
   color: "grey.700",
   fontWeight: "medium",
+  fontSize: {
+    base: "xs",
+    md: "sm",
+  },
   m: -2,
   p: 2,
   whiteSpace: "nowrap",
