@@ -160,8 +160,8 @@ importers:
         specifier: 2.5.0-dev.3
         version: 2.5.0-dev.3(@keep-network/keep-core@1.8.1-dev.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@5.0.10)
       '@orangekit/sdk':
-        specifier: 1.0.0-beta.18-dev.3
-        version: 1.0.0-beta.18-dev.3(bufferutil@4.0.8)(encoding@0.1.13)(typescript@5.4.5)(utf-8-validate@5.0.10)
+        specifier: 1.0.0-beta.18-dev.5
+        version: 1.0.0-beta.18-dev.5(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@5.0.10)
       ethers:
         specifier: 6.10.0
         version: 6.10.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
@@ -1109,10 +1109,6 @@ packages:
 
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
-
-  '@bitcoin-js/tiny-secp256k1-asmjs@2.2.3':
-    resolution: {integrity: sha512-arFPdEZi9RIiaG76OZswTnAU0KfuiLwGw2VNfD66LKhzlbfOnX1o1WI/GI3qm9UbjG/0QOzZu/KmTNvL79x/DQ==}
-    engines: {node: '>=14.0.0'}
 
   '@bitcoinerlab/secp256k1@1.1.1':
     resolution: {integrity: sha512-uhjW51WfVLpnHN7+G0saDcM/k9IqcyTbZ+bDgLF3AX8V/a3KXSE9vn7UPBrcdU72tp0J4YPR7BHp2m7MLAZ/1Q==}
@@ -2686,8 +2682,8 @@ packages:
   '@orangekit/sdk@1.0.0-beta.17':
     resolution: {integrity: sha512-SWGWbsidxe9qRGTzRcvVxNVC//HBEj7L0QIqduFAu2RVe1Khi4HlS1jEkfcvLTxwjY0qzDQwUyxWovSmnJKZNw==}
 
-  '@orangekit/sdk@1.0.0-beta.18-dev.3':
-    resolution: {integrity: sha512-rxeqOWnan0iNHs4AMTAIJpc+AK/CxD7xloX7n0qw1C+2S/kEWw3JzHcuOrBgCMqBCzXuXYr0D9JpOmND+ZUzUg==}
+  '@orangekit/sdk@1.0.0-beta.18-dev.5':
+    resolution: {integrity: sha512-2ZMofgGIgcGrd52pE4Gy/V0sisdZN5G4s1ZZvaf6x45ZBCq174epBEs0Zs7TNvxBL8xbJDLQkGpfn0UMZ32gFw==}
 
   '@orangekit/sign-in-with-wallet-parser@1.0.0-beta.6':
     resolution: {integrity: sha512-Yi6ohSJV4/Ovrq5c7jD+kPE8pZxLhWtFbZjKRwUW8JL60P/tcyT5o0etul0reqcY2iBlIo5aoC2Hh0noRGl86w==}
@@ -4373,9 +4369,6 @@ packages:
   base-x@4.0.0:
     resolution: {integrity: sha512-FuwxlW4H5kh37X/oW59pwTzzTKRzfrrQwhmyspRM7swOEZcHtDZSCt45U6oKgtuFE+WYPblePMVIPR4RZrh/hw==}
 
-  base-x@5.0.0:
-    resolution: {integrity: sha512-sMW3VGSX1QWVFA6l8U62MLKz29rRfpTlYdCqLdpLo1/Yd4zZwSbnUaDfciIAowAqvq7YFnWq9hrhdg1KYgc1lQ==}
-
   base58-js@1.0.5:
     resolution: {integrity: sha512-LkkAPP8Zu+c0SVNRTRVDyMfKVORThX+rCViget00xdgLRrKkClCTz1T7cIrpr69ShwV5XJuuoZvMvJ43yURwkA==}
     engines: {node: '>= 8'}
@@ -4431,10 +4424,6 @@ packages:
   bip32@2.0.5:
     resolution: {integrity: sha512-zVY4VvJV+b2fS0/dcap/5XLlpqtgwyN8oRkuGgAS1uLOeEp0Yo6Tw2yUTozTtlrMJO3G8n4g/KX/XGFHW6Pq3g==}
     engines: {node: '>=6.0.0'}
-
-  bip32@5.0.0-rc.0:
-    resolution: {integrity: sha512-5hVFGrdCnF8GB1Lj2eEo4PRE7+jp+3xBLnfNjydivOkMvKmUKeJ9GG8uOy8prmWl3Oh154uzgfudR1FRkNBudA==}
-    engines: {node: '>=18.0.0'}
 
   bip39@3.0.2:
     resolution: {integrity: sha512-J4E1r2N0tUylTKt07ibXvhpT2c5pyAFgvuA5q1H9uDy6dEGpjV8jmymh3MTYJDLCNbIVClSB9FbND49I6N24MQ==}
@@ -4556,17 +4545,11 @@ packages:
   bs58@5.0.0:
     resolution: {integrity: sha512-r+ihvQJvahgYT50JD05dyJNKlmmSlMoOGwn1lCcEzanPglg7TxYjioQUYehQ9mAR/+hOSd2jRc/Z2y5UxBymvQ==}
 
-  bs58@6.0.0:
-    resolution: {integrity: sha512-PD0wEnEYg6ijszw/u8s+iI3H17cTymlrwkKhDhPZq+Sokl3AU4htyBFTjAeNAlCCmg0f53g6ih3jATyCKftTfw==}
-
   bs58check@2.1.2:
     resolution: {integrity: sha512-0TS1jicxdU09dwJMNZtVAfzPi6Q6QeN0pM1Fkzrjn+XYHvzMKPU3pHVpva+769iNVSfIYWf7LJ6WR+BuuMf8cA==}
 
   bs58check@3.0.1:
     resolution: {integrity: sha512-hjuuJvoWEybo7Hn/0xOrczQKKEKD63WguEjlhLExYs2wUBcebDC1jDNK17eEAD2lYfw82d5ASC1d7K3SWszjaQ==}
-
-  bs58check@4.0.0:
-    resolution: {integrity: sha512-FsGDOnFg9aVI9erdriULkd/JjEWONV/lQE5aYziB5PoBsXRind56lh8doIZIc9X4HoxT5x4bLjMWN1/NB8Zp5g==}
 
   bser@2.1.1:
     resolution: {integrity: sha512-gQxTNE/GAfIIrmHLUE3oJyp5FO6HRBfhjnw4/wMmA63ZGDJnWBmgY/lyQBpnDUkGmAhbSe39tx2d/iTOAfglwQ==}
@@ -10015,14 +9998,6 @@ packages:
     engines: {node: '>=0.8.0'}
     hasBin: true
 
-  uint8array-tools@0.0.7:
-    resolution: {integrity: sha512-vrrNZJiusLWoFWBqz5Y5KMCgP9W9hnjZHzZiZRT8oNAkq3d5Z5Oe76jAvVVSRh4U8GGR90N2X1dWtrhvx6L8UQ==}
-    engines: {node: '>=14.0.0'}
-
-  uint8array-tools@0.0.8:
-    resolution: {integrity: sha512-xS6+s8e0Xbx++5/0L+yyexukU7pz//Yg6IHg3BKhXotg1JcYtgxVcUctQ0HxLByiJzpAkNFawz1Nz5Xadzo82g==}
-    engines: {node: '>=14.0.0'}
-
   uint8arrays@3.1.0:
     resolution: {integrity: sha512-ei5rfKtoRO8OyOIor2Rz5fhzjThwIHJZ3uyDPnDHTXbP0aMQ1RN/6AI5B5d9dBxJOU+BvOAk7ZQ1xphsX8Lrog==}
 
@@ -10261,14 +10236,6 @@ packages:
 
   valibot@0.33.2:
     resolution: {integrity: sha512-ZpFWuI+bs5+PP66q4zVFn4e4t/s5jmMw5iPBZmGUoi8iQqXyU9YY/BLCAyk62Z/bNS8qdUNBEyx52952qdqW3w==}
-
-  valibot@0.37.0:
-    resolution: {integrity: sha512-FQz52I8RXgFgOHym3XHYSREbNtkgSjF9prvMFH1nBsRyfL6SfCzoT1GuSDTlbsuPubM7/6Kbw0ZMQb8A+V+VsQ==}
-    peerDependencies:
-      typescript: '>=5'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
 
   valid-url@1.0.9:
     resolution: {integrity: sha512-QQDsV8OnSf5Uc30CKSwG9lnhMPe6exHtTXLRYX8uMwKENy640pU+2BgBL0LRbDh/eYRahNCS7aewCx0wf3NYVA==}
@@ -10861,9 +10828,6 @@ packages:
 
   wif@2.0.6:
     resolution: {integrity: sha512-HIanZn1zmduSF+BQhkE+YXIbEiH0xPr1012QbFEGB0xsKqJii0/SqJjyn8dFv6y36kOznMgMB+LGcbZTJ1xACQ==}
-
-  wif@5.0.0:
-    resolution: {integrity: sha512-iFzrC/9ne740qFbNjTZ2FciSRJlHIXoxqk/Y5EnE08QOXu1WjJyCCswwDTYbohAOEnlCtLaAAQBhyaLRFh2hMA==}
 
   word-wrap@1.2.5:
     resolution: {integrity: sha512-BN22B5eaMMI9UMtjrGd5g5eCYPpCPDUy0FJXbYsaT5zYxjFOckS53SQDE3pWkVoWpHXVb3BrYcEN4Twa55B5cA==}
@@ -12100,10 +12064,6 @@ snapshots:
       to-fast-properties: 2.0.0
 
   '@bcoe/v8-coverage@0.2.3': {}
-
-  '@bitcoin-js/tiny-secp256k1-asmjs@2.2.3':
-    dependencies:
-      uint8array-tools: 0.0.7
 
   '@bitcoinerlab/secp256k1@1.1.1':
     dependencies:
@@ -14839,15 +14799,13 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@orangekit/sdk@1.0.0-beta.18-dev.3(bufferutil@4.0.8)(encoding@0.1.13)(typescript@5.4.5)(utf-8-validate@5.0.10)':
+  '@orangekit/sdk@1.0.0-beta.18-dev.5(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@5.0.10)':
     dependencies:
-      '@bitcoin-js/tiny-secp256k1-asmjs': 2.2.3
       '@gelatonetwork/relay-sdk': 5.5.6(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@noble/curves': 1.4.0
       '@noble/hashes': 1.4.0
       '@orangekit/contracts': 1.0.0-beta.3(ethers@6.12.1(bufferutil@4.0.8)(utf-8-validate@5.0.10))
       '@safe-global/protocol-kit': 3.1.1(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@5.0.10)
-      bip32: 5.0.0-rc.0(typescript@5.4.5)
       bitcoinjs-lib: 6.1.5
       ethers: 6.12.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
@@ -14855,7 +14813,6 @@ snapshots:
       - debug
       - encoding
       - supports-color
-      - typescript
       - utf-8-validate
 
   '@orangekit/sign-in-with-wallet-parser@1.0.0-beta.6':
@@ -17361,7 +17318,7 @@ snapshots:
 
   axios@0.27.2:
     dependencies:
-      follow-redirects: 1.15.6(debug@4.3.5)
+      follow-redirects: 1.15.6(debug@4.3.4)
       form-data: 4.0.0
     transitivePeerDependencies:
       - debug
@@ -17369,6 +17326,14 @@ snapshots:
   axios@1.6.7:
     dependencies:
       follow-redirects: 1.15.5
+      form-data: 4.0.0
+      proxy-from-env: 1.1.0
+    transitivePeerDependencies:
+      - debug
+
+  axios@1.7.2:
+    dependencies:
+      follow-redirects: 1.15.6(debug@4.3.4)
       form-data: 4.0.0
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
@@ -17384,7 +17349,7 @@ snapshots:
 
   axios@1.7.4:
     dependencies:
-      follow-redirects: 1.15.6(debug@4.3.5)
+      follow-redirects: 1.15.6(debug@4.3.4)
       form-data: 4.0.0
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
@@ -17494,8 +17459,6 @@ snapshots:
 
   base-x@4.0.0: {}
 
-  base-x@5.0.0: {}
-
   base58-js@1.0.5: {}
 
   base64-js@1.5.1: {}
@@ -17545,16 +17508,6 @@ snapshots:
       tiny-secp256k1: 1.1.6
       typeforce: 1.18.0
       wif: 2.0.6
-
-  bip32@5.0.0-rc.0(typescript@5.4.5):
-    dependencies:
-      '@noble/hashes': 1.4.0
-      '@scure/base': 1.1.7
-      uint8array-tools: 0.0.8
-      valibot: 0.37.0(typescript@5.4.5)
-      wif: 5.0.0
-    transitivePeerDependencies:
-      - typescript
 
   bip39@3.0.2:
     dependencies:
@@ -17757,10 +17710,6 @@ snapshots:
     dependencies:
       base-x: 4.0.0
 
-  bs58@6.0.0:
-    dependencies:
-      base-x: 5.0.0
-
   bs58check@2.1.2:
     dependencies:
       bs58: 4.0.1
@@ -17771,11 +17720,6 @@ snapshots:
     dependencies:
       '@noble/hashes': 1.4.0
       bs58: 5.0.0
-
-  bs58check@4.0.0:
-    dependencies:
-      '@noble/hashes': 1.4.0
-      bs58: 6.0.0
 
   bser@2.1.1:
     dependencies:
@@ -19225,7 +19169,7 @@ snapshots:
   eth-gas-reporter@0.2.27(bufferutil@4.0.8)(utf-8-validate@5.0.10):
     dependencies:
       '@solidity-parser/parser': 0.14.5
-      axios: 1.7.2(debug@4.3.5)
+      axios: 1.7.2
       cli-table3: 0.5.1
       colors: 1.4.0
       ethereum-cryptography: 1.2.0
@@ -24576,10 +24520,6 @@ snapshots:
   uglify-js@3.18.0:
     optional: true
 
-  uint8array-tools@0.0.7: {}
-
-  uint8array-tools@0.0.8: {}
-
   uint8arrays@3.1.0:
     dependencies:
       multiformats: 9.9.0
@@ -24768,10 +24708,6 @@ snapshots:
       convert-source-map: 2.0.0
 
   valibot@0.33.2: {}
-
-  valibot@0.37.0(typescript@5.4.5):
-    optionalDependencies:
-      typescript: 5.4.5
 
   valid-url@1.0.9: {}
 
@@ -25963,10 +25899,6 @@ snapshots:
   wif@2.0.6:
     dependencies:
       bs58check: 2.1.2
-
-  wif@5.0.0:
-    dependencies:
-      bs58check: 4.0.0
 
   word-wrap@1.2.5: {}
 
