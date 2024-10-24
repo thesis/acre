@@ -14,21 +14,8 @@ import {
 } from "@orangekit/react"
 import { Connector } from "wagmi"
 import { SignInWithWalletMessage } from "@orangekit/sign-in-with-wallet"
-import LedgerLiveWalletApiBitcoinProvider, {
-  LedgerLiveWalletApiBitcoinProviderOptions,
-} from "@orangekit/react/dist/src/wallet/ledger-live/provider"
-import LedgerLiveConnectorIcon from "@orangekit/react/dist/src/wallet/ledger-live/icon"
-import {
-  AcreMessageType,
-  AcreModule,
-  AcreWithdrawalData,
-} from "@ledgerhq/wallet-api-acre-module"
-import { BitcoinProvider } from "@acre-btc/sdk"
-import {
-  ConnectorConfig,
-  createOrangeKitConnector,
-} from "@orangekit/react/dist/src/wallet/connector"
-import { getExpirationDate } from "./time"
+import { getOrangeKitLedgerLiveConnector } from "./ledger-live"
+import { getExpirationDate } from "../time"
 
 const getWalletInfo = (connector: OrangeKitConnector) => {
   switch (connector.id) {
@@ -118,90 +105,6 @@ async function verifySignInWithWalletMessage(
   }
 
   return result.data
-}
-
-type Client = (client: unknown) => {
-  acre: AcreModule
-}
-
-export class AcreLedgerLiveBitcoinProvider
-  extends LedgerLiveWalletApiBitcoinProvider<Client>
-  implements BitcoinProvider
-{
-  constructor(
-    network: "mainnet" | "testnet",
-    options?: LedgerLiveWalletApiBitcoinProviderOptions,
-  ) {
-    super(network, {
-      tryConnectToAddress: options?.tryConnectToAddress,
-      // @ts-expect-error we do not have an access to the `WalletApiClient`
-      // type.
-      getCustomModule: (client) => ({ acre: new AcreModule(client) }),
-    })
-  }
-
-  async signWithdrawMessage(
-    message: string,
-    data: Omit<AcreWithdrawalData, "operation" | "nonce"> & {
-      operation: number
-      nonce: number
-    },
-  ) {
-    if (!this.account) throw new Error("Connect first")
-
-    const signature = await this.walletApiClient.custom.acre.messageSign(
-      this.account.id,
-      {
-        type: AcreMessageType.Withdraw,
-        message: {
-          ...data,
-          operation: data.operation.toString(),
-          nonce: data.nonce.toString(),
-        },
-      },
-      "0/0",
-    )
-
-    return signature.toString("hex")
-  }
-
-  async signMessage(message: string): Promise<string> {
-    if (!this.account) throw new Error("Connect first")
-
-    const signature = await this.walletApiClient.custom.acre.messageSign(
-      this.account.id,
-      {
-        type: AcreMessageType.SignIn,
-        message,
-      },
-      "0/0",
-    )
-
-    return this.normalizeV(this.account.address, signature)
-  }
-}
-
-function getOrangeKitLedgerLiveConnector({
-  rpcUrl,
-  chainId,
-  relayApiKey,
-  options,
-}: ConnectorConfig<LedgerLiveWalletApiBitcoinProviderOptions>) {
-  const bitcoinWalletProvider = new AcreLedgerLiveBitcoinProvider(
-    chainId === 1 ? "mainnet" : "testnet",
-    options,
-  )
-
-  return () =>
-    createOrangeKitConnector(
-      "orangekit-ledger-live",
-      "Ledger Live",
-      LedgerLiveConnectorIcon,
-      rpcUrl,
-      chainId,
-      bitcoinWalletProvider,
-      relayApiKey,
-    )
 }
 
 export default {
