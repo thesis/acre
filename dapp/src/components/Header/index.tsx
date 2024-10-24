@@ -2,12 +2,9 @@ import React from "react"
 import { AcreLogo } from "#/assets/icons"
 import { HStack, Icon, Link } from "@chakra-ui/react"
 import { EXTERNAL_HREF } from "#/constants"
-import { useMobileMode } from "#/hooks"
 import ConnectWallet from "./ConnectWallet"
 
 export default function Header() {
-  const isMobileMode = useMobileMode()
-
   return (
     <HStack
       as="header"
@@ -24,7 +21,7 @@ export default function Header() {
         <Icon as={AcreLogo} w={20} h={12} />
       </Link>
 
-      {!isMobileMode && <ConnectWallet />}
+      <ConnectWallet />
     </HStack>
   )
 }
