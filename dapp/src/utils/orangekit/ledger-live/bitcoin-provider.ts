@@ -239,7 +239,7 @@ export default class AcreLedgerLiveBitcoinProvider
       "0/0",
     )
 
-    return this.normalizeV(this.#account?.address, signature)
+    return this.#normalizeV(this.#account?.address, signature)
   }
 
   async signMessage(message: string): Promise<string> {
@@ -254,10 +254,10 @@ export default class AcreLedgerLiveBitcoinProvider
       "0/0",
     )
 
-    return this.normalizeV(this.#account.address, signature)
+    return this.#normalizeV(this.#account.address, signature)
   }
 
-  protected async normalizeV(address: string, signature: Buffer) {
+  async #normalizeV(address: string, signature: Buffer) {
     const signatureBytes = ethers.decodeBase64(signature.toString("base64"))
 
     const v = signatureBytes[0]
