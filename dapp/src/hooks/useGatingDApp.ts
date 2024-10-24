@@ -19,6 +19,8 @@ export default function useGatingDApp() {
   useEffect(() => {
     if (!featureFlags.GATING_DAPP_ENABLED) return
 
+    // TODO: Add condition only for the standalone dApp
+    // if (!encodedCode && !sEmbed) return
     if (!encodedCode) return
 
     if (modalType === MODAL_TYPES.LOADING && !isLoading) {
@@ -30,6 +32,8 @@ export default function useGatingDApp() {
   useEffect(() => {
     if (!featureFlags.GATING_DAPP_ENABLED) return
 
+    // TODO: Add condition only for the standalone dApp
+    // if (isMounted.current && !sEmbed) return
     if (isMounted.current) return
 
     isMounted.current = true
