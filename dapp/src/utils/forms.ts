@@ -3,6 +3,7 @@ import {
   PASSWORD_FORM_ERRORS,
   TOKEN_FORM_ERRORS,
 } from "#/constants"
+import sentry from "#/sentry"
 import { ActionFlowType, CurrencyType } from "#/types"
 import acreApi from "./acreApi"
 import { getCurrencyByType } from "./currency"
@@ -19,9 +20,15 @@ export async function validatePassword(
 ): Promise<string | undefined> {
   if (value === undefined || value === "") return PASSWORD_FORM_ERRORS.REQUIRED
 
-  const encodedCode = window.btoa(value)
-  const { isValid } = await acreApi.verifyAccessCode(encodedCode)
-  if (!isValid) return PASSWORD_FORM_ERRORS.INCORRECT_VALUE
+  try {
+    const encodedCode = window.btoa(value)
+    const { isValid } = await acreApi.verifyAccessCode(encodedCode)
+    if (!isValid) return PASSWORD_FORM_ERRORS.INCORRECT_VALUE
+  } catch (error) {
+    sentry.captureException(error)
+    console.error(error)
+    return PASSWORD_FORM_ERRORS.DEFAULT
+  }
 
   return undefined
 }
