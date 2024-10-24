@@ -47,7 +47,6 @@ export default function DashboardPage() {
       {featureFlags.BEEHIVE_COMPONENT_ENABLED && (
         <BeehiveCard gridArea="beehive" />
       )}
-      <UsefulLinks gridArea="useful-links" />
     </Grid>
   )
 }
