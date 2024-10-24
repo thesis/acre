@@ -13,30 +13,26 @@ import { H4, TextMd } from "#/components/shared/Typography"
 import { numberToLocaleString } from "#/utils"
 import { IconChevronDown } from "@tabler/icons-react"
 import { useTokenAmountField } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
-import {
-  ONE_MONTH_IN_DAYS,
-  ONE_WEEK_IN_DAYS,
-  ONE_YEAR_IN_DAYS,
-} from "#/constants"
+import { ONE_MONTH_IN_DAYS, ONE_WEEK_IN_DAYS } from "#/constants"
 
 const ACRE_POINTS_DATA = {
-  week: {
-    label: "Per week",
-    multipler: ONE_WEEK_IN_DAYS,
-  },
   month: {
     label: "Per month",
     multipler: ONE_MONTH_IN_DAYS,
   },
-  year: {
-    label: "Per year",
-    multipler: ONE_YEAR_IN_DAYS,
+  day: {
+    label: "Per day",
+    multipler: 1,
+  },
+  week: {
+    label: "Per week",
+    multipler: ONE_WEEK_IN_DAYS,
   },
 }
 
 function AcrePointsRewardEstimation(props: StackProps) {
   const [selectedTierItem, setSelectedTierItem] = useState(
-    ACRE_POINTS_DATA.week,
+    ACRE_POINTS_DATA.month,
   )
 
   const tierItems = [
@@ -111,6 +107,7 @@ function AcrePointsRewardEstimation(props: StackProps) {
                     key={tierItem.label}
                     onClick={() => setSelectedTierItem(tierItem)}
                     fontWeight="semibold"
+                    whiteSpace="nowrap"
                   >
                     {tierItem.label}
                   </MenuItem>
