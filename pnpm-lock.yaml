@@ -35,9 +35,12 @@ importers:
       '@ledgerhq/wallet-api-acre-module':
         specifier: 0.1.0-nightly.0
         version: 0.1.0-nightly.0
+      '@ledgerhq/wallet-api-client':
+        specifier: 1.6.0
+        version: 1.6.0
       '@orangekit/react':
-        specifier: 1.0.0-beta.33-dev.7
-        version: 1.0.0-beta.33-dev.7(@react-native-async-storage/async-storage@1.23.1(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10)))(@tanstack/query-core@5.45.0)(@tanstack/react-query@5.45.0(react@18.3.1))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(immer@10.1.1)(react-dom@18.3.1(react@18.3.1))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10))(rollup@4.18.0)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8)
+        specifier: 1.0.0-beta.32
+        version: 1.0.0-beta.32(@react-native-async-storage/async-storage@1.23.1(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10)))(@tanstack/query-core@5.45.0)(@tanstack/react-query@5.45.0(react@18.3.1))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(immer@10.1.1)(react-dom@18.3.1(react@18.3.1))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10))(rollup@4.18.0)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8)
       '@orangekit/sign-in-with-wallet':
         specifier: 1.0.0-beta.6
         version: 1.0.0-beta.6(bech32@2.0.0)(ethers@6.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))
@@ -2263,17 +2266,11 @@ packages:
   '@ledgerhq/wallet-api-acre-module@0.1.0-nightly.0':
     resolution: {integrity: sha512-VAhkV6m8FgM565pAek+19KjLsY5QQB9xTEMaNXxnQmBX+izuwchSfaqZrnzXGzR/HBKk6XVOrdwx2Xh5I8WKSg==}
 
-  '@ledgerhq/wallet-api-client@1.5.0':
-    resolution: {integrity: sha512-I07RlTmHw0uia5xhHa8Z3I7yVlYkxUWPfKWruh0vM6o0hDzPddGp+oDJZlriJIIrj2eHfaUCO1bEgycewPe0jA==}
-
   '@ledgerhq/wallet-api-client@1.6.0':
     resolution: {integrity: sha512-xf5g9baUB1Fn94GKYGNXtlRCKTWnqMBv1w9bE/H3+IXubwY7Cdy5zhn4rI8+iA4Llmwujp+sZciesWAa9f63gg==}
 
   '@ledgerhq/wallet-api-core@1.13.0':
     resolution: {integrity: sha512-HGnkPcbkeoNr+XAH+5NSrgyRYD/sVD3tgCyoYPAKEs7j3W/eJyT/EvBWwV4yPKhghfSjuqMo1L+0wLCXnbt4Dw==}
-
-  '@ledgerhq/wallet-api-core@1.6.0':
-    resolution: {integrity: sha512-nVPN3yu5+5pbhfFYh0iKmij5U7KVKZfpDkusXbj4yKvueKY8ZXU1wgvw1rDhgxlqu+s7JTA50MX56doyhm46Qg==}
 
   '@lit-labs/ssr-dom-shim@1.2.0':
     resolution: {integrity: sha512-yWJKmpGE6lUURKAaIltoPIE/wrbY3TEkqQt+X0m+7fQNnAv0keydnYvbiJFP1PnMhizmIWRWOG5KLhYyc/xl+g==}
@@ -2683,8 +2680,11 @@ packages:
   '@orangekit/contracts@1.0.0-beta.3':
     resolution: {integrity: sha512-xP1Oz/JzuHypg5DcsHayINhFSL5M/tCmRP/stmNAvjeebXhrKuALKAHWn98H0Mo3QfYYrz8UcltQPeH6+68n6A==}
 
-  '@orangekit/react@1.0.0-beta.33-dev.7':
-    resolution: {integrity: sha512-44Ujaij/7AjDCgkdnLOJ96TDMMEu2kmoFHO15rnZ8GAoNWpVmKcZ58uG18GuwwGzhyVbed+gRdjv0c4VQPTy8A==}
+  '@orangekit/react@1.0.0-beta.32':
+    resolution: {integrity: sha512-/ztJG0QjGoRDhs7sBCFxsAeTs5eVnm6e5qFKlDTwSbTP5AIQRTdjlQL+ThuTPjeZJBtyCTC+OvEFvt3PfVXEog==}
+
+  '@orangekit/sdk@1.0.0-beta.17':
+    resolution: {integrity: sha512-SWGWbsidxe9qRGTzRcvVxNVC//HBEj7L0QIqduFAu2RVe1Khi4HlS1jEkfcvLTxwjY0qzDQwUyxWovSmnJKZNw==}
 
   '@orangekit/sdk@1.0.0-beta.18-dev.3':
     resolution: {integrity: sha512-rxeqOWnan0iNHs4AMTAIJpc+AK/CxD7xloX7n0qw1C+2S/kEWw3JzHcuOrBgCMqBCzXuXYr0D9JpOmND+ZUzUg==}
@@ -13926,7 +13926,7 @@ snapshots:
       '@bitcoinerlab/secp256k1': 1.1.1
       '@keep-network/ecdsa': 2.1.0-dev.19(@keep-network/keep-core@1.8.1-dev.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))
       '@keep-network/tbtc-v2': 1.7.0-dev.4(@keep-network/keep-core@1.8.1-dev.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@5.0.10)
-      '@ledgerhq/wallet-api-client': 1.5.0
+      '@ledgerhq/wallet-api-client': 1.6.0
       bignumber.js: 9.1.2
       bitcoinjs-lib: 6.1.6
       bufio: 1.2.1
@@ -14054,12 +14054,6 @@ snapshots:
       '@ledgerhq/wallet-api-client': 1.6.0
       '@ledgerhq/wallet-api-core': 1.13.0
 
-  '@ledgerhq/wallet-api-client@1.5.0':
-    dependencies:
-      '@ledgerhq/hw-transport': 6.30.6
-      '@ledgerhq/wallet-api-core': 1.6.0
-      bignumber.js: 9.1.2
-
   '@ledgerhq/wallet-api-client@1.6.0':
     dependencies:
       '@ledgerhq/hw-transport': 6.30.6
@@ -14067,13 +14061,6 @@ snapshots:
       bignumber.js: 9.1.2
 
   '@ledgerhq/wallet-api-core@1.13.0':
-    dependencies:
-      '@ledgerhq/errors': 6.16.4
-      bignumber.js: 9.1.2
-      uuid: 9.0.1
-      zod: 3.23.8
-
-  '@ledgerhq/wallet-api-core@1.6.0':
     dependencies:
       '@ledgerhq/errors': 6.16.4
       bignumber.js: 9.1.2
@@ -14797,10 +14784,9 @@ snapshots:
     transitivePeerDependencies:
       - ethers
 
-  '@orangekit/react@1.0.0-beta.33-dev.7(@react-native-async-storage/async-storage@1.23.1(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10)))(@tanstack/query-core@5.45.0)(@tanstack/react-query@5.45.0(react@18.3.1))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(immer@10.1.1)(react-dom@18.3.1(react@18.3.1))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10))(rollup@4.18.0)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8)':
+  '@orangekit/react@1.0.0-beta.32(@react-native-async-storage/async-storage@1.23.1(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10)))(@tanstack/query-core@5.45.0)(@tanstack/react-query@5.45.0(react@18.3.1))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(immer@10.1.1)(react-dom@18.3.1(react@18.3.1))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10))(rollup@4.18.0)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8)':
     dependencies:
-      '@ledgerhq/wallet-api-client': 1.6.0
-      '@orangekit/sdk': 1.0.0-beta.18-dev.3(bufferutil@4.0.8)(encoding@0.1.13)(typescript@5.4.5)(utf-8-validate@5.0.10)
+      '@orangekit/sdk': 1.0.0-beta.17(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@5.0.10)
       '@rainbow-me/rainbowkit': 2.0.2(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(viem@2.8.16(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8))(wagmi@2.5.12(@react-native-async-storage/async-storage@1.23.1(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10)))(@tanstack/query-core@5.45.0)(@tanstack/react-query@5.45.0(react@18.3.1))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(immer@10.1.1)(react-dom@18.3.1(react@18.3.1))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10))(react@18.3.1)(rollup@4.18.0)(typescript@5.4.5)(utf-8-validate@5.0.10)(viem@2.8.16(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8))(zod@3.23.8))
       ethers: 6.12.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       react: 18.3.1
@@ -14836,6 +14822,22 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
       - zod
+
+  '@orangekit/sdk@1.0.0-beta.17(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@5.0.10)':
+    dependencies:
+      '@gelatonetwork/relay-sdk': 5.5.6(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@noble/curves': 1.4.0
+      '@noble/hashes': 1.4.0
+      '@orangekit/contracts': 1.0.0-beta.3(ethers@6.12.1(bufferutil@4.0.8)(utf-8-validate@5.0.10))
+      '@safe-global/protocol-kit': 3.1.1(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@5.0.10)
+      bitcoinjs-lib: 6.1.5
+      ethers: 6.12.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+    transitivePeerDependencies:
+      - bufferutil
+      - debug
+      - encoding
+      - supports-color
+      - utf-8-validate
 
   '@orangekit/sdk@1.0.0-beta.18-dev.3(bufferutil@4.0.8)(encoding@0.1.13)(typescript@5.4.5)(utf-8-validate@5.0.10)':
     dependencies:
@@ -17359,7 +17361,7 @@ snapshots:
 
   axios@0.27.2:
     dependencies:
-      follow-redirects: 1.15.6(debug@4.3.4)
+      follow-redirects: 1.15.6(debug@4.3.5)
       form-data: 4.0.0
     transitivePeerDependencies:
       - debug
@@ -17367,14 +17369,6 @@ snapshots:
   axios@1.6.7:
     dependencies:
       follow-redirects: 1.15.5
-      form-data: 4.0.0
-      proxy-from-env: 1.1.0
-    transitivePeerDependencies:
-      - debug
-
-  axios@1.7.2:
-    dependencies:
-      follow-redirects: 1.15.6(debug@4.3.4)
       form-data: 4.0.0
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
@@ -17390,7 +17384,7 @@ snapshots:
 
   axios@1.7.4:
     dependencies:
-      follow-redirects: 1.15.6(debug@4.3.4)
+      follow-redirects: 1.15.6(debug@4.3.5)
       form-data: 4.0.0
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
@@ -19231,7 +19225,7 @@ snapshots:
   eth-gas-reporter@0.2.27(bufferutil@4.0.8)(utf-8-validate@5.0.10):
     dependencies:
       '@solidity-parser/parser': 0.14.5
-      axios: 1.7.2
+      axios: 1.7.2(debug@4.3.5)
       cli-table3: 0.5.1
       colors: 1.4.0
       ethereum-cryptography: 1.2.0
