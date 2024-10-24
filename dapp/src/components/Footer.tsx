@@ -16,32 +16,26 @@ const NAVIGATION: Pick<LinkProps, "href" | "isExternal" | "children">[] = [
   {
     children: "Acre.fi",
     href: EXTERNAL_HREF.WEBSITE,
-    isExternal: true,
   },
   {
     children: "Docs",
     href: EXTERNAL_HREF.DOCS,
-    isExternal: true,
   },
   {
     children: "FAQ",
     href: EXTERNAL_HREF.FAQ,
-    isExternal: true,
   },
   {
     children: "Blog",
     href: EXTERNAL_HREF.BLOG,
-    isExternal: true,
   },
   {
     children: "Discord",
     href: EXTERNAL_HREF.DISCORD,
-    isExternal: true,
   },
   {
     children: "X",
     href: EXTERNAL_HREF.X,
-    isExternal: true,
   },
 ]
 
@@ -49,12 +43,10 @@ const DOCUMENTS: Pick<LinkProps, "href" | "isExternal" | "children">[] = [
   {
     children: "Privacy Policy",
     href: EXTERNAL_HREF.PRIVACY_POLICY,
-    isExternal: true,
   },
   {
     children: "Terms of Use",
     href: EXTERNAL_HREF.TERMS_OF_USE,
-    isExternal: true,
   },
 ]
 
@@ -76,6 +68,7 @@ export default function Footer() {
                   iconSpacing={0}
                   rightIcon={<Icon as={ArrowUpRight} />}
                   {...link}
+                  isExternal
                 />
               </ListItem>
             ))}

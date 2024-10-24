@@ -39,7 +39,7 @@ const linkStyles = defineStyle({
   display: "flex",
   color: "grey.700",
   fontWeight: "medium",
-  fontSize: {
+  fontSize: {F
     base: "xs",
     md: "sm",
   },
