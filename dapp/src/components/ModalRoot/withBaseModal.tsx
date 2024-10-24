@@ -32,8 +32,9 @@ function withBaseModal<T extends BaseModalProps>(
         closeOnEsc={closeOnEsc}
         {...modalProps}
       >
-        <ModalOverlay />
+        <ModalOverlay zIndex="modalOverlay" />
         <ModalContent
+          zIndex="modalContent"
           mr={{
             base: isSidebarOpen ? "var(--chakra-sizes-sidebar_width)" : 0,
             xl: 0,
