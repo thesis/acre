@@ -90,6 +90,22 @@ const verifyAccessCode = async (encodedCode: string): Promise<boolean> => {
   return response.data.isValid
 }
 
+async function getMats() {
+  const response = await axios.get<{ totalMats: number; dailyMats: number }>(
+    "mezo/points",
+  )
+
+  return {
+    totalMats: response.data.totalMats,
+    dailyMats: response.data.dailyMats,
+  }
+}
+
+async function getBtcUsdPrice(): Promise<number> {
+  const response = await axios.get<{ btcUsdPrice: number }>("currency/btc")
+  return response.data.btcUsdPrice
+}
+
 export default {
   createSession,
   getSession,
@@ -98,4 +114,6 @@ export default {
   getPointsDataByUser,
   claimPoints,
   verifyAccessCode,
+  getMats,
+  getBtcUsdPrice,
 }
