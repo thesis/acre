@@ -2,6 +2,7 @@ import {
   ConnectorConfig,
   createOrangeKitConnector,
 } from "@orangekit/react/dist/src/wallet/connector"
+import { BitcoinNetwork } from "@acre-btc/sdk"
 import icon from "./icon"
 
 import AcreLedgerLiveBitcoinProvider, {
@@ -15,7 +16,7 @@ export default function getOrangeKitLedgerLiveConnector({
   options,
 }: ConnectorConfig & { options: LedgerLiveWalletApiBitcoinProviderOptions }) {
   const bitcoinWalletProvider = new AcreLedgerLiveBitcoinProvider(
-    chainId === 1 ? "mainnet" : "testnet",
+    chainId === 1 ? BitcoinNetwork.Mainnet : BitcoinNetwork.Testnet,
     options,
   )
 
