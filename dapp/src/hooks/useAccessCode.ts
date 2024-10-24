@@ -2,18 +2,17 @@ import { useCallback } from "react"
 import useLocalStorage from "./useLocalStorage"
 
 export default function useAccessCode() {
-  const [accessCode, setAccessCode] = useLocalStorage<string | undefined>(
+  const [encodedCode, setAccessCode] = useLocalStorage<string | undefined>(
     "acre.accessCode",
     undefined,
   )
 
   const saveAccessCode = useCallback(
     (value: string) => {
-      const encodedCode = window.btoa(value)
-      setAccessCode(encodedCode)
+      setAccessCode(window.btoa(value))
     },
     [setAccessCode],
   )
 
-  return { encodedCode: accessCode, saveAccessCode }
+  return { encodedCode, saveAccessCode }
 }
