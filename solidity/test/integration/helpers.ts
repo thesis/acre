@@ -50,7 +50,14 @@ export const expectedMainnetAddresses = {
   pauseAdmin: "0x1299C7432034d1B85e148a2033d571a9B578292B",
   maintainer: "0x373C177845cEfaB4Ed85666b99c9fDB40ae7Cd19",
 
-  // Contracts
+  // Acre Contracts
+  stbtc: "0xdF217EFD8f3ecb5E837aedF203C28c1f06854017",
+  mezoAllocator: "0xb90fdAd3DFD180458D62Cc6acedc983D78E20122",
+  bitcoinDepositor: "0x2Ba614a598Cffa5a19d683cDCA97bac3a49313d1",
+  bitcoinRedeemer: "0x7e184B0cC12572D12Db6dA248322A0e3618fc756",
+  multiAssetVault: "0xB33D938616C328eda0370CDBdb4b02dD78E2cb19",
+
+  // External Contracts
   mezoPortal: "0xAB13B8eecf5AA2460841d75da5d5D861fD5B8A39",
   tbtc: "0x18084fbA666a33d37592fA2633fD49a74DD93a88",
   bridge: "0x5e4861a80B55f035D899f66772117F00FA0E8e7B",
