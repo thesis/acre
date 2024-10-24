@@ -93,6 +93,11 @@ async function getMats() {
   }
 }
 
+async function getBtcUsdPrice(): Promise<number> {
+  const response = await axios.get<{ btcUsdPrice: number }>("currency/btc")
+  return response.data.btcUsdPrice
+}
+
 export default {
   createSession,
   getSession,
@@ -101,4 +106,5 @@ export default {
   getPointsDataByUser,
   claimPoints,
   getMats,
+  getBtcUsdPrice,
 }
