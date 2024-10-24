@@ -119,9 +119,11 @@ async function verifySignInWithWalletMessage(
 
   return result.data
 }
+
 type Client = (client: unknown) => {
   acre: AcreModule
 }
+
 export class AcreLedgerLiveBitcoinProvider
   extends LedgerLiveWalletApiBitcoinProvider<Client>
   implements BitcoinProvider
@@ -132,17 +134,31 @@ export class AcreLedgerLiveBitcoinProvider
   ) {
     super(network, {
       tryConnectToAddress: options?.tryConnectToAddress,
-      // @ts-expect-error we do not have an access to the `WalletApiClient` type.
+      // @ts-expect-error we do not have an access to the `WalletApiClient`
+      // type.
       getCustomModule: (client) => ({ acre: new AcreModule(client) }),
     })
   }
 
-  async signWithdrawMessage(message: string, data: unknown) {
+  async signWithdrawMessage(
+    message: string,
+    data: Omit<AcreWithdrawalData, "operation" | "nonce"> & {
+      operation: number
+      nonce: number
+    },
+  ) {
     if (!this.account) throw new Error("Connect first")
 
     const signature = await this.walletApiClient.custom.acre.messageSign(
       this.account.id,
-      { type: AcreMessageType.Withdraw, message: data as AcreWithdrawalData },
+      {
+        type: AcreMessageType.Withdraw,
+        message: {
+          ...data,
+          operation: data.operation.toString(),
+          nonce: data.nonce.toString(),
+        },
+      },
       "0/0",
     )
 
@@ -158,9 +174,10 @@ export class AcreLedgerLiveBitcoinProvider
         type: AcreMessageType.SignIn,
         message,
       },
+      "0/0",
     )
 
-    return signature.toString("hex")
+    return this.normalizeV(this.account.address, signature)
   }
 }
 

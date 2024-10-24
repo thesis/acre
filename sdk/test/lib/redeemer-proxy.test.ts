@@ -74,6 +74,7 @@ describe("OrangeKitTbtcRedeemerProxy", () => {
     >
 
     beforeAll(async () => {
+      // @ts-expect-error test
       spyOnSendTransaction = jest
         .spyOn(orangeKitSdk, "sendTransaction")
         .mockResolvedValueOnce(mockedTxHash)

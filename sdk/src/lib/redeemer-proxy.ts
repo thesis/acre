@@ -71,10 +71,8 @@ export default class OrangeKitTbtcRedeemerProxy implements TbtcRedeemerProxy {
       async (message: string, txData: SafeTxData) => {
         await this.#onSignMessageStepCallback?.(message)
         const signedMessage =
-          await (this.#bitcoinProvider?.signWithdrawMessage?.(
-            message,
-            txData,
-          ) ?? (await this.#bitcoinProvider.signMessage(message)))
+          await (this.#bitcoinProvider.signWithdrawMessage?.(message, txData) ??
+            (await this.#bitcoinProvider.signMessage(message)))
 
         await this.#messageSignedStepCallback?.(signedMessage)
 
