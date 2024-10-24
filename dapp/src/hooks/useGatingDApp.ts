@@ -1,19 +1,38 @@
 import { useEffect, useRef } from "react"
 import { MODAL_TYPES } from "#/types"
 import { featureFlags } from "#/constants"
+import { useQuery } from "@tanstack/react-query"
+import { acreApi } from "#/utils"
 import { useModal } from "./useModal"
+import useAccessCode from "./useAccessCode"
 
 export default function useGatingDApp() {
-  const { openModal } = useModal()
+  const { encodedCode } = useAccessCode()
+  const { openModal, closeModal, modalType } = useModal()
   const isMounted = useRef(false)
+  const { data, isLoading } = useQuery({
+    queryKey: ["verify-access-code"],
+    enabled: !!encodedCode,
+    queryFn: async () => acreApi.verifyAccessCode(encodedCode!),
+  })
 
   useEffect(() => {
-    if (featureFlags.GATING_DAPP_ENABLED && !isMounted.current) {
-      isMounted.current = true
-      openModal(MODAL_TYPES.GATE, {
-        withCloseButton: false,
-        closeOnEsc: false,
-      })
+    if (!featureFlags.GATING_DAPP_ENABLED) return
+
+    if (!encodedCode) return
+
+    if (modalType === MODAL_TYPES.LOADING && !isLoading) {
+      closeModal()
+      if (!data?.isValid) openModal(MODAL_TYPES.GATE)
     }
-  }, [openModal])
+  }, [closeModal, data?.isValid, encodedCode, isLoading, modalType, openModal])
+
+  useEffect(() => {
+    if (!featureFlags.GATING_DAPP_ENABLED) return
+
+    if (isMounted.current) return
+
+    isMounted.current = true
+    openModal(encodedCode ? MODAL_TYPES.LOADING : MODAL_TYPES.GATE)
+  }, [encodedCode, openModal])
 }
