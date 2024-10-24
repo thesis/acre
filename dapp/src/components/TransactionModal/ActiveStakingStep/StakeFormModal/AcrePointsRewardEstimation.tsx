@@ -16,10 +16,6 @@ import { useTokenAmountField } from "#/components/shared/TokenAmountForm/TokenAm
 import { ONE_MONTH_IN_DAYS, ONE_WEEK_IN_DAYS } from "#/constants"
 
 const ACRE_POINTS_DATA = {
-  month: {
-    label: "Per month",
-    multipler: ONE_MONTH_IN_DAYS,
-  },
   day: {
     label: "Per day",
     multipler: 1,
@@ -27,6 +23,10 @@ const ACRE_POINTS_DATA = {
   week: {
     label: "Per week",
     multipler: ONE_WEEK_IN_DAYS,
+  },
+  month: {
+    label: "Per month",
+    multipler: ONE_MONTH_IN_DAYS,
   },
 }
 
