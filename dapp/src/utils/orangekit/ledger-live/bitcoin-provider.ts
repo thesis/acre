@@ -243,7 +243,7 @@ export default class AcreLedgerLiveBitcoinProvider
       "0/0",
     )
 
-    return this.#normalizeV(this.#account?.address, signature)
+    return this.#normalizeV(this.#account.address, signature)
   }
 
   async signMessage(message: string): Promise<string> {
