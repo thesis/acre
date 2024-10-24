@@ -18,6 +18,7 @@ import { useAcrePoints } from "#/hooks"
 import Spinner from "#/components/shared/Spinner"
 import { IconInfoCircle } from "@tabler/icons-react"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
+import useDebounce from "#/hooks/useDebounce"
 
 export default function AcrePointsCard(props: CardProps) {
   const {
@@ -29,6 +30,8 @@ export default function AcrePointsCard(props: CardProps) {
     updatePointsData,
     isCalculationInProgress,
   } = useAcrePoints()
+
+  const debouncedClaimPoints = useDebounce(claimPoints, 1000)
 
   const formattedTotalPointsAmount = numberToLocaleString(totalBalance)
   const formattedClaimablePointsAmount = numberToLocaleString(claimableBalance)
@@ -101,7 +104,7 @@ export default function AcrePointsCard(props: CardProps) {
               {claimableBalance && (
                 <Button
                   mt={3}
-                  onClick={claimPoints}
+                  onClick={debouncedClaimPoints}
                   w="full"
                   colorScheme="green"
                   color="gold.200"
