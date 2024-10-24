@@ -28,6 +28,7 @@ import { skeletonTheme } from "./Skeleton"
 import { closeButtonTheme } from "./CloseButton"
 import { progressTheme } from "./Progress"
 import { countdownTheme } from "./Countdown"
+import { footerTheme } from "./Footer"
 
 const defaultTheme = {
   // TODO: Remove when dark mode is ready
@@ -67,6 +68,7 @@ const defaultTheme = {
     Skeleton: skeletonTheme,
     Progress: progressTheme,
     Countdown: countdownTheme,
+    Footer: footerTheme,
   },
 }
 

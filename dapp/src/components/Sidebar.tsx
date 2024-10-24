@@ -67,7 +67,10 @@ export default function Sidebar() {
   return (
     <Box
       as="aside"
-      mt="header_height"
+      mt={{
+        base: "header_height",
+        xl: "header_height_xl",
+      }}
       w={isOpen ? "sidebar_width" : "0"}
       __css={styles.sidebarContainer}
       mr={isVisible ? scrollbarWidth : 0}
