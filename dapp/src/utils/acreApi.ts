@@ -51,8 +51,8 @@ const getPointsData = async () => {
 
 type PointsDataByUserResponse = {
   isEligible: boolean
-  claimed: string
-  unclaimed: string
+  claimed: number
+  unclaimed: number
 }
 
 const getPointsDataByUser = async (address: string) => {
@@ -60,8 +60,8 @@ const getPointsDataByUser = async (address: string) => {
   const response = await axios.get<PointsDataByUserResponse>(url)
 
   return {
-    claimed: BigInt(response.data.claimed),
-    unclaimed: BigInt(response.data.unclaimed),
+    claimed: Number(response.data.claimed),
+    unclaimed: Number(response.data.unclaimed),
     isEligible: response.data.isEligible,
   }
 }

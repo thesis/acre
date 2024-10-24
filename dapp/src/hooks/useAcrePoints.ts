@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { acreApi, bigIntToUserAmount } from "#/utils"
+import { acreApi } from "#/utils"
 import { queryKeysFactory } from "#/constants"
 import { MODAL_TYPES } from "#/types"
 import { useWallet } from "./useWallet"
@@ -38,8 +38,8 @@ export default function useAcrePoints(): UseAcrePointsReturnType {
       await userPointsDataQuery.refetch()
     },
     onSuccess: (data) => {
-      const claimedAmount = bigIntToUserAmount(data.claimed, 0)
-      const totalAmount = bigIntToUserAmount(data.total, 0)
+      const claimedAmount = Number(data.claimed)
+      const totalAmount = Number(data.total)
 
       openModal(MODAL_TYPES.ACRE_POINTS_CLAIM, {
         claimedAmount,
@@ -50,13 +50,9 @@ export default function useAcrePoints(): UseAcrePointsReturnType {
     // onError: (error) => {},
   })
 
-  const { data } = userPointsDataQuery
-  const totalBalance = bigIntToUserAmount(data?.claimed ?? 0n, 0)
-  const claimableBalance = bigIntToUserAmount(data?.unclaimed ?? 0n, 0)
-
   return {
-    totalBalance,
-    claimableBalance,
+    totalBalance: userPointsDataQuery.data?.claimed ?? 0,
+    claimableBalance: userPointsDataQuery.data?.unclaimed ?? 0,
     nextDropTimestamp: pointsDataQuery.data?.dropAt,
     isCalculationInProgress: pointsDataQuery.data?.isCalculationInProgress,
     claimPoints,
