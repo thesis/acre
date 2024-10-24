@@ -1,9 +1,9 @@
 {
   "id": "acre-testnet",
   "name": "Acre [testnet]",
-  "url": "https://stake.test.acre.fi/?embed=ledger-live",
+  "url": "https://ledger-live-updates--acre-dapp-testnet.netlify.app/?embed=ledger-live",
   "homepageUrl": "https:/acre.fi/",
-  "icon": "https://stake.test.acre.fi/acre.svg",
+  "icon": "https://ledger-live-updates--acre-dapp-testnet.netlify.app/acre.svg",
   "platforms": "desktop",
   "apiVersion": "^2.0.0",
   "manifestVersion": "2",
@@ -27,7 +27,8 @@
     "bitcoin.getXPub",
     "bitcoin.getAddress",
     "bitcoin.getPublicKey",
-    "custom.acre.messageSign"
+    "custom.acre.messageSign",
+    "custom.acre.transactionSignAndBroadcast"
   ],
   "domains": ["http://*"],
   "type": "walletApp"
