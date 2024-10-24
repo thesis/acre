@@ -11,7 +11,7 @@
     "esModuleInterop": true,
     "moduleResolution": "Bundler",
     "resolveJsonModule": true,
-    "skipLibCheck": true,
+    "skipLibCheck": true
   },
   "include": ["src", "test", "src/typings.d.ts", "jest.config.js"]
 }
