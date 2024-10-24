@@ -12,7 +12,9 @@ import {
 import { EXTERNAL_HREF } from "#/constants"
 import { AcreSignIcon, ArrowUpRight } from "#/assets/icons"
 
-const NAVIGATION: Pick<LinkProps, "href" | "isExternal" | "children">[] = [
+type FooterListItem = Pick<LinkProps, "href" | "children">
+
+const NAVIGATION: FooterListItem[] = [
   {
     children: "Acre.fi",
     href: EXTERNAL_HREF.WEBSITE,
@@ -39,7 +41,7 @@ const NAVIGATION: Pick<LinkProps, "href" | "isExternal" | "children">[] = [
   },
 ]
 
-const DOCUMENTS: Pick<LinkProps, "href" | "isExternal" | "children">[] = [
+const DOCUMENTS: FooterListItem[] = [
   {
     children: "Privacy Policy",
     href: EXTERNAL_HREF.PRIVACY_POLICY,
@@ -50,6 +52,26 @@ const DOCUMENTS: Pick<LinkProps, "href" | "isExternal" | "children">[] = [
   },
 ]
 
+const getItemsList = (
+  items: FooterListItem[],
+  styles: ReturnType<typeof useMultiStyleConfig>,
+) => (
+  <List __css={styles.list}>
+    {items.map((link) => (
+      <ListItem key={link.href}>
+        <Button
+          as={Link}
+          __css={styles.link}
+          iconSpacing={0}
+          rightIcon={<Icon as={ArrowUpRight} />}
+          {...link}
+          isExternal
+        />
+      </ListItem>
+    ))}
+  </List>
+)
+
 export default function Footer() {
   const styles = useMultiStyleConfig("Footer")
 
@@ -58,22 +80,8 @@ export default function Footer() {
       <Box __css={styles.wrapper}>
         <AcreSignIcon __css={styles.logo} />
 
-        {[NAVIGATION, DOCUMENTS].map((items) => (
-          <List __css={styles.list}>
-            {items.map((link) => (
-              <ListItem key={link.href}>
-                <Button
-                  as={Link}
-                  __css={styles.link}
-                  iconSpacing={0}
-                  rightIcon={<Icon as={ArrowUpRight} />}
-                  {...link}
-                  isExternal
-                />
-              </ListItem>
-            ))}
-          </List>
-        ))}
+        {getItemsList(NAVIGATION, styles)}
+        {getItemsList(DOCUMENTS, styles)}
       </Box>
     </Box>
   )
