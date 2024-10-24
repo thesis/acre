@@ -1,5 +1,11 @@
-import { ACTION_FORM_ERRORS, TOKEN_FORM_ERRORS } from "#/constants"
+import {
+  ACTION_FORM_ERRORS,
+  PASSWORD_FORM_ERRORS,
+  TOKEN_FORM_ERRORS,
+} from "#/constants"
+import sentry from "#/sentry"
 import { ActionFlowType, CurrencyType } from "#/types"
+import acreApi from "./acreApi"
 import { getCurrencyByType } from "./currency"
 import { fixedPointNumberToString } from "./numbers"
 
@@ -7,6 +13,24 @@ export function getErrorsObj<T>(errors: { [key in keyof T]: string }) {
   return (Object.keys(errors) as Array<keyof T>).every((name) => !errors[name])
     ? {}
     : errors
+}
+
+export async function validatePassword(
+  value: string | undefined,
+): Promise<string | undefined> {
+  if (value === undefined || value === "") return PASSWORD_FORM_ERRORS.REQUIRED
+
+  try {
+    const encodedCode = window.btoa(value)
+    const isValid = await acreApi.verifyAccessCode(encodedCode)
+    if (!isValid) return PASSWORD_FORM_ERRORS.INCORRECT_VALUE
+  } catch (error) {
+    sentry.captureException(error)
+    console.error(error)
+    return PASSWORD_FORM_ERRORS.DEFAULT
+  }
+
+  return undefined
 }
 
 export function validateTokenAmount(
@@ -35,6 +59,7 @@ export function validateTokenAmount(
 }
 
 type ParametrizedError = (value: number) => string
+
 export const isFormError = (
   type: keyof typeof TOKEN_FORM_ERRORS,
   message: string,
