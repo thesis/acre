@@ -50,13 +50,9 @@ export default function useAcrePoints(): UseAcrePointsReturnType {
     // onError: (error) => {},
   })
 
-  const { data } = userPointsDataQuery
-  const totalBalance = Number(data?.claimed ?? 0n)
-  const claimableBalance = Number(data?.unclaimed ?? 0n)
-
   return {
-    totalBalance,
-    claimableBalance,
+    totalBalance: userPointsDataQuery.data?.claimed ?? 0,
+    claimableBalance: userPointsDataQuery.data?.unclaimed ?? 0,
     nextDropTimestamp: pointsDataQuery.data?.dropAt,
     isCalculationInProgress: pointsDataQuery.data?.isCalculationInProgress,
     claimPoints,
