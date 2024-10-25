@@ -70,7 +70,9 @@ export default class AcreLedgerLiveBitcoinProvider
 
   readonly #options: LedgerLiveWalletApiBitcoinProviderOptions
 
-  constructor(
+  readonly #hwAppId = "Acre"
+
+  static init(
     network: BitcoinNetwork,
     options: LedgerLiveWalletApiBitcoinProviderOptions = {
       tryConnectToAddress: undefined,
@@ -85,6 +87,22 @@ export default class AcreLedgerLiveBitcoinProvider
       (client: WalletAPIClient) => ({ acre: new AcreModule(client) }),
     )
 
+    return new AcreLedgerLiveBitcoinProvider(
+      network,
+      windowMessageTransport,
+      walletApiClient,
+      options,
+    )
+  }
+
+  constructor(
+    network: BitcoinNetwork,
+    windowMessageTransport: WindowMessageTransport,
+    walletApiClient: WalletAPIClient,
+    options: LedgerLiveWalletApiBitcoinProviderOptions = {
+      tryConnectToAddress: undefined,
+    },
+  ) {
     this.#windowMessageTransport = windowMessageTransport
     this.#walletApiClient = walletApiClient
     this.#network = network
@@ -116,6 +134,7 @@ export default class AcreLedgerLiveBitcoinProvider
           amount: satoshis.toString(),
           recipient: to,
         },
+        { hwAppId: this.#hwAppId },
       ),
     )
 
@@ -262,6 +281,7 @@ export default class AcreLedgerLiveBitcoinProvider
         },
       },
       "0/0",
+      { hwAppId: this.#hwAppId },
     )
 
     return this.#normalizeV(this.#account.address, signature)
@@ -282,6 +302,7 @@ export default class AcreLedgerLiveBitcoinProvider
         message,
       },
       "0/0",
+      { hwAppId: this.#hwAppId },
     )
 
     return this.#normalizeV(this.#account.address, signature)

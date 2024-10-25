@@ -15,7 +15,7 @@ export default function getOrangeKitLedgerLiveConnector({
   relayApiKey,
   options,
 }: ConnectorConfig & { options: LedgerLiveWalletApiBitcoinProviderOptions }) {
-  const bitcoinWalletProvider = new AcreLedgerLiveBitcoinProvider(
+  const bitcoinWalletProvider = AcreLedgerLiveBitcoinProvider.init(
     chainId === 1 ? BitcoinNetwork.Mainnet : BitcoinNetwork.Testnet,
     options,
   )
