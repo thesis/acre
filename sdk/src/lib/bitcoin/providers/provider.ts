@@ -29,6 +29,9 @@ export interface BitcoinProvider {
 
   /**
    * Signs withdraw message.
+   * @param message Message to sign.
+   * @param data Withdrawal transaction data.
+   * @returns Hash of the signed message.
    */
   signWithdrawMessage?(message: string, data: unknown): Promise<string>
 }

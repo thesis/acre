@@ -91,6 +91,13 @@ export default class AcreLedgerLiveBitcoinProvider
     this.#options = options
   }
 
+  /**
+   * Signs and broadcasts a transaction.
+   * @param to The address of the transaction's recipient.
+   * @param satoshis The amount of Bitcoin in satoshi to send in the
+   *        transaction.
+   * @returns The transaction hash
+   */
   async sendBitcoin(
     to: BitcoinAddress,
     satoshis: number,
@@ -115,6 +122,9 @@ export default class AcreLedgerLiveBitcoinProvider
     return txHash
   }
 
+  /**
+   * @returns The account Bitcoin balance.
+   */
   async getBalance(): Promise<Balance> {
     if (this.#account === undefined) {
       throw new Error("Connect first")
@@ -146,6 +156,10 @@ export default class AcreLedgerLiveBitcoinProvider
     return balance
   }
 
+  /**
+   * Connects with the Ledger Live Wallet API.
+   * @returns Connected account address.
+   */
   async connect(): Promise<BitcoinAddress> {
     this.#windowMessageTransport.connect()
 
@@ -191,6 +205,9 @@ export default class AcreLedgerLiveBitcoinProvider
     return true
   }
 
+  /**
+   * Closes the connection with Ledger Live Wallet API.
+   */
   disconnect(): Promise<void> {
     this.#account = undefined
     this.#windowMessageTransport.disconnect()
@@ -201,13 +218,11 @@ export default class AcreLedgerLiveBitcoinProvider
   /**
    * In the Ledger Live Wallet API the address is "renewed" each time funds are
    * received in order to allow some privacy. But to get the same depositor
-   * owner Ethereum address we must always get the same Bitcoin address so we
-   * must rely on the extended public key.
+   * owner Ethereum address we must always get the same Bitcoin address (under
+   * the `m/purpose'/0'/accountId'/0/0` derivation path)
    *
-   * @returns Always the same bitcoin address based on the extended public key
-   *          (an address under the `m/purpose'/0'/accountId'/0/0` derivation
-   *          path) even the address has been "renewed" by the Ledger Live
-   *          Wallet API.
+   * @returns Always the same bitcoin address even the address has been
+   *          "renewed" by the Ledger Live Wallet API.
    */
   async getAddress(): Promise<string> {
     if (this.#account === undefined) {
@@ -221,6 +236,12 @@ export default class AcreLedgerLiveBitcoinProvider
     return this.#walletApiClient.bitcoin.getAddress(accountId, derivationPath)
   }
 
+  /**
+   * Signs withdraw message.
+   * @param message Message to sign.
+   * @param data Withdrawal transaction data.
+   * @returns Hash of the signed message.
+   */
   async signWithdrawMessage(
     message: string,
     data: Omit<AcreWithdrawalData, "operation" | "nonce"> & {
@@ -246,6 +267,11 @@ export default class AcreLedgerLiveBitcoinProvider
     return this.#normalizeV(this.#account.address, signature)
   }
 
+  /**
+   * Signs message.
+   * @param message Message to sign.
+   * @returns Hash of the signed message.
+   */
   async signMessage(message: string): Promise<string> {
     if (!this.#account) throw new Error("Connect first")
 
@@ -298,6 +324,9 @@ export default class AcreLedgerLiveBitcoinProvider
     return ethers.hexlify(signatureBytes)
   }
 
+  /**
+   * @returns The public key of the Bitcoin account.
+   */
   async getPublicKey(): Promise<string> {
     if (this.#account === undefined) {
       throw new Error("Connect first")
