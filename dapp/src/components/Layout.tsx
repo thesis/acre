@@ -1,12 +1,13 @@
 import React from "react"
 import { Outlet } from "react-router-dom"
-import { Flex } from "@chakra-ui/react"
+import { Flex, VStack } from "@chakra-ui/react"
 import { useIsEmbed, useMobileMode } from "#/hooks"
 import DocsDrawer from "./DocsDrawer"
 import Header from "./Header"
 import ModalRoot from "./ModalRoot"
 import Sidebar from "./Sidebar"
 import MobileModeBanner from "./MobileModeBanner"
+import Footer from "./Footer"
 
 const PADDING = "2.5rem" // 40px
 const PAGE_MAX_WIDTH = {
@@ -26,19 +27,27 @@ function Layout() {
     : PAGE_MAX_WIDTH.standalone
 
   return (
-    <Flex
-      flexFlow="column"
-      mx="auto"
-      p={PADDING}
-      maxWidth={`calc(${maxWidth} + 2*${PADDING})`}
-    >
+    <VStack spacing={0} minH="100vh">
       <Header />
-      <Outlet />
 
-      <Sidebar />
-      <DocsDrawer />
-      <ModalRoot />
-    </Flex>
+      <Flex
+        flexFlow="column"
+        mx="auto"
+        p={PADDING}
+        pt={0.5}
+        w="full"
+        maxWidth={`calc(${maxWidth} + 2*${PADDING})`}
+        flex={1}
+      >
+        <Outlet />
+
+        <Sidebar />
+        <DocsDrawer />
+        <ModalRoot />
+      </Flex>
+
+      <Footer />
+    </VStack>
   )
 }
 
