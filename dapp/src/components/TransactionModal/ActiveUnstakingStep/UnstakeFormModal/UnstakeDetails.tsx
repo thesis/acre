@@ -30,7 +30,7 @@ function UnstakeDetails({
   const { total, ...restFees } = details.transactionFee
 
   return (
-    <Flex flexDirection="column" gap={10} mt={4}>
+    <Flex flexDirection="column" gap={10} mt={10}>
       {featureFlags.GAMIFICATION_ENABLED && (
         <WithdrawWarning balance={balance} currency={currency} />
       )}
