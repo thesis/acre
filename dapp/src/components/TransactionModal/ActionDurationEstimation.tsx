@@ -12,9 +12,9 @@ export default function ActionDurationEstimation({
   const { value: amount } = useTokenAmountField()
 
   return (
-    <TextMd mt={4} color="grey.500">
+    <TextMd mt={4} color="grey.400">
       Estimated duration&nbsp;
-      <TextMd as="span" color="grey.700">
+      <TextMd as="span" color="grey.500">
         ~ {getEstimatedDuration(amount ?? 0n, type)}
       </TextMd>
     </TextMd>
