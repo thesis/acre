@@ -4,8 +4,9 @@ import { CurrencyType } from "#/types"
 import { MINIMUM_BALANCE } from "#/constants"
 import { formatSatoshiAmount, getCurrencyByType } from "#/utils"
 import { TextMd } from "#/components/shared/Typography"
-import { useTokenAmountField } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
+import { TOKEN_AMOUNT_FIELD_NAME } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { Alert, AlertTitle, AlertIcon } from "#/components/shared/Alert"
+import { useFormField } from "#/hooks"
 
 function WithdrawWarning({
   balance,
@@ -14,7 +15,9 @@ function WithdrawWarning({
   balance: bigint
   currency: CurrencyType
 }) {
-  const { value, isValid } = useTokenAmountField()
+  const { value, isValid } = useFormField<bigint | undefined>(
+    TOKEN_AMOUNT_FIELD_NAME,
+  )
   const amount = value ?? 0n
 
   const { symbol } = getCurrencyByType(currency)
