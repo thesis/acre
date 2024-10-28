@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import {
   Box,
   Button,
@@ -102,6 +102,7 @@ function FiatCurrencyBalance({
 
 export type TokenBalanceInputProps = {
   amount?: bigint
+  defaultAmount?: bigint
   currency: CurrencyType
   tokenBalance: bigint
   placeholder?: string
@@ -116,6 +117,7 @@ export type TokenBalanceInputProps = {
 
 export default function TokenBalanceInput({
   amount,
+  defaultAmount,
   currency,
   tokenBalance,
   placeholder,
@@ -155,6 +157,16 @@ export default function TokenBalanceInput({
     typeof errorMsgText === "string" &&
     isFormError("EXCEEDED_VALUE", errorMsgText)
 
+  const defaultValue = defaultAmount
+    ? fixedPointNumberToString(defaultAmount, decimals)
+    : undefined
+
+  useEffect(() => {
+    if (!defaultAmount) return
+
+    setAmount(defaultAmount)
+  }, [defaultAmount, setAmount])
+
   return (
     <FormControl isInvalid={hasError} isDisabled={inputProps.isDisabled}>
       <FormLabel htmlFor={inputProps.name} size={size} mr={0}>
@@ -185,6 +197,7 @@ export default function TokenBalanceInput({
           allowNegative={false}
           {...inputProps}
           value={displayedValue}
+          defaultValue={defaultValue}
           onValueChange={onValueChange}
           onChange={onChange}
         />

@@ -51,7 +51,7 @@ export default function TokenAmountFormBase({
         tokenAmountLabel={tokenAmountLabel}
         currency={currency}
         withMaxButton={withMaxButton}
-        defaultValue={defaultAmount}
+        defaultAmount={defaultAmount}
         autoFocus
       />
       {children}

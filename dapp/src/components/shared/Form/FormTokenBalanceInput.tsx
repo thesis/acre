@@ -1,16 +1,14 @@
-import React, { useCallback, useEffect } from "react"
+import React, { useCallback } from "react"
 import { useField } from "formik"
 import { logPromiseFailure } from "#/utils"
 import TokenBalanceInput, { TokenBalanceInputProps } from "../TokenBalanceInput"
 
 export type FormTokenBalanceInputProps = {
   name: string
-  defaultValue?: bigint
-} & Omit<TokenBalanceInputProps, "setAmount" | "defaultValue">
+} & Omit<TokenBalanceInputProps, "setAmount">
 
 export function FormTokenBalanceInput({
   name,
-  defaultValue,
   ...restProps
 }: FormTokenBalanceInputProps) {
   const [field, meta, helpers] = useField(name)
@@ -25,17 +23,11 @@ export function FormTokenBalanceInput({
     [helpers, meta.touched, meta.error],
   )
 
-  useEffect(() => {
-    if (defaultValue) {
-      setAmount(defaultValue)
-    }
-  }, [defaultValue, setAmount])
-
   return (
     <TokenBalanceInput
       {...restProps}
       {...field}
-      amount={defaultValue ?? (meta.value as bigint)}
+      amount={meta.value as bigint}
       setAmount={setAmount}
       hasError={Boolean(meta.error)}
       errorMsgText={meta.error}
