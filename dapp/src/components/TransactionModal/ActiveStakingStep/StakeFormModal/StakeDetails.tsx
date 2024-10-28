@@ -23,16 +23,6 @@ function StakeDetails({ currency }: { currency: CurrencyType }) {
 
   return (
     <List spacing={3} mt={10}>
-      <TransactionDetailsAmountItem
-        label="Amount to be deposited"
-        from={{
-          currency,
-          amount: details.amount,
-        }}
-        to={{
-          currency: "usd",
-        }}
-      />
       <FeesDetailsAmountItem
         label="Fees"
         // TODO: Add `Bitcoin Network fee` (funding transaction fee selected by
@@ -48,14 +38,12 @@ function StakeDetails({ currency }: { currency: CurrencyType }) {
           currency: "usd",
         }}
       />
+
       <TransactionDetailsAmountItem
-        label="Approximate staked tokens"
+        label="You will deposit"
         from={{
           currency,
-          amount: details.estimatedAmount,
-        }}
-        to={{
-          currency: "usd",
+          amount: details.amount,
         }}
       />
     </List>

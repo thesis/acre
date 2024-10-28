@@ -35,17 +35,6 @@ function UnstakeDetails({
         <WithdrawWarning balance={balance} currency={currency} />
       )}
       <List spacing={3}>
-        <TransactionDetailsAmountItem
-          label="Withdraw from pool"
-          from={{
-            currency,
-            amount: details.amount,
-          }}
-          to={{
-            currency: "usd",
-          }}
-        />
-
         <FeesDetailsAmountItem
           label="Fees"
           // TODO: Add `Bitcoin Network fee` (funding transaction fee selected by
@@ -66,9 +55,6 @@ function UnstakeDetails({
           from={{
             currency,
             amount: details.estimatedAmount,
-          }}
-          to={{
-            currency: "usd",
           }}
         />
       </List>
