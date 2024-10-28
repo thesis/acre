@@ -163,13 +163,13 @@ export default class AcreLedgerLiveBitcoinProvider
       throw new Error("Failed to get account balance")
     }
 
-    const total = account.balance
-    const confirmed = account.spendableBalance
+    const total = BigInt(account.balance.toString())
+    const confirmed = BigInt(account.spendableBalance.toString())
 
     const balance: Balance = {
       total: total.toString(),
       confirmed: confirmed.toString(),
-      unconfirmed: total.minus(confirmed).toString(),
+      unconfirmed: (total - confirmed).toString(),
     }
 
     return balance
