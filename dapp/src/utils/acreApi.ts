@@ -82,6 +82,14 @@ const claimPoints = async (address: string) => {
   }
 }
 
+const verifyAccessCode = async (encodedCode: string): Promise<boolean> => {
+  const response = await axios.post<{ isValid: boolean }>("access/verify", {
+    encodedCode,
+  })
+
+  return response.data.isValid
+}
+
 async function getMats() {
   const response = await axios.get<{ totalMats: number; dailyMats: number }>(
     "mezo/points",
@@ -105,6 +113,7 @@ export default {
   getPointsData,
   getPointsDataByUser,
   claimPoints,
+  verifyAccessCode,
   getMats,
   getBtcUsdPrice,
 }

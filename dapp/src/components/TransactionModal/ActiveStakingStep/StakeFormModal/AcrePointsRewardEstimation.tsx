@@ -12,7 +12,8 @@ import {
 import { H4, TextMd } from "#/components/shared/Typography"
 import { numberToLocaleString } from "#/utils"
 import { IconChevronDown } from "@tabler/icons-react"
-import { useTokenAmountField } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
+import { TOKEN_AMOUNT_FIELD_NAME } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
+import { useFormField } from "#/hooks"
 import { ONE_MONTH_IN_DAYS, ONE_WEEK_IN_DAYS } from "#/constants"
 
 const ACRE_POINTS_DATA = {
@@ -44,7 +45,9 @@ function AcrePointsRewardEstimation(props: StackProps) {
     ),
   ]
 
-  const { value = 0n } = useTokenAmountField()
+  const { value = 0n } = useFormField<bigint | undefined>(
+    TOKEN_AMOUNT_FIELD_NAME,
+  )
   const baseReward = Number(value)
   const pointsRate = 10000
 

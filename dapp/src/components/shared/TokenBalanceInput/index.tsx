@@ -3,10 +3,8 @@ import {
   Box,
   Button,
   FormControl,
-  FormErrorMessage,
   FormHelperText,
   FormLabel,
-  Icon,
   InputGroup,
   InputProps,
   InputRightElement,
@@ -19,52 +17,13 @@ import {
   userAmountToBigInt,
 } from "#/utils"
 import { CurrencyType } from "#/types"
-import { IconInfoCircle } from "@tabler/icons-react"
 import { useCurrencyConversion } from "#/hooks"
 import NumberFormatInput, {
   NumberFormatInputValues,
   NumberFormatInputProps,
 } from "../NumberFormatInput"
 import { CurrencyBalance } from "../CurrencyBalance"
-import { Alert, AlertIcon, AlertDescription } from "../Alert"
-
-const VARIANT = "balance"
-
-type HelperErrorTextProps = {
-  errorMsgText?: string | JSX.Element
-  hasError?: boolean
-  helperText?: string | JSX.Element
-}
-
-function HelperErrorText({
-  helperText,
-  errorMsgText,
-  hasError,
-}: HelperErrorTextProps) {
-  if (hasError) {
-    return (
-      <FormErrorMessage>
-        <Alert status="error">
-          <AlertIcon status="error" />
-          <AlertDescription>
-            {errorMsgText || "Please enter a valid value"}
-          </AlertDescription>
-        </Alert>
-      </FormErrorMessage>
-    )
-  }
-
-  if (helperText) {
-    return (
-      <FormHelperText>
-        <Icon as={IconInfoCircle} />
-        {helperText}
-      </FormHelperText>
-    )
-  }
-
-  return null
-}
+import HelperErrorText, { HelperErrorTextProps } from "../Form/HelperErrorText"
 
 type FiatCurrencyBalanceProps = {
   amount: bigint
@@ -111,7 +70,7 @@ export type TokenBalanceInputProps = {
   setAmount: (value?: bigint) => void
   withMaxButton?: boolean
   tokenAmountLabel?: string
-} & InputProps &
+} & Omit<InputProps, "isInvalid" | "value" | "onValueChange" | "onChange"> &
   HelperErrorTextProps &
   Pick<NumberFormatInputProps, "decimalScale">
 
@@ -185,17 +144,17 @@ export default function TokenBalanceInput({
           </Box>
         </Box>
       </FormLabel>
-      <InputGroup variant={VARIANT}>
+      <InputGroup>
         <NumberFormatInput
+          variant="outline"
           size={size}
-          variant={VARIANT}
-          isInvalid={hasError}
           suffix={` ${symbol}`}
           placeholder={placeholder}
           integerScale={10}
           decimalScale={decimals}
           allowNegative={false}
           {...inputProps}
+          isInvalid={hasError}
           value={displayedValue}
           defaultValue={defaultValue}
           onValueChange={onValueChange}
