@@ -6,6 +6,9 @@ import WelcomeModal from "../WelcomeModal"
 import MezoBeehiveModal from "../MezoBeehiveModal"
 import ConnectWalletModal from "../ConnectWalletModal"
 import UnexpectedErrorModal from "../UnexpectedErrorModal"
+import AcrePointsClaimModal from "../AcrePointsClaimModal"
+import GateModal from "../GateModal"
+import LoadingModal from "../LoadingModal"
 
 const MODALS: Record<ModalType, ElementType> = {
   STAKE: TransactionModal,
@@ -14,6 +17,9 @@ const MODALS: Record<ModalType, ElementType> = {
   MEZO_BEEHIVE: MezoBeehiveModal,
   CONNECT_WALLET: ConnectWalletModal,
   UNEXPECTED_ERROR: UnexpectedErrorModal,
+  ACRE_POINTS_CLAIM: AcrePointsClaimModal,
+  GATE: GateModal,
+  LOADING: LoadingModal,
 } as const
 
 export default function ModalRoot() {

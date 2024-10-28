@@ -13,7 +13,13 @@ const WITHDRAWALS_ENABLED =
 const BEEHIVE_COMPONENT_ENABLED =
   import.meta.env.VITE_FEATURE_FLAG_BEEHIVE_COMPONENT_ENABLED === "true"
 
+const ACRE_POINTS_ENABLED =
+  import.meta.env.VITE_FEATURE_FLAG_ACRE_POINTS_ENABLED === "true"
+
 const TVL_ENABLED = import.meta.env.VITE_FEATURE_FLAG_TVL_ENABLED === "true"
+
+const GATING_DAPP_ENABLED =
+  import.meta.env.VITE_FEATURE_GATING_DAPP_ENABLED === "true"
 
 const featureFlags = {
   GAMIFICATION_ENABLED,
@@ -21,7 +27,9 @@ const featureFlags = {
   XVERSE_WALLET_ENABLED,
   WITHDRAWALS_ENABLED,
   BEEHIVE_COMPONENT_ENABLED,
+  ACRE_POINTS_ENABLED,
   TVL_ENABLED,
+  GATING_DAPP_ENABLED,
 }
 
 export default featureFlags
