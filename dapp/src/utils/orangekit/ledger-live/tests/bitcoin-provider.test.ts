@@ -339,7 +339,7 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
       { methodName: "signWithdrawMessage", args: ["", withdrawalData] },
       { methodName: "getAddress", args: [] },
       { methodName: "getBalance", args: [] },
-    ])("%methodName", ({ methodName, args }) => {
+    ])("$methodName", ({ methodName, args }) => {
       it("should throw an error", async () => {
         await expect(() =>
           // @ts-expect-error test
