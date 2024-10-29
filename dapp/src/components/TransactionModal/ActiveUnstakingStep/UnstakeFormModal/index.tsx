@@ -39,7 +39,7 @@ function UnstakeFormModal({
       defaultAmount={defaultAmount}
     >
       <UnstakeDetails balance={balance} currency="bitcoin" />
-      <FormSubmitButton mt={10}>Withdraw</FormSubmitButton>
+      <FormSubmitButton mt={8}>Withdraw</FormSubmitButton>
       <ActionDurationEstimation type="withdraw" />
     </TokenAmountForm>
   )
