@@ -29,6 +29,20 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
     spendableBalance: 80,
   }
   const hwAppId = "Acre"
+
+  const withdrawalData = {
+    to: "0x0",
+    value: "100",
+    data: "0x1",
+    safeTxGas: "0x0",
+    baseGas: "0x0",
+    gasPrice: "0x0",
+    gasToken: ZeroAddress,
+    refundReceiver: ZeroAddress,
+    operation: 1,
+    nonce: 1,
+  }
+
   const mockedWalletApiClient = {
     custom: {
       acre: {
@@ -151,26 +165,13 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
       const expectedSignature =
         "0x1f1dbbf7d6b573577ddf875ce1be7b774df5734d7a7f8ddbeb97fbf75d1ddf8f1ad76e786b47fd7dc79cd1ef7dedee3a774d74e5bdf97b5d796fdd79e76f3c7b5e75e7777c69dddb6ba79e779776f36ddef5bf1ce74f36e9e69b779f347fa7fdeb47fa"
 
-      const data = {
-        to: "0x0",
-        value: "100",
-        data: "0x1",
-        safeTxGas: "0x0",
-        baseGas: "0x0",
-        gasPrice: "0x0",
-        gasToken: ZeroAddress,
-        refundReceiver: ZeroAddress,
-        operation: 1,
-        nonce: 1,
-      }
-
       let result: string
 
       beforeAll(async () => {
         mockedWalletApiClient.custom.acre.messageSign.mockResolvedValueOnce(
           signature,
         )
-        result = await provider.signWithdrawMessage("", data)
+        result = await provider.signWithdrawMessage("", withdrawalData)
       })
 
       it("should call the acre custom module to sign withdraw message", () => {
@@ -181,9 +182,9 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
           {
             type: AcreMessageType.Withdraw,
             message: {
-              ...data,
-              operation: data.operation.toString(),
-              nonce: data.nonce.toString(),
+              ...withdrawalData,
+              operation: withdrawalData.operation.toString(),
+              nonce: withdrawalData.nonce.toString(),
             },
           },
           "0/0",
@@ -274,18 +275,18 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
     })
 
     describe.each([
-      "getPublicKey",
-      "sendBitcoin",
-      "signMessage",
-      "signWithdrawMessage",
-      "getAddress",
-      "getBalance",
-    ])("%s", (methodName) => {
+      { methodName: "getPublicKey", args: [] },
+      { methodName: "sendBitcoin", args: [] },
+      { methodName: "signMessage", args: [] },
+      { methodName: "signWithdrawMessage", args: ["", withdrawalData] },
+      { methodName: "getAddress", args: [] },
+      { methodName: "getBalance", args: [] },
+    ])("%methodName", ({ methodName, args }) => {
       it("should throw an error", async () => {
         await expect(() =>
           // @ts-expect-error test
           // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
-          provider[methodName](),
+          provider[methodName](...args),
         ).rejects.toThrowError("Connect first")
       })
     })

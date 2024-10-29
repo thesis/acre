@@ -18,6 +18,7 @@ import {
   BitcoinProvider,
 } from "@acre-btc/sdk"
 import {
+  AcreMessage,
   AcreMessageType,
   AcreModule,
   AcreWithdrawalData,
@@ -268,23 +269,14 @@ export default class AcreLedgerLiveBitcoinProvider
       nonce: number
     },
   ) {
-    if (!this.#account) throw new Error("Connect first")
-
-    const signature = await this.#walletApiClient.custom.acre.messageSign(
-      this.#account.id,
-      {
-        type: AcreMessageType.Withdraw,
-        message: {
-          ...data,
-          operation: data.operation.toString(),
-          nonce: data.nonce.toString(),
-        },
+    return this.#signMessage({
+      type: AcreMessageType.Withdraw,
+      message: {
+        ...data,
+        operation: data.operation.toString(),
+        nonce: data.nonce.toString(),
       },
-      "0/0",
-      { hwAppId: this.#hwAppId },
-    )
-
-    return this.#normalizeV(this.#account.address, signature)
+    })
   }
 
   /**
@@ -293,16 +285,19 @@ export default class AcreLedgerLiveBitcoinProvider
    * @returns Hash of the signed message.
    */
   async signMessage(message: string): Promise<string> {
+    return this.#signMessage({ type: AcreMessageType.SignIn, message })
+  }
+
+  async #signMessage(message: AcreMessage) {
     if (!this.#account) throw new Error("Connect first")
 
-    const signature = await this.#walletApiClient.custom.acre.messageSign(
-      this.#account.id,
-      {
-        type: AcreMessageType.SignIn,
+    const signature = await tryRequest<Buffer>()(async () =>
+      this.#walletApiClient.custom.acre.messageSign(
+        this.#account!.id,
         message,
-      },
-      "0/0",
-      { hwAppId: this.#hwAppId },
+        "0/0",
+        { hwAppId: this.#hwAppId },
+      ),
     )
 
     return this.#normalizeV(this.#account.address, signature)
