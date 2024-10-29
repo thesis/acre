@@ -155,7 +155,11 @@ export function useWallet(): UseWalletReturn {
 
   useEffect(() => {
     const fetchBitcoinAddress = async () => {
-      if (connector) {
+      if (
+        connector &&
+        typeof connector.getAccounts === "function" &&
+        typeof connector.getBitcoinAddress === "function"
+      ) {
         const btcAddress = await connector.getBitcoinAddress()
         const accounts = await connector.getAccounts()
 
