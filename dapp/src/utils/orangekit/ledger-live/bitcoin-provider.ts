@@ -62,15 +62,15 @@ export default class AcreLedgerLiveBitcoinProvider
 
   readonly #windowMessageTransport: WindowMessageTransport
 
-  #account: Account | undefined
-
   readonly #network: BitcoinNetwork
-
-  #hasConnectFunctionBeenCalled: boolean = false
 
   readonly #options: LedgerLiveWalletApiBitcoinProviderOptions
 
   readonly #hwAppId = "Acre"
+
+  #hasConnectFunctionBeenCalled: boolean = false
+
+  #account: Account | undefined
 
   static init(
     network: BitcoinNetwork,
