@@ -1,13 +1,13 @@
 import React from "react"
-import { useTriggerConnectWalletModal } from "#/hooks"
 import { featureFlags } from "#/constants"
+import { useTriggerConnectWalletModal } from "#/hooks"
 import { Grid } from "@chakra-ui/react"
 import DashboardCard from "./DashboardCard"
 // import GrantedSeasonPassCard from "./GrantedSeasonPassCard"
 import AcrePointsCard from "./AcrePointsCard"
-import { CurrentSeasonCard } from "./CurrentSeasonCard"
-import BeehiveCard from "./BeehiveCard"
 import AcrePointsTemplateCard from "./AcrePointsTemplateCard"
+import BeehiveCard from "./BeehiveCard"
+import { AcreTVLProgress } from "./AcreTVLProgress"
 
 const TEMPLATE_AREAS = `
   ${featureFlags.TVL_ENABLED ? '"dashboard current-season"' : ""}
@@ -32,17 +32,19 @@ export default function DashboardPage() {
       }}
       gridTemplateRows={GRID_TEMPLATE_ROWS}
     >
+      {featureFlags.TVL_ENABLED && <AcreTVLProgress />}
+
       <DashboardCard gridArea="dashboard" h="fit-content" />
+
       {/* TODO: Uncomment in post-launch phases + add `gridArea` and update  `templateAreas` */}
       {/* <GrantedSeasonPassCard /> */}
-      {featureFlags.TVL_ENABLED && (
-        <CurrentSeasonCard showSeasonStats={false} gridArea="current-season" />
-      )}
+
       {featureFlags.ACRE_POINTS_ENABLED ? (
         <AcrePointsCard gridArea="acre-points" />
       ) : (
         <AcrePointsTemplateCard gridArea="acre-points" />
       )}
+
       {featureFlags.BEEHIVE_COMPONENT_ENABLED && (
         <BeehiveCard gridArea="beehive" />
       )}
