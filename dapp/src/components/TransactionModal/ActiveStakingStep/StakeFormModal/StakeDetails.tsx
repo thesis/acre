@@ -43,7 +43,7 @@ function StakeDetails({ currency }: { currency: CurrencyType }) {
         label="You will deposit"
         from={{
           currency,
-          amount: details.amount,
+          amount: details.estimatedAmount,
         }}
       />
     </List>
