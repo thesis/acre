@@ -13,7 +13,7 @@
     "lint:js:fix": "eslint . --fix",
     "lint:config": "prettier -c '**/*.@(json|yaml|toml)'",
     "lint:config:fix": "prettier -w '**/*.@(json|yaml|toml)'",
-    "test": "vitest",
+    "test": "vitest --reporter=verbose",
     "generate:manifests": "for env in development testnet mainnet; do mustache config/$env.json ./manifests/ledger-live/ledger-manifest-template.json > ./manifests/ledger-live/ledger-live-manifest-$env.json; done"
   },
   "dependencies": {
