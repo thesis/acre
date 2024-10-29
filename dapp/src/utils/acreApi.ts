@@ -51,8 +51,8 @@ const getPointsData = async () => {
 
 type PointsDataByUserResponse = {
   isEligible: boolean
-  claimed: number
-  unclaimed: number
+  claimed: string
+  unclaimed: string
 }
 
 const getPointsDataByUser = async (address: string) => {
