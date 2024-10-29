@@ -1,14 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { BitcoinNetwork } from "@acre-btc/sdk"
-import {
-  beforeAll,
-  vi,
-  expect,
-  describe,
-  it,
-  beforeEach,
-  afterAll,
-} from "vitest"
+import { beforeAll, vi, expect, describe, it } from "vitest"
 import {
   WalletAPIClient,
   WindowMessageTransport,
@@ -16,7 +7,6 @@ import {
 import { Balance } from "@orangekit/react/dist/src/wallet/bitcoin-wallet-provider"
 import { AcreMessageType } from "@ledgerhq/wallet-api-acre-module"
 import { ZeroAddress } from "ethers"
-import { others } from "@chakra-ui/react"
 import AcreLedgerLiveBitcoinProvider from "../bitcoin-provider"
 
 describe("AcreLedgerLiveBitcoinProvider", () => {
@@ -139,7 +129,7 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
       })
     })
 
-    describe("getAddress", async () => {
+    describe("getAddress", () => {
       let result: string
 
       beforeAll(async () => {
