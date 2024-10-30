@@ -1,6 +1,6 @@
-import { BitcoinProvider } from "../../src/lib/bitcoin/providers"
+import { AcreBitcoinProvider } from "../../src/lib/bitcoin/providers"
 
-class MockBitcoinProvider implements BitcoinProvider {
+class MockBitcoinProvider implements AcreBitcoinProvider {
   getAddress = jest.fn()
 
   getPublicKey = jest.fn()

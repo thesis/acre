@@ -5,7 +5,7 @@ import {
 } from "@keep-network/tbtc-v2.ts"
 import { OrangeKitSdk, SafeTransactionData } from "@orangekit/sdk"
 import { AcreContracts } from "./contracts"
-import { BitcoinProvider } from "./bitcoin"
+import { AcreBitcoinProvider } from "./bitcoin"
 
 export type OnSignMessageStepCallback = (messageToSign: string) => Promise<void>
 export type MessageSignedStepCallback = (signedMessage: string) => Promise<void>
@@ -21,7 +21,7 @@ export default class OrangeKitTbtcRedeemerProxy implements TbtcRedeemerProxy {
     ethereumAddress: ChainIdentifier
   }
 
-  #bitcoinProvider: BitcoinProvider
+  #bitcoinProvider: AcreBitcoinProvider
 
   #sharesAmount: bigint
 
@@ -37,7 +37,7 @@ export default class OrangeKitTbtcRedeemerProxy implements TbtcRedeemerProxy {
       bitcoinAddress: string
       ethereumAddress: ChainIdentifier
     },
-    bitcoinProvider: BitcoinProvider,
+    bitcoinProvider: AcreBitcoinProvider,
     sharesAmount: bigint,
     onSignMessageStepCallback?: OnSignMessageStepCallback,
     messageSignedStepCallback?: MessageSignedStepCallback,

@@ -1,6 +1,3 @@
-// TODO: This is just a temporary interface that should be replaced by the
-// `OrangeKitBitcoinWalletProvider` from the `orangekit` library.
-
 import { SafeTransactionData } from "@orangekit/sdk"
 
 export { SafeTransactionData }
@@ -8,7 +5,7 @@ export { SafeTransactionData }
 /**
  * Interface for communication with Bitcoin Wallet.
  */
-export interface BitcoinProvider {
+export interface AcreBitcoinProvider {
   /**
    * Acre SDK must rely on the `BitcoinProvider` implementation to get the
    * bitcoin address because different wallets use different strategies. For

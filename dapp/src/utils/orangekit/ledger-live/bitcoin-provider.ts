@@ -13,7 +13,7 @@ import {
 } from "@orangekit/react/src/wallet/bitcoin-wallet-provider"
 import {
   BitcoinNetwork,
-  BitcoinProvider,
+  AcreBitcoinProvider,
   BitcoinSignatureHelper,
   SafeTransactionData,
 } from "@acre-btc/sdk"
@@ -55,7 +55,7 @@ export type LedgerLiveWalletApiBitcoinProviderOptions = {
  * Ledger Live Wallet API Bitcoin Provider.
  */
 export default class AcreLedgerLiveBitcoinProvider
-  implements OrangeKitBitcoinWalletProvider, BitcoinProvider
+  implements OrangeKitBitcoinWalletProvider, AcreBitcoinProvider
 {
   readonly #walletApiClient: WalletAPIClient<
     (client: WalletAPIClient) => { acre: AcreModule }
