@@ -69,6 +69,8 @@ export default class AcreLedgerLiveBitcoinProvider
 
   readonly #hwAppId = "Acre"
 
+  readonly #derivationPath = "0/0"
+
   #hasConnectFunctionBeenCalled: boolean = false
 
   #account: Account | undefined
@@ -252,8 +254,11 @@ export default class AcreLedgerLiveBitcoinProvider
     return this.#getAddress(this.#account.id)
   }
 
-  #getAddress(accountId: string, derivationPath: string = "0/0") {
-    return this.#walletApiClient.bitcoin.getAddress(accountId, derivationPath)
+  #getAddress(accountId: string) {
+    return this.#walletApiClient.bitcoin.getAddress(
+      accountId,
+      this.#derivationPath,
+    )
   }
 
   /**
@@ -295,7 +300,7 @@ export default class AcreLedgerLiveBitcoinProvider
       this.#walletApiClient.custom.acre.messageSign(
         this.#account!.id,
         message,
-        "0/0",
+        this.#derivationPath,
         { hwAppId: this.#hwAppId },
       ),
     )
@@ -348,6 +353,9 @@ export default class AcreLedgerLiveBitcoinProvider
       throw new Error("Connect first")
     }
 
-    return this.#walletApiClient.bitcoin.getPublicKey(this.#account.id, "0/0")
+    return this.#walletApiClient.bitcoin.getPublicKey(
+      this.#account.id,
+      this.#derivationPath,
+    )
   }
 }
