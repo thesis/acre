@@ -8,6 +8,7 @@ type SendBitcoinTransactionParams = Parameters<
 >
 
 type UseDepositBTCTransactionReturn = {
+  inProgress: boolean
   transactionHash?: string
   sendBitcoinTransaction: (
     ...params: SendBitcoinTransactionParams
@@ -24,6 +25,7 @@ export function useDepositBTCTransaction(
   const [transactionHash, setTransactionHash] = useState<string | undefined>(
     undefined,
   )
+  const [inProgress, setInProgress] = useState<boolean>(false)
 
   useEffect(() => {
     if (transactionHash && onSuccess) {
@@ -47,19 +49,22 @@ export function useDepositBTCTransaction(
 
         const satoshis = Number(amount)
 
+        setInProgress(true)
         // @ts-expect-error adjust types to handle bitcoin wallet wrappers
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment
         const txhash: string = await client.sendBitcoin(recipient, satoshis)
+        setInProgress(false)
         setTransactionHash(txhash)
       } catch (error) {
         if (onError) {
           onError(error)
         }
         console.error(error)
+        setInProgress(false)
       }
     },
     [address, connector, onError],
   )
 
-  return { sendBitcoinTransaction, transactionHash }
+  return { sendBitcoinTransaction, transactionHash, inProgress }
 }
