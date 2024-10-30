@@ -6,38 +6,21 @@ import {
   useExecuteFunction,
   useInvalidateQueries,
   useModal,
+  useTimeout,
   useTransactionDetails,
 } from "#/hooks"
 import { ACTION_FLOW_TYPES, PROCESS_STATUSES } from "#/types"
-import { Button, ModalCloseButton } from "@chakra-ui/react"
 import { dateToUnixTimestamp, eip1193, logPromiseFailure } from "#/utils"
 import { setStatus } from "#/store/action-flow"
 import { useInitializeWithdraw } from "#/acre-react/hooks"
-import { queryKeysFactory } from "#/constants"
+import { ONE_SEC_IN_MILLISECONDS, queryKeysFactory } from "#/constants"
 import { activityInitialized } from "#/store/wallet"
-import TriggerTransactionModal from "../TriggerTransactionModal"
+import BuildTransactionModal from "./BuildTransactionModal"
+import WalletInteractionModal from "../WalletInteractionModal"
 
 const { userKeys } = queryKeysFactory
 
 type WithdrawalStatus = "building-data" | "signature" | "transaction"
-
-const withdrawalStatusToContent: Record<
-  WithdrawalStatus,
-  { title: string; subtitle: string }
-> = {
-  "building-data": {
-    title: "Building transaction data...",
-    subtitle: "We are building your withdrawal data.",
-  },
-  signature: {
-    title: "Waiting signature...",
-    subtitle: "Please complete the signing process in your wallet.",
-  },
-  transaction: {
-    title: "Waiting for withdrawal initialization...",
-    subtitle: "Withdrawal initialization in progress...",
-  },
-}
 
 const sessionIdToPromise: Record<
   number,
@@ -167,8 +150,6 @@ export default function SignMessageModal() {
     logPromiseFailure(handleSignMessage())
   }, [handleSignMessage])
 
-  const { title, subtitle } = withdrawalStatusToContent[status]
-
   const onClose = () => {
     const currentSessionId = sessionId.current
     const sessionData = sessionIdToPromise[currentSessionId]
@@ -183,18 +164,11 @@ export default function SignMessageModal() {
     closeModal()
   }
 
-  return (
-    <>
-      <ModalCloseButton onClick={onClose} />
-      <TriggerTransactionModal
-        title={title}
-        subtitle={subtitle}
-        callback={handleInitWithdrawAndSignMessageWrapper}
-      >
-        <Button size="lg" width="100%" variant="outline" onClick={onClose}>
-          Cancel
-        </Button>
-      </TriggerTransactionModal>
-    </>
-  )
+  useTimeout(handleInitWithdrawAndSignMessageWrapper, ONE_SEC_IN_MILLISECONDS)
+
+  // TODO: This step should be split into several steps (building data and opening a wallet).
+  if (status === "building-data")
+    return <BuildTransactionModal onClose={onClose} />
+
+  return <WalletInteractionModal step="awaiting-transaction" />
 }

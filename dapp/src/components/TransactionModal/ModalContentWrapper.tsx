@@ -7,7 +7,6 @@ import { BaseModalProps, PROCESS_STATUSES } from "#/types"
 import React from "react"
 import ActionFormModal from "./ActionFormModal"
 import ErrorModal from "./ErrorModal"
-import LoadingModal from "./LoadingModal"
 import ResumeModal from "./ResumeModal"
 import SuccessModal from "./SuccessModal"
 import NotEnoughFundsModal from "./ActiveUnstakingStep/NotEnoughFundsModal"
@@ -24,8 +23,6 @@ export default function ModalContentWrapper({
 
   if (!tokenAmount || status === PROCESS_STATUSES.REFINE_AMOUNT)
     return <ActionFormModal type={type} />
-
-  if (status === PROCESS_STATUSES.LOADING) return <LoadingModal />
 
   if (status === PROCESS_STATUSES.SUCCEEDED) return <SuccessModal type={type} />
 

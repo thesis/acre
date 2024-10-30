@@ -11,12 +11,10 @@ import {
 } from "#/hooks"
 import { eip1193, logPromiseFailure } from "#/utils"
 import { PROCESS_STATUSES } from "#/types"
-import { Highlight, ModalCloseButton } from "@chakra-ui/react"
-import { TextMd } from "#/components/shared/Typography"
 import { setStatus, setTxHash } from "#/store/action-flow"
-import { queryKeysFactory } from "#/constants"
-import { Alert, AlertIcon, AlertDescription } from "#/components/shared/Alert"
-import TriggerTransactionModal from "../TriggerTransactionModal"
+import { ONE_SEC_IN_MILLISECONDS, queryKeysFactory } from "#/constants"
+import { useTimeout } from "@chakra-ui/react"
+import WalletInteractionModal from "../WalletInteractionModal"
 
 const { userKeys } = queryKeysFactory
 
@@ -62,10 +60,8 @@ export default function DepositBTCModal() {
     [onError, handlePause],
   )
 
-  const { sendBitcoinTransaction, transactionHash } = useDepositBTCTransaction(
-    onDepositBTCSuccess,
-    onDepositBTCError,
-  )
+  const { sendBitcoinTransaction, transactionHash, inProgress } =
+    useDepositBTCTransaction(onDepositBTCSuccess, onDepositBTCError)
 
   useEffect(() => {
     if (transactionHash) {
@@ -95,22 +91,9 @@ export default function DepositBTCModal() {
     logPromiseFailure(handledDepositBTC())
   }, [handledDepositBTC])
 
-  return (
-    <>
-      <ModalCloseButton />
-      <TriggerTransactionModal callback={handledDepositBTCWrapper}>
-        <Alert variant="elevated">
-          <AlertIcon />
-          <AlertDescription>
-            <TextMd>
-              <Highlight query="Rewards" styles={{ fontWeight: "bold" }}>
-                You will receive your Rewards once the deposit transaction is
-                completed.
-              </Highlight>
-            </TextMd>
-          </AlertDescription>
-        </Alert>
-      </TriggerTransactionModal>
-    </>
-  )
+  useTimeout(handledDepositBTCWrapper, ONE_SEC_IN_MILLISECONDS)
+
+  if (inProgress) return <WalletInteractionModal step="awaiting-transaction" />
+
+  return <WalletInteractionModal step="opening-wallet" />
 }
