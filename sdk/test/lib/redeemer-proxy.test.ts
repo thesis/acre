@@ -1,6 +1,6 @@
 import { RedeemerProxy } from "@keep-network/tbtc-v2.ts"
 import { ethers } from "ethers"
-import { SafeTxData } from "@orangekit/sdk"
+import { SafeTransactionData } from "@orangekit/sdk"
 import { EthereumAddress } from "../../src/lib/ethereum"
 import { ChainIdentifier } from "../../src/lib/contracts"
 import { Hex } from "../../src/lib/utils"
@@ -64,7 +64,7 @@ describe("OrangeKitTbtcRedeemerProxy", () => {
         publicKey: string,
         bitcoinSignMessageFn: (
           message: string,
-          data: SafeTxData,
+          data: SafeTransactionData,
         ) => Promise<string>,
       ]
     >
@@ -124,7 +124,7 @@ describe("OrangeKitTbtcRedeemerProxy", () => {
     it("the sign message function passed to the orange kit should call the bitcoin provider", async () => {
       const signMessageFn = spyOnSendTransaction.mock.calls[0][5]
       const mockedMessage = "test"
-      const mockedSafeTxData = { to: "test" } as SafeTxData
+      const mockedSafeTxData = { to: "test" } as SafeTransactionData
 
       await signMessageFn(mockedMessage, mockedSafeTxData)
 

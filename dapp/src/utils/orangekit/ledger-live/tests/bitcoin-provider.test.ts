@@ -271,6 +271,9 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
                 ...mockedAccount,
                 address: taprootAddress,
               })
+              mockedWalletApiClient.bitcoin.getAddress.mockResolvedValue(
+                taprootAddress,
+              )
               mockedWalletApiClient.bitcoin.getPublicKey.mockResolvedValue(
                 mockedPublicKey,
               )

@@ -4,7 +4,6 @@ import {
   WalletAPIClient,
   WindowMessageTransport,
 } from "@ledgerhq/wallet-api-client"
-import { ethers } from "ethers"
 import { UserRejectedRequestError } from "viem"
 import {
   Balance,
@@ -13,15 +12,15 @@ import {
   OrangeKitBitcoinWalletProvider,
 } from "@orangekit/react/src/wallet/bitcoin-wallet-provider"
 import {
-  BitcoinAddressHelper,
   BitcoinNetwork,
   BitcoinProvider,
+  BitcoinSignatureHelper,
+  SafeTransactionData,
 } from "@acre-btc/sdk"
 import {
   AcreMessage,
   AcreMessageType,
   AcreModule,
-  AcreWithdrawalData,
 } from "@ledgerhq/wallet-api-acre-module"
 
 export type TryRequestFn<T> = (fn: () => Promise<T>) => Promise<T>
@@ -267,13 +266,7 @@ export default class AcreLedgerLiveBitcoinProvider
    * @param data Withdrawal transaction data.
    * @returns Hash of the signed message.
    */
-  async signWithdrawMessage(
-    message: string,
-    data: Omit<AcreWithdrawalData, "operation" | "nonce"> & {
-      operation: number
-      nonce: number
-    },
-  ) {
+  async signWithdrawMessage(message: string, data: SafeTransactionData) {
     return this.#signMessage({
       type: AcreMessageType.Withdraw,
       message: {
@@ -305,44 +298,11 @@ export default class AcreLedgerLiveBitcoinProvider
       ),
     )
 
-    return this.#normalizeV(this.#account.address, signature)
-  }
-
-  async #normalizeV(address: string, signature: Buffer) {
-    const signatureBytes = ethers.decodeBase64(signature.toString("base64"))
-
-    const v = signatureBytes[0]
-    let normalizedV
-
-    if (BitcoinAddressHelper.isP2WPKHAddress(address)) {
-      // For p2wpkh, normalize to the 39-42 range specified by BIP137.
-      normalizedV = BitcoinAddressHelper.normalizeV(v, 39)
-    } else if (BitcoinAddressHelper.isP2PKHAddress(address)) {
-      // For p2pkh, assume that an uncompressed p2pkh signature will already be
-      // in the right range, and normalize any others to the 31-34 range
-      // specified by BIP137.
-      normalizedV =
-        // BIP137 range for uncompressed p2pkh
-        v >= 27 && v <= 30
-          ? v
-          : // BIP137 range for compressed p2pkh
-            BitcoinAddressHelper.normalizeV(v, 31)
-    } else if (
-      BitcoinAddressHelper.isNestedSegwitAddress(
-        // We need the zero address to confirm that this is indeed the nested
-        // segwit address.
-        await this.getAddress(),
-        await this.getPublicKey(),
-      )
-    ) {
-      normalizedV = BitcoinAddressHelper.normalizeV(v, 35)
-    } else {
-      throw new Error("Unsupported Bitcoin address type")
-    }
-
-    signatureBytes[0] = normalizedV
-
-    return ethers.hexlify(signatureBytes)
+    return BitcoinSignatureHelper.normalizeSignature(
+      signature,
+      await this.getAddress(),
+      await this.getPublicKey(),
+    )
   }
 
   /**

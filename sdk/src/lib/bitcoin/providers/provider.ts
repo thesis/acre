@@ -1,5 +1,10 @@
 // TODO: This is just a temporary interface that should be replaced by the
 // `OrangeKitBitcoinWalletProvider` from the `orangekit` library.
+
+import { SafeTransactionData } from "@orangekit/sdk"
+
+export { SafeTransactionData }
+
 /**
  * Interface for communication with Bitcoin Wallet.
  */
@@ -33,5 +38,8 @@ export interface BitcoinProvider {
    * @param data Withdrawal transaction data.
    * @returns Hash of the signed message.
    */
-  signWithdrawMessage?(message: string, data: unknown): Promise<string>
+  signWithdrawMessage?(
+    message: string,
+    data: SafeTransactionData,
+  ): Promise<string>
 }
