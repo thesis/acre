@@ -131,7 +131,7 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
       })
     })
 
-    describe("getAddress", async () => {
+    describe("getAddress", () => {
       let result: string
 
       beforeAll(async () => {
