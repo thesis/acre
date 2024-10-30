@@ -7,6 +7,7 @@ import { OrangeKitSdk } from "@orangekit/sdk"
 import { AcreContracts } from "./contracts"
 import { BitcoinProvider } from "./bitcoin"
 
+export type BuiltDataStepCallback = (safeTxData: Hex) => Promise<void>
 export type OnSignMessageStepCallback = (messageToSign: string) => Promise<void>
 export type MessageSignedStepCallback = (signedMessage: string) => Promise<void>
 
@@ -25,6 +26,8 @@ export default class OrangeKitTbtcRedeemerProxy implements TbtcRedeemerProxy {
 
   #sharesAmount: bigint
 
+  #builtDataStepCallback?: BuiltDataStepCallback
+
   #onSignMessageStepCallback?: OnSignMessageStepCallback
 
   #messageSignedStepCallback?: MessageSignedStepCallback
@@ -39,6 +42,7 @@ export default class OrangeKitTbtcRedeemerProxy implements TbtcRedeemerProxy {
     },
     bitcoinProvider: BitcoinProvider,
     sharesAmount: bigint,
+    builtDataStepCallback?: BuiltDataStepCallback,
     onSignMessageStepCallback?: OnSignMessageStepCallback,
     messageSignedStepCallback?: MessageSignedStepCallback,
   ) {
@@ -47,6 +51,7 @@ export default class OrangeKitTbtcRedeemerProxy implements TbtcRedeemerProxy {
     this.#account = account
     this.#bitcoinProvider = bitcoinProvider
     this.#sharesAmount = sharesAmount
+    this.#builtDataStepCallback = builtDataStepCallback
     this.#onSignMessageStepCallback = onSignMessageStepCallback
     this.#messageSignedStepCallback = messageSignedStepCallback
   }
@@ -61,6 +66,7 @@ export default class OrangeKitTbtcRedeemerProxy implements TbtcRedeemerProxy {
       this.#sharesAmount,
       redemptionData,
     )
+    await this.#builtDataStepCallback?.(safeTxData)
 
     const transactionHash = await this.#orangeKitSdk.sendTransaction(
       `0x${this.#contracts.stBTC.getChainIdentifier().identifierHex}`,

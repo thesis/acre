@@ -62,6 +62,8 @@ export default function SignMessageModal() {
     }
   }, [])
 
+  const builtDataStepCallback = useCallback(() => Promise.resolve(), [])
+
   const onSignMessageCallback = useCallback(async () => {
     setWaitingStatus("signature")
     return Promise.race([
@@ -104,6 +106,7 @@ export default function SignMessageModal() {
 
       const { redemptionKey } = await initializeWithdraw(
         amount,
+        builtDataStepCallback,
         onSignMessageCallback,
         messageSignedCallback,
       )

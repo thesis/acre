@@ -1,5 +1,6 @@
 import { useCallback } from "react"
 import {
+  BuiltDataStepCallback,
   MessageSignedStepCallback,
   OnSignMessageStepCallback,
 } from "@acre-btc/sdk/dist/src/lib/redeemer-proxy"
@@ -11,6 +12,7 @@ export default function useInitializeWithdraw() {
   return useCallback(
     async (
       amount: bigint,
+      builtDataStepCallback?: BuiltDataStepCallback,
       onSignMessageStep?: OnSignMessageStepCallback,
       messageSignedStep?: MessageSignedStepCallback,
     ) => {
@@ -18,6 +20,7 @@ export default function useInitializeWithdraw() {
 
       return acre.account.initializeWithdrawal(
         amount,
+        builtDataStepCallback,
         onSignMessageStep,
         messageSignedStep,
       )
