@@ -123,6 +123,17 @@ const sizeXl = multiStyleConfig.definePartsStyle({
   },
 })
 
+const size3Xl = multiStyleConfig.definePartsStyle({
+  balance: {
+    fontSize: "3xl",
+    lineHeight: "3xl",
+  },
+  symbol: {
+    fontSize: "3xl",
+    lineHeight: "3xl",
+  },
+})
+
 const size4Xl = multiStyleConfig.definePartsStyle({
   balance: {
     fontSize: "4xl",
@@ -151,6 +162,7 @@ const sizes = {
   md: sizeMd,
   lg: sizeLg,
   xl: sizeXl,
+  "3xl": size3Xl,
   "4xl": size4Xl,
   "6xl": size6Xl,
 }

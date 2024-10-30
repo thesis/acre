@@ -10,7 +10,7 @@ import BeehiveCard from "./BeehiveCard"
 import { AcreTVLProgress } from "./AcreTVLProgress"
 
 const TEMPLATE_AREAS = `
-  ${featureFlags.TVL_ENABLED ? '"dashboard current-season"' : ""}
+  ${featureFlags.TVL_ENABLED ? '"tvl tvl"' : ""}
   "dashboard acre-points"
   ${featureFlags.BEEHIVE_COMPONENT_ENABLED ? '"dashboard beehive"' : ""}
   "dashboard useful-links"
@@ -32,7 +32,7 @@ export default function DashboardPage() {
       }}
       gridTemplateRows={GRID_TEMPLATE_ROWS}
     >
-      {featureFlags.TVL_ENABLED && <AcreTVLProgress />}
+      {featureFlags.TVL_ENABLED && <AcreTVLProgress gridArea="tvl" />}
 
       <DashboardCard gridArea="dashboard" h="fit-content" />
 
