@@ -8,6 +8,7 @@ import {
 import { Balance } from "@orangekit/react/dist/src/wallet/bitcoin-wallet-provider"
 import { AcreMessageType } from "@ledgerhq/wallet-api-acre-module"
 import { ZeroAddress } from "ethers"
+import BigNumber from "bignumber.js"
 import AcreLedgerLiveBitcoinProvider from "../bitcoin-provider"
 
 describe("AcreLedgerLiveBitcoinProvider", () => {
@@ -92,7 +93,7 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
             mockedAccount.id,
             {
               family: "bitcoin",
-              amount: satoshis.toString(),
+              amount: new BigNumber(satoshis.toString()),
               recipient: bitcoinAddress,
             },
             { hwAppId },
