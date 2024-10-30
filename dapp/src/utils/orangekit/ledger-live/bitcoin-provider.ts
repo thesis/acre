@@ -22,6 +22,7 @@ import {
   AcreMessageType,
   AcreModule,
 } from "@ledgerhq/wallet-api-acre-module"
+import BigNumber from "bignumber.js"
 
 export type TryRequestFn<T> = (fn: () => Promise<T>) => Promise<T>
 
@@ -175,9 +176,7 @@ export default class AcreLedgerLiveBitcoinProvider
         this.#account!.id,
         {
           family: "bitcoin",
-          // @ts-expect-error The Ledger Live lib requires `BigNumber` but we can
-          // pass string.
-          amount: satoshis.toString(),
+          amount: new BigNumber(satoshis.toString()),
           recipient: to,
         },
         { hwAppId: this.#hwAppId },
