@@ -20,7 +20,7 @@ import WalletInteractionModal from "../WalletInteractionModal"
 
 const { userKeys } = queryKeysFactory
 
-type WithdrawalStatus = "building-data" | "signature" | "transaction"
+type WithdrawalStatus = "building-data" | "built-data" | "signature"
 
 const sessionIdToPromise: Record<
   number,
@@ -62,7 +62,10 @@ export default function SignMessageModal() {
     }
   }, [])
 
-  const builtDataStepCallback = useCallback(() => Promise.resolve(), [])
+  const builtDataStepCallback = useCallback(() => {
+    setWaitingStatus("built-data")
+    return Promise.resolve()
+  }, [])
 
   const onSignMessageCallback = useCallback(async () => {
     setWaitingStatus("signature")
@@ -71,12 +74,6 @@ export default function SignMessageModal() {
       Promise.resolve(),
     ])
   }, [])
-
-  const messageSignedCallback = useCallback(() => {
-    setWaitingStatus("transaction")
-    dispatch(setStatus(PROCESS_STATUSES.LOADING))
-    return Promise.resolve()
-  }, [dispatch])
 
   const onSignMessageSuccess = useCallback(() => {
     handleBitcoinPositionInvalidation()
@@ -108,7 +105,6 @@ export default function SignMessageModal() {
         amount,
         builtDataStepCallback,
         onSignMessageCallback,
-        messageSignedCallback,
       )
 
       dispatch(
@@ -169,9 +165,11 @@ export default function SignMessageModal() {
 
   useTimeout(handleInitWithdrawAndSignMessageWrapper, ONE_SEC_IN_MILLISECONDS)
 
-  // TODO: This step should be split into several steps (building data and opening a wallet).
   if (status === "building-data")
     return <BuildTransactionModal onClose={onClose} />
+
+  if (status === "built-data")
+    return <WalletInteractionModal step="opening-wallet" />
 
   return <WalletInteractionModal step="awaiting-transaction" />
 }
