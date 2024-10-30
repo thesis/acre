@@ -104,9 +104,9 @@ export default class AcreLedgerLiveBitcoinProvider
       tryConnectToAddress: undefined,
     },
   ) {
+    this.#network = network
     this.#windowMessageTransport = windowMessageTransport
     this.#walletApiClient = walletApiClient
-    this.#network = network
     this.#options = options
   }
 
