@@ -18,7 +18,6 @@ const containerStyles = defineStyle({
   bgGradient:
     "linear(to-r, transparent, rgba(255, 122, 0, 0.2) 10%, rgba(243, 73, 0, 0.25) 20%, transparent 30%)",
   color: "gold.200",
-  pb: 4,
   mask: 'linear-gradient(0, black, black), url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3MzkuNjI3IiBoZWlnaHQ9IjI4IiBmaWxsPSJub25lIj48cGF0aCBkPSJNNzM5LjYyNyAwYzAgNi42MjctNS4zNyAxMi0xMiAxMkgyOS4yNTRhMTUuOTk2IDE1Ljk5NiAwIDAgMC0xMS4zMTMgNC42ODZsLTYuNjI4IDYuNjI4QzguMzEzIDI2LjMxNSA0LjI0MyAyOCAwIDI4aDczOS42Mjd6IiBzdHlsZT0iZmlsbDojMDAwO2ZpbGwtb3BhY2l0eToxO3N0cm9rZTpub25lO3N0cm9rZS13aWR0aDo4O3N0cm9rZS1saW5lY2FwOnJvdW5kO3N0cm9rZS1saW5lam9pbjpyb3VuZCIvPjwvc3ZnPg==")',
   maskPosition: "100% 100%",
   clipPath: "inset(0 1px 0 0 round 12px)",
@@ -48,8 +47,6 @@ const valueWrapperStyles = defineStyle({
   alignItems: "start",
   gap: 0,
 })
-const valueAmountStyles = defineStyle({})
-const valueLabelStyles = defineStyle({})
 const progressWrapperStyles = defineStyle({
   flex: 1,
 })
@@ -57,8 +54,17 @@ const progressLabelsWrapperStyles = defineStyle({
   w: "full",
 })
 const progressLabelStyles = defineStyle({
-  flexGrow: 1,
-  textAlign: "end",
+  ml: "auto",
+
+  _after: {
+    content: '""',
+    display: "block",
+    clipPath: "polygon(50% 100%, 0 0, 100% 0)",
+    w: 3,
+    h: 1,
+    bgColor: "#5A4D3A",
+    mx: "auto",
+  },
 })
 
 const multiStyleConfig = createMultiStyleConfigHelpers(PARTS)
@@ -69,8 +75,6 @@ const baseStyle = multiStyleConfig.definePartsStyle({
   contentWrapper: contentWrapperStyles,
   valueIcon: valueIconStyles,
   valueWrapper: valueWrapperStyles,
-  valueAmount: valueAmountStyles,
-  valueLabel: valueLabelStyles,
   progressWrapper: progressWrapperStyles,
   progressLabelsWrapper: progressLabelsWrapperStyles,
   progressLabel: progressLabelStyles,
