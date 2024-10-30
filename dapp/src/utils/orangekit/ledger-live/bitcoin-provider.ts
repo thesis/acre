@@ -111,6 +111,50 @@ export default class AcreLedgerLiveBitcoinProvider
   }
 
   /**
+   * Connects with the Ledger Live Wallet API.
+   * @returns Connected account address.
+   */
+  async connect(): Promise<BitcoinAddress> {
+    this.#windowMessageTransport.connect()
+
+    const currencyIds = [
+      this.#network === BitcoinNetwork.Mainnet ? "bitcoin" : "bitcoin_testnet",
+    ]
+
+    if (!this.#hasConnectFunctionBeenCalled) {
+      const accounts: Account[] = await this.#walletApiClient.account.list({
+        currencyIds,
+      })
+
+      if (this.#options.tryConnectToAddress) {
+        for (let i = 0; i < accounts.length; i += 1) {
+          const acc = accounts[i]
+          // eslint-disable-next-line no-await-in-loop
+          const address = await this.#getAddress(acc.id)
+
+          if (address === this.#options.tryConnectToAddress) {
+            this.#account = acc
+            break
+          }
+        }
+      } else if (accounts.length === 1) {
+        ;[this.#account] = accounts
+      }
+    }
+
+    if (!this.#account || this.#hasConnectFunctionBeenCalled) {
+      this.#account = await tryRequest<Account>()(async () =>
+        this.#walletApiClient.account.request({
+          currencyIds,
+        }),
+      )
+    }
+
+    this.#hasConnectFunctionBeenCalled = true
+    return this.#account.address
+  }
+
+  /**
    * Signs and broadcasts a transaction.
    * @param to The address of the transaction's recipient.
    * @param satoshis The amount of Bitcoin in satoshi to send in the
@@ -174,50 +218,6 @@ export default class AcreLedgerLiveBitcoinProvider
     }
 
     return balance
-  }
-
-  /**
-   * Connects with the Ledger Live Wallet API.
-   * @returns Connected account address.
-   */
-  async connect(): Promise<BitcoinAddress> {
-    this.#windowMessageTransport.connect()
-
-    const currencyIds = [
-      this.#network === BitcoinNetwork.Mainnet ? "bitcoin" : "bitcoin_testnet",
-    ]
-
-    if (!this.#hasConnectFunctionBeenCalled) {
-      const accounts: Account[] = await this.#walletApiClient.account.list({
-        currencyIds,
-      })
-
-      if (this.#options.tryConnectToAddress) {
-        for (let i = 0; i < accounts.length; i += 1) {
-          const acc = accounts[i]
-          // eslint-disable-next-line no-await-in-loop
-          const address = await this.#getAddress(acc.id)
-
-          if (address === this.#options.tryConnectToAddress) {
-            this.#account = acc
-            break
-          }
-        }
-      } else if (accounts.length === 1) {
-        ;[this.#account] = accounts
-      }
-    }
-
-    if (!this.#account || this.#hasConnectFunctionBeenCalled) {
-      this.#account = await tryRequest<Account>()(async () =>
-        this.#walletApiClient.account.request({
-          currencyIds,
-        }),
-      )
-    }
-
-    this.#hasConnectFunctionBeenCalled = true
-    return this.#account.address
   }
 
   // eslint-disable-next-line class-methods-use-this
