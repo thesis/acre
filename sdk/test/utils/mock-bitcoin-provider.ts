@@ -1,3 +1,4 @@
+// eslint-disable-next-line max-classes-per-file
 import { AcreBitcoinProvider } from "../../src/lib/bitcoin/providers"
 
 class MockBitcoinProvider implements AcreBitcoinProvider {
@@ -8,5 +9,8 @@ class MockBitcoinProvider implements AcreBitcoinProvider {
   signMessage = jest.fn()
 }
 
-// eslint-disable-next-line import/prefer-default-export
-export { MockBitcoinProvider }
+class MockBitcoinProviderWithSignWithdrawMessage extends MockBitcoinProvider {
+  signWithdrawMessage = jest.fn()
+}
+
+export { MockBitcoinProvider, MockBitcoinProviderWithSignWithdrawMessage }
