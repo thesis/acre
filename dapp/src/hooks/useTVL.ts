@@ -1,7 +1,7 @@
 import { TOTAL_VALUE_LOCKED_CAP } from "#/constants"
 import useTotalAssets from "./sdk/useTotalAssets"
 
-export const useTVL = () => {
+const useTVL = () => {
   const { data } = useTotalAssets()
 
   const totalAssets = data ?? 0n
@@ -16,3 +16,5 @@ export const useTVL = () => {
 
   return { progress, value, isCapExceeded }
 }
+
+export default useTVL
