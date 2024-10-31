@@ -106,6 +106,18 @@ async function getBtcUsdPrice(): Promise<number> {
   return response.data.btcUsdPrice
 }
 
+type GetTotalValueLockedResponse = {
+  tvl: {
+    usd: number
+    btc: number
+  }
+}
+
+async function getTotalValueLocked() {
+  const response = await axios.get<GetTotalValueLockedResponse>("statistics")
+  return response.data.tvl
+}
+
 export default {
   createSession,
   getSession,
@@ -116,4 +128,5 @@ export default {
   verifyAccessCode,
   getMats,
   getBtcUsdPrice,
+  getTotalValueLocked,
 }

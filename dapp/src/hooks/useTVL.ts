@@ -1,20 +1,34 @@
-import { TOTAL_VALUE_LOCKED_CAP } from "#/constants"
-import useTotalAssets from "./sdk/useTotalAssets"
+import {
+  queryKeysFactory,
+  REFETCH_INTERVAL_IN_MILLISECONDS,
+  TOTAL_VALUE_LOCKED_CAP,
+} from "#/constants"
+import { acreApi } from "#/utils"
+import { useQuery } from "@tanstack/react-query"
+
+const { acreKeys } = queryKeysFactory
 
 const useTVL = () => {
-  const { data } = useTotalAssets()
+  const { data } = useQuery({
+    queryKey: [...acreKeys.totalAssets()],
+    queryFn: acreApi.getTotalValueLocked,
+    refetchInterval: REFETCH_INTERVAL_IN_MILLISECONDS,
+  })
 
-  const totalAssets = data ?? 0n
-  const dividingResult =
-    Number((totalAssets * 100n * 100n) / TOTAL_VALUE_LOCKED_CAP) / (100 * 100)
-  // Doubled factor to get more precision
+  const totalAssets = data?.btc ?? 0
 
   const isCapExceeded = totalAssets > TOTAL_VALUE_LOCKED_CAP
 
-  const progress = Math.floor(isCapExceeded ? 100 : dividingResult * 100)
+  const progress = Math.floor(
+    isCapExceeded ? 100 : (totalAssets / TOTAL_VALUE_LOCKED_CAP) * 100,
+  )
   const value = isCapExceeded ? TOTAL_VALUE_LOCKED_CAP : totalAssets
 
-  return { progress, value, isCapExceeded }
+  return {
+    progress,
+    value,
+    isCapExceeded,
+  }
 }
 
 export default useTVL

@@ -28,6 +28,7 @@ export function AcreTVLProgress(props: AcreTVLProgressProps) {
           <CurrencyBalance
             size="3xl"
             amount={totalValueLocked.value}
+            shouldBeFormatted={false}
             currency="bitcoin"
           />
 
