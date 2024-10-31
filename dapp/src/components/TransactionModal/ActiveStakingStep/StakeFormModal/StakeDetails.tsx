@@ -2,14 +2,20 @@ import React from "react"
 import { List } from "@chakra-ui/react"
 import TransactionDetailsAmountItem from "#/components/shared/TransactionDetails/AmountItem"
 import FeesDetailsAmountItem from "#/components/shared/FeesDetails/FeesItem"
-import { useTokenAmountField } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
+import { TOKEN_AMOUNT_FIELD_NAME } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { FeesTooltip } from "#/components/TransactionModal/FeesTooltip"
-import { useMinDepositAmount, useTransactionDetails } from "#/hooks"
+import {
+  useFormField,
+  useMinDepositAmount,
+  useTransactionDetails,
+} from "#/hooks"
 import { CurrencyType } from "#/types"
 import { DESIRED_DECIMALS_FOR_FEE } from "#/constants"
 
 function StakeDetails({ currency }: { currency: CurrencyType }) {
-  const { value = 0n } = useTokenAmountField()
+  const { value = 0n } = useFormField<bigint | undefined>(
+    TOKEN_AMOUNT_FIELD_NAME,
+  )
   const minDepositAmount = useMinDepositAmount()
   const amount = value >= minDepositAmount ? value : 0n
   const details = useTransactionDetails(amount)
@@ -17,16 +23,6 @@ function StakeDetails({ currency }: { currency: CurrencyType }) {
 
   return (
     <List spacing={3} mt={10}>
-      <TransactionDetailsAmountItem
-        label="Amount to be deposited"
-        from={{
-          currency,
-          amount: details.amount,
-        }}
-        to={{
-          currency: "usd",
-        }}
-      />
       <FeesDetailsAmountItem
         label="Fees"
         // TODO: Add `Bitcoin Network fee` (funding transaction fee selected by
@@ -42,14 +38,12 @@ function StakeDetails({ currency }: { currency: CurrencyType }) {
           currency: "usd",
         }}
       />
+
       <TransactionDetailsAmountItem
-        label="Approximate staked tokens"
+        label="You will deposit"
         from={{
           currency,
           amount: details.estimatedAmount,
-        }}
-        to={{
-          currency: "usd",
         }}
       />
     </List>

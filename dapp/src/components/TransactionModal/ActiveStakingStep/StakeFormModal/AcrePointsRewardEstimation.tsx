@@ -12,14 +12,15 @@ import {
 import { H4, TextMd } from "#/components/shared/Typography"
 import { numberToLocaleString } from "#/utils"
 import { IconChevronDown } from "@tabler/icons-react"
-import { useTokenAmountField } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
-import {
-  ONE_MONTH_IN_DAYS,
-  ONE_WEEK_IN_DAYS,
-  ONE_YEAR_IN_DAYS,
-} from "#/constants"
+import { TOKEN_AMOUNT_FIELD_NAME } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
+import { useFormField } from "#/hooks"
+import { ONE_MONTH_IN_DAYS, ONE_WEEK_IN_DAYS } from "#/constants"
 
 const ACRE_POINTS_DATA = {
+  day: {
+    label: "Per day",
+    multipler: 1,
+  },
   week: {
     label: "Per week",
     multipler: ONE_WEEK_IN_DAYS,
@@ -28,15 +29,11 @@ const ACRE_POINTS_DATA = {
     label: "Per month",
     multipler: ONE_MONTH_IN_DAYS,
   },
-  year: {
-    label: "Per year",
-    multipler: ONE_YEAR_IN_DAYS,
-  },
 }
 
 function AcrePointsRewardEstimation(props: StackProps) {
   const [selectedTierItem, setSelectedTierItem] = useState(
-    ACRE_POINTS_DATA.week,
+    ACRE_POINTS_DATA.month,
   )
 
   const tierItems = [
@@ -48,7 +45,9 @@ function AcrePointsRewardEstimation(props: StackProps) {
     ),
   ]
 
-  const { value = 0n } = useTokenAmountField()
+  const { value = 0n } = useFormField<bigint | undefined>(
+    TOKEN_AMOUNT_FIELD_NAME,
+  )
   const baseReward = Number(value)
   const pointsRate = 10000
 
@@ -111,6 +110,7 @@ function AcrePointsRewardEstimation(props: StackProps) {
                     key={tierItem.label}
                     onClick={() => setSelectedTierItem(tierItem)}
                     fontWeight="semibold"
+                    whiteSpace="nowrap"
                   >
                     {tierItem.label}
                   </MenuItem>

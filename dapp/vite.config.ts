@@ -1,3 +1,4 @@
+import { sentryVitePlugin } from "@sentry/vite-plugin"
 import { defineConfig } from "vite"
 import react from "@vitejs/plugin-react"
 import { nodePolyfills } from "vite-plugin-node-polyfills"
@@ -14,8 +15,20 @@ export default defineConfig({
       "#": resolve(__dirname, "./src"),
     },
   },
-  plugins: [nodePolyfills(), react()],
+
+  plugins: [
+    nodePolyfills(),
+    react(),
+    // Sentry plugin for Vite. Uploads source maps to Sentry.
+    sentryVitePlugin(),
+  ],
+
   define: {
     "import.meta.env.VITE_LATEST_COMMIT_HASH": latestCommitHash,
+  },
+
+  build: {
+    // Build sourcemaps for Sentry integration.
+    sourcemap: true,
   },
 })
