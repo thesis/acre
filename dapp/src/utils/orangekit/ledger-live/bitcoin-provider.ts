@@ -161,7 +161,7 @@ export default class AcreLedgerLiveBitcoinProvider
    * @param to The address of the transaction's recipient.
    * @param satoshis The amount of Bitcoin in satoshi to send in the
    *        transaction.
-   * @returns The transaction hash
+   * @returns The transaction hash.
    */
   async sendBitcoin(
     to: BitcoinAddress,
@@ -239,7 +239,7 @@ export default class AcreLedgerLiveBitcoinProvider
    * In the Ledger Live Wallet API the address is "renewed" each time funds are
    * received in order to allow some privacy. But to get the same depositor
    * owner Ethereum address we must always get the same Bitcoin address (under
-   * the `m/purpose'/0'/accountId'/0/0` derivation path)
+   * the `m/purpose'/0'/accountId'/0/0` derivation path).
    *
    * @returns Always the same bitcoin address even the address has been
    *          "renewed" by the Ledger Live Wallet API.
