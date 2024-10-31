@@ -93,7 +93,7 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
             mockedAccount.id,
             {
               family: "bitcoin",
-              amount: new BigNumber(satoshis.toString()),
+              amount: new BigNumber(satoshis),
               recipient: bitcoinAddress,
             },
             { hwAppId },

@@ -176,7 +176,7 @@ export default class AcreLedgerLiveBitcoinProvider
         this.#account!.id,
         {
           family: "bitcoin",
-          amount: new BigNumber(satoshis.toString()),
+          amount: new BigNumber(satoshis),
           recipient: to,
         },
         { hwAppId: this.#hwAppId },
