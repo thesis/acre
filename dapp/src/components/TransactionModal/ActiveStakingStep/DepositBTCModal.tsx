@@ -93,7 +93,8 @@ export default function DepositBTCModal() {
 
   useTimeout(handledDepositBTCWrapper, ONE_SEC_IN_MILLISECONDS)
 
-  if (inProgress) return <WalletInteractionModal step="awaiting-transaction" />
+  if (inProgress || transactionHash)
+    return <WalletInteractionModal step="awaiting-transaction" />
 
   return <WalletInteractionModal step="opening-wallet" />
 }
