@@ -17,6 +17,7 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
   const mockedAccount = {
     id: "test",
     address: bitcoinAddress,
+    zeroAddress,
     balance: 100,
     spendableBalance: 80,
   }
@@ -358,13 +359,15 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
     const account2 = {
       ...mockedAccount,
       id: "2",
-      address: "bc1qxg2cc7p5yur7tr3rr2cl5jw47lluuvy7cr2usu",
+      address: "tb1q3x5lk9l83aek9c0vu38tx69u2lyxsdy6tww2rp",
+      zeroAddress: "tb1qj502nrx8lv4azu4afuxhffma248gq8c00zl8uv",
     }
 
     const account3 = {
       ...mockedAccount,
       id: "3",
-      address: "tb1qhp6ug4hp3cc84spx3l8sddh8w5ffjujvjycqv5",
+      address: "mrXtbjt4XXcX2aruY1Lx58YF2F8LXYzi1U",
+      zeroAddress: "mhKLhBdi7JmtYNxRVTn3u5fSsXtiwDbj4K",
     }
     const accounts = [mockedAccount, account2, account3]
 
@@ -377,6 +380,9 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
             mockedWalletApiClient.account.list.mockReturnValueOnce([
               mockedAccount,
             ])
+            mockedWalletApiClient.bitcoin.getAddress.mockResolvedValueOnce(
+              mockedAccount.zeroAddress,
+            )
 
             provider = new AcreLedgerLiveBitcoinProvider(
               BitcoinNetwork.Testnet,
@@ -393,8 +399,14 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
             })
           })
 
+          it("should get the bitcoin address from bitcoin module", () => {
+            expect(
+              mockedWalletApiClient.bitcoin.getAddress,
+            ).toHaveBeenCalledWith(mockedAccount.id, "0/0")
+          })
+
           it("should return the first account", () => {
-            expect(result).toBe(mockedAccount.address)
+            expect(result).toBe(mockedAccount.zeroAddress)
           })
         })
 
@@ -402,6 +414,9 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
           beforeAll(async () => {
             mockedWalletApiClient.account.list.mockReturnValueOnce(accounts)
             mockedWalletApiClient.account.request.mockReturnValueOnce(account2)
+            mockedWalletApiClient.bitcoin.getAddress.mockResolvedValueOnce(
+              account2.zeroAddress,
+            )
 
             provider = new AcreLedgerLiveBitcoinProvider(
               BitcoinNetwork.Testnet,
@@ -418,23 +433,30 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
             })
           })
 
+          it("should get the bitcoin address from bitcoin module", () => {
+            expect(
+              mockedWalletApiClient.bitcoin.getAddress,
+            ).toHaveBeenCalledWith(mockedAccount.id, "0/0")
+          })
+
           it("should return account selected by the user", () => {
-            expect(result).toBe(account2.address)
+            expect(result).toBe(account2.zeroAddress)
           })
         })
       })
 
       describe("when `tryConnectToAddress` is set", () => {
-        const tryConnectToAddress = account3.address
+        const tryConnectToAddress = account3.zeroAddress
 
         beforeAll(async () => {
           mockedWalletApiClient.bitcoin.getAddress.mockClear()
 
           mockedWalletApiClient.account.list.mockReturnValueOnce(accounts)
           mockedWalletApiClient.bitcoin.getAddress
-            .mockReturnValueOnce(mockedAccount.address)
-            .mockReturnValueOnce(account2.address)
-            .mockReturnValueOnce(account3.address)
+            .mockReturnValueOnce(mockedAccount.zeroAddress)
+            .mockReturnValueOnce(account2.zeroAddress)
+            .mockReturnValueOnce(account3.zeroAddress)
+            .mockResolvedValueOnce(tryConnectToAddress)
 
           provider = new AcreLedgerLiveBitcoinProvider(
             BitcoinNetwork.Testnet,
@@ -455,9 +477,6 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
         it("should get zero address for all accounts", () => {
           expect(
             mockedWalletApiClient.bitcoin.getAddress,
-          ).toHaveBeenCalledTimes(accounts.length)
-          expect(
-            mockedWalletApiClient.bitcoin.getAddress,
           ).toHaveBeenNthCalledWith(1, mockedAccount.id, "0/0")
           expect(
             mockedWalletApiClient.bitcoin.getAddress,
@@ -467,6 +486,13 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
           ).toHaveBeenNthCalledWith(3, account3.id, "0/0")
         })
 
+        it("should get the bitcoin address from bitcoin module", () => {
+          expect(mockedWalletApiClient.bitcoin.getAddress).toHaveBeenCalledWith(
+            account3.id,
+            "0/0",
+          )
+        })
+
         it("should return an account with the same address as `tryConnectToAddress` param", () => {
           expect(result).toBe(tryConnectToAddress)
         })
@@ -474,9 +500,17 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
     })
 
     describe("when the provider is already connected", () => {
+      const selectedAccount = account2
+      let secondConnectionResult: string
+
       beforeAll(async () => {
         mockedWalletApiClient.account.list.mockReturnValueOnce([mockedAccount])
-        mockedWalletApiClient.account.request.mockReturnValueOnce(account2)
+        mockedWalletApiClient.account.request.mockReturnValueOnce(
+          selectedAccount,
+        )
+        mockedWalletApiClient.bitcoin.getAddress
+          .mockReturnValueOnce(mockedAccount.zeroAddress)
+          .mockResolvedValueOnce(selectedAccount.zeroAddress)
 
         provider = new AcreLedgerLiveBitcoinProvider(
           BitcoinNetwork.Testnet,
@@ -485,15 +519,27 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
         )
 
         await provider.connect()
+
+        secondConnectionResult = await provider.connect()
       })
 
-      it("should ask the user to select an account", async () => {
-        const secondConnectionResult = await provider.connect()
-
+      it("should ask the user to select an account", () => {
         expect(mockedWalletApiClient.account.request).toHaveBeenCalledWith({
           currencyIds: ["bitcoin_testnet"],
         })
-        expect(secondConnectionResult).toBe(account2.address)
+      })
+
+      it("should get the bitcoin address from bitcoin module", () => {
+        expect(
+          mockedWalletApiClient.bitcoin.getAddress,
+          // The first connection was when the user connected for the first
+          // time. Here we want to check the second call, after the user
+          // selected the account for the second time.
+        ).toHaveBeenNthCalledWith(2, selectedAccount.id, "0/0")
+      })
+
+      it("should return an account selected by the user", () => {
+        expect(secondConnectionResult).toBe(selectedAccount.zeroAddress)
       })
     })
   })

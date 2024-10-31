@@ -153,7 +153,7 @@ export default class AcreLedgerLiveBitcoinProvider
     }
 
     this.#hasConnectFunctionBeenCalled = true
-    return this.#account.address
+    return this.#getAddress(this.#account.id)
   }
 
   /**
