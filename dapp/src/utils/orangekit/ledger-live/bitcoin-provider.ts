@@ -263,7 +263,8 @@ export default class AcreLedgerLiveBitcoinProvider
    * Signs withdraw message.
    * @param message Message to sign.
    * @param data Withdrawal transaction data.
-   * @returns Hash of the signed message.
+   * @returns A signature for a given message, which proves that the owner of
+   *          the account has agreed to the message content.
    */
   async signWithdrawMessage(message: string, data: SafeTransactionData) {
     return this.#signMessage({
@@ -279,8 +280,9 @@ export default class AcreLedgerLiveBitcoinProvider
   /**
    * Signs message.
    * @param message Message to sign.
-   * @returns Hash of the signed message.
-   */
+   * @returns A signature for a given message, which proves that the owner of
+   *          the account has agreed to the message content.
+   * */
   async signMessage(message: string): Promise<string> {
     return this.#signMessage({ type: AcreMessageType.SignIn, message })
   }
