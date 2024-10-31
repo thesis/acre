@@ -31,11 +31,13 @@ export interface AcreBitcoinProvider {
   getPublicKey(): Promise<string>
 
   /**
-   * Signs withdraw message.
+   * Signs withdraw message. This function is optional and if it is not
+   * implemented the `signMessage` function will be used to sign the withdrawal
+   * message.
    * @param message Message to sign.
-   * @param data Withdrawal transaction data.
-   * @returns A signature for a given message, which proves that the owner of
-   *          the account has agreed to the message content.
+   * @param data Withdrawal transaction data. @returns A signature for a given
+   * message, which proves that the owner of the account has agreed to the
+   *          message content.
    */
   signWithdrawMessage?(
     message: string,
