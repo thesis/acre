@@ -1,9 +1,9 @@
 {
   "id": "acre-testnet",
   "name": "Acre [testnet]",
-  "url": "https://ledger-live-updates--acre-dapp-testnet.netlify.app/?embed=ledger-live",
+  "url": "https://stake.test.acre.fi/?embed=ledger-live",
   "homepageUrl": "https:/acre.fi/",
-  "icon": "https://ledger-live-updates--acre-dapp-testnet.netlify.app/acre.svg",
+  "icon": "https://stake.test.acre.fi/acre.svg",
   "platforms": "desktop",
   "apiVersion": "^2.0.0",
   "manifestVersion": "2",
