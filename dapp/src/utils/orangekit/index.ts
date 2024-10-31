@@ -14,8 +14,8 @@ import {
 } from "@orangekit/react"
 import { Connector } from "wagmi"
 import { SignInWithWalletMessage } from "@orangekit/sign-in-with-wallet"
-import { getOrangeKitLedgerLiveConnector } from "./ledger-live"
 import { getExpirationDate } from "../time"
+import { getOrangeKitLedgerLiveConnector } from "./ledger-live"
 
 const getWalletInfo = (connector: OrangeKitConnector) => {
   switch (connector.id) {

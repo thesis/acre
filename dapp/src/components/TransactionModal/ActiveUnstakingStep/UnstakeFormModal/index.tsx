@@ -10,6 +10,7 @@ import {
 } from "#/hooks"
 import { fixedPointNumberToString, getCurrencyByType } from "#/utils"
 import UnstakeDetails from "./UnstakeDetails"
+import ActionDurationEstimation from "../../ActionDurationEstimation"
 
 function UnstakeFormModal({
   onSubmitForm,
@@ -22,6 +23,8 @@ function UnstakeFormModal({
   const { decimals } = getCurrencyByType("bitcoin")
   const inputPlaceholder = `Minimum ${fixedPointNumberToString(minTokenAmount, decimals)} BTC`
   const tokenAmountLabel = "Acre balance"
+  const defaultAmount =
+    status === PROCESS_STATUSES.REFINE_AMOUNT ? balance : undefined
 
   return (
     <TokenAmountForm
@@ -33,12 +36,11 @@ function UnstakeFormModal({
       minTokenAmount={minTokenAmount}
       onSubmitForm={onSubmitForm}
       withMaxButton
-      defaultAmount={
-        status === PROCESS_STATUSES.REFINE_AMOUNT ? balance : undefined
-      }
+      defaultAmount={defaultAmount}
     >
       <UnstakeDetails balance={balance} currency="bitcoin" />
-      <FormSubmitButton mt={10}>Withdraw</FormSubmitButton>
+      <FormSubmitButton mt={8}>Withdraw</FormSubmitButton>
+      <ActionDurationEstimation type="withdraw" />
     </TokenAmountForm>
   )
 }
