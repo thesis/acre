@@ -47,7 +47,7 @@ function tryRequest<T>(): TryRequestFn<T> {
   }
 }
 
-export type LedgerLiveWalletApiBitcoinProviderOptions = {
+export type AcreLedgerLiveBitcoinProviderOptions = {
   tryConnectToAddress: string | undefined
 }
 
@@ -65,7 +65,7 @@ export default class AcreLedgerLiveBitcoinProvider
 
   readonly #network: BitcoinNetwork
 
-  readonly #options: LedgerLiveWalletApiBitcoinProviderOptions
+  readonly #options: AcreLedgerLiveBitcoinProviderOptions
 
   readonly #hwAppId = "Acre"
 
@@ -77,7 +77,7 @@ export default class AcreLedgerLiveBitcoinProvider
 
   static init(
     network: BitcoinNetwork,
-    options: LedgerLiveWalletApiBitcoinProviderOptions = {
+    options: AcreLedgerLiveBitcoinProviderOptions = {
       tryConnectToAddress: undefined,
     },
   ) {
@@ -102,7 +102,7 @@ export default class AcreLedgerLiveBitcoinProvider
     network: BitcoinNetwork,
     windowMessageTransport: WindowMessageTransport,
     walletApiClient: WalletAPIClient,
-    options: LedgerLiveWalletApiBitcoinProviderOptions = {
+    options: AcreLedgerLiveBitcoinProviderOptions = {
       tryConnectToAddress: undefined,
     },
   ) {
