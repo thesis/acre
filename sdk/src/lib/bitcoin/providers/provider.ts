@@ -20,7 +20,8 @@ export interface AcreBitcoinProvider {
   /**
    * Signs message.
    * @param message Message to sign.
-   * @returns Hash of the signed message.
+   * @returns A signature for a given message, which proves that the owner of
+   *          the account has agreed to the message content.
    */
   signMessage(message: string): Promise<string>
 
@@ -33,7 +34,8 @@ export interface AcreBitcoinProvider {
    * Signs withdraw message.
    * @param message Message to sign.
    * @param data Withdrawal transaction data.
-   * @returns Hash of the signed message.
+   * @returns A signature for a given message, which proves that the owner of
+   *          the account has agreed to the message content.
    */
   signWithdrawMessage?(
     message: string,
