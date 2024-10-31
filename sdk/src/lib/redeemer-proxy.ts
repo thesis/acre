@@ -3,9 +3,9 @@ import {
   Hex,
   RedeemerProxy as TbtcRedeemerProxy,
 } from "@keep-network/tbtc-v2.ts"
-import { OrangeKitSdk, SafeTransactionData } from "@orangekit/sdk"
+import { OrangeKitSdk } from "@orangekit/sdk"
 import { AcreContracts } from "./contracts"
-import { AcreBitcoinProvider } from "./bitcoin"
+import { AcreBitcoinProvider, SafeTransactionData } from "./bitcoin"
 
 export type OnSignMessageStepCallback = (messageToSign: string) => Promise<void>
 export type MessageSignedStepCallback = (signedMessage: string) => Promise<void>
