@@ -61,7 +61,7 @@ export default function WalletInteractionModal({
             isIndeterminate
             {...progressProps}
           />
-          <Image src={connector?.icon} bg="black" {...ICON_STYLES} />
+          <Image src={connector?.icon} p={2} bg="black" {...ICON_STYLES} />
         </HStack>
         <TextMd>{description}</TextMd>
         {step === "awaiting-transaction" && (
