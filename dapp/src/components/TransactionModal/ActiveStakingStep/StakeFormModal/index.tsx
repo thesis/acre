@@ -8,6 +8,7 @@ import { fixedPointNumberToString, getCurrencyByType } from "#/utils"
 import { featureFlags } from "#/constants"
 import StakeDetails from "./StakeDetails"
 import AcrePointsRewardEstimation from "./AcrePointsRewardEstimation"
+import ActionDurationEstimation from "../../ActionDurationEstimation"
 
 function StakeFormModal({
   onSubmitForm,
@@ -35,6 +36,7 @@ function StakeFormModal({
       )}
       <StakeDetails currency="bitcoin" />
       <FormSubmitButton mt={10}>Deposit</FormSubmitButton>
+      <ActionDurationEstimation type="deposit" />
     </TokenAmountForm>
   )
 }
