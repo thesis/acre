@@ -35,9 +35,12 @@ importers:
       '@ledgerhq/wallet-api-acre-module':
         specifier: 0.1.0-nightly.0
         version: 0.1.0-nightly.0
+      '@ledgerhq/wallet-api-client':
+        specifier: 1.6.0
+        version: 1.6.0
       '@orangekit/react':
-        specifier: 1.0.0-beta.33-dev.7
-        version: 1.0.0-beta.33-dev.7(@react-native-async-storage/async-storage@1.23.1(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10)))(@tanstack/query-core@5.45.0)(@tanstack/react-query@5.45.0(react@18.3.1))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(immer@10.1.1)(react-dom@18.3.1(react@18.3.1))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10))(rollup@4.18.0)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8)
+        specifier: 1.0.0-beta.33
+        version: 1.0.0-beta.33(@react-native-async-storage/async-storage@1.23.1(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10)))(@tanstack/query-core@5.45.0)(@tanstack/react-query@5.45.0(react@18.3.1))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(immer@10.1.1)(react-dom@18.3.1(react@18.3.1))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10))(rollup@4.18.0)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8)
       '@orangekit/sign-in-with-wallet':
         specifier: 1.0.0-beta.6
         version: 1.0.0-beta.6(bech32@2.0.0)(ethers@6.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))
@@ -68,6 +71,9 @@ importers:
       axios:
         specifier: ^1.6.7
         version: 1.6.7
+      bignumber.js:
+        specifier: ^9.1.2
+        version: 9.1.2
       ethers:
         specifier: ^6.10.0
         version: 6.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
@@ -160,8 +166,8 @@ importers:
         specifier: 2.5.0-dev.3
         version: 2.5.0-dev.3(@keep-network/keep-core@1.8.1-dev.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@5.0.10)
       '@orangekit/sdk':
-        specifier: 1.0.0-beta.18-dev.3
-        version: 1.0.0-beta.18-dev.3(bufferutil@4.0.8)(encoding@0.1.13)(typescript@5.4.5)(utf-8-validate@5.0.10)
+        specifier: 1.0.0-beta.18
+        version: 1.0.0-beta.18(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@5.0.10)
       ethers:
         specifier: 6.10.0
         version: 6.10.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
@@ -1110,10 +1116,6 @@ packages:
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
-  '@bitcoin-js/tiny-secp256k1-asmjs@2.2.3':
-    resolution: {integrity: sha512-arFPdEZi9RIiaG76OZswTnAU0KfuiLwGw2VNfD66LKhzlbfOnX1o1WI/GI3qm9UbjG/0QOzZu/KmTNvL79x/DQ==}
-    engines: {node: '>=14.0.0'}
-
   '@bitcoinerlab/secp256k1@1.1.1':
     resolution: {integrity: sha512-uhjW51WfVLpnHN7+G0saDcM/k9IqcyTbZ+bDgLF3AX8V/a3KXSE9vn7UPBrcdU72tp0J4YPR7BHp2m7MLAZ/1Q==}
 
@@ -1123,6 +1125,7 @@ packages:
   '@celo/connect@1.5.2':
     resolution: {integrity: sha512-IHsvYp1HizIPfPPeIHyvsmJytIf7HNtNWo9CqCbsqfNfmw53q6dFJu2p5X0qz/fUnR5840cUga8cEyuYZTfp+w==}
     engines: {node: '>=8.13.0'}
+    deprecated: Versions less than 5.1 are deprecated and will no longer be able to submit transactions to celo in a future hardfork
     peerDependencies:
       web3: 1.3.6
 
@@ -1145,6 +1148,7 @@ packages:
   '@celo/wallet-base@1.5.2':
     resolution: {integrity: sha512-NYJu7OtSRFpGcvSMl2Wc8zN32S6oTkAzKqhH7rXisQ0I2q4yNwCzoquzPVYB0G2UVUFKuuxgsA5V+Zda/LQCyw==}
     engines: {node: '>=8.13.0'}
+    deprecated: Versions less than 5.1 are deprecated and will no longer be able to submit transactions to celo in a future hardfork
 
   '@celo/wallet-local@1.5.2':
     resolution: {integrity: sha512-Aas4SwqQc8ap0OFAOZc+jBR4cXr20V9AReHNEI8Y93R3g1+RlSEJ1Zmsu4vN+Rriz58YqgMnr+pihorw8QydFQ==}
@@ -2266,17 +2270,11 @@ packages:
   '@ledgerhq/wallet-api-acre-module@0.1.0-nightly.0':
     resolution: {integrity: sha512-VAhkV6m8FgM565pAek+19KjLsY5QQB9xTEMaNXxnQmBX+izuwchSfaqZrnzXGzR/HBKk6XVOrdwx2Xh5I8WKSg==}
 
-  '@ledgerhq/wallet-api-client@1.5.0':
-    resolution: {integrity: sha512-I07RlTmHw0uia5xhHa8Z3I7yVlYkxUWPfKWruh0vM6o0hDzPddGp+oDJZlriJIIrj2eHfaUCO1bEgycewPe0jA==}
-
   '@ledgerhq/wallet-api-client@1.6.0':
     resolution: {integrity: sha512-xf5g9baUB1Fn94GKYGNXtlRCKTWnqMBv1w9bE/H3+IXubwY7Cdy5zhn4rI8+iA4Llmwujp+sZciesWAa9f63gg==}
 
   '@ledgerhq/wallet-api-core@1.13.0':
     resolution: {integrity: sha512-HGnkPcbkeoNr+XAH+5NSrgyRYD/sVD3tgCyoYPAKEs7j3W/eJyT/EvBWwV4yPKhghfSjuqMo1L+0wLCXnbt4Dw==}
-
-  '@ledgerhq/wallet-api-core@1.6.0':
-    resolution: {integrity: sha512-nVPN3yu5+5pbhfFYh0iKmij5U7KVKZfpDkusXbj4yKvueKY8ZXU1wgvw1rDhgxlqu+s7JTA50MX56doyhm46Qg==}
 
   '@lit-labs/ssr-dom-shim@1.2.0':
     resolution: {integrity: sha512-yWJKmpGE6lUURKAaIltoPIE/wrbY3TEkqQt+X0m+7fQNnAv0keydnYvbiJFP1PnMhizmIWRWOG5KLhYyc/xl+g==}
@@ -2650,9 +2648,11 @@ packages:
 
   '@openzeppelin/defender-admin-client@1.54.6':
     resolution: {integrity: sha512-P4lxJDySrekWNuPa7FeyW/UmuxnuIXIAGYr5gZnmnMHRsYNaw+XfgkiCDfoGtjEyJbXYxXttYF6iAZhWQPdf1g==}
+    deprecated: This package has been deprecated and will no longer be maintained, please use @openzeppelin/defender-sdk package instead.
 
   '@openzeppelin/defender-base-client@1.54.6':
     resolution: {integrity: sha512-PTef+rMxkM5VQ7sLwLKSjp2DBakYQd661ZJiSRywx+q/nIpm3B/HYGcz5wPZCA5O/QcEP6TatXXDoeMwimbcnw==}
+    deprecated: This package has been deprecated and will no longer be maintained, please use @openzeppelin/defender-sdk package instead.
 
   '@openzeppelin/defender-sdk-base-client@1.13.4':
     resolution: {integrity: sha512-fZjDxdL5WBt6kjKN8j6WlfIsggZKv37W1KoRkT0XwYv7Jslmr22i2qUs8ZreAzATD3ESYQs7YlO7ge0ElqdOKg==}
@@ -2686,11 +2686,11 @@ packages:
   '@orangekit/contracts@1.0.0-beta.3':
     resolution: {integrity: sha512-xP1Oz/JzuHypg5DcsHayINhFSL5M/tCmRP/stmNAvjeebXhrKuALKAHWn98H0Mo3QfYYrz8UcltQPeH6+68n6A==}
 
-  '@orangekit/react@1.0.0-beta.33-dev.7':
-    resolution: {integrity: sha512-44Ujaij/7AjDCgkdnLOJ96TDMMEu2kmoFHO15rnZ8GAoNWpVmKcZ58uG18GuwwGzhyVbed+gRdjv0c4VQPTy8A==}
+  '@orangekit/react@1.0.0-beta.33':
+    resolution: {integrity: sha512-b5VMFB2tZad86FNdtylwsKaXlXlrSjY9cIMsaJMUh7EEWEoVvtndbCsHrISKbspm7y+S5nNmGlE3WcQvR8RWWw==}
 
-  '@orangekit/sdk@1.0.0-beta.18-dev.3':
-    resolution: {integrity: sha512-rxeqOWnan0iNHs4AMTAIJpc+AK/CxD7xloX7n0qw1C+2S/kEWw3JzHcuOrBgCMqBCzXuXYr0D9JpOmND+ZUzUg==}
+  '@orangekit/sdk@1.0.0-beta.18':
+    resolution: {integrity: sha512-031JkI0F8gdGzj/7sKbJ52k0Xj/E4uwp/O0SWFDCXyZC0vwtjlw3ItAaZz+nIj820b6dSM6pjL+P7um3m9AK3Q==}
 
   '@orangekit/sign-in-with-wallet-parser@1.0.0-beta.6':
     resolution: {integrity: sha512-Yi6ohSJV4/Ovrq5c7jD+kPE8pZxLhWtFbZjKRwUW8JL60P/tcyT5o0etul0reqcY2iBlIo5aoC2Hh0noRGl86w==}
@@ -4430,9 +4430,6 @@ packages:
   base-x@4.0.0:
     resolution: {integrity: sha512-FuwxlW4H5kh37X/oW59pwTzzTKRzfrrQwhmyspRM7swOEZcHtDZSCt45U6oKgtuFE+WYPblePMVIPR4RZrh/hw==}
 
-  base-x@5.0.0:
-    resolution: {integrity: sha512-sMW3VGSX1QWVFA6l8U62MLKz29rRfpTlYdCqLdpLo1/Yd4zZwSbnUaDfciIAowAqvq7YFnWq9hrhdg1KYgc1lQ==}
-
   base58-js@1.0.5:
     resolution: {integrity: sha512-LkkAPP8Zu+c0SVNRTRVDyMfKVORThX+rCViget00xdgLRrKkClCTz1T7cIrpr69ShwV5XJuuoZvMvJ43yURwkA==}
     engines: {node: '>= 8'}
@@ -4488,10 +4485,6 @@ packages:
   bip32@2.0.5:
     resolution: {integrity: sha512-zVY4VvJV+b2fS0/dcap/5XLlpqtgwyN8oRkuGgAS1uLOeEp0Yo6Tw2yUTozTtlrMJO3G8n4g/KX/XGFHW6Pq3g==}
     engines: {node: '>=6.0.0'}
-
-  bip32@5.0.0-rc.0:
-    resolution: {integrity: sha512-5hVFGrdCnF8GB1Lj2eEo4PRE7+jp+3xBLnfNjydivOkMvKmUKeJ9GG8uOy8prmWl3Oh154uzgfudR1FRkNBudA==}
-    engines: {node: '>=18.0.0'}
 
   bip39@3.0.2:
     resolution: {integrity: sha512-J4E1r2N0tUylTKt07ibXvhpT2c5pyAFgvuA5q1H9uDy6dEGpjV8jmymh3MTYJDLCNbIVClSB9FbND49I6N24MQ==}
@@ -4613,17 +4606,11 @@ packages:
   bs58@5.0.0:
     resolution: {integrity: sha512-r+ihvQJvahgYT50JD05dyJNKlmmSlMoOGwn1lCcEzanPglg7TxYjioQUYehQ9mAR/+hOSd2jRc/Z2y5UxBymvQ==}
 
-  bs58@6.0.0:
-    resolution: {integrity: sha512-PD0wEnEYg6ijszw/u8s+iI3H17cTymlrwkKhDhPZq+Sokl3AU4htyBFTjAeNAlCCmg0f53g6ih3jATyCKftTfw==}
-
   bs58check@2.1.2:
     resolution: {integrity: sha512-0TS1jicxdU09dwJMNZtVAfzPi6Q6QeN0pM1Fkzrjn+XYHvzMKPU3pHVpva+769iNVSfIYWf7LJ6WR+BuuMf8cA==}
 
   bs58check@3.0.1:
     resolution: {integrity: sha512-hjuuJvoWEybo7Hn/0xOrczQKKEKD63WguEjlhLExYs2wUBcebDC1jDNK17eEAD2lYfw82d5ASC1d7K3SWszjaQ==}
-
-  bs58check@4.0.0:
-    resolution: {integrity: sha512-FsGDOnFg9aVI9erdriULkd/JjEWONV/lQE5aYziB5PoBsXRind56lh8doIZIc9X4HoxT5x4bLjMWN1/NB8Zp5g==}
 
   bser@2.1.1:
     resolution: {integrity: sha512-gQxTNE/GAfIIrmHLUE3oJyp5FO6HRBfhjnw4/wMmA63ZGDJnWBmgY/lyQBpnDUkGmAhbSe39tx2d/iTOAfglwQ==}
@@ -5490,6 +5477,7 @@ packages:
 
   eciesjs@0.3.19:
     resolution: {integrity: sha512-b+PkRDZ3ym7HEcnbxc22CMVCpgsnr8+gGgST3U5PtgeX1luvINgfXW7efOyUtmn/jFtA/lg5ywBi/Uazf4oeaA==}
+    deprecated: Please upgrade to v0.4+
 
   ecpair@2.1.0:
     resolution: {integrity: sha512-cL/mh3MtJutFOvFc27GPZE2pWL3a3k4YvzUWEOvilnfZVlH3Jwgx/7d6tlD7/75tNk8TG2m+7Kgtz0SI1tWcqw==}
@@ -5785,6 +5773,7 @@ packages:
   eslint@8.57.0:
     resolution: {integrity: sha512-dZ6+mexnaTIbSBZWgou51U6OmzIhYM2VcNdtiTtI7qPNZm35Akpr0f6vtw3w1Kmn5PYo+tZVfh13WrhpS6oLqQ==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
 
   esniff@2.0.1:
@@ -5871,6 +5860,7 @@ packages:
 
   ethereum-bloom-filters@1.1.0:
     resolution: {integrity: sha512-J1gDRkLpuGNvWYzWslBQR9cDV4nd4kfvVTE/Wy4Kkm4yb3EYRSlyi0eB/inTsSTTVyA0+HyzHgbr95Fn/Z1fSw==}
+    deprecated: do not use this package use package versions above as this can miss some topics
 
   ethereum-cryptography@0.1.3:
     resolution: {integrity: sha512-w8/4x1SGGzc+tO97TASLja6SLd3fRIK2tLVcV2Gx4IB21hE19atll5Cq9o3d0ZmAYC/8aw0ipieTSiekAea4SQ==}
@@ -10071,14 +10061,6 @@ packages:
     engines: {node: '>=0.8.0'}
     hasBin: true
 
-  uint8array-tools@0.0.7:
-    resolution: {integrity: sha512-vrrNZJiusLWoFWBqz5Y5KMCgP9W9hnjZHzZiZRT8oNAkq3d5Z5Oe76jAvVVSRh4U8GGR90N2X1dWtrhvx6L8UQ==}
-    engines: {node: '>=14.0.0'}
-
-  uint8array-tools@0.0.8:
-    resolution: {integrity: sha512-xS6+s8e0Xbx++5/0L+yyexukU7pz//Yg6IHg3BKhXotg1JcYtgxVcUctQ0HxLByiJzpAkNFawz1Nz5Xadzo82g==}
-    engines: {node: '>=14.0.0'}
-
   uint8arrays@3.1.0:
     resolution: {integrity: sha512-ei5rfKtoRO8OyOIor2Rz5fhzjThwIHJZ3uyDPnDHTXbP0aMQ1RN/6AI5B5d9dBxJOU+BvOAk7ZQ1xphsX8Lrog==}
 
@@ -10320,14 +10302,6 @@ packages:
 
   valibot@0.33.2:
     resolution: {integrity: sha512-ZpFWuI+bs5+PP66q4zVFn4e4t/s5jmMw5iPBZmGUoi8iQqXyU9YY/BLCAyk62Z/bNS8qdUNBEyx52952qdqW3w==}
-
-  valibot@0.37.0:
-    resolution: {integrity: sha512-FQz52I8RXgFgOHym3XHYSREbNtkgSjF9prvMFH1nBsRyfL6SfCzoT1GuSDTlbsuPubM7/6Kbw0ZMQb8A+V+VsQ==}
-    peerDependencies:
-      typescript: '>=5'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
 
   valid-url@1.0.9:
     resolution: {integrity: sha512-QQDsV8OnSf5Uc30CKSwG9lnhMPe6exHtTXLRYX8uMwKENy640pU+2BgBL0LRbDh/eYRahNCS7aewCx0wf3NYVA==}
@@ -10927,9 +10901,6 @@ packages:
 
   wif@2.0.6:
     resolution: {integrity: sha512-HIanZn1zmduSF+BQhkE+YXIbEiH0xPr1012QbFEGB0xsKqJii0/SqJjyn8dFv6y36kOznMgMB+LGcbZTJ1xACQ==}
-
-  wif@5.0.0:
-    resolution: {integrity: sha512-iFzrC/9ne740qFbNjTZ2FciSRJlHIXoxqk/Y5EnE08QOXu1WjJyCCswwDTYbohAOEnlCtLaAAQBhyaLRFh2hMA==}
 
   word-wrap@1.2.5:
     resolution: {integrity: sha512-BN22B5eaMMI9UMtjrGd5g5eCYPpCPDUy0FJXbYsaT5zYxjFOckS53SQDE3pWkVoWpHXVb3BrYcEN4Twa55B5cA==}
@@ -12166,10 +12137,6 @@ snapshots:
       to-fast-properties: 2.0.0
 
   '@bcoe/v8-coverage@0.2.3': {}
-
-  '@bitcoin-js/tiny-secp256k1-asmjs@2.2.3':
-    dependencies:
-      uint8array-tools: 0.0.7
 
   '@bitcoinerlab/secp256k1@1.1.1':
     dependencies:
@@ -13992,7 +13959,7 @@ snapshots:
       '@bitcoinerlab/secp256k1': 1.1.1
       '@keep-network/ecdsa': 2.1.0-dev.19(@keep-network/keep-core@1.8.1-dev.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))
       '@keep-network/tbtc-v2': 1.7.0-dev.4(@keep-network/keep-core@1.8.1-dev.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@5.0.10)
-      '@ledgerhq/wallet-api-client': 1.5.0
+      '@ledgerhq/wallet-api-client': 1.6.0
       bignumber.js: 9.1.2
       bitcoinjs-lib: 6.1.6
       bufio: 1.2.1
@@ -14120,12 +14087,6 @@ snapshots:
       '@ledgerhq/wallet-api-client': 1.6.0
       '@ledgerhq/wallet-api-core': 1.13.0
 
-  '@ledgerhq/wallet-api-client@1.5.0':
-    dependencies:
-      '@ledgerhq/hw-transport': 6.30.6
-      '@ledgerhq/wallet-api-core': 1.6.0
-      bignumber.js: 9.1.2
-
   '@ledgerhq/wallet-api-client@1.6.0':
     dependencies:
       '@ledgerhq/hw-transport': 6.30.6
@@ -14133,13 +14094,6 @@ snapshots:
       bignumber.js: 9.1.2
 
   '@ledgerhq/wallet-api-core@1.13.0':
-    dependencies:
-      '@ledgerhq/errors': 6.16.4
-      bignumber.js: 9.1.2
-      uuid: 9.0.1
-      zod: 3.23.8
-
-  '@ledgerhq/wallet-api-core@1.6.0':
     dependencies:
       '@ledgerhq/errors': 6.16.4
       bignumber.js: 9.1.2
@@ -14863,10 +14817,9 @@ snapshots:
     transitivePeerDependencies:
       - ethers
 
-  '@orangekit/react@1.0.0-beta.33-dev.7(@react-native-async-storage/async-storage@1.23.1(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10)))(@tanstack/query-core@5.45.0)(@tanstack/react-query@5.45.0(react@18.3.1))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(immer@10.1.1)(react-dom@18.3.1(react@18.3.1))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10))(rollup@4.18.0)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8)':
+  '@orangekit/react@1.0.0-beta.33(@react-native-async-storage/async-storage@1.23.1(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10)))(@tanstack/query-core@5.45.0)(@tanstack/react-query@5.45.0(react@18.3.1))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(immer@10.1.1)(react-dom@18.3.1(react@18.3.1))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10))(rollup@4.18.0)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8)':
     dependencies:
-      '@ledgerhq/wallet-api-client': 1.6.0
-      '@orangekit/sdk': 1.0.0-beta.18-dev.3(bufferutil@4.0.8)(encoding@0.1.13)(typescript@5.4.5)(utf-8-validate@5.0.10)
+      '@orangekit/sdk': 1.0.0-beta.18(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@5.0.10)
       '@rainbow-me/rainbowkit': 2.0.2(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(viem@2.8.16(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8))(wagmi@2.5.12(@react-native-async-storage/async-storage@1.23.1(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10)))(@tanstack/query-core@5.45.0)(@tanstack/react-query@5.45.0(react@18.3.1))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(immer@10.1.1)(react-dom@18.3.1(react@18.3.1))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10))(react@18.3.1)(rollup@4.18.0)(typescript@5.4.5)(utf-8-validate@5.0.10)(viem@2.8.16(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8))(zod@3.23.8))
       ethers: 6.12.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       react: 18.3.1
@@ -14903,15 +14856,13 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@orangekit/sdk@1.0.0-beta.18-dev.3(bufferutil@4.0.8)(encoding@0.1.13)(typescript@5.4.5)(utf-8-validate@5.0.10)':
+  '@orangekit/sdk@1.0.0-beta.18(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@5.0.10)':
     dependencies:
-      '@bitcoin-js/tiny-secp256k1-asmjs': 2.2.3
       '@gelatonetwork/relay-sdk': 5.5.6(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@noble/curves': 1.4.0
       '@noble/hashes': 1.4.0
       '@orangekit/contracts': 1.0.0-beta.3(ethers@6.12.1(bufferutil@4.0.8)(utf-8-validate@5.0.10))
       '@safe-global/protocol-kit': 3.1.1(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@5.0.10)
-      bip32: 5.0.0-rc.0(typescript@5.4.5)
       bitcoinjs-lib: 6.1.5
       ethers: 6.12.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
@@ -14919,7 +14870,6 @@ snapshots:
       - debug
       - encoding
       - supports-color
-      - typescript
       - utf-8-validate
 
   '@orangekit/sign-in-with-wallet-parser@1.0.0-beta.6':
@@ -17622,8 +17572,6 @@ snapshots:
 
   base-x@4.0.0: {}
 
-  base-x@5.0.0: {}
-
   base58-js@1.0.5: {}
 
   base64-js@1.5.1: {}
@@ -17673,16 +17621,6 @@ snapshots:
       tiny-secp256k1: 1.1.6
       typeforce: 1.18.0
       wif: 2.0.6
-
-  bip32@5.0.0-rc.0(typescript@5.4.5):
-    dependencies:
-      '@noble/hashes': 1.4.0
-      '@scure/base': 1.1.7
-      uint8array-tools: 0.0.8
-      valibot: 0.37.0(typescript@5.4.5)
-      wif: 5.0.0
-    transitivePeerDependencies:
-      - typescript
 
   bip39@3.0.2:
     dependencies:
@@ -17885,10 +17823,6 @@ snapshots:
     dependencies:
       base-x: 4.0.0
 
-  bs58@6.0.0:
-    dependencies:
-      base-x: 5.0.0
-
   bs58check@2.1.2:
     dependencies:
       bs58: 4.0.1
@@ -17899,11 +17833,6 @@ snapshots:
     dependencies:
       '@noble/hashes': 1.4.0
       bs58: 5.0.0
-
-  bs58check@4.0.0:
-    dependencies:
-      '@noble/hashes': 1.4.0
-      bs58: 6.0.0
 
   bser@2.1.1:
     dependencies:
@@ -24700,10 +24629,6 @@ snapshots:
   uglify-js@3.18.0:
     optional: true
 
-  uint8array-tools@0.0.7: {}
-
-  uint8array-tools@0.0.8: {}
-
   uint8arrays@3.1.0:
     dependencies:
       multiformats: 9.9.0
@@ -24899,10 +24824,6 @@ snapshots:
       convert-source-map: 2.0.0
 
   valibot@0.33.2: {}
-
-  valibot@0.37.0(typescript@5.4.5):
-    optionalDependencies:
-      typescript: 5.4.5
 
   valid-url@1.0.9: {}
 
@@ -26098,10 +26019,6 @@ snapshots:
   wif@2.0.6:
     dependencies:
       bs58check: 2.1.2
-
-  wif@5.0.0:
-    dependencies:
-      bs58check: 4.0.0
 
   word-wrap@1.2.5: {}
 

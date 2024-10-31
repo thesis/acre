@@ -9,7 +9,7 @@ import OrangeKitTbtcRedeemerProxy, {
   MessageSignedStepCallback,
   OnSignMessageStepCallback,
 } from "../lib/redeemer-proxy"
-import { BitcoinProvider } from "../lib/bitcoin"
+import { AcreBitcoinProvider } from "../lib/bitcoin"
 
 export { DepositReceipt } from "./tbtc"
 
@@ -70,7 +70,7 @@ export default class Account {
 
   readonly #bitcoinPublicKey: string
 
-  readonly #bitcoinProvider: BitcoinProvider
+  readonly #bitcoinProvider: AcreBitcoinProvider
 
   readonly #orangeKitSdk: OrangeKitSdk
 
@@ -83,7 +83,7 @@ export default class Account {
       bitcoinPublicKey: string
       ethereumAddress: ChainIdentifier
     },
-    bitcoinProvider: BitcoinProvider,
+    bitcoinProvider: AcreBitcoinProvider,
     orangeKitSdk: OrangeKitSdk,
   ) {
     this.#contracts = contracts
