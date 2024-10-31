@@ -21,10 +21,6 @@
   "permissions": [
     "account.request",
     "account.list",
-    "message.sign",
-    "transaction.sign",
-    "transaction.signAndBroadcast",
-    "bitcoin.getXPub",
     "bitcoin.getAddress",
     "bitcoin.getPublicKey",
     "custom.acre.messageSign",

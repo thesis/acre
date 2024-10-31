@@ -1,9 +1,11 @@
-// TODO: This is just a temporary interface that should be replaced by the
-// `OrangeKitBitcoinWalletProvider` from the `orangekit` library.
+import { SafeTransactionData } from "@orangekit/sdk"
+
+export { SafeTransactionData }
+
 /**
  * Interface for communication with Bitcoin Wallet.
  */
-export interface BitcoinProvider {
+export interface AcreBitcoinProvider {
   /**
    * Acre SDK must rely on the `BitcoinProvider` implementation to get the
    * bitcoin address because different wallets use different strategies. For
@@ -18,7 +20,8 @@ export interface BitcoinProvider {
   /**
    * Signs message.
    * @param message Message to sign.
-   * @returns Hash of the signed message.
+   * @returns A signature for a given message, which proves that the owner of
+   *          the account has agreed to the message content.
    */
   signMessage(message: string): Promise<string>
 
@@ -28,10 +31,16 @@ export interface BitcoinProvider {
   getPublicKey(): Promise<string>
 
   /**
-   * Signs withdraw message.
+   * Signs withdraw message. This function is optional and if it is not
+   * implemented the `signMessage` function will be used to sign the withdrawal
+   * message.
    * @param message Message to sign.
    * @param data Withdrawal transaction data.
-   * @returns Hash of the signed message.
+   * @returns A signature for a given message, which proves that the owner of
+   *          the account has agreed to the message content.
    */
-  signWithdrawMessage?(message: string, data: unknown): Promise<string>
+  signWithdrawMessage?(
+    message: string,
+    data: SafeTransactionData,
+  ): Promise<string>
 }

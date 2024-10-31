@@ -6,7 +6,7 @@ import { BitcoinNetwork } from "@acre-btc/sdk"
 import icon from "./icon"
 
 import AcreLedgerLiveBitcoinProvider, {
-  LedgerLiveWalletApiBitcoinProviderOptions,
+  AcreLedgerLiveBitcoinProviderOptions,
 } from "./bitcoin-provider"
 
 export default function getOrangeKitLedgerLiveConnector({
@@ -14,7 +14,7 @@ export default function getOrangeKitLedgerLiveConnector({
   chainId,
   relayApiKey,
   options,
-}: ConnectorConfig & { options: LedgerLiveWalletApiBitcoinProviderOptions }) {
+}: ConnectorConfig & { options: AcreLedgerLiveBitcoinProviderOptions }) {
   const bitcoinWalletProvider = AcreLedgerLiveBitcoinProvider.init(
     chainId === 1 ? BitcoinNetwork.Mainnet : BitcoinNetwork.Testnet,
     options,

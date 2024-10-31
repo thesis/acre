@@ -7,6 +7,7 @@ import {
 import { Balance } from "@orangekit/react/dist/src/wallet/bitcoin-wallet-provider"
 import { AcreMessageType } from "@ledgerhq/wallet-api-acre-module"
 import { ZeroAddress } from "ethers"
+import BigNumber from "bignumber.js"
 import AcreLedgerLiveBitcoinProvider from "../bitcoin-provider"
 
 describe("AcreLedgerLiveBitcoinProvider", () => {
@@ -15,6 +16,7 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
   const mockedAccount = {
     id: "test",
     address: bitcoinAddress,
+    zeroAddress,
     balance: 100,
     spendableBalance: 80,
   }
@@ -91,7 +93,7 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
             mockedAccount.id,
             {
               family: "bitcoin",
-              amount: satoshis.toString(),
+              amount: new BigNumber(satoshis),
               recipient: bitcoinAddress,
             },
             { hwAppId },
@@ -148,76 +150,146 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
       })
     })
 
-    // TODO: test all supported addresses
-    describe("signWithdrawMessage", () => {
-      const signature =
-        "0x2799a1c1d934dc4b57d031c016f43b65f7910d348a1254a0f9fcec0e997e46d0105b35e115b9155288e15153d8ad3ba6eed5d2823e9b8c50826eabd580f6f960f6"
-      const expectedSignature =
-        "0x1f1dbbf7d6b573577ddf875ce1be7b774df5734d7a7f8ddbeb97fbf75d1ddf8f1ad76e786b47fd7dc79cd1ef7dedee3a774d74e5bdf97b5d796fdd79e76f3c7b5e75e7777c69dddb6ba79e779776f36ddef5bf1ce74f36e9e69b779f347fa7fdeb47fa"
-
-      let result: string
-
-      beforeAll(async () => {
-        mockedWalletApiClient.custom.acre.messageSign.mockResolvedValueOnce(
-          signature,
-        )
-        result = await provider.signWithdrawMessage("", withdrawalData)
-      })
-
-      it("should call the acre custom module to sign withdraw message", () => {
-        expect(
-          mockedWalletApiClient.custom.acre.messageSign,
-        ).toHaveBeenCalledWith(
-          mockedAccount.id,
-          {
-            type: AcreMessageType.Withdraw,
-            message: {
-              ...withdrawalData,
-              operation: withdrawalData.operation.toString(),
-              nonce: withdrawalData.nonce.toString(),
-            },
-          },
-          "0/0",
-          { hwAppId },
-        )
-      })
-
-      it("should return correct signature", () => {
-        expect(result).toBe(expectedSignature)
-      })
-    })
-
-    // TODO: test all supported addresses
     describe("signMessage", () => {
-      const message = "message"
-      const signature =
-        "0x2799a1c1d934dc4b57d031c016f43b65f7910d348a1254a0f9fcec0e997e46d0105b35e115b9155288e15153d8ad3ba6eed5d2823e9b8c50826eabd580f6f960f6"
-      const expectedSignature =
-        "0x1f1dbbf7d6b573577ddf875ce1be7b774df5734d7a7f8ddbeb97fbf75d1ddf8f1ad76e786b47fd7dc79cd1ef7dedee3a774d74e5bdf97b5d796fdd79e76f3c7b5e75e7777c69dddb6ba79e779776f36ddef5bf1ce74f36e9e69b779f347fa7fdeb47fa"
-      let result: string
+      const taprootAddress =
+        "tb1pzfxzc0n399ezjrxkd0xyf2xuymz8a0rdzlka6ynmtatqv64z5ausw5suv2"
+      const mockedPublicKey =
+        "033b37d8b5dda991cdeb628c28c7958cf9d7bc61dfde29357b8a7190b9b3295423"
+      const signInMessage = "test"
 
-      beforeAll(async () => {
-        mockedWalletApiClient.custom.acre.messageSign.mockResolvedValueOnce(
-          signature,
-        )
+      const messageTypesData = [
+        {
+          type: AcreMessageType.Withdraw,
+          methodName: "signWithdrawMessage",
+          args: ["", withdrawalData],
+          messageData: {
+            ...withdrawalData,
+            operation: withdrawalData.operation.toString(),
+            nonce: withdrawalData.nonce.toString(),
+          },
+        },
+        {
+          type: AcreMessageType.SignIn,
+          methodName: "signMessage",
+          args: [signInMessage],
+          messageData: signInMessage,
+        },
+      ]
 
-        result = await provider.signMessage(message)
-      })
+      const testData = [
+        {
+          addressType: "Nested Segwit (P2SH-P2WPKH)",
+          address: "2N3dhPvUMaGaqrXGrHa8VnKVhfxy38A4YVW",
+          signature: Buffer.from(
+            "1f2d48374c17b5af8da605fbeb1540540f0e4e0a5108c26c13ac4ec3bd9eafa8011951b2160995b9a9da85502a6c3c689a556f542a0e7a57f7cd187670e7d9c4f9",
+            "hex",
+          ),
+          expectedSignature:
+            "0x232d48374c17b5af8da605fbeb1540540f0e4e0a5108c26c13ac4ec3bd9eafa8011951b2160995b9a9da85502a6c3c689a556f542a0e7a57f7cd187670e7d9c4f9",
+          publicKey:
+            "033b37d8b5dda991cdeb628c28c7958cf9d7bc61dfde29357b8a7190b9b3295423",
+        },
+        {
+          addressType: "Legacy (P2PKH)",
+          address: "mrXtbjt4XXcX2aruY1Lx58YF2F8LXYzi1U",
+          signature: Buffer.from(
+            "1fdea55216183919f35950e0bfe5b4889c6103c708d50fd2e0fe7eddc826b295a94a504475fb5f8896a87ac156590575a33390d8bde9ddb637aa096ae61546201f",
+            "hex",
+          ),
+          expectedSignature:
+            "0x1fdea55216183919f35950e0bfe5b4889c6103c708d50fd2e0fe7eddc826b295a94a504475fb5f8896a87ac156590575a33390d8bde9ddb637aa096ae61546201f",
+        },
+        {
+          addressType: "Native Segwit (P2WPKH)",
+          address: "tb1q3x5lk9l83aek9c0vu38tx69u2lyxsdy6tww2rp",
+          signature: Buffer.from(
+            "20ab1f9cc6955f17a18240014fae5303576ea9a7caacabebf26c2b296e7b7b75857b432a1e0b6499b8f4a82f34f02e293b884de1792c5d6cd761eefe4e9f1130c0",
+            "hex",
+          ),
+          expectedSignature:
+            "0x28ab1f9cc6955f17a18240014fae5303576ea9a7caacabebf26c2b296e7b7b75857b432a1e0b6499b8f4a82f34f02e293b884de1792c5d6cd761eefe4e9f1130c0",
+        },
+      ]
 
-      it("should call the acre custom module to sign message", () => {
-        expect(
-          mockedWalletApiClient.custom.acre.messageSign,
-        ).toHaveBeenCalledWith(
-          mockedAccount.id,
-          { type: AcreMessageType.SignIn, message },
-          "0/0",
-          { hwAppId },
-        )
-      })
+      describe.each(messageTypesData)(
+        "$type",
+        ({ methodName, args, type, messageData }) => {
+          describe("with supported address type", () => {
+            describe.each(testData)(
+              "when sign with $addressType address",
+              ({ address, signature, expectedSignature, publicKey }) => {
+                let result: string
 
-      it("should return correct signature", () => {
-        expect(result).toBe(expectedSignature)
-      })
+                beforeAll(async () => {
+                  mockedWalletApiClient.custom.acre.messageSign.mockResolvedValue(
+                    signature,
+                  )
+                  mockedWalletApiClient.account.request.mockResolvedValue({
+                    ...mockedAccount,
+                    address,
+                  })
+                  mockedWalletApiClient.bitcoin.getAddress.mockResolvedValue(
+                    address,
+                  )
+
+                  if (publicKey) {
+                    mockedWalletApiClient.bitcoin.getPublicKey.mockResolvedValue(
+                      publicKey,
+                    )
+                  }
+
+                  await provider.connect()
+
+                  // @ts-expect-error test
+                  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+                  result = await provider[methodName](...args)
+                })
+
+                it("should call the acre custom module to sign message", () => {
+                  expect(
+                    mockedWalletApiClient.custom.acre.messageSign,
+                  ).toHaveBeenCalledWith(
+                    mockedAccount.id,
+                    {
+                      type,
+                      message: messageData,
+                    },
+                    "0/0",
+                    { hwAppId },
+                  )
+                })
+
+                it("should return correct signature", () => {
+                  expect(result).toBe(expectedSignature)
+                })
+              },
+            )
+          })
+
+          describe("with unsupported address type", () => {
+            beforeAll(async () => {
+              mockedWalletApiClient.account.request.mockResolvedValue({
+                ...mockedAccount,
+                address: taprootAddress,
+              })
+              mockedWalletApiClient.bitcoin.getAddress.mockResolvedValue(
+                taprootAddress,
+              )
+              mockedWalletApiClient.bitcoin.getPublicKey.mockResolvedValue(
+                mockedPublicKey,
+              )
+
+              await provider.connect()
+            })
+
+            it("should throw an error", async () => {
+              await expect(async () =>
+                provider.signWithdrawMessage("", withdrawalData),
+              ).rejects.toThrowError("Unsupported Bitcoin address type")
+            })
+          })
+        },
+      )
     })
 
     describe("getPublicKey", () => {
@@ -271,7 +343,7 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
       { methodName: "signWithdrawMessage", args: ["", withdrawalData] },
       { methodName: "getAddress", args: [] },
       { methodName: "getBalance", args: [] },
-    ])("%methodName", ({ methodName, args }) => {
+    ])("$methodName", ({ methodName, args }) => {
       it("should throw an error", async () => {
         await expect(() =>
           // @ts-expect-error test
@@ -286,13 +358,15 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
     const account2 = {
       ...mockedAccount,
       id: "2",
-      address: "bc1qxg2cc7p5yur7tr3rr2cl5jw47lluuvy7cr2usu",
+      address: "tb1q3x5lk9l83aek9c0vu38tx69u2lyxsdy6tww2rp",
+      zeroAddress: "tb1qj502nrx8lv4azu4afuxhffma248gq8c00zl8uv",
     }
 
     const account3 = {
       ...mockedAccount,
       id: "3",
-      address: "tb1qhp6ug4hp3cc84spx3l8sddh8w5ffjujvjycqv5",
+      address: "mrXtbjt4XXcX2aruY1Lx58YF2F8LXYzi1U",
+      zeroAddress: "mhKLhBdi7JmtYNxRVTn3u5fSsXtiwDbj4K",
     }
     const accounts = [mockedAccount, account2, account3]
 
@@ -305,6 +379,9 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
             mockedWalletApiClient.account.list.mockReturnValueOnce([
               mockedAccount,
             ])
+            mockedWalletApiClient.bitcoin.getAddress.mockResolvedValueOnce(
+              mockedAccount.zeroAddress,
+            )
 
             provider = new AcreLedgerLiveBitcoinProvider(
               BitcoinNetwork.Testnet,
@@ -321,8 +398,14 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
             })
           })
 
+          it("should get the bitcoin address from bitcoin module", () => {
+            expect(
+              mockedWalletApiClient.bitcoin.getAddress,
+            ).toHaveBeenCalledWith(mockedAccount.id, "0/0")
+          })
+
           it("should return the first account", () => {
-            expect(result).toBe(mockedAccount.address)
+            expect(result).toBe(mockedAccount.zeroAddress)
           })
         })
 
@@ -330,6 +413,9 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
           beforeAll(async () => {
             mockedWalletApiClient.account.list.mockReturnValueOnce(accounts)
             mockedWalletApiClient.account.request.mockReturnValueOnce(account2)
+            mockedWalletApiClient.bitcoin.getAddress.mockResolvedValueOnce(
+              account2.zeroAddress,
+            )
 
             provider = new AcreLedgerLiveBitcoinProvider(
               BitcoinNetwork.Testnet,
@@ -346,23 +432,30 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
             })
           })
 
+          it("should get the bitcoin address from bitcoin module", () => {
+            expect(
+              mockedWalletApiClient.bitcoin.getAddress,
+            ).toHaveBeenCalledWith(mockedAccount.id, "0/0")
+          })
+
           it("should return account selected by the user", () => {
-            expect(result).toBe(account2.address)
+            expect(result).toBe(account2.zeroAddress)
           })
         })
       })
 
       describe("when `tryConnectToAddress` is set", () => {
-        const tryConnectToAddress = account3.address
+        const tryConnectToAddress = account3.zeroAddress
 
         beforeAll(async () => {
           mockedWalletApiClient.bitcoin.getAddress.mockClear()
 
           mockedWalletApiClient.account.list.mockReturnValueOnce(accounts)
           mockedWalletApiClient.bitcoin.getAddress
-            .mockReturnValueOnce(mockedAccount.address)
-            .mockReturnValueOnce(account2.address)
-            .mockReturnValueOnce(account3.address)
+            .mockReturnValueOnce(mockedAccount.zeroAddress)
+            .mockReturnValueOnce(account2.zeroAddress)
+            .mockReturnValueOnce(account3.zeroAddress)
+            .mockResolvedValueOnce(tryConnectToAddress)
 
           provider = new AcreLedgerLiveBitcoinProvider(
             BitcoinNetwork.Testnet,
@@ -383,9 +476,6 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
         it("should get zero address for all accounts", () => {
           expect(
             mockedWalletApiClient.bitcoin.getAddress,
-          ).toHaveBeenCalledTimes(accounts.length)
-          expect(
-            mockedWalletApiClient.bitcoin.getAddress,
           ).toHaveBeenNthCalledWith(1, mockedAccount.id, "0/0")
           expect(
             mockedWalletApiClient.bitcoin.getAddress,
@@ -395,6 +485,13 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
           ).toHaveBeenNthCalledWith(3, account3.id, "0/0")
         })
 
+        it("should get the bitcoin address from bitcoin module", () => {
+          expect(mockedWalletApiClient.bitcoin.getAddress).toHaveBeenCalledWith(
+            account3.id,
+            "0/0",
+          )
+        })
+
         it("should return an account with the same address as `tryConnectToAddress` param", () => {
           expect(result).toBe(tryConnectToAddress)
         })
@@ -402,9 +499,17 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
     })
 
     describe("when the provider is already connected", () => {
+      const selectedAccount = account2
+      let secondConnectionResult: string
+
       beforeAll(async () => {
         mockedWalletApiClient.account.list.mockReturnValueOnce([mockedAccount])
-        mockedWalletApiClient.account.request.mockReturnValueOnce(account2)
+        mockedWalletApiClient.account.request.mockReturnValueOnce(
+          selectedAccount,
+        )
+        mockedWalletApiClient.bitcoin.getAddress
+          .mockReturnValueOnce(mockedAccount.zeroAddress)
+          .mockResolvedValueOnce(selectedAccount.zeroAddress)
 
         provider = new AcreLedgerLiveBitcoinProvider(
           BitcoinNetwork.Testnet,
@@ -413,15 +518,27 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
         )
 
         await provider.connect()
+
+        secondConnectionResult = await provider.connect()
       })
 
-      it("should ask the user to select an account", async () => {
-        const secondConnectionResult = await provider.connect()
-
+      it("should ask the user to select an account", () => {
         expect(mockedWalletApiClient.account.request).toHaveBeenCalledWith({
           currencyIds: ["bitcoin_testnet"],
         })
-        expect(secondConnectionResult).toBe(account2.address)
+      })
+
+      it("should get the bitcoin address from bitcoin module", () => {
+        expect(
+          mockedWalletApiClient.bitcoin.getAddress,
+          // The first connection was when the user connected for the first
+          // time. Here we want to check the second call, after the user
+          // selected the account for the second time.
+        ).toHaveBeenNthCalledWith(2, selectedAccount.id, "0/0")
+      })
+
+      it("should return an account selected by the user", () => {
+        expect(secondConnectionResult).toBe(selectedAccount.zeroAddress)
       })
     })
   })

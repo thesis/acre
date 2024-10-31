@@ -4,7 +4,6 @@ import {
   WalletAPIClient,
   WindowMessageTransport,
 } from "@ledgerhq/wallet-api-client"
-import { ethers } from "ethers"
 import { UserRejectedRequestError } from "viem"
 import {
   Balance,
@@ -13,16 +12,17 @@ import {
   OrangeKitBitcoinWalletProvider,
 } from "@orangekit/react/src/wallet/bitcoin-wallet-provider"
 import {
-  BitcoinAddressHelper,
   BitcoinNetwork,
-  BitcoinProvider,
+  AcreBitcoinProvider,
+  BitcoinSignatureHelper,
+  SafeTransactionData,
 } from "@acre-btc/sdk"
 import {
   AcreMessage,
   AcreMessageType,
   AcreModule,
-  AcreWithdrawalData,
 } from "@ledgerhq/wallet-api-acre-module"
+import BigNumber from "bignumber.js"
 
 export type TryRequestFn<T> = (fn: () => Promise<T>) => Promise<T>
 
@@ -47,7 +47,7 @@ function tryRequest<T>(): TryRequestFn<T> {
   }
 }
 
-export type LedgerLiveWalletApiBitcoinProviderOptions = {
+export type AcreLedgerLiveBitcoinProviderOptions = {
   tryConnectToAddress: string | undefined
 }
 
@@ -55,7 +55,7 @@ export type LedgerLiveWalletApiBitcoinProviderOptions = {
  * Ledger Live Wallet API Bitcoin Provider.
  */
 export default class AcreLedgerLiveBitcoinProvider
-  implements OrangeKitBitcoinWalletProvider, BitcoinProvider
+  implements OrangeKitBitcoinWalletProvider, AcreBitcoinProvider
 {
   readonly #walletApiClient: WalletAPIClient<
     (client: WalletAPIClient) => { acre: AcreModule }
@@ -65,9 +65,11 @@ export default class AcreLedgerLiveBitcoinProvider
 
   readonly #network: BitcoinNetwork
 
-  readonly #options: LedgerLiveWalletApiBitcoinProviderOptions
+  readonly #options: AcreLedgerLiveBitcoinProviderOptions
 
   readonly #hwAppId = "Acre"
+
+  readonly #derivationPath = "0/0"
 
   #hasConnectFunctionBeenCalled: boolean = false
 
@@ -75,7 +77,7 @@ export default class AcreLedgerLiveBitcoinProvider
 
   static init(
     network: BitcoinNetwork,
-    options: LedgerLiveWalletApiBitcoinProviderOptions = {
+    options: AcreLedgerLiveBitcoinProviderOptions = {
       tryConnectToAddress: undefined,
     },
   ) {
@@ -100,80 +102,14 @@ export default class AcreLedgerLiveBitcoinProvider
     network: BitcoinNetwork,
     windowMessageTransport: WindowMessageTransport,
     walletApiClient: WalletAPIClient,
-    options: LedgerLiveWalletApiBitcoinProviderOptions = {
+    options: AcreLedgerLiveBitcoinProviderOptions = {
       tryConnectToAddress: undefined,
     },
   ) {
+    this.#network = network
     this.#windowMessageTransport = windowMessageTransport
     this.#walletApiClient = walletApiClient
-    this.#network = network
     this.#options = options
-  }
-
-  /**
-   * Signs and broadcasts a transaction.
-   * @param to The address of the transaction's recipient.
-   * @param satoshis The amount of Bitcoin in satoshi to send in the
-   *        transaction.
-   * @returns The transaction hash
-   */
-  async sendBitcoin(
-    to: BitcoinAddress,
-    satoshis: number,
-  ): Promise<BitcoinTxHash> {
-    if (this.#account === undefined) {
-      throw new Error("Connect first")
-    }
-
-    const txHash = await tryRequest<string>()(() =>
-      this.#walletApiClient.custom.acre.transactionSignAndBroadcast(
-        this.#account!.id,
-        {
-          family: "bitcoin",
-          // @ts-expect-error The Ledger Live lib requires `BigNumber` but we can
-          // pass string.
-          amount: satoshis.toString(),
-          recipient: to,
-        },
-        { hwAppId: this.#hwAppId },
-      ),
-    )
-
-    return txHash
-  }
-
-  /**
-   * @returns The account Bitcoin balance.
-   */
-  async getBalance(): Promise<Balance> {
-    if (this.#account === undefined) {
-      throw new Error("Connect first")
-    }
-
-    const account = (
-      await this.#walletApiClient.account.list({
-        currencyIds: [
-          this.#network === BitcoinNetwork.Mainnet
-            ? "bitcoin"
-            : "bitcoin_testnet",
-        ],
-      })
-    ).find((acc) => acc.id === this.#account!.id)
-
-    if (!account) {
-      throw new Error("Failed to get account balance")
-    }
-
-    const total = BigInt(account.balance.toString())
-    const confirmed = BigInt(account.spendableBalance.toString())
-
-    const balance: Balance = {
-      total: total.toString(),
-      confirmed: confirmed.toString(),
-      unconfirmed: (total - confirmed).toString(),
-    }
-
-    return balance
   }
 
   /**
@@ -217,7 +153,71 @@ export default class AcreLedgerLiveBitcoinProvider
     }
 
     this.#hasConnectFunctionBeenCalled = true
-    return this.#account.address
+    return this.#getAddress(this.#account.id)
+  }
+
+  /**
+   * Signs and broadcasts a transaction.
+   * @param to The address of the transaction's recipient.
+   * @param satoshis The amount of Bitcoin in satoshi to send in the
+   *        transaction.
+   * @returns The transaction hash.
+   */
+  async sendBitcoin(
+    to: BitcoinAddress,
+    satoshis: number,
+  ): Promise<BitcoinTxHash> {
+    if (this.#account === undefined) {
+      throw new Error("Connect first")
+    }
+
+    const txHash = await tryRequest<string>()(() =>
+      this.#walletApiClient.custom.acre.transactionSignAndBroadcast(
+        this.#account!.id,
+        {
+          family: "bitcoin",
+          amount: new BigNumber(satoshis),
+          recipient: to,
+        },
+        { hwAppId: this.#hwAppId },
+      ),
+    )
+
+    return txHash
+  }
+
+  /**
+   * @returns The account Bitcoin balance.
+   */
+  async getBalance(): Promise<Balance> {
+    if (this.#account === undefined) {
+      throw new Error("Connect first")
+    }
+
+    const account = (
+      await this.#walletApiClient.account.list({
+        currencyIds: [
+          this.#network === BitcoinNetwork.Mainnet
+            ? "bitcoin"
+            : "bitcoin_testnet",
+        ],
+      })
+    ).find((acc) => acc.id === this.#account!.id)
+
+    if (!account) {
+      throw new Error("Failed to get account balance")
+    }
+
+    const total = BigInt(account.balance.toString())
+    const confirmed = BigInt(account.spendableBalance.toString())
+
+    const balance: Balance = {
+      total: total.toString(),
+      confirmed: confirmed.toString(),
+      unconfirmed: (total - confirmed).toString(),
+    }
+
+    return balance
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -239,7 +239,7 @@ export default class AcreLedgerLiveBitcoinProvider
    * In the Ledger Live Wallet API the address is "renewed" each time funds are
    * received in order to allow some privacy. But to get the same depositor
    * owner Ethereum address we must always get the same Bitcoin address (under
-   * the `m/purpose'/0'/accountId'/0/0` derivation path)
+   * the `m/purpose'/0'/accountId'/0/0` derivation path).
    *
    * @returns Always the same bitcoin address even the address has been
    *          "renewed" by the Ledger Live Wallet API.
@@ -252,23 +252,21 @@ export default class AcreLedgerLiveBitcoinProvider
     return this.#getAddress(this.#account.id)
   }
 
-  #getAddress(accountId: string, derivationPath: string = "0/0") {
-    return this.#walletApiClient.bitcoin.getAddress(accountId, derivationPath)
+  #getAddress(accountId: string) {
+    return this.#walletApiClient.bitcoin.getAddress(
+      accountId,
+      this.#derivationPath,
+    )
   }
 
   /**
    * Signs withdraw message.
    * @param message Message to sign.
    * @param data Withdrawal transaction data.
-   * @returns Hash of the signed message.
+   * @returns A signature for a given message, which proves that the owner of
+   *          the account has agreed to the message content.
    */
-  async signWithdrawMessage(
-    message: string,
-    data: Omit<AcreWithdrawalData, "operation" | "nonce"> & {
-      operation: number
-      nonce: number
-    },
-  ) {
+  async signWithdrawMessage(message: string, data: SafeTransactionData) {
     return this.#signMessage({
       type: AcreMessageType.Withdraw,
       message: {
@@ -282,8 +280,9 @@ export default class AcreLedgerLiveBitcoinProvider
   /**
    * Signs message.
    * @param message Message to sign.
-   * @returns Hash of the signed message.
-   */
+   * @returns A signature for a given message, which proves that the owner of
+   *          the account has agreed to the message content.
+   * */
   async signMessage(message: string): Promise<string> {
     return this.#signMessage({ type: AcreMessageType.SignIn, message })
   }
@@ -295,49 +294,16 @@ export default class AcreLedgerLiveBitcoinProvider
       this.#walletApiClient.custom.acre.messageSign(
         this.#account!.id,
         message,
-        "0/0",
+        this.#derivationPath,
         { hwAppId: this.#hwAppId },
       ),
     )
 
-    return this.#normalizeV(this.#account.address, signature)
-  }
-
-  async #normalizeV(address: string, signature: Buffer) {
-    const signatureBytes = ethers.decodeBase64(signature.toString("base64"))
-
-    const v = signatureBytes[0]
-    let normalizedV
-
-    if (BitcoinAddressHelper.isP2WPKHAddress(address)) {
-      // For p2wpkh, normalize to the 39-42 range specified by BIP137.
-      normalizedV = BitcoinAddressHelper.normalizeV(v, 39)
-    } else if (BitcoinAddressHelper.isP2PKHAddress(address)) {
-      // For p2pkh, assume that an uncompressed p2pkh signature will already be
-      // in the right range, and normalize any others to the 31-34 range
-      // specified by BIP137.
-      normalizedV =
-        // BIP137 range for uncompressed p2pkh
-        v >= 27 && v <= 30
-          ? v
-          : // BIP137 range for compressed p2pkh
-            BitcoinAddressHelper.normalizeV(v, 31)
-    } else if (
-      BitcoinAddressHelper.isNestedSegwitAddress(
-        // We need the zero address to confirm that this is indeed the nested
-        // segwit address.
-        await this.getAddress(),
-        await this.getPublicKey(),
-      )
-    ) {
-      normalizedV = BitcoinAddressHelper.normalizeV(v, 35)
-    } else {
-      throw new Error("Unsupported Bitcoin address type")
-    }
-
-    signatureBytes[0] = normalizedV
-
-    return ethers.hexlify(signatureBytes)
+    return BitcoinSignatureHelper.normalizeSignature(
+      signature,
+      await this.getAddress(),
+      await this.getPublicKey(),
+    )
   }
 
   /**
@@ -348,6 +314,9 @@ export default class AcreLedgerLiveBitcoinProvider
       throw new Error("Connect first")
     }
 
-    return this.#walletApiClient.bitcoin.getPublicKey(this.#account.id, "0/0")
+    return this.#walletApiClient.bitcoin.getPublicKey(
+      this.#account.id,
+      this.#derivationPath,
+    )
   }
 }

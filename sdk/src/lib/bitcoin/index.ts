@@ -1,4 +1,5 @@
 export * from "./transaction"
 export { default as BitcoinNetwork } from "./network"
+export { BitcoinSignatureHelper } from "@orangekit/sdk"
 export * from "./address"
 export * from "./providers"

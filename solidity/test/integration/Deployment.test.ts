@@ -90,6 +90,12 @@ describe("Deployment", () => {
   describe("stBTC", () => {
     testUpgradeableInitialization("stBTC", ZeroAddress, ZeroAddress)
 
+    it("should get contract deployed at address", async () => {
+      expect(await stbtc.getAddress()).to.be.equal(
+        expectedMainnetAddresses.stbtc,
+      )
+    })
+
     describe("initializer", () => {
       it("should set asset", async () => {
         expect(await stbtc.asset()).to.be.equal(expectedMainnetAddresses.tbtc)
@@ -156,6 +162,12 @@ describe("Deployment", () => {
       ZeroAddress,
     )
 
+    it("should get contract deployed at address", async () => {
+      expect(await mezoAllocator.getAddress()).to.be.equal(
+        expectedMainnetAddresses.mezoAllocator,
+      )
+    })
+
     it("should set mezoPortal", async () => {
       expect(await mezoAllocator.mezoPortal()).to.be.equal(
         expectedMainnetAddresses.mezoPortal,
@@ -193,6 +205,12 @@ describe("Deployment", () => {
       ZeroAddress,
       ZeroAddress,
     )
+
+    it("should get contract deployed at address", async () => {
+      expect(await bitcoinDepositor.getAddress()).to.be.equal(
+        expectedMainnetAddresses.bitcoinDepositor,
+      )
+    })
 
     it("should set bridge", async () => {
       expect(await bitcoinDepositor.bridge()).to.be.equal(
@@ -233,6 +251,12 @@ describe("Deployment", () => {
       ZeroAddress,
     )
 
+    it("should get contract deployed at address", async () => {
+      expect(await bitcoinRedeemer.getAddress()).to.be.equal(
+        expectedMainnetAddresses.bitcoinRedeemer,
+      )
+    })
+
     it("should set tbtcVault", async () => {
       expect(await bitcoinRedeemer.tbtcVault()).to.be.equal(
         expectedMainnetAddresses.tbtcVault,
@@ -265,6 +289,12 @@ describe("Deployment", () => {
       ZeroAddress,
       [ZeroAddress],
     )
+
+    it("should get contract deployed at address", async () => {
+      expect(await multiAssetVault.getAddress()).to.be.equal(
+        expectedMainnetAddresses.multiAssetVault,
+      )
+    })
 
     it("should set mezoPortal", async () => {
       expect(await multiAssetVault.mezoPortal()).to.be.equal(
