@@ -2,12 +2,14 @@ import React, { useEffect } from "react"
 import { StakeFlowProvider } from "#/contexts"
 import {
   useAppDispatch,
+  useFetchActivities,
   useIsSignedMessage,
   useSidebar,
   useTransactionModal,
 } from "#/hooks"
 import { ActionFlowType, BaseModalProps } from "#/types"
 import { resetState, setType } from "#/store/action-flow"
+import { logPromiseFailure } from "#/utils"
 import ModalContentWrapper from "./ModalContentWrapper"
 import { ActiveFlowStep } from "./ActiveFlowStep"
 import withBaseModal from "../ModalRoot/withBaseModal"
@@ -18,6 +20,7 @@ type TransactionModalProps = { type: ActionFlowType } & BaseModalProps
 function TransactionModalBase({ type, closeModal }: TransactionModalProps) {
   const { onOpen: openSideBar, onClose: closeSidebar } = useSidebar()
   const dispatch = useAppDispatch()
+  const fetchActivities = useFetchActivities()
 
   useEffect(() => {
     dispatch(setType(type))
@@ -27,8 +30,9 @@ function TransactionModalBase({ type, closeModal }: TransactionModalProps) {
   useEffect(() => {
     return () => {
       dispatch(resetState())
+      logPromiseFailure(fetchActivities())
     }
-  }, [dispatch])
+  }, [dispatch, fetchActivities])
 
   useEffect(() => {
     openSideBar()
