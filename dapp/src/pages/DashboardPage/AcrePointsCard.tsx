@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react"
 import Countdown from "#/components/shared/Countdown"
 import { logPromiseFailure, numberToLocaleString } from "#/utils"
-import { useAcrePoints } from "#/hooks"
+import { useAcrePoints, useWallet } from "#/hooks"
 import Spinner from "#/components/shared/Spinner"
 import { IconInfoCircle } from "@tabler/icons-react"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
@@ -30,6 +30,9 @@ export default function AcrePointsCard(props: CardProps) {
     updatePointsData,
     isCalculationInProgress,
   } = useAcrePoints()
+  const { address } = useWallet()
+
+  const isWalletConnected = !!address
 
   const formattedTotalPointsAmount = numberToLocaleString(totalBalance)
   const formattedClaimablePointsAmount = numberToLocaleString(claimableBalance)
@@ -54,7 +57,11 @@ export default function AcrePointsCard(props: CardProps) {
         </TextMd>
 
         <InfoTooltip
-          label="Your current balance of Acre points collected so far. New points drop daily and are ready to be claimed. Unclaimed points roll over to the next day."
+          label={
+            isWalletConnected
+              ? "Your current balance of Acre points collected so far. New points drop daily and are ready to be claimed. Unclaimed points roll over to the next day."
+              : "Total points distributed to Acre users so far. New points drop daily and can be claimed in each user's dashboard."
+          }
           w={56}
         />
       </CardHeader>
