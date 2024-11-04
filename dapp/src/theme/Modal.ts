@@ -35,8 +35,8 @@ const baseStyleOverlay = defineStyle({
 
 const baseStyleHeader = defineStyle({
   textAlign: "left",
-  fontSize: "lg",
-  lineHeight: "lg",
+  fontSize: "xl",
+  lineHeight: "xl",
   fontWeight: "bold",
   pt: 10,
   px: 10,

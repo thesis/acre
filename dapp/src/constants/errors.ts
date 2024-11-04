@@ -33,6 +33,12 @@ export const TOKEN_FORM_ERRORS = {
     `The amount is below the minimum required deposit of ${minValue} BTC.`,
 }
 
+export const PASSWORD_FORM_ERRORS = {
+  REQUIRED: "Please enter a password.",
+  INCORRECT_VALUE: "Incorrect password. Please try again.",
+  DEFAULT: "Something went wrong...",
+}
+
 export const ACTION_FORM_ERRORS = {
   [ACTION_FLOW_TYPES.STAKE]: TOKEN_FORM_ERRORS,
   [ACTION_FLOW_TYPES.UNSTAKE]: {
