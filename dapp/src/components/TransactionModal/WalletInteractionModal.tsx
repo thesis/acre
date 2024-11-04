@@ -67,7 +67,13 @@ export default function WalletInteractionModal({
             isIndeterminate
             {...progressProps}
           />
-          <Image src={connector?.icon} p={2} bg="black" {...ICON_STYLES} />
+          <Image
+            src={connector?.icon}
+            p={2}
+            bg="black"
+            alt="Connector icon"
+            {...ICON_STYLES}
+          />
         </HStack>
         <TextMd>
           {description(
