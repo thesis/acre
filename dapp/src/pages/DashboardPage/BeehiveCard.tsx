@@ -33,13 +33,18 @@ export default function BeehiveCard(props: CardProps) {
 
   return (
     <Card p={4} {...props}>
-      <CardHeader p={0} as={Flex} alignItems="center" gap={2}>
+      <CardHeader
+        p={0}
+        as={Flex}
+        alignItems="center"
+        justify="space-between"
+        gap={2}
+      >
         <TextMd fontWeight="bold" color="grey.700">
           L2 Rewards
         </TextMd>
         <InfoTooltip
-          label="Earn rewards from our L2 partners within the Acre Beehive. The rewards are calculated based on amount and time staked. No hassle and automatic participation across each of our launch partners."
-          color="gold.300"
+          label="Acre Beehive automatically collects rewards from our partner projects. Rewards are dropped daily, and your share is calculated based on your deposit amount and how long you HODL."
           w={56}
         />
       </CardHeader>
