@@ -12,8 +12,19 @@ import { BitcoinIcon } from "#/assets/icons"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import ProgressBar from "#/components/shared/ProgressBar"
 import { TextMd, TextXs } from "#/components/shared/Typography"
+import { TOTAL_VALUE_LOCKED_CAP } from "#/constants"
 
 type AcreTVLProgressProps = StackProps
+
+const STEP_COUNT = 5
+
+const getSteps = () =>
+  Array(STEP_COUNT)
+    .fill(0)
+    .map(
+      (_, index) =>
+        (index + 1) * Math.floor(TOTAL_VALUE_LOCKED_CAP / STEP_COUNT),
+    )
 
 export function AcreTVLProgress(props: AcreTVLProgressProps) {
   const styles = useMultiStyleConfig("AcreTVLProgress")
@@ -38,7 +49,7 @@ export function AcreTVLProgress(props: AcreTVLProgressProps) {
 
         <VStack sx={styles.progressWrapper}>
           <HStack sx={styles.progressLabelsWrapper}>
-            {[50, 100, 150, 200, 250].map((value) => (
+            {getSteps().map((value) => (
               <TextXs key={value} sx={styles.progressLabel}>
                 {value}
               </TextXs>
