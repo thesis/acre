@@ -19,7 +19,7 @@ import ArrivingSoonTooltip from "#/components/ArrivingSoonTooltip"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import { featureFlags } from "#/constants"
 import { TextMd } from "#/components/shared/Typography"
-import { BoltFilled } from "#/assets/icons"
+import AcreTVLMessage from "./AcreTVLMessage"
 
 const isWithdrawalFlowEnabled = featureFlags.WITHDRAWALS_ENABLED
 
@@ -107,17 +107,7 @@ export default function PositionDetails() {
             </Button>
           </ArrivingSoonTooltip>
         </UserDataSkeleton>
-        {tvl.isCapExceeded && (
-          <HStack align="start" spacing={1} mt={3}>
-            <BoltFilled color="orange.400" my={1} />
-            <VStack align="start" spacing={0}>
-              <TextMd fontWeight="semibold">Deposit cap reached!</TextMd>
-              <TextMd color="grey.500">
-                Stay tuned for the next deposit cycle.
-              </TextMd>
-            </VStack>
-          </HStack>
-        )}
+        <AcreTVLMessage />
       </HStack>
     </Flex>
   )
