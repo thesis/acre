@@ -56,7 +56,10 @@ export function AcreTVLProgress(props: AcreTVLProgressProps) {
             ))}
           </HStack>
 
-          <ProgressBar value={totalValueLocked.progress} />
+          <ProgressBar
+            value={totalValueLocked.progress}
+            withBoltIcon={totalValueLocked.progress > 2}
+          />
         </VStack>
       </HStack>
     </Box>
