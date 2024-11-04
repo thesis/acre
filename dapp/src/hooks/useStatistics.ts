@@ -8,26 +8,30 @@ import { useQuery } from "@tanstack/react-query"
 
 const { acreKeys } = queryKeysFactory
 
-const useTVL = () => {
+const useStatistics = () => {
   const { data } = useQuery({
-    queryKey: [...acreKeys.totalAssets()],
+    queryKey: [...acreKeys.statistics()],
     queryFn: acreApi.getStatistics,
     refetchInterval: REFETCH_INTERVAL_IN_MILLISECONDS,
   })
 
-  const totalAssets = data?.btc ?? 0
+  const bitcoinTvl = data?.btc ?? 0
+  const usdTvl = data?.usd ?? 0
 
-  const isCapExceeded = totalAssets > TOTAL_VALUE_LOCKED_CAP
+  const isCapExceeded = bitcoinTvl > TOTAL_VALUE_LOCKED_CAP
 
   const progress = isCapExceeded
     ? 100
-    : Math.floor((totalAssets / TOTAL_VALUE_LOCKED_CAP) * 100)
+    : Math.floor((bitcoinTvl / TOTAL_VALUE_LOCKED_CAP) * 100)
 
   return {
-    progress,
-    value: totalAssets,
-    isCapExceeded,
+    tvl: {
+      progress,
+      value: bitcoinTvl,
+      usdValue: usdTvl,
+      isCapExceeded,
+    },
   }
 }
 
-export default useTVL
+export default useStatistics

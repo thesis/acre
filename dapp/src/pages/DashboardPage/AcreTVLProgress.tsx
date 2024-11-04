@@ -7,7 +7,7 @@ import {
   Grid,
   Box,
 } from "@chakra-ui/react"
-import { useTVL } from "#/hooks"
+import { useStatistics } from "#/hooks"
 import { BitcoinIcon } from "#/assets/icons"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import ProgressBar from "#/components/shared/ProgressBar"
@@ -26,7 +26,7 @@ const STEPS = Array(STEP_COUNT)
 
 export function AcreTVLProgress(props: AcreTVLProgressProps) {
   const styles = useMultiStyleConfig("AcreTVLProgress")
-  const totalValueLocked = useTVL()
+  const { tvl } = useStatistics()
 
   return (
     <Box sx={styles.container} {...props}>
@@ -36,7 +36,7 @@ export function AcreTVLProgress(props: AcreTVLProgressProps) {
 
           <CurrencyBalance
             size="3xl"
-            amount={totalValueLocked.value}
+            amount={tvl.value}
             shouldBeFormatted={false}
             currency="bitcoin"
             desiredDecimals={2}
@@ -54,10 +54,7 @@ export function AcreTVLProgress(props: AcreTVLProgressProps) {
             ))}
           </HStack>
 
-          <ProgressBar
-            value={totalValueLocked.progress}
-            withBoltIcon={totalValueLocked.progress > 2}
-          />
+          <ProgressBar value={tvl.progress} withBoltIcon={tvl.progress > 2} />
         </VStack>
       </HStack>
     </Box>
