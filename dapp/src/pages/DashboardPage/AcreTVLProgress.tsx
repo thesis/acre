@@ -30,6 +30,7 @@ export function AcreTVLProgress(props: AcreTVLProgressProps) {
             amount={totalValueLocked.value}
             shouldBeFormatted={false}
             currency="bitcoin"
+            desiredDecimals={2}
           />
 
           <TextMd>Total value locked</TextMd>
