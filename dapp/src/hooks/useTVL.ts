@@ -19,9 +19,9 @@ const useTVL = () => {
 
   const isCapExceeded = totalAssets > TOTAL_VALUE_LOCKED_CAP
 
-  const progress = Math.floor(
-    isCapExceeded ? 100 : (totalAssets / TOTAL_VALUE_LOCKED_CAP) * 100,
-  )
+  const progress = isCapExceeded
+    ? 100
+    : Math.floor((totalAssets / TOTAL_VALUE_LOCKED_CAP) * 100)
 
   return {
     progress,
