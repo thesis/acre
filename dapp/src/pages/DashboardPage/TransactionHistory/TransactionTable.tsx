@@ -9,11 +9,7 @@ import {
 } from "#/components/shared/Pagination"
 import { TextSm } from "#/components/shared/Typography"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
-import {
-  displayBlockTimestamp,
-  getActivityTimestamp,
-  getCurrencyByType,
-} from "#/utils"
+import { displayBlockTimestamp, getActivityTimestamp } from "#/utils"
 import { Activity } from "#/types"
 import BlockExplorerLink from "#/components/shared/BlockExplorerLink"
 import { IconArrowUpRight } from "@tabler/icons-react"
