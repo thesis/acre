@@ -21,13 +21,10 @@
   "permissions": [
     "account.request",
     "account.list",
-    "message.sign",
-    "transaction.sign",
-    "transaction.signAndBroadcast",
-    "bitcoin.getXPub",
     "bitcoin.getAddress",
     "bitcoin.getPublicKey",
-    "custom.acre.messageSign"
+    "custom.acre.messageSign",
+    "custom.acre.transactionSignAndBroadcast"
   ],
   "domains": ["http://*"],
   "type": "walletApp"
