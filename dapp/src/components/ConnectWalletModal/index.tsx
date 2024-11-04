@@ -8,6 +8,7 @@ import {
   useWalletConnectionError,
 } from "#/hooks"
 import { OrangeKitConnector, BaseModalProps, OnSuccessCallback } from "#/types"
+import { wallets } from "#/constants"
 import withBaseModal from "../ModalRoot/withBaseModal"
 import ConnectWalletButton from "./ConnectWalletButton"
 import ConnectWalletErrorAlert from "./ConnectWalletErrorAlert"
@@ -25,7 +26,7 @@ export function ConnectWalletModalBase({
   const connectors = useConnectors()
   const enabledConnectors = connectors.map((connector) => ({
     ...connector,
-    isDisabled: false,
+    isDisabled: !wallets.SUPPORTED_WALLET_IDS.includes(connector.id),
   }))
 
   const [selectedConnectorId, setSelectedConnectorId] = useState<string>()
