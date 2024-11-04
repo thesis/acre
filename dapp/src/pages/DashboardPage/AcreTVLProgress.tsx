@@ -18,13 +18,11 @@ type AcreTVLProgressProps = StackProps
 
 const STEP_COUNT = 5
 
-const getSteps = () =>
-  Array(STEP_COUNT)
-    .fill(0)
-    .map(
-      (_, index) =>
-        (index + 1) * Math.floor(TOTAL_VALUE_LOCKED_CAP / STEP_COUNT),
-    )
+const STEPS = Array(STEP_COUNT)
+  .fill(0)
+  .map(
+    (_, index) => (index + 1) * Math.floor(TOTAL_VALUE_LOCKED_CAP / STEP_COUNT),
+  )
 
 export function AcreTVLProgress(props: AcreTVLProgressProps) {
   const styles = useMultiStyleConfig("AcreTVLProgress")
@@ -49,7 +47,7 @@ export function AcreTVLProgress(props: AcreTVLProgressProps) {
 
         <VStack sx={styles.progressWrapper}>
           <HStack sx={styles.progressLabelsWrapper}>
-            {getSteps().map((value) => (
+            {STEPS.map((value) => (
               <TextXs key={value} sx={styles.progressLabel}>
                 {value}
               </TextXs>
