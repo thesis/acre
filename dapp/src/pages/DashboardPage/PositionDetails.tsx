@@ -5,6 +5,7 @@ import {
   useBitcoinPosition,
   useTransactionModal,
   useStatistics,
+  useWallet,
 } from "#/hooks"
 import { ACTION_FLOW_TYPES } from "#/types"
 import {
@@ -42,6 +43,9 @@ export default function PositionDetails() {
   const activitiesCount = useAllActivitiesCount()
 
   const { tvl } = useStatistics()
+
+  const { address } = useWallet()
+  const isWalletConnected = !!address
 
   return (
     <Flex w="100%" flexDirection="column" gap={5}>
@@ -85,7 +89,7 @@ export default function PositionDetails() {
         </UserDataSkeleton>
       </VStack>
 
-      <HStack w="full" justify="start" flexWrap="wrap" spacing={2}>
+      <HStack w="full" justify="start" flexWrap="wrap" spacing={5}>
         <UserDataSkeleton>
           <Button
             {...buttonStyles}
@@ -95,18 +99,22 @@ export default function PositionDetails() {
             {activitiesCount === 0 ? "Deposit" : "Deposit more"}
           </Button>
         </UserDataSkeleton>
-        <UserDataSkeleton>
-          <ArrivingSoonTooltip shouldDisplayTooltip={!isWithdrawalFlowEnabled}>
-            <Button
-              variant="outline"
-              {...buttonStyles}
-              onClick={openWithdrawModal}
-              isDisabled={!isWithdrawalFlowEnabled}
+        {isWalletConnected && activitiesCount > 0 && (
+          <UserDataSkeleton ml={-3}>
+            <ArrivingSoonTooltip
+              shouldDisplayTooltip={!isWithdrawalFlowEnabled}
             >
-              Withdraw
-            </Button>
-          </ArrivingSoonTooltip>
-        </UserDataSkeleton>
+              <Button
+                variant="outline"
+                {...buttonStyles}
+                onClick={openWithdrawModal}
+                isDisabled={!isWithdrawalFlowEnabled}
+              >
+                Withdraw
+              </Button>
+            </ArrivingSoonTooltip>
+          </UserDataSkeleton>
+        )}
         <AcreTVLMessage />
       </HStack>
     </Flex>
