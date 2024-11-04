@@ -18,6 +18,7 @@ import { useAcrePoints } from "#/hooks"
 import Spinner from "#/components/shared/Spinner"
 import { IconInfoCircle } from "@tabler/icons-react"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
+import InfoTooltip from "#/components/shared/InfoTooltip"
 
 export default function AcrePointsCard(props: CardProps) {
   const {
@@ -47,10 +48,15 @@ export default function AcrePointsCard(props: CardProps) {
       py={5}
       {...props}
     >
-      <CardHeader p={0} mb={2}>
+      <CardHeader p={0} mb={2} as={HStack} justify="space-between">
         <TextMd fontWeight="bold" color="grey.700">
           Your Acre points balance
         </TextMd>
+
+        <InfoTooltip
+          label="Your current balance of Acre points collected so far. New points drop daily and are ready to be claimed. Unclaimed points roll over to the next day."
+          w={56}
+        />
       </CardHeader>
 
       <CardBody p={0}>
