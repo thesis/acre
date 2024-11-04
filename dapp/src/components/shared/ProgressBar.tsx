@@ -2,14 +2,18 @@ import React from "react"
 import { Progress, ProgressProps, ProgressLabel, Icon } from "@chakra-ui/react"
 import { BoltFilled } from "#/assets/icons"
 
-function ProgressBar(props: ProgressProps) {
-  const { value = 0, children, ...restProps } = props
+type ProgressBarProps = ProgressProps & {
+  withBoltIcon?: boolean
+}
+
+function ProgressBar(props: ProgressBarProps) {
+  const { value = 0, children, withBoltIcon = false, ...restProps } = props
 
   return (
     <Progress value={value} hasStripe {...restProps}>
       <ProgressLabel>{children}</ProgressLabel>
 
-      {value > 2 && (
+      {withBoltIcon && (
         <Icon
           position="absolute"
           top="50%"

@@ -6,12 +6,16 @@ import {
 import { getColorVar } from "@chakra-ui/theme-tools"
 import { keyframes } from "@chakra-ui/react"
 
+const PROGRESS_TRACK_BG_COLOR = "#3A3328"
+const PROGRESS_TRACK_BG_COLOR_PRIMARY = "#FF1822"
+const PROGRESS_TRACK_BG_COLOR_SECONDARY = "#FF8A02"
+
 const multiStyleConfig = createMultiStyleConfigHelpers(parts.keys)
 
 const trackStyle = defineStyle((props) => {
   const { isIndeterminate, hasStripe } = props
 
-  const bgColor = "#3A3328"
+  const bgColor = PROGRESS_TRACK_BG_COLOR
   const stripeColor = getColorVar(props.theme, "grey.700") as string
   const stripesAnimation = keyframes`
     from { background-position: 0 0; }
@@ -38,8 +42,8 @@ const trackStyle = defineStyle((props) => {
 const indeterminateStyle = defineStyle((props) => {
   const { theme, isIndeterminate } = props
 
-  const bgColorPrimary = "#FF1822"
-  const bgColorSecondary = "#FF8A02"
+  const bgColorPrimary = PROGRESS_TRACK_BG_COLOR_PRIMARY
+  const bgColorSecondary = PROGRESS_TRACK_BG_COLOR_SECONDARY
 
   if (!isIndeterminate) {
     return {
