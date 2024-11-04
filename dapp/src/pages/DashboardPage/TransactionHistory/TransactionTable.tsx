@@ -1,13 +1,5 @@
 import React from "react"
-import {
-  HStack,
-  Card,
-  CardBody,
-  Box,
-  Flex,
-  Icon,
-  Tooltip,
-} from "@chakra-ui/react"
+import { HStack, Card, CardBody, Box, Flex, Icon } from "@chakra-ui/react"
 import {
   Pagination,
   PaginationButton,
@@ -18,7 +10,6 @@ import {
 import { TextSm } from "#/components/shared/Typography"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import {
-  bigIntToUserAmount,
   displayBlockTimestamp,
   getActivityTimestamp,
   getCurrencyByType,
@@ -34,8 +25,6 @@ const BLOCK_EXPLORER_CELL_MIN_WIDTH = 16
 
 export default function TransactionTable() {
   const activities = useActivities()
-
-  const currency = getCurrencyByType("bitcoin")
 
   return (
     <Pagination data={activities} pageSize={10} spacing={6}>
