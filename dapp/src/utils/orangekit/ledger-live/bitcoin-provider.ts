@@ -9,11 +9,9 @@ import {
   Balance,
   BitcoinAddress,
   BitcoinTxHash,
-  OrangeKitBitcoinWalletProvider,
 } from "@orangekit/react/src/wallet/bitcoin-wallet-provider"
 import {
   BitcoinNetwork,
-  AcreBitcoinProvider,
   BitcoinSignatureHelper,
   SafeTransactionData,
 } from "@acre-btc/sdk"
@@ -23,6 +21,8 @@ import {
   AcreModule,
 } from "@ledgerhq/wallet-api-acre-module"
 import BigNumber from "bignumber.js"
+import { AcreDappBitcoinProvider } from "#/types"
+import { SignInWithWalletMessage } from "@orangekit/sign-in-with-wallet"
 
 export type TryRequestFn<T> = (fn: () => Promise<T>) => Promise<T>
 
@@ -55,7 +55,7 @@ export type AcreLedgerLiveBitcoinProviderOptions = {
  * Ledger Live Wallet API Bitcoin Provider.
  */
 export default class AcreLedgerLiveBitcoinProvider
-  implements OrangeKitBitcoinWalletProvider, AcreBitcoinProvider
+  implements AcreDappBitcoinProvider
 {
   readonly #walletApiClient: WalletAPIClient<
     (client: WalletAPIClient) => { acre: AcreModule }
@@ -278,13 +278,31 @@ export default class AcreLedgerLiveBitcoinProvider
   }
 
   /**
+   * Signs SIWW message.
+   * @param message Message to sign.
+   * @param data Sign in with wallet message data.
+   * @returns A signature for a given message, which proves that the owner of
+   *          the account has agreed to the message content.
+   * */
+  async signSignInMessage(
+    message: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    data: SignInWithWalletMessage,
+  ): Promise<string> {
+    return this.#signMessage({ type: AcreMessageType.SignIn, message })
+  }
+
+  /**
    * Signs message.
    * @param message Message to sign.
    * @returns A signature for a given message, which proves that the owner of
    *          the account has agreed to the message content.
    * */
+  // eslint-disable-next-line @typescript-eslint/require-await, class-methods-use-this, @typescript-eslint/no-unused-vars
   async signMessage(message: string): Promise<string> {
-    return this.#signMessage({ type: AcreMessageType.SignIn, message })
+    // @ts-expect-error Make sure we can set `type` to `undefined` to sign
+    // standard message.
+    return this.#signMessage({ type: undefined, message })
   }
 
   async #signMessage(message: AcreMessage) {

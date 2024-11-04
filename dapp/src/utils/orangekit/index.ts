@@ -59,7 +59,7 @@ const createSignInWithWalletMessage = (address: string, nonce: string) => {
     nonce,
   })
 
-  return message.prepareMessage()
+  return { message: message.prepareMessage(), data: message }
 }
 
 const typeConversionToOrangeKitConnector = (

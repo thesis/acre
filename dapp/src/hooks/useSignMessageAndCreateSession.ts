@@ -1,14 +1,36 @@
-import { OrangeKitConnector } from "#/types"
+import { AcreDappBitcoinProvider, OrangeKitConnector } from "#/types"
 import { acreApi, orangeKit } from "#/utils"
+import { SignInWithWalletMessage } from "@orangekit/sign-in-with-wallet"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useCallback } from "react"
-import { useSignMessage } from "wagmi"
+
+function useSignSignInMessage() {
+  const queryClient = useQueryClient()
+  return useMutation<
+    string,
+    unknown,
+    {
+      provider: AcreDappBitcoinProvider
+      message: string
+      data: SignInWithWalletMessage
+    }
+  >(
+    {
+      mutationKey: ["signSignInMessage"],
+      mutationFn: async ({ provider, message, data }) =>
+        provider?.signSignInMessage?.(message, data) ??
+        provider.signMessage(message),
+    },
+    queryClient,
+  )
+}
 
 function useSignMessageAndCreateSession() {
   const {
-    signMessageAsync,
+    mutateAsync: signMessageAsync,
     status: signMessageStatus,
     reset: resetMessageStatus,
-  } = useSignMessage()
+  } = useSignSignInMessage()
 
   const signMessageAndCreateSession = useCallback(
     async (connectedConnector: OrangeKitConnector, btcAddress: string) => {
@@ -34,14 +56,16 @@ function useSignMessageAndCreateSession() {
         throw new Error("Session nonce not available")
       }
 
-      const message = orangeKit.createSignInWithWalletMessage(
+      const { message, data } = orangeKit.createSignInWithWalletMessage(
         btcAddress,
         session.nonce,
       )
+      const provider = connectedConnector.getBitcoinProvider()
 
       const signedMessage = await signMessageAsync({
+        provider,
         message,
-        connector: orangeKit.typeConversionToConnector(connectedConnector),
+        data,
       })
 
       const publicKey = await connectedConnector
