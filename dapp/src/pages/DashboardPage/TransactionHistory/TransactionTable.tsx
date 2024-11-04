@@ -1,5 +1,13 @@
 import React from "react"
-import { HStack, Card, CardBody, Box, Flex, Icon } from "@chakra-ui/react"
+import {
+  HStack,
+  Card,
+  CardBody,
+  Box,
+  Flex,
+  Icon,
+  Tooltip,
+} from "@chakra-ui/react"
 import {
   Pagination,
   PaginationButton,
@@ -9,7 +17,12 @@ import {
 } from "#/components/shared/Pagination"
 import { TextSm } from "#/components/shared/Typography"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
-import { displayBlockTimestamp, getActivityTimestamp } from "#/utils"
+import {
+  bigIntToUserAmount,
+  displayBlockTimestamp,
+  getActivityTimestamp,
+  getCurrencyByType,
+} from "#/utils"
 import { Activity } from "#/types"
 import BlockExplorerLink from "#/components/shared/BlockExplorerLink"
 import { IconArrowUpRight } from "@tabler/icons-react"
@@ -21,6 +34,8 @@ const BLOCK_EXPLORER_CELL_MIN_WIDTH = 16
 
 export default function TransactionTable() {
   const activities = useActivities()
+
+  const currency = getCurrencyByType("bitcoin")
 
   return (
     <Pagination data={activities} pageSize={10} spacing={6}>
@@ -51,6 +66,7 @@ export default function TransactionTable() {
                       amount={activity.amount}
                       currency="bitcoin"
                       withDots
+                      withTooltip
                     />
                   </Flex>
                   <Flex justifyContent="space-between">

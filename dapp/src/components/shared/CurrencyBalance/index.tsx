@@ -4,8 +4,10 @@ import {
   useMultiStyleConfig,
   TextProps,
   ResponsiveValue,
+  Tooltip,
 } from "@chakra-ui/react"
 import {
+  bigIntToUserAmount,
   formatTokenAmount,
   getCurrencyByType,
   numberToLocaleString,
@@ -29,6 +31,7 @@ export type CurrencyBalanceProps = {
   withDots?: boolean
   balanceTextProps?: TextProps
   symbolTextProps?: TextProps
+  withTooltip?: boolean
 } & TextProps
 
 export function CurrencyBalance({
@@ -44,6 +47,7 @@ export function CurrencyBalance({
   as,
   balanceTextProps,
   symbolTextProps,
+  withTooltip = false,
   ...textProps
 }: CurrencyBalanceProps) {
   const styles = useMultiStyleConfig("CurrencyBalance", {
@@ -67,7 +71,7 @@ export function CurrencyBalance({
     return numberToLocaleString(value, desiredDecimals)
   }, [amount, decimals, desiredDecimals, shouldBeFormatted, withRoundUp])
 
-  return (
+  const content = (
     <Box as={as} __css={styles.container}>
       <Box
         as="span"
@@ -76,11 +80,23 @@ export function CurrencyBalance({
         {...balanceTextProps}
       >
         {balance}
-        {withDots && ".."}
+        {withDots && "..."}
       </Box>
       <Box as="span" __css={styles.symbol} {...textProps} {...symbolTextProps}>
         {symbol}
       </Box>
     </Box>
   )
+
+  if (withTooltip) {
+    const tooltipLabel = `${bigIntToUserAmount(BigInt(amount ?? 0), decimals, decimals)} ${symbol}`
+
+    return (
+      <Tooltip label={tooltipLabel} shouldWrapChildren>
+        {content}
+      </Tooltip>
+    )
+  }
+
+  return content
 }
