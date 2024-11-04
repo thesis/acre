@@ -75,9 +75,9 @@ export default function ConnectWalletButton({
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const hasConnectionError = connectionError || connectionStatus === "error"
-  const hasSignMessageStatus = signMessageStatus === "error"
-  const showStatuses = isSelected && !hasConnectionError
-  const showRetryButton = address && hasSignMessageStatus
+  const hasSignMessageErrorStatus = signMessageStatus === "error"
+  const shouldShowStatuses = isSelected && !hasConnectionError
+  const shouldShowRetryButton = address && hasSignMessageErrorStatus
 
   const onSuccessSignMessage = useCallback(() => {
     closeModal()
@@ -156,7 +156,7 @@ export default function ConnectWalletButton({
 
   const handleButtonClick = () => {
     // Do not trigger action again when wallet connection is in progress
-    if (showStatuses) return
+    if (shouldShowStatuses) return
 
     if (!isReconnecting) onDisconnect()
     resetConnectionError()
@@ -225,7 +225,7 @@ export default function ConnectWalletButton({
       </CardHeader>
 
       <AnimatePresence initial={false}>
-        {showStatuses && (
+        {shouldShowStatuses && (
           <CardBody
             as={motion.div}
             variants={collapseVariants}
@@ -256,7 +256,7 @@ export default function ConnectWalletButton({
                   status={signMessageStatus}
                   label="Sign message"
                 />
-                {showRetryButton && (
+                {shouldShowRetryButton && (
                   <Button
                     mt={4}
                     size="lg"

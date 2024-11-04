@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { BitcoinNetwork } from "@acre-btc/sdk"
 import { beforeAll, vi, expect, describe, it } from "vitest"
 import {

@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react"
 import { ModalBody, ModalHeader, ModalCloseButton } from "@chakra-ui/react"
-import { useConnectors, useIsEmbed, useWalletConnectionError } from "#/hooks"
+import {
+  useConnectors,
+  useIsEmbed,
+  useIsSignedMessage,
+  useWallet,
+  useWalletConnectionError,
+} from "#/hooks"
 import { OrangeKitConnector, BaseModalProps, OnSuccessCallback } from "#/types"
 import withBaseModal from "../ModalRoot/withBaseModal"
 import ConnectWalletButton from "./ConnectWalletButton"
@@ -15,6 +21,7 @@ export function ConnectWalletModalBase({
   isReconnecting?: boolean
 } & BaseModalProps) {
   const { isEmbed } = useIsEmbed()
+  const { onDisconnect } = useWallet()
   const connectors = useConnectors()
   const enabledConnectors = connectors.map((connector) => ({
     ...connector,
@@ -23,6 +30,7 @@ export function ConnectWalletModalBase({
 
   const [selectedConnectorId, setSelectedConnectorId] = useState<string>()
   const { connectionError, resetConnectionError } = useWalletConnectionError()
+  const isSignedMessage = useIsSignedMessage()
 
   const handleButtonOnClick = (connector: OrangeKitConnector) => {
     setSelectedConnectorId(connector.id)
@@ -37,7 +45,15 @@ export function ConnectWalletModalBase({
   return (
     <>
       {withCloseButton && (
-        <ModalCloseButton onClick={() => resetConnectionError()} />
+        <ModalCloseButton
+          onClick={() => {
+            resetConnectionError()
+
+            if (!isSignedMessage) {
+              onDisconnect()
+            }
+          }}
+        />
       )}
       <ModalHeader>{`Select your ${isEmbed ? "account" : "wallet"}`}</ModalHeader>
 
