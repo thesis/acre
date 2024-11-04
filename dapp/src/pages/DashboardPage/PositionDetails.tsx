@@ -4,7 +4,7 @@ import {
   useAllActivitiesCount,
   useBitcoinPosition,
   useTransactionModal,
-  useTVL,
+  useStatistics,
 } from "#/hooks"
 import { ACTION_FLOW_TYPES } from "#/types"
 import {
@@ -41,7 +41,7 @@ export default function PositionDetails() {
   const openWithdrawModal = useTransactionModal(ACTION_FLOW_TYPES.UNSTAKE)
   const activitiesCount = useAllActivitiesCount()
 
-  const { isCapExceeded } = useTVL()
+  const { tvl } = useStatistics()
 
   return (
     <Flex w="100%" flexDirection="column" gap={5}>
@@ -90,7 +90,7 @@ export default function PositionDetails() {
           <Button
             {...buttonStyles}
             onClick={openDepositModal}
-            isDisabled={isCapExceeded}
+            isDisabled={tvl.isCapExceeded}
           >
             {activitiesCount === 0 ? "Deposit" : "Deposit more"}
           </Button>
@@ -107,7 +107,7 @@ export default function PositionDetails() {
             </Button>
           </ArrivingSoonTooltip>
         </UserDataSkeleton>
-        {isCapExceeded && (
+        {tvl.isCapExceeded && (
           <HStack align="start" spacing={1} mt={3}>
             <BoltFilled color="orange.400" my={1} />
             <VStack align="start" spacing={0}>
