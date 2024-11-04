@@ -11,7 +11,7 @@ const { acreKeys } = queryKeysFactory
 const useTVL = () => {
   const { data } = useQuery({
     queryKey: [...acreKeys.totalAssets()],
-    queryFn: acreApi.getTotalValueLocked,
+    queryFn: acreApi.getStatistics,
     refetchInterval: REFETCH_INTERVAL_IN_MILLISECONDS,
   })
 
