@@ -4,6 +4,7 @@ import {
   useAllActivitiesCount,
   useBitcoinPosition,
   useTransactionModal,
+  useTVL,
 } from "#/hooks"
 import { ACTION_FLOW_TYPES } from "#/types"
 import {
@@ -18,6 +19,7 @@ import ArrivingSoonTooltip from "#/components/ArrivingSoonTooltip"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import { featureFlags } from "#/constants"
 import { TextMd } from "#/components/shared/Typography"
+import { BoltFilled } from "#/assets/icons"
 
 const isWithdrawalFlowEnabled = featureFlags.WITHDRAWALS_ENABLED
 
@@ -38,6 +40,8 @@ export default function PositionDetails() {
   const openDepositModal = useTransactionModal(ACTION_FLOW_TYPES.STAKE)
   const openWithdrawModal = useTransactionModal(ACTION_FLOW_TYPES.UNSTAKE)
   const activitiesCount = useAllActivitiesCount()
+
+  const { isCapExceeded } = useTVL()
 
   return (
     <Flex w="100%" flexDirection="column" gap={5}>
@@ -83,7 +87,11 @@ export default function PositionDetails() {
 
       <HStack w="full" justify="start" flexWrap="wrap" spacing={2}>
         <UserDataSkeleton>
-          <Button {...buttonStyles} onClick={openDepositModal}>
+          <Button
+            {...buttonStyles}
+            onClick={openDepositModal}
+            isDisabled={isCapExceeded}
+          >
             {activitiesCount === 0 ? "Deposit" : "Deposit more"}
           </Button>
         </UserDataSkeleton>
@@ -99,6 +107,17 @@ export default function PositionDetails() {
             </Button>
           </ArrivingSoonTooltip>
         </UserDataSkeleton>
+        {isCapExceeded && (
+          <HStack align="start" spacing={1} mt={3}>
+            <BoltFilled color="orange.400" my={1} />
+            <VStack align="start" spacing={0}>
+              <TextMd fontWeight="semibold">Deposit cap reached!</TextMd>
+              <TextMd color="grey.500">
+                Stay tuned for the next deposit cycle.
+              </TextMd>
+            </VStack>
+          </HStack>
+        )}
       </HStack>
     </Flex>
   )
