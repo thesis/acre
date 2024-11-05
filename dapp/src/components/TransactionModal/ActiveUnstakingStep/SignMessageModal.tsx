@@ -62,7 +62,7 @@ export default function SignMessageModal() {
     }
   }, [])
 
-  const builtDataStepCallback = useCallback(() => {
+  const dataBuiltStepCallback = useCallback(() => {
     setWaitingStatus("built-data")
     return Promise.resolve()
   }, [])
@@ -103,7 +103,7 @@ export default function SignMessageModal() {
 
       const { redemptionKey } = await initializeWithdraw(
         amount,
-        builtDataStepCallback,
+        dataBuiltStepCallback,
         onSignMessageCallback,
       )
 

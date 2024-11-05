@@ -47,7 +47,7 @@ export default function WalletInteractionModal({
 }: {
   step: WalletInteractionStep
 }) {
-  const type = useActionFlowType()
+  const actionType = useActionFlowType()
   const connector = useConnector()
   const { header, description, progressProps } = DATA[step]
 
@@ -67,11 +67,17 @@ export default function WalletInteractionModal({
             isIndeterminate
             {...progressProps}
           />
-          <Image src={connector?.icon} p={2} bg="black" {...ICON_STYLES} />
+          <Image
+            src={connector?.icon}
+            p={2}
+            bg="black"
+            alt="Connector icon"
+            {...ICON_STYLES}
+          />
         </HStack>
         <TextMd>
           {description(
-            type === ACTION_FLOW_TYPES.STAKE ? "deposit" : "withdraw",
+            actionType === ACTION_FLOW_TYPES.STAKE ? "deposit" : "withdraw",
           )}
         </TextMd>
         {step === "awaiting-transaction" && (

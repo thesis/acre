@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react"
+import React, { useCallback } from "react"
 import {
   useActionFlowPause,
   useActionFlowTokenAmount,
@@ -34,57 +34,58 @@ export default function DepositBTCModal() {
   }, [dispatch, handleBitcoinBalanceInvalidation])
 
   const onError = useCallback(
-    (error?: unknown) => {
-      console.error(error)
-      dispatch(setStatus(PROCESS_STATUSES.FAILED))
-    },
+    () => dispatch(setStatus(PROCESS_STATUSES.FAILED)),
     [dispatch],
   )
 
   const handleStake = useExecuteFunction(stake, onStakeBTCSuccess, onError)
 
-  const onDepositBTCSuccess = useCallback(() => {
-    dispatch(setStatus(PROCESS_STATUSES.LOADING))
-
-    logPromiseFailure(handleStake())
-  }, [dispatch, handleStake])
+  const onDepositBTCSuccess = useCallback(
+    (transactionHash: string) => {
+      dispatch(setTxHash(transactionHash))
+      logPromiseFailure(handleStake())
+    },
+    [dispatch, handleStake],
+  )
 
   const onDepositBTCError = useCallback(
     (error: unknown) => {
       if (eip1193.didUserRejectRequest(error)) {
         handlePause()
       } else {
-        onError(error)
+        onError()
       }
     },
     [onError, handlePause],
   )
 
-  const { sendBitcoinTransaction, transactionHash, inProgress } =
-    useDepositBTCTransaction(onDepositBTCSuccess, onDepositBTCError)
-
-  useEffect(() => {
-    if (transactionHash) {
-      dispatch(setTxHash(transactionHash))
-    }
-  }, [dispatch, transactionHash])
+  const { sendBitcoinTransaction, status } = useDepositBTCTransaction(
+    onDepositBTCSuccess,
+    onDepositBTCError,
+  )
 
   const handledDepositBTC = useCallback(async () => {
     if (!tokenAmount?.amount || !btcAddress || !depositReceipt) return
-    const status = await verifyDepositAddress(depositReceipt, btcAddress)
+    const verificationStatus = await verifyDepositAddress(
+      depositReceipt,
+      btcAddress,
+    )
 
-    if (status === "valid") {
-      await sendBitcoinTransaction(btcAddress, tokenAmount?.amount)
+    if (verificationStatus === "valid") {
+      sendBitcoinTransaction({
+        recipient: btcAddress,
+        amount: tokenAmount?.amount,
+      })
     } else {
       onError()
     }
   }, [
+    tokenAmount?.amount,
     btcAddress,
     depositReceipt,
-    onError,
     verifyDepositAddress,
     sendBitcoinTransaction,
-    tokenAmount?.amount,
+    onError,
   ])
 
   const handledDepositBTCWrapper = useCallback(() => {
@@ -93,7 +94,7 @@ export default function DepositBTCModal() {
 
   useTimeout(handledDepositBTCWrapper, ONE_SEC_IN_MILLISECONDS)
 
-  if (inProgress || transactionHash)
+  if (status === "pending" || status === "success")
     return <WalletInteractionModal step="awaiting-transaction" />
 
   return <WalletInteractionModal step="opening-wallet" />
