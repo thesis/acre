@@ -56,14 +56,12 @@ export default function AcrePointsCard(props: CardProps) {
           Your Acre points balance
         </TextMd>
 
-        <InfoTooltip
-          label={
-            isWalletConnected
-              ? "Your current balance of Acre points collected so far. New points drop daily and are ready to be claimed. Unclaimed points roll over to the next day."
-              : "Total points distributed to Acre users so far. New points drop daily and can be claimed in each user's dashboard."
-          }
-          w={56}
-        />
+        {isWalletConnected && (
+          <InfoTooltip
+            label="Your current balance of Acre points collected so far. New points drop daily and are ready to be claimed. Unclaimed points roll over to the next day."
+            w={56}
+          />
+        )}
       </CardHeader>
 
       <CardBody p={0}>
