@@ -9,13 +9,12 @@ type AcreTVLMessageProps = Omit<StackProps, "children">
 
 export default function AcreTVLMessage(props: AcreTVLMessageProps) {
   const { tvl } = useStatistics()
-  const { address } = useWallet()
+  const { isConnected } = useWallet()
   const activitiesCount = useAllActivitiesCount()
 
-  const isWalletConnected = !!address
   const isFirstTimeUser = activitiesCount === 0
 
-  if (isWalletConnected && !isFirstTimeUser && !tvl.isCapExceeded) {
+  if (isConnected && !isFirstTimeUser && !tvl.isCapExceeded) {
     return null
   }
 
