@@ -1,10 +1,5 @@
 import { http, createConfig, CreateConnectorFn } from "wagmi"
 import { Chain, mainnet, sepolia } from "wagmi/chains"
-import {
-  getOrangeKitUnisatConnector,
-  getOrangeKitOKXConnector,
-  getOrangeKitXverseConnector,
-} from "@orangekit/react"
 import { env } from "./constants"
 
 const isTestnet = env.USE_TESTNET
@@ -21,21 +16,29 @@ const transports = chains.reduce(
   {},
 )
 
-const orangeKitUnisatConnector = getOrangeKitUnisatConnector(connectorConfig)
-const orangeKitOKXConnector = getOrangeKitOKXConnector(connectorConfig)
-const orangeKitXverseConnector = getOrangeKitXverseConnector(connectorConfig)
+async function getWagmiConfig() {
+  const {
+    getOrangeKitUnisatConnector,
+    getOrangeKitOKXConnector,
+    getOrangeKitXverseConnector,
+  } = await import("@orangekit/react")
 
-const connectors = [
-  orangeKitOKXConnector(),
-  orangeKitUnisatConnector(),
-  orangeKitXverseConnector(),
-] as unknown as CreateConnectorFn[]
+  const orangeKitUnisatConnector = getOrangeKitUnisatConnector(connectorConfig)
+  const orangeKitOKXConnector = getOrangeKitOKXConnector(connectorConfig)
+  const orangeKitXverseConnector = getOrangeKitXverseConnector(connectorConfig)
 
-const wagmiConfig = createConfig({
-  chains,
-  multiInjectedProviderDiscovery: false,
-  connectors,
-  transports,
-})
+  const connectors = [
+    orangeKitOKXConnector(),
+    orangeKitUnisatConnector(),
+    orangeKitXverseConnector(),
+  ] as unknown as CreateConnectorFn[]
 
-export default wagmiConfig
+  return createConfig({
+    chains,
+    multiInjectedProviderDiscovery: false,
+    connectors,
+    transports,
+  })
+}
+
+export default getWagmiConfig
