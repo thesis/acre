@@ -3,18 +3,18 @@ import {
   useActionFlowPause,
   useActionFlowTokenAmount,
   useAppDispatch,
-  useExecuteFunction,
   useInvalidateQueries,
   useModal,
   useTimeout,
   useTransactionDetails,
 } from "#/hooks"
 import { ACTION_FLOW_TYPES, PROCESS_STATUSES } from "#/types"
-import { dateToUnixTimestamp, eip1193, logPromiseFailure } from "#/utils"
+import { dateToUnixTimestamp, eip1193 } from "#/utils"
 import { setStatus } from "#/store/action-flow"
 import { useInitializeWithdraw } from "#/acre-react/hooks"
 import { ONE_SEC_IN_MILLISECONDS, queryKeysFactory } from "#/constants"
 import { activityInitialized } from "#/store/wallet"
+import { useMutation } from "@tanstack/react-query"
 import BuildTransactionModal from "./BuildTransactionModal"
 import WalletInteractionModal from "../WalletInteractionModal"
 
@@ -97,8 +97,9 @@ export default function SignMessageModal() {
     [onSignMessageError, handlePause],
   )
 
-  const handleSignMessage = useExecuteFunction(
-    async () => {
+  const { mutate: handleSignMessage } = useMutation({
+    mutationKey: ["sign-message"],
+    mutationFn: async () => {
       if (!amount) return
 
       const { redemptionKey } = await initializeWithdraw(
@@ -141,13 +142,9 @@ export default function SignMessageModal() {
         }),
       )
     },
-    onSignMessageSuccess,
+    onSuccess: onSignMessageSuccess,
     onError,
-  )
-
-  const handleInitWithdrawAndSignMessageWrapper = useCallback(() => {
-    logPromiseFailure(handleSignMessage())
-  }, [handleSignMessage])
+  })
 
   const onClose = () => {
     const currentSessionId = sessionId.current
@@ -163,7 +160,7 @@ export default function SignMessageModal() {
     closeModal()
   }
 
-  useTimeout(handleInitWithdrawAndSignMessageWrapper, ONE_SEC_IN_MILLISECONDS)
+  useTimeout(handleSignMessage, ONE_SEC_IN_MILLISECONDS)
 
   if (status === "building-data")
     return <BuildTransactionModal onClose={onClose} />
