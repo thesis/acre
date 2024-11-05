@@ -10,6 +10,7 @@ import {
 } from "#/hooks"
 import { fixedPointNumberToString, getCurrencyByType } from "#/utils"
 import UnstakeDetails from "./UnstakeDetails"
+import ActionDurationEstimation from "../../ActionDurationEstimation"
 
 function UnstakeFormModal({
   onSubmitForm,
@@ -38,7 +39,8 @@ function UnstakeFormModal({
       defaultAmount={defaultAmount}
     >
       <UnstakeDetails balance={balance} currency="bitcoin" />
-      <FormSubmitButton mt={10}>Withdraw</FormSubmitButton>
+      <FormSubmitButton mt={8}>Withdraw</FormSubmitButton>
+      <ActionDurationEstimation type="withdraw" />
     </TokenAmountForm>
   )
 }
