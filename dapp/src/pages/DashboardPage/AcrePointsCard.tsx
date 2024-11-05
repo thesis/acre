@@ -30,9 +30,7 @@ export default function AcrePointsCard(props: CardProps) {
     updatePointsData,
     isCalculationInProgress,
   } = useAcrePoints()
-  const { address } = useWallet()
-
-  const isWalletConnected = !!address
+  const { isConnected } = useWallet()
 
   const formattedTotalPointsAmount = numberToLocaleString(totalBalance)
   const formattedClaimablePointsAmount = numberToLocaleString(claimableBalance)
@@ -56,7 +54,7 @@ export default function AcrePointsCard(props: CardProps) {
           Your Acre points balance
         </TextMd>
 
-        {isWalletConnected && (
+        {isConnected && (
           <InfoTooltip
             // TODO: Add alternative variant of label for disconnected wallet
             label="Your current balance of Acre points collected so far. New points drop daily and are ready to be claimed. Unclaimed points roll over to the next day."
