@@ -13,10 +13,10 @@ export function useExecuteFunction<
   return useCallback(
     async (...args: Parameters<typeof fn>) => {
       try {
-        await fn(...args)
+        const response = await fn(...args)
 
         if (onSuccess) {
-          onSuccess()
+          onSuccess(response)
         }
       } catch (error) {
         if (onError) {
