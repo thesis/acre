@@ -58,6 +58,7 @@ export default function AcrePointsCard(props: CardProps) {
 
         {isWalletConnected && (
           <InfoTooltip
+            // TODO: Add alternative variant of label for disconnected wallet
             label="Your current balance of Acre points collected so far. New points drop daily and are ready to be claimed. Unclaimed points roll over to the next day."
             w={56}
           />
