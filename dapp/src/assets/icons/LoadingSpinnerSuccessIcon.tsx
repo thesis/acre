@@ -1,26 +1,47 @@
 import React from "react"
 import { createIcon } from "@chakra-ui/react"
 
-export const LoadingSpinnerSuccessIcon = createIcon({
+export default createIcon({
   displayName: "LoadingSpinnerSuccessIcon",
-  viewBox: "0 0 48 48",
+  viewBox: "0 0 56 56",
   defaultProps: {
     fill: "none",
   },
   path: [
+    <g filter="url(#filter0_b_55_2073)">
+      <circle cx="28" cy="28" r="28" fill="#33A321" fillOpacity="0.15" />
+    </g>,
     <path
-      d="M45.75 24C45.75 26.8563 45.1874 29.6845 44.0944 32.3234C43.0013 34.9622 41.3992 37.3599 39.3796 39.3796C37.3599 41.3992 34.9622 43.0013 32.3234 44.0944C29.6845 45.1874 26.8562 45.75 24 45.75C21.1437 45.75 18.3155 45.1874 15.6766 44.0944C13.0378 43.0013 10.6401 41.3992 8.62042 39.3796C6.60075 37.3599 4.99866 34.9622 3.90562 32.3234C2.81258 29.6845 2.25 26.8562 2.25 24C2.25 21.1437 2.81258 18.3155 3.90562 15.6766C4.99866 13.0378 6.60076 10.6401 8.62043 8.62042C10.6401 6.60075 13.0378 4.99866 15.6766 3.90562C18.3155 2.81258 21.1438 2.25 24 2.25C26.8563 2.25 29.6845 2.81258 32.3234 3.90562C34.9622 4.99867 37.3599 6.60076 39.3796 8.62044C41.3993 10.6401 43.0013 13.0378 44.0944 15.6766C45.1874 18.3155 45.75 21.1438 45.75 24L45.75 24Z"
-      stroke="#EDD8A2"
+      d="M37 22L25 34L19 28.5"
+      stroke="#33A321"
       strokeWidth="3"
       strokeLinecap="round"
       strokeLinejoin="round"
     />,
-    <path
-      d="M31.2008 19.2002L21.6008 28.8002L16.8008 24.4002"
-      stroke="#318401"
-      strokeWidth="3"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />,
+    <defs>
+      <filter
+        id="filter0_b_55_2073"
+        x="-16"
+        y="-16"
+        width="88"
+        height="88"
+        filterUnits="userSpaceOnUse"
+        colorInterpolationFilters="sRGB"
+      >
+        <feFlood floodOpacity="0" result="BackgroundImageFix" />
+        <feGaussianBlur in="BackgroundImageFix" stdDeviation="8" />
+        <feComposite
+          in2="SourceAlpha"
+          operator="in"
+          result="effect1_backgroundBlur_55_2073"
+        />
+        <feBlend
+          mode="normal"
+          in="SourceGraphic"
+          in2="effect1_backgroundBlur_55_2073"
+          result="shape"
+        />
+      </filter>
+    </defs>,
   ],
 })

@@ -2,11 +2,9 @@ import React, { useCallback, useState } from "react"
 import {
   useActionFlowTxHash,
   useAppDispatch,
-  useFetchActivities,
   useStakeFlowContext,
 } from "#/hooks"
 import { PROCESS_STATUSES } from "#/types"
-import { logPromiseFailure } from "#/utils"
 import { setStatus } from "#/store/action-flow"
 import { UnexpectedErrorModalBase } from "#/components/UnexpectedErrorModal"
 import { useMutation } from "@tanstack/react-query"
@@ -20,15 +18,13 @@ export default function StakingErrorModal({
 }) {
   const { stake } = useStakeFlowContext()
   const dispatch = useAppDispatch()
-  const fetchActivities = useFetchActivities()
   const txHash = useActionFlowTxHash()
 
   const [isServerError, setIsServerError] = useState(false)
 
   const onStakeBTCSuccess = useCallback(() => {
-    logPromiseFailure(fetchActivities())
     dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED))
-  }, [dispatch, fetchActivities])
+  }, [dispatch])
 
   const onStakeBTCError = useCallback(() => setIsServerError(true), [])
 
