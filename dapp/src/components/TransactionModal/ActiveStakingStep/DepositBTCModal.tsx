@@ -37,7 +37,10 @@ export default function DepositBTCModal() {
   }, [dispatch, handleBitcoinBalanceInvalidation])
 
   const onError = useCallback(
-    () => dispatch(setStatus(PROCESS_STATUSES.FAILED)),
+    (error: unknown) => {
+      console.error(error)
+      dispatch(setStatus(PROCESS_STATUSES.FAILED))
+    },
     [dispatch],
   )
 
@@ -61,8 +64,7 @@ export default function DepositBTCModal() {
       if (eip1193.didUserRejectRequest(error)) {
         handlePause()
       } else {
-        onError()
-        console.error(error)
+        onError(error)
       }
     },
     [onError, handlePause],
@@ -111,7 +113,7 @@ export default function DepositBTCModal() {
         amount: tokenAmount?.amount,
       })
     } else {
-      onError()
+      onError("Invalid deposit address")
     }
   }, [
     tokenAmount?.amount,

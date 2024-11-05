@@ -80,9 +80,13 @@ export default function SignMessageModal() {
     dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED))
   }, [dispatch, handleBitcoinPositionInvalidation])
 
-  const onSignMessageError = useCallback(() => {
-    dispatch(setStatus(PROCESS_STATUSES.FAILED))
-  }, [dispatch])
+  const onSignMessageError = useCallback(
+    (error: unknown) => {
+      console.error(error)
+      dispatch(setStatus(PROCESS_STATUSES.FAILED))
+    },
+    [dispatch],
+  )
 
   const onError = useCallback(
     (error: unknown) => {
@@ -91,7 +95,7 @@ export default function SignMessageModal() {
       if (eip1193.didUserRejectRequest(error)) {
         handlePause()
       } else {
-        onSignMessageError()
+        onSignMessageError(error)
       }
     },
     [onSignMessageError, handlePause],
