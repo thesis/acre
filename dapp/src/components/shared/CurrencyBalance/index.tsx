@@ -1,4 +1,4 @@
-import React, { useMemo } from "react"
+import React, { useCallback } from "react"
 import {
   Box,
   useMultiStyleConfig,
@@ -7,7 +7,6 @@ import {
   Tooltip,
 } from "@chakra-ui/react"
 import {
-  bigIntToUserAmount,
   formatTokenAmount,
   getCurrencyByType,
   numberToLocaleString,
@@ -61,15 +60,17 @@ export function CurrencyBalance({
     decimals,
     desiredDecimals: currencyDesiredDecimals,
   } = getCurrencyByType(currency)
-  const desiredDecimals = customDesiredDecimals ?? currencyDesiredDecimals
 
-  const balance = useMemo(() => {
-    const value = amount ?? 0
-    if (shouldBeFormatted || typeof value === "bigint")
-      return formatTokenAmount(value, decimals, desiredDecimals, withRoundUp)
+  const getBalance = useCallback(
+    (desiredDecimals: number) => {
+      const value = amount ?? 0
+      if (shouldBeFormatted || typeof value === "bigint")
+        return formatTokenAmount(value, decimals, desiredDecimals, withRoundUp)
 
-    return numberToLocaleString(value, desiredDecimals)
-  }, [amount, decimals, desiredDecimals, shouldBeFormatted, withRoundUp])
+      return numberToLocaleString(value, desiredDecimals)
+    },
+    [amount, decimals, shouldBeFormatted, withRoundUp],
+  )
 
   const content = (
     <Box as={as} __css={styles.container}>
@@ -79,7 +80,7 @@ export function CurrencyBalance({
         {...textProps}
         {...balanceTextProps}
       >
-        {balance}
+        {getBalance(customDesiredDecimals ?? currencyDesiredDecimals)}
         {withDots && "..."}
       </Box>
       <Box as="span" __css={styles.symbol} {...textProps} {...symbolTextProps}>
@@ -89,7 +90,8 @@ export function CurrencyBalance({
   )
 
   if (withTooltip) {
-    const tooltipLabel = `${bigIntToUserAmount(BigInt(amount ?? 0), decimals, decimals)} ${symbol}`
+    const fullPrecisionDecimals = (amount ?? 0).toString().length
+    const tooltipLabel = `${getBalance(fullPrecisionDecimals)} ${symbol}`
 
     return (
       <Tooltip label={tooltipLabel} shouldWrapChildren>
