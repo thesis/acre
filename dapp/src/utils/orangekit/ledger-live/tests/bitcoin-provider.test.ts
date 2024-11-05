@@ -20,7 +20,7 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
     balance: 100,
     spendableBalance: 80,
   }
-  const hwAppId = "Acre"
+  const hwAppId = "Acre Test"
 
   const withdrawalData = {
     to: "0x0",
