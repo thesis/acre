@@ -1,10 +1,5 @@
 import { http, createConfig, CreateConnectorFn } from "wagmi"
 import { Chain, mainnet, sepolia } from "wagmi/chains"
-import {
-  getOrangeKitUnisatConnector,
-  getOrangeKitOKXConnector,
-  getOrangeKitXverseConnector,
-} from "@orangekit/react"
 import { CreateOrangeKitConnectorFn } from "@orangekit/react/dist/src/wallet/connector"
 import { env } from "./constants"
 import { getLastUsedBtcAddress } from "./hooks/useLastUsedBtcAddress"
@@ -25,41 +20,83 @@ const transports = chains.reduce(
   {},
 )
 
-const orangeKitUnisatConnector = getOrangeKitUnisatConnector(connectorConfig)
-const orangeKitOKXConnector = getOrangeKitOKXConnector(connectorConfig)
-const orangeKitXverseConnector = getOrangeKitXverseConnector(connectorConfig)
-const orangeKitLedgerLiveConnector = orangeKit.getOrangeKitLedgerLiveConnector({
-  ...connectorConfig,
-  options: {
-    tryConnectToAddress: getLastUsedBtcAddress(),
-  },
-})
+// const orangeKitUnisatConnector = getOrangeKitUnisatConnector(connectorConfig)
+// const orangeKitOKXConnector = getOrangeKitOKXConnector(connectorConfig)
+// const orangeKitXverseConnector = getOrangeKitXverseConnector(connectorConfig)
+// const orangeKitLedgerLiveConnector = orangeKit.getOrangeKitLedgerLiveConnector({
+//   ...connectorConfig,
+//   options: {
+//     tryConnectToAddress: getLastUsedBtcAddress(),
+//   },
+// })
 
-const embedConnectorsMap: Record<EmbedApp, () => CreateOrangeKitConnectorFn> = {
-  "ledger-live": orangeKitLedgerLiveConnector,
+// const embedConnectorsMap: Record<EmbedApp, () => CreateOrangeKitConnectorFn> = {
+//   "ledger-live": orangeKitLedgerLiveConnector,
+// }
+
+// let createEmbedConnectorFn
+// const embeddedApp = referralProgram.getEmbeddedApp()
+// if (referralProgram.isEmbedApp(embeddedApp)) {
+//   createEmbedConnectorFn = embedConnectorsMap[embeddedApp as EmbedApp]
+// }
+
+// const defaultConnectors = [
+//   orangeKitOKXConnector(),
+//   orangeKitUnisatConnector(),
+//   orangeKitXverseConnector(),
+// ]
+
+// const connectors = (createEmbedConnectorFn !== undefined
+//   ? [createEmbedConnectorFn()]
+//   : defaultConnectors) as unknown as CreateConnectorFn[]
+async function getWagmiConfig() {
+  const {
+    getOrangeKitUnisatConnector,
+    getOrangeKitOKXConnector,
+    getOrangeKitXverseConnector,
+  } = await import("@orangekit/react")
+
+  const orangeKitUnisatConnector = getOrangeKitUnisatConnector(connectorConfig)
+  const orangeKitOKXConnector = getOrangeKitOKXConnector(connectorConfig)
+  const orangeKitXverseConnector = getOrangeKitXverseConnector(connectorConfig)
+
+  let createEmbedConnectorFn
+  const embeddedApp = referralProgram.getEmbeddedApp()
+  if (referralProgram.isEmbedApp(embeddedApp)) {
+    const orangeKitLedgerLiveConnector =
+      orangeKit.getOrangeKitLedgerLiveConnector({
+        ...connectorConfig,
+        options: {
+          tryConnectToAddress: getLastUsedBtcAddress(),
+        },
+      })
+
+    const embedConnectorsMap: Record<
+      EmbedApp,
+      () => CreateOrangeKitConnectorFn
+    > = {
+      "ledger-live": orangeKitLedgerLiveConnector,
+    }
+
+    createEmbedConnectorFn = embedConnectorsMap[embeddedApp as EmbedApp]
+  }
+
+  const defaultConnectors = [
+    orangeKitOKXConnector(),
+    orangeKitUnisatConnector(),
+    orangeKitXverseConnector(),
+  ]
+
+  const connectors = (createEmbedConnectorFn !== undefined
+    ? [createEmbedConnectorFn()]
+    : defaultConnectors) as unknown as CreateConnectorFn[]
+
+  return createConfig({
+    chains,
+    multiInjectedProviderDiscovery: false,
+    connectors,
+    transports,
+  })
 }
 
-let createEmbedConnectorFn
-const embeddedApp = referralProgram.getEmbeddedApp()
-if (referralProgram.isEmbedApp(embeddedApp)) {
-  createEmbedConnectorFn = embedConnectorsMap[embeddedApp as EmbedApp]
-}
-
-const defaultConnectors = [
-  orangeKitOKXConnector(),
-  orangeKitUnisatConnector(),
-  orangeKitXverseConnector(),
-]
-
-const connectors = (createEmbedConnectorFn !== undefined
-  ? [createEmbedConnectorFn()]
-  : defaultConnectors) as unknown as CreateConnectorFn[]
-
-const wagmiConfig = createConfig({
-  chains,
-  multiInjectedProviderDiscovery: false,
-  connectors,
-  transports,
-})
-
-export default wagmiConfig
+export default getWagmiConfig
