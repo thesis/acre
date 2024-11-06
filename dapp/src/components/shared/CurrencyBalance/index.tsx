@@ -7,6 +7,7 @@ import {
   Tooltip,
 } from "@chakra-ui/react"
 import {
+  fixedPointNumberToString,
   formatTokenAmount,
   getCurrencyByType,
   numberToLocaleString,
@@ -60,16 +61,24 @@ export function CurrencyBalance({
     decimals,
     desiredDecimals: currencyDesiredDecimals,
   } = getCurrencyByType(currency)
+  const desiredDecimals = customDesiredDecimals ?? currencyDesiredDecimals
 
   const getBalance = useCallback(
-    (desiredDecimals: number) => {
-      const value = amount ?? 0
+    (options: { withFullPrecision?: boolean } = {}) => {
+      const { withFullPrecision } = options
+
+      const value = amount ?? 0n
+
+      if (withFullPrecision) {
+        return fixedPointNumberToString(BigInt(value), decimals, withRoundUp)
+      }
+
       if (shouldBeFormatted || typeof value === "bigint")
         return formatTokenAmount(value, decimals, desiredDecimals, withRoundUp)
 
       return numberToLocaleString(value, desiredDecimals)
     },
-    [amount, decimals, shouldBeFormatted, withRoundUp],
+    [amount, decimals, desiredDecimals, shouldBeFormatted, withRoundUp],
   )
 
   const content = (
@@ -80,7 +89,7 @@ export function CurrencyBalance({
         {...textProps}
         {...balanceTextProps}
       >
-        {getBalance(customDesiredDecimals ?? currencyDesiredDecimals)}
+        {getBalance()}
         {withDots && "..."}
       </Box>
       <Box as="span" __css={styles.symbol} {...textProps} {...symbolTextProps}>
@@ -90,8 +99,7 @@ export function CurrencyBalance({
   )
 
   if (withTooltip) {
-    const fullPrecisionDecimals = (amount ?? 0).toString().length
-    const tooltipLabel = `${getBalance(fullPrecisionDecimals)} ${symbol}`
+    const tooltipLabel = `${getBalance({ withFullPrecision: true })} ${symbol}`
 
     return (
       <Tooltip label={tooltipLabel} shouldWrapChildren>
