@@ -1,9 +1,9 @@
 {
-  "id": "acre-mainnet",
+  "id": "acre",
   "name": "Acre",
-  "url": "https://stake.acre.fi/?embed=ledger-live",
+  "url": "https://bitcoin.acre.fi/?embed=ledger-live",
   "homepageUrl": "https:/acre.fi/",
-  "icon": "https://stake.acre.fi/acre.svg",
+  "icon": "https://bitcoin.acre.fi/acre.svg",
   "platforms": "desktop",
   "apiVersion": "^2.0.0",
   "manifestVersion": "2",

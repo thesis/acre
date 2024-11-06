@@ -1,10 +1,6 @@
 import React from "react"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
-import {
-  useAllActivitiesCount,
-  useBitcoinPosition,
-  useTransactionModal,
-} from "#/hooks"
+import { useBitcoinPosition, useTransactionModal } from "#/hooks"
 import { ACTION_FLOW_TYPES } from "#/types"
 import {
   Button,
@@ -37,7 +33,6 @@ export default function PositionDetails() {
 
   const openDepositModal = useTransactionModal(ACTION_FLOW_TYPES.STAKE)
   const openWithdrawModal = useTransactionModal(ACTION_FLOW_TYPES.UNSTAKE)
-  const activitiesCount = useAllActivitiesCount()
 
   return (
     <Flex w="100%" flexDirection="column" gap={5}>
@@ -84,7 +79,7 @@ export default function PositionDetails() {
       <HStack w="full" justify="start" flexWrap="wrap" spacing={2}>
         <UserDataSkeleton>
           <Button {...buttonStyles} onClick={openDepositModal}>
-            {activitiesCount === 0 ? "Deposit" : "Deposit more"}
+            Deposit
           </Button>
         </UserDataSkeleton>
         <UserDataSkeleton>

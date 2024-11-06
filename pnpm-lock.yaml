@@ -33,8 +33,8 @@ importers:
         specifier: ^11.11.0
         version: 11.11.5(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1)
       '@ledgerhq/wallet-api-acre-module':
-        specifier: 0.1.0-nightly.0
-        version: 0.1.0-nightly.0
+        specifier: 0.1.0
+        version: 0.1.0
       '@ledgerhq/wallet-api-client':
         specifier: 1.6.0
         version: 1.6.0
@@ -2267,8 +2267,8 @@ packages:
   '@ledgerhq/logs@6.12.0':
     resolution: {integrity: sha512-ExDoj1QV5eC6TEbMdLUMMk9cfvNKhhv5gXol4SmULRVCx/3iyCPhJ74nsb3S0Vb+/f+XujBEj3vQn5+cwS0fNA==}
 
-  '@ledgerhq/wallet-api-acre-module@0.1.0-nightly.0':
-    resolution: {integrity: sha512-VAhkV6m8FgM565pAek+19KjLsY5QQB9xTEMaNXxnQmBX+izuwchSfaqZrnzXGzR/HBKk6XVOrdwx2Xh5I8WKSg==}
+  '@ledgerhq/wallet-api-acre-module@0.1.0':
+    resolution: {integrity: sha512-zRfTDetX4Tbwust4mq0NeIp6lIanzfWmBclyWmLpxd9j0WMgxZmz2aXAR95tPVe8fWSDJwR2nqOqhSu2etVxIQ==}
 
   '@ledgerhq/wallet-api-client@1.6.0':
     resolution: {integrity: sha512-xf5g9baUB1Fn94GKYGNXtlRCKTWnqMBv1w9bE/H3+IXubwY7Cdy5zhn4rI8+iA4Llmwujp+sZciesWAa9f63gg==}
@@ -14082,7 +14082,7 @@ snapshots:
 
   '@ledgerhq/logs@6.12.0': {}
 
-  '@ledgerhq/wallet-api-acre-module@0.1.0-nightly.0':
+  '@ledgerhq/wallet-api-acre-module@0.1.0':
     dependencies:
       '@ledgerhq/wallet-api-client': 1.6.0
       '@ledgerhq/wallet-api-core': 1.13.0

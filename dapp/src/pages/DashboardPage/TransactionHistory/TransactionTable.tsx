@@ -51,6 +51,7 @@ export default function TransactionTable() {
                       amount={activity.amount}
                       currency="bitcoin"
                       withDots
+                      withTooltip
                     />
                   </Flex>
                   <Flex justifyContent="space-between">
