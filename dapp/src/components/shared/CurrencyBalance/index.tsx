@@ -1,11 +1,13 @@
-import React, { useMemo } from "react"
+import React, { useCallback } from "react"
 import {
   Box,
   useMultiStyleConfig,
   TextProps,
   ResponsiveValue,
+  Tooltip,
 } from "@chakra-ui/react"
 import {
+  fixedPointNumberToString,
   formatTokenAmount,
   getCurrencyByType,
   numberToLocaleString,
@@ -29,6 +31,7 @@ export type CurrencyBalanceProps = {
   withDots?: boolean
   balanceTextProps?: TextProps
   symbolTextProps?: TextProps
+  withTooltip?: boolean
 } & TextProps
 
 export function CurrencyBalance({
@@ -44,6 +47,7 @@ export function CurrencyBalance({
   as,
   balanceTextProps,
   symbolTextProps,
+  withTooltip = false,
   ...textProps
 }: CurrencyBalanceProps) {
   const styles = useMultiStyleConfig("CurrencyBalance", {
@@ -59,15 +63,25 @@ export function CurrencyBalance({
   } = getCurrencyByType(currency)
   const desiredDecimals = customDesiredDecimals ?? currencyDesiredDecimals
 
-  const balance = useMemo(() => {
-    const value = amount ?? 0
-    if (shouldBeFormatted || typeof value === "bigint")
-      return formatTokenAmount(value, decimals, desiredDecimals, withRoundUp)
+  const getBalance = useCallback(
+    (options: { withFullPrecision?: boolean } = {}) => {
+      const { withFullPrecision } = options
 
-    return numberToLocaleString(value, desiredDecimals)
-  }, [amount, decimals, desiredDecimals, shouldBeFormatted, withRoundUp])
+      const value = amount ?? 0n
 
-  return (
+      if (shouldBeFormatted || typeof value === "bigint") {
+        if (withFullPrecision)
+          return fixedPointNumberToString(BigInt(value), decimals, withRoundUp)
+
+        return formatTokenAmount(value, decimals, desiredDecimals, withRoundUp)
+      }
+
+      return numberToLocaleString(value.toString(), desiredDecimals)
+    },
+    [amount, decimals, desiredDecimals, shouldBeFormatted, withRoundUp],
+  )
+
+  const content = (
     <Box as={as} __css={styles.container}>
       <Box
         as="span"
@@ -75,12 +89,24 @@ export function CurrencyBalance({
         {...textProps}
         {...balanceTextProps}
       >
-        {balance}
-        {withDots && ".."}
+        {getBalance()}
+        {withDots && "..."}
       </Box>
       <Box as="span" __css={styles.symbol} {...textProps} {...symbolTextProps}>
         {symbol}
       </Box>
     </Box>
   )
+
+  if (withTooltip) {
+    const tooltipLabel = `${getBalance({ withFullPrecision: true })} ${symbol}`
+
+    return (
+      <Tooltip label={tooltipLabel} shouldWrapChildren>
+        {content}
+      </Tooltip>
+    )
+  }
+
+  return content
 }
