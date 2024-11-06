@@ -34,3 +34,6 @@ export const selectIsSignedMessage = (state: RootState): boolean =>
 
 export const selectHasFetchedActivities = (state: RootState): boolean =>
   state.wallet.hasFetchedActivities
+
+export const selectWalletAddress = (state: RootState): string | undefined =>
+  state.wallet.address
