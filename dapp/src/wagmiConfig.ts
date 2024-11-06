@@ -20,35 +20,6 @@ const transports = chains.reduce(
   {},
 )
 
-// const orangeKitUnisatConnector = getOrangeKitUnisatConnector(connectorConfig)
-// const orangeKitOKXConnector = getOrangeKitOKXConnector(connectorConfig)
-// const orangeKitXverseConnector = getOrangeKitXverseConnector(connectorConfig)
-// const orangeKitLedgerLiveConnector = orangeKit.getOrangeKitLedgerLiveConnector({
-//   ...connectorConfig,
-//   options: {
-//     tryConnectToAddress: getLastUsedBtcAddress(),
-//   },
-// })
-
-// const embedConnectorsMap: Record<EmbedApp, () => CreateOrangeKitConnectorFn> = {
-//   "ledger-live": orangeKitLedgerLiveConnector,
-// }
-
-// let createEmbedConnectorFn
-// const embeddedApp = referralProgram.getEmbeddedApp()
-// if (referralProgram.isEmbedApp(embeddedApp)) {
-//   createEmbedConnectorFn = embedConnectorsMap[embeddedApp as EmbedApp]
-// }
-
-// const defaultConnectors = [
-//   orangeKitOKXConnector(),
-//   orangeKitUnisatConnector(),
-//   orangeKitXverseConnector(),
-// ]
-
-// const connectors = (createEmbedConnectorFn !== undefined
-//   ? [createEmbedConnectorFn()]
-//   : defaultConnectors) as unknown as CreateConnectorFn[]
 async function getWagmiConfig() {
   const {
     getOrangeKitUnisatConnector,
