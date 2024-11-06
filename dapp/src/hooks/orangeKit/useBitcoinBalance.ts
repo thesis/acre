@@ -4,14 +4,14 @@ import { useBitcoinProvider } from "./useBitcoinProvider"
 
 const { userKeys } = queryKeysFactory
 
-export default function useBitcoinBalance() {
+export default function useBitcoinBalance(address: string | undefined) {
   const provider = useBitcoinProvider()
 
   return useQuery({
-    queryKey: [...userKeys.balance(), { provider }],
-    enabled: !!provider,
+    queryKey: [...userKeys.balance(), { provider, address }],
+    enabled: !!provider && !!address,
     queryFn: async () => {
-      if (!provider) return 0n
+      if (!provider || !address) return 0n
 
       const { total } = await provider.getBalance()
       return BigInt(total)

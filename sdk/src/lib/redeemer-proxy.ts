@@ -5,7 +5,7 @@ import {
 } from "@keep-network/tbtc-v2.ts"
 import { OrangeKitSdk } from "@orangekit/sdk"
 import { AcreContracts } from "./contracts"
-import { BitcoinProvider } from "./bitcoin"
+import { AcreBitcoinProvider, SafeTransactionData } from "./bitcoin"
 
 export type OnSignMessageStepCallback = (messageToSign: string) => Promise<void>
 export type MessageSignedStepCallback = (signedMessage: string) => Promise<void>
@@ -21,7 +21,7 @@ export default class OrangeKitTbtcRedeemerProxy implements TbtcRedeemerProxy {
     ethereumAddress: ChainIdentifier
   }
 
-  #bitcoinProvider: BitcoinProvider
+  #bitcoinProvider: AcreBitcoinProvider
 
   #sharesAmount: bigint
 
@@ -37,7 +37,7 @@ export default class OrangeKitTbtcRedeemerProxy implements TbtcRedeemerProxy {
       bitcoinAddress: string
       ethereumAddress: ChainIdentifier
     },
-    bitcoinProvider: BitcoinProvider,
+    bitcoinProvider: AcreBitcoinProvider,
     sharesAmount: bigint,
     onSignMessageStepCallback?: OnSignMessageStepCallback,
     messageSignedStepCallback?: MessageSignedStepCallback,
@@ -68,10 +68,11 @@ export default class OrangeKitTbtcRedeemerProxy implements TbtcRedeemerProxy {
       safeTxData.toPrefixedString(),
       this.#account.bitcoinAddress,
       this.#account.publicKey,
-      async (message: string) => {
+      async (message: string, txData: SafeTransactionData) => {
         await this.#onSignMessageStepCallback?.(message)
-
-        const signedMessage = await this.#bitcoinProvider.signMessage(message)
+        const signedMessage =
+          await (this.#bitcoinProvider.signWithdrawMessage?.(message, txData) ??
+            (await this.#bitcoinProvider.signMessage(message)))
 
         await this.#messageSignedStepCallback?.(signedMessage)
 
