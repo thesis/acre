@@ -9,7 +9,7 @@ import {
   useStakeFlowContext,
   useVerifyDepositAddress,
 } from "#/hooks"
-import { eip1193, ledgerLive, logPromiseFailure } from "#/utils"
+import { eip1193, logPromiseFailure } from "#/utils"
 import { PROCESS_STATUSES } from "#/types"
 import { Highlight, ModalCloseButton } from "@chakra-ui/react"
 import { TextMd } from "#/components/shared/Typography"
@@ -53,10 +53,7 @@ export default function DepositBTCModal() {
 
   const onDepositBTCError = useCallback(
     (error: unknown) => {
-      if (
-        eip1193.didUserRejectRequest(error) ||
-        ledgerLive.didUserRejectRequest(error)
-      ) {
+      if (eip1193.didUserRejectRequest(error)) {
         handlePause()
       } else {
         onError(error)

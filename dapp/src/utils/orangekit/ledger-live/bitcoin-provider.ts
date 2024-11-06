@@ -37,7 +37,8 @@ function tryRequest<T>(): TryRequestFn<T> {
       // the request.
       if (
         err?.message === "UserRefusedOnDevice" ||
-        err?.message === "Canceled by user"
+        err?.message === "Canceled by user" ||
+        err?.message === "Signature interrupted by user"
       ) {
         throw new UserRejectedRequestError(err)
       }

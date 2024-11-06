@@ -10,12 +10,7 @@ import {
 } from "#/hooks"
 import { ACTION_FLOW_TYPES, PROCESS_STATUSES } from "#/types"
 import { Button, ModalCloseButton } from "@chakra-ui/react"
-import {
-  dateToUnixTimestamp,
-  eip1193,
-  ledgerLive,
-  logPromiseFailure,
-} from "#/utils"
+import { dateToUnixTimestamp, eip1193, logPromiseFailure } from "#/utils"
 import { setStatus } from "#/store/action-flow"
 import { useInitializeWithdraw } from "#/acre-react/hooks"
 import { queryKeysFactory } from "#/constants"
@@ -111,10 +106,7 @@ export default function SignMessageModal() {
     (error: unknown) => {
       if (!sessionIdToPromise[sessionId.current].shouldOpenErrorModal) return
 
-      if (
-        eip1193.didUserRejectRequest(error) ||
-        ledgerLive.didUserRejectRequest(error)
-      ) {
+      if (eip1193.didUserRejectRequest(error)) {
         handlePause()
       } else {
         onSignMessageError()
