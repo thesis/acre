@@ -69,14 +69,14 @@ export function CurrencyBalance({
 
       const value = amount ?? 0n
 
-      if (withFullPrecision) {
-        return fixedPointNumberToString(BigInt(value), decimals, withRoundUp)
+      if (shouldBeFormatted || typeof value === "bigint") {
+        if (withFullPrecision)
+          return fixedPointNumberToString(BigInt(value), decimals, withRoundUp)
+
+        return formatTokenAmount(value, decimals, desiredDecimals, withRoundUp)
       }
 
-      if (shouldBeFormatted || typeof value === "bigint")
-        return formatTokenAmount(value, decimals, desiredDecimals, withRoundUp)
-
-      return numberToLocaleString(value, desiredDecimals)
+      return numberToLocaleString(value.toString(), desiredDecimals)
     },
     [amount, decimals, desiredDecimals, shouldBeFormatted, withRoundUp],
   )
