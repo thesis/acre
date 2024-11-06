@@ -16,17 +16,11 @@ import { IconArrowUpRight } from "@tabler/icons-react"
 import { useActivities } from "#/hooks"
 import { semanticTokens } from "#/theme/utils"
 import EstimatedDuration from "./EstimatedDuration"
-import { createActivity } from "#/tests/factories"
 
 const BLOCK_EXPLORER_CELL_MIN_WIDTH = 16
 
 export default function TransactionTable() {
-  // const activities = useActivities()
-  const activities = [
-    createActivity({
-      amount: 122200000n,
-    }),
-  ]
+  const activities = useActivities()
 
   return (
     <Pagination data={activities} pageSize={10} spacing={6}>
