@@ -7,7 +7,7 @@ import referralProgram, { EmbedApp } from "./utils/referralProgram"
 import { orangeKit } from "./utils"
 
 const isTestnet = env.USE_TESTNET
-const CHAIN_ID = isTestnet ? sepolia.id : mainnet.id
+export const CHAIN_ID = isTestnet ? sepolia.id : mainnet.id
 
 const chains: [Chain, ...Chain[]] = isTestnet ? [sepolia] : [mainnet]
 const connectorConfig = {
