@@ -1,9 +1,9 @@
 {
-  "id": "acre-test",
-  "name": "Acre [test]",
-  "url": "https://dapp.test.acre.fi/",
+  "id": "{{id}}",
+  "name": "{{name}}",
+  "url": "{{{url}}}?embed=ledger-live",
   "homepageUrl": "https:/acre.fi/",
-  "icon": "https://dapp.test.acre.fi/acre.svg",
+  "icon": "{{{url}}}acre.svg",
   "platforms": "desktop",
   "apiVersion": "^2.0.0",
   "manifestVersion": "2",
@@ -21,10 +21,10 @@
   "permissions": [
     "account.request",
     "account.list",
-    "message.sign",
-    "transaction.sign",
-    "transaction.signAndBroadcast",
-    "bitcoin.getXPub"
+    "bitcoin.getAddress",
+    "bitcoin.getPublicKey",
+    "custom.acre.messageSign",
+    "custom.acre.transactionSignAndBroadcast"
   ],
   "domains": ["http://*"],
   "type": "walletApp"

@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react"
-import { Acre } from "@acre-btc/sdk"
-import { BitcoinProvider } from "@acre-btc/sdk/dist/src/lib/bitcoin/providers"
+import { Acre, AcreBitcoinProvider } from "@acre-btc/sdk"
 import { BITCOIN_NETWORK, env } from "#/constants"
 
 const { TBTC_API_ENDPOINT, SUBGRAPH_API_KEY } = env
@@ -9,7 +8,7 @@ const GELATO_API_KEY = env.GELATO_RELAY_API_KEY
 
 type AcreSdkContextValue = {
   acre?: Acre
-  init: (bitcoinProvider?: BitcoinProvider) => Promise<void>
+  init: (bitcoinProvider?: AcreBitcoinProvider) => Promise<void>
   isInitialized: boolean
   isConnected: boolean
 }
@@ -27,7 +26,7 @@ export function AcreSdkProvider({ children }: { children: React.ReactNode }) {
   const [isConnected, setIsConnected] = useState(false)
 
   const init = useCallback<AcreSdkContextValue["init"]>(
-    async (bitcoinProvider?: BitcoinProvider) => {
+    async (bitcoinProvider?: AcreBitcoinProvider) => {
       let sdk = await Acre.initialize(
         BITCOIN_NETWORK,
         TBTC_API_ENDPOINT,
@@ -37,6 +36,7 @@ export function AcreSdkProvider({ children }: { children: React.ReactNode }) {
       )
 
       if (bitcoinProvider) {
+        setIsConnected(false)
         sdk = await sdk.connect(bitcoinProvider)
         setIsConnected(true)
       } else {

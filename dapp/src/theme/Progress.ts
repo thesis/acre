@@ -6,29 +6,33 @@ import {
 import { getColorVar } from "@chakra-ui/theme-tools"
 import { keyframes } from "@chakra-ui/react"
 
+const PROGRESS_TRACK_BG_COLOR = "#3A3328"
+const PROGRESS_TRACK_BG_COLOR_PRIMARY = "#FF1822"
+const PROGRESS_TRACK_BG_COLOR_SECONDARY = "#FF8A02"
+
 const multiStyleConfig = createMultiStyleConfigHelpers(parts.keys)
 
-const filledStyle = defineStyle((props) => {
-  const { colorScheme: color, theme, isIndeterminate, hasStripe } = props
+const trackStyle = defineStyle((props) => {
+  const { isIndeterminate, hasStripe } = props
 
-  const bgColor = `${color}.400`
-  const stripeColor = "opacity.white.1"
+  const bgColor = PROGRESS_TRACK_BG_COLOR
+  const stripeColor = getColorVar(props.theme, "grey.700") as string
   const stripesAnimation = keyframes`
     from { background-position: 0 0; }
-    to { background-position: 1rem 0; }
+    to { background-position: 17px 0; }
   `
 
   const addStripe = Boolean(!isIndeterminate && hasStripe)
   const style = {
     bgColor,
     bgImage: `repeating-linear-gradient(
-      105deg,
-      transparent 0%,
-      transparent 25%,
-      ${getColorVar(theme, stripeColor)} 25%,
-      ${getColorVar(theme, stripeColor)} 50%
+      125deg, 
+      ${stripeColor}, 
+      ${stripeColor} 2px, 
+      ${bgColor} 2px, 
+      ${bgColor} 14px
     )`,
-    bgSize: "16.64px 58.05px", // Calculated for 8px stripes
+    bgSize: "17px 33px", // Calculated for 8px stripes
     animation: `${stripesAnimation} 2s linear infinite`,
   }
 
@@ -36,20 +40,26 @@ const filledStyle = defineStyle((props) => {
 })
 
 const indeterminateStyle = defineStyle((props) => {
-  const { colorScheme: color, theme, isIndeterminate } = props
+  const { theme, isIndeterminate } = props
 
-  const bgColor = `${color}.400`
+  const bgColorPrimary = PROGRESS_TRACK_BG_COLOR_PRIMARY
+  const bgColorSecondary = PROGRESS_TRACK_BG_COLOR_SECONDARY
 
-  const style = {
+  if (!isIndeterminate) {
+    return {
+      bgGradient: `linear(to-r, ${bgColorPrimary}, ${bgColorSecondary})`,
+    }
+  }
+
+  return {
     bgImage: `linear-gradient(
           to right,
           transparent 0%,
-          ${getColorVar(theme, bgColor)} 50%,
+          ${getColorVar(theme, bgColorPrimary)} 25%,
+          ${getColorVar(theme, bgColorSecondary)} 75%,
           transparent 100%
         )`,
   }
-
-  return isIndeterminate ? style : { bgColor }
 })
 
 const baseStyleLabel = defineStyle({
@@ -59,33 +69,35 @@ const baseStyleLabel = defineStyle({
   justifyContent: "space-between",
 })
 
-const baseStyleTrack = defineStyle({
-  bg: "grey.700",
+const baseStyleTrack = defineStyle((props) => ({
+  ...trackStyle(props),
   rounded: "full",
   w: "full",
-  ringColor: "grey.700",
-})
+}))
 
 const baseStyleFilledTrack = defineStyle((props) => ({
-  ...filledStyle(props),
   ...indeterminateStyle(props),
   rounded: "inherit",
-  inset: 0,
+  bgSize: "100%",
 }))
 
 const baseStyle = multiStyleConfig.definePartsStyle((props) => ({
   label: baseStyleLabel,
   filledTrack: baseStyleFilledTrack(props),
-  track: baseStyleTrack,
+  track: baseStyleTrack(props),
 }))
 
 const sizes = {
+  lg: multiStyleConfig.definePartsStyle({
+    track: { h: 4 },
+    label: { fontSize: "0.875em", lineHeight: 3, px: 1.5 },
+  }),
   xl: multiStyleConfig.definePartsStyle({
-    track: { h: 8, ring: 4, m: 1 },
+    track: { h: 8 },
     label: { fontSize: "1.125em", lineHeight: 6, px: 3 },
   }),
   "2xl": multiStyleConfig.definePartsStyle({
-    track: { h: 16, ring: 8, m: 2 },
+    track: { h: 16 },
     label: { fontSize: "4xl", lineHeight: "4xl", px: 6 },
   }),
 }
@@ -94,7 +106,6 @@ export const progressTheme = multiStyleConfig.defineMultiStyleConfig({
   sizes,
   baseStyle,
   defaultProps: {
-    size: "xl",
-    colorScheme: "brand",
+    size: "lg",
   },
 })

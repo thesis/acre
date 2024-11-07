@@ -1,16 +1,25 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
-import { useAccount, useChainId, useConnect, useDisconnect } from "wagmi"
-import { logPromiseFailure, orangeKit } from "#/utils"
+import { useCallback, useMemo } from "react"
+import {
+  Connector,
+  useAccount,
+  useChainId,
+  useConfig,
+  useConnect,
+  useDisconnect,
+} from "wagmi"
+import { orangeKit } from "#/utils"
 import {
   OnErrorCallback,
   OrangeKitConnector,
   OrangeKitError,
   Status,
 } from "#/types"
-import { useConnector } from "./orangeKit/useConnector"
-import { useBitcoinProvider } from "./orangeKit/useBitcoinProvider"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useDispatch, useSelector } from "react-redux"
+import { selectWalletAddress, setAddress } from "#/store/wallet"
 import useBitcoinBalance from "./orangeKit/useBitcoinBalance"
 import useResetWalletState from "./useResetWalletState"
+import useLastUsedBtcAddress from "./useLastUsedBtcAddress"
 
 const { typeConversionToConnector, typeConversionToOrangeKitConnector } =
   orangeKit
@@ -24,6 +33,7 @@ type UseWalletReturn = {
   onConnect: (
     connector: OrangeKitConnector,
     options?: {
+      isReconnecting?: boolean
       onSuccess?: (connector: OrangeKitConnector) => void
       onError?: OnErrorCallback<OrangeKitError>
     },
@@ -32,24 +42,91 @@ type UseWalletReturn = {
 }
 
 export function useWallet(): UseWalletReturn {
-  const chainId = useChainId()
-  const { status: accountStatus } = useAccount()
-  const { connect, status } = useConnect()
-  const { disconnect } = useDisconnect()
-  const connector = useConnector()
-  const provider = useBitcoinProvider()
-  const { data: balance } = useBitcoinBalance()
+  const queryClient = useQueryClient()
+  const dispatch = useDispatch()
+  const btcAddress = useSelector(selectWalletAddress)
   const resetWalletState = useResetWalletState()
+  const { setAddressInLocalStorage, removeAddressFromLocalStorage } =
+    useLastUsedBtcAddress()
 
-  const [address, setAddress] = useState<string | undefined>(undefined)
-  const [ethAddress, setEthAddress] = useState<string | undefined>(undefined)
+  const { data: balance } = useBitcoinBalance(btcAddress)
 
-  // `isConnected` is variable derived from `status` but does not guarantee us a set `address`.
-  // When `status` is 'connected' properties like `address` are guaranteed to be defined.
-  // Let's use `status` to make sure the account is connected.
+  const chainId = useChainId()
+  const config = useConfig()
+  // `useAccount` hook returns the Ethereum address
+  const { status: accountStatus, address: account } = useAccount()
+
+  // `isConnected` is variable derived from `status` but does not guarantee us a
+  // set `address`. When `status` is 'connected' properties like `address` are
+  // guaranteed to be defined. Let's use `status` to make sure the account is
+  // connected.
   const isConnected = useMemo(
     () => orangeKit.isConnectedStatus(accountStatus),
     [accountStatus],
+  )
+
+  const { connect, status } = useConnect({
+    mutation: {
+      onSuccess: async (_, { connector }) => {
+        const connectedConnector = typeConversionToOrangeKitConnector(
+          connector as Connector,
+        )
+        const bitcoinAddress = await connectedConnector.getBitcoinAddress()
+
+        dispatch(setAddress(bitcoinAddress))
+        setAddressInLocalStorage(bitcoinAddress)
+      },
+    },
+  })
+
+  const { disconnect } = useDisconnect({
+    mutation: {
+      onSuccess: () => {
+        config.setState((prevState) => ({ ...prevState, current: null }))
+        dispatch(setAddress(undefined))
+        removeAddressFromLocalStorage()
+        resetWalletState()
+      },
+    },
+  })
+
+  const { mutate: reconnect, status: reconnectStatus } = useMutation(
+    {
+      mutationFn: async (selectedConnector: OrangeKitConnector) => {
+        if (!selectedConnector.connect) return
+        const prevAddress = await selectedConnector.getBitcoinAddress()
+        const {
+          accounts: [newAccount],
+        } = await selectedConnector.connect({ chainId, isReconnecting: true })
+        const newAddress = await selectedConnector.getBitcoinAddress()
+
+        if (newAddress !== prevAddress) {
+          config.setState((prevState) => ({
+            ...prevState,
+            status: "connected",
+            connections: new Map(prevState.connections).set(
+              prevState.current!,
+              {
+                // Update accounts to force update of wagmi hooks.
+                accounts: [newAccount],
+                connector:
+                  orangeKit.typeConversionToConnector(selectedConnector),
+                chainId,
+              },
+            ),
+          }))
+          resetWalletState()
+        }
+      },
+      mutationKey: ["reconnect"],
+      onSuccess: async (_, selectedConnector) => {
+        const bitcoinAddress = await selectedConnector.getBitcoinAddress()
+
+        dispatch(setAddress(bitcoinAddress))
+        setAddressInLocalStorage(bitcoinAddress)
+      },
+    },
+    queryClient,
   )
 
   const onConnect = useCallback(
@@ -58,8 +135,18 @@ export function useWallet(): UseWalletReturn {
       options?: {
         onSuccess?: (connector: OrangeKitConnector) => void
         onError?: OnErrorCallback<OrangeKitError>
+        isReconnecting?: boolean
       },
     ) => {
+      if (options?.isReconnecting) {
+        reconnect(selectedConnector, {
+          onSuccess: (_, connectedConnector) =>
+            options?.onSuccess?.(connectedConnector),
+          onError: options.onError,
+        })
+        return
+      }
+
       connect(
         { connector: typeConversionToConnector(selectedConnector), chainId },
         {
@@ -79,55 +166,31 @@ export function useWallet(): UseWalletReturn {
         },
       )
     },
-    [connect, chainId],
+    [connect, chainId, reconnect],
   )
-
-  const onDisconnect = useCallback(() => {
-    disconnect(
-      {},
-      {
-        onSuccess: () => {
-          resetWalletState()
-        },
-      },
-    )
-  }, [disconnect, resetWalletState])
-
-  useEffect(() => {
-    const fetchBitcoinAddress = async () => {
-      if (connector) {
-        const btcAddress = await connector.getBitcoinAddress()
-        const accounts = await connector.getAccounts()
-
-        setAddress(btcAddress)
-        setEthAddress(accounts[0])
-      } else {
-        setAddress(undefined)
-        setEthAddress(undefined)
-      }
-    }
-
-    logPromiseFailure(fetchBitcoinAddress())
-  }, [connector, provider])
 
   return useMemo(
     () => ({
       isConnected,
-      address,
-      ethAddress,
+      address: btcAddress,
+      ethAddress: account,
       balance,
-      status,
+      status:
+        status === "idle" && reconnectStatus !== "idle"
+          ? reconnectStatus
+          : status,
       onConnect,
-      onDisconnect,
+      onDisconnect: disconnect,
     }),
     [
-      address,
+      btcAddress,
       balance,
-      ethAddress,
+      account,
       isConnected,
       onConnect,
-      onDisconnect,
+      disconnect,
       status,
+      reconnectStatus,
     ],
   )
 }

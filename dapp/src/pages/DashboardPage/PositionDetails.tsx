@@ -1,10 +1,6 @@
 import React from "react"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
-import {
-  useAllActivitiesCount,
-  useBitcoinPosition,
-  useTransactionModal,
-} from "#/hooks"
+import { useBitcoinPosition, useTransactionModal } from "#/hooks"
 import { ACTION_FLOW_TYPES } from "#/types"
 import {
   Button,
@@ -24,7 +20,7 @@ const isWithdrawalFlowEnabled = featureFlags.WITHDRAWALS_ENABLED
 const buttonStyles: ButtonProps = {
   size: "lg",
   flex: 1,
-  maxW: "12.5rem", // 200px
+  w: { base: "auto", lg: 40 },
   fontWeight: "bold",
   lineHeight: 6,
   px: 7,
@@ -37,13 +33,12 @@ export default function PositionDetails() {
 
   const openDepositModal = useTransactionModal(ACTION_FLOW_TYPES.STAKE)
   const openWithdrawModal = useTransactionModal(ACTION_FLOW_TYPES.UNSTAKE)
-  const activitiesCount = useAllActivitiesCount()
 
   return (
-    <Flex flexDirection="column" gap={5}>
-      <VStack justify="center" spacing={0}>
+    <Flex w="100%" flexDirection="column" gap={5}>
+      <VStack alignItems="start" spacing={0}>
         <TextMd fontWeight="bold">
-          My position
+          Acre balance
           {/* TODO: Uncomment when position will be implemented */}
           {/* {positionPercentage && (
             <Tag
@@ -62,17 +57,14 @@ export default function PositionDetails() {
           )} */}
         </TextMd>
         <UserDataSkeleton>
-          <VStack justify="center" spacing={0}>
+          <VStack alignItems="start" spacing={0}>
             <CurrencyBalanceWithConversion
               from={{
                 amount: bitcoinAmount,
                 currency: "bitcoin",
-                size: "6xl",
+                size: "4xl",
                 letterSpacing: "-0.075rem", // -1.2px
                 color: "grey.700",
-                symbolTextProps: {
-                  color: "gold.500",
-                },
               }}
               to={{
                 currency: "usd",
@@ -84,10 +76,10 @@ export default function PositionDetails() {
         </UserDataSkeleton>
       </VStack>
 
-      <HStack w="full" justify="center" spacing={2}>
+      <HStack w="full" justify="start" flexWrap="wrap" spacing={2}>
         <UserDataSkeleton>
           <Button {...buttonStyles} onClick={openDepositModal}>
-            {activitiesCount === 0 ? "Deposit" : "Deposit more"}
+            Deposit
           </Button>
         </UserDataSkeleton>
         <UserDataSkeleton>
