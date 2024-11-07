@@ -44,8 +44,7 @@ export default function PositionDetails() {
 
   const { tvl } = useStatistics()
 
-  const { address } = useWallet()
-  const isWalletConnected = !!address
+  const { isConnected } = useWallet()
 
   return (
     <Flex w="100%" flexDirection="column" gap={5}>
@@ -94,12 +93,12 @@ export default function PositionDetails() {
           <Button
             {...buttonStyles}
             onClick={openDepositModal}
-            isDisabled={tvl.isCapExceeded}
+            isDisabled={featureFlags.TVL_ENABLED && tvl.isCapExceeded}
           >
             {activitiesCount === 0 ? "Deposit" : "Deposit more"}
           </Button>
         </UserDataSkeleton>
-        {isWalletConnected && activitiesCount > 0 && (
+        {isConnected && activitiesCount > 0 && (
           <UserDataSkeleton ml={-3}>
             <ArrivingSoonTooltip
               shouldDisplayTooltip={!isWithdrawalFlowEnabled}
@@ -115,7 +114,7 @@ export default function PositionDetails() {
             </ArrivingSoonTooltip>
           </UserDataSkeleton>
         )}
-        <AcreTVLMessage />
+        {featureFlags.TVL_ENABLED && <AcreTVLMessage />}
       </HStack>
     </Flex>
   )

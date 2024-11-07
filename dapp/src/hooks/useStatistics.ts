@@ -24,7 +24,7 @@ const useStatistics = () => {
     ? 100
     : Math.floor((bitcoinTvl / TOTAL_VALUE_LOCKED_CAP) * 100)
 
-  const remaining = TOTAL_VALUE_LOCKED_CAP - bitcoinTvl
+  const remaining = isCapExceeded ? 0 : TOTAL_VALUE_LOCKED_CAP - bitcoinTvl
 
   return {
     tvl: {
