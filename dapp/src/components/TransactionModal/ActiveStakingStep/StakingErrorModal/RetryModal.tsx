@@ -31,13 +31,9 @@ const getCounterData = (minutes: string, seconds: string) => {
   return { label, progressPercent }
 }
 
-export default function RetryModal({
-  isLoading,
-  retry,
-}: {
-  isLoading: boolean
-  retry: () => void
-}) {
+type RetryModalProps = { isLoading: boolean; retry: () => void }
+
+export default function RetryModal({ isLoading, retry }: RetryModalProps) {
   const retryTimestamp = useMemo(
     () =>
       getExpirationTimestamp(ONE_MINUTE_IN_SECONDS * ONE_SEC_IN_MILLISECONDS),
