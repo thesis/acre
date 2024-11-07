@@ -4,7 +4,7 @@ import {
   TOKEN_FORM_ERRORS,
 } from "#/constants"
 import sentry from "#/sentry"
-import { ActionFlowType, CurrencyType } from "#/types"
+import { ACTION_FLOW_TYPES, ActionFlowType, CurrencyType } from "#/types"
 import acreApi from "./acreApi"
 import { getCurrencyByType } from "./currency"
 import { fixedPointNumberToString } from "./numbers"
@@ -52,6 +52,7 @@ export function validateTokenAmount(
   if (isMaximumValueExceeded) return ERRORS_BY_ACTION_TYPE.EXCEEDED_VALUE
   if (!isMinimumValueFulfilled)
     return ERRORS_BY_ACTION_TYPE.INSUFFICIENT_VALUE(
+      actionType === ACTION_FLOW_TYPES.STAKE ? "deposit" : "withdraw",
       fixedPointNumberToString(minValue, decimals),
     )
 
