@@ -90,7 +90,7 @@ function MezoBeehiveModalBase() {
               <TextMd lineHeight={5}>
                 In the event of a reward distribution, your share is calculated
                 by deposit amount and duration, and you can claim it directly
-                from ACRE.
+                from Acre.
               </TextMd>
             </CardBody>
           </Card>
