@@ -10,7 +10,6 @@ import { UnexpectedErrorModalBase } from "#/components/UnexpectedErrorModal"
 import { useMutation } from "@tanstack/react-query"
 import ServerErrorModal from "./ServerErrorModal"
 import RetryModal from "./RetryModal"
-import LoadingModal from "../../LoadingModal"
 
 export default function StakingErrorModal({
   closeModal,
@@ -41,9 +40,7 @@ export default function StakingErrorModal({
   if (isServerError)
     return <ServerErrorModal retry={handleStake} isLoading={isLoading} />
 
-  if (isLoading) return <LoadingModal />
-
-  if (txHash) return <RetryModal retry={handleStake} />
+  if (txHash) return <RetryModal isLoading={isLoading} retry={handleStake} />
 
   return <UnexpectedErrorModalBase closeModal={closeModal} withCloseButton />
 }
