@@ -54,7 +54,7 @@ export default function AcrePointsCard(props: CardProps) {
     >
       <CardHeader p={0} mb={2} as={HStack} justify="space-between">
         <TextMd fontWeight="bold" color="grey.700">
-          Your Acre points balance
+          Total Acre points
         </TextMd>
 
         {isConnected && (
