@@ -6,6 +6,7 @@ import Tbtc from "./tbtc"
 import AcreSubgraphApi from "../lib/api/AcreSubgraphApi"
 import { DepositStatus } from "../lib/api/TbtcApi"
 import OrangeKitTbtcRedeemerProxy, {
+  DataBuiltStepCallback,
   MessageSignedStepCallback,
   OnSignMessageStepCallback,
 } from "../lib/redeemer-proxy"
@@ -183,6 +184,8 @@ export default class Account {
   /**
    * Initializes the withdrawal process.
    * @param amount Bitcoin amount to withdraw in 1e8 satoshi precision.
+   * @param dataBuiltStepCallback A callback triggered after the data
+   *        building step.
    * @param onSignMessageStepCallback A callback triggered before the message
    *        signing step.
    * @param messageSignedStepCallback A callback triggered after the message
@@ -191,6 +194,7 @@ export default class Account {
    */
   async initializeWithdrawal(
     btcAmount: bigint,
+    dataBuiltStepCallback?: DataBuiltStepCallback,
     onSignMessageStepCallback?: OnSignMessageStepCallback,
     messageSignedStepCallback?: MessageSignedStepCallback,
   ): Promise<{ transactionHash: string; redemptionKey: string }> {
@@ -209,6 +213,7 @@ export default class Account {
       },
       this.#bitcoinProvider,
       shares,
+      dataBuiltStepCallback,
       onSignMessageStepCallback,
       messageSignedStepCallback,
     )
