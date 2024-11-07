@@ -3,13 +3,13 @@ import {
   BitcoinNetwork,
   BitcoinScriptUtils,
 } from "@keep-network/tbtc-v2.ts"
+import { BitcoinAddressHelper } from "@orangekit/sdk"
 
 /**
  * Checks if the address is of type P2PKH or P2WPKH.
  * @param address The address to be checked.
  * @param network The network for which the check will be done.
  */
-// eslint-disable-next-line import/prefer-default-export
 export const isPublicKeyHashTypeAddress = (
   address: string,
   network: BitcoinNetwork,
@@ -30,3 +30,5 @@ export const isPublicKeyHashTypeAddress = (
     return false
   }
 }
+
+export { BitcoinAddressHelper }

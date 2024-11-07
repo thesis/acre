@@ -9,6 +9,7 @@ export type WalletState = {
   latestActivities: ActivitiesByIds
   activities: Activity[]
   hasFetchedActivities: boolean
+  address: string | undefined
 }
 
 export const initialState: WalletState = {
@@ -18,6 +19,7 @@ export const initialState: WalletState = {
   latestActivities: {},
   activities: [],
   hasFetchedActivities: false,
+  address: undefined,
 }
 
 export const walletSlice = createSlice({
@@ -101,7 +103,7 @@ export const walletSlice = createSlice({
       const activityId = action.payload
       delete state.latestActivities[activityId]
     },
-    resetState: () => initialState,
+    resetState: (state) => ({ ...initialState, address: state.address }),
     activityInitialized(state, action: PayloadAction<Activity>) {
       const activity = action.payload
       state.latestActivities = {
@@ -109,6 +111,9 @@ export const walletSlice = createSlice({
         [activity.id]: activity,
       }
       state.activities = [...state.activities, activity]
+    },
+    setAddress(state, action: PayloadAction<string | undefined>) {
+      state.address = action.payload
     },
   },
 })
@@ -121,5 +126,6 @@ export const {
   deleteLatestActivity,
   resetState,
   activityInitialized,
+  setAddress,
 } = walletSlice.actions
 export default walletSlice.reducer

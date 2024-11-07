@@ -1,6 +1,12 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { ModalBody, ModalHeader, ModalCloseButton } from "@chakra-ui/react"
-import { useConnectors, useWalletConnectionError } from "#/hooks"
+import {
+  useConnectors,
+  useIsEmbed,
+  useIsSignedMessage,
+  useWallet,
+  useWalletConnectionError,
+} from "#/hooks"
 import { OrangeKitConnector, BaseModalProps, OnSuccessCallback } from "#/types"
 import { wallets } from "#/constants"
 import withBaseModal from "../ModalRoot/withBaseModal"
@@ -10,9 +16,13 @@ import ConnectWalletErrorAlert from "./ConnectWalletErrorAlert"
 export function ConnectWalletModalBase({
   onSuccess,
   withCloseButton = true,
+  isReconnecting,
 }: {
   onSuccess?: OnSuccessCallback
+  isReconnecting?: boolean
 } & BaseModalProps) {
+  const { isEmbed } = useIsEmbed()
+  const { onDisconnect } = useWallet()
   const connectors = useConnectors()
   const enabledConnectors = connectors.map((connector) => ({
     ...connector,
@@ -21,17 +31,32 @@ export function ConnectWalletModalBase({
 
   const [selectedConnectorId, setSelectedConnectorId] = useState<string>()
   const { connectionError, resetConnectionError } = useWalletConnectionError()
+  const isSignedMessage = useIsSignedMessage()
 
   const handleButtonOnClick = (connector: OrangeKitConnector) => {
     setSelectedConnectorId(connector.id)
   }
 
+  useEffect(() => {
+    if (!isEmbed) return
+
+    setSelectedConnectorId(enabledConnectors[0].id)
+  }, [enabledConnectors, isEmbed])
+
   return (
     <>
       {withCloseButton && (
-        <ModalCloseButton onClick={() => resetConnectionError()} />
+        <ModalCloseButton
+          onClick={() => {
+            resetConnectionError()
+
+            if (!isSignedMessage) {
+              onDisconnect()
+            }
+          }}
+        />
       )}
-      <ModalHeader>Select your wallet</ModalHeader>
+      <ModalHeader>{`Select your ${isEmbed ? "account" : "wallet"}`}</ModalHeader>
 
       <ModalBody gap={0}>
         <ConnectWalletErrorAlert {...connectionError} />
@@ -44,6 +69,7 @@ export function ConnectWalletModalBase({
             onClick={() => handleButtonOnClick(connector)}
             isSelected={selectedConnectorId === connector.id}
             onSuccess={onSuccess}
+            isReconnecting={isReconnecting}
           />
         ))}
       </ModalBody>

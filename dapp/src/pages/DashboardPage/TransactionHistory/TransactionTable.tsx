@@ -34,12 +34,8 @@ export default function TransactionTable() {
               colorScheme="gold"
             >
               <CardBody as={Flex} flexDirection="column" gap={4} p={4}>
-                <HStack spacing={3}>
-                  <TextSm color="grey.500" flex={1} fontWeight="medium">
-                    {displayBlockTimestamp(getActivityTimestamp(activity))}
-                  </TextSm>
-
-                  <HStack flexBasis="55%">
+                <Flex flexDirection="column">
+                  <Flex justifyContent="space-between">
                     <TextSm
                       color="grey.700"
                       flex={1}
@@ -48,43 +44,46 @@ export default function TransactionTable() {
                     >
                       {activity.type}
                     </TextSm>
-
-                    <Box flex={1}>
-                      <CurrencyBalance
-                        color="grey.700"
-                        size="sm"
-                        fontWeight="bold"
-                        amount={activity.amount}
-                        currency="bitcoin"
-                        withDots
-                      />
-                    </Box>
-                  </HStack>
-                  {activity.txHash ? (
-                    <BlockExplorerLink
-                      id={activity.txHash}
-                      chain="bitcoin"
-                      type="transaction"
-                      color="grey.600"
-                      _groupHover={{
-                        color: "brand.400",
-                        textDecoration: "none",
-                      }}
-                      minW={BLOCK_EXPLORER_CELL_MIN_WIDTH}
-                    >
-                      <HStack spacing={1}>
-                        <TextSm>Details</TextSm>
-                        <Icon
-                          as={IconArrowUpRight}
-                          color="brand.400"
-                          boxSize={4}
-                        />
-                      </HStack>
-                    </BlockExplorerLink>
-                  ) : (
-                    <Box minW={BLOCK_EXPLORER_CELL_MIN_WIDTH} />
-                  )}
-                </HStack>
+                    <CurrencyBalance
+                      color="grey.700"
+                      size="sm"
+                      fontWeight="bold"
+                      amount={activity.amount}
+                      currency="bitcoin"
+                      withDots
+                      withTooltip
+                    />
+                  </Flex>
+                  <Flex justifyContent="space-between">
+                    <TextSm color="grey.500" flex={1} fontWeight="medium">
+                      {displayBlockTimestamp(getActivityTimestamp(activity))}
+                    </TextSm>
+                    {activity.txHash ? (
+                      <BlockExplorerLink
+                        id={activity.txHash}
+                        chain="bitcoin"
+                        type="transaction"
+                        color="grey.600"
+                        _groupHover={{
+                          color: "brand.400",
+                          textDecoration: "none",
+                        }}
+                        minW={BLOCK_EXPLORER_CELL_MIN_WIDTH}
+                      >
+                        <HStack spacing={1}>
+                          <TextSm>Details</TextSm>
+                          <Icon
+                            as={IconArrowUpRight}
+                            color="brand.400"
+                            boxSize={4}
+                          />
+                        </HStack>
+                      </BlockExplorerLink>
+                    ) : (
+                      <Box minW={BLOCK_EXPLORER_CELL_MIN_WIDTH} />
+                    )}
+                  </Flex>
+                </Flex>
                 <EstimatedDuration activity={activity} />
               </CardBody>
             </Card>

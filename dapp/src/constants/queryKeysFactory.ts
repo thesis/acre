@@ -8,6 +8,7 @@ const userKeys = {
 const acreKeys = {
   all: ["acre"] as const,
   totalAssets: () => [...acreKeys.all, "total-assets"] as const,
+  statistics: () => [...acreKeys.all, "statistics"] as const,
   mats: () => [...acreKeys.all, "mats"] as const,
   pointsData: () => [...acreKeys.all, "points-data"] as const,
 }
