@@ -75,7 +75,7 @@ export default function BeehiveCard(props: CardProps) {
             colorScheme="gold"
             align="center"
             px={4}
-            py={3}
+            py={5}
             gap={1}
           >
             <CardHeader p={0} mb={1}>
