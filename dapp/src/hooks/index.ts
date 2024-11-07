@@ -35,3 +35,4 @@ export { default as useSignMessageAndCreateSession } from "./useSignMessageAndCr
 export { default as useScrollbarVisibility } from "./useScrollbarVisibility"
 export { default as useAccessCode } from "./useAccessCode"
 export { default as useFormField } from "./useFormField"
+export { default as useDepositBTCTransaction } from "./useDepositBTCTransaction"
