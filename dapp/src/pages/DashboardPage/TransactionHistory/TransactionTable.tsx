@@ -107,7 +107,7 @@ export default function TransactionTable() {
           <PaginationButton mode="next" />
         </HStack>
 
-        <PaginationStatus dataLabel="transactions" color="grey.500" />
+        <PaginationStatus dataLabel="entries" color="grey.500" />
       </PaginationFooter>
     </Pagination>
   )
