@@ -3,41 +3,24 @@ import {
   useActionFlowPause,
   useActionFlowTokenAmount,
   useAppDispatch,
-  useExecuteFunction,
   useInvalidateQueries,
   useModal,
+  useTimeout,
   useTransactionDetails,
 } from "#/hooks"
 import { ACTION_FLOW_TYPES, PROCESS_STATUSES } from "#/types"
-import { Button, ModalCloseButton } from "@chakra-ui/react"
-import { dateToUnixTimestamp, eip1193, logPromiseFailure } from "#/utils"
+import { dateToUnixTimestamp, eip1193 } from "#/utils"
 import { setStatus } from "#/store/action-flow"
 import { useInitializeWithdraw } from "#/acre-react/hooks"
-import { queryKeysFactory } from "#/constants"
+import { ONE_SEC_IN_MILLISECONDS, queryKeysFactory } from "#/constants"
 import { activityInitialized } from "#/store/wallet"
-import TriggerTransactionModal from "../TriggerTransactionModal"
+import { useMutation } from "@tanstack/react-query"
+import BuildTransactionModal from "./BuildTransactionModal"
+import WalletInteractionModal from "../WalletInteractionModal"
 
 const { userKeys } = queryKeysFactory
 
-type WithdrawalStatus = "building-data" | "signature" | "transaction"
-
-const withdrawalStatusToContent: Record<
-  WithdrawalStatus,
-  { title: string; subtitle: string }
-> = {
-  "building-data": {
-    title: "Building transaction data...",
-    subtitle: "We are building your withdrawal data.",
-  },
-  signature: {
-    title: "Waiting signature...",
-    subtitle: "Please complete the signing process in your wallet.",
-  },
-  transaction: {
-    title: "Waiting for withdrawal initialization...",
-    subtitle: "Withdrawal initialization in progress...",
-  },
-}
+type WithdrawalStatus = "building-data" | "built-data" | "signature"
 
 const sessionIdToPromise: Record<
   number,
@@ -79,6 +62,11 @@ export default function SignMessageModal() {
     }
   }, [])
 
+  const dataBuiltStepCallback = useCallback(() => {
+    setWaitingStatus("built-data")
+    return Promise.resolve()
+  }, [])
+
   const onSignMessageCallback = useCallback(async () => {
     setWaitingStatus("signature")
     return Promise.race([
@@ -87,20 +75,18 @@ export default function SignMessageModal() {
     ])
   }, [])
 
-  const messageSignedCallback = useCallback(() => {
-    setWaitingStatus("transaction")
-    dispatch(setStatus(PROCESS_STATUSES.LOADING))
-    return Promise.resolve()
-  }, [dispatch])
-
   const onSignMessageSuccess = useCallback(() => {
     handleBitcoinPositionInvalidation()
     dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED))
   }, [dispatch, handleBitcoinPositionInvalidation])
 
-  const onSignMessageError = useCallback(() => {
-    dispatch(setStatus(PROCESS_STATUSES.FAILED))
-  }, [dispatch])
+  const onSignMessageError = useCallback(
+    (error: unknown) => {
+      console.error(error)
+      dispatch(setStatus(PROCESS_STATUSES.FAILED))
+    },
+    [dispatch],
+  )
 
   const onError = useCallback(
     (error: unknown) => {
@@ -109,20 +95,21 @@ export default function SignMessageModal() {
       if (eip1193.didUserRejectRequest(error)) {
         handlePause()
       } else {
-        onSignMessageError()
+        onSignMessageError(error)
       }
     },
     [onSignMessageError, handlePause],
   )
 
-  const handleSignMessage = useExecuteFunction(
-    async () => {
+  const { mutate: handleSignMessage } = useMutation({
+    mutationKey: ["sign-message"],
+    mutationFn: async () => {
       if (!amount) return
 
       const { redemptionKey } = await initializeWithdraw(
         amount,
+        dataBuiltStepCallback,
         onSignMessageCallback,
-        messageSignedCallback,
       )
 
       dispatch(
@@ -159,15 +146,9 @@ export default function SignMessageModal() {
         }),
       )
     },
-    onSignMessageSuccess,
+    onSuccess: onSignMessageSuccess,
     onError,
-  )
-
-  const handleInitWithdrawAndSignMessageWrapper = useCallback(() => {
-    logPromiseFailure(handleSignMessage())
-  }, [handleSignMessage])
-
-  const { title, subtitle } = withdrawalStatusToContent[status]
+  })
 
   const onClose = () => {
     const currentSessionId = sessionId.current
@@ -183,18 +164,13 @@ export default function SignMessageModal() {
     closeModal()
   }
 
-  return (
-    <>
-      <ModalCloseButton onClick={onClose} />
-      <TriggerTransactionModal
-        title={title}
-        subtitle={subtitle}
-        callback={handleInitWithdrawAndSignMessageWrapper}
-      >
-        <Button size="lg" width="100%" variant="outline" onClick={onClose}>
-          Cancel
-        </Button>
-      </TriggerTransactionModal>
-    </>
-  )
+  useTimeout(handleSignMessage, ONE_SEC_IN_MILLISECONDS)
+
+  if (status === "building-data")
+    return <BuildTransactionModal onClose={onClose} />
+
+  if (status === "built-data")
+    return <WalletInteractionModal step="opening-wallet" />
+
+  return <WalletInteractionModal step="awaiting-transaction" />
 }

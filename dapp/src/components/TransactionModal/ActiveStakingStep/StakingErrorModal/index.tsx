@@ -2,13 +2,12 @@ import React, { useCallback, useState } from "react"
 import {
   useActionFlowTxHash,
   useAppDispatch,
-  useExecuteFunction,
   useStakeFlowContext,
 } from "#/hooks"
 import { PROCESS_STATUSES } from "#/types"
-import { logPromiseFailure } from "#/utils"
 import { setStatus } from "#/store/action-flow"
 import { UnexpectedErrorModalBase } from "#/components/UnexpectedErrorModal"
+import { useMutation } from "@tanstack/react-query"
 import ServerErrorModal from "./ServerErrorModal"
 import RetryModal from "./RetryModal"
 import LoadingModal from "../../LoadingModal"
@@ -22,7 +21,6 @@ export default function StakingErrorModal({
   const dispatch = useAppDispatch()
   const txHash = useActionFlowTxHash()
 
-  const [isLoading, setIsLoading] = useState(false)
   const [isServerError, setIsServerError] = useState(false)
 
   const onStakeBTCSuccess = useCallback(() => {
@@ -31,29 +29,21 @@ export default function StakingErrorModal({
 
   const onStakeBTCError = useCallback(() => setIsServerError(true), [])
 
-  const handleStake = useExecuteFunction(
-    stake,
-    onStakeBTCSuccess,
-    onStakeBTCError,
-  )
+  const { mutate: handleStake, status } = useMutation({
+    mutationKey: ["stake"],
+    mutationFn: stake,
+    onSuccess: onStakeBTCSuccess,
+    onError: onStakeBTCError,
+  })
 
-  const handleRetry = useCallback(async () => {
-    setIsLoading(true)
-    await handleStake()
-    setIsLoading(false)
-  }, [handleStake])
-
-  const handleRetryWrapper = useCallback(
-    () => logPromiseFailure(handleRetry()),
-    [handleRetry],
-  )
+  const isLoading = status === "pending"
 
   if (isServerError)
-    return <ServerErrorModal retry={handleRetryWrapper} isLoading={isLoading} />
+    return <ServerErrorModal retry={handleStake} isLoading={isLoading} />
 
   if (isLoading) return <LoadingModal />
 
-  if (txHash) return <RetryModal retry={handleRetryWrapper} />
+  if (txHash) return <RetryModal retry={handleStake} />
 
   return <UnexpectedErrorModalBase closeModal={closeModal} withCloseButton />
 }
