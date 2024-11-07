@@ -20,7 +20,8 @@ const getReferralFromURL = () =>
 const getReferralByEmbeddedApp = (embedApp: EmbedApp) =>
   EMBEDDED_APP_TO_REFERRAL[embedApp]
 
-const getEmbeddedApp = () => router.getURLParam(SEARCH_PARAMS_NAMES.embed)
+const getEmbeddedApp = (href: string = window.location.href) =>
+  router.getURLParamFromHref(href, SEARCH_PARAMS_NAMES.embed)
 
 function isEmbedApp(embedApp: unknown): embedApp is EmbedApp {
   return (

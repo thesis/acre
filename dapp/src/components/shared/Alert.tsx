@@ -38,7 +38,7 @@ const STATUSES = {
   },
   loading: {
     icon: Spinner,
-    colorScheme: "grey",
+    colorScheme: "brand",
   },
 }
 
@@ -56,6 +56,7 @@ function AlertIcon(props: AlertProps) {
       ? {
           ...styles.spinner,
           ...styles.icon,
+          color: `${getStatusColorScheme(status)}.400`,
         }
       : styles.icon
 

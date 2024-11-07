@@ -14,10 +14,12 @@ import {
 } from "@chakra-ui/react"
 import Countdown from "#/components/shared/Countdown"
 import { logPromiseFailure, numberToLocaleString } from "#/utils"
-import { useAcrePoints } from "#/hooks"
+import { useAcrePoints, useWallet } from "#/hooks"
 import Spinner from "#/components/shared/Spinner"
 import { IconInfoCircle } from "@tabler/icons-react"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
+import InfoTooltip from "#/components/shared/InfoTooltip"
+import useDebounce from "#/hooks/useDebounce"
 
 export default function AcrePointsCard(props: CardProps) {
   const {
@@ -29,6 +31,9 @@ export default function AcrePointsCard(props: CardProps) {
     updatePointsData,
     isCalculationInProgress,
   } = useAcrePoints()
+  const { isConnected } = useWallet()
+
+  const debouncedClaimPoints = useDebounce(claimPoints, 1000)
 
   const formattedTotalPointsAmount = numberToLocaleString(totalBalance)
   const formattedClaimablePointsAmount = numberToLocaleString(claimableBalance)
@@ -47,10 +52,18 @@ export default function AcrePointsCard(props: CardProps) {
       py={5}
       {...props}
     >
-      <CardHeader p={0} mb={2}>
+      <CardHeader p={0} mb={2} as={HStack} justify="space-between">
         <TextMd fontWeight="bold" color="grey.700">
           Your Acre points balance
         </TextMd>
+
+        {isConnected && (
+          <InfoTooltip
+            // TODO: Add alternative variant of label for disconnected wallet
+            label="Your current balance of Acre points collected so far. New points drop daily and are ready to be claimed. Unclaimed points roll over to the next day."
+            w={56}
+          />
+        )}
       </CardHeader>
 
       <CardBody p={0}>
@@ -101,7 +114,7 @@ export default function AcrePointsCard(props: CardProps) {
               {claimableBalance && (
                 <Button
                   mt={3}
-                  onClick={claimPoints}
+                  onClick={debouncedClaimPoints}
                   w="full"
                   colorScheme="green"
                   color="gold.200"

@@ -37,7 +37,8 @@ function tryRequest<T>(): TryRequestFn<T> {
       // the request.
       if (
         err?.message === "UserRefusedOnDevice" ||
-        err?.message === "Canceled by user"
+        err?.message === "Canceled by user" ||
+        err?.message === "Signature interrupted by user"
       ) {
         throw new UserRejectedRequestError(err)
       }
@@ -67,7 +68,7 @@ export default class AcreLedgerLiveBitcoinProvider
 
   readonly #options: AcreLedgerLiveBitcoinProviderOptions
 
-  readonly #hwAppId = "Acre"
+  readonly #hwAppId: string
 
   readonly #derivationPath = "0/0"
 
@@ -110,6 +111,7 @@ export default class AcreLedgerLiveBitcoinProvider
     this.#windowMessageTransport = windowMessageTransport
     this.#walletApiClient = walletApiClient
     this.#options = options
+    this.#hwAppId = network === BitcoinNetwork.Mainnet ? "Acre" : "Acre Test"
   }
 
   /**

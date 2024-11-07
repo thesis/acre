@@ -1,22 +1,20 @@
-import React, { useCallback, useEffect } from "react"
+import React, { useCallback } from "react"
 import {
   useActionFlowPause,
   useActionFlowTokenAmount,
   useAppDispatch,
   useDepositBTCTransaction,
-  useExecuteFunction,
   useInvalidateQueries,
   useStakeFlowContext,
   useVerifyDepositAddress,
 } from "#/hooks"
-import { eip1193, ledgerLive, logPromiseFailure } from "#/utils"
+import { eip1193, logPromiseFailure } from "#/utils"
 import { PROCESS_STATUSES } from "#/types"
-import { Highlight, ModalCloseButton } from "@chakra-ui/react"
-import { TextMd } from "#/components/shared/Typography"
 import { setStatus, setTxHash } from "#/store/action-flow"
-import { queryKeysFactory } from "#/constants"
-import { Alert, AlertIcon, AlertDescription } from "#/components/shared/Alert"
-import TriggerTransactionModal from "../TriggerTransactionModal"
+import { ONE_SEC_IN_MILLISECONDS, queryKeysFactory } from "#/constants"
+import { useTimeout } from "@chakra-ui/react"
+import { useMutation } from "@tanstack/react-query"
+import WalletInteractionModal from "../WalletInteractionModal"
 
 const { userKeys } = queryKeysFactory
 
@@ -36,27 +34,31 @@ export default function DepositBTCModal() {
   }, [dispatch, handleBitcoinBalanceInvalidation])
 
   const onError = useCallback(
-    (error?: unknown) => {
+    (error: unknown) => {
       console.error(error)
       dispatch(setStatus(PROCESS_STATUSES.FAILED))
     },
     [dispatch],
   )
 
-  const handleStake = useExecuteFunction(stake, onStakeBTCSuccess, onError)
+  const { mutate: handleStake } = useMutation({
+    mutationKey: ["stake"],
+    mutationFn: stake,
+    onSuccess: onStakeBTCSuccess,
+    onError,
+  })
 
-  const onDepositBTCSuccess = useCallback(() => {
-    dispatch(setStatus(PROCESS_STATUSES.LOADING))
-
-    logPromiseFailure(handleStake())
-  }, [dispatch, handleStake])
+  const onDepositBTCSuccess = useCallback(
+    (transactionHash: string) => {
+      dispatch(setTxHash(transactionHash))
+      handleStake()
+    },
+    [dispatch, handleStake],
+  )
 
   const onDepositBTCError = useCallback(
     (error: unknown) => {
-      if (
-        eip1193.didUserRejectRequest(error) ||
-        ledgerLive.didUserRejectRequest(error)
-      ) {
+      if (eip1193.didUserRejectRequest(error)) {
         handlePause()
       } else {
         onError(error)
@@ -65,55 +67,43 @@ export default function DepositBTCModal() {
     [onError, handlePause],
   )
 
-  const { sendBitcoinTransaction, transactionHash } = useDepositBTCTransaction(
-    onDepositBTCSuccess,
-    onDepositBTCError,
-  )
-
-  useEffect(() => {
-    if (transactionHash) {
-      dispatch(setTxHash(transactionHash))
-    }
-  }, [dispatch, transactionHash])
+  const { mutate: sendBitcoinTransaction, status } = useDepositBTCTransaction({
+    onSuccess: onDepositBTCSuccess,
+    onError: onDepositBTCError,
+  })
 
   const handledDepositBTC = useCallback(async () => {
     if (!tokenAmount?.amount || !btcAddress || !depositReceipt) return
-    const status = await verifyDepositAddress(depositReceipt, btcAddress)
+    const verificationStatus = await verifyDepositAddress(
+      depositReceipt,
+      btcAddress,
+    )
 
-    if (status === "valid") {
-      await sendBitcoinTransaction(btcAddress, tokenAmount?.amount)
+    if (verificationStatus === "valid") {
+      sendBitcoinTransaction({
+        recipient: btcAddress,
+        amount: tokenAmount?.amount,
+      })
     } else {
-      onError()
+      onError("Invalid deposit address")
     }
   }, [
+    tokenAmount?.amount,
     btcAddress,
     depositReceipt,
-    onError,
     verifyDepositAddress,
     sendBitcoinTransaction,
-    tokenAmount?.amount,
+    onError,
   ])
 
   const handledDepositBTCWrapper = useCallback(() => {
     logPromiseFailure(handledDepositBTC())
   }, [handledDepositBTC])
 
-  return (
-    <>
-      <ModalCloseButton />
-      <TriggerTransactionModal callback={handledDepositBTCWrapper}>
-        <Alert variant="elevated">
-          <AlertIcon />
-          <AlertDescription>
-            <TextMd>
-              <Highlight query="Rewards" styles={{ fontWeight: "bold" }}>
-                You will receive your Rewards once the deposit transaction is
-                completed.
-              </Highlight>
-            </TextMd>
-          </AlertDescription>
-        </Alert>
-      </TriggerTransactionModal>
-    </>
-  )
+  useTimeout(handledDepositBTCWrapper, ONE_SEC_IN_MILLISECONDS)
+
+  if (status === "pending" || status === "success")
+    return <WalletInteractionModal step="awaiting-transaction" />
+
+  return <WalletInteractionModal step="opening-wallet" />
 }

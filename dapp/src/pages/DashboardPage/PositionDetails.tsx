@@ -95,7 +95,7 @@ export default function PositionDetails() {
             onClick={openDepositModal}
             isDisabled={featureFlags.TVL_ENABLED && tvl.isCapExceeded}
           >
-            {activitiesCount === 0 ? "Deposit" : "Deposit more"}
+            Deposit
           </Button>
         </UserDataSkeleton>
         {isConnected && activitiesCount > 0 && (

@@ -31,7 +31,7 @@ const XVERSE: WalletInfo = {
   },
 }
 
-const LEDGER: WalletInfo = {
+const LEDGER_LIVE: WalletInfo = {
   id: "orangekit-ledger-live",
   downloadUrls: {
     desktop: "https://www.ledger.com/ledger-live",
@@ -42,13 +42,13 @@ const SUPPORTED_WALLET_IDS = [
   UNISAT.id,
   ...(featureFlags.OKX_WALLET_ENABLED ? [OKX.id] : []),
   ...(featureFlags.XVERSE_WALLET_ENABLED ? [XVERSE.id] : []),
-  LEDGER.id,
+  LEDGER_LIVE.id,
 ]
 
 export default {
   UNISAT,
   OKX,
   XVERSE,
-  LEDGER,
+  LEDGER_LIVE,
   SUPPORTED_WALLET_IDS,
 }

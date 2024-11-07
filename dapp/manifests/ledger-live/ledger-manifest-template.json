@@ -1,5 +1,5 @@
 {
-  "id": "acre-{{id}}",
+  "id": "{{id}}",
   "name": "{{name}}",
   "url": "{{{url}}}?embed=ledger-live",
   "homepageUrl": "https:/acre.fi/",
