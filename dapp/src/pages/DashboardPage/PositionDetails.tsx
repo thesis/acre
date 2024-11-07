@@ -50,7 +50,7 @@ export default function PositionDetails() {
     <Flex w="100%" flexDirection="column" gap={5}>
       <VStack alignItems="start" spacing={0}>
         <TextMd fontWeight="bold">
-          Acre balance
+          Your deposit
           {/* TODO: Uncomment when position will be implemented */}
           {/* {positionPercentage && (
             <Tag

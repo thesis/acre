@@ -1,5 +1,5 @@
 import React from "react"
-import { H6, TextLg, TextMd } from "#/components/shared/Typography"
+import { H6, TextMd } from "#/components/shared/Typography"
 import {
   Button,
   Card,
@@ -41,7 +41,7 @@ export default function BeehiveCard(props: CardProps) {
         gap={2}
       >
         <TextMd fontWeight="bold" color="grey.700">
-          L2 Rewards
+          Additional rewards
         </TextMd>
         <InfoTooltip
           label="Acre Beehive automatically collects rewards from our partner projects. Rewards are dropped daily, and your share is calculated based on your deposit amount and how long you HODL."
@@ -75,7 +75,7 @@ export default function BeehiveCard(props: CardProps) {
             colorScheme="gold"
             align="center"
             px={4}
-            py={3}
+            py={5}
             gap={1}
           >
             <CardHeader p={0} mb={1}>
@@ -91,7 +91,7 @@ export default function BeehiveCard(props: CardProps) {
                     query="Mezo"
                     styles={{ fontWeight: "bold", color: "grey.700" }}
                   >
-                    Collecting mats from Mezo
+                    Total collected mats from Mezo
                   </Highlight>
                 </TextMd>
 
@@ -114,7 +114,6 @@ export default function BeehiveCard(props: CardProps) {
                   <H6 fontWeight="bold">
                     {numberToLocaleString(data.totalMats)}
                   </H6>
-                  <TextLg fontWeight="bold">MATS</TextLg>
                 </HStack>
               )}
 
