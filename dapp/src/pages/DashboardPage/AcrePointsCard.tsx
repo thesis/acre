@@ -47,11 +47,7 @@ export default function AcrePointsCard(props: CardProps) {
     isCalculationInProgress || !!nextDropTimestamp || !!claimableBalance
 
   return (
-    <Card
-      px="1.875rem" // 30px
-      py={5}
-      {...props}
-    >
+    <Card px={4} py={5} {...props}>
       <CardHeader p={0} mb={2} as={HStack} justify="space-between">
         <TextMd fontWeight="bold" color="grey.700">
           Total Acre points
