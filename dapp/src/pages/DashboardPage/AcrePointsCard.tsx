@@ -30,6 +30,7 @@ export default function AcrePointsCard(props: CardProps) {
     updateUserPointsData,
     updatePointsData,
     isCalculationInProgress,
+    totalPoolBalance,
   } = useAcrePoints()
   const { isConnected } = useWallet()
 
@@ -37,6 +38,7 @@ export default function AcrePointsCard(props: CardProps) {
 
   const formattedTotalPointsAmount = numberToLocaleString(totalBalance)
   const formattedClaimablePointsAmount = numberToLocaleString(claimableBalance)
+  const formattedTotalPoolBalance = numberToLocaleString(totalPoolBalance)
 
   const handleOnCountdownEnd = () => {
     logPromiseFailure(updatePointsData())
@@ -50,21 +52,27 @@ export default function AcrePointsCard(props: CardProps) {
     <Card px={4} py={5} {...props}>
       <CardHeader p={0} mb={2} as={HStack} justify="space-between">
         <TextMd fontWeight="bold" color="grey.700">
-          Total Acre points
+          {isConnected ? "Your" : "Total"} Acre points
         </TextMd>
 
-        {isConnected && (
-          <InfoTooltip
-            // TODO: Add alternative variant of label for disconnected wallet
-            label="Your current balance of Acre points collected so far. New points drop daily and are ready to be claimed. Unclaimed points roll over to the next day."
-            w={56}
-          />
-        )}
+        <InfoTooltip
+          label={
+            isConnected
+              ? "Your current balance of Acre points collected so far. New points drop daily and are ready to be claimed. Unclaimed points roll over to the next day."
+              : "Total points distributed to Acre users so far. New points drop daily and can be claimed in each user's dashboard."
+          }
+          w={56}
+        />
       </CardHeader>
 
       <CardBody p={0}>
         <UserDataSkeleton>
-          <H4 mb={2}>{formattedTotalPointsAmount}&nbsp;PTS</H4>
+          <H4 mb={2}>
+            {isConnected
+              ? formattedTotalPointsAmount
+              : formattedTotalPoolBalance}
+            &nbsp;PTS
+          </H4>
 
           {isDataReady && (
             <VStack px={4} py={3} spacing={0} rounded="lg" bg="gold.100">
