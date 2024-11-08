@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardProps,
   Flex,
+  Heading,
   Highlight,
   Image,
   VStack,
@@ -31,9 +32,7 @@ export default function BeehiveCard(props: CardProps) {
   return (
     <Card {...props}>
       <CardHeader as={Flex} alignItems="center" justify="space-between" gap={2}>
-        <TextMd fontWeight="bold" color="grey.700">
-          Additional rewards
-        </TextMd>
+        <TextMd>Additional rewards</TextMd>
         <InfoTooltip
           label="Acre Beehive automatically collects rewards from our partner projects. Rewards are dropped daily, and your share is calculated based on your deposit amount and how long you HODL."
           w={56}

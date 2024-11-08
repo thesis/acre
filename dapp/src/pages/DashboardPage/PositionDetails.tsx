@@ -37,7 +37,8 @@ export default function PositionDetails() {
   return (
     <Flex w="100%" flexDirection="column" gap={5}>
       <VStack alignItems="start" spacing={0}>
-        <TextMd fontWeight="bold">
+        {/* TODO: Component should be moved to `CardHeader` */}
+        <TextMd>
           Your deposit
           {/* TODO: Uncomment when position will be implemented */}
           {/* {positionPercentage && (

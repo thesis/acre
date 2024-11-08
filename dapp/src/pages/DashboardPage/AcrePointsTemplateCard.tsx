@@ -27,9 +27,7 @@ export default function AcrePointsTemplateCard(props: CardProps) {
       {...props}
     >
       <CardHeader mb={8}>
-        <TextMd fontWeight="bold" color="grey.700" textAlign="center">
-          Acre points
-        </TextMd>
+        <TextMd>Acre points</TextMd>
       </CardHeader>
 
       <CardBody>
