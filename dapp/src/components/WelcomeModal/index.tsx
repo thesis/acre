@@ -13,6 +13,7 @@ import {
   SimpleGrid,
   StepIndicatorProps,
   UseStepsReturn,
+  Highlight,
 } from "@chakra-ui/react"
 import { H3, TextSm } from "#/components/shared/Typography"
 import { BaseModalProps } from "#/types"
@@ -52,11 +53,11 @@ const steps = [
       </H3>
     ),
     content: (
-      <>
-        Acre is powered by <Box as="strong">tBTC</Box>, the trusted Bitcoin
-        bridge that secured over half a billion dollars in BTC. No centralized
-        custodians, everything is fully on-chain.
-      </>
+      <Highlight query="tBTC">
+        Acre is powered by tBTC, the trusted Bitcoin bridge that secured over
+        half a billion dollars in BTC. No centralized custodians, everything is
+        fully on-chain.
+      </Highlight>
     ),
     video: step2Video,
   },
@@ -71,11 +72,11 @@ const steps = [
       </H3>
     ),
     content: (
-      <>
-        As a depositor, you&apos;re automatically in the{" "}
-        <Box as="strong">Acre Points Program</Box>. Enjoy daily points drops and
-        exclusive partner rewards. Start stacking those points!
-      </>
+      <Highlight query="Acre Points Program">
+        As a depositor, you&apos;re automatically in the Acre Points Program.
+        Enjoy daily points drops and exclusive partner rewards. Start stacking
+        those points!
+      </Highlight>
     ),
     video: step3Video,
   },
