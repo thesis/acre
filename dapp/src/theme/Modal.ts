@@ -13,6 +13,7 @@ const baseStyleDialog = defineStyle({
   borderColor: "white",
   borderRadius: "xl",
   bg: "gold.100",
+  border: "none",
 })
 
 const baseCloseButton = defineStyle({

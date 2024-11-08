@@ -1,11 +1,5 @@
 import React, { ComponentType, useCallback } from "react"
-import {
-  BoxProps,
-  Modal,
-  ModalContent,
-  ModalOverlay,
-  ModalProps,
-} from "@chakra-ui/react"
+import { Modal, ModalContent, ModalOverlay, ModalProps } from "@chakra-ui/react"
 import { BaseModalProps } from "#/types"
 import { useAppNavigate, useSidebar } from "#/hooks"
 
@@ -13,9 +7,7 @@ const MODAL_BASE_SIZE = "lg"
 
 function withBaseModal<T extends BaseModalProps>(
   WrappedModalContent: ComponentType<T>,
-  modalProps?: Omit<ModalProps, "isOpen" | "onClose" | "children"> & {
-    border?: BoxProps["border"]
-  },
+  modalProps?: Omit<ModalProps, "isOpen" | "onClose" | "children">,
 ) {
   return function ModalBase(props: T) {
     const { closeModal, closeOnEsc, navigateToOnClose } = props
@@ -47,7 +39,6 @@ function withBaseModal<T extends BaseModalProps>(
             base: isSidebarOpen ? "var(--chakra-sizes-sidebar_width)" : 0,
             xl: 0,
           }}
-          border={modalProps?.border}
         >
           <WrappedModalContent {...props} closeModal={handleCloseModal} />
         </ModalContent>
