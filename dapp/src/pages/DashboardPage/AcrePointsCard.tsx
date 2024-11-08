@@ -20,6 +20,7 @@ import { IconInfoCircle } from "@tabler/icons-react"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import InfoTooltip from "#/components/shared/InfoTooltip"
 import useDebounce from "#/hooks/useDebounce"
+import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
 
 export default function AcrePointsCard(props: CardProps) {
   const {
@@ -34,7 +35,7 @@ export default function AcrePointsCard(props: CardProps) {
   } = useAcrePoints()
   const { isConnected } = useWallet()
 
-  const debouncedClaimPoints = useDebounce(claimPoints, 1000)
+  const debouncedClaimPoints = useDebounce(claimPoints, ONE_SEC_IN_MILLISECONDS)
 
   const formattedTotalPointsAmount = numberToLocaleString(totalBalance)
   const formattedClaimablePointsAmount = numberToLocaleString(claimableBalance)

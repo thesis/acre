@@ -53,13 +53,13 @@ export default function useAcrePoints(): UseAcrePointsReturnType {
   })
 
   return {
-    totalBalance: userPointsDataQuery.data?.claimed ?? 0,
-    claimableBalance: userPointsDataQuery.data?.unclaimed ?? 0,
+    totalBalance: userPointsDataQuery.data?.claimed || 0,
+    claimableBalance: userPointsDataQuery.data?.unclaimed || 0,
     nextDropTimestamp: pointsDataQuery.data?.dropAt,
     isCalculationInProgress: pointsDataQuery.data?.isCalculationInProgress,
     claimPoints,
     updateUserPointsData: userPointsDataQuery.refetch,
     updatePointsData: pointsDataQuery.refetch,
-    totalPoolBalance: pointsDataQuery.data?.totalPool ?? 0,
+    totalPoolBalance: pointsDataQuery.data?.totalPool || 0,
   }
 }
