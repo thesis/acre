@@ -125,7 +125,7 @@ export default function ConnectWallet() {
             </Tooltip>
           )}
 
-          <Tooltip fontSize="xs" label="Disconnect">
+          <Tooltip size="xs" label="Disconnect">
             <IconButton
               variant="ghost"
               aria-label="Disconnect"
