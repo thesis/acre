@@ -44,8 +44,8 @@ export default function AcrePointsCard(props: CardProps) {
     isCalculationInProgress || !!nextDropTimestamp || !!claimableBalance
 
   return (
-    <Card px={4} py={5} {...props}>
-      <CardHeader p={0} mb={2} as={HStack} justify="space-between">
+    <Card {...props}>
+      <CardHeader mb={2} as={HStack} justify="space-between">
         <TextMd fontWeight="bold" color="grey.700">
           Total Acre points
         </TextMd>
@@ -59,7 +59,7 @@ export default function AcrePointsCard(props: CardProps) {
         )}
       </CardHeader>
 
-      <CardBody p={0}>
+      <CardBody>
         <UserDataSkeleton>
           <H4 mb={2}>{formattedTotalPointsAmount}&nbsp;PTS</H4>
 

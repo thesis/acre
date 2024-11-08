@@ -1,40 +1,29 @@
-import { ComponentMultiStyleConfig, StyleFunctionProps } from "@chakra-ui/react"
+import { createMultiStyleConfigHelpers, defineStyle } from "@chakra-ui/react"
 import { cardAnatomy as parts } from "@chakra-ui/anatomy"
 
-export const cardTheme: ComponentMultiStyleConfig = {
-  baseStyle: {
-    container: {
-      boxShadow: "none",
-      borderColor: "gold.100",
-      bg: "gold.200",
-    },
-  },
-  parts: parts.keys,
-  variants: {
-    elevated: ({ colorScheme }: StyleFunctionProps) => {
-      if (!colorScheme) return {}
+const multiStyleConfig = createMultiStyleConfigHelpers(parts.keys)
 
-      return {
-        container: {
-          bg: "gold.100",
-          borderColor: "white",
-        },
-      }
-    },
-  },
-  sizes: {
-    md: {
-      container: {
-        borderWidth: "1px",
-      },
-    },
-    lg: {
-      container: {
-        borderWidth: "2px",
-      },
-    },
-  },
-  defaultProps: {
-    size: "lg",
-  },
-}
+const baseStyleContainer = defineStyle({
+  boxShadow: "none",
+  bg: "gold.200",
+  borderRadius: "xl",
+  padding: 5,
+})
+
+const baseStyleHeader = defineStyle({
+  padding: 0,
+})
+
+const baseStyleBody = defineStyle({
+  padding: 0,
+})
+
+const baseStyle = multiStyleConfig.definePartsStyle({
+  container: baseStyleContainer,
+  header: baseStyleHeader,
+  body: baseStyleBody,
+})
+
+export const cardTheme = multiStyleConfig.defineMultiStyleConfig({
+  baseStyle,
+})

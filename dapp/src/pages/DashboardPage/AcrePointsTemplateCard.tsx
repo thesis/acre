@@ -24,16 +24,15 @@ export default function AcrePointsTemplateCard(props: CardProps) {
   return (
     <Card
       px="1.875rem" // 30px
-      py={5}
       {...props}
     >
-      <CardHeader p={0} mb={8}>
+      <CardHeader mb={8}>
         <TextMd fontWeight="bold" color="grey.700" textAlign="center">
           Acre points
         </TextMd>
       </CardHeader>
 
-      <CardBody p={0}>
+      <CardBody>
         <UserDataSkeleton>
           <VStack
             bgImg={acrePointsCardPlaceholderSrc}
