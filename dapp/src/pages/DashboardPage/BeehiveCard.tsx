@@ -8,7 +8,6 @@ import {
   CardHeader,
   CardProps,
   Flex,
-  Heading,
   Highlight,
   Image,
   VStack,
