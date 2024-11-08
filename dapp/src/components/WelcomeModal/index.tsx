@@ -85,16 +85,16 @@ const stepIndicatorStyleProps: StepIndicatorProps = {
   sx: {
     "[data-status=active] &": {
       opacity: 1,
-      w: "15px",
-      borderRadius: "6",
+      w: "4",
+      rounded: "6",
       _after: {
         content: '""',
         position: "absolute",
         opacity: "0.15",
-        w: "15px",
-        h: "10px",
-        borderRightRadius: "5",
-        left: "6px",
+        w: "4",
+        h: "2.5",
+        rounded: "5",
+        left: "1.5",
         bgColor: "orange.50",
       },
     },
@@ -103,9 +103,9 @@ const stepIndicatorStyleProps: StepIndicatorProps = {
     },
   },
   border: "none",
-  w: "10px",
-  h: "10px",
-  borderRadius: "50%",
+  w: "2.5",
+  h: "2.5",
+  rounded: "50%",
   bgColor: "orange.50",
   position: "relative",
   opacity: "0.15",
@@ -159,12 +159,12 @@ function WelcomeModalBase({ closeModal }: BaseModalProps) {
         <Box
           as="video"
           src={activeStepData.video}
-          width="320px"
-          height="100%"
+          width="xs"
+          height="full"
           autoPlay
           muted
           objectFit="cover"
-          borderRadius="xl"
+          rounded="xl"
         />
       </SimpleGrid>
     </>
