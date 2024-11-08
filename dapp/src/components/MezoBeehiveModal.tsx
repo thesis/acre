@@ -59,9 +59,7 @@ function MezoBeehiveModalBase() {
         <VStack>
           <Card
             gap={2}
-            rounded="xl"
             bg="grey.700"
-            borderWidth={0}
             color="gold.300"
             align="start"
             textAlign="start"
@@ -94,7 +92,7 @@ function MezoBeehiveModalBase() {
             </CardBody>
           </Card>
 
-          <Card bg="gold.200" borderWidth={0} rounded="xl">
+          <Card>
             <CardBody
               as={HStack}
               spacing={6}
