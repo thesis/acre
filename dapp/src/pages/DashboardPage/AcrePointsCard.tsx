@@ -7,16 +7,13 @@ import {
   CardHeader,
   CardProps,
   HStack,
-  Icon,
   Stack,
-  Tooltip,
   VStack,
 } from "@chakra-ui/react"
 import Countdown from "#/components/shared/Countdown"
 import { logPromiseFailure, numberToLocaleString } from "#/utils"
 import { useAcrePoints, useWallet } from "#/hooks"
 import Spinner from "#/components/shared/Spinner"
-import { IconInfoCircle } from "@tabler/icons-react"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import InfoTooltip from "#/components/shared/InfoTooltip"
 import useDebounce from "#/hooks/useDebounce"
@@ -77,15 +74,13 @@ export default function AcrePointsCard(props: CardProps) {
                   <HStack spacing={0}>
                     <Spinner mr={3} size="sm" />
                     <TextMd>Your drop is being prepared.</TextMd>
-                    <Tooltip
+                    <InfoTooltip
                       label={`
-                      We need some time to calculate your points. It may take up to 30 minutes. 
-                      ${claimableBalance ? "You can still claim points from previous drops." : ""}
-                    `}
+                        We need some time to calculate your points. It may take up to 30 minutes. 
+                        ${claimableBalance ? "You can still claim points from previous drops." : ""}
+                      `}
                       maxW={72}
-                    >
-                      <Icon ml={1.5} as={IconInfoCircle} />
-                    </Tooltip>
+                    />
                   </HStack>
                 </VStack>
               ) : (
