@@ -74,4 +74,5 @@ export const colors = {
       15: "rgba(0, 0, 0, 0.15)",
     },
   },
+  mezo: "#FF004D",
 }
