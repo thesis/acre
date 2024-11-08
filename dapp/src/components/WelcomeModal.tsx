@@ -17,10 +17,10 @@ import {
 } from "@chakra-ui/react"
 import { H3, TextSm } from "#/components/shared/Typography"
 import { BaseModalProps } from "#/types"
-import withBaseModal from "../ModalRoot/withBaseModal"
-import step1Video from "../../assets/videos/welcome-steps/welcome-step-1.mov"
-import step2Video from "../../assets/videos/welcome-steps/welcome-step-2.mov"
-import step3Video from "../../assets/videos/welcome-steps/welcome-step-3.mov"
+import withBaseModal from "./ModalRoot/withBaseModal"
+import step1Video from "../assets/videos/welcome-steps/welcome-step-1.mov"
+import step2Video from "../assets/videos/welcome-steps/welcome-step-2.mov"
+import step3Video from "../assets/videos/welcome-steps/welcome-step-3.mov"
 
 // TODO: Break the title text as it is in Figma.
 const steps = [
