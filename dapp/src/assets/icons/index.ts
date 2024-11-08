@@ -1,4 +1,3 @@
-export * from "./Info"
 export * from "./ArrowUpRight"
 export * from "./AcreLogo"
 export * from "./Pause"
