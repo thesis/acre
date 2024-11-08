@@ -9,7 +9,6 @@ import {
   HStack,
   Icon,
   Image,
-  Stack,
   Tooltip,
   VStack,
 } from "@chakra-ui/react"
@@ -76,11 +75,13 @@ export default function AcrePointsCard(props: CardProps) {
           <H4 fontWeight="semibold" mb={2}>
             {formattedTotalPointsAmount}
           </H4>
+        </UserDataSkeleton>
 
-          <Image src={acrePointsIllustrationSrc} mt={6} />
+        <Image src={acrePointsIllustrationSrc} mt={6} />
 
+        <UserDataSkeleton>
           {isDataReady && (
-            <VStack px={4} py={3} spacing={0} rounded="lg" bg="gold.100">
+            <VStack px={4} py={5} spacing={0} rounded="lg" bg="gold.100">
               {isCalculationInProgress ? (
                 <VStack spacing={4}>
                   {!claimableBalance && (
@@ -102,28 +103,23 @@ export default function AcrePointsCard(props: CardProps) {
                   </HStack>
                 </VStack>
               ) : (
-                <Stack
-                  direction={claimableBalance ? "row" : "column"}
-                  spacing={0}
-                >
+                <HStack spacing={0}>
                   <TextMd color={COLOR_TEXT_LIGHT_TERTIARY} textAlign="center">
                     Next drop in
                   </TextMd>
                   <Countdown
                     timestamp={nextDropTimestamp!} // Timestamp presence already checked
                     onCountdownEnd={handleOnCountdownEnd}
-                    size={claimableBalance ? "md" : "2xl"}
-                    display={claimableBalance ? "inline" : "block"}
-                    ml={claimableBalance ? 1 : 0}
-                    mt={claimableBalance ? 0 : 2}
+                    size="md"
+                    ml={1}
                     color={COLOR_TEXT_LIGHT_PRIMARY}
                   />
-                </Stack>
+                </HStack>
               )}
 
               {claimableBalance && (
                 <Button
-                  mt={3}
+                  mt={5}
                   onClick={debouncedClaimPoints}
                   w="full"
                   colorScheme="green"
