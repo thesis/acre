@@ -22,8 +22,8 @@ const baseStyle = defineStyle({
 })
 
 const sizeXs = defineStyle({
-  px: 4,
-  py: 2,
+  px: 2,
+  py: 1,
   fontSize: "xs",
   lineHeight: "xs",
   borderRadius: "base",
