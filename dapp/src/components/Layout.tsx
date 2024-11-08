@@ -1,7 +1,8 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { Outlet } from "react-router-dom"
 import { Flex, VStack } from "@chakra-ui/react"
-import { useIsEmbed, useMobileMode } from "#/hooks"
+import { useIsEmbed, useMobileMode, useModal } from "#/hooks"
+import { MODAL_TYPES } from "#/types"
 import DocsDrawer from "./DocsDrawer"
 import Header from "./Header"
 import ModalRoot from "./ModalRoot"
@@ -18,6 +19,12 @@ const PAGE_MAX_WIDTH = {
 function Layout() {
   const isMobileMode = useMobileMode()
   const { embeddedApp } = useIsEmbed()
+  const { openModal } = useModal()
+
+  // TODO: Temporary solution to test Welcome modal.
+  useEffect(() => {
+    openModal(MODAL_TYPES.WELCOME, { navigateToOnClose: "/" })
+  }, [openModal])
 
   if (isMobileMode) return <MobileModeBanner forceOpen />
 

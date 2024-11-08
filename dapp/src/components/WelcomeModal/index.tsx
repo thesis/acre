@@ -1,0 +1,179 @@
+import React from "react"
+import {
+  Button,
+  ModalBody,
+  ModalHeader,
+  Box,
+  ModalCloseButton,
+  Stepper,
+  Step,
+  StepIndicator,
+  ModalFooter,
+  useSteps,
+  SimpleGrid,
+  StepIndicatorProps,
+  UseStepsReturn,
+} from "@chakra-ui/react"
+import { H3, TextSm } from "#/components/shared/Typography"
+import { BaseModalProps } from "#/types"
+import withBaseModal from "../ModalRoot/withBaseModal"
+import step1Video from "../../assets/videos/step-1.mov"
+import step2Video from "../../assets/videos/step-2.mov"
+import step3Video from "../../assets/videos/step-3.mov"
+
+// TODO: Break the title text as it is in Figma.
+const steps = [
+  {
+    id: 0,
+    title: (
+      <H3 fontWeight="semibold">
+        Activate your BTC,{" "}
+        <Box as="span" color="orange.30">
+          earn rewards
+        </Box>
+      </H3>
+    ),
+    content: (
+      <>
+        Acre makes earning rewards with your BTC simple and secure. Dedicated to
+        everyone, it&apos;s fun and easy to use. No advanced knowledge required.
+      </>
+    ),
+    video: step1Video,
+  },
+  {
+    id: 1,
+    title: (
+      <H3 fontWeight="semibold">
+        <Box as="span" color="orange.30">
+          Battle-tested{" "}
+        </Box>
+        in the market
+      </H3>
+    ),
+    content: (
+      <>
+        Acre is powered by <Box as="strong">tBTC</Box>, the trusted Bitcoin
+        bridge that secured over half a billion dollars in BTC. No centralized
+        custodians, everything is fully on-chain.
+      </>
+    ),
+    video: step2Video,
+  },
+  {
+    id: 2,
+    title: (
+      <H3 fontWeight="semibold">
+        One dashboard{" "}
+        <Box as="span" color="orange.30">
+          endless rewards
+        </Box>
+      </H3>
+    ),
+    content: (
+      <>
+        As a depositor, you&apos;re automatically in the{" "}
+        <Box as="strong">Acre Points Program</Box>. Enjoy daily points drops and
+        exclusive partner rewards. Start stacking those points!
+      </>
+    ),
+    video: step3Video,
+  },
+]
+
+const stepIndicatorStyleProps: StepIndicatorProps = {
+  sx: {
+    "[data-status=active] &": {
+      opacity: 1,
+      w: "15px",
+      borderRadius: "6",
+      _after: {
+        content: '""',
+        position: "absolute",
+        opacity: "0.15",
+        w: "15px",
+        h: "10px",
+        borderRightRadius: "5",
+        left: "6px",
+        bgColor: "orange.50",
+      },
+    },
+    "&[data-status=complete], [data-status=incomplete] &": {
+      bgColor: "orange.50",
+    },
+  },
+  border: "none",
+  w: "10px",
+  h: "10px",
+  borderRadius: "50%",
+  bgColor: "orange.50",
+  position: "relative",
+  opacity: "0.15",
+}
+
+function WelcomeModalBase({ closeModal }: BaseModalProps) {
+  // Cast to fix eslint error: `unbound-method`.
+  const { activeStep, goToNext } = useSteps({
+    index: 0,
+    count: steps.length,
+  }) as UseStepsReturn & { goToNext: () => void }
+
+  const isLastStep = activeStep + 1 === steps.length
+  const activeStepData = steps[activeStep]
+
+  return (
+    <>
+      <ModalCloseButton />
+      <SimpleGrid columns={2} templateColumns="1fr auto">
+        <Box>
+          <ModalHeader gap={3} pb={8}>
+            <TextSm mb="12" color="neutral.70">
+              Welcome to Acre,
+            </TextSm>
+            {activeStepData.title}
+          </ModalHeader>
+          <ModalBody textAlign="left" display="block" color="brown.80" px="10">
+            {activeStepData.content}
+          </ModalBody>
+          <ModalFooter
+            display="flex"
+            flexDirection="row"
+            justifyContent="space-between"
+            mt="14"
+          >
+            <Stepper index={activeStep} gap="3">
+              {steps.map((step) => (
+                <Step key={step.id}>
+                  <StepIndicator {...stepIndicatorStyleProps} />
+                </Step>
+              ))}
+            </Stepper>
+            <Button
+              variant={isLastStep ? undefined : "outline"}
+              onClick={isLastStep ? closeModal : goToNext}
+            >
+              {isLastStep ? "Get started" : "Skip"}
+            </Button>
+          </ModalFooter>
+        </Box>
+        <Box
+          as="video"
+          src={activeStepData.video}
+          width="320px"
+          height="100%"
+          autoPlay
+          muted
+          objectFit="cover"
+          borderRadius="xl"
+        />
+      </SimpleGrid>
+    </>
+  )
+}
+
+const WelcomeModal = withBaseModal(WelcomeModalBase, {
+  // TODO: Define the new size for welcome modal or update `xxl` size values.
+  size: "xl",
+  border: "none",
+})
+export default WelcomeModal
