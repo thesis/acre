@@ -73,11 +73,6 @@ export const colors = {
       "05": "rgba(0, 0, 0, 0.05)",
       15: "rgba(0, 0, 0, 0.15)",
     },
-    orange: {
-      30: {
-        50: {},
-      },
-    },
   },
   neutral: {
     70: "#7D6A4B",
