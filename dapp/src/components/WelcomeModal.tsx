@@ -20,9 +20,9 @@ import { BaseModalProps } from "#/types"
 import { EmbedApp } from "#/utils/referralProgram"
 import { useIsEmbed } from "#/hooks"
 import withBaseModal from "./ModalRoot/withBaseModal"
-import step1Video from "../assets/videos/welcome-steps/welcome-step-1.mov"
-import step2Video from "../assets/videos/welcome-steps/welcome-step-2.mov"
-import step3Video from "../assets/videos/welcome-steps/welcome-step-3.mov"
+import step1Video from "../assets/videos/welcome-steps/welcome-step-1.mp4"
+import step2Video from "../assets/videos/welcome-steps/welcome-step-2.mp4"
+import step3Video from "../assets/videos/welcome-steps/welcome-step-3.mp4"
 
 const embeddedAppToContent: Record<EmbedApp, () => ReactElement> = {
   "ledger-live": () => (
