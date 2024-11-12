@@ -1,4 +1,4 @@
-import React from "react"
+import React, { ReactElement } from "react"
 import {
   Button,
   ModalBody,
@@ -17,42 +17,57 @@ import {
 } from "@chakra-ui/react"
 import { H3, TextSm } from "#/components/shared/Typography"
 import { BaseModalProps } from "#/types"
+import { EmbedApp } from "#/utils/referralProgram"
+import { useIsEmbed } from "#/hooks"
 import withBaseModal from "./ModalRoot/withBaseModal"
 import step1Video from "../assets/videos/welcome-steps/welcome-step-1.mov"
 import step2Video from "../assets/videos/welcome-steps/welcome-step-2.mov"
 import step3Video from "../assets/videos/welcome-steps/welcome-step-3.mov"
 
-// TODO: Break the title text as it is in Figma.
+const embeddedAppToContent: Record<EmbedApp, () => ReactElement> = {
+  "ledger-live": () => (
+    <Highlight query="Ledger Live">
+      Acre makes earning rewards with your BTC simple and secure. Tailored for
+      Ledger Live everyone, it&apos;s fun and easy to use. No advanced knowledge
+      required.
+    </Highlight>
+  ),
+}
+
 const steps = [
   {
     id: 0,
     title: (
       <H3 fontWeight="semibold">
         Activate your BTC,{" "}
-        <Box as="span" color="orange.30">
+        <Box as="span" display="block" color="orange.30">
           earn rewards
         </Box>
       </H3>
     ),
-    content: (
-      <>
-        Acre makes earning rewards with your BTC simple and secure. Dedicated to
-        everyone, it&apos;s fun and easy to use. No advanced knowledge required.
-      </>
-    ),
+    content: (embeddedApp?: EmbedApp) =>
+      embeddedApp ? (
+        embeddedAppToContent[embeddedApp]()
+      ) : (
+        <>
+          Acre makes earning rewards with your BTC simple and secure. Dedicated
+          to everyone, it&apos;s fun and easy to use. No advanced knowledge
+          required.
+        </>
+      ),
     video: step1Video,
   },
   {
     id: 1,
     title: (
       <H3 fontWeight="semibold">
-        <Box as="span" color="orange.30">
+        <Box as="span" display="block" color="orange.30">
           Battle-tested{" "}
         </Box>
         in the market
       </H3>
     ),
-    content: (
+    content: () => (
       <Highlight query="tBTC">
         Acre is powered by tBTC, the trusted Bitcoin bridge that secured over
         half a billion dollars in BTC. No centralized custodians, everything is
@@ -66,12 +81,12 @@ const steps = [
     title: (
       <H3 fontWeight="semibold">
         One dashboard{" "}
-        <Box as="span" color="orange.30">
+        <Box as="span" display="block" color="orange.30">
           endless rewards
         </Box>
       </H3>
     ),
-    content: (
+    content: () => (
       <Highlight query="Acre Points Program">
         As a depositor, you&apos;re automatically in the Acre Points Program.
         Enjoy daily points drops and exclusive partner rewards. Start stacking
@@ -118,6 +133,7 @@ function WelcomeModalBase({ closeModal }: BaseModalProps) {
     index: 0,
     count: steps.length,
   }) as UseStepsReturn & { goToNext: () => void }
+  const { embeddedApp } = useIsEmbed()
 
   const isLastStep = activeStep + 1 === steps.length
   const activeStepData = steps[activeStep]
@@ -134,7 +150,7 @@ function WelcomeModalBase({ closeModal }: BaseModalProps) {
             {activeStepData.title}
           </ModalHeader>
           <ModalBody textAlign="left" display="block" color="brown.80" px="10">
-            {activeStepData.content}
+            {activeStepData.content(embeddedApp)}
           </ModalBody>
           <ModalFooter
             display="flex"
