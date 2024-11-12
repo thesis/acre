@@ -274,7 +274,7 @@ export default class AcreLedgerLiveBitcoinProvider
       message: {
         ...data,
         operation: data.operation.toString(),
-        nonce: data.nonce.toString(),
+        nonce: data.nonce.toString(16),
       },
     })
   }

@@ -32,7 +32,7 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
     gasToken: ZeroAddress,
     refundReceiver: ZeroAddress,
     operation: 1,
-    nonce: 1,
+    nonce: 12,
   }
 
   const mockedWalletApiClient = {
@@ -165,7 +165,7 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
           messageData: {
             ...withdrawalData,
             operation: withdrawalData.operation.toString(),
-            nonce: withdrawalData.nonce.toString(),
+            nonce: withdrawalData.nonce.toString(16),
           },
         },
         {
