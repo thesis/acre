@@ -181,7 +181,7 @@ function WelcomeModalBase({ closeModal }: BaseModalProps) {
           autoPlay
           muted
           objectFit="cover"
-          rounded="xl"
+          roundedRight="xl"
         />
       </SimpleGrid>
     </>
