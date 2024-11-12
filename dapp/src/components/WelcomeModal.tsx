@@ -173,7 +173,6 @@ function WelcomeModalBase({ closeModal }: BaseModalProps) {
 }
 
 const WelcomeModal = withBaseModal(WelcomeModalBase, {
-  // TODO: Define the new size for welcome modal or update `xxl` size values.
   size: "xl",
 })
 export default WelcomeModal
