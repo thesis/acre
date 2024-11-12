@@ -7,15 +7,15 @@ const baseStyleContainer = defineStyle({
   boxShadow: "none",
   bg: "gold.200",
   borderRadius: "xl",
-  padding: 5,
+  p: 5,
 })
 
 const baseStyleHeader = defineStyle({
-  padding: 0,
+  p: 0,
 })
 
 const baseStyleBody = defineStyle({
-  padding: 0,
+  p: 0,
 })
 
 const baseStyle = multiStyleConfig.definePartsStyle({
