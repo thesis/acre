@@ -178,7 +178,7 @@ function WelcomeModalBase({ closeModal }: BaseModalProps) {
         <Box
           as="video"
           src={activeStepData.video}
-          width="xs"
+          width="24rem"
           height="full"
           autoPlay
           muted
