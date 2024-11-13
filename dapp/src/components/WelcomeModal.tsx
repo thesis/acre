@@ -16,7 +16,7 @@ import {
   Highlight,
 } from "@chakra-ui/react"
 import { H3, TextSm } from "#/components/shared/Typography"
-import { BaseModalProps } from "#/types"
+import { BaseModalProps, DappMode } from "#/types"
 import { EmbedApp } from "#/utils/referralProgram"
 import { useIsEmbed } from "#/hooks"
 import withBaseModal from "./ModalRoot/withBaseModal"
@@ -24,7 +24,13 @@ import step1Video from "../assets/videos/welcome-steps/welcome-step-1.mp4"
 import step2Video from "../assets/videos/welcome-steps/welcome-step-2.mp4"
 import step3Video from "../assets/videos/welcome-steps/welcome-step-3.mp4"
 
-const embeddedAppToContent: Record<EmbedApp, () => ReactElement> = {
+const dappModeToContent: Record<DappMode, () => ReactElement> = {
+  standalone: () => (
+    <>
+      Acre makes earning rewards with your BTC simple and secure. Dedicated to
+      everyone, it&apos;s fun and easy to use. No advanced knowledge required.
+    </>
+  ),
   "ledger-live": () => (
     <Highlight query="Ledger Live">
       Acre makes earning rewards with your BTC simple and secure. Tailored for
@@ -46,15 +52,8 @@ const steps = [
       </H3>
     ),
     content: (embeddedApp?: EmbedApp) =>
-      embeddedApp ? (
-        embeddedAppToContent[embeddedApp]()
-      ) : (
-        <>
-          Acre makes earning rewards with your BTC simple and secure. Dedicated
-          to everyone, it&apos;s fun and easy to use. No advanced knowledge
-          required.
-        </>
-      ),
+      dappModeToContent[embeddedApp ?? "standalone"](),
+
     video: step1Video,
   },
   {
