@@ -1,6 +1,12 @@
 import React from "react"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
-import { useBitcoinPosition, useTransactionModal } from "#/hooks"
+import {
+  useAllActivitiesCount,
+  useBitcoinPosition,
+  useTransactionModal,
+  useStatistics,
+  useWallet,
+} from "#/hooks"
 import { ACTION_FLOW_TYPES } from "#/types"
 import {
   Button,
@@ -14,6 +20,7 @@ import ArrivingSoonTooltip from "#/components/ArrivingSoonTooltip"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import { featureFlags } from "#/constants"
 import { TextMd } from "#/components/shared/Typography"
+import AcreTVLMessage from "./AcreTVLMessage"
 
 const isWithdrawalFlowEnabled = featureFlags.WITHDRAWALS_ENABLED
 
@@ -33,6 +40,11 @@ export default function PositionDetails() {
 
   const openDepositModal = useTransactionModal(ACTION_FLOW_TYPES.STAKE)
   const openWithdrawModal = useTransactionModal(ACTION_FLOW_TYPES.UNSTAKE)
+  const activitiesCount = useAllActivitiesCount()
+
+  const { tvl } = useStatistics()
+
+  const { isConnected } = useWallet()
 
   return (
     <Flex w="100%" flexDirection="column" gap={5}>
@@ -77,24 +89,33 @@ export default function PositionDetails() {
         </UserDataSkeleton>
       </VStack>
 
-      <HStack w="full" justify="start" flexWrap="wrap" spacing={2}>
+      <HStack w="full" justify="start" flexWrap="wrap" spacing={5}>
         <UserDataSkeleton>
-          <Button {...buttonStyles} onClick={openDepositModal}>
+          <Button
+            {...buttonStyles}
+            onClick={openDepositModal}
+            isDisabled={featureFlags.TVL_ENABLED && tvl.isCapExceeded}
+          >
             Deposit
           </Button>
         </UserDataSkeleton>
-        <UserDataSkeleton>
-          <ArrivingSoonTooltip shouldDisplayTooltip={!isWithdrawalFlowEnabled}>
-            <Button
-              variant="outline"
-              {...buttonStyles}
-              onClick={openWithdrawModal}
-              isDisabled={!isWithdrawalFlowEnabled}
+        {isConnected && activitiesCount > 0 && (
+          <UserDataSkeleton ml={-3}>
+            <ArrivingSoonTooltip
+              shouldDisplayTooltip={!isWithdrawalFlowEnabled}
             >
-              Withdraw
-            </Button>
-          </ArrivingSoonTooltip>
-        </UserDataSkeleton>
+              <Button
+                variant="outline"
+                {...buttonStyles}
+                onClick={openWithdrawModal}
+                isDisabled={!isWithdrawalFlowEnabled}
+              >
+                Withdraw
+              </Button>
+            </ArrivingSoonTooltip>
+          </UserDataSkeleton>
+        )}
+        {featureFlags.TVL_ENABLED && <AcreTVLMessage />}
       </HStack>
     </Flex>
   )
