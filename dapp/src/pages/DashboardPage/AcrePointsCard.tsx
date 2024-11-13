@@ -7,19 +7,17 @@ import {
   CardHeader,
   CardProps,
   HStack,
-  Icon,
   Image,
-  Tooltip,
   VStack,
 } from "@chakra-ui/react"
 import Countdown from "#/components/shared/Countdown"
 import { logPromiseFailure, numberToLocaleString } from "#/utils"
 import { useAcrePoints, useWallet } from "#/hooks"
 import Spinner from "#/components/shared/Spinner"
-import { IconInfoCircle } from "@tabler/icons-react"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import InfoTooltip from "#/components/shared/InfoTooltip"
 import useDebounce from "#/hooks/useDebounce"
+import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import acrePointsIllustrationSrc from "#/assets/images/acre-points-illustration.png"
 
 // TODO: Define colors as theme value
@@ -38,13 +36,15 @@ export default function AcrePointsCard(props: CardProps) {
     updateUserPointsData,
     updatePointsData,
     isCalculationInProgress,
+    totalPoolBalance,
   } = useAcrePoints()
   const { isConnected } = useWallet()
 
-  const debouncedClaimPoints = useDebounce(claimPoints, 1000)
+  const debouncedClaimPoints = useDebounce(claimPoints, ONE_SEC_IN_MILLISECONDS)
 
   const formattedTotalPointsAmount = numberToLocaleString(totalBalance)
   const formattedClaimablePointsAmount = numberToLocaleString(claimableBalance)
+  const formattedTotalPoolBalance = numberToLocaleString(totalPoolBalance)
 
   const handleOnCountdownEnd = () => {
     logPromiseFailure(updatePointsData())
@@ -55,25 +55,28 @@ export default function AcrePointsCard(props: CardProps) {
     isCalculationInProgress || !!nextDropTimestamp || !!claimableBalance
 
   return (
-    <Card px={4} py={5} {...props}>
-      <CardHeader p={0} mb={2} as={HStack} justify="space-between">
-        <TextMd fontWeight="medium" color="grey.700">
-          Total Acre points
+    <Card {...props}>
+      <CardHeader mb={2} as={HStack} justify="space-between">
+        <TextMd color="grey.700">
+          {isConnected ? "Your" : "Total"} Acre points
         </TextMd>
 
-        {isConnected && (
-          <InfoTooltip
-            // TODO: Add alternative variant of label for disconnected wallet
-            label="Your current balance of Acre points collected so far. New points drop daily and are ready to be claimed. Unclaimed points roll over to the next day."
-            w={56}
-          />
-        )}
+        <InfoTooltip
+          label={
+            isConnected
+              ? "Your current balance of Acre points collected so far. New points drop daily and are ready to be claimed. Unclaimed points roll over to the next day."
+              : "Total points distributed to Acre users so far. New points drop daily and can be claimed in each user's dashboard."
+          }
+          w={56}
+        />
       </CardHeader>
 
-      <CardBody p={0}>
+      <CardBody>
         <UserDataSkeleton>
           <H4 fontWeight="semibold" mb={2}>
-            {formattedTotalPointsAmount}
+            {isConnected
+              ? formattedTotalPointsAmount
+              : formattedTotalPoolBalance}
           </H4>
         </UserDataSkeleton>
 
@@ -91,15 +94,13 @@ export default function AcrePointsCard(props: CardProps) {
                   <HStack spacing={0}>
                     <Spinner mr={3} size="sm" />
                     <TextMd>Your drop is being prepared.</TextMd>
-                    <Tooltip
+                    <InfoTooltip
                       label={`
-                      We need some time to calculate your points. It may take up to 30 minutes. 
-                      ${claimableBalance ? "You can still claim points from previous drops." : ""}
-                    `}
+                        We need some time to calculate your points. It may take up to 30 minutes. 
+                        ${claimableBalance ? "You can still claim points from previous drops." : ""}
+                      `}
                       maxW={72}
-                    >
-                      <Icon ml={1.5} as={IconInfoCircle} />
-                    </Tooltip>
+                    />
                   </HStack>
                 </VStack>
               ) : (

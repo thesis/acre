@@ -48,6 +48,16 @@ function tryRequest<T>(): TryRequestFn<T> {
   }
 }
 
+function numberToValidHexString(value: number): string {
+  let hex = value.toString(16)
+
+  if (hex.length % 2 !== 0) {
+    hex = `0${hex}`
+  }
+
+  return `0x${hex}`
+}
+
 export type AcreLedgerLiveBitcoinProviderOptions = {
   tryConnectToAddress: string | undefined
 }
@@ -273,7 +283,7 @@ export default class AcreLedgerLiveBitcoinProvider
       message: {
         ...data,
         operation: data.operation.toString(),
-        nonce: data.nonce.toString(),
+        nonce: numberToValidHexString(data.nonce),
       },
     })
   }

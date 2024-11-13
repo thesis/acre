@@ -12,11 +12,11 @@ import { AcreTVLProgress } from "./AcreTVLProgress"
 const TEMPLATE_AREAS = `
   ${featureFlags.TVL_ENABLED ? '"tvl tvl"' : ""}
   "dashboard acre-points"
-  ${featureFlags.BEEHIVE_COMPONENT_ENABLED ? '"dashboard beehive"' : ""}
+  "dashboard beehive"
   "dashboard useful-links"
 `
 
-const GRID_TEMPLATE_ROWS = `${featureFlags.TVL_ENABLED ? "auto" : ""} ${featureFlags.BEEHIVE_COMPONENT_ENABLED ? "auto" : ""} auto 1fr`
+const GRID_TEMPLATE_ROWS = `${featureFlags.TVL_ENABLED ? "auto" : ""} auto auto 1fr`
 
 export default function DashboardPage() {
   useTriggerConnectWalletModal()
@@ -45,9 +45,7 @@ export default function DashboardPage() {
         <AcrePointsTemplateCard gridArea="acre-points" />
       )}
 
-      {featureFlags.BEEHIVE_COMPONENT_ENABLED && (
-        <BeehiveCard gridArea="beehive" />
-      )}
+      <BeehiveCard gridArea="beehive" />
     </Grid>
   )
 }

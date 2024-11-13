@@ -102,7 +102,7 @@ export function CurrencyBalance({
     const tooltipLabel = `${getBalance({ withFullPrecision: true })} ${symbol}`
 
     return (
-      <Tooltip label={tooltipLabel} shouldWrapChildren>
+      <Tooltip size="xs" label={tooltipLabel} shouldWrapChildren>
         {content}
       </Tooltip>
     )

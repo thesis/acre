@@ -84,4 +84,5 @@ export const colors = {
     30: "#FF7A00",
     50: "#FFB76E",
   },
+  mezo: "#FF004D",
 }

@@ -93,7 +93,6 @@ export default function Sidebar() {
                     flexDirection="row"
                     justifyContent="space-between"
                     alignItems="center"
-                    py={0}
                     px={4}
                   >
                     <TextSm fontWeight="semibold">{name}</TextSm>

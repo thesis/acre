@@ -98,11 +98,8 @@ export default function ConnectWallet() {
           divider={<StackDivider borderColor="gold.500" />}
         >
           <Tooltip
-            fontSize="xs"
+            size="xs"
             label={hasCopied ? "Address copied" : "Copy"}
-            color="gold.200"
-            px={3}
-            py={2}
             closeOnClick={false}
           >
             <IconButton
@@ -116,13 +113,7 @@ export default function ConnectWallet() {
           </Tooltip>
 
           {isChangeAccountFeatureSupported(embeddedApp) && (
-            <Tooltip
-              fontSize="xs"
-              label="Change account"
-              color="gold.200"
-              px={3}
-              py={2}
-            >
+            <Tooltip size="xs" label="Change account">
               <IconButton
                 variant="ghost"
                 aria-label="Change account"
@@ -134,13 +125,7 @@ export default function ConnectWallet() {
             </Tooltip>
           )}
 
-          <Tooltip
-            fontSize="xs"
-            label="Disconnect"
-            color="gold.200"
-            px={3}
-            py={2}
-          >
+          <Tooltip size="xs" label="Disconnect">
             <IconButton
               variant="ghost"
               aria-label="Disconnect"
