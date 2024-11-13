@@ -13,20 +13,20 @@ import { H4, TextMd } from "#/components/shared/Typography"
 import { numberToLocaleString } from "#/utils"
 import { IconChevronDown } from "@tabler/icons-react"
 import { TOKEN_AMOUNT_FIELD_NAME } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
-import { useFormField } from "#/hooks"
+import { useFormField, useMinDepositAmount } from "#/hooks"
 import { ONE_MONTH_IN_DAYS, ONE_WEEK_IN_DAYS } from "#/constants"
 
 const ACRE_POINTS_DATA = {
   day: {
-    label: "Per day",
+    label: "per day",
     multipler: 1,
   },
   week: {
-    label: "Per week",
+    label: "per week",
     multipler: ONE_WEEK_IN_DAYS,
   },
   month: {
-    label: "Per month",
+    label: "per month",
     multipler: ONE_MONTH_IN_DAYS,
   },
 }
@@ -48,7 +48,10 @@ function AcrePointsRewardEstimation(props: StackProps) {
   const { value = 0n } = useFormField<bigint | undefined>(
     TOKEN_AMOUNT_FIELD_NAME,
   )
-  const baseReward = Number(value)
+  const minDepositAmount = useMinDepositAmount()
+  const amount = value >= minDepositAmount ? value : 0n
+
+  const baseReward = Number(amount)
   const pointsRate = 10000
 
   const estimatedReward = useMemo(

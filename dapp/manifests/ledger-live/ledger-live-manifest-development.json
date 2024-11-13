@@ -23,6 +23,7 @@
     "account.list",
     "bitcoin.getAddress",
     "bitcoin.getPublicKey",
+    "transaction.signAndBroadcast",
     "custom.acre.messageSign",
     "custom.acre.transactionSignAndBroadcast"
   ],
