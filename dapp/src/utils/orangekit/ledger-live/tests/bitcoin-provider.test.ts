@@ -32,7 +32,7 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
     gasToken: ZeroAddress,
     refundReceiver: ZeroAddress,
     operation: 1,
-    nonce: 1,
+    nonce: 12,
   }
 
   const mockedWalletApiClient = {
@@ -155,6 +155,7 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
       const mockedPublicKey =
         "033b37d8b5dda991cdeb628c28c7958cf9d7bc61dfde29357b8a7190b9b3295423"
       const signInMessage = "test"
+      const expectedNonceAsHex = "0x0c"
 
       const messageTypesData = [
         {
@@ -164,7 +165,7 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
           messageData: {
             ...withdrawalData,
             operation: withdrawalData.operation.toString(),
-            nonce: withdrawalData.nonce.toString(),
+            nonce: expectedNonceAsHex,
           },
         },
         {
