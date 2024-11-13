@@ -185,6 +185,8 @@ function WelcomeModalBase({ closeModal }: BaseModalProps) {
           loop
           objectFit="cover"
           roundedRight="xl"
+          outline="1px solid #f6ead5"
+          outlineOffset="-1px"
         />
       </SimpleGrid>
     </>
