@@ -7,7 +7,7 @@ import PositionDetails from "./PositionDetails"
 export default function DashboardCard(props: CardProps) {
   return (
     <Card p="dashboard_card_padding" overflow="hidden" {...props}>
-      <CardBody as={VStack} spacing={10} p={0}>
+      <CardBody as={VStack} spacing={10}>
         <ActivitiesList />
         <PositionDetails />
         <TransactionHistory />

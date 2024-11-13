@@ -27,13 +27,8 @@ export default function TransactionTable() {
       <PaginationPage direction="column" spacing={2} pageSpacing={6}>
         {(pageData: Activity[]) =>
           pageData.map((activity) => (
-            <Card
-              key={activity.id}
-              role="group"
-              variant="elevated"
-              colorScheme="gold"
-            >
-              <CardBody as={Flex} flexDirection="column" gap={4} p={4}>
+            <Card key={activity.id} role="group" bg="gold.100" p={4}>
+              <CardBody as={Flex} flexDirection="column" gap={4}>
                 <Flex flexDirection="column">
                   <Flex justifyContent="space-between">
                     <TextSm
