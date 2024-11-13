@@ -42,6 +42,9 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
         messageSign: vi.fn(),
       },
     },
+    transaction: {
+      signAndBroadcast: vi.fn(),
+    },
     account: {
       list: vi.fn(),
       request: vi.fn(),
@@ -79,7 +82,7 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
         let result: string
 
         beforeAll(async () => {
-          mockedWalletApiClient.custom.acre.transactionSignAndBroadcast.mockResolvedValue(
+          mockedWalletApiClient.transaction.signAndBroadcast.mockResolvedValue(
             mockedTxHash,
           )
 
@@ -88,16 +91,12 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
 
         it("should send transaction via Acre custom module", () => {
           expect(
-            mockedWalletApiClient.custom.acre.transactionSignAndBroadcast,
-          ).toHaveBeenCalledWith(
-            mockedAccount.id,
-            {
-              family: "bitcoin",
-              amount: new BigNumber(satoshis),
-              recipient: bitcoinAddress,
-            },
-            { hwAppId },
-          )
+            mockedWalletApiClient.transaction.signAndBroadcast,
+          ).toHaveBeenCalledWith(mockedAccount.id, {
+            family: "bitcoin",
+            amount: new BigNumber(satoshis),
+            recipient: bitcoinAddress,
+          })
         })
 
         it("should return transaction hash", () => {

@@ -9,13 +9,11 @@ const containerBaseStyle = defineStyle({
 
 const unitBaseStyle = defineStyle({
   display: "inline-block",
-  color: "grey.700",
   whiteSpace: "nowrap",
 })
 
 const separatorBaseStyle = defineStyle({
   display: "inline-block",
-  color: "grey.300",
 })
 
 const multiStyleConfig = createMultiStyleConfigHelpers(PARTS)

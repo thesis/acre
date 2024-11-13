@@ -8,7 +8,7 @@ import {
   CardProps,
   HStack,
   Icon,
-  Stack,
+  Image,
   Tooltip,
   VStack,
 } from "@chakra-ui/react"
@@ -20,6 +20,14 @@ import { IconInfoCircle } from "@tabler/icons-react"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import InfoTooltip from "#/components/shared/InfoTooltip"
 import useDebounce from "#/hooks/useDebounce"
+import acrePointsIllustrationSrc from "#/assets/images/acre-points-illustration.png"
+
+// TODO: Define colors as theme value
+const COLOR_TEXT_LIGHT_PRIMARY = "#1C1A16"
+const COLOR_TEXT_LIGHT_TERTIARY = "#7D6A4B"
+// TODO: Update `Button` component theme
+const COLOR_BUTTON_LABEL = "#FBF7EC"
+const COLOR_BUTTON_BACKGROUND = "#33A321"
 
 export default function AcrePointsCard(props: CardProps) {
   const {
@@ -49,7 +57,7 @@ export default function AcrePointsCard(props: CardProps) {
   return (
     <Card px={4} py={5} {...props}>
       <CardHeader p={0} mb={2} as={HStack} justify="space-between">
-        <TextMd fontWeight="bold" color="grey.700">
+        <TextMd fontWeight="medium" color="grey.700">
           Total Acre points
         </TextMd>
 
@@ -64,10 +72,16 @@ export default function AcrePointsCard(props: CardProps) {
 
       <CardBody p={0}>
         <UserDataSkeleton>
-          <H4 mb={2}>{formattedTotalPointsAmount}&nbsp;PTS</H4>
+          <H4 fontWeight="semibold" mb={2}>
+            {formattedTotalPointsAmount}
+          </H4>
+        </UserDataSkeleton>
 
+        <Image src={acrePointsIllustrationSrc} mt={6} />
+
+        <UserDataSkeleton>
           {isDataReady && (
-            <VStack px={4} py={3} spacing={0} rounded="lg" bg="gold.100">
+            <VStack px={4} py={5} spacing={0} rounded="lg" bg="gold.100">
               {isCalculationInProgress ? (
                 <VStack spacing={4}>
                   {!claimableBalance && (
@@ -89,32 +103,29 @@ export default function AcrePointsCard(props: CardProps) {
                   </HStack>
                 </VStack>
               ) : (
-                <Stack
-                  direction={claimableBalance ? "row" : "column"}
-                  spacing={0}
-                >
-                  <TextMd color="grey.500" textAlign="center">
+                <HStack spacing={0}>
+                  <TextMd color={COLOR_TEXT_LIGHT_TERTIARY} textAlign="center">
                     Next drop in
                   </TextMd>
                   <Countdown
                     timestamp={nextDropTimestamp!} // Timestamp presence already checked
                     onCountdownEnd={handleOnCountdownEnd}
-                    size={claimableBalance ? "md" : "2xl"}
-                    display={claimableBalance ? "inline" : "block"}
-                    ml={claimableBalance ? 2 : 0}
-                    mt={claimableBalance ? 0 : 2}
+                    size="md"
+                    ml={1}
+                    color={COLOR_TEXT_LIGHT_PRIMARY}
                   />
-                </Stack>
+                </HStack>
               )}
 
               {claimableBalance && (
                 <Button
-                  mt={3}
+                  mt={5}
                   onClick={debouncedClaimPoints}
                   w="full"
                   colorScheme="green"
-                  color="gold.200"
-                  fontWeight="bold"
+                  bgColor={COLOR_BUTTON_BACKGROUND}
+                  color={COLOR_BUTTON_LABEL}
+                  fontWeight="semibold"
                   size="lg"
                 >
                   Claim {formattedClaimablePointsAmount} PTS
