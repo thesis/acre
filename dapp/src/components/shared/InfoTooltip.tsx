@@ -1,11 +1,20 @@
 import React from "react"
-import { Info } from "#/assets/icons"
+import { IconInfoCircleFilled } from "@tabler/icons-react"
 import { Icon, Tooltip, TooltipProps } from "@chakra-ui/react"
+
+// TODO: Define in the new color palette
+const ICON_COLOR = "#3A3328"
 
 export default function InfoTooltip(props: Omit<TooltipProps, "children">) {
   return (
     <Tooltip placement="bottom" {...props}>
-      <Icon as={Info} boxSize={4} cursor="pointer" color="grey.400" />
+      <Icon
+        as={IconInfoCircleFilled}
+        boxSize="1.125rem" // 18px
+        cursor="pointer"
+        color={ICON_COLOR}
+        opacity={0.25}
+      />
     </Tooltip>
   )
 }
