@@ -48,6 +48,16 @@ function tryRequest<T>(): TryRequestFn<T> {
   }
 }
 
+function numberToValidHexString(value: number): string {
+  let hex = value.toString(16)
+
+  if (hex.length % 2 !== 0) {
+    hex = `0${hex}`
+  }
+
+  return `0x${hex}`
+}
+
 export type AcreLedgerLiveBitcoinProviderOptions = {
   tryConnectToAddress: string | undefined
 }
@@ -173,16 +183,15 @@ export default class AcreLedgerLiveBitcoinProvider
       throw new Error("Connect first")
     }
 
+    // TODO: In the current version of Acre module, sending Bitcoin transactions
+    // is not supported. Use the custom Acre module to send Bitcoin transaction
+    // once it works correctly.
     const txHash = await tryRequest<string>()(() =>
-      this.#walletApiClient.custom.acre.transactionSignAndBroadcast(
-        this.#account!.id,
-        {
-          family: "bitcoin",
-          amount: new BigNumber(satoshis),
-          recipient: to,
-        },
-        { hwAppId: this.#hwAppId },
-      ),
+      this.#walletApiClient.transaction.signAndBroadcast(this.#account!.id, {
+        family: "bitcoin",
+        amount: new BigNumber(satoshis),
+        recipient: to,
+      }),
     )
 
     return txHash
@@ -274,7 +283,7 @@ export default class AcreLedgerLiveBitcoinProvider
       message: {
         ...data,
         operation: data.operation.toString(),
-        nonce: data.nonce.toString(),
+        nonce: numberToValidHexString(data.nonce),
       },
     })
   }
