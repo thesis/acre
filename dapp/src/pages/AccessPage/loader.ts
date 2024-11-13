@@ -8,9 +8,11 @@ export const redirectToAccessPageLoader = async (
   redirectToOnFail: null | string = null,
 ) => {
   try {
-    const isValid = await acreApi.verifyAccessCode(
-      getAccessCodeFromLocalStorage() ?? "",
-    )
+    const encodedCode = getAccessCodeFromLocalStorage()
+
+    const isValid = encodedCode
+      ? await acreApi.verifyAccessCode(encodedCode)
+      : false
 
     if (isValid) {
       const shouldRedirectToWelcomeModal = shouldDisplayWelcomeModal()
