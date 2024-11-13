@@ -29,24 +29,16 @@ export default function BeehiveCard(props: CardProps) {
   }
 
   return (
-    <Card p={4} {...props}>
-      <CardHeader
-        p={0}
-        as={Flex}
-        alignItems="center"
-        justify="space-between"
-        gap={2}
-      >
-        <TextMd fontWeight="bold" color="grey.700">
-          Additional rewards
-        </TextMd>
+    <Card {...props}>
+      <CardHeader as={Flex} alignItems="center" justify="space-between" gap={2}>
+        <TextMd>Additional rewards</TextMd>
         <InfoTooltip
           label="Acre Beehive automatically collects rewards from our partner projects. Rewards are dropped daily, and your share is calculated based on your deposit amount and how long you HODL."
           w={56}
         />
       </CardHeader>
 
-      <CardBody p={0} as={VStack}>
+      <CardBody as={VStack}>
         <Image src={beehiveIllustrationSrc} boxSize={32} />
         <UserDataSkeleton w="100%" mt={-7}>
           <Box px={4} py={3} bg="gold.100" borderRadius="lg">
