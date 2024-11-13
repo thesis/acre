@@ -83,7 +83,7 @@ const variants = {
 }
 
 const sizeXl = multiStyleConfig.definePartsStyle({
-  dialog: { maxW: "50.75rem" },
+  dialog: { maxW: "52rem" },
 })
 
 const sizeLg = multiStyleConfig.definePartsStyle({

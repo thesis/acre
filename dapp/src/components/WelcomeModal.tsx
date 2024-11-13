@@ -124,11 +124,14 @@ const stepIndicatorStyleProps: StepIndicatorProps = {
   bgColor: "orange.50",
   position: "relative",
   opacity: "0.15",
+  _hover: {
+    cursor: "pointer",
+  },
 }
 
 function WelcomeModalBase({ closeModal }: BaseModalProps) {
   // Cast to fix eslint error: `unbound-method`.
-  const { activeStep, goToNext } = useSteps({
+  const { activeStep, goToNext, setActiveStep } = useSteps({
     index: 0,
     count: steps.length,
   }) as UseStepsReturn & { goToNext: () => void }
@@ -159,7 +162,7 @@ function WelcomeModalBase({ closeModal }: BaseModalProps) {
           >
             <Stepper index={activeStep} gap="3">
               {steps.map((step) => (
-                <Step key={step.id}>
+                <Step key={step.id} onClick={() => setActiveStep(step.id)}>
                   <StepIndicator {...stepIndicatorStyleProps} />
                 </Step>
               ))}
@@ -175,12 +178,15 @@ function WelcomeModalBase({ closeModal }: BaseModalProps) {
         <Box
           as="video"
           src={activeStepData.video}
-          width="xs"
+          width="24rem"
           height="full"
           autoPlay
           muted
+          loop
           objectFit="cover"
           roundedRight="xl"
+          outline="1px solid #f6ead5"
+          outlineOffset="-1px"
         />
       </SimpleGrid>
     </>
