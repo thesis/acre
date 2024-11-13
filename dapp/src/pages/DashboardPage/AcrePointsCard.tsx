@@ -17,6 +17,7 @@ import Spinner from "#/components/shared/Spinner"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import InfoTooltip from "#/components/shared/InfoTooltip"
 import useDebounce from "#/hooks/useDebounce"
+import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import acrePointsIllustrationSrc from "#/assets/images/acre-points-illustration.png"
 
 // TODO: Define colors as theme value
@@ -35,13 +36,15 @@ export default function AcrePointsCard(props: CardProps) {
     updateUserPointsData,
     updatePointsData,
     isCalculationInProgress,
+    totalPoolBalance,
   } = useAcrePoints()
   const { isConnected } = useWallet()
 
-  const debouncedClaimPoints = useDebounce(claimPoints, 1000)
+  const debouncedClaimPoints = useDebounce(claimPoints, ONE_SEC_IN_MILLISECONDS)
 
   const formattedTotalPointsAmount = numberToLocaleString(totalBalance)
   const formattedClaimablePointsAmount = numberToLocaleString(claimableBalance)
+  const formattedTotalPoolBalance = numberToLocaleString(totalPoolBalance)
 
   const handleOnCountdownEnd = () => {
     logPromiseFailure(updatePointsData())
@@ -54,21 +57,26 @@ export default function AcrePointsCard(props: CardProps) {
   return (
     <Card {...props}>
       <CardHeader mb={2} as={HStack} justify="space-between">
-        <TextMd>Total Acre points</TextMd>
+        <TextMd color="grey.700">
+          {isConnected ? "Your" : "Total"} Acre points
+        </TextMd>
 
-        {isConnected && (
-          <InfoTooltip
-            // TODO: Add alternative variant of label for disconnected wallet
-            label="Your current balance of Acre points collected so far. New points drop daily and are ready to be claimed. Unclaimed points roll over to the next day."
-            w={56}
-          />
-        )}
+        <InfoTooltip
+          label={
+            isConnected
+              ? "Your current balance of Acre points collected so far. New points drop daily and are ready to be claimed. Unclaimed points roll over to the next day."
+              : "Total points distributed to Acre users so far. New points drop daily and can be claimed in each user's dashboard."
+          }
+          w={56}
+        />
       </CardHeader>
 
       <CardBody>
         <UserDataSkeleton>
           <H4 fontWeight="semibold" mb={2}>
-            {formattedTotalPointsAmount}
+            {isConnected
+              ? formattedTotalPointsAmount
+              : formattedTotalPoolBalance}
           </H4>
         </UserDataSkeleton>
 
