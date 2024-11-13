@@ -182,6 +182,7 @@ function WelcomeModalBase({ closeModal }: BaseModalProps) {
           height="full"
           autoPlay
           muted
+          loop
           objectFit="cover"
           roundedRight="xl"
         />
