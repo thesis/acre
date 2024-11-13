@@ -1,6 +1,5 @@
-import { referralProgram, shouldDisplayWelcomeModal } from "#/utils"
+import { referralProgram, router, shouldDisplayWelcomeModal } from "#/utils"
 import { LoaderFunction } from "react-router-dom"
-import redirectWithSearchParams from "#/router/utils"
 import { redirectToAccessPageLoader } from "../AccessPage/loader"
 
 const dashboardPageLoader: LoaderFunction = async (args) => {
@@ -8,7 +7,7 @@ const dashboardPageLoader: LoaderFunction = async (args) => {
 
   if (referralProgram.isEmbedApp(referralProgram.getEmbeddedApp(request.url)))
     return shouldDisplayWelcomeModal()
-      ? redirectWithSearchParams(request.url, "/welcome")
+      ? router.redirectWithSearchParams(request.url, "/welcome")
       : null
 
   return redirectToAccessPageLoader(request.url, null, "/access")

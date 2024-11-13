@@ -2,13 +2,16 @@ import React from "react"
 import Layout from "#/components/Layout"
 import DashboardPage from "#/pages/DashboardPage"
 import { createBrowserRouter, LoaderFunction } from "react-router-dom"
-import { shouldDisplayWelcomeModal, referralProgram } from "#/utils"
+import {
+  shouldDisplayWelcomeModal,
+  referralProgram,
+  router as routerUtils,
+} from "#/utils"
 import dashboardPageLoader from "#/pages/DashboardPage/loader"
 import AccessPage from "#/pages/AccessPage"
 import WelcomePage from "#/pages/WelcomePage"
 import welcomePageLoader from "#/pages/WelcomePage/loader"
 import accessPageLoader from "#/pages/AccessPage/loader"
-import redirectWithSearchParams from "./utils"
 import { routerPath } from "./path"
 
 const mainLayoutLoader: LoaderFunction = ({ request }) => {
@@ -18,11 +21,11 @@ const mainLayoutLoader: LoaderFunction = ({ request }) => {
     const shouldRedirectToWelcomeModal = !shouldDisplayWelcomeModal()
 
     return shouldRedirectToWelcomeModal
-      ? redirectWithSearchParams(request.url, "/welcome")
-      : redirectWithSearchParams(request.url, "/dashboard")
+      ? routerUtils.redirectWithSearchParams(request.url, "/welcome")
+      : routerUtils.redirectWithSearchParams(request.url, "/dashboard")
   }
 
-  return redirectWithSearchParams(request.url, "/access")
+  return routerUtils.redirectWithSearchParams(request.url, "/access")
 }
 
 export const router = createBrowserRouter([
