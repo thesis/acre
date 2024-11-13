@@ -2,6 +2,7 @@ import React from "react"
 import { Outlet } from "react-router-dom"
 import { Flex, VStack } from "@chakra-ui/react"
 import { useIsEmbed, useMobileMode } from "#/hooks"
+import { DappMode } from "#/types"
 import DocsDrawer from "./DocsDrawer"
 import Header from "./Header"
 import ModalRoot from "./ModalRoot"
@@ -10,7 +11,7 @@ import MobileModeBanner from "./MobileModeBanner"
 import Footer from "./Footer"
 
 const PADDING = "2.5rem" // 40px
-const PAGE_MAX_WIDTH = {
+const PAGE_MAX_WIDTH: Record<DappMode, string> = {
   standalone: "63rem", // 1008px
   "ledger-live": "63rem", // 1008px
 }

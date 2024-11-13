@@ -74,5 +74,15 @@ export const colors = {
       15: "rgba(0, 0, 0, 0.15)",
     },
   },
+  neutral: {
+    70: "#7D6A4B",
+  },
+  brown: {
+    80: "#5A4D3A",
+  },
+  orange: {
+    30: "#FF7A00",
+    50: "#FFB76E",
+  },
   mezo: "#FF004D",
 }
