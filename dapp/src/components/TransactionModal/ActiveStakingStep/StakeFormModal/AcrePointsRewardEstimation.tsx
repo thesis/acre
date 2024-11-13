@@ -18,15 +18,15 @@ import { ONE_MONTH_IN_DAYS, ONE_WEEK_IN_DAYS } from "#/constants"
 
 const ACRE_POINTS_DATA = {
   day: {
-    label: "Per day",
+    label: "per day",
     multipler: 1,
   },
   week: {
-    label: "Per week",
+    label: "per week",
     multipler: ONE_WEEK_IN_DAYS,
   },
   month: {
-    label: "Per month",
+    label: "per month",
     multipler: ONE_MONTH_IN_DAYS,
   },
 }
