@@ -38,7 +38,6 @@ type PointsDataResponse = {
   dropAt: number
   isCalculationInProgress: boolean
   totalPool: string
-  cap: string
 }
 
 const getPointsData = async () => {
@@ -49,7 +48,6 @@ const getPointsData = async () => {
     dropAt: response.data.dropAt,
     isCalculationInProgress: response.data.isCalculationInProgress,
     totalPool: Number(response.data.totalPool),
-    cap: response.data.cap,
   }
 }
 
