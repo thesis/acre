@@ -112,6 +112,7 @@ type GetStatisticsResponse = {
   tvl: {
     usd: number
     btc: number
+    cap: number
   }
 }
 
