@@ -4,7 +4,6 @@ import {
   ModalBody,
   ModalHeader,
   Box,
-  ModalCloseButton,
   Stepper,
   Step,
   StepIndicator,
@@ -141,55 +140,52 @@ function WelcomeModalBase({ closeModal }: BaseModalProps) {
   const activeStepData = steps[activeStep]
 
   return (
-    <>
-      <ModalCloseButton />
-      <SimpleGrid columns={2} templateColumns="1fr auto">
-        <Box>
-          <ModalHeader gap={3} pb={8}>
-            <TextSm mb="12" color="neutral.70">
-              Welcome to Acre,
-            </TextSm>
-            {activeStepData.title}
-          </ModalHeader>
-          <ModalBody textAlign="left" display="block" color="brown.80" px="10">
-            {activeStepData.content(embeddedApp)}
-          </ModalBody>
-          <ModalFooter
-            display="flex"
-            flexDirection="row"
-            justifyContent="space-between"
-            mt="14"
+    <SimpleGrid columns={2} templateColumns="1fr auto">
+      <Box>
+        <ModalHeader gap={3} pb={8}>
+          <TextSm mb="12" color="neutral.70">
+            Welcome to Acre,
+          </TextSm>
+          {activeStepData.title}
+        </ModalHeader>
+        <ModalBody textAlign="left" display="block" color="brown.80" px="10">
+          {activeStepData.content(embeddedApp)}
+        </ModalBody>
+        <ModalFooter
+          display="flex"
+          flexDirection="row"
+          justifyContent="space-between"
+          mt="14"
+        >
+          <Stepper index={activeStep} gap="3">
+            {steps.map((step) => (
+              <Step key={step.id} onClick={() => setActiveStep(step.id)}>
+                <StepIndicator {...stepIndicatorStyleProps} />
+              </Step>
+            ))}
+          </Stepper>
+          <Button
+            variant={isLastStep ? undefined : "outline"}
+            onClick={isLastStep ? closeModal : goToNext}
           >
-            <Stepper index={activeStep} gap="3">
-              {steps.map((step) => (
-                <Step key={step.id} onClick={() => setActiveStep(step.id)}>
-                  <StepIndicator {...stepIndicatorStyleProps} />
-                </Step>
-              ))}
-            </Stepper>
-            <Button
-              variant={isLastStep ? undefined : "outline"}
-              onClick={isLastStep ? closeModal : goToNext}
-            >
-              {isLastStep ? "Get started" : "Skip"}
-            </Button>
-          </ModalFooter>
-        </Box>
-        <Box
-          as="video"
-          src={activeStepData.video}
-          width="24rem"
-          height="full"
-          autoPlay
-          muted
-          loop
-          objectFit="cover"
-          roundedRight="xl"
-          outline="1px solid #f6ead5"
-          outlineOffset="-1px"
-        />
-      </SimpleGrid>
-    </>
+            {isLastStep ? "Get started" : "Skip"}
+          </Button>
+        </ModalFooter>
+      </Box>
+      <Box
+        as="video"
+        src={activeStepData.video}
+        width="24rem"
+        height="full"
+        autoPlay
+        muted
+        loop
+        objectFit="cover"
+        roundedRight="xl"
+        outline="1px solid #f6ead5"
+        outlineOffset="-1px"
+      />
+    </SimpleGrid>
   )
 }
 
