@@ -54,31 +54,8 @@ const variantElevated = multiStyleConfig.definePartsStyle(({ colorScheme }) => {
   }
 })
 
-const variantProcess = multiStyleConfig.definePartsStyle({
-  container: {
-    px: 6,
-    py: 4,
-    bg: "gold.300",
-    borderWidth: 1,
-    borderColor: "gold.100",
-    alignItems: "flex-start",
-    [$foregroundColor.variable]: "colors.brand.400",
-  },
-  icon: {
-    mr: 4,
-    boxSize: 12,
-  },
-  title: {
-    color: "grey.700",
-    fontWeight: "bold",
-    m: 0,
-  },
-  description: { color: "grey.500", fontWeight: "medium" },
-})
-
 const variants = {
   subtle: variantSubtle,
-  process: variantProcess,
   elevated: variantElevated,
 }
 

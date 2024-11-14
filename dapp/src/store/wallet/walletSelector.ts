@@ -1,5 +1,5 @@
 import { createSelector } from "@reduxjs/toolkit"
-import { filterCompletedActivities, sortActivitiesByTimestamp } from "#/utils"
+import { sortActivitiesByTimestamp } from "#/utils"
 import { RootState } from ".."
 
 export const selectEstimatedBtcBalance = (state: RootState): bigint =>
@@ -16,17 +16,6 @@ export const selectActivities = createSelector(
 export const selectAllActivitiesCount = createSelector(
   (state: RootState) => state.wallet.activities,
   (activities) => activities.length,
-)
-
-export const selectLatestActivities = createSelector(
-  (state: RootState) => state.wallet.latestActivities,
-  (latestActivities) =>
-    sortActivitiesByTimestamp(Object.values(latestActivities)),
-)
-
-export const selectLatestCompletedActivities = createSelector(
-  selectLatestActivities,
-  (latestActivities) => filterCompletedActivities(latestActivities),
 )
 
 export const selectIsSignedMessage = (state: RootState): boolean =>
