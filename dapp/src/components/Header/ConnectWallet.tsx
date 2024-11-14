@@ -23,6 +23,7 @@ import {
   IconWallet,
   IconUserCode,
 } from "@tabler/icons-react"
+import { useMatch } from "react-router-dom"
 
 function isChangeAccountFeatureSupported(embeddedApp: string | undefined) {
   return referralProgram.isEmbedApp(embeddedApp)
@@ -37,6 +38,7 @@ export default function ConnectWallet() {
     variant: "card",
     size: "lg",
   })
+  const isDashboardPage = useMatch("/dashboard")
 
   const handleConnectWallet = (isReconnecting: boolean = false) => {
     openModal(MODAL_TYPES.CONNECT_WALLET, { isReconnecting })
@@ -54,6 +56,7 @@ export default function ConnectWallet() {
           isOpenGlobalErrorModal) && {
           pointerEvents: "none",
         })}
+        isDisabled={!isDashboardPage}
       >
         {`Connect ${isEmbed ? "account" : "wallet"}`}
       </Button>
