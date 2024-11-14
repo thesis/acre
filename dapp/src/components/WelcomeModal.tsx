@@ -99,18 +99,6 @@ const stepIndicatorStyleProps: StepIndicatorProps = {
   sx: {
     "[data-status=active] &": {
       opacity: 1,
-      w: "4",
-      rounded: "6",
-      _after: {
-        content: '""',
-        position: "absolute",
-        opacity: "0.15",
-        w: "4",
-        h: "2.5",
-        rounded: "5",
-        left: "1.5",
-        bgColor: "orange.50",
-      },
     },
     "&[data-status=complete], [data-status=incomplete] &": {
       bgColor: "orange.50",
@@ -121,7 +109,6 @@ const stepIndicatorStyleProps: StepIndicatorProps = {
   h: "2.5",
   rounded: "50%",
   bgColor: "orange.50",
-  position: "relative",
   opacity: "0.15",
   _hover: {
     cursor: "pointer",
