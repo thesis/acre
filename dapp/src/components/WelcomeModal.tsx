@@ -168,7 +168,7 @@ function WelcomeModalBase({ closeModal }: BaseModalProps) {
             variant={isLastStep ? undefined : "outline"}
             onClick={isLastStep ? closeModal : goToNext}
           >
-            {isLastStep ? "Get started" : "Skip"}
+            {isLastStep ? "Get started" : "Next"}
           </Button>
         </ModalFooter>
       </Box>
