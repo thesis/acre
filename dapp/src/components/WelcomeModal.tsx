@@ -34,7 +34,7 @@ const dappModeToContent: Record<DappMode, () => ReactElement> = {
   "ledger-live": () => (
     <Highlight query="Ledger Live">
       Acre makes earning rewards with your BTC simple and secure. Tailored for
-      Ledger Live everyone, it&apos;s fun and easy to use. No advanced knowledge
+      Ledger Live, it&apos;s fun and easy to use. No advanced knowledge
       required.
     </Highlight>
   ),
@@ -79,7 +79,7 @@ const steps = [
     id: 2,
     title: (
       <H3 fontWeight="semibold">
-        One dashboard{" "}
+        One dashboard,{" "}
         <Box as="span" display="block" color="orange.30">
           endless rewards
         </Box>
