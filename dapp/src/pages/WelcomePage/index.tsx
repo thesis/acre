@@ -12,6 +12,7 @@ function WelcomePage() {
 
   return (
     <WelcomeModal
+      closeOnEsc={false}
       closeModal={() => {
         setShouldDisplayWelcomeModal(false)
         navigate("/dashboard")

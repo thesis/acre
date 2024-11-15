@@ -4,7 +4,6 @@ import {
   ModalBody,
   ModalHeader,
   Box,
-  ModalCloseButton,
   Stepper,
   Step,
   StepIndicator,
@@ -34,7 +33,7 @@ const dappModeToContent: Record<DappMode, () => ReactElement> = {
   "ledger-live": () => (
     <Highlight query="Ledger Live">
       Acre makes earning rewards with your BTC simple and secure. Tailored for
-      Ledger Live everyone, it&apos;s fun and easy to use. No advanced knowledge
+      Ledger Live, it&apos;s fun and easy to use. No advanced knowledge
       required.
     </Highlight>
   ),
@@ -79,7 +78,7 @@ const steps = [
     id: 2,
     title: (
       <H3 fontWeight="semibold">
-        One dashboard{" "}
+        One dashboard,{" "}
         <Box as="span" display="block" color="orange.30">
           endless rewards
         </Box>
@@ -100,18 +99,6 @@ const stepIndicatorStyleProps: StepIndicatorProps = {
   sx: {
     "[data-status=active] &": {
       opacity: 1,
-      w: "4",
-      rounded: "6",
-      _after: {
-        content: '""',
-        position: "absolute",
-        opacity: "0.15",
-        w: "4",
-        h: "2.5",
-        rounded: "5",
-        left: "1.5",
-        bgColor: "orange.50",
-      },
     },
     "&[data-status=complete], [data-status=incomplete] &": {
       bgColor: "orange.50",
@@ -122,7 +109,6 @@ const stepIndicatorStyleProps: StepIndicatorProps = {
   h: "2.5",
   rounded: "50%",
   bgColor: "orange.50",
-  position: "relative",
   opacity: "0.15",
   _hover: {
     cursor: "pointer",
@@ -141,55 +127,52 @@ function WelcomeModalBase({ closeModal }: BaseModalProps) {
   const activeStepData = steps[activeStep]
 
   return (
-    <>
-      <ModalCloseButton />
-      <SimpleGrid columns={2} templateColumns="1fr auto">
-        <Box>
-          <ModalHeader gap={3} pb={8}>
-            <TextSm mb="12" color="neutral.70">
-              Welcome to Acre,
-            </TextSm>
-            {activeStepData.title}
-          </ModalHeader>
-          <ModalBody textAlign="left" display="block" color="brown.80" px="10">
-            {activeStepData.content(embeddedApp)}
-          </ModalBody>
-          <ModalFooter
-            display="flex"
-            flexDirection="row"
-            justifyContent="space-between"
-            mt="14"
+    <SimpleGrid columns={2} templateColumns="1fr auto">
+      <Box>
+        <ModalHeader gap={3} pb={8}>
+          <TextSm mb="12" color="neutral.70">
+            Welcome to Acre,
+          </TextSm>
+          {activeStepData.title}
+        </ModalHeader>
+        <ModalBody textAlign="left" display="block" color="brown.80" px="10">
+          {activeStepData.content(embeddedApp)}
+        </ModalBody>
+        <ModalFooter
+          display="flex"
+          flexDirection="row"
+          justifyContent="space-between"
+          mt="14"
+        >
+          <Stepper index={activeStep} gap="3">
+            {steps.map((step) => (
+              <Step key={step.id} onClick={() => setActiveStep(step.id)}>
+                <StepIndicator {...stepIndicatorStyleProps} />
+              </Step>
+            ))}
+          </Stepper>
+          <Button
+            variant={isLastStep ? undefined : "outline"}
+            onClick={isLastStep ? closeModal : goToNext}
           >
-            <Stepper index={activeStep} gap="3">
-              {steps.map((step) => (
-                <Step key={step.id} onClick={() => setActiveStep(step.id)}>
-                  <StepIndicator {...stepIndicatorStyleProps} />
-                </Step>
-              ))}
-            </Stepper>
-            <Button
-              variant={isLastStep ? undefined : "outline"}
-              onClick={isLastStep ? closeModal : goToNext}
-            >
-              {isLastStep ? "Get started" : "Skip"}
-            </Button>
-          </ModalFooter>
-        </Box>
-        <Box
-          as="video"
-          src={activeStepData.video}
-          width="24rem"
-          height="full"
-          autoPlay
-          muted
-          loop
-          objectFit="cover"
-          roundedRight="xl"
-          outline="1px solid #f6ead5"
-          outlineOffset="-1px"
-        />
-      </SimpleGrid>
-    </>
+            {isLastStep ? "Get started" : "Next"}
+          </Button>
+        </ModalFooter>
+      </Box>
+      <Box
+        as="video"
+        src={activeStepData.video}
+        width="24rem"
+        height="full"
+        autoPlay
+        muted
+        loop
+        objectFit="cover"
+        roundedRight="xl"
+        outline="1px solid #f6ead5"
+        outlineOffset="-1px"
+      />
+    </SimpleGrid>
   )
 }
 
