@@ -14,9 +14,12 @@ interface ImportMetaEnv {
   readonly VITE_FEATURE_FLAG_ACRE_POINTS_ENABLED: string
   readonly VITE_FEATURE_FLAG_TVL_ENABLED: string
   readonly VITE_FEATURE_GATING_DAPP_ENABLED: string
+  readonly VITE_FEATURE_POSTHOG_ENABLED: string
   readonly VITE_SUBGRAPH_API_KEY: string
   readonly VITE_LATEST_COMMIT_HASH: string
   readonly VITE_ACRE_API_ENDPOINT: string
+  readonly VITE_POSTHOG_API_HOST: string
+  readonly VITE_POSTHOG_API_KEY: string
 }
 
 interface ImportMeta {

@@ -19,6 +19,7 @@ import getWagmiConfig from "./wagmiConfig"
 import queryClient from "./queryClient"
 import { delay, logPromiseFailure } from "./utils"
 import { AcreLogo } from "./assets/icons"
+import PostHogProvider from "./posthog/PostHogProvider"
 
 function SplashPage() {
   return (
@@ -62,21 +63,23 @@ function DAppProviders() {
 
   return (
     <Fade in={config !== undefined}>
-      <WagmiProvider config={config}>
-        <QueryClientProvider client={queryClient}>
-          <AcreSdkProvider>
-            <DocsDrawerContextProvider>
-              <SidebarContextProvider>
-                <WalletConnectionErrorContextProvider>
-                  <ReduxProvider store={store}>
-                    <DApp />
-                  </ReduxProvider>
-                </WalletConnectionErrorContextProvider>
-              </SidebarContextProvider>
-            </DocsDrawerContextProvider>
-          </AcreSdkProvider>
-        </QueryClientProvider>
-      </WagmiProvider>
+      <PostHogProvider>
+        <WagmiProvider config={config}>
+          <QueryClientProvider client={queryClient}>
+            <AcreSdkProvider>
+              <DocsDrawerContextProvider>
+                <SidebarContextProvider>
+                  <WalletConnectionErrorContextProvider>
+                    <ReduxProvider store={store}>
+                      <DApp />
+                    </ReduxProvider>
+                  </WalletConnectionErrorContextProvider>
+                </SidebarContextProvider>
+              </DocsDrawerContextProvider>
+            </AcreSdkProvider>
+          </QueryClientProvider>
+        </WagmiProvider>
+      </PostHogProvider>
     </Fade>
   )
 }
