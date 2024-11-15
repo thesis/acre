@@ -15,9 +15,6 @@ export const sortActivitiesByTimestamp = (activities: Activity[]): Activity[] =>
       getActivityTimestamp(activity2) - getActivityTimestamp(activity1),
   )
 
-export const filterCompletedActivities = (activities: Activity[]): Activity[] =>
-  activities.filter((activity) => isActivityCompleted(activity))
-
 export const isWithdrawType = (type: ActivityType) => type === "withdraw"
 
 export function getEstimatedDuration(

@@ -2,11 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest"
 import { createActivity } from "#/tests/factories"
 import { Activity } from "#/types"
 import { WalletState } from "../wallet"
-import reducer, {
-  deleteLatestActivity,
-  initialState,
-  setActivities,
-} from "../wallet/walletSlice"
+import reducer, { initialState, setActivities } from "../wallet/walletSlice"
 
 const isSignedMessage = false
 const hasFetchedActivities = true
@@ -15,10 +11,6 @@ const pendingActivity = createActivity({
   id: pendingActivityId,
   status: "pending",
 })
-
-const latestActivities = {
-  [pendingActivityId]: pendingActivity,
-}
 
 const activities = [
   pendingActivity,
@@ -34,20 +26,9 @@ describe("Wallet redux slice", () => {
       state = {
         ...initialState,
         activities,
-        latestActivities,
         isSignedMessage,
         hasFetchedActivities,
       }
-    })
-
-    it("should delete latest activity", () => {
-      expect(reducer(state, deleteLatestActivity(pendingActivityId))).toEqual({
-        ...initialState,
-        activities,
-        latestActivities: {},
-        isSignedMessage,
-        hasFetchedActivities,
-      })
     })
 
     it("should update activities when the status of item changes", () => {
@@ -60,14 +41,10 @@ describe("Wallet redux slice", () => {
         ({ id }) => id === pendingActivityId,
       )
       newActivities[foundIndex] = completedActivity
-      const newLatestActivities = {
-        [pendingActivityId]: completedActivity,
-      }
 
       expect(reducer(state, setActivities(newActivities))).toEqual({
         ...initialState,
         activities: newActivities,
-        latestActivities: newLatestActivities,
         isSignedMessage,
         hasFetchedActivities,
       })
@@ -102,12 +79,6 @@ describe("Wallet redux slice", () => {
       }),
     ]
 
-    // A user made a new withdrawal and the dapp saved the pending activity in
-    // the store.
-    const currentLatestActivities = {
-      [pendingWithdrawRedemptionKey]: pendingWithdrawActivity,
-    }
-
     describe("when withdrawal is still pending", () => {
       // This is our pending withdrawal but with the full id with the `-<count>`
       // suffix returned by backend.
@@ -122,19 +93,10 @@ describe("Wallet redux slice", () => {
         pendingWithdrawActivityWithFullId,
       ]
 
-      // We should replace the pending activity with the activity from the
-      // backend that contains the full id (`<redemptionKey>-<count>`) and still
-      // keep it in the `latestActivities` map.
-      const expectedLatestActivities = {
-        [pendingWithdrawActivityWithFullId.id]:
-          pendingWithdrawActivityWithFullId,
-      }
-
       beforeEach(() => {
         state = {
           ...initialState,
           activities: currentActivities,
-          latestActivities: currentLatestActivities,
           isSignedMessage,
           hasFetchedActivities,
         }
@@ -144,7 +106,6 @@ describe("Wallet redux slice", () => {
         expect(reducer(state, setActivities(newActivities))).toEqual({
           ...initialState,
           activities: newActivities,
-          latestActivities: expectedLatestActivities,
           isSignedMessage,
           hasFetchedActivities,
         })
@@ -164,26 +125,18 @@ describe("Wallet redux slice", () => {
       // redemption key).
       const newActivities = [...currentActivities, withdrawActivityCompleted]
 
-      // The dapp should update the state to `completed` and save this activity
-      // in the latest activity map.
-      const expectedLatestActivities = {
-        [withdrawActivityCompleted.id]: withdrawActivityCompleted,
-      }
-
       beforeEach(() => {
         state = {
           ...initialState,
           activities: currentActivities,
-          latestActivities: currentLatestActivities,
           isSignedMessage,
         }
       })
 
-      it("should mark the latest pending withdraw activity as completed and save as latest activity", () => {
+      it("should mark the latest pending withdraw activity as completed", () => {
         expect(reducer(state, setActivities(newActivities))).toEqual({
           ...initialState,
           activities: newActivities,
-          latestActivities: expectedLatestActivities,
           isSignedMessage,
           hasFetchedActivities,
         })
