@@ -72,7 +72,7 @@ export const timestampToRelativeTime = (timestamp: number) =>
 export const blockTimestampToRelativeTime = (
   unixTimestamp: number,
 ): string | null => {
-  const time = unixTimestamp * 1000
+  const time = unixTimestamp * ONE_SEC_IN_MILLISECONDS
   return timestampToRelativeTime(time)
 }
 
