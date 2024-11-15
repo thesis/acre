@@ -9,6 +9,7 @@ import {
   ONE_YEAR_IN_SECONDS,
 } from "#/constants"
 import { TimeUnits } from "#/types"
+import { DateTime } from "luxon"
 
 export const dateToUnixTimestamp = (date: Date = new Date()) =>
   Math.floor(date.getTime() / ONE_SEC_IN_MILLISECONDS)
@@ -65,6 +66,16 @@ export const getRelativeTime = (dateOrUnixTimestamp: Date | number): string => {
   return rtf.format(Math.floor(diff / divisor), unit)
 }
 
+export const timestampToRelativeTime = (timestamp: number) =>
+  DateTime.fromMillis(timestamp).toRelative()
+
+export const blockTimestampToRelativeTime = (
+  unixTimestamp: number,
+): string | null => {
+  const time = unixTimestamp * 1000
+  return timestampToRelativeTime(time)
+}
+
 // The function displays the date in the format: 21 Nov 2024, 16:02
 export const formatBlockTimestamp = (blockTimestamp: number) =>
   new Date(blockTimestamp * ONE_SEC_IN_MILLISECONDS).toLocaleString(
@@ -81,7 +92,7 @@ export const displayBlockTimestamp = (blockTimestamp: number) => {
 
   if (executedMoreThanDayAgo) return formatBlockTimestamp(blockTimestamp)
 
-  return getRelativeTime(blockTimestamp)
+  return blockTimestampToRelativeTime(blockTimestamp)
 }
 
 export const getExpirationDate = (duration: number, startDate?: Date) => {
