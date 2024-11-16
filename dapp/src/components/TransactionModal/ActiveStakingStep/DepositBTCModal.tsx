@@ -14,6 +14,8 @@ import { setStatus, setTxHash } from "#/store/action-flow"
 import { ONE_SEC_IN_MILLISECONDS, queryKeysFactory } from "#/constants"
 import { useTimeout } from "@chakra-ui/react"
 import { useMutation } from "@tanstack/react-query"
+import { PostHogEvent } from "#/posthog/events"
+import { usePostHogCapture } from "#/hooks/posthog/usePostHogCapture"
 import WalletInteractionModal from "../WalletInteractionModal"
 
 const { userKeys } = queryKeysFactory
@@ -27,6 +29,7 @@ export default function DepositBTCModal() {
   const handleBitcoinBalanceInvalidation = useInvalidateQueries({
     queryKey: userKeys.balance(),
   })
+  const handleCapture = usePostHogCapture()
 
   const onStakeBTCSuccess = useCallback(() => {
     handleBitcoinBalanceInvalidation()
@@ -52,8 +55,11 @@ export default function DepositBTCModal() {
     (transactionHash: string) => {
       dispatch(setTxHash(transactionHash))
       handleStake()
+      handleCapture(PostHogEvent.DepositSuccess, {
+        transactionHash,
+      })
     },
-    [dispatch, handleStake],
+    [dispatch, handleStake, handleCapture],
   )
 
   const onDepositBTCError = useCallback(
@@ -63,8 +69,16 @@ export default function DepositBTCModal() {
       } else {
         onError(error)
       }
+
+      const captureParameters =
+        error instanceof Error
+          ? {
+              cause: error.message,
+            }
+          : undefined
+      handleCapture(PostHogEvent.DepositFailure, captureParameters)
     },
-    [onError, handlePause],
+    [onError, handlePause, handleCapture],
   )
 
   const { mutate: sendBitcoinTransaction, status } = useDepositBTCTransaction({

@@ -24,6 +24,7 @@ import {
   IconUserCode,
 } from "@tabler/icons-react"
 import { useMatch } from "react-router-dom"
+import { usePostHogIdentity } from "#/hooks/posthog"
 
 function isChangeAccountFeatureSupported(embeddedApp: string | undefined) {
   return referralProgram.isEmbedApp(embeddedApp)
@@ -39,9 +40,15 @@ export default function ConnectWallet() {
     size: "lg",
   })
   const isDashboardPage = useMatch("/dashboard")
+  const { resetIdentity } = usePostHogIdentity()
 
   const handleConnectWallet = (isReconnecting: boolean = false) => {
     openModal(MODAL_TYPES.CONNECT_WALLET, { isReconnecting })
+  }
+
+  const handleDisconnectWallet = () => {
+    onDisconnect()
+    resetIdentity()
   }
 
   if (!address) {
@@ -135,7 +142,7 @@ export default function ConnectWallet() {
               icon={<Icon as={IconLogout} boxSize={5} />}
               px={2}
               boxSize={5}
-              onClick={onDisconnect}
+              onClick={handleDisconnectWallet}
             />
           </Tooltip>
         </HStack>
