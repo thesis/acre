@@ -60,7 +60,7 @@ function AcrePointsRewardEstimation(props: StackProps) {
   const pointsRate = 10000
 
   const estimatedReward = useMemo(
-    () => (selectedTierItem.multipler * baseReward) / pointsRate,
+    () => Math.floor((selectedTierItem.multipler * baseReward) / pointsRate),
     [baseReward, selectedTierItem],
   )
 
