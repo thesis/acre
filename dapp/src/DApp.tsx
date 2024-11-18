@@ -33,11 +33,11 @@ function DApp() {
   useInitApp()
 
   return (
-    <>
+    <PostHogProvider>
       <GlobalStyles />
       <RouterProvider router={router} fallbackElement={<SplashPage />} />
       <ReactQueryDevtools initialIsOpen={false} />
-    </>
+    </PostHogProvider>
   )
 }
 
@@ -63,23 +63,21 @@ function DAppProviders() {
 
   return (
     <Fade in={config !== undefined}>
-      <PostHogProvider>
-        <WagmiProvider config={config}>
-          <QueryClientProvider client={queryClient}>
-            <AcreSdkProvider>
-              <DocsDrawerContextProvider>
-                <SidebarContextProvider>
-                  <WalletConnectionErrorContextProvider>
-                    <ReduxProvider store={store}>
-                      <DApp />
-                    </ReduxProvider>
-                  </WalletConnectionErrorContextProvider>
-                </SidebarContextProvider>
-              </DocsDrawerContextProvider>
-            </AcreSdkProvider>
-          </QueryClientProvider>
-        </WagmiProvider>
-      </PostHogProvider>
+      <WagmiProvider config={config}>
+        <QueryClientProvider client={queryClient}>
+          <AcreSdkProvider>
+            <DocsDrawerContextProvider>
+              <SidebarContextProvider>
+                <WalletConnectionErrorContextProvider>
+                  <ReduxProvider store={store}>
+                    <DApp />
+                  </ReduxProvider>
+                </WalletConnectionErrorContextProvider>
+              </SidebarContextProvider>
+            </DocsDrawerContextProvider>
+          </AcreSdkProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
     </Fade>
   )
 }
