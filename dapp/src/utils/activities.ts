@@ -30,9 +30,3 @@ export function getEstimatedDuration(
 
   return "3 hours"
 }
-
-export function convertActivityTypeToLabel(type: ActivityType): string {
-  if (isWithdrawType(type)) return "Unstaking"
-
-  return "Staking"
-}
