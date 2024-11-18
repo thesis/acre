@@ -33,11 +33,11 @@ function DApp() {
   useInitApp()
 
   return (
-    <PostHogProvider>
+    <>
       <GlobalStyles />
       <RouterProvider router={router} fallbackElement={<SplashPage />} />
       <ReactQueryDevtools initialIsOpen={false} />
-    </PostHogProvider>
+    </>
   )
 }
 
@@ -70,7 +70,9 @@ function DAppProviders() {
               <SidebarContextProvider>
                 <WalletConnectionErrorContextProvider>
                   <ReduxProvider store={store}>
-                    <DApp />
+                    <PostHogProvider>
+                      <DApp />
+                    </PostHogProvider>
                   </ReduxProvider>
                 </WalletConnectionErrorContextProvider>
               </SidebarContextProvider>
