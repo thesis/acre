@@ -3,7 +3,13 @@ import * as Sentry from "@sentry/react"
 const initialize = (dsn: string) => {
   Sentry.init({
     dsn,
-    integrations: [Sentry.browserTracingIntegration()],
+    integrations: [
+      Sentry.browserTracingIntegration(),
+      Sentry.captureConsoleIntegration({ levels: ["error"] }),
+    ],
+    // Attach stacktrace to errors logged by `console.error`. This is useful for
+    // the `captureConsoleIntegration` integration.
+    attachStacktrace: true,
     // Performance Monitoring
     tracesSampleRate: 0.1,
   })
