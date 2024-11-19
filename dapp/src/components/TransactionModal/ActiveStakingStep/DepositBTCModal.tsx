@@ -12,7 +12,7 @@ import { eip1193, logPromiseFailure } from "#/utils"
 import { PROCESS_STATUSES } from "#/types"
 import { setStatus, setTxHash } from "#/store/action-flow"
 import { ONE_SEC_IN_MILLISECONDS, queryKeysFactory } from "#/constants"
-import { useTimeout } from "@chakra-ui/react"
+import { useBoolean, useTimeout } from "@chakra-ui/react"
 import { useMutation } from "@tanstack/react-query"
 import WalletInteractionModal from "../WalletInteractionModal"
 
@@ -27,6 +27,8 @@ export default function DepositBTCModal() {
   const handleBitcoinBalanceInvalidation = useInvalidateQueries({
     queryKey: userKeys.balance(),
   })
+
+  const [isTriggeredAction, setIsTriggeredAction] = useBoolean()
 
   const onStakeBTCSuccess = useCallback(() => {
     handleBitcoinBalanceInvalidation()
@@ -97,13 +99,21 @@ export default function DepositBTCModal() {
   ])
 
   const handledDepositBTCWrapper = useCallback(() => {
+    setIsTriggeredAction.on()
     logPromiseFailure(handledDepositBTC())
-  }, [handledDepositBTC])
+  }, [handledDepositBTC, setIsTriggeredAction])
 
   useTimeout(handledDepositBTCWrapper, ONE_SEC_IN_MILLISECONDS)
 
   if (status === "pending" || status === "success")
     return <WalletInteractionModal step="awaiting-transaction" />
 
-  return <WalletInteractionModal step="opening-wallet" />
+  return (
+    <WalletInteractionModal
+      step="opening-wallet"
+      // Let's make sure that the user does not close the window
+      // when the wallet opening action has already been triggered.
+      withCloseButton={!isTriggeredAction}
+    />
+  )
 }

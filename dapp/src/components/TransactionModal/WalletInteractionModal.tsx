@@ -44,8 +44,10 @@ const DATA: Record<
 
 export default function WalletInteractionModal({
   step,
+  withCloseButton,
 }: {
   step: WalletInteractionStep
+  withCloseButton?: boolean
 }) {
   const actionType = useActionFlowType()
   const connector = useConnector()
@@ -53,7 +55,7 @@ export default function WalletInteractionModal({
 
   return (
     <>
-      {step === "opening-wallet" && <ModalCloseButton />}
+      {withCloseButton && <ModalCloseButton />}
       <ModalHeader textAlign="center" pt={16} pb={12}>
         {header}
       </ModalHeader>
