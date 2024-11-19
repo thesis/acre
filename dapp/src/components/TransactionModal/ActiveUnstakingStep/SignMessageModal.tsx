@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useRef, useState } from "react"
+import React, { useCallback, useState } from "react"
 import {
   useActionFlowPause,
   useActionFlowTokenAmount,
   useAppDispatch,
+  useCancelPromise,
   useInvalidateQueries,
   useModal,
   useTimeout,
@@ -22,15 +23,6 @@ const { userKeys } = queryKeysFactory
 
 type WithdrawalStatus = "building-data" | "built-data" | "signature"
 
-const sessionIdToPromise: Record<
-  number,
-  {
-    promise: Promise<void>
-    cancel: (reason: Error) => void
-    shouldOpenErrorModal: boolean
-  }
-> = {}
-
 export default function SignMessageModal() {
   const [status, setWaitingStatus] = useState<WithdrawalStatus>("building-data")
 
@@ -43,24 +35,13 @@ export default function SignMessageModal() {
   const handleBitcoinPositionInvalidation = useInvalidateQueries({
     queryKey: userKeys.position(),
   })
-  const sessionId = useRef(Math.random())
+  const { cancel, resolve, shouldOpenErrorModal } = useCancelPromise(
+    "Withdrawal cancelled",
+  )
   const { transactionFee } = useTransactionDetails(
     amount,
     ACTION_FLOW_TYPES.UNSTAKE,
   )
-
-  useEffect(() => {
-    let cancel = (_: Error) => {}
-    const promise: Promise<void> = new Promise((_, reject) => {
-      cancel = reject
-    })
-
-    sessionIdToPromise[sessionId.current] = {
-      cancel,
-      promise,
-      shouldOpenErrorModal: true,
-    }
-  }, [])
 
   const dataBuiltStepCallback = useCallback(() => {
     setWaitingStatus("built-data")
@@ -69,11 +50,8 @@ export default function SignMessageModal() {
 
   const onSignMessageCallback = useCallback(async () => {
     setWaitingStatus("signature")
-    return Promise.race([
-      sessionIdToPromise[sessionId.current].promise,
-      Promise.resolve(),
-    ])
-  }, [])
+    return resolve()
+  }, [resolve])
 
   const onSignMessageSuccess = useCallback(() => {
     handleBitcoinPositionInvalidation()
@@ -90,7 +68,7 @@ export default function SignMessageModal() {
 
   const onError = useCallback(
     (error: unknown) => {
-      if (!sessionIdToPromise[sessionId.current].shouldOpenErrorModal) return
+      if (!shouldOpenErrorModal) return
 
       if (eip1193.didUserRejectRequest(error)) {
         handlePause()
@@ -98,7 +76,7 @@ export default function SignMessageModal() {
         onSignMessageError(error)
       }
     },
-    [onSignMessageError, handlePause],
+    [shouldOpenErrorModal, handlePause, onSignMessageError],
   )
 
   const { mutate: handleSignMessage } = useMutation({
@@ -151,16 +129,7 @@ export default function SignMessageModal() {
   })
 
   const onClose = () => {
-    const currentSessionId = sessionId.current
-    const sessionData = sessionIdToPromise[currentSessionId]
-    sessionIdToPromise[currentSessionId] = {
-      ...sessionData,
-      shouldOpenErrorModal: false,
-    }
-
-    sessionIdToPromise[currentSessionId].cancel(
-      new Error("Withdrawal cancelled"),
-    )
+    cancel()
     closeModal()
   }
 

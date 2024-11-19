@@ -3,6 +3,7 @@ import {
   useActionFlowPause,
   useActionFlowTokenAmount,
   useAppDispatch,
+  useCancelPromise,
   useDepositBTCTransaction,
   useInvalidateQueries,
   useStakeFlowContext,
@@ -12,7 +13,7 @@ import { eip1193, logPromiseFailure } from "#/utils"
 import { PROCESS_STATUSES } from "#/types"
 import { setStatus, setTxHash } from "#/store/action-flow"
 import { ONE_SEC_IN_MILLISECONDS, queryKeysFactory } from "#/constants"
-import { useBoolean, useTimeout } from "@chakra-ui/react"
+import { useTimeout } from "@chakra-ui/react"
 import { useMutation } from "@tanstack/react-query"
 import WalletInteractionModal from "../WalletInteractionModal"
 
@@ -28,7 +29,8 @@ export default function DepositBTCModal() {
     queryKey: userKeys.balance(),
   })
 
-  const [isTriggeredAction, setIsTriggeredAction] = useBoolean()
+  const { cancel, resolve, shouldOpenErrorModal } =
+    useCancelPromise("Deposit cancelled")
 
   const onStakeBTCSuccess = useCallback(() => {
     handleBitcoinBalanceInvalidation()
@@ -60,13 +62,15 @@ export default function DepositBTCModal() {
 
   const onDepositBTCError = useCallback(
     (error: unknown) => {
+      if (!shouldOpenErrorModal) return
+
       if (eip1193.didUserRejectRequest(error)) {
         handlePause()
       } else {
         onError(error)
       }
     },
-    [onError, handlePause],
+    [shouldOpenErrorModal, handlePause, onError],
   )
 
   const { mutate: sendBitcoinTransaction, status } = useDepositBTCTransaction({
@@ -81,6 +85,8 @@ export default function DepositBTCModal() {
       btcAddress,
     )
 
+    await resolve()
+
     if (verificationStatus === "valid") {
       sendBitcoinTransaction({
         recipient: btcAddress,
@@ -94,26 +100,19 @@ export default function DepositBTCModal() {
     btcAddress,
     depositReceipt,
     verifyDepositAddress,
+    resolve,
     sendBitcoinTransaction,
     onError,
   ])
 
   const handledDepositBTCWrapper = useCallback(() => {
-    setIsTriggeredAction.on()
     logPromiseFailure(handledDepositBTC())
-  }, [handledDepositBTC, setIsTriggeredAction])
+  }, [handledDepositBTC])
 
   useTimeout(handledDepositBTCWrapper, ONE_SEC_IN_MILLISECONDS)
 
   if (status === "pending" || status === "success")
     return <WalletInteractionModal step="awaiting-transaction" />
 
-  return (
-    <WalletInteractionModal
-      step="opening-wallet"
-      // Let's make sure that the user does not close the window
-      // when the wallet opening action has already been triggered.
-      withCloseButton={!isTriggeredAction}
-    />
-  )
+  return <WalletInteractionModal step="opening-wallet" onClose={cancel} />
 }
