@@ -42,14 +42,12 @@ export default function BeehiveCard(props: CardProps) {
         <Image src={beehiveIllustrationSrc} boxSize={32} />
         <UserDataSkeleton w="100%" mt={-7}>
           <Box px={4} py={3} bg="gold.100" borderRadius="lg">
-            <Flex gap={1} flexDirection="row">
-              <TextSm>
-                <Highlight query="Mezo" styles={{ color: "mezo" }}>
-                  Total collected mats from Mezo
-                </Highlight>
-              </TextSm>
-              <MezoSignIcon boxSize={5} rounded="full" />
-            </Flex>
+            <TextSm>
+              <Highlight query="Mezo" styles={{ color: "mezo" }}>
+                Total collected mats from Mezo
+              </Highlight>
+              <MezoSignIcon ml={1} boxSize={5} rounded="full" />
+            </TextSm>
             {data && (
               <H6 fontWeight="semibold" color="grey.700">
                 {numberToLocaleString(data.totalMats)}
