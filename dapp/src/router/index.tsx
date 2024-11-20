@@ -12,6 +12,7 @@ import AccessPage from "#/pages/AccessPage"
 import WelcomePage from "#/pages/WelcomePage"
 import welcomePageLoader from "#/pages/WelcomePage/loader"
 import accessPageLoader from "#/pages/AccessPage/loader"
+import { writeReferral } from "#/hooks/useReferral"
 import { routerPath } from "./path"
 
 const mainLayoutLoader: LoaderFunction = ({ request }) => {
@@ -32,6 +33,24 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
+    loader: ({ request }) => {
+      // TODO: display the error page/modal when the referral is invalid.
+      const referralCode = referralProgram.getReferralFromURL()
+      if (
+        referralCode &&
+        referralProgram.isValidReferral(Number(referralCode))
+      ) {
+        writeReferral(referralCode)
+      }
+
+      const embedApp = referralProgram.getEmbeddedApp(request.url)
+      if (referralProgram.isEmbedApp(embedApp)) {
+        writeReferral(
+          referralProgram.getReferralByEmbeddedApp(embedApp).toString(),
+        )
+      }
+      return null
+    },
     children: [
       {
         index: true,
