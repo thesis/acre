@@ -28,6 +28,12 @@ export default function DashboardPage() {
           "dashboard beehive"
           `,
       }}
+      gridTemplateColumns={{
+        base: "1fr",
+        sm: "1fr 1fr",
+        lg: "1fr 31%",
+        "2xl": "1fr 36%",
+      }}
       gridTemplateRows={{
         base: `
           ${featureFlags.TVL_ENABLED ? "auto" : ""}
