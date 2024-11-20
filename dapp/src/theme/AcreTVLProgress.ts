@@ -27,7 +27,9 @@ const containerStyles = defineStyle({
 const wrapperStyles = defineStyle({
   px: 5,
   py: 6,
-  gap: "6.875rem", // 110px
+  display: "flex",
+  flexDirection: { base: "column", sm: "row" }, // 110px
+  gap: { base: 5, md: "6.875rem" }, // 110px
 })
 const contentWrapperStyles = defineStyle({
   gridAutoFlow: "column",

@@ -9,28 +9,38 @@ import AcrePointsTemplateCard from "./AcrePointsTemplateCard"
 import BeehiveCard from "./BeehiveCard"
 import { AcreTVLProgress } from "./AcreTVLProgress"
 
-const TEMPLATE_AREAS = `
-  ${featureFlags.TVL_ENABLED ? '"tvl tvl"' : ""}
-  "dashboard acre-points"
-  "dashboard beehive"
-  "dashboard useful-links"
-`
-
-const GRID_TEMPLATE_ROWS = `${featureFlags.TVL_ENABLED ? "auto" : ""} auto auto 1fr`
-
 export default function DashboardPage() {
   useTriggerConnectWalletModal()
 
   return (
     <Grid
       gridGap={{ base: 4, "2xl": 8 }}
-      templateAreas={TEMPLATE_AREAS}
-      gridTemplateColumns={{
-        base: "1fr 1fr",
-        lg: "1fr 31%",
-        "2xl": "1fr 36%",
+      gridTemplateAreas={{
+        base: `
+          ${featureFlags.TVL_ENABLED ? '"tvl"' : ""}
+          "dashboard"
+          "acre-points"
+          "beehive"
+        `,
+        sm: `
+          ${featureFlags.TVL_ENABLED ? '"tvl tvl"' : ""}
+          "dashboard acre-points"
+          "dashboard beehive"
+          `,
       }}
-      gridTemplateRows={GRID_TEMPLATE_ROWS}
+      gridTemplateRows={{
+        base: `
+          ${featureFlags.TVL_ENABLED ? "auto" : ""}
+          auto
+          auto
+          1fr
+        `,
+        sm: `
+          ${featureFlags.TVL_ENABLED ? "auto" : ""}
+          auto
+          1fr
+          `,
+      }}
     >
       {featureFlags.TVL_ENABLED && <AcreTVLProgress gridArea="tvl" />}
 
@@ -40,12 +50,12 @@ export default function DashboardPage() {
       {/* <GrantedSeasonPassCard /> */}
 
       {featureFlags.ACRE_POINTS_ENABLED ? (
-        <AcrePointsCard gridArea="acre-points" />
+        <AcrePointsCard gridArea="acre-points" h="fit-content" />
       ) : (
-        <AcrePointsTemplateCard gridArea="acre-points" />
+        <AcrePointsTemplateCard gridArea="acre-points" h="fit-content" />
       )}
 
-      <BeehiveCard gridArea="beehive" />
+      <BeehiveCard gridArea="beehive" h="fit-content" />
     </Grid>
   )
 }

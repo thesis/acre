@@ -6,6 +6,7 @@ import {
   useTransactionModal,
   useStatistics,
   useWallet,
+  useMobileMode,
 } from "#/hooks"
 import { ACTION_FLOW_TYPES } from "#/types"
 import {
@@ -41,6 +42,10 @@ export default function PositionDetails() {
   const openDepositModal = useTransactionModal(ACTION_FLOW_TYPES.STAKE)
   const openWithdrawModal = useTransactionModal(ACTION_FLOW_TYPES.UNSTAKE)
   const activitiesCount = useAllActivitiesCount()
+  const isMobileMode = useMobileMode()
+  const arrivingSoonLabel = isMobileMode
+    ? "Arriving Soon to mobile devices"
+    : undefined
 
   const { tvl } = useStatistics()
 
@@ -91,24 +96,39 @@ export default function PositionDetails() {
 
       <HStack w="full" justify="start" flexWrap="wrap" spacing={5}>
         <UserDataSkeleton>
-          <Button
-            {...buttonStyles}
-            onClick={openDepositModal}
-            isDisabled={featureFlags.TVL_ENABLED && tvl.isCapExceeded}
+          <ArrivingSoonTooltip
+            label={arrivingSoonLabel}
+            shouldDisplayTooltip={isMobileMode}
           >
-            Deposit
-          </Button>
+            <Button
+              {...buttonStyles}
+              onClick={openDepositModal}
+              isDisabled={
+                (featureFlags.TVL_ENABLED && tvl.isCapExceeded) || isMobileMode
+              }
+            >
+              Deposit
+            </Button>
+          </ArrivingSoonTooltip>
         </UserDataSkeleton>
         {isConnected && activitiesCount > 0 && (
-          <UserDataSkeleton ml={-3}>
+          <UserDataSkeleton>
             <ArrivingSoonTooltip
-              shouldDisplayTooltip={!isWithdrawalFlowEnabled}
+              label={
+                isWithdrawalFlowEnabled && isMobileMode
+                  ? arrivingSoonLabel
+                  : undefined
+              }
+              shouldDisplayTooltip={
+                !isWithdrawalFlowEnabled ||
+                (isWithdrawalFlowEnabled && isMobileMode)
+              }
             >
               <Button
                 variant="outline"
                 {...buttonStyles}
                 onClick={openWithdrawModal}
-                isDisabled={!isWithdrawalFlowEnabled}
+                isDisabled={!isWithdrawalFlowEnabled || isMobileMode}
               >
                 Withdraw
               </Button>
