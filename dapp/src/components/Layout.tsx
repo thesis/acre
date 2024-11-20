@@ -18,9 +18,9 @@ const PAGE_MAX_WIDTH: Record<DappMode, string> = {
 
 function Layout() {
   const isMobileMode = useMobileMode()
-  const { embeddedApp } = useIsEmbed()
+  const { isEmbed, embeddedApp } = useIsEmbed()
 
-  if (isMobileMode) return <MobileModeBanner forceOpen />
+  if (!isEmbed && isMobileMode) return <MobileModeBanner forceOpen />
 
   const maxWidth = embeddedApp
     ? PAGE_MAX_WIDTH[embeddedApp]
