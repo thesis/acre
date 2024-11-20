@@ -46,7 +46,7 @@ function MobileModeBanner(props: MobileModeBannerProps) {
     >
       <Flex align="center" justify="center" p={4} bg="grey.700">
         <TextMd color="gold.300" textAlign="center" whiteSpace="break-spaces">
-          Acre app is <LiveTag color="brand.400" gap={1} px={1} py={0} /> on
+          Acre App is <LiveTag color="brand.400" gap={1} px={1} py={0} /> on
           desktop!
         </TextMd>
 
@@ -92,7 +92,7 @@ function MobileModeBanner(props: MobileModeBannerProps) {
               <AcreAnimatedBadge mx="auto" mb={12} />
 
               <H4 mb={9} fontWeight="500">
-                Acre app live only on desktop for now. We&apos;re working with
+                Acre App live only on desktop for now. We&apos;re working with
                 partners to bring it to mobile soon.
               </H4>
 
