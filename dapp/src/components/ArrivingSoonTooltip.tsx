@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react"
-import { Tooltip } from "@chakra-ui/react"
+import Tooltip from "./shared/Tooltip"
 
 export default function ArrivingSoonTooltip({
   label,
