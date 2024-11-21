@@ -43,9 +43,6 @@ export default function PositionDetails() {
   const openWithdrawModal = useTransactionModal(ACTION_FLOW_TYPES.UNSTAKE)
   const activitiesCount = useAllActivitiesCount()
   const isMobileMode = useMobileMode()
-  const arrivingSoonLabel = isMobileMode
-    ? "Arriving Soon to mobile devices"
-    : undefined
 
   const { tvl } = useStatistics()
 
@@ -97,7 +94,7 @@ export default function PositionDetails() {
       <HStack w="full" justify="start" flexWrap="wrap" spacing={5}>
         <UserDataSkeleton>
           <ArrivingSoonTooltip
-            label={arrivingSoonLabel}
+            label="This option is not available on mobile yet. Please use the desktop app to deposit."
             shouldDisplayTooltip={isMobileMode}
           >
             <Button
@@ -116,7 +113,7 @@ export default function PositionDetails() {
             <ArrivingSoonTooltip
               label={
                 isWithdrawalFlowEnabled && isMobileMode
-                  ? arrivingSoonLabel
+                  ? "This option is not available on mobile yet. Please use the desktop app to withdraw."
                   : undefined
               }
               shouldDisplayTooltip={
