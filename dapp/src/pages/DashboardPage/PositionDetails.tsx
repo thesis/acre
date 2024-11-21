@@ -93,40 +93,38 @@ export default function PositionDetails() {
 
       <HStack w="full" justify="start" flexWrap="wrap" spacing={5}>
         <UserDataSkeleton>
-          <ArrivingSoonTooltip
+          {/* <ArrivingSoonTooltip
             label="This option is not available on mobile yet. Please use the desktop app to deposit."
             shouldDisplayTooltip={isMobileMode}
+          > */}
+          <Button
+            {...buttonStyles}
+            onClick={openDepositModal}
+            isDisabled={featureFlags.TVL_ENABLED && tvl.isCapExceeded}
           >
-            <Button
-              {...buttonStyles}
-              onClick={openDepositModal}
-              isDisabled={
-                (featureFlags.TVL_ENABLED && tvl.isCapExceeded) || isMobileMode
-              }
-            >
-              Deposit
-            </Button>
-          </ArrivingSoonTooltip>
+            Deposit
+          </Button>
+          {/* </ArrivingSoonTooltip> */}
         </UserDataSkeleton>
         {isConnected && activitiesCount > 0 && (
           <UserDataSkeleton>
-            <ArrivingSoonTooltip
+            {/* <ArrivingSoonTooltip
               label={
                 isMobileMode
                   ? "This option is not available on mobile yet. Please use the desktop app to withdraw."
                   : "This option is currently not available."
               }
-              shouldDisplayTooltip={!isWithdrawalFlowEnabled || isMobileMode}
+              shouldDisplayTooltip={!isWithdrawalFlowEnabled}
+            > */}
+            <Button
+              variant="outline"
+              {...buttonStyles}
+              onClick={openWithdrawModal}
+              isDisabled={!isWithdrawalFlowEnabled}
             >
-              <Button
-                variant="outline"
-                {...buttonStyles}
-                onClick={openWithdrawModal}
-                isDisabled={!isWithdrawalFlowEnabled || isMobileMode}
-              >
-                Withdraw
-              </Button>
-            </ArrivingSoonTooltip>
+              Withdraw
+            </Button>
+            {/* </ArrivingSoonTooltip> */}
           </UserDataSkeleton>
         )}
         {featureFlags.TVL_ENABLED && <AcreTVLMessage />}
