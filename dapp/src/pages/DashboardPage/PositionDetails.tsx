@@ -112,9 +112,9 @@ export default function PositionDetails() {
           <UserDataSkeleton>
             <ArrivingSoonTooltip
               label={
-                isWithdrawalFlowEnabled && isMobileMode
+                isMobileMode
                   ? "This option is not available on mobile yet. Please use the desktop app to withdraw."
-                  : undefined
+                  : "This option is currently not available."
               }
               shouldDisplayTooltip={!isWithdrawalFlowEnabled || isMobileMode}
             >
