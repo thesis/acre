@@ -131,7 +131,7 @@ function WelcomeModalBase({ closeModal }: BaseModalProps) {
     <SimpleGrid columns={2} templateColumns="1fr auto">
       <Box>
         <ModalHeader gap={3} pb={8}>
-          <TextSm mb="12" color="neutral.70">
+          <TextSm mb={{ base: 4, md: 12 }} color="neutral.70">
             Welcome to Acre,
           </TextSm>
           {activeStepData.title}
@@ -143,7 +143,7 @@ function WelcomeModalBase({ closeModal }: BaseModalProps) {
           display="flex"
           flexDirection="row"
           justifyContent="space-between"
-          mt="14"
+          mt={{ base: 0, md: 14 }}
         >
           <Stepper index={activeStep} gap="3">
             {steps.map((step) => (
