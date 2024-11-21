@@ -48,7 +48,7 @@ function useSignMessageAndCreateSession() {
         .getBitcoinProvider()
         .getPublicKey()
 
-      await acreApi.createSession(message, signedMessage, publicKey)
+      // await acreApi.createSession(message, signedMessage, publicKey)
     },
     [signMessageAsync],
   )
