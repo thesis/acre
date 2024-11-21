@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react"
 import { EXTERNAL_HREF } from "#/constants"
 import { AcreSignIcon, ArrowUpRight } from "#/assets/icons"
+import { useMobileMode } from "#/hooks"
 
 type FooterListItem = Pick<LinkProps, "href" | "children">
 
@@ -74,6 +75,9 @@ const getItemsList = (
 
 export default function Footer() {
   const styles = useMultiStyleConfig("Footer")
+  const isMobileMode = useMobileMode()
+
+  if (isMobileMode) return null
 
   return (
     <Box as="footer" __css={styles.container}>
