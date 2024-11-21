@@ -46,7 +46,11 @@ export default function BeehiveCard(props: CardProps) {
               <Highlight query="Mezo" styles={{ color: "mezo" }}>
                 Total collected mats from Mezo
               </Highlight>
-              <MezoSignIcon ml={1} boxSize={5} rounded="full" />
+              <MezoSignIcon
+                ml={1}
+                boxSize={{ base: 4, md: 5 }}
+                rounded="full"
+              />
             </TextSm>
             {data && (
               <H6 fontWeight="semibold" color="grey.700">
