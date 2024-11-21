@@ -13,7 +13,7 @@ import { displayBlockTimestamp, getActivityTimestamp } from "#/utils"
 import { Activity } from "#/types"
 import BlockExplorerLink from "#/components/shared/BlockExplorerLink"
 import { IconArrowUpRight } from "@tabler/icons-react"
-import { useActivities } from "#/hooks"
+import { useActivities, useMobileMode } from "#/hooks"
 import { semanticTokens } from "#/theme/utils"
 import EstimatedDuration from "./EstimatedDuration"
 
@@ -21,9 +21,10 @@ const BLOCK_EXPLORER_CELL_MIN_WIDTH = 16
 
 export default function TransactionTable() {
   const activities = useActivities()
+  const isMobileMode = useMobileMode()
 
   return (
-    <Pagination data={activities} pageSize={10} spacing={6}>
+    <Pagination data={activities} pageSize={isMobileMode ? 5 : 10} spacing={6}>
       <PaginationPage direction="column" spacing={2} pageSpacing={6}>
         {(pageData: Activity[]) =>
           pageData.map((activity) => (

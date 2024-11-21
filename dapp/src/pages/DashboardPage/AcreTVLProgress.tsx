@@ -33,7 +33,7 @@ export function AcreTVLProgress(props: AcreTVLProgressProps) {
 
   return (
     <Box sx={styles.container} {...props}>
-      <HStack sx={styles.wrapper}>
+      <Box sx={styles.wrapper}>
         <Grid sx={styles.contentWrapper}>
           <BitcoinIcon sx={styles.valueIcon} />
 
@@ -59,7 +59,7 @@ export function AcreTVLProgress(props: AcreTVLProgressProps) {
 
           <ProgressBar value={tvl.progress} withBoltIcon={tvl.progress > 2} />
         </VStack>
-      </HStack>
+      </Box>
     </Box>
   )
 }

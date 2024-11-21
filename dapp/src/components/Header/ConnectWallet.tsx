@@ -6,7 +6,6 @@ import {
   Icon,
   IconButton,
   StackDivider,
-  Tooltip,
   useClipboard,
   useMultiStyleConfig,
 } from "@chakra-ui/react"
@@ -24,6 +23,7 @@ import {
   IconUserCode,
 } from "@tabler/icons-react"
 import { useMatch } from "react-router-dom"
+import Tooltip from "../shared/Tooltip"
 
 function isChangeAccountFeatureSupported(embeddedApp: string | undefined) {
   return referralProgram.isEmbedApp(embeddedApp)
