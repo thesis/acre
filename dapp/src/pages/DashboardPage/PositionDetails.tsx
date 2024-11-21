@@ -116,10 +116,7 @@ export default function PositionDetails() {
                   ? "This option is not available on mobile yet. Please use the desktop app to withdraw."
                   : undefined
               }
-              shouldDisplayTooltip={
-                !isWithdrawalFlowEnabled ||
-                (isWithdrawalFlowEnabled && isMobileMode)
-              }
+              shouldDisplayTooltip={!isWithdrawalFlowEnabled || isMobileMode}
             >
               <Button
                 variant="outline"
