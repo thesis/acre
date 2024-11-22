@@ -39,7 +39,7 @@ export default function ConnectWalletErrorAlert(
           <Alert status="error" mb={6} {...restProps}>
             <AlertIcon />
             <VStack w="full" align="start" spacing={0}>
-              <AlertTitle>{title}</AlertTitle>
+              <AlertTitle textAlign="start">{title}</AlertTitle>
               <AlertDescription>{description}</AlertDescription>
             </VStack>
           </Alert>
