@@ -5,11 +5,15 @@ import {
   HStack,
   Icon,
   IconButton,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   StackDivider,
   useClipboard,
   useMultiStyleConfig,
 } from "@chakra-ui/react"
-import { useIsEmbed, useModal, useWallet } from "#/hooks"
+import { useIsEmbed, useMobileMode, useModal, useWallet } from "#/hooks"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import { TextMd } from "#/components/shared/Typography"
 import { BitcoinIcon } from "#/assets/icons"
@@ -21,6 +25,8 @@ import {
   IconLogout,
   IconWallet,
   IconUserCode,
+  IconChevronDown,
+  IconChevronUp,
 } from "@tabler/icons-react"
 import { useMatch } from "react-router-dom"
 import Tooltip from "../shared/Tooltip"
@@ -39,6 +45,7 @@ export default function ConnectWallet() {
     size: "lg",
   })
   const isDashboardPage = useMatch("/dashboard")
+  const isMobile = useMobileMode()
 
   const handleConnectWallet = (isReconnecting: boolean = false) => {
     openModal(MODAL_TYPES.CONNECT_WALLET, { isReconnecting })
@@ -63,7 +70,47 @@ export default function ConnectWallet() {
     )
   }
 
-  return (
+  return isMobile ? (
+    <Menu>
+      {({ isOpen }) => (
+        <>
+          <MenuButton
+            as={Button}
+            variant="card"
+            leftIcon={<Icon as={BitcoinIcon} boxSize={6} color="brand.400" />}
+            rightIcon={isOpen ? <IconChevronUp /> : <IconChevronDown />}
+          >
+            <TextMd color="brand.400">{truncateAddress(address)}</TextMd>
+          </MenuButton>
+          <MenuList bg="gold.200">
+            <MenuItem
+              {...styles}
+              icon={<Icon as={IconCopy} boxSize={5} />}
+              onClick={onCopy}
+            >
+              {hasCopied ? "Address copied" : "Copy Address"}
+            </MenuItem>
+            {isChangeAccountFeatureSupported(embeddedApp) && (
+              <MenuItem
+                {...styles}
+                icon={<Icon as={IconUserCode} boxSize={5} />}
+                onClick={() => handleConnectWallet(true)}
+              >
+                Change account
+              </MenuItem>
+            )}
+            <MenuItem
+              {...styles}
+              icon={<Icon as={IconLogout} boxSize={5} />}
+              onClick={onDisconnect}
+            >
+              Disconnect
+            </MenuItem>
+          </MenuList>
+        </>
+      )}
+    </Menu>
+  ) : (
     <HStack spacing={4}>
       <HStack display={{ base: "none", md: "flex" }}>
         <CurrencyBalance currency="bitcoin" amount={balance} />
