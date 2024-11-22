@@ -10,6 +10,7 @@ import Sidebar from "./Sidebar"
 import MobileModeBanner from "./MobileModeBanner"
 import Footer from "./Footer"
 
+// The padding update should also be done in the Header component and Footer theme as well
 const PADDING = {
   base: 4,
   md: "2.5rem", // 40px
