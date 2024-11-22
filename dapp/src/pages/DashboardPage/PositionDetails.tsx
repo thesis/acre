@@ -48,6 +48,9 @@ export default function PositionDetails() {
 
   const { isConnected } = useWallet()
 
+  const isDisabledForMobileMode =
+    isMobileMode && !featureFlags.MOBILE_MODE_ENABLED
+
   return (
     <Flex w="100%" flexDirection="column" gap={5}>
       <VStack alignItems="start" spacing={0}>
@@ -95,13 +98,14 @@ export default function PositionDetails() {
         <UserDataSkeleton>
           <ArrivingSoonTooltip
             label="This option is not available on mobile yet. Please use the desktop app to deposit."
-            shouldDisplayTooltip={isMobileMode}
+            shouldDisplayTooltip={isDisabledForMobileMode}
           >
             <Button
               {...buttonStyles}
               onClick={openDepositModal}
               isDisabled={
-                (featureFlags.TVL_ENABLED && tvl.isCapExceeded) || isMobileMode
+                (featureFlags.TVL_ENABLED && tvl.isCapExceeded) ||
+                isDisabledForMobileMode
               }
             >
               Deposit
@@ -116,13 +120,15 @@ export default function PositionDetails() {
                   ? "This option is not available on mobile yet. Please use the desktop app to withdraw."
                   : "This option is currently not available."
               }
-              shouldDisplayTooltip={!isWithdrawalFlowEnabled || isMobileMode}
+              shouldDisplayTooltip={
+                !isWithdrawalFlowEnabled || isDisabledForMobileMode
+              }
             >
               <Button
                 variant="outline"
                 {...buttonStyles}
                 onClick={openWithdrawModal}
-                isDisabled={!isWithdrawalFlowEnabled || isMobileMode}
+                isDisabled={!isWithdrawalFlowEnabled || isDisabledForMobileMode}
               >
                 Withdraw
               </Button>

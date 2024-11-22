@@ -18,6 +18,9 @@ const TVL_ENABLED = import.meta.env.VITE_FEATURE_FLAG_TVL_ENABLED === "true"
 const GATING_DAPP_ENABLED =
   import.meta.env.VITE_FEATURE_GATING_DAPP_ENABLED === "true"
 
+const MOBILE_MODE_ENABLED =
+  import.meta.env.VITE_FEATURE_MOBILE_MODE_ENABLED === "true"
+
 const featureFlags = {
   GAMIFICATION_ENABLED,
   OKX_WALLET_ENABLED,
@@ -26,6 +29,7 @@ const featureFlags = {
   ACRE_POINTS_ENABLED,
   TVL_ENABLED,
   GATING_DAPP_ENABLED,
+  MOBILE_MODE_ENABLED,
 }
 
 export default featureFlags

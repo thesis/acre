@@ -17,6 +17,7 @@ interface ImportMetaEnv {
   readonly VITE_SUBGRAPH_API_KEY: string
   readonly VITE_LATEST_COMMIT_HASH: string
   readonly VITE_ACRE_API_ENDPOINT: string
+  readonly VITE_FEATURE_MOBILE_MODE_ENABLED: string
 }
 
 interface ImportMeta {
