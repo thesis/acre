@@ -36,13 +36,15 @@ export const router = createBrowserRouter([
     element: <Layout />,
     loader: ({ request }) => {
       // TODO: display the error page/modal when the referral is invalid.
-      const referralCode = referralProgram.getReferralFromURL() ?? env.REFERRAL
-      if (
-        referralCode &&
-        referralProgram.isValidReferral(Number(referralCode))
-      ) {
-        writeReferral(referralCode.toString())
-      }
+      const referralCodeFromUrl = referralProgram.getReferralFromURL()
+
+      const referralCode = referralProgram.isValidReferral(
+        Number(referralCodeFromUrl),
+      )
+        ? referralCodeFromUrl!
+        : env.REFERRAL
+
+      writeReferral(referralCode.toString())
 
       const embedApp = referralProgram.getEmbeddedApp(request.url)
       if (referralProgram.isEmbedApp(embedApp)) {
