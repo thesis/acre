@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from "react"
+import { useCallback, useEffect, useRef } from "react"
 
 const sessionIdToPromise: Record<
   number,
@@ -44,11 +44,8 @@ export default function useCancelPromise(errorMsgText: string) {
       ]),
     [],
   )
-
-  const shouldOpenErrorModal = useMemo(
-    () => sessionIdToPromise[sessionId.current]?.shouldOpenErrorModal,
-    [],
-  )
+  const shouldOpenErrorModal =
+    sessionIdToPromise[sessionId.current]?.shouldOpenErrorModal
 
   return {
     cancel,
