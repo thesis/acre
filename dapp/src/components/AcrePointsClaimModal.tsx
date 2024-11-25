@@ -162,7 +162,7 @@ function AcrePointsClaimModalBase({
               <Box
                 data-step-value
                 transformOrigin="bottom"
-                fontSize="8xl"
+                fontSize={{ base: "5xl", md: "8xl" }}
                 lineHeight="6.25rem" // 100px
                 fontWeight="bold"
                 color="grey.700"
@@ -208,7 +208,6 @@ function AcrePointsClaimModalBase({
 const AcrePointsClaimModal = withBaseModal(AcrePointsClaimModalBase, {
   returnFocusOnClose: false,
   variant: "unstyled",
-  size: "full",
 })
 
 export default AcrePointsClaimModal

@@ -52,7 +52,7 @@ export function validateTokenAmount(
   if (isMaximumValueExceeded) return ERRORS_BY_ACTION_TYPE.EXCEEDED_VALUE
   if (!isMinimumValueFulfilled)
     return ERRORS_BY_ACTION_TYPE.INSUFFICIENT_VALUE(
-      actionType === ACTION_FLOW_TYPES.STAKE ? "deposit" : "withdraw",
+      actionType === ACTION_FLOW_TYPES.STAKE ? "deposit" : "withdrawal",
       fixedPointNumberToString(minValue, decimals),
     )
 

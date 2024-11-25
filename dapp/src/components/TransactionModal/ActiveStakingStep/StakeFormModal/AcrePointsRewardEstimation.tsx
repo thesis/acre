@@ -13,7 +13,11 @@ import { H4, TextMd } from "#/components/shared/Typography"
 import { numberToLocaleString } from "#/utils"
 import { IconChevronDown } from "@tabler/icons-react"
 import { TOKEN_AMOUNT_FIELD_NAME } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
-import { useFormField, useMinDepositAmount } from "#/hooks"
+import {
+  useFormField,
+  useMinDepositAmount,
+  useTransactionDetails,
+} from "#/hooks"
 import { ONE_MONTH_IN_DAYS, ONE_WEEK_IN_DAYS } from "#/constants"
 
 const ACRE_POINTS_DATA = {
@@ -48,14 +52,15 @@ function AcrePointsRewardEstimation(props: StackProps) {
   const { value = 0n } = useFormField<bigint | undefined>(
     TOKEN_AMOUNT_FIELD_NAME,
   )
+  const { estimatedAmount } = useTransactionDetails(value)
   const minDepositAmount = useMinDepositAmount()
-  const amount = value >= minDepositAmount ? value : 0n
+  const amount = value >= minDepositAmount ? estimatedAmount : 0n
 
   const baseReward = Number(amount)
   const pointsRate = 10000
 
   const estimatedReward = useMemo(
-    () => (selectedTierItem.multipler * baseReward) / pointsRate,
+    () => Math.floor((selectedTierItem.multipler * baseReward) / pointsRate),
     [baseReward, selectedTierItem],
   )
 

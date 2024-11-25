@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { acreApi } from "#/utils"
-import { queryKeysFactory } from "#/constants"
+import { queryKeysFactory, REFETCH_INTERVAL_IN_MILLISECONDS } from "#/constants"
 import { MODAL_TYPES } from "#/types"
 import { useWallet } from "./useWallet"
 import { useModal } from "./useModal"
@@ -15,6 +15,7 @@ type UseAcrePointsReturnType = {
   claimPoints: () => void
   updateUserPointsData: () => Promise<unknown>
   updatePointsData: () => Promise<unknown>
+  totalPoolBalance: number
 }
 
 export default function useAcrePoints(): UseAcrePointsReturnType {
@@ -30,6 +31,7 @@ export default function useAcrePoints(): UseAcrePointsReturnType {
   const pointsDataQuery = useQuery({
     queryKey: [...acreKeys.pointsData()],
     queryFn: async () => acreApi.getPointsData(),
+    refetchInterval: REFETCH_INTERVAL_IN_MILLISECONDS,
   })
 
   const { mutate: claimPoints } = useMutation({
@@ -51,12 +53,13 @@ export default function useAcrePoints(): UseAcrePointsReturnType {
   })
 
   return {
-    totalBalance: userPointsDataQuery.data?.claimed ?? 0,
-    claimableBalance: userPointsDataQuery.data?.unclaimed ?? 0,
+    totalBalance: userPointsDataQuery.data?.claimed || 0,
+    claimableBalance: userPointsDataQuery.data?.unclaimed || 0,
     nextDropTimestamp: pointsDataQuery.data?.dropAt,
     isCalculationInProgress: pointsDataQuery.data?.isCalculationInProgress,
     claimPoints,
     updateUserPointsData: userPointsDataQuery.refetch,
     updatePointsData: pointsDataQuery.refetch,
+    totalPoolBalance: pointsDataQuery.data?.totalPool || 0,
   }
 }

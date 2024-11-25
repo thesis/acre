@@ -1,6 +1,6 @@
 import { useCallback } from "react"
 import referralProgram, { EmbedApp } from "#/utils/referralProgram"
-import useLocalStorage from "./useLocalStorage"
+import useLocalStorage, { parseLocalStorageValue } from "./useLocalStorage"
 
 export default function useIsEmbed() {
   const [embeddedApp, setEmbeddedApp] = useLocalStorage<EmbedApp | undefined>(
@@ -28,6 +28,6 @@ export default function useIsEmbed() {
     enableIsEmbed,
     disableIsEmbed,
     isEmbed: referralProgram.isEmbedApp(embeddedApp),
-    embeddedApp,
+    embeddedApp: parseLocalStorageValue(embeddedApp) as EmbedApp | undefined,
   }
 }

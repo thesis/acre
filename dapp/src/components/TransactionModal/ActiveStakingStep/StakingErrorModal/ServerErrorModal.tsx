@@ -9,9 +9,8 @@ import {
   ModalCloseButton,
   ModalFooter,
   ModalHeader,
-  Tooltip,
 } from "@chakra-ui/react"
-import { CableWithPlugIcon, Info } from "#/assets/icons"
+import { CableWithPlugIcon } from "#/assets/icons"
 import { TextMd } from "#/components/shared/Typography"
 import { EXTERNAL_HREF } from "#/constants"
 import IconWrapper from "#/components/shared/IconWrapper"
@@ -20,6 +19,7 @@ import {
   IconReload,
   IconServerBolt,
 } from "@tabler/icons-react"
+// import InfoTooltip from "#/components/shared/InfoTooltip"
 
 export default function ServerErrorModal({
   isLoading,
@@ -66,9 +66,7 @@ export default function ServerErrorModal({
           <HStack>
             <TextMd fontWeight="bold">System status</TextMd>
             {/* TODO: ADD a tooltip */}
-            <Tooltip label="Tooltip text" placement="top">
-              <Icon as={Info} boxSize={4} color="grey.400" />
-            </Tooltip>
+            {/* <InfoTooltip label="Tooltip text" placement="top" /> */}
           </HStack>
           <TextMd color="red.400">Partial Outage</TextMd>
         </Flex>

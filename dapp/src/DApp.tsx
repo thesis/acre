@@ -20,13 +20,21 @@ import queryClient from "./queryClient"
 import { delay, logPromiseFailure } from "./utils"
 import { AcreLogo } from "./assets/icons"
 
+function SplashPage() {
+  return (
+    <Center h="100vh" w="100vw">
+      <Icon as={AcreLogo} w={200} h={300} />
+    </Center>
+  )
+}
+
 function DApp() {
   useInitApp()
 
   return (
     <>
       <GlobalStyles />
-      <RouterProvider router={router} />
+      <RouterProvider router={router} fallbackElement={<SplashPage />} />
       <ReactQueryDevtools initialIsOpen={false} />
     </>
   )
@@ -48,9 +56,7 @@ function DAppProviders() {
   if (!config)
     return (
       <Fade in={!config}>
-        <Center h="100vh" w="100vw">
-          <Icon as={AcreLogo} alt="Acre logo" w={200} h={300} />
-        </Center>
+        <SplashPage />
       </Fade>
     )
 

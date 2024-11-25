@@ -7,7 +7,6 @@ import useDetectEmbed from "./useDetectEmbed"
 import useDetectReferral from "./useDetectReferral"
 import { useDisconnectWallet } from "./useDisconnectWallet"
 import { useFetchBTCPriceUSD } from "./useFetchBTCPriceUSD"
-import useGatingDApp from "./useGatingDApp"
 
 export function useInitApp() {
   // TODO: Let's uncomment when dark mode is ready
@@ -15,7 +14,6 @@ export function useInitApp() {
   useSentry()
   useDetectEmbed()
   useDetectReferral()
-  useGatingDApp()
   useInitializeAcreSdk()
   useInitDataFromSdk()
   useFetchBTCPriceUSD()

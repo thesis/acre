@@ -4,7 +4,6 @@ import {
   useMultiStyleConfig,
   TextProps,
   ResponsiveValue,
-  Tooltip,
 } from "@chakra-ui/react"
 import {
   fixedPointNumberToString,
@@ -13,6 +12,7 @@ import {
   numberToLocaleString,
 } from "#/utils"
 import { CurrencyType, AmountType } from "#/types"
+import Tooltip from "../Tooltip"
 
 export type CurrencyBalanceProps = {
   currency: CurrencyType
@@ -102,7 +102,7 @@ export function CurrencyBalance({
     const tooltipLabel = `${getBalance({ withFullPrecision: true })} ${symbol}`
 
     return (
-      <Tooltip label={tooltipLabel} shouldWrapChildren>
+      <Tooltip size="xs" label={tooltipLabel} shouldWrapChildren>
         {content}
       </Tooltip>
     )

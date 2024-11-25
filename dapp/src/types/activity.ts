@@ -19,7 +19,3 @@ type ConditionalActivityData =
 export type ActivityType = ConditionalActivityData["type"]
 
 export type Activity = CommonActivityData & ConditionalActivityData
-
-export type ActivitiesByIds = {
-  [id: string]: Activity
-}

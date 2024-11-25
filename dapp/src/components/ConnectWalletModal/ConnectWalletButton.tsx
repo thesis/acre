@@ -189,8 +189,9 @@ export default function ConnectWalletButton({
       rounded="lg"
       mb={3}
       _last={{ mb: 0 }}
+      p={0}
     >
-      <CardHeader p={0}>
+      <CardHeader>
         <ArrivingSoonTooltip shouldDisplayTooltip={connector.isDisabled}>
           <Button
             variant="ghost"
@@ -232,7 +233,6 @@ export default function ConnectWalletButton({
             initial="collapsed"
             animate="expanded"
             exit="collapsed"
-            p={0}
             overflow="hidden"
             sx={{ flex: undefined }} // To override the default flex: 1
           >

@@ -6,13 +6,12 @@ const baseStyleContainer = defineStyle({
 })
 
 const baseStyleDialog = defineStyle({
-  marginTop: "var(--chakra-space-modal_shift)",
+  marginTop: { base: 12, sm: "var(--chakra-space-modal_shift)" },
   marginBottom: 8,
-  borderWidth: "2px",
   boxShadow: "none",
-  borderColor: "white",
   borderRadius: "xl",
   bg: "gold.100",
+  border: "none",
 })
 
 const baseCloseButton = defineStyle({
@@ -84,7 +83,7 @@ const variants = {
 }
 
 const sizeXl = multiStyleConfig.definePartsStyle({
-  dialog: { maxW: "46.75rem" },
+  dialog: { maxW: "52rem" },
 })
 
 const sizeLg = multiStyleConfig.definePartsStyle({

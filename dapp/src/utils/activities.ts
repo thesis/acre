@@ -15,9 +15,6 @@ export const sortActivitiesByTimestamp = (activities: Activity[]): Activity[] =>
       getActivityTimestamp(activity2) - getActivityTimestamp(activity1),
   )
 
-export const filterCompletedActivities = (activities: Activity[]): Activity[] =>
-  activities.filter((activity) => isActivityCompleted(activity))
-
 export const isWithdrawType = (type: ActivityType) => type === "withdraw"
 
 export function getEstimatedDuration(
@@ -32,10 +29,4 @@ export function getEstimatedDuration(
     return "2 hours"
 
   return "3 hours"
-}
-
-export function convertActivityTypeToLabel(type: ActivityType): string {
-  if (isWithdrawType(type)) return "Unstaking"
-
-  return "Staking"
 }

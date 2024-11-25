@@ -11,13 +11,13 @@ interface ImportMetaEnv {
   readonly VITE_FEATURE_FLAG_WITHDRAWALS_ENABLED: string
   readonly VITE_FEATURE_FLAG_OKX_WALLET_ENABLED: string
   readonly VITE_FEATURE_FLAG_XVERSE_WALLET_ENABLED: string
-  readonly VITE_FEATURE_FLAG_BEEHIVE_COMPONENT_ENABLED: string
   readonly VITE_FEATURE_FLAG_ACRE_POINTS_ENABLED: string
   readonly VITE_FEATURE_FLAG_TVL_ENABLED: string
   readonly VITE_FEATURE_GATING_DAPP_ENABLED: string
   readonly VITE_SUBGRAPH_API_KEY: string
   readonly VITE_LATEST_COMMIT_HASH: string
   readonly VITE_ACRE_API_ENDPOINT: string
+  readonly VITE_FEATURE_MOBILE_MODE_ENABLED: string
 }
 
 interface ImportMeta {

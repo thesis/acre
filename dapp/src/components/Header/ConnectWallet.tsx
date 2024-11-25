@@ -6,7 +6,6 @@ import {
   Icon,
   IconButton,
   StackDivider,
-  Tooltip,
   useClipboard,
   useMultiStyleConfig,
 } from "@chakra-ui/react"
@@ -23,6 +22,8 @@ import {
   IconWallet,
   IconUserCode,
 } from "@tabler/icons-react"
+import { useMatch } from "react-router-dom"
+import Tooltip from "../shared/Tooltip"
 
 function isChangeAccountFeatureSupported(embeddedApp: string | undefined) {
   return referralProgram.isEmbedApp(embeddedApp)
@@ -37,6 +38,7 @@ export default function ConnectWallet() {
     variant: "card",
     size: "lg",
   })
+  const isDashboardPage = useMatch("/dashboard")
 
   const handleConnectWallet = (isReconnecting: boolean = false) => {
     openModal(MODAL_TYPES.CONNECT_WALLET, { isReconnecting })
@@ -54,6 +56,7 @@ export default function ConnectWallet() {
           isOpenGlobalErrorModal) && {
           pointerEvents: "none",
         })}
+        isDisabled={!isDashboardPage}
       >
         {`Connect ${isEmbed ? "account" : "wallet"}`}
       </Button>
@@ -98,11 +101,8 @@ export default function ConnectWallet() {
           divider={<StackDivider borderColor="gold.500" />}
         >
           <Tooltip
-            fontSize="xs"
+            size="xs"
             label={hasCopied ? "Address copied" : "Copy"}
-            color="gold.200"
-            px={3}
-            py={2}
             closeOnClick={false}
           >
             <IconButton
@@ -116,13 +116,7 @@ export default function ConnectWallet() {
           </Tooltip>
 
           {isChangeAccountFeatureSupported(embeddedApp) && (
-            <Tooltip
-              fontSize="xs"
-              label="Change account"
-              color="gold.200"
-              px={3}
-              py={2}
-            >
+            <Tooltip size="xs" label="Change account">
               <IconButton
                 variant="ghost"
                 aria-label="Change account"
@@ -134,13 +128,7 @@ export default function ConnectWallet() {
             </Tooltip>
           )}
 
-          <Tooltip
-            fontSize="xs"
-            label="Disconnect"
-            color="gold.200"
-            px={3}
-            py={2}
-          >
+          <Tooltip size="xs" label="Disconnect">
             <IconButton
               variant="ghost"
               aria-label="Disconnect"

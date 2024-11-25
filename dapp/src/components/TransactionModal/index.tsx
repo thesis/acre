@@ -4,7 +4,6 @@ import {
   useAppDispatch,
   useFetchActivities,
   useIsSignedMessage,
-  useSidebar,
   useTransactionModal,
 } from "#/hooks"
 import { ActionFlowType, BaseModalProps } from "#/types"
@@ -18,7 +17,6 @@ import { ConnectWalletModalBase } from "../ConnectWalletModal"
 type TransactionModalProps = { type: ActionFlowType } & BaseModalProps
 
 function TransactionModalBase({ type, closeModal }: TransactionModalProps) {
-  const { onOpen: openSideBar, onClose: closeSidebar } = useSidebar()
   const dispatch = useAppDispatch()
   const fetchActivities = useFetchActivities()
 
@@ -33,11 +31,6 @@ function TransactionModalBase({ type, closeModal }: TransactionModalProps) {
       logPromiseFailure(fetchActivities())
     }
   }, [dispatch, fetchActivities])
-
-  useEffect(() => {
-    openSideBar()
-    return () => closeSidebar()
-  }, [closeSidebar, openSideBar])
 
   return (
     <StakeFlowProvider>

@@ -59,10 +59,7 @@ function MezoBeehiveModalBase() {
         <VStack>
           <Card
             gap={2}
-            p={5}
-            rounded="xl"
             bg="grey.700"
-            borderWidth={0}
             color="gold.300"
             align="start"
             textAlign="start"
@@ -82,11 +79,11 @@ function MezoBeehiveModalBase() {
               translateY: "-100%",
             }}
           >
-            <CardHeader p={0} as={HStack}>
+            <CardHeader as={HStack}>
               <Icon as={IconChartPieFilled} color="brand.400" boxSize={5} />
             </CardHeader>
 
-            <CardBody p={0}>
+            <CardBody>
               <TextMd lineHeight={5}>
                 In the event of a reward distribution, your share is calculated
                 by deposit amount and duration, and you can claim it directly
@@ -95,11 +92,10 @@ function MezoBeehiveModalBase() {
             </CardBody>
           </Card>
 
-          <Card bg="gold.200" borderWidth={0} rounded="xl">
+          <Card>
             <CardBody
               as={HStack}
               spacing={6}
-              p={5}
               color="grey.700"
               textAlign="start"
             >

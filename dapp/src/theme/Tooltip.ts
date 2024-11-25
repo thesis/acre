@@ -1,7 +1,8 @@
 import {
-  ComponentSingleStyleConfig,
   Tooltip as ChakraTooltip,
   cssVar,
+  defineStyle,
+  defineStyleConfig,
 } from "@chakra-ui/react"
 
 // Currently, there is no possibility to set all tooltips with hasArrow by
@@ -14,12 +15,36 @@ ChakraTooltip.defaultProps = { ...ChakraTooltip.defaultProps, hasArrow: true }
 // https://github.com/chakra-ui/chakra-ui/issues/4695#issuecomment-991023319
 const $arrowBg = cssVar("popper-arrow-bg")
 
-export const tooltipTheme: ComponentSingleStyleConfig = {
-  baseStyle: {
-    borderRadius: "md",
-    bg: "grey.700",
-    [$arrowBg.variable]: "colors.grey.700",
-    py: 2,
-    px: 3,
-  },
+const baseStyle = defineStyle({
+  color: "gold.100",
+  bg: "grey.700",
+  [$arrowBg.variable]: "colors.grey.700",
+})
+
+const sizeXs = defineStyle({
+  px: 2,
+  py: 1,
+  fontSize: "xs",
+  lineHeight: "xs",
+  borderRadius: "base",
+})
+
+const sizeSm = defineStyle({
+  p: 3,
+  fontSize: "sm",
+  lineHeight: "sm",
+  borderRadius: "lg",
+})
+
+const sizes = {
+  xs: sizeXs,
+  sm: sizeSm,
 }
+
+export const tooltipTheme = defineStyleConfig({
+  defaultProps: {
+    size: "sm",
+  },
+  baseStyle,
+  sizes,
+})
