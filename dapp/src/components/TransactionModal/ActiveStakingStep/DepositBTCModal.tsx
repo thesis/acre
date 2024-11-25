@@ -1,4 +1,4 @@
-import React, { useCallback } from "react"
+import React, { useCallback, useRef } from "react"
 import {
   useActionFlowPause,
   useActionFlowTokenAmount,
@@ -29,8 +29,11 @@ export default function DepositBTCModal() {
     queryKey: userKeys.balance(),
   })
 
-  const { cancel, resolve, shouldOpenErrorModal } =
-    useCancelPromise("Deposit cancelled")
+  const sessionId = useRef(Math.random())
+  const { cancel, resolve, sessionIdToPromise } = useCancelPromise(
+    sessionId.current,
+    "Deposit cancelled",
+  )
 
   const onStakeBTCSuccess = useCallback(() => {
     handleBitcoinBalanceInvalidation()
@@ -62,7 +65,7 @@ export default function DepositBTCModal() {
 
   const onDepositBTCError = useCallback(
     (error: unknown) => {
-      if (!shouldOpenErrorModal) return
+      if (!sessionIdToPromise[sessionId.current].shouldOpenErrorModal) return
 
       if (eip1193.didUserRejectRequest(error)) {
         handlePause()
@@ -70,7 +73,7 @@ export default function DepositBTCModal() {
         onError(error)
       }
     },
-    [shouldOpenErrorModal, handlePause, onError],
+    [sessionIdToPromise, handlePause, onError],
   )
 
   const { mutate: sendBitcoinTransaction, status } = useDepositBTCTransaction({

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react"
+import React, { useCallback, useRef, useState } from "react"
 import {
   useActionFlowPause,
   useActionFlowTokenAmount,
@@ -35,7 +35,9 @@ export default function SignMessageModal() {
   const handleBitcoinPositionInvalidation = useInvalidateQueries({
     queryKey: userKeys.position(),
   })
-  const { cancel, resolve, shouldOpenErrorModal } = useCancelPromise(
+  const sessionId = useRef(Math.random())
+  const { cancel, resolve, sessionIdToPromise } = useCancelPromise(
+    sessionId.current,
     "Withdrawal cancelled",
   )
   const { transactionFee } = useTransactionDetails(
@@ -68,7 +70,7 @@ export default function SignMessageModal() {
 
   const onError = useCallback(
     (error: unknown) => {
-      if (!shouldOpenErrorModal) return
+      if (!sessionIdToPromise[sessionId.current].shouldOpenErrorModal) return
 
       if (eip1193.didUserRejectRequest(error)) {
         handlePause()
@@ -76,7 +78,7 @@ export default function SignMessageModal() {
         onSignMessageError(error)
       }
     },
-    [shouldOpenErrorModal, handlePause, onSignMessageError],
+    [sessionIdToPromise, handlePause, onSignMessageError],
   )
 
   const { mutate: handleSignMessage } = useMutation({
