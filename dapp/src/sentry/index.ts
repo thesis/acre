@@ -6,6 +6,7 @@ const initialize = (dsn: string) => {
     integrations: [
       Sentry.browserTracingIntegration(),
       Sentry.captureConsoleIntegration({ levels: ["error"] }),
+      Sentry.extraErrorDataIntegration(),
     ],
     // Attach stacktrace to errors logged by `console.error`. This is useful for
     // the `captureConsoleIntegration` integration.
