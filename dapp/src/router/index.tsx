@@ -38,9 +38,7 @@ export const router = createBrowserRouter([
       // TODO: display the error page/modal when the referral is invalid.
       const referralCodeFromUrl = referralProgram.getReferralFromURL()
 
-      const referralCode = referralProgram.isValidReferral(
-        Number(referralCodeFromUrl),
-      )
+      const referralCode = referralProgram.isValidReferral(referralCodeFromUrl)
         ? referralCodeFromUrl!
         : env.REFERRAL
 
