@@ -46,12 +46,12 @@ export default function ConnectWalletStatusLabel({
 
   return (
     <HStack spacing={3}>
-      <HStack>
+      <HStack textAlign="start">
         {icon}
         <TextMd {...statusToLabelProps[status]}>{label}</TextMd>
       </HStack>
       {isError && (
-        <HStack color="red.400">
+        <HStack color="red.400" textAlign="start">
           <Icon as={IconInfoCircle} boxSize={boxSize} />
           <TextMd>Rejected by user</TextMd>
         </HStack>

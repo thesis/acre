@@ -29,8 +29,14 @@ export const TOKEN_FORM_ERRORS = {
   REQUIRED: "Please enter an amount.",
   EXCEEDED_VALUE:
     "The amount exceeds your current wallet balance. Add more funds to your wallet or lower the deposit amount.",
-  INSUFFICIENT_VALUE: (minValue: string) =>
-    `The amount is below the minimum required deposit of ${minValue} BTC.`,
+  INSUFFICIENT_VALUE: (formType: string, minValue: string) =>
+    `The amount is below the minimum required ${formType} of ${minValue} BTC.`,
+}
+
+export const PASSWORD_FORM_ERRORS = {
+  REQUIRED: "Please enter a password.",
+  INCORRECT_VALUE: "Incorrect password. Please try again.",
+  DEFAULT: "Something went wrong...",
 }
 
 export const ACTION_FORM_ERRORS = {

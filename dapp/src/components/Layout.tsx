@@ -1,28 +1,58 @@
 import React from "react"
 import { Outlet } from "react-router-dom"
-import { Flex } from "@chakra-ui/react"
-import { useMobileMode } from "#/hooks"
+import { Flex, VStack } from "@chakra-ui/react"
+import { useIsEmbed, useMobileMode } from "#/hooks"
+import { DappMode } from "#/types"
 import DocsDrawer from "./DocsDrawer"
 import Header from "./Header"
 import ModalRoot from "./ModalRoot"
 import Sidebar from "./Sidebar"
+import MobileModeBanner from "./MobileModeBanner"
+import Footer from "./Footer"
+
+// The padding update should also be done in the Header component and Footer theme as well
+const PADDING = {
+  base: 4,
+  md: "2.5rem", // 40px
+}
+const PAGE_MAX_WIDTH: Record<DappMode, string> = {
+  standalone: "63rem", // 1008px
+  "ledger-live": "63rem", // 1008px
+}
 
 function Layout() {
   const isMobileMode = useMobileMode()
+  const { isEmbed, embeddedApp } = useIsEmbed()
+
+  if (!isEmbed && isMobileMode) return <MobileModeBanner forceOpen />
+
+  const maxWidth = embeddedApp
+    ? PAGE_MAX_WIDTH[embeddedApp]
+    : PAGE_MAX_WIDTH.standalone
 
   return (
-    <Flex flexFlow="column">
+    <VStack spacing={0} minH="100vh">
       <Header />
-      <Outlet />
 
-      {!isMobileMode && (
-        <>
-          <Sidebar />
-          <DocsDrawer />
-          <ModalRoot />
-        </>
-      )}
-    </Flex>
+      <Flex
+        flexFlow="column"
+        mx="auto"
+        px={PADDING}
+        pb={10}
+        pt={0.5}
+        w="full"
+        maxWidth={`calc(${maxWidth} + 2*${PADDING.md})`}
+        flex={1}
+      >
+        <Outlet />
+
+        <Sidebar />
+        <DocsDrawer />
+        <ModalRoot />
+      </Flex>
+
+      <Footer />
+    </VStack>
   )
 }
 

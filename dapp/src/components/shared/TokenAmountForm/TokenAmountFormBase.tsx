@@ -1,23 +1,12 @@
 import React from "react"
-import { FormikProps, useField } from "formik"
+import { FormikProps } from "formik"
 import { CurrencyType } from "#/types"
 import { Form, FormTokenBalanceInput } from "../Form"
 
-const TOKEN_AMOUNT_FIELD_NAME = "amount"
+export const TOKEN_AMOUNT_FIELD_NAME = "amount"
 
 export type TokenAmountFormValues = {
   [TOKEN_AMOUNT_FIELD_NAME]?: bigint
-}
-
-export const useTokenAmountField = () => {
-  const [, { error, touched, value }] = useField<
-    TokenAmountFormValues[typeof TOKEN_AMOUNT_FIELD_NAME]
-  >(TOKEN_AMOUNT_FIELD_NAME)
-
-  const hasError = !!error
-  const isValid = !hasError && touched && value
-
-  return { value, isValid }
 }
 
 export type TokenAmountFormBaseProps = {
@@ -51,8 +40,9 @@ export default function TokenAmountFormBase({
         tokenAmountLabel={tokenAmountLabel}
         currency={currency}
         withMaxButton={withMaxButton}
-        defaultValue={defaultAmount}
+        defaultAmount={defaultAmount}
         autoFocus
+        autoComplete="off"
       />
       {children}
     </Form>

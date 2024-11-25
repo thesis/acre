@@ -6,20 +6,31 @@ import {
   Icon,
   IconButton,
   StackDivider,
-  Tooltip,
   useClipboard,
   useMultiStyleConfig,
 } from "@chakra-ui/react"
-import { useModal, useWallet } from "#/hooks"
+import { useIsEmbed, useModal, useWallet } from "#/hooks"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import { TextMd } from "#/components/shared/Typography"
 import { BitcoinIcon } from "#/assets/icons"
-import { truncateAddress } from "#/utils"
+import { referralProgram, truncateAddress } from "#/utils"
 import { motion } from "framer-motion"
 import { MODAL_TYPES } from "#/types"
-import { IconCopy, IconLogout, IconWallet } from "@tabler/icons-react"
+import {
+  IconCopy,
+  IconLogout,
+  IconWallet,
+  IconUserCode,
+} from "@tabler/icons-react"
+import { useMatch } from "react-router-dom"
+import Tooltip from "../shared/Tooltip"
+
+function isChangeAccountFeatureSupported(embeddedApp: string | undefined) {
+  return referralProgram.isEmbedApp(embeddedApp)
+}
 
 export default function ConnectWallet() {
+  const { isEmbed, embeddedApp } = useIsEmbed()
   const { address, balance, onDisconnect } = useWallet()
   const { isOpenGlobalErrorModal, modalType, openModal } = useModal()
   const { hasCopied, onCopy } = useClipboard(address ?? "")
@@ -27,9 +38,10 @@ export default function ConnectWallet() {
     variant: "card",
     size: "lg",
   })
+  const isDashboardPage = useMatch("/dashboard")
 
-  const handleConnectWallet = () => {
-    openModal(MODAL_TYPES.CONNECT_WALLET)
+  const handleConnectWallet = (isReconnecting: boolean = false) => {
+    openModal(MODAL_TYPES.CONNECT_WALLET, { isReconnecting })
   }
 
   if (!address) {
@@ -39,13 +51,14 @@ export default function ConnectWallet() {
         variant="card"
         color="grey.700"
         leftIcon={<Icon as={BitcoinIcon} boxSize={6} color="brand.400" />}
-        onClick={handleConnectWallet}
+        onClick={() => handleConnectWallet(false)}
         {...((modalType === MODAL_TYPES.CONNECT_WALLET ||
           isOpenGlobalErrorModal) && {
           pointerEvents: "none",
         })}
+        isDisabled={!isDashboardPage}
       >
-        Connect wallet
+        {`Connect ${isEmbed ? "account" : "wallet"}`}
       </Button>
     )
   }
@@ -88,11 +101,8 @@ export default function ConnectWallet() {
           divider={<StackDivider borderColor="gold.500" />}
         >
           <Tooltip
-            fontSize="xs"
+            size="xs"
             label={hasCopied ? "Address copied" : "Copy"}
-            color="gold.200"
-            px={3}
-            py={2}
             closeOnClick={false}
           >
             <IconButton
@@ -105,13 +115,20 @@ export default function ConnectWallet() {
             />
           </Tooltip>
 
-          <Tooltip
-            fontSize="xs"
-            label="Disconnect"
-            color="gold.200"
-            px={3}
-            py={2}
-          >
+          {isChangeAccountFeatureSupported(embeddedApp) && (
+            <Tooltip size="xs" label="Change account">
+              <IconButton
+                variant="ghost"
+                aria-label="Change account"
+                icon={<Icon as={IconUserCode} boxSize={5} />}
+                px={2}
+                boxSize={5}
+                onClick={() => handleConnectWallet(true)}
+              />
+            </Tooltip>
+          )}
+
+          <Tooltip size="xs" label="Disconnect">
             <IconButton
               variant="ghost"
               aria-label="Disconnect"

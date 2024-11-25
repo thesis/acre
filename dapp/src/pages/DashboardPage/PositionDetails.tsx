@@ -4,6 +4,9 @@ import {
   useAllActivitiesCount,
   useBitcoinPosition,
   useTransactionModal,
+  useStatistics,
+  useWallet,
+  useMobileMode,
 } from "#/hooks"
 import { ACTION_FLOW_TYPES } from "#/types"
 import {
@@ -18,13 +21,14 @@ import ArrivingSoonTooltip from "#/components/ArrivingSoonTooltip"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import { featureFlags } from "#/constants"
 import { TextMd } from "#/components/shared/Typography"
+import AcreTVLMessage from "./AcreTVLMessage"
 
 const isWithdrawalFlowEnabled = featureFlags.WITHDRAWALS_ENABLED
 
 const buttonStyles: ButtonProps = {
   size: "lg",
   flex: 1,
-  maxW: "12.5rem", // 200px
+  w: 40,
   fontWeight: "bold",
   lineHeight: 6,
   px: 7,
@@ -38,12 +42,21 @@ export default function PositionDetails() {
   const openDepositModal = useTransactionModal(ACTION_FLOW_TYPES.STAKE)
   const openWithdrawModal = useTransactionModal(ACTION_FLOW_TYPES.UNSTAKE)
   const activitiesCount = useAllActivitiesCount()
+  const isMobileMode = useMobileMode()
+
+  const { tvl } = useStatistics()
+
+  const { isConnected } = useWallet()
+
+  const isDisabledForMobileMode =
+    isMobileMode && !featureFlags.MOBILE_MODE_ENABLED
 
   return (
-    <Flex flexDirection="column" gap={5}>
-      <VStack justify="center" spacing={0}>
-        <TextMd fontWeight="bold">
-          My position
+    <Flex w="100%" flexDirection="column" gap={5}>
+      <VStack alignItems="start" spacing={0}>
+        {/* TODO: Component should be moved to `CardHeader` */}
+        <TextMd>
+          Your deposit
           {/* TODO: Uncomment when position will be implemented */}
           {/* {positionPercentage && (
             <Tag
@@ -62,17 +75,14 @@ export default function PositionDetails() {
           )} */}
         </TextMd>
         <UserDataSkeleton>
-          <VStack justify="center" spacing={0}>
+          <VStack alignItems="start" spacing={0}>
             <CurrencyBalanceWithConversion
               from={{
                 amount: bitcoinAmount,
                 currency: "bitcoin",
-                size: "6xl",
+                size: "4xl",
                 letterSpacing: "-0.075rem", // -1.2px
                 color: "grey.700",
-                symbolTextProps: {
-                  color: "gold.500",
-                },
               }}
               to={{
                 currency: "usd",
@@ -84,24 +94,48 @@ export default function PositionDetails() {
         </UserDataSkeleton>
       </VStack>
 
-      <HStack w="full" justify="center" spacing={2}>
+      <HStack w="full" justify="start" flexWrap="wrap" spacing={5}>
         <UserDataSkeleton>
-          <Button {...buttonStyles} onClick={openDepositModal}>
-            {activitiesCount === 0 ? "Deposit" : "Deposit more"}
-          </Button>
-        </UserDataSkeleton>
-        <UserDataSkeleton>
-          <ArrivingSoonTooltip shouldDisplayTooltip={!isWithdrawalFlowEnabled}>
+          <ArrivingSoonTooltip
+            label="This option is not available on mobile yet. Please use the desktop app to deposit."
+            shouldDisplayTooltip={isDisabledForMobileMode}
+          >
             <Button
-              variant="outline"
               {...buttonStyles}
-              onClick={openWithdrawModal}
-              isDisabled={!isWithdrawalFlowEnabled}
+              onClick={openDepositModal}
+              isDisabled={
+                (featureFlags.TVL_ENABLED && tvl.isCapExceeded) ||
+                isDisabledForMobileMode
+              }
             >
-              Withdraw
+              Deposit
             </Button>
           </ArrivingSoonTooltip>
         </UserDataSkeleton>
+        {isConnected && activitiesCount > 0 && (
+          <UserDataSkeleton>
+            <ArrivingSoonTooltip
+              label={
+                isMobileMode
+                  ? "This option is not available on mobile yet. Please use the desktop app to withdraw."
+                  : "This option is currently not available."
+              }
+              shouldDisplayTooltip={
+                !isWithdrawalFlowEnabled || isDisabledForMobileMode
+              }
+            >
+              <Button
+                variant="outline"
+                {...buttonStyles}
+                onClick={openWithdrawModal}
+                isDisabled={!isWithdrawalFlowEnabled || isDisabledForMobileMode}
+              >
+                Withdraw
+              </Button>
+            </ArrivingSoonTooltip>
+          </UserDataSkeleton>
+        )}
+        {featureFlags.TVL_ENABLED && <AcreTVLMessage />}
       </HStack>
     </Flex>
   )

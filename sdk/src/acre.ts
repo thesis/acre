@@ -11,7 +11,7 @@ import {
 } from "./lib/ethereum"
 import Account from "./modules/account"
 import Tbtc from "./modules/tbtc"
-import { BitcoinProvider, BitcoinNetwork } from "./lib/bitcoin"
+import { AcreBitcoinProvider, BitcoinNetwork } from "./lib/bitcoin"
 import { getChainIdByNetwork } from "./lib/ethereum/network"
 import AcreSubgraphApi from "./lib/api/AcreSubgraphApi"
 import Protocol from "./modules/protocol"
@@ -96,7 +96,7 @@ class Acre {
     const acreSubgraphApiUrl =
       network === BitcoinNetwork.Mainnet
         ? `https://gateway-arbitrum.network.thegraph.com/api/${subgraphApiKey}/subgraphs/id/DJfS9X5asHtFEdAPikBcSLw8jtKmFcbReQVEa2iY9C9`
-        : "https://api.studio.thegraph.com/query/73600/acre/version/latest"
+        : "https://api.studio.thegraph.com/query/73600/acre-sepolia/version/latest"
 
     const subgraph = new AcreSubgraphApi(acreSubgraphApiUrl)
 
@@ -118,7 +118,7 @@ class Acre {
    * @param bitcoinProvider Provider for Bitcoin wallet.
    * @returns Acre SDK instance with connected account.
    */
-  async connect(bitcoinProvider: BitcoinProvider): Promise<Acre> {
+  async connect(bitcoinProvider: AcreBitcoinProvider): Promise<Acre> {
     const accountBitcoinAddress = await bitcoinProvider.getAddress()
     const accountBitcoinPublicKey = await bitcoinProvider.getPublicKey()
     const accountEthereumAddress = EthereumAddress.from(

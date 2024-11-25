@@ -1,8 +1,8 @@
-import React from "react"
-import { ChakraProvider } from "@chakra-ui/react"
+import React, { useEffect, useState } from "react"
+import { Center, Fade, Icon } from "@chakra-ui/react"
 import { Provider as ReduxProvider } from "react-redux"
 import { RouterProvider } from "react-router-dom"
-import { WagmiProvider } from "wagmi"
+import { Config, WagmiProvider } from "wagmi"
 import { QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { AcreSdkProvider } from "./acre-react/contexts"
@@ -15,9 +15,18 @@ import {
 import { useInitApp } from "./hooks"
 import { router } from "./router"
 import { store } from "./store"
-import theme from "./theme"
-import wagmiConfig from "./wagmiConfig"
+import getWagmiConfig from "./wagmiConfig"
 import queryClient from "./queryClient"
+import { delay, logPromiseFailure } from "./utils"
+import { AcreLogo } from "./assets/icons"
+
+function SplashPage() {
+  return (
+    <Center h="100vh" w="100vw">
+      <Icon as={AcreLogo} w={200} h={300} />
+    </Center>
+  )
+}
 
 function DApp() {
   useInitApp()
@@ -25,31 +34,50 @@ function DApp() {
   return (
     <>
       <GlobalStyles />
-      <RouterProvider router={router} />
+      <RouterProvider router={router} fallbackElement={<SplashPage />} />
       <ReactQueryDevtools initialIsOpen={false} />
     </>
   )
 }
 
 function DAppProviders() {
+  const [config, setConfig] = useState<Config | undefined>()
+
+  useEffect(() => {
+    const setWagmiConfig = async () => {
+      await delay(500)
+      const wagmiConfig = await getWagmiConfig()
+      setConfig(wagmiConfig)
+    }
+
+    logPromiseFailure(setWagmiConfig())
+  }, [])
+
+  if (!config)
+    return (
+      <Fade in={!config}>
+        <SplashPage />
+      </Fade>
+    )
+
   return (
-    <WagmiProvider config={wagmiConfig}>
-      <QueryClientProvider client={queryClient}>
-        <AcreSdkProvider>
-          <DocsDrawerContextProvider>
-            <SidebarContextProvider>
-              <WalletConnectionErrorContextProvider>
-                <ReduxProvider store={store}>
-                  <ChakraProvider theme={theme}>
+    <Fade in={config !== undefined}>
+      <WagmiProvider config={config}>
+        <QueryClientProvider client={queryClient}>
+          <AcreSdkProvider>
+            <DocsDrawerContextProvider>
+              <SidebarContextProvider>
+                <WalletConnectionErrorContextProvider>
+                  <ReduxProvider store={store}>
                     <DApp />
-                  </ChakraProvider>
-                </ReduxProvider>
-              </WalletConnectionErrorContextProvider>
-            </SidebarContextProvider>
-          </DocsDrawerContextProvider>
-        </AcreSdkProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
+                  </ReduxProvider>
+                </WalletConnectionErrorContextProvider>
+              </SidebarContextProvider>
+            </DocsDrawerContextProvider>
+          </AcreSdkProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
+    </Fade>
   )
 }
 

@@ -2,12 +2,15 @@ const userKeys = {
   all: ["user"] as const,
   balance: () => [...userKeys.all, "balance"] as const,
   position: () => [...userKeys.all, "position"] as const,
+  pointsData: () => [...userKeys.all, "points-data"] as const,
 }
 
 const acreKeys = {
   all: ["acre"] as const,
   totalAssets: () => [...acreKeys.all, "total-assets"] as const,
+  statistics: () => [...acreKeys.all, "statistics"] as const,
   mats: () => [...acreKeys.all, "mats"] as const,
+  pointsData: () => [...acreKeys.all, "points-data"] as const,
 }
 
 export default {

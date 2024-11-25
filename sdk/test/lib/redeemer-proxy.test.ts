@@ -1,12 +1,17 @@
 import { RedeemerProxy } from "@keep-network/tbtc-v2.ts"
 import { ethers } from "ethers"
+import { SafeTransactionData } from "@orangekit/sdk"
 import { EthereumAddress } from "../../src/lib/ethereum"
 import { ChainIdentifier } from "../../src/lib/contracts"
 import { Hex } from "../../src/lib/utils"
 import OrangeKitTbtcRedeemerProxy from "../../src/lib/redeemer-proxy"
 import { MockAcreContracts } from "../utils/mock-acre-contracts"
 import { MockOrangeKitSdk } from "../utils/mock-orangekit"
-import { MockBitcoinProvider } from "../utils/mock-bitcoin-provider"
+import {
+  MockBitcoinProvider,
+  MockBitcoinProviderWithSignWithdrawMessage,
+} from "../utils/mock-bitcoin-provider"
+import { AcreBitcoinProvider } from "../../src/lib/bitcoin"
 
 describe("OrangeKitTbtcRedeemerProxy", () => {
   let redeemer: RedeemerProxy
@@ -19,6 +24,8 @@ describe("OrangeKitTbtcRedeemerProxy", () => {
     bitcoinAddress: "123",
   }
   const bitcoinProvider = new MockBitcoinProvider()
+  const bitcoinProviderWithSignWithdrawMessage =
+    new MockBitcoinProviderWithSignWithdrawMessage()
   const sharesAmount = 10n
 
   beforeEach(() => {
@@ -51,6 +58,8 @@ describe("OrangeKitTbtcRedeemerProxy", () => {
     const mockedStBTCIdentifier = EthereumAddress.from(
       "0x8FF2A98c1F08FD5a4D12bED447b90d4de045C10b",
     )
+    const mockedMessageToSign = "test"
+    const mockedSafeTxData = { to: "test" } as SafeTransactionData
 
     let result: Hex
     let spyOnSendTransaction: jest.SpyInstance<
@@ -61,7 +70,10 @@ describe("OrangeKitTbtcRedeemerProxy", () => {
         data: string,
         bitcoinAddress: string,
         publicKey: string,
-        bitcoinSignMessageFn: (message: string) => Promise<string>,
+        bitcoinSignMessageFn: (
+          message: string,
+          data: SafeTransactionData,
+        ) => Promise<string>,
       ]
     >
     let spyOnBitcoinRedeemerIdentifier: jest.SpyInstance<ChainIdentifier, []>
@@ -73,61 +85,104 @@ describe("OrangeKitTbtcRedeemerProxy", () => {
       [spender: ChainIdentifier, amount: bigint, extraData: Hex]
     >
 
-    beforeAll(async () => {
-      spyOnSendTransaction = jest
-        .spyOn(orangeKitSdk, "sendTransaction")
-        .mockResolvedValueOnce(mockedTxHash)
-      spyOnBitcoinRedeemerIdentifier = jest
-        .spyOn(contracts.bitcoinRedeemer, "getChainIdentifier")
-        .mockReturnValueOnce(mockedBitcoinRedeemerIdentifier)
-      spyOnStBTCIdentifier = jest
-        .spyOn(contracts.stBTC, "getChainIdentifier")
-        .mockReturnValueOnce(mockedStBTCIdentifier)
-      spyOnEncodeData = jest
-        .spyOn(contracts.stBTC, "encodeApproveAndCallFunctionData")
-        .mockReturnValueOnce(mockedEncodedApproveAndCallData)
+    describe.each<{
+      provider: AcreBitcoinProvider
+      description: string
+      functionToCall: "signWithdrawMessage" | "signMessage"
+      functionArgs: [string, SafeTransactionData] | [string]
+    }>([
+      {
+        provider: bitcoinProviderWithSignWithdrawMessage,
+        description:
+          "when the bitcoin provider implements the `signWithdrawMessage` function",
+        functionToCall: "signWithdrawMessage",
+        functionArgs: [mockedMessageToSign, mockedSafeTxData],
+      },
+      {
+        provider: bitcoinProvider,
+        description:
+          "when the bitcoin provider does not implement the `signWithdrawMessage` function",
+        functionToCall: "signMessage",
+        functionArgs: [mockedMessageToSign],
+      },
+    ])("$description", ({ provider, functionToCall, functionArgs }) => {
+      let spies: jest.SpyInstance[]
 
-      result = await redeemer.requestRedemption(mockedRedemptionData)
-    })
+      beforeAll(async () => {
+        spyOnSendTransaction = jest
+          .spyOn(orangeKitSdk, "sendTransaction")
+          .mockResolvedValueOnce(mockedTxHash)
+        spyOnBitcoinRedeemerIdentifier = jest
+          .spyOn(contracts.bitcoinRedeemer, "getChainIdentifier")
+          .mockReturnValueOnce(mockedBitcoinRedeemerIdentifier)
+        spyOnStBTCIdentifier = jest
+          .spyOn(contracts.stBTC, "getChainIdentifier")
+          .mockReturnValueOnce(mockedStBTCIdentifier)
+        spyOnEncodeData = jest
+          .spyOn(contracts.stBTC, "encodeApproveAndCallFunctionData")
+          .mockReturnValueOnce(mockedEncodedApproveAndCallData)
 
-    it("should get the bitcoin redeemer contract's address", () => {
-      expect(spyOnBitcoinRedeemerIdentifier).toHaveBeenCalled()
-    })
+        spies = [
+          spyOnSendTransaction,
+          spyOnBitcoinRedeemerIdentifier,
+          spyOnStBTCIdentifier,
+          spyOnEncodeData,
+        ]
 
-    it("should encode approve and call data function", () => {
-      expect(spyOnEncodeData).toHaveBeenCalledWith(
-        mockedBitcoinRedeemerIdentifier,
-        sharesAmount,
-        mockedRedemptionData,
-      )
-    })
+        redeemer = new OrangeKitTbtcRedeemerProxy(
+          contracts,
+          // @ts-expect-error we only mock used the orangeKit methods
+          orangeKitSdk,
+          account,
+          provider,
+          sharesAmount,
+        )
 
-    it("should get the stBTC contract's address", () => {
-      expect(spyOnStBTCIdentifier).toHaveBeenCalled()
-    })
+        result = await redeemer.requestRedemption(mockedRedemptionData)
+      })
 
-    it("should send transaction via orange kit", () => {
-      expect(spyOnSendTransaction).toHaveBeenCalledWith(
-        `0x${mockedStBTCIdentifier.identifierHex}`,
-        "0x0",
-        mockedEncodedApproveAndCallData.toPrefixedString(),
-        account.bitcoinAddress,
-        account.publicKey,
-        expect.any(Function),
-      )
-    })
+      afterAll(() => {
+        spies.forEach((spy) => spy.mockClear())
+      })
 
-    it("the sign message function passed to the orange kit should call the bitcoin provider", async () => {
-      const signMessageFn = spyOnSendTransaction.mock.calls[0][5]
-      const mockedMessage = "test"
+      it("should get the bitcoin redeemer contract's address", () => {
+        expect(spyOnBitcoinRedeemerIdentifier).toHaveBeenCalled()
+      })
 
-      await signMessageFn(mockedMessage)
+      it("should encode approve and call data function", () => {
+        expect(spyOnEncodeData).toHaveBeenCalledWith(
+          mockedBitcoinRedeemerIdentifier,
+          sharesAmount,
+          mockedRedemptionData,
+        )
+      })
 
-      expect(bitcoinProvider.signMessage).toHaveBeenCalledWith(mockedMessage)
-    })
+      it("should get the stBTC contract's address", () => {
+        expect(spyOnStBTCIdentifier).toHaveBeenCalled()
+      })
 
-    it("should return tx hash", () => {
-      expect(result.equals(Hex.from(mockedTxHash))).toBeTruthy()
+      it("should send transaction via orange kit", () => {
+        expect(spyOnSendTransaction).toHaveBeenCalledWith(
+          `0x${mockedStBTCIdentifier.identifierHex}`,
+          "0x0",
+          mockedEncodedApproveAndCallData.toPrefixedString(),
+          account.bitcoinAddress,
+          account.publicKey,
+          expect.any(Function),
+        )
+      })
+
+      it("the sign message function passed to the orange kit should call the bitcoin provider", async () => {
+        const signMessageFn = spyOnSendTransaction.mock.calls[0][5]
+
+        await signMessageFn(mockedMessageToSign, mockedSafeTxData)
+
+        expect(provider[functionToCall]).toHaveBeenCalledWith(...functionArgs)
+      })
+
+      it("should return tx hash", () => {
+        expect(result.equals(Hex.from(mockedTxHash))).toBeTruthy()
+      })
     })
   })
 })

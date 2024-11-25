@@ -13,7 +13,7 @@ import { displayBlockTimestamp, getActivityTimestamp } from "#/utils"
 import { Activity } from "#/types"
 import BlockExplorerLink from "#/components/shared/BlockExplorerLink"
 import { IconArrowUpRight } from "@tabler/icons-react"
-import { useActivities } from "#/hooks"
+import { useActivities, useMobileMode } from "#/hooks"
 import { semanticTokens } from "#/theme/utils"
 import EstimatedDuration from "./EstimatedDuration"
 
@@ -21,25 +21,17 @@ const BLOCK_EXPLORER_CELL_MIN_WIDTH = 16
 
 export default function TransactionTable() {
   const activities = useActivities()
+  const isMobileMode = useMobileMode()
 
   return (
-    <Pagination data={activities} pageSize={10} spacing={6}>
+    <Pagination data={activities} pageSize={isMobileMode ? 5 : 10} spacing={6}>
       <PaginationPage direction="column" spacing={2} pageSpacing={6}>
         {(pageData: Activity[]) =>
           pageData.map((activity) => (
-            <Card
-              key={activity.id}
-              role="group"
-              variant="elevated"
-              colorScheme="gold"
-            >
-              <CardBody as={Flex} flexDirection="column" gap={4} p={4}>
-                <HStack spacing={3}>
-                  <TextSm color="grey.500" flex={1} fontWeight="medium">
-                    {displayBlockTimestamp(getActivityTimestamp(activity))}
-                  </TextSm>
-
-                  <HStack flexBasis="55%">
+            <Card key={activity.id} role="group" bg="gold.100" p={4}>
+              <CardBody as={Flex} flexDirection="column" gap={4}>
+                <Flex flexDirection="column">
+                  <Flex justifyContent="space-between">
                     <TextSm
                       color="grey.700"
                       flex={1}
@@ -48,43 +40,46 @@ export default function TransactionTable() {
                     >
                       {activity.type}
                     </TextSm>
-
-                    <Box flex={1}>
-                      <CurrencyBalance
-                        color="grey.700"
-                        size="sm"
-                        fontWeight="bold"
-                        amount={activity.amount}
-                        currency="bitcoin"
-                        withDots
-                      />
-                    </Box>
-                  </HStack>
-                  {activity.txHash ? (
-                    <BlockExplorerLink
-                      id={activity.txHash}
-                      chain="bitcoin"
-                      type="transaction"
-                      color="grey.600"
-                      _groupHover={{
-                        color: "brand.400",
-                        textDecoration: "none",
-                      }}
-                      minW={BLOCK_EXPLORER_CELL_MIN_WIDTH}
-                    >
-                      <HStack spacing={1}>
-                        <TextSm>Details</TextSm>
-                        <Icon
-                          as={IconArrowUpRight}
-                          color="brand.400"
-                          boxSize={4}
-                        />
-                      </HStack>
-                    </BlockExplorerLink>
-                  ) : (
-                    <Box minW={BLOCK_EXPLORER_CELL_MIN_WIDTH} />
-                  )}
-                </HStack>
+                    <CurrencyBalance
+                      color="grey.700"
+                      size="sm"
+                      fontWeight="bold"
+                      amount={activity.amount}
+                      currency="bitcoin"
+                      withDots
+                      withTooltip
+                    />
+                  </Flex>
+                  <Flex justifyContent="space-between">
+                    <TextSm color="grey.500" flex={1} fontWeight="medium">
+                      {displayBlockTimestamp(getActivityTimestamp(activity))}
+                    </TextSm>
+                    {activity.txHash ? (
+                      <BlockExplorerLink
+                        id={activity.txHash}
+                        chain="bitcoin"
+                        type="transaction"
+                        color="grey.600"
+                        _groupHover={{
+                          color: "brand.400",
+                          textDecoration: "none",
+                        }}
+                        minW={BLOCK_EXPLORER_CELL_MIN_WIDTH}
+                      >
+                        <HStack spacing={1}>
+                          <TextSm>Details</TextSm>
+                          <Icon
+                            as={IconArrowUpRight}
+                            color="brand.400"
+                            boxSize={4}
+                          />
+                        </HStack>
+                      </BlockExplorerLink>
+                    ) : (
+                      <Box minW={BLOCK_EXPLORER_CELL_MIN_WIDTH} />
+                    )}
+                  </Flex>
+                </Flex>
                 <EstimatedDuration activity={activity} />
               </CardBody>
             </Card>
@@ -108,7 +103,7 @@ export default function TransactionTable() {
           <PaginationButton mode="next" />
         </HStack>
 
-        <PaginationStatus dataLabel="transactions" color="grey.500" />
+        <PaginationStatus dataLabel="entries" color="grey.500" />
       </PaginationFooter>
     </Pagination>
   )

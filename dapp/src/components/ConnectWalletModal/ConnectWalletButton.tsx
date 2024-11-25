@@ -1,7 +1,8 @@
-import React, { useCallback, useState } from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
 import { CONNECTION_ERRORS, ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import {
   useAppDispatch,
+  useIsEmbed,
   useModal,
   useSignMessageAndCreateSession,
   useWallet,
@@ -34,6 +35,7 @@ type ConnectWalletButtonProps = {
   isSelected: boolean
   connector: OrangeKitConnector & { isDisabled: boolean }
   onSuccess?: OnSuccessCallback
+  isReconnecting?: boolean
 }
 
 const iconStyles: Record<string, ImageProps> = {
@@ -53,7 +55,9 @@ export default function ConnectWalletButton({
   isSelected,
   connector,
   onSuccess,
+  isReconnecting,
 }: ConnectWalletButtonProps) {
+  const { isEmbed } = useIsEmbed()
   const {
     address,
     onConnect,
@@ -66,13 +70,14 @@ export default function ConnectWalletButton({
     useWalletConnectionError()
   const { closeModal } = useModal()
   const dispatch = useAppDispatch()
+  const isMounted = useRef(false)
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const hasConnectionError = connectionError || connectionStatus === "error"
-  const hasSignMessageStatus = signMessageStatus === "error"
-  const showStatuses = isSelected && !hasConnectionError
-  const showRetryButton = address && hasSignMessageStatus
+  const hasSignMessageErrorStatus = signMessageStatus === "error"
+  const shouldShowStatuses = isSelected && !hasConnectionError
+  const shouldShowRetryButton = address && hasSignMessageErrorStatus
 
   const onSuccessSignMessage = useCallback(() => {
     closeModal()
@@ -118,6 +123,7 @@ export default function ConnectWalletButton({
 
   const handleConnection = useCallback(() => {
     onConnect(connector, {
+      isReconnecting,
       onSuccess: () => {
         logPromiseFailure(onSuccessConnection(connector))
       },
@@ -126,7 +132,13 @@ export default function ConnectWalletButton({
         setConnectionError(errorData)
       },
     })
-  }, [onConnect, connector, onSuccessConnection, setConnectionError])
+  }, [
+    onConnect,
+    connector,
+    onSuccessConnection,
+    setConnectionError,
+    isReconnecting,
+  ])
 
   const handleRedirectUser = useCallback(() => {
     setIsLoading(true)
@@ -144,9 +156,9 @@ export default function ConnectWalletButton({
 
   const handleButtonClick = () => {
     // Do not trigger action again when wallet connection is in progress
-    if (showStatuses) return
+    if (shouldShowStatuses) return
 
-    onDisconnect()
+    if (!isReconnecting) onDisconnect()
     resetConnectionError()
     resetMessageStatus()
 
@@ -161,6 +173,13 @@ export default function ConnectWalletButton({
     handleConnection()
   }
 
+  useEffect(() => {
+    if (!isMounted.current && isEmbed && isSelected) {
+      isMounted.current = true
+      handleConnection()
+    }
+  }, [handleConnection, isEmbed, isSelected])
+
   return (
     <Card
       key={connector.id}
@@ -170,8 +189,9 @@ export default function ConnectWalletButton({
       rounded="lg"
       mb={3}
       _last={{ mb: 0 }}
+      p={0}
     >
-      <CardHeader p={0}>
+      <CardHeader>
         <ArrivingSoonTooltip shouldDisplayTooltip={connector.isDisabled}>
           <Button
             variant="ghost"
@@ -206,14 +226,13 @@ export default function ConnectWalletButton({
       </CardHeader>
 
       <AnimatePresence initial={false}>
-        {showStatuses && (
+        {shouldShowStatuses && (
           <CardBody
             as={motion.div}
             variants={collapseVariants}
             initial="collapsed"
             animate="expanded"
             exit="collapsed"
-            p={0}
             overflow="hidden"
             sx={{ flex: undefined }} // To override the default flex: 1
           >
@@ -231,13 +250,13 @@ export default function ConnectWalletButton({
                 </TextMd>
                 <ConnectWalletStatusLabel
                   status={connectionStatus}
-                  label="Connect wallet"
+                  label={`Connect ${isEmbed ? "account" : "wallet"}`}
                 />
                 <ConnectWalletStatusLabel
                   status={signMessageStatus}
                   label="Sign message"
                 />
-                {showRetryButton && (
+                {shouldShowRetryButton && (
                   <Button
                     mt={4}
                     size="lg"

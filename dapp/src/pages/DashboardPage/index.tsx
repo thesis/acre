@@ -1,39 +1,67 @@
 import React from "react"
-import { useMobileMode } from "#/hooks"
-import MobileModeBanner from "#/components/MobileModeBanner"
 import { featureFlags } from "#/constants"
+import { useTriggerConnectWalletModal } from "#/hooks"
+import { Grid } from "@chakra-ui/react"
 import DashboardCard from "./DashboardCard"
-import { PageLayout, PageLayoutColumn } from "./PageLayout"
 // import GrantedSeasonPassCard from "./GrantedSeasonPassCard"
 import AcrePointsCard from "./AcrePointsCard"
-import { CurrentSeasonCard } from "./CurrentSeasonCard"
+import AcrePointsTemplateCard from "./AcrePointsTemplateCard"
 import BeehiveCard from "./BeehiveCard"
-import UsefulLinks from "./UsefulLinks"
+import { AcreTVLProgress } from "./AcreTVLProgress"
 
 export default function DashboardPage() {
-  const isMobileMode = useMobileMode()
+  useTriggerConnectWalletModal()
 
-  return isMobileMode ? (
-    <MobileModeBanner forceOpen />
-  ) : (
-    <PageLayout>
-      <PageLayoutColumn isMain>
-        <DashboardCard />
-      </PageLayoutColumn>
+  return (
+    <Grid
+      gridGap={{ base: 4, "2xl": 8 }}
+      gridTemplateAreas={{
+        base: `
+          ${featureFlags.TVL_ENABLED ? '"tvl"' : ""}
+          "dashboard"
+          "acre-points"
+          "beehive"
+        `,
+        sm: `
+          ${featureFlags.TVL_ENABLED ? '"tvl tvl"' : ""}
+          "dashboard acre-points"
+          "dashboard beehive"
+          `,
+      }}
+      gridTemplateColumns={{
+        base: "1fr",
+        sm: "1fr 1fr",
+        lg: "1fr 31%",
+        "2xl": "1fr 36%",
+      }}
+      gridTemplateRows={{
+        base: `
+          ${featureFlags.TVL_ENABLED ? "auto" : ""}
+          auto
+          auto
+          1fr
+        `,
+        sm: `
+          ${featureFlags.TVL_ENABLED ? "auto" : ""}
+          auto
+          1fr
+          `,
+      }}
+    >
+      {featureFlags.TVL_ENABLED && <AcreTVLProgress gridArea="tvl" />}
 
-      <PageLayoutColumn>
-        {featureFlags.TVL_ENABLED && (
-          <CurrentSeasonCard showSeasonStats={false} />
-        )}
-        {/* TODO: Uncomment in post-launch phases */}
-        {/* <GrantedSeasonPassCard /> */}
-        {featureFlags.BEEHIVE_COMPONENT_ENABLED && <BeehiveCard />}
-      </PageLayoutColumn>
+      <DashboardCard gridArea="dashboard" h="fit-content" />
 
-      <PageLayoutColumn position="relative">
-        <AcrePointsCard />
-        <UsefulLinks />
-      </PageLayoutColumn>
-    </PageLayout>
+      {/* TODO: Uncomment in post-launch phases + add `gridArea` and update  `templateAreas` */}
+      {/* <GrantedSeasonPassCard /> */}
+
+      {featureFlags.ACRE_POINTS_ENABLED ? (
+        <AcrePointsCard gridArea="acre-points" h="fit-content" />
+      ) : (
+        <AcrePointsTemplateCard gridArea="acre-points" h="fit-content" />
+      )}
+
+      <BeehiveCard gridArea="beehive" h="fit-content" />
+    </Grid>
   )
 }

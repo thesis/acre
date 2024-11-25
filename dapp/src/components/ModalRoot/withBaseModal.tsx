@@ -27,14 +27,14 @@ function withBaseModal<T extends BaseModalProps>(
       <Modal
         isOpen
         onClose={handleCloseModal}
-        scrollBehavior="inside"
         closeOnOverlayClick={false}
         size={MODAL_BASE_SIZE}
         closeOnEsc={closeOnEsc}
         {...modalProps}
       >
-        <ModalOverlay mt="header_height" />
+        <ModalOverlay zIndex="modalOverlay" />
         <ModalContent
+          zIndex="modalContent"
           mr={{
             base: isSidebarOpen ? "var(--chakra-sizes-sidebar_width)" : 0,
             xl: 0,

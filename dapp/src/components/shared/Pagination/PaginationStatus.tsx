@@ -31,7 +31,7 @@ function PaginationStatus(props: PaginationStatusProps) {
 
   return (
     <TextSm {...restProps}>
-      Showing {rangeStart}-{rangeEnd} out of {totalSize} {dataLabel}
+      {rangeStart}-{rangeEnd} out of {totalSize} {dataLabel}
     </TextSm>
   )
 }

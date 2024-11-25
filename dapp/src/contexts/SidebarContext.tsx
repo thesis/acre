@@ -1,3 +1,4 @@
+import useIsEmbed from "#/hooks/useIsEmbed"
 import React, { createContext, useCallback, useMemo, useState } from "react"
 
 type SidebarContextValue = {
@@ -17,11 +18,15 @@ export function SidebarContextProvider({
 }: {
   children: React.ReactNode
 }): React.ReactElement {
+  const { isEmbed } = useIsEmbed()
+
   const [isOpen, setIsOpen] = useState(false)
 
   const onOpen = useCallback(() => {
+    if (isEmbed) return
+
     setIsOpen(true)
-  }, [])
+  }, [isEmbed])
 
   const onClose = useCallback(() => {
     setIsOpen(false)
