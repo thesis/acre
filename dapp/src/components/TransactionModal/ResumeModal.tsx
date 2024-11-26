@@ -22,7 +22,7 @@ export default function ResumeModal({ closeModal }: BaseModalProps) {
 
   return (
     <>
-      <ModalHeader pb={6} textAlign="center">
+      <ModalHeader pb={{ md: 6 }} textAlign="center">
         Paused
       </ModalHeader>
       <ModalBody textAlign="start" py={6} mx={3} gap={4}>

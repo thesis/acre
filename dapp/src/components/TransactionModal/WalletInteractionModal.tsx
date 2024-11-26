@@ -54,7 +54,7 @@ export default function WalletInteractionModal({
   return (
     <>
       {step === "opening-wallet" && <ModalCloseButton />}
-      <ModalHeader textAlign="center" pt={16} pb={12}>
+      <ModalHeader textAlign="center" pt={{ md: 16 }} pb={{ base: 4, md: 12 }}>
         {header}
       </ModalHeader>
       <ModalBody gap={12}>
