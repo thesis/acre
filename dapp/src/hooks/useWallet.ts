@@ -8,6 +8,7 @@ import {
   useDisconnect,
 } from "wagmi"
 import { orangeKit } from "#/utils"
+import sentry from "#/sentry"
 import {
   OnErrorCallback,
   OrangeKitConnector,
@@ -75,6 +76,7 @@ export function useWallet(): UseWalletReturn {
 
         dispatch(setAddress(bitcoinAddress))
         setAddressInLocalStorage(bitcoinAddress)
+        sentry.setUser(bitcoinAddress)
       },
     },
   })
@@ -86,6 +88,7 @@ export function useWallet(): UseWalletReturn {
         dispatch(setAddress(undefined))
         removeAddressFromLocalStorage()
         resetWalletState()
+        sentry.setUser(undefined)
       },
     },
   })
@@ -124,6 +127,7 @@ export function useWallet(): UseWalletReturn {
 
         dispatch(setAddress(bitcoinAddress))
         setAddressInLocalStorage(bitcoinAddress)
+        sentry.setUser(bitcoinAddress)
       },
     },
     queryClient,
