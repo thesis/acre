@@ -69,6 +69,32 @@ export default function ConnectWallet() {
       </Button>
     )
   }
+  const options = [
+    {
+      id: "Copy",
+      icon: IconCopy,
+      label: hasCopied ? "Address copied" : "Copy Address",
+      onClick: onCopy,
+      isSupported: true,
+      closeOnSelect: false,
+    },
+    {
+      id: "Change account",
+      icon: IconUserCode,
+      label: "Change account",
+      onClick: () => handleConnectWallet(true),
+      isSupported: isChangeAccountFeatureSupported(embeddedApp),
+      closeOnSelect: true,
+    },
+    {
+      id: "Disconnect",
+      icon: IconLogout,
+      label: "Disconnect",
+      onClick: onDisconnect,
+      closeOnSelect: true,
+      isSupported: true,
+    },
+  ]
 
   return isMobile ? (
     <Menu>
@@ -83,29 +109,20 @@ export default function ConnectWallet() {
             <TextMd color="brand.400">{truncateAddress(address)}</TextMd>
           </MenuButton>
           <MenuList bg="gold.200">
-            <MenuItem
-              {...styles}
-              icon={<Icon as={IconCopy} boxSize={5} />}
-              onClick={onCopy}
-            >
-              {hasCopied ? "Address copied" : "Copy Address"}
-            </MenuItem>
-            {isChangeAccountFeatureSupported(embeddedApp) && (
-              <MenuItem
-                {...styles}
-                icon={<Icon as={IconUserCode} boxSize={5} />}
-                onClick={() => handleConnectWallet(true)}
-              >
-                Change account
-              </MenuItem>
+            {options.map(
+              (option) =>
+                option.isSupported && (
+                  <MenuItem
+                    key={option.id}
+                    closeOnSelect={option.closeOnSelect}
+                    {...styles}
+                    icon={<Icon as={option.icon} boxSize={5} />}
+                    onClick={option.onClick}
+                  >
+                    {option.label}
+                  </MenuItem>
+                ),
             )}
-            <MenuItem
-              {...styles}
-              icon={<Icon as={IconLogout} boxSize={5} />}
-              onClick={onDisconnect}
-            >
-              Disconnect
-            </MenuItem>
           </MenuList>
         </>
       )}
@@ -147,44 +164,26 @@ export default function ConnectWallet() {
           spacing={1}
           divider={<StackDivider borderColor="gold.500" />}
         >
-          <Tooltip
-            size="xs"
-            label={hasCopied ? "Address copied" : "Copy"}
-            closeOnClick={false}
-          >
-            <IconButton
-              variant="ghost"
-              aria-label="Copy"
-              icon={<Icon as={IconCopy} boxSize={5} />}
-              px={2}
-              boxSize={5}
-              onClick={onCopy}
-            />
-          </Tooltip>
-
-          {isChangeAccountFeatureSupported(embeddedApp) && (
-            <Tooltip size="xs" label="Change account">
-              <IconButton
-                variant="ghost"
-                aria-label="Change account"
-                icon={<Icon as={IconUserCode} boxSize={5} />}
-                px={2}
-                boxSize={5}
-                onClick={() => handleConnectWallet(true)}
-              />
-            </Tooltip>
+          {options.map(
+            (option) =>
+              option.isSupported && (
+                <Tooltip
+                  key={option.id}
+                  size="xs"
+                  label={option.label}
+                  closeOnClick={false}
+                >
+                  <IconButton
+                    variant="ghost"
+                    aria-label={option.id}
+                    icon={<Icon as={option.icon} boxSize={5} />}
+                    px={2}
+                    boxSize={5}
+                    onClick={option.onClick}
+                  />
+                </Tooltip>
+              ),
           )}
-
-          <Tooltip size="xs" label="Disconnect">
-            <IconButton
-              variant="ghost"
-              aria-label="Disconnect"
-              icon={<Icon as={IconLogout} boxSize={5} />}
-              px={2}
-              boxSize={5}
-              onClick={onDisconnect}
-            />
-          </Tooltip>
         </HStack>
       </Flex>
     </HStack>
