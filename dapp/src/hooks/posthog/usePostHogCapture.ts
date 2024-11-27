@@ -19,5 +19,22 @@ export const usePostHogCapture = () => {
     [posthog],
   )
 
-  return handleCapture
+  const handleCaptureWithCause = useCallback(
+    (error: unknown, ...captureArgs: CaptureArgs) => {
+      const [eventName, parameters, ...rest] = captureArgs
+
+      const captureParameters =
+        error instanceof Error
+          ? {
+              ...parameters,
+              cause: error.message,
+            }
+          : undefined
+
+      posthog.capture(eventName, captureParameters, ...rest)
+    },
+    [posthog],
+  )
+
+  return { handleCapture, handleCaptureWithCause }
 }

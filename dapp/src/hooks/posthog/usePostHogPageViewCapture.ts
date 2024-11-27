@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom"
 import { usePostHogCapture } from "./usePostHogCapture"
 
 export const usePostHogPageViewCapture = () => {
-  const handleCapture = usePostHogCapture()
+  const { handleCapture } = usePostHogCapture()
   const location = useLocation()
 
   useEffect(() => {

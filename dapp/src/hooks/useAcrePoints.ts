@@ -23,7 +23,7 @@ type UseAcrePointsReturnType = {
 export default function useAcrePoints(): UseAcrePointsReturnType {
   const { ethAddress = "" } = useWallet()
   const { openModal } = useModal()
-  const handleCapture = usePostHogCapture()
+  const { handleCapture } = usePostHogCapture()
 
   const userPointsDataQuery = useQuery({
     queryKey: [...userKeys.pointsData(), ethAddress],

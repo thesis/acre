@@ -50,7 +50,7 @@ export default function SignMessageModal() {
     amount,
     ACTION_FLOW_TYPES.UNSTAKE,
   )
-  const handleCapture = usePostHogCapture()
+  const { handleCapture, handleCaptureWithCause } = usePostHogCapture()
 
   useEffect(() => {
     let cancel = (_: Error) => {}
@@ -102,15 +102,9 @@ export default function SignMessageModal() {
         onSignMessageError(error)
       }
 
-      const captureParameters =
-        error instanceof Error
-          ? {
-              cause: error.message,
-            }
-          : undefined
-      handleCapture(PostHogEvent.WithdrawalFailure, captureParameters)
+      handleCaptureWithCause(error, PostHogEvent.WithdrawalFailure)
     },
-    [onSignMessageError, handlePause, handleCapture],
+    [onSignMessageError, handlePause, handleCaptureWithCause],
   )
 
   const { mutate: handleSignMessage } = useMutation({

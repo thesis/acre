@@ -29,7 +29,7 @@ export default function DepositBTCModal() {
   const handleBitcoinBalanceInvalidation = useInvalidateQueries({
     queryKey: userKeys.balance(),
   })
-  const handleCapture = usePostHogCapture()
+  const { handleCapture, handleCaptureWithCause } = usePostHogCapture()
 
   const onStakeBTCSuccess = useCallback(() => {
     handleBitcoinBalanceInvalidation()
@@ -70,15 +70,9 @@ export default function DepositBTCModal() {
         onError(error)
       }
 
-      const captureParameters =
-        error instanceof Error
-          ? {
-              cause: error.message,
-            }
-          : undefined
-      handleCapture(PostHogEvent.DepositFailure, captureParameters)
+      handleCaptureWithCause(error, PostHogEvent.DepositFailure)
     },
-    [onError, handlePause, handleCapture],
+    [onError, handlePause, handleCaptureWithCause],
   )
 
   const { mutate: sendBitcoinTransaction, status } = useDepositBTCTransaction({
