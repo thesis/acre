@@ -2,7 +2,6 @@ import { useCallback, useMemo } from "react"
 import {
   Connector,
   useAccount,
-  useChainId,
   useConfig,
   useConnect,
   useDisconnect,
@@ -18,6 +17,7 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useDispatch, useSelector } from "react-redux"
 import { selectWalletAddress, setAddress } from "#/store/wallet"
+import { CHAIN_ID as chainId } from "#/wagmiConfig"
 import useBitcoinBalance from "./orangeKit/useBitcoinBalance"
 import useResetWalletState from "./useResetWalletState"
 import useLastUsedBtcAddress from "./useLastUsedBtcAddress"
@@ -52,9 +52,8 @@ export function useWallet(): UseWalletReturn {
 
   const { data: balance } = useBitcoinBalance(btcAddress)
 
-  const chainId = useChainId()
   const config = useConfig()
-  // `useAccount` hook returns the Ethereum address
+  // `useAccount` hook returns the Ethereum address.
   const { status: accountStatus, address: account } = useAccount()
 
   // `isConnected` is variable derived from `status` but does not guarantee us a
@@ -100,7 +99,10 @@ export function useWallet(): UseWalletReturn {
         const prevAddress = await selectedConnector.getBitcoinAddress()
         const {
           accounts: [newAccount],
-        } = await selectedConnector.connect({ chainId, isReconnecting: true })
+        } = await selectedConnector.connect({
+          chainId,
+          isReconnecting: true,
+        })
         const newAddress = await selectedConnector.getBitcoinAddress()
 
         if (newAddress !== prevAddress) {
@@ -152,7 +154,10 @@ export function useWallet(): UseWalletReturn {
       }
 
       connect(
-        { connector: typeConversionToConnector(selectedConnector), chainId },
+        {
+          connector: typeConversionToConnector(selectedConnector),
+          chainId,
+        },
         {
           onError: (error) => {
             if (options?.onError) options.onError(error)
@@ -170,7 +175,7 @@ export function useWallet(): UseWalletReturn {
         },
       )
     },
-    [connect, chainId, reconnect],
+    [connect, reconnect],
   )
 
   return useMemo(
