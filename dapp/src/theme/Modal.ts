@@ -6,10 +6,7 @@ const baseStyleContainer = defineStyle({
 })
 
 const baseStyleDialog = defineStyle({
-  marginTop: {
-    base: "var(--chakra-space-modal_shift)",
-    md: "var(--chakra-space-modal_shift_xl)",
-  },
+  marginTop: { base: 12, sm: "var(--chakra-space-modal_shift)" },
   marginBottom: 8,
   boxShadow: "none",
   borderRadius: "xl",
@@ -19,10 +16,10 @@ const baseStyleDialog = defineStyle({
 })
 
 const baseCloseButton = defineStyle({
-  top: { base: 3, md: -7 },
-  right: { base: 3, md: -7 },
-  boxSize: { md: 7 },
-  rounded: { md: "100%" },
+  top: { base: 3, sm: -7 },
+  right: { base: 3, sm: -7 },
+  boxSize: { sm: 7 },
+  rounded: { sm: "100%" },
   bg: "opacity.white.5",
 
   _hover: {
@@ -41,8 +38,8 @@ const baseStyleHeader = defineStyle({
   fontSize: "xl",
   lineHeight: "xl",
   fontWeight: "bold",
-  pt: { md: 10 },
-  px: { md: 10 },
+  pt: { sm: 10 },
+  px: { sm: 10 },
   mb: 8,
 })
 
@@ -54,15 +51,15 @@ const baseStyleBody = defineStyle({
   alignItems: "center",
   gap: 6,
   pt: 0,
-  px: { base: 0, md: 8 },
-  pb: { base: 0, md: 10 },
+  px: { base: 0, sm: 8 },
+  pb: { base: 0, sm: 10 },
 })
 
 const baseStyleFooter = defineStyle({
   flexDirection: "column",
   gap: 6,
-  px: { base: 0, md: 8 },
-  pb: { base: 0, md: 10 },
+  px: { base: 0, sm: 8 },
+  pb: { base: 0, sm: 10 },
 })
 
 const multiStyleConfig = createMultiStyleConfigHelpers(parts.keys)

@@ -1,17 +1,8 @@
-const headerHeight = 28
-const headerHeightXl = 36
-
-const modalShiftToHeaderHeight = {
-  [headerHeight]: 28,
-  [headerHeightXl]: "9.25rem",
-}
-
 export const semanticTokens = {
   space: {
-    header_height: headerHeight,
-    header_height_xl: headerHeightXl,
-    modal_shift: modalShiftToHeaderHeight[headerHeight],
-    modal_shift_xl: modalShiftToHeaderHeight[headerHeightXl],
+    header_height: 28,
+    header_height_xl: 36,
+    modal_shift: "9.75rem", // 156px
     dashboard_card_padding: 5,
   },
   sizes: {
