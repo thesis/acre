@@ -63,7 +63,7 @@ const collapseVariants: Variants = {
 type ConnectWalletAlertProps = AlertProps & { type?: ConnectionAlert }
 
 export default function ConnectWalletAlert(props: ConnectWalletAlertProps) {
-  const { type, ...restProps } = props
+  const { type, status, ...restProps } = props
 
   const data = type ? CONNECTION_ALERTS[type] : undefined
 
@@ -79,7 +79,7 @@ export default function ConnectWalletAlert(props: ConnectWalletAlertProps) {
           overflow="hidden"
           w="full"
         >
-          <Alert status="error" mb={6} {...restProps}>
+          <Alert status={status} mb={6} {...restProps}>
             <AlertIcon />
             <VStack w="full" align="start" spacing={0}>
               <AlertTitle textAlign="start">{data.title}</AlertTitle>
