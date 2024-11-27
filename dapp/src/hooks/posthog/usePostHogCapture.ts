@@ -31,9 +31,9 @@ export const usePostHogCapture = () => {
             }
           : undefined
 
-      posthog.capture(eventName, captureParameters, ...rest)
+      handleCapture(eventName, captureParameters, ...rest)
     },
-    [posthog],
+    [handleCapture],
   )
 
   return { handleCapture, handleCaptureWithCause }

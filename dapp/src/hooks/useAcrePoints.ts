@@ -23,7 +23,7 @@ type UseAcrePointsReturnType = {
 export default function useAcrePoints(): UseAcrePointsReturnType {
   const { ethAddress = "" } = useWallet()
   const { openModal } = useModal()
-  const { handleCapture } = usePostHogCapture()
+  const { handleCapture, handleCaptureWithCause } = usePostHogCapture()
 
   const userPointsDataQuery = useQuery({
     queryKey: [...userKeys.pointsData(), ethAddress],
@@ -51,13 +51,14 @@ export default function useAcrePoints(): UseAcrePointsReturnType {
         totalAmount,
       })
 
-      handleCapture(PostHogEvent.PointsClaim, {
+      handleCapture(PostHogEvent.PointsClaimSuccess, {
         claimedAmount,
         totalAmount,
       })
     },
-    // TODO: Add the case when something goes wrong
-    // onError: (error) => {},
+    onError: (error) => {
+      handleCaptureWithCause(error, PostHogEvent.PointsClaimFailure)
+    },
   })
 
   return {

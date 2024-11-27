@@ -4,5 +4,6 @@ export enum PostHogEvent {
   DepositFailure = "deposit_failure",
   WithdrawalSuccess = "withdrawal_success",
   WithdrawalFailure = "withdrawal_failure",
-  PointsClaim = "points_claim",
+  PointsClaimSuccess = "points_claim_success",
+  PointsClaimFailure = "points_claim_failure",
 }
