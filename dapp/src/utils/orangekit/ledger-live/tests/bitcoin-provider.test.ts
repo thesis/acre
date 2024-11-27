@@ -473,8 +473,6 @@ describe("AcreLedgerLiveBitcoinProvider", () => {
           })
         })
 
-        it("should get")
-
         it("should get zero address for all accounts", () => {
           expect(
             mockedWalletApiClient.bitcoin.getAddress,
