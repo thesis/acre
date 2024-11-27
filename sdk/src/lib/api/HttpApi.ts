@@ -1,11 +1,48 @@
+import { backoffRetrier, RetryOptions } from "../utils"
+
 /**
  * Represents an abstract HTTP API.
  */
 export default abstract class HttpApi {
   #apiUrl: string
 
-  constructor(apiUrl: string) {
+  /**
+   * Retry options for API requests.
+   */
+  #retryOptions: RetryOptions
+
+  constructor(
+    apiUrl: string,
+    retryOptions: RetryOptions = {
+      retries: 5,
+      backoffStepMs: 1000,
+    },
+  ) {
     this.#apiUrl = apiUrl
+    this.#retryOptions = retryOptions
+  }
+
+  /**
+   * Makes an HTTP request with retry logic.
+   * @param requestFn Function that returns a Promise of the HTTP response.
+   * @returns The HTTP response.
+   * @throws Error if the request fails after all retries.
+   */
+  async requestWithRetry(
+    requestFn: () => Promise<Response>,
+  ): Promise<Response> {
+    return backoffRetrier<Response>(
+      this.#retryOptions.retries,
+      this.#retryOptions.backoffStepMs,
+    )(async () => {
+      const response = await requestFn()
+
+      if (!response.ok) {
+        throw new Error(`Request failed: ${await response.text()}`)
+      }
+
+      return response
+    })
   }
 
   /**
