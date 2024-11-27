@@ -1,19 +1,12 @@
-import {
-  ACRE_SESSION_EXPIRATION_TIME,
-  CONNECTION_ERRORS,
-  wallets,
-} from "#/constants"
-import {
-  ConnectionErrorData,
-  OrangeKitError,
-  OrangeKitConnector,
-} from "#/types"
+import { ACRE_SESSION_EXPIRATION_TIME, wallets } from "#/constants"
+import { OrangeKitError, OrangeKitConnector } from "#/types"
 import {
   isUnsupportedBitcoinAddressError,
   isWalletNetworkDoesNotMatchProviderChainError,
 } from "@orangekit/react"
 import { Connector } from "wagmi"
 import { SignInWithWalletMessage } from "@orangekit/sign-in-with-wallet"
+import { ConnectionAlert } from "#/components/ConnectWalletModal/ConnectWalletAlert"
 import { getExpirationDate } from "../time"
 import { getOrangeKitLedgerLiveConnector } from "./ledger-live"
 
@@ -71,22 +64,22 @@ const typeConversionToConnector = (connector?: OrangeKitConnector): Connector =>
 
 const parseOrangeKitConnectionError = (
   error: OrangeKitError,
-): ConnectionErrorData => {
+): ConnectionAlert => {
   const { cause } = error
 
   if (isWalletConnectionRejectedError(cause)) {
-    return CONNECTION_ERRORS.REJECTED
+    return ConnectionAlert.Rejected
   }
 
   if (isUnsupportedBitcoinAddressError(cause)) {
-    return CONNECTION_ERRORS.NOT_SUPPORTED
+    return ConnectionAlert.NotSupported
   }
 
   if (isWalletNetworkDoesNotMatchProviderChainError(cause)) {
-    return CONNECTION_ERRORS.NETWORK_MISMATCH
+    return ConnectionAlert.NetworkMismatch
   }
 
-  return CONNECTION_ERRORS.DEFAULT
+  return ConnectionAlert.Default
 }
 
 async function verifySignInWithWalletMessage(
