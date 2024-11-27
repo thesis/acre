@@ -39,6 +39,7 @@ const CONNECTION_ALERTS = {
       <Box as="span">
         If the problem persists, contact{" "}
         <Link
+          // TODO: Define in the new color palette
           color="#0E61FE"
           textDecoration="underline"
           href={EXTERNAL_HREF.DISCORD}
