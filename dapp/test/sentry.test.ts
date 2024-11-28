@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest"
 import * as Sentry from "@sentry/react"
-import sentry from "./sentry"
+import sentry from "#/sentry"
 
 describe("sentry", () => {
   describe("setUser", () => {
