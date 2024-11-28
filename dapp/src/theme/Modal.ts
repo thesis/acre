@@ -88,7 +88,7 @@ const sizeXl = multiStyleConfig.definePartsStyle({
 })
 
 const sizeLg = multiStyleConfig.definePartsStyle({
-  dialog: { w: { xs: "95%" } },
+  dialog: { w: "30rem" },
 })
 
 const sizeFull = multiStyleConfig.definePartsStyle({
