@@ -10,7 +10,7 @@ const baseStyleDialog = defineStyle({
   marginBottom: 8,
   boxShadow: "none",
   borderRadius: "xl",
-  p: { base: 5 },
+  p: { base: 5, sm: 0 },
   bg: "gold.100",
   border: "none",
 })
@@ -40,7 +40,7 @@ const baseStyleHeader = defineStyle({
   fontWeight: "bold",
   pt: { sm: 10 },
   px: { sm: 10 },
-  mb: 8,
+  pb: 8,
 })
 
 const baseStyleBody = defineStyle({
