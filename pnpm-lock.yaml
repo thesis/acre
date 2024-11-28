@@ -74,9 +74,6 @@ importers:
       bignumber.js:
         specifier: ^9.1.2
         version: 9.1.2
-      crypto-js:
-        specifier: ^4.2.0
-        version: 4.2.0
       ethers:
         specifier: ^6.10.0
         version: 6.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
@@ -123,9 +120,6 @@ importers:
       '@thesis-co/eslint-config':
         specifier: github:thesis/eslint-config#7b9bc8c
         version: https://codeload.github.com/thesis/eslint-config/tar.gz/7b9bc8c(eslint@8.57.0)(prettier@3.3.2)(typescript@5.4.5)
-      '@types/crypto-js':
-        specifier: ^4.2.2
-        version: 4.2.2
       '@types/luxon':
         specifier: ^3.4.2
         version: 3.4.2
@@ -3563,9 +3557,6 @@ packages:
   '@types/country-data@0.0.0':
     resolution: {integrity: sha512-lIxCk6G7AwmUagQ4gIQGxUBnvAq664prFD9nSAz6dgd1XmBXBtZABV/op+QsJsIyaP1GZsf/iXhYKHX3azSRCw==}
 
-  '@types/crypto-js@4.2.2':
-    resolution: {integrity: sha512-sDOLlVbHhXpAUAL0YHDUUwDZf3iN4Bwi4W6a0W0b+QcAezUbRtH4FVb+9J4h+XFPW7l/gQ9F8qC7P+Ec4k8QVQ==}
-
   '@types/debug@4.1.12':
     resolution: {integrity: sha512-vIChWdVG3LG1SMxEvI/AK+FWJthlrqlTu7fbrlywTkkaONwk/UAGaULXRlf8vkzFBLVm0zkMdCquhL5aOjhXPQ==}
 
@@ -5165,9 +5156,6 @@ packages:
 
   crypto-js@3.3.0:
     resolution: {integrity: sha512-DIT51nX0dCfKltpRiXV+/TVZq+Qq2NgF4644+K7Ttnla7zEzqc+kjJyiB96BHNyUTBxyjzRcZYpUdZa+QAqi6Q==}
-
-  crypto-js@4.2.0:
-    resolution: {integrity: sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==}
 
   css-box-model@1.2.1:
     resolution: {integrity: sha512-a7Vr4Q/kd/aw96bnJG332W9V9LkJO69JRcaCYDUqjp6/z0w6VcZjgAcTbgFxEPfBgdnAwlh3iwu+hLopa+flJw==}
@@ -16095,8 +16083,6 @@ snapshots:
 
   '@types/country-data@0.0.0': {}
 
-  '@types/crypto-js@4.2.2': {}
-
   '@types/debug@4.1.12':
     dependencies:
       '@types/ms': 0.7.34
@@ -18490,8 +18476,6 @@ snapshots:
       randomfill: 1.0.4
 
   crypto-js@3.3.0: {}
-
-  crypto-js@4.2.0: {}
 
   css-box-model@1.2.1:
     dependencies:

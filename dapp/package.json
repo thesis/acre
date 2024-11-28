@@ -35,7 +35,6 @@
     "@tanstack/react-query-devtools": "^5.49.2",
     "axios": "^1.6.7",
     "bignumber.js": "^9.1.2",
-    "crypto-js": "^4.2.0",
     "ethers": "^6.10.0",
     "formik": "^2.4.5",
     "framer-motion": "^10.16.5",
@@ -53,7 +52,6 @@
   "devDependencies": {
     "@sentry/vite-plugin": "^2.22.5",
     "@thesis-co/eslint-config": "github:thesis/eslint-config#7b9bc8c",
-    "@types/crypto-js": "^4.2.2",
     "@types/luxon": "^3.4.2",
     "@types/react": "^18.2.38",
     "@types/react-dom": "^18.2.17",
