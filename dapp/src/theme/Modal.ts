@@ -2,7 +2,7 @@ import { modalAnatomy as parts } from "@chakra-ui/anatomy"
 import { createMultiStyleConfigHelpers, defineStyle } from "@chakra-ui/react"
 
 const baseStyleContainer = defineStyle({
-  px: { base: 3, md: 8 },
+  px: { base: 3, sm: 8 },
 })
 
 const baseStyleDialog = defineStyle({
@@ -51,7 +51,7 @@ const baseStyleBody = defineStyle({
   alignItems: "center",
   gap: 6,
   pt: 0,
-  px: { base: 0, sm: 8 },
+  px: { base: 0, sm: 10 },
   pb: { base: 0, sm: 10 },
 })
 
