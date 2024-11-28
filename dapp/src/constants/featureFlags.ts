@@ -20,6 +20,9 @@ const GATING_DAPP_ENABLED =
 
 const POSTHOG_ENABLED = import.meta.env.VITE_FEATURE_POSTHOG_ENABLED === "true"
 
+const MOBILE_MODE_ENABLED =
+  import.meta.env.VITE_FEATURE_MOBILE_MODE_ENABLED === "true"
+
 const featureFlags = {
   GAMIFICATION_ENABLED,
   OKX_WALLET_ENABLED,
@@ -29,6 +32,7 @@ const featureFlags = {
   TVL_ENABLED,
   GATING_DAPP_ENABLED,
   POSTHOG_ENABLED,
+  MOBILE_MODE_ENABLED,
 }
 
 export default featureFlags

@@ -11,7 +11,11 @@ import Sidebar from "./Sidebar"
 import MobileModeBanner from "./MobileModeBanner"
 import Footer from "./Footer"
 
-const PADDING = "2.5rem" // 40px
+// The padding update should also be done in the Header component and Footer theme as well
+const PADDING = {
+  base: 4,
+  md: "2.5rem", // 40px
+}
 const PAGE_MAX_WIDTH: Record<DappMode, string> = {
   standalone: "63rem", // 1008px
   "ledger-live": "63rem", // 1008px
@@ -19,13 +23,13 @@ const PAGE_MAX_WIDTH: Record<DappMode, string> = {
 
 function Layout() {
   const isMobileMode = useMobileMode()
-  const { embeddedApp } = useIsEmbed()
+  const { isEmbed, embeddedApp } = useIsEmbed()
 
   // It needs to be called here because the scope of `RouterProvider` is
   // required to get `location` from `useLocation` hook.
   usePostHogPageViewCapture()
 
-  if (isMobileMode) return <MobileModeBanner forceOpen />
+  if (!isEmbed && isMobileMode) return <MobileModeBanner forceOpen />
 
   const maxWidth = embeddedApp
     ? PAGE_MAX_WIDTH[embeddedApp]
@@ -38,10 +42,11 @@ function Layout() {
       <Flex
         flexFlow="column"
         mx="auto"
-        p={PADDING}
+        px={PADDING}
+        pb={10}
         pt={0.5}
         w="full"
-        maxWidth={`calc(${maxWidth} + 2*${PADDING})`}
+        maxWidth={`calc(${maxWidth} + 2*${PADDING.md})`}
         flex={1}
       >
         <Outlet />

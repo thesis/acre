@@ -2,23 +2,24 @@ import { modalAnatomy as parts } from "@chakra-ui/anatomy"
 import { createMultiStyleConfigHelpers, defineStyle } from "@chakra-ui/react"
 
 const baseStyleContainer = defineStyle({
-  px: 8,
+  px: { base: 3, sm: 8 },
 })
 
 const baseStyleDialog = defineStyle({
-  marginTop: "var(--chakra-space-modal_shift)",
+  marginTop: { base: 12, sm: "var(--chakra-space-modal_shift)" },
   marginBottom: 8,
   boxShadow: "none",
   borderRadius: "xl",
+  p: { base: 5, sm: 0 },
   bg: "gold.100",
   border: "none",
 })
 
 const baseCloseButton = defineStyle({
-  top: -7,
-  right: -7,
-  boxSize: 7,
-  rounded: "100%",
+  top: { base: 3, sm: -7 },
+  right: { base: 3, sm: -7 },
+  boxSize: { sm: 7 },
+  rounded: { sm: "100%" },
   bg: "opacity.white.5",
 
   _hover: {
@@ -37,8 +38,8 @@ const baseStyleHeader = defineStyle({
   fontSize: "xl",
   lineHeight: "xl",
   fontWeight: "bold",
-  pt: 10,
-  px: 10,
+  pt: { sm: 10 },
+  px: { sm: 10 },
   pb: 8,
 })
 
@@ -50,15 +51,15 @@ const baseStyleBody = defineStyle({
   alignItems: "center",
   gap: 6,
   pt: 0,
-  px: 8,
-  pb: 10,
+  px: { base: 0, sm: 10 },
+  pb: { base: 0, sm: 10 },
 })
 
 const baseStyleFooter = defineStyle({
   flexDirection: "column",
   gap: 6,
-  px: 8,
-  pb: 10,
+  px: { base: 0, sm: 8 },
+  pb: { base: 0, sm: 10 },
 })
 
 const multiStyleConfig = createMultiStyleConfigHelpers(parts.keys)

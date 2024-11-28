@@ -134,6 +134,11 @@ export default function ConnectWalletButton({
       },
       onError: (error: OrangeKitError) => {
         const errorData = orangeKit.parseOrangeKitConnectionError(error)
+
+        if (errorData === CONNECTION_ERRORS.DEFAULT) {
+          console.error("Failed to connect", error)
+        }
+
         setConnectionError(errorData)
       },
     })

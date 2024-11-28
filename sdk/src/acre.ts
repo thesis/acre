@@ -85,7 +85,9 @@ class Acre {
     const orangeKit = await OrangeKitSdk.init(
       Number(ethereumChainId),
       ethereumRpcUrl,
-      new GelatoTransactionSender(gelatoApiKey),
+      new GelatoTransactionSender(gelatoApiKey, {
+        backoffRetrier: { retries: 7, backoffStepMs: 3000 },
+      }),
     )
 
     const contracts = await getEthereumContracts(

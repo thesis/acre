@@ -42,7 +42,7 @@ function MezoBeehiveModalBase() {
         </Flex>
       </ModalHeader>
 
-      <ModalBody gap={6} pb={8} overflowX="hidden">
+      <ModalBody gap={6} pb={{ base: 0, sm: 8 }} overflowX="hidden">
         <VStack spacing={1}>
           {data && (
             <HStack>
