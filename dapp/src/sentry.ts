@@ -1,5 +1,5 @@
 import * as Sentry from "@sentry/react"
-import * as CryptoJS from "crypto-js"
+import { sha256, toUtf8Bytes } from "ethers"
 
 const initialize = (dsn: string) => {
   Sentry.init({
@@ -33,11 +33,9 @@ const setUser = (bitcoinAddress: string | undefined) => {
     return
   }
 
-  const hashedBitcoinAddress = CryptoJS.SHA256(
-    bitcoinAddress.toLowerCase(),
-  ).toString(CryptoJS.enc.Hex)
-
-  const id = hashedBitcoinAddress.slice(0, 10)
+  const hashedBitcoinAddress = sha256(toUtf8Bytes(bitcoinAddress.toLowerCase()))
+  // Remove the 0x prefix and take the first 10 characters.
+  const id = hashedBitcoinAddress.slice(2, 12)
 
   Sentry.setUser({ id })
 }
