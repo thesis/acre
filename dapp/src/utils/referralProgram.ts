@@ -9,9 +9,23 @@ const EMBEDDED_APP_TO_REFERRAL: Record<EmbedApp, number> = {
   "ledger-live": 2083,
 }
 
-const isValidReferral = (value: number) => {
-  const isInteger = Number.isInteger(value)
-  return isInteger && value >= 0 && value <= MAX_UINT16
+const isValidReferral = (value: unknown) => {
+  let valueAsNumber: number | undefined
+
+  if (typeof value === "string") {
+    // Only digits w/o leading zeros.
+    const isNumber = /^(?:[1-9][0-9]*|0)$/.test(value)
+    valueAsNumber = isNumber ? Number(value) : undefined
+  } else if (typeof value === "number") {
+    valueAsNumber = value
+  }
+
+  return (
+    !!valueAsNumber &&
+    Number.isInteger(valueAsNumber) &&
+    valueAsNumber >= 0 &&
+    valueAsNumber <= MAX_UINT16
+  )
 }
 
 const getReferralFromURL = () =>

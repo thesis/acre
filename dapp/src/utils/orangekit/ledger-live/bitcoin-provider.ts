@@ -58,9 +58,12 @@ function numberToValidHexString(value: number): string {
   return `0x${hex}`
 }
 
-export type AcreLedgerLiveBitcoinProviderOptions = {
-  tryConnectToAddress: string | undefined
-}
+export type AcreLedgerLiveBitcoinProviderOptions =
+  | {
+      tryConnectToAddress?: string
+      tryConnectToAccountByXpub?: never
+    }
+  | { tryConnectToAddress?: never; tryConnectToAccountByXpub?: string }
 
 /**
  * Ledger Live Wallet API Bitcoin Provider.
@@ -90,6 +93,7 @@ export default class AcreLedgerLiveBitcoinProvider
     network: BitcoinNetwork,
     options: AcreLedgerLiveBitcoinProviderOptions = {
       tryConnectToAddress: undefined,
+      tryConnectToAccountByXpub: undefined,
     },
   ) {
     const windowMessageTransport = new WindowMessageTransport()
@@ -115,6 +119,7 @@ export default class AcreLedgerLiveBitcoinProvider
     walletApiClient: WalletAPIClient,
     options: AcreLedgerLiveBitcoinProviderOptions = {
       tryConnectToAddress: undefined,
+      tryConnectToAccountByXpub: undefined,
     },
   ) {
     this.#network = network
@@ -140,12 +145,24 @@ export default class AcreLedgerLiveBitcoinProvider
         currencyIds,
       })
 
-      if (this.#options.tryConnectToAddress) {
+      if (
+        this.#options.tryConnectToAddress ||
+        this.#options.tryConnectToAccountByXpub
+      ) {
         for (let i = 0; i < accounts.length; i += 1) {
           const acc = accounts[i]
+          if (
+            this.#options.tryConnectToAccountByXpub &&
+            // eslint-disable-next-line no-await-in-loop
+            (await this.#walletApiClient.bitcoin.getXPub(acc.id)) ===
+              this.#options.tryConnectToAccountByXpub
+          ) {
+            this.#account = acc
+            break
+          }
+
           // eslint-disable-next-line no-await-in-loop
           const address = await this.#getAddress(acc.id)
-
           if (address === this.#options.tryConnectToAddress) {
             this.#account = acc
             break

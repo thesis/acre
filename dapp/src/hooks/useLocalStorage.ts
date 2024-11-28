@@ -1,4 +1,7 @@
-import { useLocalStorage as useRehooksLocalStorage } from "@rehooks/local-storage"
+import {
+  useLocalStorage as useRehooksLocalStorage,
+  writeStorage,
+} from "@rehooks/local-storage"
 
 export const parseLocalStorageValue = (value: string | null | undefined) => {
   if (
@@ -11,6 +14,8 @@ export const parseLocalStorageValue = (value: string | null | undefined) => {
 
   return value
 }
+
+export { writeStorage }
 
 export const getLocalStorageItem = (key: string): string | undefined => {
   const value = localStorage.getItem(key)
