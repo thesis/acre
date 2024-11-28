@@ -18,6 +18,24 @@ export enum ConnectionAlert {
   Default = "DEFAULT",
 }
 
+function ContactSupport() {
+  return (
+    <Box as="span">
+      If the problem persists, contact{" "}
+      <Link
+        // TODO: Define in the new color palette
+        color="#0E61FE"
+        textDecoration="underline"
+        href={EXTERNAL_HREF.DISCORD}
+        isExternal
+      >
+        Acre support
+      </Link>
+      .
+    </Box>
+  )
+}
+
 const CONNECTION_ALERTS = {
   [ConnectionAlert.Rejected]: {
     title: "Wallet connection rejected.",
@@ -26,33 +44,20 @@ const CONNECTION_ALERTS = {
   [ConnectionAlert.NotSupported]: {
     title: "Not supported.",
     description:
-      "Only Native SegWit, Nested SegWit or Legacy addresses supported at this time. Please try a different address or another wallet.",
+      "Only Native SegWit, Nested SegWit, or Legacy addresses are supported. Please use a compatible address or switch to a different wallet.",
   },
   [ConnectionAlert.NetworkMismatch]: {
-    title: "Error!",
+    title: "Incorrect network detected in your wallet.",
     description:
-      "Incorrect network detected in your wallet. Please choose proper network and try again.",
+      "Please connect your wallet to the correct Bitcoin network and try again.",
   },
   [ConnectionAlert.Default]: {
-    title: "Wallet connection error. Please try again.",
-    description: (
-      <Box as="span">
-        If the problem persists, contact{" "}
-        <Link
-          // TODO: Define in the new color palette
-          color="#0E61FE"
-          textDecoration="underline"
-          href={EXTERNAL_HREF.DISCORD}
-          isExternal
-        >
-          Acre support
-        </Link>
-      </Box>
-    ),
+    title: "Wallet connection failed. Please try again.",
+    description: <ContactSupport />,
   },
   [ConnectionAlert.InvalidSIWWSignature]: {
-    title: "Invalid Sign In With Wallet signature",
-    description: "We encountered an error. Please try again.",
+    title: "Invalid sign-in signature. Please try again.",
+    description: <ContactSupport />,
   },
 }
 
