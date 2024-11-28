@@ -1,5 +1,6 @@
 import { PostHog, usePostHog } from "posthog-js/react"
 import { useCallback } from "react"
+import { sha256, toUtf8Bytes } from "ethers"
 
 type IdentifyArgs = Parameters<PostHog["identify"]>
 
@@ -8,7 +9,12 @@ export const usePostHogIdentity = () => {
 
   const handleIdentification = useCallback(
     (...identifyArgs: IdentifyArgs) => {
-      posthog.identify(...identifyArgs)
+      const [id, ...rest] = identifyArgs
+      if (!id) return
+
+      const hashedId = sha256(toUtf8Bytes(id.toLowerCase())).slice(2, 12)
+
+      posthog.identify(hashedId, ...rest)
     },
     [posthog],
   )
