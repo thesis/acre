@@ -65,7 +65,7 @@ export default function PositionDetails() {
       <VStack alignItems="start" spacing={0}>
         {/* TODO: Component should be moved to `CardHeader` */}
         <HStack>
-          <TextMd>Your balance</TextMd>
+          <TextMd>Your Acre balance</TextMd>
           {activities.status === "pending" && (
             <Tooltip
               label="Your balance will update once the pending deposit is finalized."
