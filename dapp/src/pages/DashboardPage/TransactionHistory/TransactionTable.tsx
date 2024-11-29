@@ -24,7 +24,11 @@ export default function TransactionTable() {
   const isMobileMode = useMobileMode()
 
   return (
-    <Pagination data={activities} pageSize={isMobileMode ? 5 : 10} spacing={6}>
+    <Pagination
+      data={activities.data}
+      pageSize={isMobileMode ? 5 : 10}
+      spacing={6}
+    >
       <PaginationPage direction="column" spacing={2} pageSpacing={6}>
         {(pageData: Activity[]) =>
           pageData.map((activity) => (

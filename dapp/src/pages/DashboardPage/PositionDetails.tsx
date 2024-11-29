@@ -7,6 +7,7 @@ import {
   useStatistics,
   useWallet,
   useMobileMode,
+  useActivities,
 } from "#/hooks"
 import { ACTION_FLOW_TYPES } from "#/types"
 import {
@@ -14,6 +15,7 @@ import {
   ButtonProps,
   Flex,
   HStack,
+  Icon,
   // Tag,
   VStack,
 } from "@chakra-ui/react"
@@ -22,6 +24,8 @@ import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import { featureFlags } from "#/constants"
 import { TextMd } from "#/components/shared/Typography"
 import AcreTVLMessage from "./AcreTVLMessage"
+import Tooltip from "#/components/shared/Tooltip"
+import { IconClockHour5Filled } from "@tabler/icons-react"
 
 const isWithdrawalFlowEnabled = featureFlags.WITHDRAWALS_ENABLED
 
@@ -34,6 +38,9 @@ const buttonStyles: ButtonProps = {
   px: 7,
   h: "auto",
 }
+
+// TODO: Define in the new color palette
+const TOOLTIP_ICON_COLOR = "#3A3328"
 
 export default function PositionDetails() {
   const { data } = useBitcoinPosition()
@@ -51,12 +58,29 @@ export default function PositionDetails() {
   const isDisabledForMobileMode =
     isMobileMode && !featureFlags.MOBILE_MODE_ENABLED
 
+  const activities = useActivities()
+
   return (
     <Flex w="100%" flexDirection="column" gap={5}>
       <VStack alignItems="start" spacing={0}>
         {/* TODO: Component should be moved to `CardHeader` */}
-        <TextMd>
-          Your balance
+        <HStack>
+          <TextMd>Your balance</TextMd>
+          {activities.status === "pending" && (
+            <Tooltip
+              label="Your balance will update once the pending deposit is finalized."
+              placement="right"
+              wrapperProps={{
+                lineHeight: 4,
+              }}
+            >
+              <Icon
+                as={IconClockHour5Filled}
+                color={TOOLTIP_ICON_COLOR}
+                opacity={0.25}
+              />
+            </Tooltip>
+          )}
           {/* TODO: Uncomment when position will be implemented */}
           {/* {positionPercentage && (
             <Tag
@@ -73,7 +97,7 @@ export default function PositionDetails() {
               Top {positionPercentage}%
             </Tag>
           )} */}
-        </TextMd>
+        </HStack>
         <UserDataSkeleton>
           <VStack alignItems="start" spacing={0}>
             <CurrencyBalanceWithConversion
