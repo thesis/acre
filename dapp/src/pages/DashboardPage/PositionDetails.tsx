@@ -6,6 +6,7 @@ import {
   useTransactionModal,
   useStatistics,
   useWallet,
+  useMobileMode,
 } from "#/hooks"
 import { ACTION_FLOW_TYPES } from "#/types"
 import {
@@ -27,7 +28,7 @@ const isWithdrawalFlowEnabled = featureFlags.WITHDRAWALS_ENABLED
 const buttonStyles: ButtonProps = {
   size: "lg",
   flex: 1,
-  w: { base: "auto", lg: 40 },
+  w: 40,
   fontWeight: "bold",
   lineHeight: 6,
   px: 7,
@@ -41,17 +42,21 @@ export default function PositionDetails() {
   const openDepositModal = useTransactionModal(ACTION_FLOW_TYPES.STAKE)
   const openWithdrawModal = useTransactionModal(ACTION_FLOW_TYPES.UNSTAKE)
   const activitiesCount = useAllActivitiesCount()
+  const isMobileMode = useMobileMode()
 
   const { tvl } = useStatistics()
 
   const { isConnected } = useWallet()
+
+  const isDisabledForMobileMode =
+    isMobileMode && !featureFlags.MOBILE_MODE_ENABLED
 
   return (
     <Flex w="100%" flexDirection="column" gap={5}>
       <VStack alignItems="start" spacing={0}>
         {/* TODO: Component should be moved to `CardHeader` */}
         <TextMd>
-          Your deposit
+          Your balance
           {/* TODO: Uncomment when position will be implemented */}
           {/* {positionPercentage && (
             <Tag
@@ -91,24 +96,39 @@ export default function PositionDetails() {
 
       <HStack w="full" justify="start" flexWrap="wrap" spacing={5}>
         <UserDataSkeleton>
-          <Button
-            {...buttonStyles}
-            onClick={openDepositModal}
-            isDisabled={featureFlags.TVL_ENABLED && tvl.isCapExceeded}
+          <ArrivingSoonTooltip
+            label="This option is not available on mobile yet. Please use the desktop app to deposit."
+            shouldDisplayTooltip={isDisabledForMobileMode}
           >
-            Deposit
-          </Button>
+            <Button
+              {...buttonStyles}
+              onClick={openDepositModal}
+              isDisabled={
+                (featureFlags.TVL_ENABLED && tvl.isCapExceeded) ||
+                isDisabledForMobileMode
+              }
+            >
+              Deposit
+            </Button>
+          </ArrivingSoonTooltip>
         </UserDataSkeleton>
         {isConnected && activitiesCount > 0 && (
-          <UserDataSkeleton ml={-3}>
+          <UserDataSkeleton>
             <ArrivingSoonTooltip
-              shouldDisplayTooltip={!isWithdrawalFlowEnabled}
+              label={
+                isMobileMode
+                  ? "This option is not available on mobile yet. Please use the desktop app to withdraw."
+                  : "This option is currently not available."
+              }
+              shouldDisplayTooltip={
+                !isWithdrawalFlowEnabled || isDisabledForMobileMode
+              }
             >
               <Button
                 variant="outline"
                 {...buttonStyles}
                 onClick={openWithdrawModal}
-                isDisabled={!isWithdrawalFlowEnabled}
+                isDisabled={!isWithdrawalFlowEnabled || isDisabledForMobileMode}
               >
                 Withdraw
               </Button>

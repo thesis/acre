@@ -17,7 +17,7 @@ import {
 import { H3, TextSm } from "#/components/shared/Typography"
 import { BaseModalProps, DappMode } from "#/types"
 import { EmbedApp } from "#/utils/referralProgram"
-import { useIsEmbed } from "#/hooks"
+import { useIsEmbed, useMobileMode } from "#/hooks"
 import withBaseModal from "./ModalRoot/withBaseModal"
 import step1Video from "../assets/videos/welcome-steps/welcome-step-1.mp4"
 import step2Video from "../assets/videos/welcome-steps/welcome-step-2.mp4"
@@ -122,6 +122,7 @@ function WelcomeModalBase({ closeModal }: BaseModalProps) {
     count: steps.length,
   }) as UseStepsReturn & { goToNext: () => void }
   const { embeddedApp } = useIsEmbed()
+  const isMobileMode = useMobileMode()
 
   const isLastStep = activeStep + 1 === steps.length
   const activeStepData = steps[activeStep]
@@ -130,19 +131,19 @@ function WelcomeModalBase({ closeModal }: BaseModalProps) {
     <SimpleGrid columns={2} templateColumns="1fr auto">
       <Box>
         <ModalHeader gap={3} pb={8}>
-          <TextSm mb="12" color="neutral.70">
+          <TextSm mb={{ base: 4, md: 12 }} color="neutral.70">
             Welcome to Acre,
           </TextSm>
           {activeStepData.title}
         </ModalHeader>
-        <ModalBody textAlign="left" display="block" color="brown.80" px="10">
+        <ModalBody textAlign="left" display="block" color="brown.80">
           {activeStepData.content(embeddedApp)}
         </ModalBody>
         <ModalFooter
           display="flex"
           flexDirection="row"
           justifyContent="space-between"
-          mt="14"
+          mt={{ base: 0, md: 14 }}
         >
           <Stepper index={activeStep} gap="3">
             {steps.map((step) => (
@@ -159,19 +160,21 @@ function WelcomeModalBase({ closeModal }: BaseModalProps) {
           </Button>
         </ModalFooter>
       </Box>
-      <Box
-        as="video"
-        src={activeStepData.video}
-        width="24rem"
-        height="full"
-        autoPlay
-        muted
-        loop
-        objectFit="cover"
-        roundedRight="xl"
-        outline="1px solid #f6ead5"
-        outlineOffset="-1px"
-      />
+      {!isMobileMode && (
+        <Box
+          as="video"
+          src={activeStepData.video}
+          width="24rem"
+          height="full"
+          autoPlay
+          muted
+          loop
+          objectFit="cover"
+          roundedRight="xl"
+          outline="1px solid #f6ead5"
+          outlineOffset="-1px"
+        />
+      )}
     </SimpleGrid>
   )
 }

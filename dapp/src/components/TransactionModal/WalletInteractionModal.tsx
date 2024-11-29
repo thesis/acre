@@ -10,8 +10,8 @@ import {
   ProgressProps,
 } from "@chakra-ui/react"
 import { AcreSignIcon } from "#/assets/icons"
-import { useActionFlowType, useConnector } from "#/hooks"
-import { ACTION_FLOW_TYPES } from "#/types"
+import { useActionFlowType, useConnector, useIsEmbed } from "#/hooks"
+import { ACTION_FLOW_TYPES, DappMode } from "#/types"
 import { Alert, AlertIcon } from "../shared/Alert"
 import { TextMd } from "../shared/Typography"
 
@@ -22,11 +22,16 @@ const ICON_STYLES = {
 
 type WalletInteractionStep = "opening-wallet" | "awaiting-transaction"
 
+const CONTENT_BY_DAPP_MODE: Record<DappMode, string> = {
+  standalone: "wallet",
+  "ledger-live": "Ledger Device",
+}
+
 const DATA: Record<
   WalletInteractionStep,
   {
     header: string
-    description: (action: string) => string
+    description: (action: string, mode: DappMode) => string
     progressProps?: ProgressProps
   }
 > = {
@@ -37,7 +42,8 @@ const DATA: Record<
   },
   "awaiting-transaction": {
     header: "Awaiting signature confirmation",
-    description: () => "Waiting for your wallet to confirm the transaction.",
+    description: (_, mode: DappMode) =>
+      `Communicating with your ${CONTENT_BY_DAPP_MODE[mode]}...`,
     progressProps: { transform: "scaleX(-1)" },
   },
 }
@@ -52,11 +58,12 @@ export default function WalletInteractionModal({
   const actionType = useActionFlowType()
   const connector = useConnector()
   const { header, description, progressProps } = DATA[step]
+  const { embeddedApp } = useIsEmbed()
 
   return (
     <>
       {step === "opening-wallet" && <ModalCloseButton onClick={onClose} />}
-      <ModalHeader textAlign="center" pt={16} pb={12}>
+      <ModalHeader textAlign="center" pt={{ sm: 16 }} pb={{ base: 4, sm: 12 }}>
         {header}
       </ModalHeader>
       <ModalBody gap={12}>
@@ -80,6 +87,7 @@ export default function WalletInteractionModal({
         <TextMd>
           {description(
             actionType === ACTION_FLOW_TYPES.STAKE ? "deposit" : "withdraw",
+            embeddedApp ?? "standalone",
           )}
         </TextMd>
         {step === "awaiting-transaction" && (
@@ -87,7 +95,6 @@ export default function WalletInteractionModal({
             <AlertIcon />
             <AlertDescription>
               <TextMd>This may take up to a minute.</TextMd>
-              <TextMd>Don&apos;t close this window.</TextMd>
             </AlertDescription>
           </Alert>
         )}

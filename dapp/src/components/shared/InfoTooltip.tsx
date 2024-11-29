@@ -1,6 +1,7 @@
 import React from "react"
 import { IconInfoCircleFilled } from "@tabler/icons-react"
-import { Icon, Tooltip, TooltipProps } from "@chakra-ui/react"
+import { Icon, TooltipProps } from "@chakra-ui/react"
+import Tooltip from "./Tooltip"
 
 // TODO: Define in the new color palette
 const ICON_COLOR = "#3A3328"

@@ -19,7 +19,7 @@ const wrapperStyles = defineStyle({
   gap: { base: 4, xl: 10 },
   maxW: "120rem", // 1920px
   py: 3,
-  px: { base: 10, xl: 30 },
+  px: { base: 4, md: "2.5rem", xl: 30 },
   mx: "auto",
 })
 

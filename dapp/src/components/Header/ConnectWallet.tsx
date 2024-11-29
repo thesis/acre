@@ -5,12 +5,15 @@ import {
   HStack,
   Icon,
   IconButton,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   StackDivider,
-  Tooltip,
   useClipboard,
   useMultiStyleConfig,
 } from "@chakra-ui/react"
-import { useIsEmbed, useModal, useWallet } from "#/hooks"
+import { useIsEmbed, useMobileMode, useModal, useWallet } from "#/hooks"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import { TextMd } from "#/components/shared/Typography"
 import { BitcoinIcon } from "#/assets/icons"
@@ -22,8 +25,11 @@ import {
   IconLogout,
   IconWallet,
   IconUserCode,
+  IconChevronDown,
+  IconChevronUp,
 } from "@tabler/icons-react"
 import { useMatch } from "react-router-dom"
+import Tooltip from "../shared/Tooltip"
 
 function isChangeAccountFeatureSupported(embeddedApp: string | undefined) {
   return referralProgram.isEmbedApp(embeddedApp)
@@ -39,6 +45,7 @@ export default function ConnectWallet() {
     size: "lg",
   })
   const isDashboardPage = useMatch("/dashboard")
+  const isMobile = useMobileMode()
 
   const handleConnectWallet = (isReconnecting: boolean = false) => {
     openModal(MODAL_TYPES.CONNECT_WALLET, { isReconnecting })
@@ -62,8 +69,65 @@ export default function ConnectWallet() {
       </Button>
     )
   }
+  const options = [
+    {
+      id: "Copy",
+      icon: IconCopy,
+      label: hasCopied ? "Address copied" : "Copy Address",
+      onClick: onCopy,
+      isSupported: true,
+      closeOnSelect: false,
+    },
+    {
+      id: "Change account",
+      icon: IconUserCode,
+      label: "Change account",
+      onClick: () => handleConnectWallet(true),
+      isSupported: isChangeAccountFeatureSupported(embeddedApp),
+      closeOnSelect: true,
+    },
+    {
+      id: "Disconnect",
+      icon: IconLogout,
+      label: "Disconnect",
+      onClick: onDisconnect,
+      closeOnSelect: true,
+      isSupported: true,
+    },
+  ]
 
-  return (
+  return isMobile ? (
+    <Menu>
+      {({ isOpen }) => (
+        <>
+          <MenuButton
+            as={Button}
+            variant="card"
+            leftIcon={<Icon as={BitcoinIcon} boxSize={6} color="brand.400" />}
+            rightIcon={isOpen ? <IconChevronUp /> : <IconChevronDown />}
+          >
+            <TextMd color="brand.400">{truncateAddress(address)}</TextMd>
+          </MenuButton>
+          <MenuList bg="gold.200">
+            {options.map(
+              (option) =>
+                option.isSupported && (
+                  <MenuItem
+                    key={option.id}
+                    closeOnSelect={option.closeOnSelect}
+                    {...styles}
+                    icon={<Icon as={option.icon} boxSize={5} />}
+                    onClick={option.onClick}
+                  >
+                    {option.label}
+                  </MenuItem>
+                ),
+            )}
+          </MenuList>
+        </>
+      )}
+    </Menu>
+  ) : (
     <HStack spacing={4}>
       <HStack display={{ base: "none", md: "flex" }}>
         <CurrencyBalance currency="bitcoin" amount={balance} />
@@ -100,44 +164,26 @@ export default function ConnectWallet() {
           spacing={1}
           divider={<StackDivider borderColor="gold.500" />}
         >
-          <Tooltip
-            size="xs"
-            label={hasCopied ? "Address copied" : "Copy"}
-            closeOnClick={false}
-          >
-            <IconButton
-              variant="ghost"
-              aria-label="Copy"
-              icon={<Icon as={IconCopy} boxSize={5} />}
-              px={2}
-              boxSize={5}
-              onClick={onCopy}
-            />
-          </Tooltip>
-
-          {isChangeAccountFeatureSupported(embeddedApp) && (
-            <Tooltip size="xs" label="Change account">
-              <IconButton
-                variant="ghost"
-                aria-label="Change account"
-                icon={<Icon as={IconUserCode} boxSize={5} />}
-                px={2}
-                boxSize={5}
-                onClick={() => handleConnectWallet(true)}
-              />
-            </Tooltip>
+          {options.map(
+            (option) =>
+              option.isSupported && (
+                <Tooltip
+                  key={option.id}
+                  size="xs"
+                  label={option.label}
+                  closeOnClick={false}
+                >
+                  <IconButton
+                    variant="ghost"
+                    aria-label={option.id}
+                    icon={<Icon as={option.icon} boxSize={5} />}
+                    px={2}
+                    boxSize={5}
+                    onClick={option.onClick}
+                  />
+                </Tooltip>
+              ),
           )}
-
-          <Tooltip size="xs" label="Disconnect">
-            <IconButton
-              variant="ghost"
-              aria-label="Disconnect"
-              icon={<Icon as={IconLogout} boxSize={5} />}
-              px={2}
-              boxSize={5}
-              onClick={onDisconnect}
-            />
-          </Tooltip>
         </HStack>
       </Flex>
     </HStack>

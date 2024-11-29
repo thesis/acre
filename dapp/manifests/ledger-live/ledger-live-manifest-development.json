@@ -2,9 +2,9 @@
   "id": "acre-dev",
   "name": "Acre [dev]",
   "url": "http://localhost:5173/?embed=ledger-live",
-  "homepageUrl": "https:/acre.fi/",
+  "homepageUrl": "https://acre.fi/",
   "icon": "http://localhost:5173/acre.svg",
-  "platforms": "desktop",
+  "platforms": "all",
   "apiVersion": "^2.0.0",
   "manifestVersion": "2",
   "branch": "stable",
@@ -12,10 +12,10 @@
   "currencies": ["bitcoin", "bitcoin_testnet"],
   "content": {
     "shortDescription": {
-      "en": "Bitcoin Liquid Staking"
+      "en": "Bitcoin Rewards Done Right"
     },
     "description": {
-      "en": "Bitcoin Liquid Staking"
+      "en": "Bitcoin Rewards Done Right"
     }
   },
   "permissions": [
@@ -23,10 +23,10 @@
     "account.list",
     "bitcoin.getAddress",
     "bitcoin.getPublicKey",
+    "bitcoin.getXPub",
     "transaction.signAndBroadcast",
     "custom.acre.messageSign",
     "custom.acre.transactionSignAndBroadcast"
   ],
-  "domains": ["http://*"],
-  "type": "walletApp"
+  "domains": ["https://"]
 }

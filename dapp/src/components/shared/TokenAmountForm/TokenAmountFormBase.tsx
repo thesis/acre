@@ -42,6 +42,7 @@ export default function TokenAmountFormBase({
         withMaxButton={withMaxButton}
         defaultAmount={defaultAmount}
         autoFocus
+        autoComplete="off"
       />
       {children}
     </Form>
