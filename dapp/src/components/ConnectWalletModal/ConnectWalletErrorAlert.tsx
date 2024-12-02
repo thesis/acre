@@ -1,7 +1,7 @@
 import React from "react"
 import { Box, VStack } from "@chakra-ui/react"
 import { AnimatePresence, Variants, motion } from "framer-motion"
-import { ConnectionErrorData } from "#/types"
+import { ConnectionAlertData } from "#/types"
 import {
   Alert,
   AlertDescription,
@@ -10,7 +10,7 @@ import {
   AlertProps,
 } from "../shared/Alert"
 
-type ConnectWalletErrorAlertProps = AlertProps & Partial<ConnectionErrorData>
+type ConnectWalletErrorAlertProps = AlertProps & Partial<ConnectionAlertData>
 
 const collapseVariants: Variants = {
   collapsed: { height: 0 },
@@ -20,9 +20,9 @@ const collapseVariants: Variants = {
 export default function ConnectWalletErrorAlert(
   props: ConnectWalletErrorAlertProps,
 ) {
-  const { title, description, ...restProps } = props
+  const { title, description, type = "error", ...restProps } = props
 
-  const shouldRender = !!(title && description)
+  const shouldRender = !!(title && type)
 
   return (
     <AnimatePresence initial={false}>
@@ -36,11 +36,13 @@ export default function ConnectWalletErrorAlert(
           overflow="hidden"
           w="full"
         >
-          <Alert status="error" mb={6} {...restProps}>
+          <Alert status={type} mb={6} {...restProps}>
             <AlertIcon />
             <VStack w="full" align="start" spacing={0}>
               <AlertTitle textAlign="start">{title}</AlertTitle>
-              <AlertDescription>{description}</AlertDescription>
+              {description && (
+                <AlertDescription>{description}</AlertDescription>
+              )}
             </VStack>
           </Alert>
         </Box>

@@ -1,10 +1,10 @@
 import {
   ACRE_SESSION_EXPIRATION_TIME,
-  CONNECTION_ERRORS,
+  CONNECTION_ALERTS,
   wallets,
 } from "#/constants"
 import {
-  ConnectionErrorData,
+  ConnectionAlertData,
   OrangeKitError,
   OrangeKitConnector,
 } from "#/types"
@@ -71,22 +71,22 @@ const typeConversionToConnector = (connector?: OrangeKitConnector): Connector =>
 
 const parseOrangeKitConnectionError = (
   error: OrangeKitError,
-): ConnectionErrorData => {
+): ConnectionAlertData => {
   const { cause } = error
 
   if (isWalletConnectionRejectedError(cause)) {
-    return CONNECTION_ERRORS.REJECTED
+    return CONNECTION_ALERTS.REJECTED
   }
 
   if (isUnsupportedBitcoinAddressError(cause)) {
-    return CONNECTION_ERRORS.NOT_SUPPORTED
+    return CONNECTION_ALERTS.NOT_SUPPORTED
   }
 
   if (isWalletNetworkDoesNotMatchProviderChainError(cause)) {
-    return CONNECTION_ERRORS.NETWORK_MISMATCH
+    return CONNECTION_ALERTS.NETWORK_MISMATCH
   }
 
-  return CONNECTION_ERRORS.DEFAULT
+  return CONNECTION_ALERTS.DEFAULT
 }
 
 async function verifySignInWithWalletMessage(

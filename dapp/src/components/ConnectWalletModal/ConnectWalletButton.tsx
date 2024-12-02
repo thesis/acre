@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from "react"
-import { CONNECTION_ERRORS, ONE_SEC_IN_MILLISECONDS } from "#/constants"
+import { CONNECTION_ALERTS, ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import {
   useAppDispatch,
   useIsEmbed,
   useModal,
   useSignMessageAndCreateSession,
   useWallet,
-  useWalletConnectionError,
+  useWalletConnectionAlert,
 } from "#/hooks"
 import { setIsSignedMessage } from "#/store/wallet"
 import { OrangeKitConnector, OrangeKitError, OnSuccessCallback } from "#/types"
@@ -66,17 +66,17 @@ export default function ConnectWalletButton({
   } = useWallet()
   const { signMessageStatus, resetMessageStatus, signMessageAndCreateSession } =
     useSignMessageAndCreateSession()
-  const { connectionError, setConnectionError, resetConnectionError } =
-    useWalletConnectionError()
+  const { connectionAlert, setConnectionAlert, resetConnectionAlert } =
+    useWalletConnectionAlert()
   const { closeModal } = useModal()
   const dispatch = useAppDispatch()
   const isMounted = useRef(false)
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const hasConnectionError = connectionError || connectionStatus === "error"
+  const hasConnectionAlert = connectionAlert || connectionStatus === "error"
   const hasSignMessageErrorStatus = signMessageStatus === "error"
-  const shouldShowStatuses = isSelected && !hasConnectionError
+  const shouldShowStatuses = isSelected && !hasConnectionAlert
   const shouldShowRetryButton = address && hasSignMessageErrorStatus
 
   const onSuccessSignMessage = useCallback(() => {
@@ -99,14 +99,14 @@ export default function ConnectWalletButton({
 
         onDisconnect()
         console.error("Failed to sign siww message", error)
-        setConnectionError(CONNECTION_ERRORS.INVALID_SIWW_SIGNATURE)
+        setConnectionAlert(CONNECTION_ALERTS.INVALID_SIWW_SIGNATURE)
       }
     },
     [
       signMessageAndCreateSession,
       onSuccessSignMessage,
       onDisconnect,
-      setConnectionError,
+      setConnectionAlert,
     ],
   )
 
@@ -130,18 +130,18 @@ export default function ConnectWalletButton({
       onError: (error: OrangeKitError) => {
         const errorData = orangeKit.parseOrangeKitConnectionError(error)
 
-        if (errorData === CONNECTION_ERRORS.DEFAULT) {
+        if (errorData === CONNECTION_ALERTS.DEFAULT) {
           console.error("Failed to connect", error)
         }
 
-        setConnectionError(errorData)
+        setConnectionAlert(errorData)
       },
     })
   }, [
     onConnect,
     connector,
     onSuccessConnection,
-    setConnectionError,
+    setConnectionAlert,
     isReconnecting,
   ])
 
@@ -164,7 +164,7 @@ export default function ConnectWalletButton({
     if (shouldShowStatuses) return
 
     if (!isReconnecting) onDisconnect()
-    resetConnectionError()
+    resetConnectionAlert()
     resetMessageStatus()
 
     const isInstalled = orangeKit.isWalletInstalled(connector)

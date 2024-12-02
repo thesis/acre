@@ -5,7 +5,7 @@ import {
   useIsEmbed,
   useIsSignedMessage,
   useWallet,
-  useWalletConnectionError,
+  useWalletConnectionAlert,
 } from "#/hooks"
 import { OrangeKitConnector, BaseModalProps, OnSuccessCallback } from "#/types"
 import { wallets } from "#/constants"
@@ -30,7 +30,7 @@ export function ConnectWalletModalBase({
   }))
 
   const [selectedConnectorId, setSelectedConnectorId] = useState<string>()
-  const { connectionError, resetConnectionError } = useWalletConnectionError()
+  const { connectionAlert, resetConnectionAlert } = useWalletConnectionAlert()
   const isSignedMessage = useIsSignedMessage()
 
   const handleButtonOnClick = (connector: OrangeKitConnector) => {
@@ -48,7 +48,7 @@ export function ConnectWalletModalBase({
       {withCloseButton && (
         <ModalCloseButton
           onClick={() => {
-            resetConnectionError()
+            resetConnectionAlert()
 
             if (!isSignedMessage) {
               onDisconnect()
@@ -59,7 +59,7 @@ export function ConnectWalletModalBase({
       <ModalHeader>{`Select your ${isEmbed ? "account" : "wallet"}`}</ModalHeader>
 
       <ModalBody gap={0}>
-        <ConnectWalletErrorAlert {...connectionError} />
+        <ConnectWalletErrorAlert {...connectionAlert} />
 
         {enabledConnectors.map((connector) => (
           <ConnectWalletButton
