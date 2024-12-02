@@ -11,7 +11,7 @@ import { OrangeKitConnector, BaseModalProps, OnSuccessCallback } from "#/types"
 import { wallets } from "#/constants"
 import withBaseModal from "../ModalRoot/withBaseModal"
 import ConnectWalletButton from "./ConnectWalletButton"
-import ConnectWalletErrorAlert from "./ConnectWalletErrorAlert"
+import ConnectWalletAlert from "./ConnectWalletAlert"
 
 export function ConnectWalletModalBase({
   onSuccess,
@@ -59,7 +59,7 @@ export function ConnectWalletModalBase({
       <ModalHeader>{`Select your ${isEmbed ? "account" : "wallet"}`}</ModalHeader>
 
       <ModalBody gap={0}>
-        <ConnectWalletErrorAlert {...connectionAlert} />
+        <ConnectWalletAlert {...connectionAlert} />
 
         {enabledConnectors.map((connector) => (
           <ConnectWalletButton

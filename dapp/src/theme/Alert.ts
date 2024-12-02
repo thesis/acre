@@ -12,9 +12,13 @@ const baseStyle = multiStyleConfig.definePartsStyle({
     borderWidth: 1,
     borderStyle: "solid",
     borderColor: $borderColor.reference,
-    px: 5,
-    py: 5,
+    px: 4,
+    py: 4,
     rounded: "xl",
+  },
+  title: {
+    fontWeight: "semibold",
+    mr: 0,
   },
   description: {
     fontWeight: "medium",
