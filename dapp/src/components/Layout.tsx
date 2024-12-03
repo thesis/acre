@@ -6,7 +6,6 @@ import { DappMode } from "#/types"
 import DocsDrawer from "./DocsDrawer"
 import Header from "./Header"
 import ModalRoot from "./ModalRoot"
-import Sidebar from "./Sidebar"
 import MobileModeBanner from "./MobileModeBanner"
 import Footer from "./Footer"
 
@@ -46,7 +45,6 @@ function Layout() {
       >
         <Outlet />
 
-        <Sidebar />
         <DocsDrawer />
         <ModalRoot />
       </Flex>

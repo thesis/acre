@@ -9,7 +9,6 @@ import { AcreSdkProvider } from "./acre-react/contexts"
 import GlobalStyles from "./components/GlobalStyles"
 import {
   DocsDrawerContextProvider,
-  SidebarContextProvider,
   WalletConnectionAlertContextProvider,
 } from "./contexts"
 import { useInitApp } from "./hooks"
@@ -66,13 +65,11 @@ function DAppProviders() {
         <QueryClientProvider client={queryClient}>
           <AcreSdkProvider>
             <DocsDrawerContextProvider>
-              <SidebarContextProvider>
-                <WalletConnectionAlertContextProvider>
-                  <ReduxProvider store={store}>
-                    <DApp />
-                  </ReduxProvider>
-                </WalletConnectionAlertContextProvider>
-              </SidebarContextProvider>
+              <WalletConnectionAlertContextProvider>
+                <ReduxProvider store={store}>
+                  <DApp />
+                </ReduxProvider>
+              </WalletConnectionAlertContextProvider>
             </DocsDrawerContextProvider>
           </AcreSdkProvider>
         </QueryClientProvider>
