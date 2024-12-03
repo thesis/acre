@@ -1,24 +1,16 @@
 import { useEffect } from "react"
-import { useInterval } from "@chakra-ui/react"
-import { logPromiseFailure } from "#/utils"
-import { REFETCH_INTERVAL_IN_MILLISECONDS } from "#/constants"
+import { setActivities } from "#/store/wallet"
 import { useFetchMinDepositAmount } from "./useFetchMinDepositAmount"
-import { useFetchActivities } from "./useFetchActivities"
-import { useWallet } from "../useWallet"
+import useActivitiesQuery from "./useActivitiesQuery"
+import { useAppDispatch } from "../store/useAppDispatch"
 
 export function useInitDataFromSdk() {
-  const { address } = useWallet()
-  const fetchActivities = useFetchActivities()
+  const { data } = useActivitiesQuery()
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
-    if (address) {
-      logPromiseFailure(fetchActivities())
-    }
-  }, [address, fetchActivities])
+    dispatch(setActivities(data ?? []))
+  }, [data, dispatch])
 
   useFetchMinDepositAmount()
-  useInterval(
-    () => logPromiseFailure(fetchActivities()),
-    REFETCH_INTERVAL_IN_MILLISECONDS,
-  )
 }

@@ -21,8 +21,5 @@ export const selectAllActivitiesCount = createSelector(
 export const selectIsSignedMessage = (state: RootState): boolean =>
   state.wallet.isSignedMessage
 
-export const selectHasFetchedActivities = (state: RootState): boolean =>
-  state.wallet.hasFetchedActivities
-
 export const selectWalletAddress = (state: RootState): string | undefined =>
   state.wallet.address

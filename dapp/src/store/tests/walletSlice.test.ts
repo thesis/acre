@@ -5,7 +5,6 @@ import { WalletState } from "../wallet"
 import reducer, { initialState, setActivities } from "../wallet/walletSlice"
 
 const isSignedMessage = false
-const hasFetchedActivities = true
 const pendingActivityId = "0"
 const pendingActivity = createActivity({
   id: pendingActivityId,
@@ -27,7 +26,6 @@ describe("Wallet redux slice", () => {
         ...initialState,
         activities,
         isSignedMessage,
-        hasFetchedActivities,
       }
     })
 
@@ -46,7 +44,6 @@ describe("Wallet redux slice", () => {
         ...initialState,
         activities: newActivities,
         isSignedMessage,
-        hasFetchedActivities,
       })
     })
   })
@@ -98,7 +95,6 @@ describe("Wallet redux slice", () => {
           ...initialState,
           activities: currentActivities,
           isSignedMessage,
-          hasFetchedActivities,
         }
       })
 
@@ -107,7 +103,6 @@ describe("Wallet redux slice", () => {
           ...initialState,
           activities: newActivities,
           isSignedMessage,
-          hasFetchedActivities,
         })
       })
     })
@@ -138,7 +133,6 @@ describe("Wallet redux slice", () => {
           ...initialState,
           activities: newActivities,
           isSignedMessage,
-          hasFetchedActivities,
         })
       })
     })

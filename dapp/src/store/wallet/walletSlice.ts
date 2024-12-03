@@ -6,7 +6,6 @@ export type WalletState = {
   sharesBalance: bigint
   isSignedMessage: boolean
   activities: Activity[]
-  hasFetchedActivities: boolean
   address: string | undefined
 }
 
@@ -15,7 +14,6 @@ export const initialState: WalletState = {
   sharesBalance: 0n,
   isSignedMessage: false,
   activities: [],
-  hasFetchedActivities: false,
   address: undefined,
 }
 
@@ -34,7 +32,6 @@ export const walletSlice = createSlice({
     },
     setActivities(state, action: PayloadAction<Activity[]>) {
       state.activities = action.payload
-      state.hasFetchedActivities = true
     },
     resetState: (state) => ({ ...initialState, address: state.address }),
     activityInitialized(state, action: PayloadAction<Activity>) {
