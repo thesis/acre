@@ -8,18 +8,11 @@ import {
   useTransactionDetails,
 } from "#/hooks"
 import { ACTION_FLOW_TYPES, CurrencyType } from "#/types"
-import { DESIRED_DECIMALS_FOR_FEE, featureFlags } from "#/constants"
+import { DESIRED_DECIMALS_FOR_FEE } from "#/constants"
 import FeesDetailsAmountItem from "#/components/shared/FeesDetails/FeesItem"
-import WithdrawWarning from "./WithdrawWarning"
 import { FeesTooltip } from "../../FeesTooltip"
 
-function UnstakeDetails({
-  balance,
-  currency,
-}: {
-  balance: bigint
-  currency: CurrencyType
-}) {
+function UnstakeDetails({ currency }: { currency: CurrencyType }) {
   const { value = 0n } = useFormField<bigint | undefined>(
     TOKEN_AMOUNT_FIELD_NAME,
   )
@@ -31,9 +24,6 @@ function UnstakeDetails({
 
   return (
     <Flex flexDirection="column" gap={10} mt={10}>
-      {featureFlags.GAMIFICATION_ENABLED && (
-        <WithdrawWarning balance={balance} currency={currency} />
-      )}
       <List spacing={3}>
         <FeesDetailsAmountItem
           label="Fees"
