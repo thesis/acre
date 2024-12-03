@@ -1,8 +1,9 @@
-import React, { useCallback } from "react"
+import React, { useCallback, useRef } from "react"
 import {
   useActionFlowPause,
   useActionFlowTokenAmount,
   useAppDispatch,
+  useCancelPromise,
   useDepositBTCTransaction,
   useInvalidateQueries,
   useStakeFlowContext,
@@ -27,6 +28,12 @@ export default function DepositBTCModal() {
   const handleBitcoinBalanceInvalidation = useInvalidateQueries({
     queryKey: userKeys.balance(),
   })
+
+  const sessionId = useRef(Math.random())
+  const { cancel, resolve, sessionIdToPromise } = useCancelPromise(
+    sessionId.current,
+    "Deposit cancelled",
+  )
 
   const onStakeBTCSuccess = useCallback(() => {
     handleBitcoinBalanceInvalidation()
@@ -58,13 +65,15 @@ export default function DepositBTCModal() {
 
   const onDepositBTCError = useCallback(
     (error: unknown) => {
+      if (!sessionIdToPromise[sessionId.current].shouldOpenErrorModal) return
+
       if (eip1193.didUserRejectRequest(error)) {
         handlePause()
       } else {
         onError(error)
       }
     },
-    [onError, handlePause],
+    [sessionIdToPromise, handlePause, onError],
   )
 
   const { mutate: sendBitcoinTransaction, status } = useDepositBTCTransaction({
@@ -79,6 +88,8 @@ export default function DepositBTCModal() {
       btcAddress,
     )
 
+    await resolve()
+
     if (verificationStatus === "valid") {
       sendBitcoinTransaction({
         recipient: btcAddress,
@@ -92,6 +103,7 @@ export default function DepositBTCModal() {
     btcAddress,
     depositReceipt,
     verifyDepositAddress,
+    resolve,
     sendBitcoinTransaction,
     onError,
   ])
@@ -105,5 +117,5 @@ export default function DepositBTCModal() {
   if (status === "pending" || status === "success")
     return <WalletInteractionModal step="awaiting-transaction" />
 
-  return <WalletInteractionModal step="opening-wallet" />
+  return <WalletInteractionModal step="opening-wallet" onClose={cancel} />
 }
