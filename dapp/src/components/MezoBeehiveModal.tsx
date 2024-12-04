@@ -18,11 +18,11 @@ import { AcreSignIcon, MatsIcon, MezoSignIcon } from "#/assets/icons"
 import { IconArrowUpRight, IconChartPieFilled } from "@tabler/icons-react"
 import { EXTERNAL_HREF } from "#/constants"
 import { numberToLocaleString } from "#/utils"
-import { useMats } from "#/hooks"
+import { useMatsQuery } from "#/hooks"
 import withBaseModal from "./ModalRoot/withBaseModal"
 
 function MezoBeehiveModalBase() {
-  const { data } = useMats()
+  const { data } = useMatsQuery()
 
   return (
     <>

@@ -4,10 +4,10 @@ import { acreApi } from "#/utils"
 
 const { acreKeys } = queryKeysFactory
 
-export default function useMats() {
+export default function useStatisticsQuery() {
   return useQuery({
-    queryKey: [...acreKeys.mats()],
-    queryFn: async () => acreApi.getMats(),
+    queryKey: [...acreKeys.statistics()],
+    queryFn: acreApi.getStatistics,
     refetchInterval: REFETCH_INTERVAL_IN_MILLISECONDS,
   })
 }

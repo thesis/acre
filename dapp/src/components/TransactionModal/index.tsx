@@ -1,8 +1,8 @@
 import React, { useEffect } from "react"
 import { StakeFlowProvider } from "#/contexts"
 import {
+  useActivitiesQuery,
   useAppDispatch,
-  useFetchActivities,
   useIsSignedMessage,
   useTransactionModal,
 } from "#/hooks"
@@ -18,7 +18,7 @@ type TransactionModalProps = { type: ActionFlowType } & BaseModalProps
 
 function TransactionModalBase({ type, closeModal }: TransactionModalProps) {
   const dispatch = useAppDispatch()
-  const fetchActivities = useFetchActivities()
+  const { refetch: refetchActivities } = useActivitiesQuery()
 
   useEffect(() => {
     dispatch(setType(type))
@@ -28,9 +28,9 @@ function TransactionModalBase({ type, closeModal }: TransactionModalProps) {
   useEffect(() => {
     return () => {
       dispatch(resetState())
-      logPromiseFailure(fetchActivities())
+      logPromiseFailure(refetchActivities())
     }
-  }, [dispatch, fetchActivities])
+  }, [dispatch, refetchActivities])
 
   return (
     <StakeFlowProvider>

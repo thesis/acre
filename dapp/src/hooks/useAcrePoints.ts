@@ -1,11 +1,12 @@
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation } from "@tanstack/react-query"
 import { acreApi } from "#/utils"
-import { queryKeysFactory, REFETCH_INTERVAL_IN_MILLISECONDS } from "#/constants"
 import { MODAL_TYPES } from "#/types"
 import { useWallet } from "./useWallet"
 import { useModal } from "./useModal"
-
-const { userKeys, acreKeys } = queryKeysFactory
+import {
+  useAcrePointsDataQuery,
+  useUserPointsDataQuery,
+} from "./tanstack-query"
 
 type UseAcrePointsReturnType = {
   totalBalance: number
@@ -22,17 +23,8 @@ export default function useAcrePoints(): UseAcrePointsReturnType {
   const { ethAddress = "" } = useWallet()
   const { openModal } = useModal()
 
-  const userPointsDataQuery = useQuery({
-    queryKey: [...userKeys.pointsData(), ethAddress],
-    enabled: !!ethAddress,
-    queryFn: async () => acreApi.getPointsDataByUser(ethAddress),
-  })
-
-  const pointsDataQuery = useQuery({
-    queryKey: [...acreKeys.pointsData()],
-    queryFn: async () => acreApi.getPointsData(),
-    refetchInterval: REFETCH_INTERVAL_IN_MILLISECONDS,
-  })
+  const userPointsDataQuery = useUserPointsDataQuery()
+  const pointsDataQuery = useAcrePointsDataQuery()
 
   const { mutate: claimPoints } = useMutation({
     mutationFn: async () => acreApi.claimPoints(ethAddress),

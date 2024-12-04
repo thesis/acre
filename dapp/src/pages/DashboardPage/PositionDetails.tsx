@@ -2,7 +2,7 @@ import React from "react"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import {
   useAllActivitiesCount,
-  useBitcoinPosition,
+  useBitcoinPositionQuery,
   useTransactionModal,
   useStatistics,
   useWallet,
@@ -36,7 +36,7 @@ const buttonStyles: ButtonProps = {
 }
 
 export default function PositionDetails() {
-  const { data } = useBitcoinPosition()
+  const { data } = useBitcoinPositionQuery()
   const bitcoinAmount = data?.estimatedBitcoinBalance ?? 0n
 
   const openDepositModal = useTransactionModal(ACTION_FLOW_TYPES.STAKE)

@@ -3,22 +3,20 @@ import {
   useActionFlowPause,
   useActionFlowTokenAmount,
   useAppDispatch,
-  useInvalidateQueries,
+  useBitcoinPositionQuery,
   useModal,
   useTimeout,
   useTransactionDetails,
 } from "#/hooks"
 import { ACTION_FLOW_TYPES, PROCESS_STATUSES } from "#/types"
-import { dateToUnixTimestamp, eip1193 } from "#/utils"
+import { dateToUnixTimestamp, eip1193, logPromiseFailure } from "#/utils"
 import { setStatus } from "#/store/action-flow"
 import { useInitializeWithdraw } from "#/acre-react/hooks"
-import { ONE_SEC_IN_MILLISECONDS, queryKeysFactory } from "#/constants"
+import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import { activityInitialized } from "#/store/wallet"
 import { useMutation } from "@tanstack/react-query"
 import BuildTransactionModal from "./BuildTransactionModal"
 import WalletInteractionModal from "../WalletInteractionModal"
-
-const { userKeys } = queryKeysFactory
 
 type WithdrawalStatus = "building-data" | "built-data" | "signature"
 
@@ -40,9 +38,8 @@ export default function SignMessageModal() {
   const { closeModal } = useModal()
   const { handlePause } = useActionFlowPause()
   const initializeWithdraw = useInitializeWithdraw()
-  const handleBitcoinPositionInvalidation = useInvalidateQueries({
-    queryKey: userKeys.position(),
-  })
+  const { refetch: refetchBitcoinPosition } = useBitcoinPositionQuery()
+
   const sessionId = useRef(Math.random())
   const { transactionFee } = useTransactionDetails(
     amount,
@@ -76,9 +73,9 @@ export default function SignMessageModal() {
   }, [])
 
   const onSignMessageSuccess = useCallback(() => {
-    handleBitcoinPositionInvalidation()
+    logPromiseFailure(refetchBitcoinPosition())
     dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED))
-  }, [dispatch, handleBitcoinPositionInvalidation])
+  }, [dispatch, refetchBitcoinPosition])
 
   const onSignMessageError = useCallback(
     (error: unknown) => {

@@ -6,6 +6,7 @@ import { useSentry } from "./sentry"
 import useDetectEmbed from "./useDetectEmbed"
 import { useDisconnectWallet } from "./useDisconnectWallet"
 import { useFetchBTCPriceUSD } from "./useFetchBTCPriceUSD"
+import useTrackActivities from "./useTrackActivities"
 
 export function useInitApp() {
   // TODO: Let's uncomment when dark mode is ready
@@ -19,4 +20,5 @@ export function useInitApp() {
   useAccountChangedOKX()
   useAccountsChangedOKX()
   useAccountsChangedUnisat()
+  useTrackActivities()
 }

@@ -3,20 +3,18 @@ import {
   useActionFlowPause,
   useActionFlowTokenAmount,
   useAppDispatch,
+  useBitcoinBalanceQuery,
   useDepositBTCTransaction,
-  useInvalidateQueries,
   useStakeFlowContext,
   useVerifyDepositAddress,
 } from "#/hooks"
 import { eip1193, logPromiseFailure } from "#/utils"
 import { PROCESS_STATUSES } from "#/types"
 import { setStatus, setTxHash } from "#/store/action-flow"
-import { ONE_SEC_IN_MILLISECONDS, queryKeysFactory } from "#/constants"
+import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import { useTimeout } from "@chakra-ui/react"
 import { useMutation } from "@tanstack/react-query"
 import WalletInteractionModal from "../WalletInteractionModal"
-
-const { userKeys } = queryKeysFactory
 
 export default function DepositBTCModal() {
   const tokenAmount = useActionFlowTokenAmount()
@@ -24,14 +22,12 @@ export default function DepositBTCModal() {
   const verifyDepositAddress = useVerifyDepositAddress()
   const dispatch = useAppDispatch()
   const { handlePause } = useActionFlowPause()
-  const handleBitcoinBalanceInvalidation = useInvalidateQueries({
-    queryKey: userKeys.balance(),
-  })
+  const { refetch: refetchBitcoinBalance } = useBitcoinBalanceQuery()
 
   const onStakeBTCSuccess = useCallback(() => {
-    handleBitcoinBalanceInvalidation()
+    logPromiseFailure(refetchBitcoinBalance())
     dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED))
-  }, [dispatch, handleBitcoinBalanceInvalidation])
+  }, [dispatch, refetchBitcoinBalance])
 
   const onError = useCallback(
     (error: unknown) => {

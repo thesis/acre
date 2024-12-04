@@ -5,7 +5,7 @@ import { useWallet } from "../useWallet"
 
 const { userKeys } = queryKeysFactory
 
-export default function useBitcoinPosition() {
+export default function useBitcoinPositionQuery() {
   const { address } = useWallet()
   const { acre, isConnected } = useAcreContext()
 

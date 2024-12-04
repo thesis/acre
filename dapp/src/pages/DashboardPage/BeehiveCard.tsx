@@ -13,7 +13,7 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { MezoSignIcon } from "#/assets/icons"
-import { useMats, useModal } from "#/hooks"
+import { useMatsQuery, useModal } from "#/hooks"
 import { MODAL_TYPES } from "#/types"
 import beehiveIllustrationSrc from "#/assets/images/beehive-illustration.svg"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
@@ -22,7 +22,7 @@ import InfoTooltip from "#/components/shared/InfoTooltip"
 
 export default function BeehiveCard(props: CardProps) {
   const { openModal } = useModal()
-  const { data } = useMats()
+  const { data } = useMatsQuery()
 
   const handleOpenBeehiveModal = () => {
     openModal(MODAL_TYPES.MEZO_BEEHIVE)

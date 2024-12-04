@@ -1,15 +1,7 @@
-import { queryKeysFactory, REFETCH_INTERVAL_IN_MILLISECONDS } from "#/constants"
-import { acreApi } from "#/utils"
-import { useQuery } from "@tanstack/react-query"
-
-const { acreKeys } = queryKeysFactory
+import { useStatisticsQuery } from "./tanstack-query"
 
 const useStatistics = () => {
-  const { data } = useQuery({
-    queryKey: [...acreKeys.statistics()],
-    queryFn: acreApi.getStatistics,
-    refetchInterval: REFETCH_INTERVAL_IN_MILLISECONDS,
-  })
+  const { data } = useStatisticsQuery()
 
   const bitcoinTvl = data?.btc ?? 0
   const usdTvl = data?.usd ?? 0
