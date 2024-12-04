@@ -1,6 +1,6 @@
 import React from "react"
 import { Flex, List } from "@chakra-ui/react"
-import TransactionDetailsAmountItem from "#/components/shared/TransactionDetails/AmountItem"
+import TransactionDetailsAmountItem from "#/components/shared/TransactionDetails/TransactionDetailsAmountItem"
 import { TOKEN_AMOUNT_FIELD_NAME } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import {
   useFormField,
@@ -9,7 +9,7 @@ import {
 } from "#/hooks"
 import { ACTION_FLOW_TYPES, CurrencyType } from "#/types"
 import { DESIRED_DECIMALS_FOR_FEE, featureFlags } from "#/constants"
-import FeesDetailsAmountItem from "#/components/shared/FeesDetails/FeesItem"
+import FeesDetailsAmountItem from "#/components/shared/FeesDetails/FeesDetailsAmountItem"
 import WithdrawWarning from "./WithdrawWarning"
 import { FeesTooltip } from "../../FeesTooltip"
 

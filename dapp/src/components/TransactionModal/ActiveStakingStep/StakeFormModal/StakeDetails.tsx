@@ -1,7 +1,7 @@
 import React from "react"
 import { List } from "@chakra-ui/react"
-import TransactionDetailsAmountItem from "#/components/shared/TransactionDetails/AmountItem"
-import FeesDetailsAmountItem from "#/components/shared/FeesDetails/FeesItem"
+import TransactionDetailsAmountItem from "#/components/shared/TransactionDetails/TransactionDetailsAmountItem"
+import FeesDetailsAmountItem from "#/components/shared/FeesDetails/FeesDetailsAmountItem"
 import { TOKEN_AMOUNT_FIELD_NAME } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import { FeesTooltip } from "#/components/TransactionModal/FeesTooltip"
 import {
