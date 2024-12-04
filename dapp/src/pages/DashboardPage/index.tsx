@@ -3,7 +3,6 @@ import { featureFlags } from "#/constants"
 import { useTriggerConnectWalletModal } from "#/hooks"
 import { Grid } from "@chakra-ui/react"
 import DashboardCard from "./DashboardCard"
-// import GrantedSeasonPassCard from "./GrantedSeasonPassCard"
 import AcrePointsCard from "./AcrePointsCard"
 import AcrePointsTemplateCard from "./AcrePointsTemplateCard"
 import BeehiveCard from "./BeehiveCard"
@@ -51,9 +50,6 @@ export default function DashboardPage() {
       {featureFlags.TVL_ENABLED && <AcreTVLProgress gridArea="tvl" />}
 
       <DashboardCard gridArea="dashboard" h="fit-content" />
-
-      {/* TODO: Uncomment in post-launch phases + add `gridArea` and update  `templateAreas` */}
-      {/* <GrantedSeasonPassCard /> */}
 
       {featureFlags.ACRE_POINTS_ENABLED ? (
         <AcrePointsCard gridArea="acre-points" h="fit-content" />
