@@ -1,15 +1,23 @@
-import { queryKeysFactory } from "#/constants"
-import { useIsFetching } from "@tanstack/react-query"
 import { useIsSignedMessage } from "./store"
-
-const { userKeys } = queryKeysFactory
+import {
+  useActivitiesQuery,
+  useBitcoinBalanceQuery,
+  useBitcoinPositionQuery,
+  useUserPointsDataQuery,
+} from "./tanstack-query"
 
 export default function useIsFetchedWalletData() {
   const isSignedMessage = useIsSignedMessage()
-  const fetchingQueries = useIsFetching({
-    queryKey: userKeys.all,
-    predicate: (query) => query.state.data === undefined,
-  })
+  const { isFetched: isBitcoinBalanceFetched } = useBitcoinBalanceQuery()
+  const { isFetched: isBitcoinPositionFetched } = useBitcoinPositionQuery()
+  const { isFetched: isActivitiesFetched } = useActivitiesQuery()
+  const { isFetched: isPointsDataFetched } = useUserPointsDataQuery()
 
-  return (isSignedMessage && fetchingQueries === 0) || !isSignedMessage
+  const isFetchedData =
+    isBitcoinBalanceFetched &&
+    isActivitiesFetched &&
+    isBitcoinPositionFetched &&
+    isPointsDataFetched
+
+  return (isSignedMessage && isFetchedData) || !isSignedMessage
 }
