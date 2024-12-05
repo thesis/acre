@@ -1,3 +1,4 @@
+import React, { useCallback, useRef } from "react"
 import { ONE_SEC_IN_MILLISECONDS, queryKeysFactory } from "#/constants"
 import {
   useActionFlowPause,
@@ -16,7 +17,6 @@ import { PROCESS_STATUSES } from "#/types"
 import { eip1193, logPromiseFailure } from "#/utils"
 import { useTimeout } from "@chakra-ui/react"
 import { useMutation } from "@tanstack/react-query"
-import { useCallback, useRef } from "react"
 import WalletInteractionModal from "../WalletInteractionModal"
 
 const { userKeys } = queryKeysFactory
