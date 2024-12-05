@@ -1,5 +1,11 @@
-import React from "react"
+import { MezoSignIcon } from "#/assets/icons"
+import beehiveIllustrationSrc from "#/assets/images/beehive-illustration.svg"
+import TooltipIcon from "#/components/shared/TooltipIcon"
 import { H6, TextMd, TextSm } from "#/components/shared/Typography"
+import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
+import { useMats, useModal } from "#/hooks"
+import { MODAL_TYPES } from "#/types"
+import { numberToLocaleString } from "#/utils"
 import {
   Box,
   Button,
@@ -12,13 +18,6 @@ import {
   Image,
   VStack,
 } from "@chakra-ui/react"
-import { MezoSignIcon } from "#/assets/icons"
-import { useMats, useModal } from "#/hooks"
-import { MODAL_TYPES } from "#/types"
-import beehiveIllustrationSrc from "#/assets/images/beehive-illustration.svg"
-import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
-import { numberToLocaleString } from "#/utils"
-import InfoTooltip from "#/components/shared/InfoTooltip"
 
 export default function BeehiveCard(props: CardProps) {
   const { openModal } = useModal()
@@ -32,7 +31,7 @@ export default function BeehiveCard(props: CardProps) {
     <Card {...props}>
       <CardHeader as={Flex} alignItems="center" justify="space-between" gap={2}>
         <TextMd>Additional rewards</TextMd>
-        <InfoTooltip
+        <TooltipIcon
           label="Acre Beehive automatically collects rewards from our partner projects. Rewards are dropped daily, and your share is calculated based on your deposit amount and how long you HODL."
           w={56}
         />
