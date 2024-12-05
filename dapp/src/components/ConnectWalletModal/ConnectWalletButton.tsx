@@ -24,6 +24,7 @@ import {
 } from "@chakra-ui/react"
 import { IconArrowNarrowRight } from "@tabler/icons-react"
 import { AnimatePresence, Variants, motion } from "framer-motion"
+import { usePostHogIdentity } from "#/hooks/posthog"
 import ArrivingSoonTooltip from "../ArrivingSoonTooltip"
 import { TextLg, TextMd } from "../shared/Typography"
 import ConnectWalletStatusLabel from "./ConnectWalletStatusLabel"
@@ -72,6 +73,7 @@ export default function ConnectWalletButton({
   const { closeModal } = useModal()
   const dispatch = useAppDispatch()
   const isMounted = useRef(false)
+  const { handleIdentification } = usePostHogIdentity()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -118,8 +120,11 @@ export default function ConnectWalletButton({
       if (!btcAddress) return
 
       await handleSignMessageAndCreateSession(connector, btcAddress)
+      handleIdentification(btcAddress, {
+        connector: connectedConnector.id,
+      })
     },
-    [connector, handleSignMessageAndCreateSession],
+    [connector, handleSignMessageAndCreateSession, handleIdentification],
   )
 
   const handleConnection = useCallback(() => {

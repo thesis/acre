@@ -22,6 +22,10 @@ const LATEST_COMMIT_HASH = import.meta.env.VITE_LATEST_COMMIT_HASH
 
 const ACRE_API_ENDPOINT = import.meta.env.VITE_ACRE_API_ENDPOINT
 
+const POSTHOG_API_HOST = import.meta.env.VITE_POSTHOG_API_HOST
+
+const POSTHOG_API_KEY = import.meta.env.VITE_POSTHOG_API_KEY
+
 export default {
   PROD,
   USE_TESTNET,
@@ -35,4 +39,6 @@ export default {
   NETWORK_TYPE,
   LATEST_COMMIT_HASH,
   ACRE_API_ENDPOINT,
+  POSTHOG_API_HOST,
+  POSTHOG_API_KEY,
 }

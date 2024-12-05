@@ -18,6 +18,7 @@ import getWagmiConfig from "./wagmiConfig"
 import queryClient from "./queryClient"
 import { delay, logPromiseFailure } from "./utils"
 import { AcreLogo } from "./assets/icons"
+import PostHogProvider from "./posthog/PostHogProvider"
 
 function SplashPage() {
   return (
@@ -67,7 +68,9 @@ function DAppProviders() {
             <DocsDrawerContextProvider>
               <WalletConnectionAlertContextProvider>
                 <ReduxProvider store={store}>
-                  <DApp />
+                  <PostHogProvider>
+                    <DApp />
+                  </PostHogProvider>
                 </ReduxProvider>
               </WalletConnectionAlertContextProvider>
             </DocsDrawerContextProvider>
