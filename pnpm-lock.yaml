@@ -42,8 +42,8 @@ importers:
         specifier: 1.0.0-beta.34
         version: 1.0.0-beta.34(@react-native-async-storage/async-storage@1.23.1(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10)))(@tanstack/query-core@5.45.0)(@tanstack/react-query@5.45.0(react@18.3.1))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(immer@10.1.1)(react-dom@18.3.1(react@18.3.1))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10))(rollup@4.18.0)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8)
       '@orangekit/sign-in-with-wallet':
-        specifier: 1.0.0-beta.6
-        version: 1.0.0-beta.6(bech32@2.0.0)(ethers@6.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))
+        specifier: 1.0.0-beta.7
+        version: 1.0.0-beta.7(bech32@2.0.0)(ethers@6.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))
       '@reduxjs/toolkit':
         specifier: ^2.2.0
         version: 2.2.5(react-redux@9.1.2(@types/react@18.3.3)(react@18.3.1)(redux@5.0.1))(react@18.3.1)
@@ -2698,11 +2698,11 @@ packages:
   '@orangekit/sdk@1.0.0-beta.19':
     resolution: {integrity: sha512-sIqzu3QTb0WkB4Ir4zHX4tP7hf+uZBXX60q/ww6UzwPjoqGL3dOdui59lTZSNygdMbydLE3y9FSNZPNkQvm+gA==}
 
-  '@orangekit/sign-in-with-wallet-parser@1.0.0-beta.6':
-    resolution: {integrity: sha512-Yi6ohSJV4/Ovrq5c7jD+kPE8pZxLhWtFbZjKRwUW8JL60P/tcyT5o0etul0reqcY2iBlIo5aoC2Hh0noRGl86w==}
+  '@orangekit/sign-in-with-wallet-parser@1.0.0-beta.7':
+    resolution: {integrity: sha512-C7gmliw2TJOQzIMpuhDZhIGlp7zFSqNsa/oevNaqnB+i0zFIsXZjsKg2oddr8smYG1+KhbX+V+O3AeaPCSsK9A==}
 
-  '@orangekit/sign-in-with-wallet@1.0.0-beta.6':
-    resolution: {integrity: sha512-UzNG8QHehem2wayWDyMBd13z1lQUBKsSq+NjGK6KHYWUbet6EizBeVZK7jSruzTHba3gDI8I3NH071E6sxTFtQ==}
+  '@orangekit/sign-in-with-wallet@1.0.0-beta.7':
+    resolution: {integrity: sha512-o2U5oi8b+2cc0Lel4p7myp1pQ6J2OLCdVTRhYQ4Te4+iqVFns1UlHx28pEo0zvGCJ5CwHQBmJHX6QguL02Kj4Q==}
     peerDependencies:
       bech32: '=2.0.0'
       ethers: ^6.0.8
@@ -14891,16 +14891,16 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@orangekit/sign-in-with-wallet-parser@1.0.0-beta.6':
+  '@orangekit/sign-in-with-wallet-parser@1.0.0-beta.7':
     dependencies:
       '@noble/hashes': 1.4.0
       apg-js: 4.4.0
       uri-js: 4.4.1
       valid-url: 1.0.9
 
-  '@orangekit/sign-in-with-wallet@1.0.0-beta.6(bech32@2.0.0)(ethers@6.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))':
+  '@orangekit/sign-in-with-wallet@1.0.0-beta.7(bech32@2.0.0)(ethers@6.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))':
     dependencies:
-      '@orangekit/sign-in-with-wallet-parser': 1.0.0-beta.6
+      '@orangekit/sign-in-with-wallet-parser': 1.0.0-beta.7
       '@stablelib/random': 1.0.2
       bech32: 2.0.0
       ethers: 6.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
