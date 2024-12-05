@@ -15,7 +15,6 @@ import {
   ButtonProps,
   Flex,
   HStack,
-  Icon,
   // Tag,
   VStack,
 } from "@chakra-ui/react"
@@ -23,8 +22,8 @@ import ArrivingSoonTooltip from "#/components/ArrivingSoonTooltip"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import { featureFlags } from "#/constants"
 import { TextMd } from "#/components/shared/Typography"
-import Tooltip from "#/components/shared/Tooltip"
 import { IconClockHour5Filled } from "@tabler/icons-react"
+import TooltipIcon from "#/components/shared/TooltipIcon"
 import AcreTVLMessage from "./AcreTVLMessage"
 
 const isWithdrawalFlowEnabled = featureFlags.WITHDRAWALS_ENABLED
@@ -38,9 +37,6 @@ const buttonStyles: ButtonProps = {
   px: 7,
   h: "auto",
 }
-
-// TODO: Define in the new color palette
-const TOOLTIP_ICON_COLOR = "#3A3328"
 
 export default function PositionDetails() {
   const { data } = useBitcoinPosition()
@@ -58,7 +54,7 @@ export default function PositionDetails() {
   const isDisabledForMobileMode =
     isMobileMode && !featureFlags.MOBILE_MODE_ENABLED
 
-  const activities = useActivities()
+  const { hasPendingActivities } = useActivities()
 
   return (
     <Flex w="100%" flexDirection="column" gap={5}>
@@ -66,17 +62,12 @@ export default function PositionDetails() {
         {/* TODO: Component should be moved to `CardHeader` */}
         <HStack>
           <TextMd>Your Acre balance</TextMd>
-          {activities.status === "pending" && (
-            <Tooltip
+          {!hasPendingActivities && (
+            <TooltipIcon
+              icon={IconClockHour5Filled}
               label="Your balance will update once the pending deposit is finalized."
               placement="right"
-            >
-              <Icon
-                as={IconClockHour5Filled}
-                color={TOOLTIP_ICON_COLOR}
-                opacity={0.25}
-              />
-            </Tooltip>
+            />
           )}
           {/* TODO: Uncomment when position will be implemented */}
           {/* {positionPercentage && (

@@ -1,3 +1,4 @@
+import React from "react"
 import { MezoSignIcon } from "#/assets/icons"
 import beehiveIllustrationSrc from "#/assets/images/beehive-illustration.svg"
 import TooltipIcon from "#/components/shared/TooltipIcon"

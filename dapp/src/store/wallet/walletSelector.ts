@@ -13,6 +13,11 @@ export const selectActivities = createSelector(
   (activities) => sortActivitiesByTimestamp(activities),
 )
 
+export const selectHasPendingActivities = createSelector(
+  (state: RootState) => state.wallet.activities,
+  (activities) => activities.some((activity) => activity.status === "pending"),
+)
+
 export const selectAllActivitiesCount = createSelector(
   (state: RootState) => state.wallet.activities,
   (activities) => activities.length,
