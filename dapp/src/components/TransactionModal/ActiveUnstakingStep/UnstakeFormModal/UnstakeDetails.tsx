@@ -1,5 +1,5 @@
 import React from "react"
-import { Flex, List } from "@chakra-ui/react"
+import { List } from "@chakra-ui/react"
 import TransactionDetailsAmountItem from "#/components/shared/TransactionDetails/AmountItem"
 import { TOKEN_AMOUNT_FIELD_NAME } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import {
@@ -23,32 +23,30 @@ function UnstakeDetails({ currency }: { currency: CurrencyType }) {
   const { total, ...restFees } = details.transactionFee
 
   return (
-    <Flex flexDirection="column" gap={10} mt={10}>
-      <List spacing={3}>
-        <FeesDetailsAmountItem
-          label="Fees"
-          // TODO: Add `Bitcoin Network fee` (funding transaction fee selected by
-          // the user) and figure out how to estimate this fee.
-          tooltip={<FeesTooltip fees={restFees} />}
-          from={{
-            currency,
-            amount: total,
-            desiredDecimals: DESIRED_DECIMALS_FOR_FEE,
-            withRoundUp: true,
-          }}
-          to={{
-            currency: "usd",
-          }}
-        />
-        <TransactionDetailsAmountItem
-          label="You will receive"
-          from={{
-            currency,
-            amount: details.estimatedAmount,
-          }}
-        />
-      </List>
-    </Flex>
+    <List spacing={3} mt={10}>
+      <FeesDetailsAmountItem
+        label="Fees"
+        // TODO: Add `Bitcoin Network fee` (funding transaction fee selected by
+        // the user) and figure out how to estimate this fee.
+        tooltip={<FeesTooltip fees={restFees} />}
+        from={{
+          currency,
+          amount: total,
+          desiredDecimals: DESIRED_DECIMALS_FOR_FEE,
+          withRoundUp: true,
+        }}
+        to={{
+          currency: "usd",
+        }}
+      />
+      <TransactionDetailsAmountItem
+        label="You will receive"
+        from={{
+          currency,
+          amount: details.estimatedAmount,
+        }}
+      />
+    </List>
   )
 }
 
