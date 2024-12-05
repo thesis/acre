@@ -10,7 +10,7 @@ import GlobalStyles from "./components/GlobalStyles"
 import {
   DocsDrawerContextProvider,
   SidebarContextProvider,
-  WalletConnectionErrorContextProvider,
+  WalletConnectionAlertContextProvider,
 } from "./contexts"
 import { useInitApp } from "./hooks"
 import { router } from "./router"
@@ -68,13 +68,13 @@ function DAppProviders() {
           <AcreSdkProvider>
             <DocsDrawerContextProvider>
               <SidebarContextProvider>
-                <WalletConnectionErrorContextProvider>
+                <WalletConnectionAlertContextProvider>
                   <ReduxProvider store={store}>
                     <PostHogProvider>
                       <DApp />
                     </PostHogProvider>
                   </ReduxProvider>
-                </WalletConnectionErrorContextProvider>
+                </WalletConnectionAlertContextProvider>
               </SidebarContextProvider>
             </DocsDrawerContextProvider>
           </AcreSdkProvider>
