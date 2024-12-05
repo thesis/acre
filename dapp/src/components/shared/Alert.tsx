@@ -22,7 +22,7 @@ import Spinner from "./Spinner"
 const STATUSES = {
   info: {
     icon: IconInfoCircle,
-    colorScheme: "gold",
+    colorScheme: "blue",
   },
   warning: {
     icon: IconExclamationCircle,
