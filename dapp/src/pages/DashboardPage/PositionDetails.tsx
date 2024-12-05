@@ -23,9 +23,9 @@ import ArrivingSoonTooltip from "#/components/ArrivingSoonTooltip"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import { featureFlags } from "#/constants"
 import { TextMd } from "#/components/shared/Typography"
-import AcreTVLMessage from "./AcreTVLMessage"
 import Tooltip from "#/components/shared/Tooltip"
 import { IconClockHour5Filled } from "@tabler/icons-react"
+import AcreTVLMessage from "./AcreTVLMessage"
 
 const isWithdrawalFlowEnabled = featureFlags.WITHDRAWALS_ENABLED
 
