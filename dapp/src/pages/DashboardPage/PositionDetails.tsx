@@ -70,9 +70,6 @@ export default function PositionDetails() {
             <Tooltip
               label="Your balance will update once the pending deposit is finalized."
               placement="right"
-              wrapperProps={{
-                lineHeight: 4,
-              }}
             >
               <Icon
                 as={IconClockHour5Filled}
