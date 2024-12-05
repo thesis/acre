@@ -29,6 +29,7 @@ import {
   IconChevronUp,
 } from "@tabler/icons-react"
 import { useMatch } from "react-router-dom"
+import { usePostHogIdentity } from "#/hooks/posthog"
 import Tooltip from "../shared/Tooltip"
 
 function isChangeAccountFeatureSupported(embeddedApp: string | undefined) {
@@ -45,10 +46,16 @@ export default function ConnectWallet() {
     size: "lg",
   })
   const isDashboardPage = useMatch("/dashboard")
+  const { resetIdentity } = usePostHogIdentity()
   const isMobile = useMobileMode()
 
   const handleConnectWallet = (isReconnecting: boolean = false) => {
     openModal(MODAL_TYPES.CONNECT_WALLET, { isReconnecting })
+  }
+
+  const handleDisconnectWallet = () => {
+    onDisconnect()
+    resetIdentity()
   }
 
   if (!address) {
@@ -184,6 +191,17 @@ export default function ConnectWallet() {
                 </Tooltip>
               ),
           )}
+
+          <Tooltip size="xs" label="Disconnect">
+            <IconButton
+              variant="ghost"
+              aria-label="Disconnect"
+              icon={<Icon as={IconLogout} boxSize={5} />}
+              px={2}
+              boxSize={5}
+              onClick={handleDisconnectWallet}
+            />
+          </Tooltip>
         </HStack>
       </Flex>
     </HStack>
