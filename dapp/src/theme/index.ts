@@ -13,7 +13,6 @@ import { modalTheme } from "./Modal"
 import { cardTheme } from "./Card"
 import { tooltipTheme } from "./Tooltip"
 import { headingTheme } from "./Heading"
-import { sidebarTheme } from "./Sidebar"
 import { currencyBalanceTheme } from "./CurrencyBalance"
 import { tokenBalanceInputTheme } from "./TokenBalanceInput"
 import { inputTheme } from "./Input"
@@ -61,7 +60,6 @@ const defaultTheme = {
     Input: inputTheme,
     Link: linkTheme,
     Modal: modalTheme,
-    Sidebar: sidebarTheme,
     Spinner: spinnerTheme,
     Tag: tagTheme,
     TokenBalanceInput: tokenBalanceInputTheme,
