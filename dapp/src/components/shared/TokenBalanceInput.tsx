@@ -21,9 +21,9 @@ import { useCurrencyConversion } from "#/hooks"
 import NumberFormatInput, {
   NumberFormatInputValues,
   NumberFormatInputProps,
-} from "../NumberFormatInput"
-import { CurrencyBalance } from "../CurrencyBalance"
-import HelperErrorText, { HelperErrorTextProps } from "../Form/HelperErrorText"
+} from "./NumberFormatInput"
+import { CurrencyBalance } from "./CurrencyBalance"
+import HelperErrorText, { HelperErrorTextProps } from "./Form/HelperErrorText"
 
 type FiatCurrencyBalanceProps = {
   amount: bigint
