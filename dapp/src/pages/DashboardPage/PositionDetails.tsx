@@ -1,10 +1,10 @@
 import React from "react"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import {
-  useAllActivitiesCount,
+  useActivitiesCount,
   useBitcoinPosition,
   useTransactionModal,
-  useStatistics,
+  useEnhancedStatistics,
   useWallet,
   useMobileMode,
 } from "#/hooks"
@@ -41,10 +41,10 @@ export default function PositionDetails() {
 
   const openDepositModal = useTransactionModal(ACTION_FLOW_TYPES.STAKE)
   const openWithdrawModal = useTransactionModal(ACTION_FLOW_TYPES.UNSTAKE)
-  const activitiesCount = useAllActivitiesCount()
+  const activitiesCount = useActivitiesCount()
   const isMobileMode = useMobileMode()
 
-  const { tvl } = useStatistics()
+  const { tvl } = useEnhancedStatistics()
 
   const { isConnected } = useWallet()
 
