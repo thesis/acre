@@ -28,7 +28,7 @@ export default abstract class HttpApi {
    * @returns The HTTP response.
    * @throws Error if the request fails after all retries.
    */
-  async requestWithRetry(
+  async #requestWithRetry(
     requestFn: () => Promise<Response>,
   ): Promise<Response> {
     return backoffRetrier<Response>(
@@ -55,10 +55,12 @@ export default abstract class HttpApi {
     endpoint: string,
     requestInit?: RequestInit,
   ): Promise<Response> {
-    return fetch(new URL(endpoint, this.#apiUrl), {
-      credentials: "include",
-      ...requestInit,
-    })
+    return this.#requestWithRetry(async () =>
+      fetch(new URL(endpoint, this.#apiUrl), {
+        credentials: "include",
+        ...requestInit,
+      }),
+    )
   }
 
   /**
@@ -73,12 +75,14 @@ export default abstract class HttpApi {
     body: unknown,
     requestInit?: RequestInit,
   ): Promise<Response> {
-    return fetch(new URL(endpoint, this.#apiUrl), {
-      method: "POST",
-      body: JSON.stringify(body),
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      ...requestInit,
-    })
+    return this.#requestWithRetry(async () =>
+      fetch(new URL(endpoint, this.#apiUrl), {
+        method: "POST",
+        body: JSON.stringify(body),
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        ...requestInit,
+      }),
+    )
   }
 }

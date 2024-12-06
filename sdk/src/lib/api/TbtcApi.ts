@@ -38,11 +38,11 @@ export default class TbtcApi extends HttpApi {
    * otherwise.
    */
   async saveReveal(revealData: SaveRevealRequest): Promise<boolean> {
-    const response = await this.requestWithRetry(async () =>
-      this.postRequest("reveals", revealData),
-    ).catch((error) => {
-      throw new Error(`Failed to save reveal: ${error}`)
-    })
+    const response = await this.postRequest("reveals", revealData).catch(
+      (error) => {
+        throw new Error(`Failed to save reveal: ${error}`)
+      },
+    )
 
     const { success } = (await response.json()) as { success: boolean }
 
@@ -59,11 +59,11 @@ export default class TbtcApi extends HttpApi {
     depositStatus: DepositStatus
     fundingOutpoint: BitcoinTxOutpoint
   }> {
-    const response = await this.requestWithRetry(async () =>
-      this.postRequest("deposits", depositData),
-    ).catch((error) => {
-      throw new Error(`Failed to create deposit: ${error}`)
-    })
+    const response = await this.postRequest("deposits", depositData).catch(
+      (error) => {
+        throw new Error(`Failed to create deposit: ${error}`)
+      },
+    )
 
     const responseData = (await response.json()) as CreateDepositResponse
 
@@ -82,8 +82,8 @@ export default class TbtcApi extends HttpApi {
    * @returns All owner deposits, including queued deposits.
    */
   async getDepositsByOwner(depositOwner: ChainIdentifier): Promise<Deposit[]> {
-    const response = await this.requestWithRetry(async () =>
-      this.getRequest(`deposits/${depositOwner.identifierHex}`),
+    const response = await this.getRequest(
+      `deposits/${depositOwner.identifierHex}`,
     ).catch((error) => {
       throw new Error(`Failed to fetch deposits: ${error}`)
     })
