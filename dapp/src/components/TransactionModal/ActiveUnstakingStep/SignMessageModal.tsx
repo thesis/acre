@@ -16,6 +16,8 @@ import { useInitializeWithdraw } from "#/acre-react/hooks"
 import { ONE_SEC_IN_MILLISECONDS, queryKeysFactory } from "#/constants"
 import { activityInitialized } from "#/store/wallet"
 import { useMutation } from "@tanstack/react-query"
+import { PostHogEvent } from "#/posthog/events"
+import { usePostHogCapture } from "#/hooks/posthog/usePostHogCapture"
 import BuildTransactionModal from "./BuildTransactionModal"
 import WalletInteractionModal from "../WalletInteractionModal"
 
@@ -44,6 +46,7 @@ export default function SignMessageModal() {
     amount,
     ACTION_FLOW_TYPES.UNSTAKE,
   )
+  const { handleCapture, handleCaptureWithCause } = usePostHogCapture()
 
   const dataBuiltStepCallback = useCallback(() => {
     setWaitingStatus("built-data")
@@ -58,7 +61,8 @@ export default function SignMessageModal() {
   const onSignMessageSuccess = useCallback(() => {
     handleBitcoinPositionInvalidation()
     dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED))
-  }, [dispatch, handleBitcoinPositionInvalidation])
+    handleCapture(PostHogEvent.WithdrawalSuccess)
+  }, [dispatch, handleBitcoinPositionInvalidation, handleCapture])
 
   const onSignMessageError = useCallback(
     (error: unknown) => {
@@ -77,8 +81,15 @@ export default function SignMessageModal() {
       } else {
         onSignMessageError(error)
       }
+
+      handleCaptureWithCause(error, PostHogEvent.WithdrawalFailure)
     },
-    [sessionIdToPromise, handlePause, onSignMessageError],
+    [
+      sessionIdToPromise,
+      handlePause,
+      onSignMessageError,
+      handleCaptureWithCause,
+    ],
   )
 
   const { mutate: handleSignMessage } = useMutation({

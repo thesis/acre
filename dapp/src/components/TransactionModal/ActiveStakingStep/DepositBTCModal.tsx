@@ -1,4 +1,5 @@
 import React, { useCallback, useRef } from "react"
+import { ONE_SEC_IN_MILLISECONDS, queryKeysFactory } from "#/constants"
 import {
   useActionFlowPause,
   useActionFlowTokenAmount,
@@ -9,10 +10,11 @@ import {
   useStakeFlowContext,
   useVerifyDepositAddress,
 } from "#/hooks"
-import { eip1193, logPromiseFailure } from "#/utils"
-import { PROCESS_STATUSES } from "#/types"
+import { usePostHogCapture } from "#/hooks/posthog/usePostHogCapture"
+import { PostHogEvent } from "#/posthog/events"
 import { setStatus, setTxHash } from "#/store/action-flow"
-import { ONE_SEC_IN_MILLISECONDS, queryKeysFactory } from "#/constants"
+import { PROCESS_STATUSES } from "#/types"
+import { eip1193, logPromiseFailure } from "#/utils"
 import { useTimeout } from "@chakra-ui/react"
 import { useMutation } from "@tanstack/react-query"
 import WalletInteractionModal from "../WalletInteractionModal"
@@ -28,6 +30,7 @@ export default function DepositBTCModal() {
   const handleBitcoinBalanceInvalidation = useInvalidateQueries({
     queryKey: userKeys.balance(),
   })
+  const { handleCapture, handleCaptureWithCause } = usePostHogCapture()
 
   const sessionId = useRef(Math.random())
   const { cancel, resolve, sessionIdToPromise } = useCancelPromise(
@@ -59,8 +62,11 @@ export default function DepositBTCModal() {
     (transactionHash: string) => {
       dispatch(setTxHash(transactionHash))
       handleStake()
+      handleCapture(PostHogEvent.DepositSuccess, {
+        transactionHash,
+      })
     },
-    [dispatch, handleStake],
+    [dispatch, handleStake, handleCapture],
   )
 
   const onDepositBTCError = useCallback(
@@ -72,8 +78,10 @@ export default function DepositBTCModal() {
       } else {
         onError(error)
       }
+
+      handleCaptureWithCause(error, PostHogEvent.DepositFailure)
     },
-    [sessionIdToPromise, handlePause, onError],
+    [sessionIdToPromise, handlePause, onError, handleCaptureWithCause],
   )
 
   const { mutate: sendBitcoinTransaction, status } = useDepositBTCTransaction({
