@@ -8,9 +8,9 @@ import {
 } from "#/hooks"
 import { ACTION_FLOW_TYPES, CurrencyType } from "#/types"
 import { DESIRED_DECIMALS_FOR_FEE } from "#/constants"
-import { FeesTooltip } from "../../FeesTooltip"
 import FeesDetailsAmountItem from "#/components/shared/FeesDetails/FeesDetailsAmountItem"
 import TransactionDetailsAmountItem from "#/components/shared/TransactionDetails/TransactionDetailsAmountItem"
+import { FeesTooltip } from "../../FeesTooltip"
 
 function UnstakeDetails({ currency }: { currency: CurrencyType }) {
   const { value = 0n } = useFormField<bigint | undefined>(
