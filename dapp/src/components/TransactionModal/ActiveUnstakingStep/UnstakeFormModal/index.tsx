@@ -38,7 +38,7 @@ function UnstakeFormModal({
       withMaxButton
       defaultAmount={defaultAmount}
     >
-      <UnstakeDetails balance={balance} currency="bitcoin" />
+      <UnstakeDetails currency="bitcoin" />
       <FormSubmitButton mt={8}>Withdraw</FormSubmitButton>
       <ActionDurationEstimation type="withdraw" />
     </TokenAmountForm>

@@ -1,12 +1,14 @@
 import { useMutation } from "@tanstack/react-query"
 import { acreApi } from "#/utils"
 import { MODAL_TYPES } from "#/types"
+import { PostHogEvent } from "#/posthog/events"
 import { useWallet } from "./useWallet"
 import { useModal } from "./useModal"
 import {
   useAcrePointsDataQuery,
   useUserPointsDataQuery,
 } from "./tanstack-query"
+import { usePostHogCapture } from "./posthog/usePostHogCapture"
 
 type UseAcrePointsReturnType = {
   totalBalance: number
@@ -22,6 +24,7 @@ type UseAcrePointsReturnType = {
 export default function useAcrePoints(): UseAcrePointsReturnType {
   const { ethAddress = "" } = useWallet()
   const { openModal } = useModal()
+  const { handleCapture, handleCaptureWithCause } = usePostHogCapture()
 
   const userPointsDataQuery = useUserPointsDataQuery()
   const pointsDataQuery = useAcrePointsDataQuery()
@@ -39,9 +42,15 @@ export default function useAcrePoints(): UseAcrePointsReturnType {
         claimedAmount,
         totalAmount,
       })
+
+      handleCapture(PostHogEvent.PointsClaimSuccess, {
+        claimedAmount,
+        totalAmount,
+      })
     },
-    // TODO: Add the case when something goes wrong
-    // onError: (error) => {},
+    onError: (error) => {
+      handleCaptureWithCause(error, PostHogEvent.PointsClaimFailure)
+    },
   })
 
   return {
