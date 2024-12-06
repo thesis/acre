@@ -136,7 +136,7 @@ function WelcomeModalBase({ closeModal }: BaseModalProps) {
           </TextSm>
           {activeStepData.title}
         </ModalHeader>
-        <ModalBody textAlign="left" display="block" color="brown.80" px="10">
+        <ModalBody textAlign="left" display="block" color="brown.80">
           {activeStepData.content(embeddedApp)}
         </ModalBody>
         <ModalFooter

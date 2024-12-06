@@ -56,7 +56,7 @@ export default function PositionDetails() {
       <VStack alignItems="start" spacing={0}>
         {/* TODO: Component should be moved to `CardHeader` */}
         <TextMd>
-          Your balance
+          Your Acre balance
           {/* TODO: Uncomment when position will be implemented */}
           {/* {positionPercentage && (
             <Tag
