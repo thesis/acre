@@ -62,7 +62,7 @@ export default function PositionDetails() {
         {/* TODO: Component should be moved to `CardHeader` */}
         <HStack>
           <TextMd>Your Acre balance</TextMd>
-          {!hasPendingActivities && (
+          {hasPendingActivities && (
             <TooltipIcon
               icon={IconClockHour5Filled}
               label="Your balance will update once the pending deposit is finalized."
