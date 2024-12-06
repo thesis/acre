@@ -33,7 +33,6 @@ export { default as useTriggerConnectWalletModal } from "./useTriggerConnectWall
 export { default as useLastUsedBtcAddress } from "./useLastUsedBtcAddress"
 export { default as useAcrePoints } from "./useAcrePoints"
 export { default as useSignMessageAndCreateSession } from "./useSignMessageAndCreateSession"
-export { default as useScrollbarVisibility } from "./useScrollbarVisibility"
 export { default as useAccessCode } from "./useAccessCode"
 export { default as useFormField } from "./useFormField"
 export { default as useDepositBTCTransaction } from "./useDepositBTCTransaction"
