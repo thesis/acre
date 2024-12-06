@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query"
 import { Activity } from "#/types"
 import { DepositStatus } from "@acre-btc/sdk"
 import { useAcreContext } from "#/acre-react/hooks"
+import { sortActivitiesByTimestamp } from "#/utils"
 import { useWallet } from "../useWallet"
 
 const { userKeys } = queryKeysFactory
@@ -40,7 +41,7 @@ export default function useActivitiesQuery() {
           }
         },
       )
-      return [...deposits, ...withdrawals]
+      return sortActivitiesByTimestamp([...deposits, ...withdrawals])
     },
     refetchInterval: REFETCH_INTERVAL_IN_MILLISECONDS,
   })
