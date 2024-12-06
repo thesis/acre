@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { roundUp } from "../numbers"
+import { roundUp } from "#/utils/numbers"
 
 describe("Utils functions for numbers", () => {
   describe("roundUp", () => {

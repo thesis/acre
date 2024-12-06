@@ -8,7 +8,7 @@ import { Balance } from "@orangekit/react/dist/src/wallet/bitcoin-wallet-provide
 import { AcreMessageType } from "@ledgerhq/wallet-api-acre-module"
 import { ZeroAddress } from "ethers"
 import BigNumber from "bignumber.js"
-import AcreLedgerLiveBitcoinProvider from "../bitcoin-provider"
+import AcreLedgerLiveBitcoinProvider from "#/utils/orangekit/ledger-live/bitcoin-provider"
 
 describe("AcreLedgerLiveBitcoinProvider", () => {
   const bitcoinAddress = "mjc2zGWypwpNyDi4ZxGbBNnUA84bfgiwYc"
