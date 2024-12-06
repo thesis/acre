@@ -32,7 +32,7 @@ function withBaseModal<T extends BaseModalProps>(
         {...modalProps}
       >
         <ModalOverlay zIndex="modalOverlay" />
-        <ModalContent zIndex="modalContent">
+        <ModalContent>
           <WrappedModalContent {...props} closeModal={handleCloseModal} />
         </ModalContent>
       </Modal>
