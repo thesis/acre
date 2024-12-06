@@ -2,8 +2,10 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import { acreApi } from "#/utils"
 import { queryKeysFactory, REFETCH_INTERVAL_IN_MILLISECONDS } from "#/constants"
 import { MODAL_TYPES } from "#/types"
+import { PostHogEvent } from "#/posthog/events"
 import { useWallet } from "./useWallet"
 import { useModal } from "./useModal"
+import { usePostHogCapture } from "./posthog/usePostHogCapture"
 
 const { userKeys, acreKeys } = queryKeysFactory
 
@@ -21,6 +23,7 @@ type UseAcrePointsReturnType = {
 export default function useAcrePoints(): UseAcrePointsReturnType {
   const { ethAddress = "" } = useWallet()
   const { openModal } = useModal()
+  const { handleCapture, handleCaptureWithCause } = usePostHogCapture()
 
   const userPointsDataQuery = useQuery({
     queryKey: [...userKeys.pointsData(), ethAddress],
@@ -47,9 +50,15 @@ export default function useAcrePoints(): UseAcrePointsReturnType {
         claimedAmount,
         totalAmount,
       })
+
+      handleCapture(PostHogEvent.PointsClaimSuccess, {
+        claimedAmount,
+        totalAmount,
+      })
     },
-    // TODO: Add the case when something goes wrong
-    // onError: (error) => {},
+    onError: (error) => {
+      handleCaptureWithCause(error, PostHogEvent.PointsClaimFailure)
+    },
   })
 
   return {

@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useRef, useState } from "react"
+import React, { useCallback, useRef, useState } from "react"
 import {
   useActionFlowPause,
   useActionFlowTokenAmount,
   useAppDispatch,
+  useCancelPromise,
   useInvalidateQueries,
   useModal,
   useTimeout,
@@ -15,21 +16,14 @@ import { useInitializeWithdraw } from "#/acre-react/hooks"
 import { ONE_SEC_IN_MILLISECONDS, queryKeysFactory } from "#/constants"
 import { activityInitialized } from "#/store/wallet"
 import { useMutation } from "@tanstack/react-query"
+import { PostHogEvent } from "#/posthog/events"
+import { usePostHogCapture } from "#/hooks/posthog/usePostHogCapture"
 import BuildTransactionModal from "./BuildTransactionModal"
 import WalletInteractionModal from "../WalletInteractionModal"
 
 const { userKeys } = queryKeysFactory
 
 type WithdrawalStatus = "building-data" | "built-data" | "signature"
-
-const sessionIdToPromise: Record<
-  number,
-  {
-    promise: Promise<void>
-    cancel: (reason: Error) => void
-    shouldOpenErrorModal: boolean
-  }
-> = {}
 
 export default function SignMessageModal() {
   const [status, setWaitingStatus] = useState<WithdrawalStatus>("building-data")
@@ -44,23 +38,15 @@ export default function SignMessageModal() {
     queryKey: userKeys.position(),
   })
   const sessionId = useRef(Math.random())
+  const { cancel, resolve, sessionIdToPromise } = useCancelPromise(
+    sessionId.current,
+    "Withdrawal cancelled",
+  )
   const { transactionFee } = useTransactionDetails(
     amount,
     ACTION_FLOW_TYPES.UNSTAKE,
   )
-
-  useEffect(() => {
-    let cancel = (_: Error) => {}
-    const promise: Promise<void> = new Promise((_, reject) => {
-      cancel = reject
-    })
-
-    sessionIdToPromise[sessionId.current] = {
-      cancel,
-      promise,
-      shouldOpenErrorModal: true,
-    }
-  }, [])
+  const { handleCapture, handleCaptureWithCause } = usePostHogCapture()
 
   const dataBuiltStepCallback = useCallback(() => {
     setWaitingStatus("built-data")
@@ -69,16 +55,14 @@ export default function SignMessageModal() {
 
   const onSignMessageCallback = useCallback(async () => {
     setWaitingStatus("signature")
-    return Promise.race([
-      sessionIdToPromise[sessionId.current].promise,
-      Promise.resolve(),
-    ])
-  }, [])
+    return resolve()
+  }, [resolve])
 
   const onSignMessageSuccess = useCallback(() => {
     handleBitcoinPositionInvalidation()
     dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED))
-  }, [dispatch, handleBitcoinPositionInvalidation])
+    handleCapture(PostHogEvent.WithdrawalSuccess)
+  }, [dispatch, handleBitcoinPositionInvalidation, handleCapture])
 
   const onSignMessageError = useCallback(
     (error: unknown) => {
@@ -97,8 +81,15 @@ export default function SignMessageModal() {
       } else {
         onSignMessageError(error)
       }
+
+      handleCaptureWithCause(error, PostHogEvent.WithdrawalFailure)
     },
-    [onSignMessageError, handlePause],
+    [
+      sessionIdToPromise,
+      handlePause,
+      onSignMessageError,
+      handleCaptureWithCause,
+    ],
   )
 
   const { mutate: handleSignMessage } = useMutation({
@@ -151,16 +142,7 @@ export default function SignMessageModal() {
   })
 
   const onClose = () => {
-    const currentSessionId = sessionId.current
-    const sessionData = sessionIdToPromise[currentSessionId]
-    sessionIdToPromise[currentSessionId] = {
-      ...sessionData,
-      shouldOpenErrorModal: false,
-    }
-
-    sessionIdToPromise[currentSessionId].cancel(
-      new Error("Withdrawal cancelled"),
-    )
+    cancel()
     closeModal()
   }
 
