@@ -3,7 +3,7 @@ import {
   useActionFlowPause,
   useActionFlowTokenAmount,
   useAppDispatch,
-  useBitcoinPositionQuery,
+  useBitcoinPosition,
   useCancelPromise,
   useModal,
   useTimeout,
@@ -32,7 +32,7 @@ export default function SignMessageModal() {
   const { closeModal } = useModal()
   const { handlePause } = useActionFlowPause()
   const initializeWithdraw = useInitializeWithdraw()
-  const { refetch: refetchBitcoinPosition } = useBitcoinPositionQuery()
+  const { refetch: refetchBitcoinPosition } = useBitcoinPosition()
 
   const sessionId = useRef(Math.random())
   const { cancel, resolve, sessionIdToPromise } = useCancelPromise(

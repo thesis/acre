@@ -4,7 +4,7 @@ import { acreApi } from "#/utils"
 
 const { acreKeys } = queryKeysFactory
 
-export default function useAcrePointsDataQuery() {
+export default function useAcrePointsData() {
   return useQuery({
     queryKey: [...acreKeys.pointsData()],
     queryFn: async () => acreApi.getPointsData(),

@@ -20,7 +20,7 @@ import { useDispatch } from "react-redux"
 import { setAddress } from "#/store/wallet"
 import useResetWalletState from "./useResetWalletState"
 import useLastUsedBtcAddress from "./useLastUsedBtcAddress"
-import useBitcoinBalanceQuery from "./tanstack-query/useBitcoinBalanceQuery"
+import useBitcoinBalance from "./useBitcoinBalance"
 import { useWalletAddress } from "./store"
 
 const { typeConversionToConnector, typeConversionToOrangeKitConnector } =
@@ -51,7 +51,7 @@ export function useWallet(): UseWalletReturn {
   const { setAddressInLocalStorage, removeAddressFromLocalStorage } =
     useLastUsedBtcAddress()
 
-  const { data: balance } = useBitcoinBalanceQuery()
+  const { data: balance } = useBitcoinBalance()
 
   const chainId = useChainId()
   const config = useConfig()

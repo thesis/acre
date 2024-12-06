@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query"
 import { REFETCH_INTERVAL_IN_MILLISECONDS, queryKeysFactory } from "#/constants"
-import { useWalletAddress } from "../store"
-import { useBitcoinProvider } from "../orangeKit/useBitcoinProvider"
+import useWalletAddress from "./store/useWalletAddress"
+import { useBitcoinProvider } from "./orangeKit/useBitcoinProvider"
 
 const { userKeys } = queryKeysFactory
 
-export default function useBitcoinBalanceQuery() {
+export default function useBitcoinBalance() {
   const address = useWalletAddress()
   const provider = useBitcoinProvider()
 

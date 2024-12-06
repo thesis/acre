@@ -3,7 +3,7 @@ import {
   useActionFlowPause,
   useActionFlowTokenAmount,
   useAppDispatch,
-  useBitcoinBalanceQuery,
+  useBitcoinBalance,
   useCancelPromise,
   useDepositBTCTransaction,
   useStakeFlowContext,
@@ -25,7 +25,7 @@ export default function DepositBTCModal() {
   const verifyDepositAddress = useVerifyDepositAddress()
   const dispatch = useAppDispatch()
   const { handlePause } = useActionFlowPause()
-  const { refetch: refetchBitcoinBalance } = useBitcoinBalanceQuery()
+  const { refetch: refetchBitcoinBalance } = useBitcoinBalance()
   const { handleCapture, handleCaptureWithCause } = usePostHogCapture()
 
   const sessionId = useRef(Math.random())

@@ -1,6 +1,6 @@
-import { useActivitiesQuery } from "./tanstack-query"
+import useActivities from "./useActivities"
 
 export default function useActivitiesCount() {
-  const { data } = useActivitiesQuery()
+  const { data } = useActivities()
   return data ? data.length : 0
 }

@@ -4,11 +4,11 @@ import { Activity } from "#/types"
 import { DepositStatus } from "@acre-btc/sdk"
 import { useAcreContext } from "#/acre-react/hooks"
 import { sortActivitiesByTimestamp } from "#/utils"
-import { useWallet } from "../useWallet"
+import { useWallet } from "./useWallet"
 
 const { userKeys } = queryKeysFactory
 
-export default function useActivitiesQuery() {
+export default function useActivities() {
   const { address } = useWallet()
   const { acre, isConnected } = useAcreContext()
 

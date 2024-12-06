@@ -1,11 +1,11 @@
 import { useAcreContext } from "#/acre-react/hooks"
 import { useQuery } from "@tanstack/react-query"
 import { REFETCH_INTERVAL_IN_MILLISECONDS, queryKeysFactory } from "#/constants"
-import { useWallet } from "../useWallet"
+import { useWallet } from "./useWallet"
 
 const { userKeys } = queryKeysFactory
 
-export default function useBitcoinPositionQuery() {
+export default function useBitcoinPosition() {
   const { address } = useWallet()
   const { acre, isConnected } = useAcreContext()
 

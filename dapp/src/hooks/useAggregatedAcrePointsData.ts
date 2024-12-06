@@ -4,13 +4,11 @@ import { MODAL_TYPES } from "#/types"
 import { PostHogEvent } from "#/posthog/events"
 import { useWallet } from "./useWallet"
 import { useModal } from "./useModal"
-import {
-  useAcrePointsDataQuery,
-  useUserPointsDataQuery,
-} from "./tanstack-query"
 import { usePostHogCapture } from "./posthog/usePostHogCapture"
+import useUserPointsData from "./useUserPointsData"
+import useAcrePointsData from "./useAcrePointsData"
 
-type UseAcrePointsReturnType = {
+type UseAggregatedAcrePointsDataReturnType = {
   totalBalance: number
   claimableBalance: number
   nextDropTimestamp?: number
@@ -21,13 +19,13 @@ type UseAcrePointsReturnType = {
   totalPoolBalance: number
 }
 
-export default function useAcrePoints(): UseAcrePointsReturnType {
+export default function useAggregatedAcrePointsData(): UseAggregatedAcrePointsDataReturnType {
   const { ethAddress = "" } = useWallet()
   const { openModal } = useModal()
   const { handleCapture, handleCaptureWithCause } = usePostHogCapture()
 
-  const userPointsDataQuery = useUserPointsDataQuery()
-  const pointsDataQuery = useAcrePointsDataQuery()
+  const userPointsDataQuery = useUserPointsData()
+  const pointsDataQuery = useAcrePointsData()
 
   const { mutate: claimPoints } = useMutation({
     mutationFn: async () => acreApi.claimPoints(ethAddress),

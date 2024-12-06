@@ -3,7 +3,7 @@ import { Box, ModalBody, ModalCloseButton, ModalHeader } from "@chakra-ui/react"
 import {
   useActionFlowStatus,
   useAppDispatch,
-  useBitcoinPositionQuery,
+  useBitcoinPosition,
   useMinWithdrawAmount,
   useStakeFlowContext,
 } from "#/hooks"
@@ -40,7 +40,7 @@ function ActionFormModal({ type }: { type: ActionFlowType }) {
   const { initStake } = useStakeFlowContext()
   const dispatch = useAppDispatch()
   const minWithdrawAmount = useMinWithdrawAmount()
-  const { data } = useBitcoinPositionQuery()
+  const { data } = useBitcoinPosition()
   const depositedAmount = data?.estimatedBitcoinBalance ?? 0n
   const status = useActionFlowStatus()
 

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react"
 import { StakeFlowProvider } from "#/contexts"
 import {
-  useActivitiesQuery,
+  useActivities,
   useAppDispatch,
   useIsSignedMessage,
   useTransactionModal,
@@ -18,7 +18,7 @@ type TransactionModalProps = { type: ActionFlowType } & BaseModalProps
 
 function TransactionModalBase({ type, closeModal }: TransactionModalProps) {
   const dispatch = useAppDispatch()
-  const { refetch: refetchActivities } = useActivitiesQuery()
+  const { refetch: refetchActivities } = useActivities()
 
   useEffect(() => {
     dispatch(setType(type))

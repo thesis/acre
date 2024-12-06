@@ -5,7 +5,7 @@ import { FormSubmitButton } from "#/components/shared/Form"
 import { ACTION_FLOW_TYPES, BaseFormProps, PROCESS_STATUSES } from "#/types"
 import {
   useActionFlowStatus,
-  useBitcoinPositionQuery,
+  useBitcoinPosition,
   useMinWithdrawAmount,
 } from "#/hooks"
 import { fixedPointNumberToString, getCurrencyByType } from "#/utils"
@@ -15,7 +15,7 @@ import ActionDurationEstimation from "../../ActionDurationEstimation"
 function UnstakeFormModal({
   onSubmitForm,
 }: BaseFormProps<TokenAmountFormValues>) {
-  const { data } = useBitcoinPositionQuery()
+  const { data } = useBitcoinPosition()
   const balance = data?.estimatedBitcoinBalance ?? 0n
   const minTokenAmount = useMinWithdrawAmount()
   const status = useActionFlowStatus()

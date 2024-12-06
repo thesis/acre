@@ -1,28 +1,13 @@
-import { useStatisticsQuery } from "./tanstack-query"
+import { useQuery } from "@tanstack/react-query"
+import { REFETCH_INTERVAL_IN_MILLISECONDS, queryKeysFactory } from "#/constants"
+import { acreApi } from "#/utils"
 
-const useStatistics = () => {
-  const { data } = useStatisticsQuery()
+const { acreKeys } = queryKeysFactory
 
-  const bitcoinTvl = data?.btc ?? 0
-  const usdTvl = data?.usd ?? 0
-  const tvlCap = data?.cap ?? 0
-
-  const isCapExceeded = bitcoinTvl > tvlCap
-
-  const progress = isCapExceeded ? 100 : Math.floor((bitcoinTvl / tvlCap) * 100)
-
-  const remaining = isCapExceeded ? 0 : tvlCap - bitcoinTvl
-
-  return {
-    tvl: {
-      progress,
-      value: bitcoinTvl,
-      usdValue: usdTvl,
-      isCapExceeded,
-      remaining,
-      cap: tvlCap,
-    },
-  }
+export default function useStatistics() {
+  return useQuery({
+    queryKey: [...acreKeys.statistics()],
+    queryFn: acreApi.getStatistics,
+    refetchInterval: REFETCH_INTERVAL_IN_MILLISECONDS,
+  })
 }
-
-export default useStatistics
