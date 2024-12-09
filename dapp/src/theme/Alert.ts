@@ -15,6 +15,11 @@ const baseStyle = multiStyleConfig.definePartsStyle({
     p: 4,
     rounded: "xl",
   },
+  title: {
+    fontWeight: "semibold",
+    mr: 0,
+  },
+
   description: {
     fontWeight: "medium",
     textAlign: "start",

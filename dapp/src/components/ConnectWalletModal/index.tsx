@@ -30,7 +30,7 @@ export function ConnectWalletModalBase({
   }))
 
   const [selectedConnectorId, setSelectedConnectorId] = useState<string>()
-  const { type, status, resetConnectionAlert } = useWalletConnectionAlert()
+  const { type, resetConnectionAlert } = useWalletConnectionAlert()
   const isSignedMessage = useIsSignedMessage()
 
   const handleButtonOnClick = (connector: OrangeKitConnector) => {
@@ -59,7 +59,7 @@ export function ConnectWalletModalBase({
       <ModalHeader>{`Select your ${isEmbed ? "account" : "wallet"}`}</ModalHeader>
 
       <ModalBody gap={0}>
-        <ConnectWalletAlert type={type} status={status} />
+        <ConnectWalletAlert type={type} />
 
         {enabledConnectors.map((connector) => (
           <ConnectWalletButton
