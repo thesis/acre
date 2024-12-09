@@ -20,7 +20,7 @@ import EstimatedDuration from "./EstimatedDuration"
 const BLOCK_EXPLORER_CELL_MIN_WIDTH = 16
 
 export default function TransactionTable() {
-  const activities = useActivities()
+  const { activities } = useActivities()
   const isMobileMode = useMobileMode()
 
   return (
