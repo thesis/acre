@@ -15,7 +15,11 @@ export const selectActivities = createSelector(
 
 export const selectHasPendingActivities = createSelector(
   (state: RootState) => state.wallet.activities,
-  (activities) => activities.some((activity) => activity.status === "pending"),
+  (activities) =>
+    activities.some(
+      (activity) =>
+        activity.status === "pending" && activity.type === "deposit",
+    ),
 )
 
 export const selectAllActivitiesCount = createSelector(
