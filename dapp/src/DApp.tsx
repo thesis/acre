@@ -9,8 +9,7 @@ import { AcreSdkProvider } from "./acre-react/contexts"
 import GlobalStyles from "./components/GlobalStyles"
 import {
   DocsDrawerContextProvider,
-  SidebarContextProvider,
-  WalletConnectionErrorContextProvider,
+  WalletConnectionAlertContextProvider,
 } from "./contexts"
 import { useInitApp } from "./hooks"
 import { router } from "./router"
@@ -19,6 +18,7 @@ import getWagmiConfig from "./wagmiConfig"
 import queryClient from "./queryClient"
 import { delay, logPromiseFailure } from "./utils"
 import { AcreLogo } from "./assets/icons"
+import PostHogProvider from "./posthog/PostHogProvider"
 
 function SplashPage() {
   return (
@@ -66,13 +66,13 @@ function DAppProviders() {
         <QueryClientProvider client={queryClient}>
           <AcreSdkProvider>
             <DocsDrawerContextProvider>
-              <SidebarContextProvider>
-                <WalletConnectionErrorContextProvider>
-                  <ReduxProvider store={store}>
+              <WalletConnectionAlertContextProvider>
+                <ReduxProvider store={store}>
+                  <PostHogProvider>
                     <DApp />
-                  </ReduxProvider>
-                </WalletConnectionErrorContextProvider>
-              </SidebarContextProvider>
+                  </PostHogProvider>
+                </ReduxProvider>
+              </WalletConnectionAlertContextProvider>
             </DocsDrawerContextProvider>
           </AcreSdkProvider>
         </QueryClientProvider>
