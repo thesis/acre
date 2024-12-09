@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Box, Tooltip as ChakraTooltip, TooltipProps } from "@chakra-ui/react"
+import { Tooltip as ChakraTooltip, TooltipProps, Flex } from "@chakra-ui/react"
 
 export default function Tooltip(props: TooltipProps) {
   const { children, ...restProps } = props
@@ -7,13 +7,13 @@ export default function Tooltip(props: TooltipProps) {
 
   return (
     <ChakraTooltip isOpen={isOpen} {...restProps}>
-      <Box
+      <Flex
         onMouseEnter={() => setIsOpen(true)}
         onMouseLeave={() => setIsOpen(false)}
         onClick={() => setIsOpen(true)}
       >
         {children}
-      </Box>
+      </Flex>
     </ChakraTooltip>
   )
 }

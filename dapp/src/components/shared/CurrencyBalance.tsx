@@ -12,7 +12,7 @@ import {
   numberToLocaleString,
 } from "#/utils"
 import { CurrencyType, AmountType } from "#/types"
-import Tooltip from "../Tooltip"
+import Tooltip from "./Tooltip"
 
 export type CurrencyBalanceProps = {
   currency: CurrencyType

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { getEstimatedDuration } from "../activities"
+import { getEstimatedDuration } from "#/utils/activities"
 
 describe("Utils functions for activities", () => {
   describe("getEstimatedDuration", () => {

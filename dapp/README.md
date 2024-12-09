@@ -1,10 +1,10 @@
 # Acre dApp
 
-The application is integrate with OrangeKit and allows people to earn yield on their Bitcoin via yield farming on Ethereum.
+The application is integrated with OrangeKit and allows people to earn yield on their Bitcoin via yield farming on Ethereum.
 
 This project was bootstrapped with [Create Vite](https://github.com/vitejs/vite/tree/main/packages/create-vite).
 
-To access the dApp in Ledger Live import manifest as described in the
+To access the dApp in Ledger Live import the manifest as described in the
 [Ledger Live Setup](#ledger-live-setup) section.
 
 ### Development
@@ -29,7 +29,7 @@ Install dependencies and start the dApp:
 
 ### Environmental variables
 
-To make sure dApp is running correctly, include the following variables in `.env` file:
+To make sure dApp is running correctly, include the following variables in the `.env` file:
 
 ```bash
     VITE_TBTC_API_ENDPOINT=

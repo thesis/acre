@@ -7,6 +7,7 @@ import {
   useEnhancedStatistics,
   useWallet,
   useMobileMode,
+  useActivities,
 } from "#/hooks"
 import { ACTION_FLOW_TYPES } from "#/types"
 import {
@@ -21,6 +22,8 @@ import ArrivingSoonTooltip from "#/components/ArrivingSoonTooltip"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import { featureFlags } from "#/constants"
 import { TextMd } from "#/components/shared/Typography"
+import { IconClockHour5Filled } from "@tabler/icons-react"
+import TooltipIcon from "#/components/shared/TooltipIcon"
 import AcreTVLMessage from "./AcreTVLMessage"
 
 const isWithdrawalFlowEnabled = featureFlags.WITHDRAWALS_ENABLED
@@ -51,12 +54,21 @@ export default function PositionDetails() {
   const isDisabledForMobileMode =
     isMobileMode && !featureFlags.MOBILE_MODE_ENABLED
 
+  const { hasPendingActivities } = useActivities()
+
   return (
     <Flex w="100%" flexDirection="column" gap={5}>
       <VStack alignItems="start" spacing={0}>
         {/* TODO: Component should be moved to `CardHeader` */}
-        <TextMd>
-          Your Acre balance
+        <HStack>
+          <TextMd>Your Acre balance</TextMd>
+          {hasPendingActivities && (
+            <TooltipIcon
+              icon={IconClockHour5Filled}
+              label="Your balance will update once the pending deposit is finalized."
+              placement="right"
+            />
+          )}
           {/* TODO: Uncomment when position will be implemented */}
           {/* {positionPercentage && (
             <Tag
@@ -73,7 +85,7 @@ export default function PositionDetails() {
               Top {positionPercentage}%
             </Tag>
           )} */}
-        </TextMd>
+        </HStack>
         <UserDataSkeleton>
           <VStack alignItems="start" spacing={0}>
             <CurrencyBalanceWithConversion
