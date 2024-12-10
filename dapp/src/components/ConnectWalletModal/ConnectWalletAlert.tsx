@@ -1,5 +1,5 @@
 import React from "react"
-import { Box, Link, VStack } from "@chakra-ui/react"
+import { AlertStatus, Box, Link, VStack } from "@chakra-ui/react"
 import { AnimatePresence, Variants, motion } from "framer-motion"
 import { EXTERNAL_HREF } from "#/constants"
 import {
@@ -17,6 +17,16 @@ export enum ConnectionAlert {
   InvalidSIWWSignature = "INVALID_SIWW_SIGNATURE",
   Default = "DEFAULT",
 }
+
+type ConnectionAlerts = Record<
+  ConnectionAlert,
+  {
+    title: string
+    description?: React.ReactNode
+    status?: AlertStatus
+    colorScheme?: string
+  }
+>
 
 function ContactSupport() {
   return (
@@ -36,10 +46,11 @@ function ContactSupport() {
   )
 }
 
-const CONNECTION_ALERTS = {
+const CONNECTION_ALERTS: ConnectionAlerts = {
   [ConnectionAlert.Rejected]: {
-    title: "Wallet connection rejected.",
-    description: "If you encountered an error, please try again.",
+    title: "Please connect your wallet to start using Acre",
+    status: "info",
+    colorScheme: "blue",
   },
   [ConnectionAlert.NotSupported]: {
     title: "Not supported.",
@@ -66,16 +77,23 @@ const collapseVariants: Variants = {
   expanded: { height: "auto" },
 }
 
-type ConnectWalletAlertProps = AlertProps & { type?: ConnectionAlert }
+type ConnectWalletAlertProps = Omit<AlertProps, "status"> & {
+  type?: ConnectionAlert
+}
 
 export default function ConnectWalletAlert(props: ConnectWalletAlertProps) {
-  const { type, status, ...restProps } = props
+  const { type, ...restProps } = props
 
-  const data = type ? CONNECTION_ALERTS[type] : undefined
+  const {
+    status = "error",
+    title,
+    description,
+    ...restData
+  } = type ? CONNECTION_ALERTS[type] : {}
 
   return (
     <AnimatePresence initial={false}>
-      {data && (
+      {type && (
         <Box
           as={motion.div}
           variants={collapseVariants}
@@ -85,11 +103,13 @@ export default function ConnectWalletAlert(props: ConnectWalletAlertProps) {
           overflow="hidden"
           w="full"
         >
-          <Alert status={status} mb={6} {...restProps}>
+          <Alert status={status} mb={6} {...restProps} {...restData}>
             <AlertIcon />
             <VStack w="full" align="start" spacing={0}>
-              <AlertTitle textAlign="start">{data.title}</AlertTitle>
-              <AlertDescription>{data.description}</AlertDescription>
+              <AlertTitle textAlign="start">{title}</AlertTitle>
+              {description && (
+                <AlertDescription>{description}</AlertDescription>
+              )}
             </VStack>
           </Alert>
         </Box>
