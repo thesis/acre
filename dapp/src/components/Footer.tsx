@@ -10,8 +10,9 @@ import {
   Icon,
 } from "@chakra-ui/react"
 import { EXTERNAL_HREF } from "#/constants"
-import { AcreSignIcon, ArrowUpRight } from "#/assets/icons"
+import { AcreSignIcon } from "#/assets/icons"
 import { useMobileMode } from "#/hooks"
+import { IconArrowUpRight } from "@tabler/icons-react"
 
 type FooterListItem = Pick<LinkProps, "href" | "children">
 
@@ -64,7 +65,7 @@ const getItemsList = (
           as={Link}
           __css={styles.link}
           iconSpacing={0}
-          rightIcon={<Icon as={ArrowUpRight} />}
+          rightIcon={<Icon as={IconArrowUpRight} />}
           {...link}
           isExternal
         />

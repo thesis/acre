@@ -1,16 +1,16 @@
 import React from "react"
 import { Button, ButtonProps, Icon, Link, LinkProps } from "@chakra-ui/react"
-import { ArrowUpRight } from "#/assets/icons"
+import { IconArrowUpRight, TablerIcon } from "@tabler/icons-react"
 
 type ButtonLinkProps = ButtonProps &
   LinkProps & {
-    icon?: typeof Icon
+    icon?: TablerIcon
     iconColor?: string
   }
 
 export default function ButtonLink({
   children,
-  icon = ArrowUpRight,
+  icon = IconArrowUpRight,
   iconColor = "brand.400",
   variant = "outline",
   ...props
