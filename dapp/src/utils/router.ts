@@ -1,7 +1,4 @@
-import { To, redirect } from "react-router-dom"
-import { isString } from "./type-check"
-
-const getURLPath = (to: To) => (isString(to) ? to : to.pathname)
+import { redirect } from "react-router-dom"
 
 const getURLParamFromHref = (href: string, paramName: string) => {
   const { searchParams } = new URL(href)
@@ -19,7 +16,6 @@ const redirectWithSearchParams = (url: string, to: string) => {
 }
 
 export default {
-  getURLPath,
   getURLParam,
   getURLParamFromHref,
   redirectWithSearchParams,

@@ -10,14 +10,7 @@ import {
   useActivities,
 } from "#/hooks"
 import { ACTION_FLOW_TYPES } from "#/types"
-import {
-  Button,
-  ButtonProps,
-  Flex,
-  HStack,
-  // Tag,
-  VStack,
-} from "@chakra-ui/react"
+import { Button, ButtonProps, Flex, HStack, VStack } from "@chakra-ui/react"
 import ArrivingSoonTooltip from "#/components/ArrivingSoonTooltip"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import { featureFlags } from "#/constants"
@@ -69,22 +62,6 @@ export default function PositionDetails() {
               placement="right"
             />
           )}
-          {/* TODO: Uncomment when position will be implemented */}
-          {/* {positionPercentage && (
-            <Tag
-              px={3}
-              py={1}
-              ml={2}
-              borderWidth={0}
-              color="gold.100"
-              bg="gold.700"
-              fontWeight="bold"
-              lineHeight={5}
-              verticalAlign="baseline"
-            >
-              Top {positionPercentage}%
-            </Tag>
-          )} */}
         </HStack>
         <UserDataSkeleton>
           <VStack alignItems="start" spacing={0}>
