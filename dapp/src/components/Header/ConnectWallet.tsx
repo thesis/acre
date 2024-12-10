@@ -97,7 +97,7 @@ export default function ConnectWallet() {
       id: "Disconnect",
       icon: IconLogout,
       label: "Disconnect",
-      onClick: onDisconnect,
+      onClick: handleDisconnectWallet,
       closeOnSelect: true,
       isSupported: true,
     },
@@ -191,17 +191,6 @@ export default function ConnectWallet() {
                 </Tooltip>
               ),
           )}
-
-          <Tooltip size="xs" label="Disconnect">
-            <IconButton
-              variant="ghost"
-              aria-label="Disconnect"
-              icon={<Icon as={IconLogout} boxSize={5} />}
-              px={2}
-              boxSize={5}
-              onClick={handleDisconnectWallet}
-            />
-          </Tooltip>
         </HStack>
       </Flex>
     </HStack>
