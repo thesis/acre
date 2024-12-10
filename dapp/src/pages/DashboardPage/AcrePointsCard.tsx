@@ -15,7 +15,7 @@ import { logPromiseFailure, numberToLocaleString } from "#/utils"
 import { useAcrePoints, useWallet } from "#/hooks"
 import Spinner from "#/components/shared/Spinner"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
-import InfoTooltip from "#/components/shared/InfoTooltip"
+import TooltipIcon from "#/components/shared/TooltipIcon"
 import useDebounce from "#/hooks/useDebounce"
 import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import acrePointsIllustrationSrc from "#/assets/images/acre-points-illustration.png"
@@ -61,7 +61,7 @@ export default function AcrePointsCard(props: CardProps) {
           {isConnected ? "Your" : "Total"} Acre points
         </TextMd>
 
-        <InfoTooltip
+        <TooltipIcon
           label={
             isConnected
               ? "Your current balance of Acre points collected so far. New points drop daily and are ready to be claimed. Unclaimed points roll over to the next day."
@@ -94,7 +94,7 @@ export default function AcrePointsCard(props: CardProps) {
                   <HStack spacing={0}>
                     <Spinner mr={3} size="sm" />
                     <TextMd>Your drop is being prepared.</TextMd>
-                    <InfoTooltip
+                    <TooltipIcon
                       label={`
                         We need some time to calculate your points. It may take up to 30 minutes. 
                         ${claimableBalance ? "You can still claim points from previous drops." : ""}

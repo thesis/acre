@@ -18,7 +18,7 @@ pnpm install
 
 ### Testing
 
-To run the test execute:
+To run the tests execute:
 
 ```
 $ pnpm test
