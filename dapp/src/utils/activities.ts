@@ -9,6 +9,11 @@ export const isActivityCompleted = (activity: Activity): boolean =>
 export const getActivityTimestamp = (activity: Activity): number =>
   activity?.finalizedAt ?? activity.initializedAt
 
+export const hasPendingDeposits = (activities: Activity[]): boolean =>
+  activities.some(
+    (activity) => activity.status === "pending" && activity.type === "deposit",
+  )
+
 export const sortActivitiesByTimestamp = (activities: Activity[]): Activity[] =>
   [...activities].sort(
     (activity1, activity2) =>

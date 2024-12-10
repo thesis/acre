@@ -1,15 +1,14 @@
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation } from "@tanstack/react-query"
 import { acreApi } from "#/utils"
-import { queryKeysFactory, REFETCH_INTERVAL_IN_MILLISECONDS } from "#/constants"
 import { MODAL_TYPES } from "#/types"
 import { PostHogEvent } from "#/posthog/events"
 import { useWallet } from "./useWallet"
 import { useModal } from "./useModal"
 import { usePostHogCapture } from "./posthog/usePostHogCapture"
+import useUserPointsData from "./useUserPointsData"
+import useAcrePointsData from "./useAcrePointsData"
 
-const { userKeys, acreKeys } = queryKeysFactory
-
-type UseAcrePointsReturnType = {
+type UseAggregatedAcrePointsDataReturnType = {
   totalBalance: number
   claimableBalance: number
   nextDropTimestamp?: number
@@ -20,22 +19,13 @@ type UseAcrePointsReturnType = {
   totalPoolBalance: number
 }
 
-export default function useAcrePoints(): UseAcrePointsReturnType {
+export default function useAggregatedAcrePointsData(): UseAggregatedAcrePointsDataReturnType {
   const { ethAddress = "" } = useWallet()
   const { openModal } = useModal()
   const { handleCapture, handleCaptureWithCause } = usePostHogCapture()
 
-  const userPointsDataQuery = useQuery({
-    queryKey: [...userKeys.pointsData(), ethAddress],
-    enabled: !!ethAddress,
-    queryFn: async () => acreApi.getPointsDataByUser(ethAddress),
-  })
-
-  const pointsDataQuery = useQuery({
-    queryKey: [...acreKeys.pointsData()],
-    queryFn: async () => acreApi.getPointsData(),
-    refetchInterval: REFETCH_INTERVAL_IN_MILLISECONDS,
-  })
+  const userPointsDataQuery = useUserPointsData()
+  const pointsDataQuery = useAcrePointsData()
 
   const { mutate: claimPoints } = useMutation({
     mutationFn: async () => acreApi.claimPoints(ethAddress),

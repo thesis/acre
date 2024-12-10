@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react"
 import Countdown from "#/components/shared/Countdown"
 import { logPromiseFailure, numberToLocaleString } from "#/utils"
-import { useAcrePoints, useWallet } from "#/hooks"
+import { useAggregatedAcrePointsData, useWallet } from "#/hooks"
 import Spinner from "#/components/shared/Spinner"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import TooltipIcon from "#/components/shared/TooltipIcon"
@@ -37,7 +37,7 @@ export default function AcrePointsCard(props: CardProps) {
     updatePointsData,
     isCalculationInProgress,
     totalPoolBalance,
-  } = useAcrePoints()
+  } = useAggregatedAcrePointsData()
   const { isConnected } = useWallet()
 
   const debouncedClaimPoints = useDebounce(claimPoints, ONE_SEC_IN_MILLISECONDS)
