@@ -24,6 +24,7 @@ type ConnectionAlerts = Record<
     title: string
     description?: React.ReactNode
     status?: AlertStatus
+    colorScheme?: string
   }
 >
 
@@ -49,6 +50,7 @@ const CONNECTION_ALERTS: ConnectionAlerts = {
   [ConnectionAlert.Rejected]: {
     title: "Please connect your wallet to start using Acre",
     status: "info",
+    colorScheme: "blue",
   },
   [ConnectionAlert.NotSupported]: {
     title: "Not supported.",
@@ -82,11 +84,16 @@ type ConnectWalletAlertProps = Omit<AlertProps, "status"> & {
 export default function ConnectWalletAlert(props: ConnectWalletAlertProps) {
   const { type, ...restProps } = props
 
-  const data = type ? CONNECTION_ALERTS[type] : undefined
+  const {
+    status = "error",
+    title,
+    description,
+    ...restData
+  } = type ? CONNECTION_ALERTS[type] : {}
 
   return (
     <AnimatePresence initial={false}>
-      {data && (
+      {type && (
         <Box
           as={motion.div}
           variants={collapseVariants}
@@ -96,12 +103,12 @@ export default function ConnectWalletAlert(props: ConnectWalletAlertProps) {
           overflow="hidden"
           w="full"
         >
-          <Alert status={data.status || "error"} mb={6} {...restProps}>
+          <Alert status={status} mb={6} {...restProps} {...restData}>
             <AlertIcon />
             <VStack w="full" align="start" spacing={0}>
-              <AlertTitle textAlign="start">{data.title}</AlertTitle>
-              {data.description && (
-                <AlertDescription>{data.description}</AlertDescription>
+              <AlertTitle textAlign="start">{title}</AlertTitle>
+              {description && (
+                <AlertDescription>{description}</AlertDescription>
               )}
             </VStack>
           </Alert>
