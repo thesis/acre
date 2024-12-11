@@ -4,7 +4,7 @@ import {
   useActivitiesCount,
   useBitcoinPosition,
   useTransactionModal,
-  useEnhancedStatistics,
+  useStatistics,
   useWallet,
   useMobileMode,
   useActivities,
