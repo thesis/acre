@@ -1,7 +1,7 @@
 import React from "react"
 import { Box, HStack, StackProps, VStack } from "@chakra-ui/react"
 import { useActivitiesCount, useStatistics, useWallet } from "#/hooks"
-import { BoltFilled } from "#/assets/icons"
+import { IconBolt } from "@tabler/icons-react"
 import { TextMd } from "#/components/shared/Typography"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 
@@ -20,7 +20,9 @@ export default function AcreTVLMessage(props: AcreTVLMessageProps) {
 
   return (
     <HStack align="start" spacing={1} color="grey.500" {...props}>
-      <BoltFilled color="orange.400" my={1} />
+      <Box color="orange.400" margin="auto">
+        <IconBolt fill="currentColor" size={16} />
+      </Box>
       {tvl.isCapExceeded ? (
         <VStack align="start" spacing={0}>
           <TextMd fontWeight="semibold" color="grey.700">
