@@ -1,6 +1,9 @@
-import { selectActivities } from "#/store/wallet"
+import { selectActivities, selectHasPendingActivities } from "#/store/wallet"
 import { useAppSelector } from "./useAppSelector"
 
 export default function useActivities() {
-  return useAppSelector(selectActivities)
+  const activities = useAppSelector(selectActivities)
+  const hasPendingActivities = useAppSelector(selectHasPendingActivities)
+
+  return { activities, hasPendingActivities }
 }
