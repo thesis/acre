@@ -18,15 +18,14 @@ export enum ConnectionAlert {
   Default = "DEFAULT",
 }
 
-type ConnectionAlerts = Record<
-  ConnectionAlert,
-  {
-    title: string
-    description?: React.ReactNode
-    status?: AlertStatus
-    colorScheme?: string
-  }
->
+type ConnectionAlertData = {
+  title: string
+  description?: React.ReactNode
+  status?: AlertStatus
+  colorScheme?: string
+}
+
+type ConnectionAlerts = Record<ConnectionAlert, ConnectionAlertData>
 
 function ContactSupport() {
   return (
@@ -89,7 +88,7 @@ export default function ConnectWalletAlert(props: ConnectWalletAlertProps) {
     title,
     description,
     ...restData
-  } = type ? CONNECTION_ALERTS[type] : {}
+  } = (type ? CONNECTION_ALERTS[type] : {}) as ConnectionAlertData
 
   return (
     <AnimatePresence initial={false}>
