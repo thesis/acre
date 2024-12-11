@@ -1,6 +1,6 @@
 import React from "react"
 import { Box, HStack, StackProps, VStack } from "@chakra-ui/react"
-import { useActivitiesCount, useEnhancedStatistics, useWallet } from "#/hooks"
+import { useActivitiesCount, useStatistics, useWallet } from "#/hooks"
 import { BoltFilled } from "#/assets/icons"
 import { TextMd } from "#/components/shared/Typography"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
@@ -8,7 +8,7 @@ import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 type AcreTVLMessageProps = Omit<StackProps, "children">
 
 export default function AcreTVLMessage(props: AcreTVLMessageProps) {
-  const { tvl } = useEnhancedStatistics()
+  const { tvl } = useStatistics()
   const { isConnected } = useWallet()
   const activitiesCount = useActivitiesCount()
 

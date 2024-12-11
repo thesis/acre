@@ -7,7 +7,7 @@ import {
   Grid,
   Box,
 } from "@chakra-ui/react"
-import { useEnhancedStatistics } from "#/hooks"
+import { useStatistics } from "#/hooks"
 import { BitcoinIcon } from "#/assets/icons"
 import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
 import ProgressBar from "#/components/shared/ProgressBar"
@@ -19,7 +19,7 @@ const STEP_COUNT = 5
 
 export function AcreTVLProgress(props: AcreTVLProgressProps) {
   const styles = useMultiStyleConfig("AcreTVLProgress")
-  const { tvl } = useEnhancedStatistics()
+  const { tvl } = useStatistics()
 
   const steps = useMemo(
     () =>
