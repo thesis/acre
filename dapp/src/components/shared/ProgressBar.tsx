@@ -1,6 +1,6 @@
 import React from "react"
 import { Progress, ProgressProps, ProgressLabel, Icon } from "@chakra-ui/react"
-import { BoltFilled } from "#/assets/icons"
+import { IconBolt } from "@tabler/icons-react"
 
 type ProgressBarProps = ProgressProps & {
   withBoltIcon?: boolean
@@ -23,7 +23,8 @@ function ProgressBar(props: ProgressBarProps) {
           transform="auto"
           translateX="-100%"
           translateY="-50%"
-          as={BoltFilled}
+          as={IconBolt}
+          fill="currentcolor"
           mx={-1}
         />
       )}
