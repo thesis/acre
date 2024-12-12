@@ -1,13 +1,13 @@
 import React from "react"
 import { StackProps, VStack, Image } from "@chakra-ui/react"
 import { TextMd } from "#/components/shared/Typography"
-import { useAllActivitiesCount, useIsFetchedWalletData } from "#/hooks"
+import { useActivitiesCount, useIsFetchedWalletData } from "#/hooks"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import emptyStateIllustration from "#/assets/images/empty-state.svg"
 import TransactionTable from "./TransactionTable"
 
 function TransactionHistoryContent() {
-  const activitiesCount = useAllActivitiesCount()
+  const activitiesCount = useActivitiesCount()
   const isFetchedWalletData = useIsFetchedWalletData()
 
   if (!isFetchedWalletData)

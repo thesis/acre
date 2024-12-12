@@ -16,11 +16,12 @@ import {
   Status,
 } from "#/types"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { useDispatch, useSelector } from "react-redux"
-import { selectWalletAddress, setAddress } from "#/store/wallet"
-import useBitcoinBalance from "./orangeKit/useBitcoinBalance"
+import { useDispatch } from "react-redux"
+import { setAddress } from "#/store/wallet"
 import useResetWalletState from "./useResetWalletState"
 import useLastUsedBtcAddress from "./useLastUsedBtcAddress"
+import useBitcoinBalance from "./useBitcoinBalance"
+import { useWalletAddress } from "./store"
 
 const { typeConversionToConnector, typeConversionToOrangeKitConnector } =
   orangeKit
@@ -45,12 +46,12 @@ type UseWalletReturn = {
 export function useWallet(): UseWalletReturn {
   const queryClient = useQueryClient()
   const dispatch = useDispatch()
-  const btcAddress = useSelector(selectWalletAddress)
+  const btcAddress = useWalletAddress()
   const resetWalletState = useResetWalletState()
   const { setAddressInLocalStorage, removeAddressFromLocalStorage } =
     useLastUsedBtcAddress()
 
-  const { data: balance } = useBitcoinBalance(btcAddress)
+  const { data: balance } = useBitcoinBalance()
 
   const chainId = useChainId()
   const config = useConfig()
