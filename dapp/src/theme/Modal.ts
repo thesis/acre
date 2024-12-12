@@ -6,7 +6,10 @@ const baseStyleContainer = defineStyle({
 })
 
 const baseStyleDialog = defineStyle({
-  marginTop: { base: 12, sm: "var(--chakra-space-modal_shift)" },
+  marginTop: {
+    base: 12,
+    sm: "9.75rem", // 156px
+  },
   marginBottom: 8,
   boxShadow: "none",
   borderRadius: "xl",
