@@ -4,7 +4,6 @@ import { Flex, VStack } from "@chakra-ui/react"
 import { useIsEmbed, useMobileMode } from "#/hooks"
 import { DappMode } from "#/types"
 import { usePostHogPageViewCapture } from "#/hooks/posthog"
-import DocsDrawer from "./DocsDrawer"
 import Header from "./Header"
 import ModalRoot from "./ModalRoot"
 import MobileModeBanner from "./MobileModeBanner"
@@ -50,7 +49,6 @@ function Layout() {
       >
         <Outlet />
 
-        <DocsDrawer />
         <ModalRoot />
       </Flex>
 

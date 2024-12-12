@@ -14,7 +14,6 @@ import { cardTheme } from "./cardTheme"
 import { closeButtonTheme } from "./closeButtonTheme"
 import { countdownTheme } from "./countdownTheme"
 import { currencyBalanceTheme } from "./currencyBalanceTheme"
-import { drawerTheme } from "./drawerTheme"
 import { footerTheme } from "./footerTheme"
 import { formErrorTheme } from "./formErrorTheme"
 import { formLabelTheme } from "./formLabelTheme"
@@ -52,7 +51,6 @@ const defaultTheme = {
     Card: cardTheme,
     CloseButton: closeButtonTheme,
     CurrencyBalance: currencyBalanceTheme,
-    Drawer: drawerTheme,
     Form: formTheme,
     FormLabel: formLabelTheme,
     FormError: formErrorTheme,

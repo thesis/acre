@@ -1,11 +1,9 @@
 import { ConnectionAlert } from "#/components/ConnectWalletModal/ConnectWalletAlert"
-import { AlertStatus } from "@chakra-ui/react"
 import React, { createContext, useCallback, useMemo, useState } from "react"
 
 type WalletConnectionAlertContextValue = {
   type?: ConnectionAlert
-  status: AlertStatus
-  setConnectionAlert: (type: ConnectionAlert, status?: AlertStatus) => void
+  setConnectionAlert: (type: ConnectionAlert) => void
   resetConnectionAlert: () => void
 }
 
@@ -20,17 +18,14 @@ export function WalletConnectionAlertContextProvider({
   children: React.ReactNode
 }): React.ReactElement {
   const [type, setType] = useState<ConnectionAlert>()
-  const [status, setStatus] = useState<AlertStatus>("error")
 
   const resetConnectionAlert = useCallback(() => {
     setType(undefined)
-    setStatus("error")
   }, [setType])
 
   const setConnectionAlert = useCallback(
-    (connectionAlert: ConnectionAlert, alertStatus: AlertStatus = "error") => {
+    (connectionAlert: ConnectionAlert) => {
       setType(connectionAlert)
-      setStatus(alertStatus)
     },
     [setType],
   )
@@ -39,11 +34,10 @@ export function WalletConnectionAlertContextProvider({
     useMemo<WalletConnectionAlertContextValue>(
       () => ({
         type,
-        status,
         setConnectionAlert,
         resetConnectionAlert,
       }),
-      [resetConnectionAlert, setConnectionAlert, status, type],
+      [resetConnectionAlert, setConnectionAlert, type],
     )
 
   return (
