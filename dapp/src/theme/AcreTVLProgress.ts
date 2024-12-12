@@ -18,11 +18,13 @@ const containerStyles = defineStyle({
   bgGradient:
     "linear(to-r, transparent, rgba(255, 122, 0, 0.2) 10%, rgba(243, 73, 0, 0.25) 20%, transparent 30%)",
   color: "gold.200",
-  mask: 'linear-gradient(0, black, black), url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3MzkuNjI3IiBoZWlnaHQ9IjI4IiBmaWxsPSJub25lIj48cGF0aCBkPSJNNzM5LjYyNyAwYzAgNi42MjctNS4zNyAxMi0xMiAxMkgyOS4yNTRhMTUuOTk2IDE1Ljk5NiAwIDAgMC0xMS4zMTMgNC42ODZsLTYuNjI4IDYuNjI4QzguMzEzIDI2LjMxNSA0LjI0MyAyOCAwIDI4aDczOS42Mjd6IiBzdHlsZT0iZmlsbDojMDAwO2ZpbGwtb3BhY2l0eToxO3N0cm9rZTpub25lO3N0cm9rZS13aWR0aDo4O3N0cm9rZS1saW5lY2FwOnJvdW5kO3N0cm9rZS1saW5lam9pbjpyb3VuZCIvPjwvc3ZnPg==")',
+  mask: 'linear-gradient(0, black, black), url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDA4IiBoZWlnaHQ9IjI4IiB2aWV3Qm94PSIwIDAgMjY2LjcgNy40MDgiPgogICAgPHBhdGgKICAgICAgICBkPSJNMjY2LjcgMGEzLjE3NSAzLjE3NSAwIDAgMS0zLjE3NSAzLjE3NUg3OC43NDdjLTEuMTIyIDAtMi4yLjQ0Ni0yLjk5MyAxLjI0TDc0IDYuMTY5YTQuMjMzIDQuMjMzIDAgMCAxLTIuOTkzIDEuMjRIMjY2LjdaTTAgNC4yMzN2My4xNzVoMy4xNzVBMy4xNzUgMy4xNzUgMCAwIDEgMCA0LjIzMyIKICAgICAgICBzdHlsZT0iZmlsbDojMDAwO3N0cm9rZTpub25lO3N0cm9rZS13aWR0aDouMjY0NTgzO3N0cm9rZS1vcGFjaXR5OjEiIC8+Cjwvc3ZnPg==")',
   maskPosition: "100% 100%",
-  clipPath: "inset(0 1px 0 0 round 12px)",
+  clipPath: "inset(0 0.5px 0.5px 0)",
   maskComposite: "exclude",
   maskRepeat: "no-repeat",
+  maskSize: "contain",
+  rounded: "12px 12px 0 0",
 })
 const wrapperStyles = defineStyle({
   px: 5,
