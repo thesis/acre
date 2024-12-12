@@ -7,7 +7,6 @@ import {
   CardProps,
   HStack,
   Image,
-  VStack,
 } from "@chakra-ui/react"
 import { numberToLocaleString } from "#/utils"
 import { useAcrePointsData, useUserPointsData, useWallet } from "#/hooks"
@@ -15,6 +14,7 @@ import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import TooltipIcon from "#/components/shared/TooltipIcon"
 import acrePointsIllustrationSrc from "#/assets/images/acre-points-illustration.png"
 import AcrePointsLabel from "./AcrePointsLabel"
+import UserPointsLabel from "./UserPointsLabel"
 
 export default function AcrePointsCard(props: CardProps) {
   const { data: acrePointsData } = useAcrePointsData()
@@ -57,9 +57,7 @@ export default function AcrePointsCard(props: CardProps) {
         <Image src={acrePointsIllustrationSrc} mt={6} />
 
         <UserDataSkeleton>
-          <VStack px={4} py={5} spacing={0} rounded="lg" bg="gold.100">
-            <AcrePointsLabel />
-          </VStack>
+          {isConnected ? <UserPointsLabel /> : <AcrePointsLabel />}
         </UserDataSkeleton>
       </CardBody>
     </Card>
