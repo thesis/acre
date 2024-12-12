@@ -8,7 +8,6 @@ import {
   styles,
   zIndices,
 } from "./utils"
-import { drawerTheme } from "./Drawer"
 import { modalTheme } from "./Modal"
 import { cardTheme } from "./Card"
 import { tooltipTheme } from "./Tooltip"
@@ -52,7 +51,6 @@ const defaultTheme = {
     Card: cardTheme,
     CloseButton: closeButtonTheme,
     CurrencyBalance: currencyBalanceTheme,
-    Drawer: drawerTheme,
     Form: formTheme,
     FormLabel: formLabelTheme,
     FormError: formErrorTheme,
