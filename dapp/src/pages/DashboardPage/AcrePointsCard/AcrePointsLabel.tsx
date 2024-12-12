@@ -3,7 +3,12 @@ import { TextMd } from "#/components/shared/Typography"
 import { Button, HStack, VStack } from "@chakra-ui/react"
 import Countdown from "#/components/shared/Countdown"
 import { logPromiseFailure, numberToLocaleString } from "#/utils"
-import { useAggregatedAcrePointsData, useWallet } from "#/hooks"
+import {
+  useAcrePointsData,
+  useClaimPoints,
+  useUserPointsData,
+  useWallet,
+} from "#/hooks"
 import Spinner from "#/components/shared/Spinner"
 import TooltipIcon from "#/components/shared/TooltipIcon"
 import useDebounce from "#/hooks/useDebounce"
@@ -17,15 +22,16 @@ const COLOR_BUTTON_LABEL = "#FBF7EC"
 const COLOR_BUTTON_BACKGROUND = "#33A321"
 
 function NextDropTimestampLabel() {
-  const { nextDropTimestamp, updatePointsData, updateUserPointsData } =
-    useAggregatedAcrePointsData()
+  const { data: acrePointsData, refetch: acrePointsDataRefetch } =
+    useAcrePointsData()
+  const { refetch: userPointsDataRefetch } = useUserPointsData()
 
   const handleOnCountdownEnd = () => {
-    logPromiseFailure(updatePointsData())
-    logPromiseFailure(updateUserPointsData())
+    logPromiseFailure(acrePointsDataRefetch())
+    logPromiseFailure(userPointsDataRefetch())
   }
 
-  if (!nextDropTimestamp) return null
+  if (!acrePointsData?.nextDropTimestamp) return null
 
   return (
     <HStack spacing={0}>
@@ -33,7 +39,7 @@ function NextDropTimestampLabel() {
         Next drop in
       </TextMd>
       <Countdown
-        timestamp={nextDropTimestamp} // Timestamp presence already checked
+        timestamp={acrePointsData.nextDropTimestamp} // Timestamp presence already checked
         onCountdownEnd={handleOnCountdownEnd}
         size="md"
         ml={1}
@@ -44,9 +50,11 @@ function NextDropTimestampLabel() {
 }
 
 function ClaimableBalanceLabel() {
-  const { claimableBalance, claimPoints } = useAggregatedAcrePointsData()
+  const { mutate: claimPoints } = useClaimPoints()
+  const { data: userPointsData } = useUserPointsData()
   const debouncedClaimPoints = useDebounce(claimPoints, ONE_SEC_IN_MILLISECONDS)
 
+  const claimableBalance = userPointsData?.claimableBalance || 0
   const formattedClaimablePointsAmount = numberToLocaleString(claimableBalance)
 
   if (claimableBalance <= 0) return null
@@ -68,18 +76,20 @@ function ClaimableBalanceLabel() {
 }
 
 function CalculationInProgressLabel() {
-  const { claimableBalance } = useAggregatedAcrePointsData()
+  const { data } = useUserPointsData()
 
   return (
     <VStack spacing={4}>
-      {!claimableBalance && <TextMd color="grey.500">Please wait...</TextMd>}
+      {!data?.claimableBalance && (
+        <TextMd color="grey.500">Please wait...</TextMd>
+      )}
       <HStack spacing={0}>
         <Spinner mr={3} size="sm" />
         <TextMd>Your drop is being prepared.</TextMd>
         <TooltipIcon
           label={`
             We need some time to calculate your points. It may take up to 30 minutes. 
-            ${claimableBalance ? "You can still claim points from previous drops." : ""}
+            ${data?.claimableBalance ? "You can still claim points from previous drops." : ""}
           `}
           maxW={72}
         />
@@ -89,12 +99,12 @@ function CalculationInProgressLabel() {
 }
 
 export default function AcrePointsLabel() {
-  const { isCalculationInProgress } = useAggregatedAcrePointsData()
+  const { data } = useAcrePointsData()
   const { isConnected } = useWallet()
 
   if (!isConnected) return <NextDropTimestampLabel />
 
-  if (isCalculationInProgress)
+  if (data?.isCalculationInProgress)
     return (
       <>
         <CalculationInProgressLabel />

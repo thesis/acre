@@ -10,18 +10,23 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { numberToLocaleString } from "#/utils"
-import { useAggregatedAcrePointsData, useWallet } from "#/hooks"
+import { useAcrePointsData, useUserPointsData, useWallet } from "#/hooks"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import TooltipIcon from "#/components/shared/TooltipIcon"
 import acrePointsIllustrationSrc from "#/assets/images/acre-points-illustration.png"
 import AcrePointsLabel from "./AcrePointsLabel"
 
 export default function AcrePointsCard(props: CardProps) {
-  const { totalBalance, totalPoolBalance } = useAggregatedAcrePointsData()
+  const { data: acrePointsData } = useAcrePointsData()
+  const { data: userPointsData } = useUserPointsData()
   const { isConnected } = useWallet()
 
-  const formattedTotalPointsAmount = numberToLocaleString(totalBalance)
-  const formattedTotalPoolBalance = numberToLocaleString(totalPoolBalance)
+  const formattedUserTotalBalance = numberToLocaleString(
+    userPointsData?.totalBalance ?? 0,
+  )
+  const formattedTotalPoolBalance = numberToLocaleString(
+    acrePointsData?.totalPoolBalance ?? 0,
+  )
 
   return (
     <Card {...props}>
@@ -44,7 +49,7 @@ export default function AcrePointsCard(props: CardProps) {
         <UserDataSkeleton>
           <H4 fontWeight="semibold" mb={2}>
             {isConnected
-              ? formattedTotalPointsAmount
+              ? formattedUserTotalBalance
               : formattedTotalPoolBalance}
           </H4>
         </UserDataSkeleton>

@@ -45,9 +45,9 @@ const getPointsData = async () => {
   const response = await axios.get<PointsDataResponse>(url)
 
   return {
-    dropAt: response.data.dropAt,
+    nextDropTimestamp: response.data.dropAt,
     isCalculationInProgress: response.data.isCalculationInProgress,
-    totalPool: Number(response.data.totalPool),
+    totalPoolBalance: Number(response.data.totalPool),
   }
 }
 
@@ -62,8 +62,8 @@ const getPointsDataByUser = async (address: string) => {
   const response = await axios.get<PointsDataByUserResponse>(url)
 
   return {
-    claimed: Number(response.data.claimed),
-    unclaimed: Number(response.data.unclaimed),
+    totalBalance: Number(response.data.claimed),
+    claimableBalance: Number(response.data.unclaimed),
     isEligible: response.data.isEligible,
   }
 }
