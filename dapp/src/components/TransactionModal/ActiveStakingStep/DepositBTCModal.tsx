@@ -1,25 +1,23 @@
 import React, { useCallback, useRef } from "react"
-import { ONE_SEC_IN_MILLISECONDS, queryKeysFactory } from "#/constants"
 import {
   useActionFlowPause,
   useActionFlowTokenAmount,
   useAppDispatch,
+  useBitcoinBalance,
   useCancelPromise,
   useDepositBTCTransaction,
-  useInvalidateQueries,
   useStakeFlowContext,
   useVerifyDepositAddress,
 } from "#/hooks"
 import { usePostHogCapture } from "#/hooks/posthog/usePostHogCapture"
 import { PostHogEvent } from "#/posthog/events"
 import { setStatus, setTxHash } from "#/store/action-flow"
+import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
 import { PROCESS_STATUSES } from "#/types"
 import { eip1193, logPromiseFailure } from "#/utils"
 import { useTimeout } from "@chakra-ui/react"
 import { useMutation } from "@tanstack/react-query"
 import WalletInteractionModal from "../WalletInteractionModal"
-
-const { userKeys } = queryKeysFactory
 
 export default function DepositBTCModal() {
   const tokenAmount = useActionFlowTokenAmount()
@@ -27,9 +25,7 @@ export default function DepositBTCModal() {
   const verifyDepositAddress = useVerifyDepositAddress()
   const dispatch = useAppDispatch()
   const { handlePause } = useActionFlowPause()
-  const handleBitcoinBalanceInvalidation = useInvalidateQueries({
-    queryKey: userKeys.balance(),
-  })
+  const { refetch: refetchBitcoinBalance } = useBitcoinBalance()
   const { handleCapture, handleCaptureWithCause } = usePostHogCapture()
 
   const sessionId = useRef(Math.random())
@@ -39,9 +35,9 @@ export default function DepositBTCModal() {
   )
 
   const onStakeBTCSuccess = useCallback(() => {
-    handleBitcoinBalanceInvalidation()
+    logPromiseFailure(refetchBitcoinBalance())
     dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED))
-  }, [dispatch, handleBitcoinBalanceInvalidation])
+  }, [dispatch, refetchBitcoinBalance])
 
   const onError = useCallback(
     (error: unknown) => {

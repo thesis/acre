@@ -1,7 +1,7 @@
 import React from "react"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import {
-  useAllActivitiesCount,
+  useActivitiesCount,
   useBitcoinPosition,
   useTransactionModal,
   useStatistics,
@@ -17,6 +17,7 @@ import { featureFlags } from "#/constants"
 import { TextMd } from "#/components/shared/Typography"
 import { IconClockHour5Filled } from "@tabler/icons-react"
 import TooltipIcon from "#/components/shared/TooltipIcon"
+import { hasPendingDeposits } from "#/utils"
 import AcreTVLMessage from "./AcreTVLMessage"
 
 const isWithdrawalFlowEnabled = featureFlags.WITHDRAWALS_ENABLED
@@ -32,12 +33,13 @@ const buttonStyles: ButtonProps = {
 }
 
 export default function PositionDetails() {
-  const { data } = useBitcoinPosition()
-  const bitcoinAmount = data?.estimatedBitcoinBalance ?? 0n
+  const { data: bitcoinPosition } = useBitcoinPosition()
+  const bitcoinAmount = bitcoinPosition?.estimatedBitcoinBalance ?? 0n
 
   const openDepositModal = useTransactionModal(ACTION_FLOW_TYPES.STAKE)
   const openWithdrawModal = useTransactionModal(ACTION_FLOW_TYPES.UNSTAKE)
-  const activitiesCount = useAllActivitiesCount()
+  const activitiesCount = useActivitiesCount()
+  const { data: activities } = useActivities()
   const isMobileMode = useMobileMode()
 
   const { tvl } = useStatistics()
@@ -47,15 +49,13 @@ export default function PositionDetails() {
   const isDisabledForMobileMode =
     isMobileMode && !featureFlags.MOBILE_MODE_ENABLED
 
-  const { hasPendingActivities } = useActivities()
-
   return (
     <Flex w="100%" flexDirection="column" gap={5}>
       <VStack alignItems="start" spacing={0}>
         {/* TODO: Component should be moved to `CardHeader` */}
         <HStack>
           <TextMd>Your Acre balance</TextMd>
-          {hasPendingActivities && (
+          {hasPendingDeposits(activities ?? []) && (
             <TooltipIcon
               icon={IconClockHour5Filled}
               label="Your balance will update once the pending deposit is finalized."
