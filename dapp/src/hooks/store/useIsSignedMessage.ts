@@ -1,6 +1,6 @@
 import { selectIsSignedMessage } from "#/store/wallet"
-import { useAppSelector } from "./useAppSelector"
+import useAppSelector from "./useAppSelector"
 
-export function useIsSignedMessage() {
+export default function useIsSignedMessage() {
   return useAppSelector(selectIsSignedMessage)
 }

@@ -20,7 +20,7 @@ const variantCard = defineStyle({
 })
 
 // TODO: Update the button styles correctly when ready
-export const buttonTheme: ComponentSingleStyleConfig = {
+const buttonTheme: ComponentSingleStyleConfig = {
   baseStyle: {
     // Remove a blue outline when the button is in focus.
     boxShadow: "none !important",
@@ -163,3 +163,5 @@ export const buttonTheme: ComponentSingleStyleConfig = {
     colorScheme: "brand",
   },
 }
+
+export default buttonTheme

@@ -1,7 +1,7 @@
 import React from "react"
 import { createIcon } from "@chakra-ui/react"
 
-export const MezoSignIcon = createIcon({
+export default createIcon({
   displayName: "MezoSignIcon",
   viewBox: "0 0 88 88",
   path: [

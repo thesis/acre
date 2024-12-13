@@ -11,14 +11,13 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import Countdown from "#/components/shared/Countdown"
-import { logPromiseFailure, numberToLocaleString } from "#/utils"
-import { useAggregatedAcrePointsData, useWallet } from "#/hooks"
+import { logPromiseFailure, numbersUtils } from "#/utils"
+import { useAggregatedAcrePointsData, useDebounce, useWallet } from "#/hooks"
 import Spinner from "#/components/shared/Spinner"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import TooltipIcon from "#/components/shared/TooltipIcon"
-import useDebounce from "#/hooks/useDebounce"
-import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
-import acrePointsIllustrationSrc from "#/assets/images/acre-points-illustration.png"
+import { time } from "#/constants"
+import { acrePointsIllustration } from "#/assets/images"
 
 // TODO: Define colors as theme value
 const COLOR_TEXT_LIGHT_PRIMARY = "#1C1A16"
@@ -26,6 +25,8 @@ const COLOR_TEXT_LIGHT_TERTIARY = "#7D6A4B"
 // TODO: Update `Button` component theme
 const COLOR_BUTTON_LABEL = "#FBF7EC"
 const COLOR_BUTTON_BACKGROUND = "#33A321"
+
+const { numberToLocaleString } = numbersUtils
 
 export default function AcrePointsCard(props: CardProps) {
   const {
@@ -40,7 +41,10 @@ export default function AcrePointsCard(props: CardProps) {
   } = useAggregatedAcrePointsData()
   const { isConnected } = useWallet()
 
-  const debouncedClaimPoints = useDebounce(claimPoints, ONE_SEC_IN_MILLISECONDS)
+  const debouncedClaimPoints = useDebounce(
+    claimPoints,
+    time.ONE_SEC_IN_MILLISECONDS,
+  )
 
   const formattedTotalPointsAmount = numberToLocaleString(totalBalance)
   const formattedClaimablePointsAmount = numberToLocaleString(claimableBalance)
@@ -80,7 +84,7 @@ export default function AcrePointsCard(props: CardProps) {
           </H4>
         </UserDataSkeleton>
 
-        <Image src={acrePointsIllustrationSrc} mt={6} />
+        <Image src={acrePointsIllustration} mt={6} />
 
         <UserDataSkeleton>
           {isDataReady && (

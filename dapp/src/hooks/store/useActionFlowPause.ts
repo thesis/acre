@@ -1,12 +1,12 @@
 import { setStatus } from "#/store/action-flow"
 import { PROCESS_STATUSES } from "#/types"
-import { useAppDispatch } from "./useAppDispatch"
+import useAppDispatch from "./useAppDispatch"
 
 /**
  * Custom hook that provides functions to pause and resume the action flow process.
  * @returns An object containing the `handlePause` and `handleResume` functions.
  */
-export function useActionFlowPause() {
+export default function useActionFlowPause() {
   const dispatch = useAppDispatch()
 
   /**

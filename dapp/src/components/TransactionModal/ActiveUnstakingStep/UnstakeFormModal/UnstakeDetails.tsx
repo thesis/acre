@@ -7,10 +7,10 @@ import {
   useTransactionDetails,
 } from "#/hooks"
 import { ACTION_FLOW_TYPES, CurrencyType } from "#/types"
-import { DESIRED_DECIMALS_FOR_FEE } from "#/constants"
+import { currencies } from "#/constants"
 import FeesDetailsAmountItem from "#/components/shared/FeesDetails/FeesDetailsAmountItem"
 import TransactionDetailsAmountItem from "#/components/shared/TransactionDetails/TransactionDetailsAmountItem"
-import { FeesTooltip } from "../../FeesTooltip"
+import FeesTooltip from "../../FeesTooltip"
 
 function UnstakeDetails({ currency }: { currency: CurrencyType }) {
   const { value = 0n } = useFormField<bigint | undefined>(
@@ -32,7 +32,7 @@ function UnstakeDetails({ currency }: { currency: CurrencyType }) {
         from={{
           currency,
           amount: total,
-          desiredDecimals: DESIRED_DECIMALS_FOR_FEE,
+          desiredDecimals: currencies.DESIRED_DECIMALS_FOR_FEE,
           withRoundUp: true,
         }}
         to={{

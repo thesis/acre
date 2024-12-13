@@ -1,9 +1,9 @@
 import { Currency, CurrencyType } from "#/types"
 import env from "./env"
 
-export const DESIRED_DECIMALS_FOR_FEE = 5
+const DESIRED_DECIMALS_FOR_FEE = 5
 
-export const BITCOIN: Currency = {
+const BITCOIN: Currency = {
   name: "Bitcoin",
   symbol: "BTC",
   decimals: 8,
@@ -11,25 +11,32 @@ export const BITCOIN: Currency = {
   desiredDecimals: 4,
 }
 
-export const STBTC: Currency = {
+const STBTC: Currency = {
   ...BITCOIN,
   name: "stBTC",
   symbol: "stBTC",
 }
 
-export const USD: Currency = {
+const USD: Currency = {
   name: "United States Dollar",
   symbol: "USD",
   decimals: 10,
   desiredDecimals: 2,
 }
 
-export const CURRENCY_ID_BITCOIN = env.USE_TESTNET
-  ? "bitcoin_testnet"
-  : "bitcoin"
+const CURRENCY_ID_BITCOIN = env.USE_TESTNET ? "bitcoin_testnet" : "bitcoin"
 
-export const CURRENCIES_BY_TYPE: Record<CurrencyType, Currency> = {
+const CURRENCIES_BY_TYPE: Record<CurrencyType, Currency> = {
   bitcoin: BITCOIN,
   usd: USD,
   stbtc: STBTC,
+}
+
+export default {
+  BITCOIN,
+  STBTC,
+  USD,
+  CURRENCY_ID_BITCOIN,
+  CURRENCIES_BY_TYPE,
+  DESIRED_DECIMALS_FOR_FEE,
 }

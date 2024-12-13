@@ -1,7 +1,7 @@
 import React from "react"
 import { Chain, ExplorerDataType } from "#/types"
 import { Link, LinkProps } from "@chakra-ui/react"
-import { createLinkToBlockExplorerForChain } from "#/utils"
+import { chainUtils } from "#/utils"
 
 type BlockExplorerLinkProps = {
   id: string
@@ -16,7 +16,11 @@ function BlockExplorerLink({
   children,
   ...restProps
 }: BlockExplorerLinkProps) {
-  const { link, title } = createLinkToBlockExplorerForChain(chain, id, type)
+  const { link, title } = chainUtils.createLinkToBlockExplorerForChain(
+    chain,
+    id,
+    type,
+  )
 
   // TODO: Update when ButtonLink is ready
   return (

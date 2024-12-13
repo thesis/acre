@@ -1,10 +1,10 @@
 import { useMemo } from "react"
 import { OrangeKitBitcoinWalletProvider } from "@orangekit/react/dist/src/wallet/bitcoin-wallet-provider"
-import { useConnector } from "./useConnector"
+import useConnector from "./useConnector"
 
 type UseBitcoinProviderReturn = OrangeKitBitcoinWalletProvider | undefined
 
-export function useBitcoinProvider(): UseBitcoinProviderReturn {
+export default function useBitcoinProvider(): UseBitcoinProviderReturn {
   const connector = useConnector()
 
   return useMemo(() => {

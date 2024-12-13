@@ -48,7 +48,7 @@ const variants = {
   outline: variantOutline,
 }
 
-export const inputTheme = multiStyleConfig.defineMultiStyleConfig({
+export default multiStyleConfig.defineMultiStyleConfig({
   variants,
   defaultProps: {
     variant: "outline",

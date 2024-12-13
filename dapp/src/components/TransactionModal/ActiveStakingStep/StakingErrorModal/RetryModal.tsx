@@ -12,9 +12,9 @@ import {
 import { CableWithPlugIcon } from "#/assets/icons"
 import { TextMd, TextSm } from "#/components/shared/Typography"
 import IconWrapper from "#/components/shared/IconWrapper"
-import { getExpirationTimestamp, getPercentValue } from "#/utils"
+import { timeUtils, numbersUtils } from "#/utils"
 import { useCountdown } from "#/hooks"
-import { ONE_MINUTE_IN_SECONDS, ONE_SEC_IN_MILLISECONDS } from "#/constants"
+import { time } from "#/constants"
 import { IconShieldCheckFilled, IconX } from "@tabler/icons-react"
 import Skeleton from "#/components/shared/Skeleton"
 
@@ -23,7 +23,10 @@ const getCounterData = (minutes: string, seconds: string) => {
 
   const progressPercent = `${
     isLessThanMinute
-      ? getPercentValue(parseInt(seconds, 10), ONE_MINUTE_IN_SECONDS)
+      ? numbersUtils.getPercentValue(
+          parseInt(seconds, 10),
+          time.ONE_MINUTE_IN_SECONDS,
+        )
       : 100
   }%`
   const label = `${isLessThanMinute ? "0" : "1"}:${seconds}`
@@ -36,7 +39,9 @@ type RetryModalProps = { isLoading: boolean; retry: () => void }
 export default function RetryModal({ isLoading, retry }: RetryModalProps) {
   const retryTimestamp = useMemo(
     () =>
-      getExpirationTimestamp(ONE_MINUTE_IN_SECONDS * ONE_SEC_IN_MILLISECONDS),
+      timeUtils.getExpirationTimestamp(
+        time.ONE_MINUTE_IN_SECONDS * time.ONE_SEC_IN_MILLISECONDS,
+      ),
     [],
   )
   const { minutes, seconds } = useCountdown(retryTimestamp, true, retry)

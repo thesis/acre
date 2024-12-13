@@ -1,6 +1,6 @@
 import { useMutation, UseMutationOptions } from "@tanstack/react-query"
 import { useConnector } from "./orangeKit"
-import { useWallet } from "./useWallet"
+import useWallet from "./useWallet"
 
 type MutationFnParams = {
   recipient: string

@@ -1,8 +1,8 @@
-export function roundUp(amount: number, desiredDecimals = 2): number {
+function roundUp(amount: number, desiredDecimals = 2): number {
   return Math.ceil(amount * 10 ** desiredDecimals) / 10 ** desiredDecimals
 }
 
-export const numberToLocaleString = (
+const numberToLocaleString = (
   value: string | number,
   desiredDecimals = 0,
 ): string => {
@@ -26,7 +26,7 @@ export const numberToLocaleString = (
  * Source:
  * https://github.com/tahowallet/extension/blob/main/background/lib/fixed-point.ts#L216-L239
  */
-export function bigIntToUserAmount(
+function bigIntToUserAmount(
   fixedPoint: bigint,
   fixedPointDecimals: number,
   desiredDecimals = 2,
@@ -54,7 +54,7 @@ export function bigIntToUserAmount(
  *  - Other amounts are formatted according to the use of the `bigIntToUserAmount` function.
  *
  */
-export const formatTokenAmount = (
+const formatTokenAmount = (
   amount: number | string | bigint,
   decimals = 18,
   desiredDecimals = 2,
@@ -86,7 +86,7 @@ export const formatTokenAmount = (
   return numberToLocaleString(finalFormattedAmount, desiredDecimals)
 }
 
-export const formatSatoshiAmount = (
+const formatSatoshiAmount = (
   amount: number | string | bigint,
   desiredDecimals = 2,
 ) => formatTokenAmount(amount, 8, desiredDecimals)
@@ -103,7 +103,7 @@ export const formatSatoshiAmount = (
  * Source:
  * https://github.com/tahowallet/extension/blob/main/background/lib/fixed-point.ts#L172-L214
  */
-export function fixedPointNumberToString(
+function fixedPointNumberToString(
   amount: bigint,
   decimals: number,
   trimTrailingZeros = true,
@@ -198,10 +198,7 @@ function parseToFixedPointNumber(
  * Then convert a fixed point bigint with precision `parsedAmount.decimals` to another
  * fixed point bigint with precision `decimals`.
  */
-export function userAmountToBigInt(
-  amount: string,
-  decimals = 18,
-): bigint | undefined {
+function userAmountToBigInt(amount: string, decimals = 18): bigint | undefined {
   const parsedAmount = parseToFixedPointNumber(amount)
 
   if (typeof parsedAmount === "undefined") {
@@ -212,11 +209,24 @@ export function userAmountToBigInt(
 }
 
 // Generates a random integer in min-max range (inclusively)
-export const randomInteger = (min: number, max: number) =>
+const randomInteger = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min + 1)) + min
 
-export const addLeadingZero = (num: number): string =>
+const addLeadingZero = (num: number): string =>
   num >= 0 && num <= 9 ? `0${num}` : `${num}`
 
-export const getPercentValue = (value: number, maxValue: number) =>
+const getPercentValue = (value: number, maxValue: number) =>
   (value * 100) / maxValue
+
+export default {
+  roundUp,
+  numberToLocaleString,
+  bigIntToUserAmount,
+  formatTokenAmount,
+  formatSatoshiAmount,
+  fixedPointNumberToString,
+  userAmountToBigInt,
+  randomInteger,
+  addLeadingZero,
+  getPercentValue,
+}

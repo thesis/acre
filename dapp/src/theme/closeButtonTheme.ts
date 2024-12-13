@@ -4,6 +4,6 @@ const baseStyle = defineStyle({
   bg: "transparent",
 })
 
-export const closeButtonTheme = defineStyleConfig({
+export default defineStyleConfig({
   baseStyle,
 })

@@ -4,7 +4,11 @@ import DepositBTCModal from "./DepositBTCModal"
 
 const STEPS = ACTION_FLOW_STEPS_TYPES[ACTION_FLOW_TYPES.STAKE]
 
-export function ActiveStakingStep({ activeStep }: { activeStep: number }) {
+export default function ActiveStakingStep({
+  activeStep,
+}: {
+  activeStep: number
+}) {
   switch (activeStep) {
     case STEPS.DEPOSIT_BTC:
       return <DepositBTCModal />

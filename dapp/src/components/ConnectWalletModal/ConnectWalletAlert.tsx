@@ -1,7 +1,7 @@
 import React from "react"
 import { AlertStatus, Box, Link, VStack } from "@chakra-ui/react"
 import { AnimatePresence, Variants, motion } from "framer-motion"
-import { EXTERNAL_HREF } from "#/constants"
+import { externalHref } from "#/constants"
 import {
   Alert,
   AlertDescription,
@@ -35,7 +35,7 @@ function ContactSupport() {
         // TODO: Define in the new color palette
         color="#0E61FE"
         textDecoration="underline"
-        href={EXTERNAL_HREF.DISCORD}
+        href={externalHref.DISCORD}
         isExternal
       >
         Acre support

@@ -1,8 +1,8 @@
 import React from "react"
 import { List } from "@chakra-ui/react"
 import TooltipIcon from "#/components/shared/TooltipIcon"
-import { FeesTooltipItem } from "./FeesTooltipItem"
-import { Fee as AcreFee } from "../../../types/fee"
+import { Fee as AcreFee } from "#/types"
+import FeesTooltipItem from "./FeesTooltipItem"
 
 type Props = {
   fees: Omit<AcreFee, "total">
@@ -19,7 +19,7 @@ const mapFeeToLabel = (feeId: keyof AcreFee) => {
   }
 }
 
-export function FeesTooltip({ fees }: Props) {
+export default function FeesTooltip({ fees }: Props) {
   return (
     <TooltipIcon
       placement="right"

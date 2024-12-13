@@ -1,4 +1,4 @@
-import { ACRE_SESSION_EXPIRATION_TIME, wallets } from "#/constants"
+import { time, wallets } from "#/constants"
 import { OrangeKitError, OrangeKitConnector } from "#/types"
 import {
   isUnsupportedBitcoinAddressError,
@@ -7,8 +7,8 @@ import {
 import { Connector } from "wagmi"
 import { SignInWithWalletMessage } from "@orangekit/sign-in-with-wallet"
 import { ConnectionAlert } from "#/components/ConnectWalletModal/ConnectWalletAlert"
-import { getExpirationDate } from "../time"
 import { getOrangeKitLedgerLiveConnector } from "./ledger-live"
+import timeUtils from "../timeUtils"
 
 const getWalletInfo = (connector: OrangeKitConnector) => {
   switch (connector.id) {
@@ -46,9 +46,9 @@ const createSignInWithWalletMessage = (address: string, nonce: string) => {
     issuedAt: new Date().toISOString(),
     version: "1",
     networkFamily: "bitcoin",
-    expirationTime: getExpirationDate(
-      ACRE_SESSION_EXPIRATION_TIME,
-    ).toISOString(),
+    expirationTime: timeUtils
+      .getExpirationDate(time.ACRE_SESSION_EXPIRATION_TIME)
+      .toISOString(),
     nonce,
   })
 

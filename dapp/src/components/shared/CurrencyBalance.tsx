@@ -5,12 +5,7 @@ import {
   TextProps,
   ResponsiveValue,
 } from "@chakra-ui/react"
-import {
-  fixedPointNumberToString,
-  formatTokenAmount,
-  getCurrencyByType,
-  numberToLocaleString,
-} from "#/utils"
+import { numbersUtils, currencyUtils } from "#/utils"
 import { CurrencyType, AmountType } from "#/types"
 import Tooltip from "./Tooltip"
 
@@ -34,7 +29,7 @@ export type CurrencyBalanceProps = {
   withTooltip?: boolean
 } & TextProps
 
-export function CurrencyBalance({
+export default function CurrencyBalance({
   currency,
   amount,
   shouldBeFormatted = true,
@@ -60,7 +55,7 @@ export function CurrencyBalance({
     symbol,
     decimals,
     desiredDecimals: currencyDesiredDecimals,
-  } = getCurrencyByType(currency)
+  } = currencyUtils.getCurrencyByType(currency)
   const desiredDecimals = customDesiredDecimals ?? currencyDesiredDecimals
 
   const getBalance = useCallback(
@@ -71,12 +66,24 @@ export function CurrencyBalance({
 
       if (shouldBeFormatted || typeof value === "bigint") {
         if (withFullPrecision)
-          return fixedPointNumberToString(BigInt(value), decimals, withRoundUp)
+          return numbersUtils.fixedPointNumberToString(
+            BigInt(value),
+            decimals,
+            withRoundUp,
+          )
 
-        return formatTokenAmount(value, decimals, desiredDecimals, withRoundUp)
+        return numbersUtils.formatTokenAmount(
+          value,
+          decimals,
+          desiredDecimals,
+          withRoundUp,
+        )
       }
 
-      return numberToLocaleString(value.toString(), desiredDecimals)
+      return numbersUtils.numberToLocaleString(
+        value.toString(),
+        desiredDecimals,
+      )
     },
     [amount, decimals, desiredDecimals, shouldBeFormatted, withRoundUp],
   )

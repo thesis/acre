@@ -104,7 +104,7 @@ const sizes = {
   lg: sizeLg,
 }
 
-export const modalTheme = multiStyleConfig.defineMultiStyleConfig({
+export default multiStyleConfig.defineMultiStyleConfig({
   baseStyle,
   sizes,
   variants,

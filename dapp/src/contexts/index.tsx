@@ -1,3 +1,3 @@
 export * from "./StakeFlowContext"
-export * from "./PaginationContext"
 export * from "./WalletConnectionAlertContext"
+export { default as PaginationContext } from "./PaginationContext"

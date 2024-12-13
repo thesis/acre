@@ -1,3 +1,3 @@
-export * from "./usePostHogIdentity"
-export * from "./usePostHogCapture"
-export * from "./usePostHogPageViewCapture"
+export { default as usePostHogIdentity } from "./usePostHogIdentity"
+export { default as usePostHogCapture } from "./usePostHogCapture"
+export { default as usePostHogPageViewCapture } from "./usePostHogPageViewCapture"

@@ -3,14 +3,14 @@ import { List } from "@chakra-ui/react"
 import TransactionDetailsAmountItem from "#/components/shared/TransactionDetails/TransactionDetailsAmountItem"
 import FeesDetailsAmountItem from "#/components/shared/FeesDetails/FeesDetailsAmountItem"
 import { TOKEN_AMOUNT_FIELD_NAME } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
-import { FeesTooltip } from "#/components/TransactionModal/FeesTooltip"
 import {
   useFormField,
   useMinDepositAmount,
   useTransactionDetails,
 } from "#/hooks"
 import { CurrencyType } from "#/types"
-import { DESIRED_DECIMALS_FOR_FEE } from "#/constants"
+import { currencies } from "#/constants"
+import FeesTooltip from "../../FeesTooltip"
 
 function StakeDetails({ currency }: { currency: CurrencyType }) {
   const { value = 0n } = useFormField<bigint | undefined>(
@@ -31,7 +31,7 @@ function StakeDetails({ currency }: { currency: CurrencyType }) {
         from={{
           currency,
           amount: total,
-          desiredDecimals: DESIRED_DECIMALS_FOR_FEE,
+          desiredDecimals: currencies.DESIRED_DECIMALS_FOR_FEE,
           withRoundUp: true,
         }}
         to={{

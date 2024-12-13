@@ -102,7 +102,7 @@ const sizes = {
   }),
 }
 
-export const progressTheme = multiStyleConfig.defineMultiStyleConfig({
+export default multiStyleConfig.defineMultiStyleConfig({
   sizes,
   baseStyle,
   defaultProps: {

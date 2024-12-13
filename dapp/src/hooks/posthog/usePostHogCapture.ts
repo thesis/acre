@@ -1,4 +1,4 @@
-import { PostHogEvent } from "#/posthog/events"
+import PostHogEvent from "#/posthog/events"
 import { PostHog, usePostHog } from "posthog-js/react"
 import { useCallback } from "react"
 
@@ -9,7 +9,7 @@ type CaptureArgs = [
     : never,
 ]
 
-export const usePostHogCapture = () => {
+const usePostHogCapture = () => {
   const posthog = usePostHog()
 
   const handleCapture = useCallback(
@@ -38,3 +38,5 @@ export const usePostHogCapture = () => {
 
   return { handleCapture, handleCaptureWithCause }
 }
+
+export default usePostHogCapture

@@ -10,7 +10,7 @@ import { ActionFlowType, BaseModalProps } from "#/types"
 import { resetState, setType } from "#/store/action-flow"
 import { logPromiseFailure } from "#/utils"
 import ModalContentWrapper from "./ModalContentWrapper"
-import { ActiveFlowStep } from "./ActiveFlowStep"
+import ActiveFlowStep from "./ActiveFlowStep"
 import withBaseModal from "../ModalRoot/withBaseModal"
 import { ConnectWalletModalBase } from "../ConnectWalletModal"
 

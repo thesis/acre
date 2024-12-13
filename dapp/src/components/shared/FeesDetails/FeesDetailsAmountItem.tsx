@@ -1,7 +1,7 @@
 import React, { ComponentProps } from "react"
 import { Flex } from "@chakra-ui/react"
 import FeesDetailsItem, { FeesDetailsItemProps } from "."
-import { CurrencyBalanceWithConversion } from "../CurrencyBalanceWithConversion"
+import CurrencyBalanceWithConversion from "../CurrencyBalanceWithConversion"
 
 type FeesDetailsItemAmountItemProps = ComponentProps<
   typeof CurrencyBalanceWithConversion

@@ -4,7 +4,7 @@
  *
  * Does nothing to successful promises.
  */
-export function logPromiseFailure<T>(promise: Promise<T>) {
+export default function logPromiseFailure<T>(promise: Promise<T>) {
   promise.catch((error) => {
     console.error(error)
     throw error

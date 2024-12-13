@@ -1,33 +1,26 @@
 import { extendTheme } from "@chakra-ui/react"
-import {
-  colors,
-  fonts,
-  lineHeights,
-  semanticTokens,
-  styles,
-  zIndices,
-} from "./utils"
-import { acreTVLProgressTheme } from "./acreTVLProgressTheme"
-import { alertTheme } from "./alertTheme"
-import { buttonTheme } from "./buttonTheme"
-import { cardTheme } from "./cardTheme"
-import { closeButtonTheme } from "./closeButtonTheme"
-import { countdownTheme } from "./countdownTheme"
-import { currencyBalanceTheme } from "./currencyBalanceTheme"
-import { footerTheme } from "./footerTheme"
-import { formErrorTheme } from "./formErrorTheme"
-import { formLabelTheme } from "./formLabelTheme"
-import { formTheme } from "./formTheme"
-import { headingTheme } from "./headingTheme"
-import { inputTheme } from "./inputTheme"
-import { linkTheme } from "./linkTheme"
-import { modalTheme } from "./modalTheme"
-import { progressTheme } from "./progressTheme"
-import { skeletonTheme } from "./skeletonTheme"
-import { spinnerTheme } from "./spinnerTheme"
-import { tagTheme } from "./tagTheme"
-import { tokenBalanceInputTheme } from "./tokenBalanceInputTheme"
-import { tooltipTheme } from "./tooltipTheme"
+import { colors, typography, semanticTokens, styles, zIndices } from "./utils"
+import acreTVLProgressTheme from "./acreTVLProgressTheme"
+import alertTheme from "./alertTheme"
+import buttonTheme from "./buttonTheme"
+import cardTheme from "./cardTheme"
+import closeButtonTheme from "./closeButtonTheme"
+import countdownTheme from "./countdownTheme"
+import currencyBalanceTheme from "./currencyBalanceTheme"
+import footerTheme from "./footerTheme"
+import formErrorTheme from "./formErrorTheme"
+import formLabelTheme from "./formLabelTheme"
+import formTheme from "./formTheme"
+import headingTheme from "./headingTheme"
+import inputTheme from "./inputTheme"
+import linkTheme from "./linkTheme"
+import modalTheme from "./modalTheme"
+import progressTheme from "./progressTheme"
+import skeletonTheme from "./skeletonTheme"
+import spinnerTheme from "./spinnerTheme"
+import tagTheme from "./tagTheme"
+import tokenBalanceInputTheme from "./tokenBalanceInputTheme"
+import tooltipTheme from "./tooltipTheme"
 
 const defaultTheme = {
   // TODO: Remove when dark mode is ready
@@ -35,8 +28,7 @@ const defaultTheme = {
   initialColorMode: "light",
   useSystemColorMode: false,
   colors,
-  fonts,
-  lineHeights,
+  ...typography,
   zIndices,
   semanticTokens,
   styles,
@@ -70,6 +62,4 @@ const defaultTheme = {
   },
 }
 
-const theme = extendTheme(defaultTheme)
-
-export default theme
+export default extendTheme(defaultTheme)

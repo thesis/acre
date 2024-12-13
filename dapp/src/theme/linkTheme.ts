@@ -36,7 +36,7 @@ const sizes = {
   md: sizeMd,
 }
 
-export const linkTheme = multiStyleConfig.defineMultiStyleConfig({
+export default multiStyleConfig.defineMultiStyleConfig({
   baseStyle: {
     container: containerBaseStyle,
     size: "sm",

@@ -4,7 +4,7 @@ import { TokenAmountFormValues } from "#/components/shared/TokenAmountForm/Token
 import { useMinDepositAmount, useWallet } from "#/hooks"
 import { FormSubmitButton } from "#/components/shared/Form"
 import { ACTION_FLOW_TYPES, BaseFormProps } from "#/types"
-import { fixedPointNumberToString, getCurrencyByType } from "#/utils"
+import { numbersUtils, currencyUtils } from "#/utils"
 import { featureFlags } from "#/constants"
 import StakeDetails from "./StakeDetails"
 import AcrePointsRewardEstimation from "./AcrePointsRewardEstimation"
@@ -16,8 +16,8 @@ function StakeFormModal({
   const minDepositAmount = useMinDepositAmount()
   const { balance: tokenBalance } = useWallet()
 
-  const { decimals } = getCurrencyByType("bitcoin")
-  const inputPlaceholder = `Minimum ${fixedPointNumberToString(minDepositAmount, decimals)} BTC`
+  const { decimals } = currencyUtils.getCurrencyByType("bitcoin")
+  const inputPlaceholder = `Minimum ${numbersUtils.fixedPointNumberToString(minDepositAmount, decimals)} BTC`
   const tokenAmountLabel = "Wallet balance"
 
   return (

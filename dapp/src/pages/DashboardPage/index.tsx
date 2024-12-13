@@ -6,7 +6,7 @@ import DashboardCard from "./DashboardCard"
 import AcrePointsCard from "./AcrePointsCard"
 import AcrePointsTemplateCard from "./AcrePointsTemplateCard"
 import BeehiveCard from "./BeehiveCard"
-import { AcreTVLProgress } from "./AcreTVLProgress"
+import AcreTVLProgress from "./AcreTVLProgress"
 
 export default function DashboardPage() {
   useTriggerConnectWalletModal()

@@ -1,6 +1,6 @@
 import { FormikErrors, withFormik } from "formik"
 import { BaseFormProps } from "#/types"
-import { getErrorsObj, validatePassword } from "#/utils"
+import { forms } from "#/utils"
 import PasswordFormBase, {
   PasswordFormBaseProps,
   PasswordFormValues,
@@ -16,9 +16,9 @@ const PasswordForm = withFormik<PasswordFormProps, PasswordFormValues>({
   validate: async ({ password }) => {
     const errors: FormikErrors<PasswordFormValues> = {}
 
-    errors.password = await validatePassword(password)
+    errors.password = await forms.validatePassword(password)
 
-    return getErrorsObj(errors)
+    return forms.getErrorsObj(errors)
   },
   handleSubmit: (values, { props }) => {
     props.onSubmitForm(values)

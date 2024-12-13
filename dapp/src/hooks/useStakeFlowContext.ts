@@ -1,7 +1,7 @@
 import { useContext } from "react"
 import { StakeFlowContext } from "#/contexts"
 
-export function useStakeFlowContext() {
+export default function useStakeFlowContext() {
   const context = useContext(StakeFlowContext)
 
   if (!context) {

@@ -24,6 +24,6 @@ const baseStyle = multiStyleConfig.definePartsStyle({
   body: baseStyleBody,
 })
 
-export const cardTheme = multiStyleConfig.defineMultiStyleConfig({
+export default multiStyleConfig.defineMultiStyleConfig({
   baseStyle,
 })

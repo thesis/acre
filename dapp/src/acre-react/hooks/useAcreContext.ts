@@ -1,7 +1,7 @@
 import { useContext } from "react"
 import { AcreSdkContext } from "../contexts"
 
-export function useAcreContext() {
+export default function useAcreContext() {
   const context = useContext(AcreSdkContext)
 
   if (!context) {

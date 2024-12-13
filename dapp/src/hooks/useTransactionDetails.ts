@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { ACTION_FLOW_TYPES, ActionFlowType, Fee } from "#/types"
-import { initialFee, useTransactionFee } from "./useTransactionFee"
+import useTransactionFee, { initialFee } from "./useTransactionFee"
 
 type UseTransactionDetailsResult = {
   amount: bigint
@@ -14,7 +14,7 @@ const initialTransactionDetails = {
   estimatedAmount: 0n,
 }
 
-export function useTransactionDetails(
+export default function useTransactionDetails(
   amount: bigint | undefined,
   flow: ActionFlowType = ACTION_FLOW_TYPES.STAKE,
 ) {

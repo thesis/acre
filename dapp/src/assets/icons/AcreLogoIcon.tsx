@@ -1,7 +1,7 @@
 import React from "react"
 import { createIcon } from "@chakra-ui/react"
 
-export const AcreLogo = createIcon({
+export default createIcon({
   displayName: "AcreLogo",
   viewBox: "0 0 120 71",
   path: (

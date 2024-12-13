@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react"
 import { MODAL_TYPES } from "#/types"
-import { useIsSignedMessage } from "./store/useIsSignedMessage"
-import { useModal } from "./useModal"
+import useIsSignedMessage from "./store/useIsSignedMessage"
+import useModal from "./useModal"
 import useIsEmbed from "./useIsEmbed"
 
 export default function useTriggerConnectWalletModal() {

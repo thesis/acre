@@ -1,7 +1,7 @@
 import React from "react"
 import { createIcon } from "@chakra-ui/react"
 
-export const CableWithPlugIcon = createIcon({
+export default createIcon({
   displayName: "CableWithPlugIcon",
   viewBox: "0 0 127 122",
   defaultProps: {

@@ -10,7 +10,7 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { H4, TextMd } from "#/components/shared/Typography"
-import { numberToLocaleString } from "#/utils"
+import { numbersUtils } from "#/utils"
 import { IconChevronDown } from "@tabler/icons-react"
 import { TOKEN_AMOUNT_FIELD_NAME } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
 import {
@@ -18,7 +18,7 @@ import {
   useMinDepositAmount,
   useTransactionDetails,
 } from "#/hooks"
-import { ONE_MONTH_IN_DAYS, ONE_WEEK_IN_DAYS } from "#/constants"
+import { time } from "#/constants"
 
 const ACRE_POINTS_DATA = {
   day: {
@@ -27,11 +27,11 @@ const ACRE_POINTS_DATA = {
   },
   week: {
     label: "per week",
-    multipler: ONE_WEEK_IN_DAYS,
+    multipler: time.ONE_WEEK_IN_DAYS,
   },
   month: {
     label: "per month",
-    multipler: ONE_MONTH_IN_DAYS,
+    multipler: time.ONE_MONTH_IN_DAYS,
   },
 }
 
@@ -129,7 +129,7 @@ function AcrePointsRewardEstimation(props: StackProps) {
         </Menu>
       </HStack>
 
-      <H4>+{numberToLocaleString(estimatedReward)} PTS</H4>
+      <H4>+{numbersUtils.numberToLocaleString(estimatedReward)} PTS</H4>
     </VStack>
   )
 }

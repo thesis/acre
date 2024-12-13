@@ -1,10 +1,10 @@
-import { queryKeysFactory, REFETCH_INTERVAL_IN_MILLISECONDS } from "#/constants"
+import { queryKeysFactory, time } from "#/constants"
 import { useQuery } from "@tanstack/react-query"
 import { Activity } from "#/types"
 import { DepositStatus } from "@acre-btc/sdk"
 import { useAcreContext } from "#/acre-react/hooks"
-import { sortActivitiesByTimestamp } from "#/utils"
-import { useWallet } from "./useWallet"
+import { activitiesUtils } from "#/utils"
+import useWallet from "./useWallet"
 
 const { userKeys } = queryKeysFactory
 
@@ -41,8 +41,11 @@ export default function useActivities() {
           }
         },
       )
-      return sortActivitiesByTimestamp([...deposits, ...withdrawals])
+      return activitiesUtils.sortActivitiesByTimestamp([
+        ...deposits,
+        ...withdrawals,
+      ])
     },
-    refetchInterval: REFETCH_INTERVAL_IN_MILLISECONDS,
+    refetchInterval: time.REFETCH_INTERVAL_IN_MILLISECONDS,
   })
 }

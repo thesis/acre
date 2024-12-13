@@ -1,9 +1,9 @@
 import { useEffect } from "react"
 import { MODAL_TYPES } from "#/types"
-import { useWallet } from "../useWallet"
-import { useModal } from "../useModal"
+import useWallet from "../useWallet"
+import useModal from "../useModal"
 
-export function useAccountsChangedUnisat() {
+export default function useAccountsChangedUnisat() {
   const { isConnected, address, onDisconnect } = useWallet()
   const { openModal } = useModal()
 

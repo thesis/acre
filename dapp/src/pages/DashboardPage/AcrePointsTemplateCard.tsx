@@ -12,13 +12,13 @@ import {
   TagLeftIcon,
   VStack,
 } from "@chakra-ui/react"
-import acrePointsCardPlaceholderSrc from "#/assets/images/acre-points-card-placeholder.png"
+import { acrePointsCardPlaceholder } from "#/assets/images"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import {
   IconArrowUpRight,
   IconPlayerTrackNextFilled,
 } from "@tabler/icons-react"
-import { EXTERNAL_HREF } from "#/constants"
+import { externalHref } from "#/constants"
 
 export default function AcrePointsTemplateCard(props: CardProps) {
   return (
@@ -33,7 +33,7 @@ export default function AcrePointsTemplateCard(props: CardProps) {
       <CardBody>
         <UserDataSkeleton>
           <VStack
-            bgImg={acrePointsCardPlaceholderSrc}
+            bgImg={acrePointsCardPlaceholder}
             bgSize="cover"
             spacing={0}
             pt={16}
@@ -58,7 +58,7 @@ export default function AcrePointsTemplateCard(props: CardProps) {
             {/* TODO: Update `ButtonLink` component and 'link' Button theme variant */}
             <Button
               as={Link}
-              href={`${EXTERNAL_HREF.DOCS}/acre-points-program`}
+              href={`${externalHref.DOCS}/acre-points-program`}
               isExternal
               variant="ghost"
               color="brand.400"

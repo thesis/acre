@@ -16,9 +16,11 @@ function devToolsSanitizer(input: unknown): unknown {
   }
 }
 
-export const devTools = !env.PROD
+const devTools = !env.PROD
   ? ({
       actionSanitizer: devToolsSanitizer,
       stateSanitizer: devToolsSanitizer,
     } as DevToolsEnhancerOptions)
   : false
+
+export default devTools

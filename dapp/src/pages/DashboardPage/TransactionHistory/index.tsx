@@ -3,7 +3,7 @@ import { StackProps, VStack, Image } from "@chakra-ui/react"
 import { TextMd } from "#/components/shared/Typography"
 import { useActivitiesCount, useIsFetchedWalletData } from "#/hooks"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
-import emptyStateIllustration from "#/assets/images/empty-state.svg"
+import { emptyState } from "#/assets/images"
 import TransactionTable from "./TransactionTable"
 
 function TransactionHistoryContent() {
@@ -22,11 +22,8 @@ function TransactionHistoryContent() {
   if (activitiesCount === 0)
     return (
       <VStack w="100%">
-        <Image
-          src={emptyStateIllustration}
-          alt="Stack of paper with magnifying glass"
-        />
-        ,<TextMd color="grey.400">You have no transactions yet!</TextMd>
+        <Image src={emptyState} alt="Stack of paper with magnifying glass" />,
+        <TextMd color="grey.400">You have no transactions yet!</TextMd>
       </VStack>
     )
 

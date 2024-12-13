@@ -13,7 +13,7 @@ import { PROCESS_STATUSES } from "#/types"
 import { BitcoinsStackErrorIcon } from "#/assets/icons"
 import { TextMd, TextXl } from "../../shared/Typography"
 import { Alert, AlertIcon } from "../../shared/Alert"
-import { CurrencyBalance } from "../../shared/CurrencyBalance"
+import CurrencyBalance from "../../shared/CurrencyBalance"
 
 export default function NotEnoughFundsModal() {
   const dispatch = useAppDispatch()

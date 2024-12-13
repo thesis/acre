@@ -3,29 +3,26 @@ import { Activity, ActivityType } from "#/types"
 const MIN_LIMIT_VALUE_DURATION = BigInt(String(1e7)) // 0.1 BTC
 const MAX_LIMIT_VALUE_DURATION = BigInt(String(1e8)) // 1 BTC
 
-export const isActivityCompleted = (activity: Activity): boolean =>
+const isActivityCompleted = (activity: Activity): boolean =>
   activity.status === "completed"
 
-export const getActivityTimestamp = (activity: Activity): number =>
+const getActivityTimestamp = (activity: Activity): number =>
   activity?.finalizedAt ?? activity.initializedAt
 
-export const hasPendingDeposits = (activities: Activity[]): boolean =>
+const hasPendingDeposits = (activities: Activity[]): boolean =>
   activities.some(
     (activity) => activity.status === "pending" && activity.type === "deposit",
   )
 
-export const sortActivitiesByTimestamp = (activities: Activity[]): Activity[] =>
+const sortActivitiesByTimestamp = (activities: Activity[]): Activity[] =>
   [...activities].sort(
     (activity1, activity2) =>
       getActivityTimestamp(activity2) - getActivityTimestamp(activity1),
   )
 
-export const isWithdrawType = (type: ActivityType) => type === "withdraw"
+const isWithdrawType = (type: ActivityType) => type === "withdraw"
 
-export function getEstimatedDuration(
-  amount: bigint,
-  type: ActivityType,
-): string {
+function getEstimatedDuration(amount: bigint, type: ActivityType): string {
   // Withdrawal duration is related to the tBTC redemption process, which takes
   // approximately 5 - 7 hours. We use the average value of 6 hours.
   if (isWithdrawType(type)) return "6 hours"
@@ -53,4 +50,13 @@ export function getEstimatedDuration(
   if (amount < MAX_LIMIT_VALUE_DURATION) return "2 hours"
   // For >=1 BTC estimated duration is around 2 hours 10 minutes.
   return "3 hours"
+}
+
+export default {
+  isActivityCompleted,
+  getActivityTimestamp,
+  hasPendingDeposits,
+  sortActivitiesByTimestamp,
+  isWithdrawType,
+  getEstimatedDuration,
 }

@@ -10,10 +10,10 @@ import {
 } from "@chakra-ui/react"
 import { LoadingSpinnerSuccessIcon } from "#/assets/icons"
 import { useActionFlowTokenAmount, useActionFlowTxHash } from "#/hooks"
-import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
+import CurrencyBalanceWithConversion from "#/components/shared/CurrencyBalanceWithConversion"
 import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
 import { IconArrowUpRight } from "@tabler/icons-react"
-import { getEstimatedDuration } from "#/utils"
+import { activitiesUtils } from "#/utils"
 import { Alert, AlertIcon, AlertDescription } from "#/components/shared/Alert"
 import { TextMd, TextSm } from "../shared/Typography"
 import BlockExplorerLink from "../shared/BlockExplorerLink"
@@ -85,7 +85,10 @@ export default function SuccessModal({ type }: SuccessModalProps) {
             <TextSm>The process will continue in the background.</TextSm>
             <TextSm color="#7D6A4B">
               Estimated duration&nbsp; ~{" "}
-              {getEstimatedDuration(tokenAmount?.amount ?? 0n, activityType)}
+              {activitiesUtils.getEstimatedDuration(
+                tokenAmount?.amount ?? 0n,
+                activityType,
+              )}
             </TextSm>
           </AlertDescription>
         </Alert>

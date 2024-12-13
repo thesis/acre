@@ -1,9 +1,9 @@
 import React from "react"
 import { useFormikContext } from "formik"
 import { ButtonProps } from "@chakra-ui/react"
-import { LoadingButton } from "../LoadingButton"
+import LoadingButton from "../LoadingButton"
 
-export function FormSubmitButton({ children, ...props }: ButtonProps) {
+export default function FormSubmitButton({ children, ...props }: ButtonProps) {
   const { isSubmitting, isValid } = useFormikContext()
 
   return (

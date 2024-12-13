@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react"
 import { useStatistics } from "#/hooks"
 import { BitcoinIcon } from "#/assets/icons"
-import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
+import CurrencyBalance from "#/components/shared/CurrencyBalance"
 import ProgressBar from "#/components/shared/ProgressBar"
 import { TextMd, TextXs } from "#/components/shared/Typography"
 
@@ -17,7 +17,7 @@ type AcreTVLProgressProps = StackProps
 
 const STEP_COUNT = 5
 
-export function AcreTVLProgress(props: AcreTVLProgressProps) {
+export default function AcreTVLProgress(props: AcreTVLProgressProps) {
   const styles = useMultiStyleConfig("AcreTVLProgress")
   const { tvl } = useStatistics()
 

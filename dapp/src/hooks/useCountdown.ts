@@ -1,11 +1,7 @@
 import { useState, useEffect } from "react"
 import { TimeUnits } from "#/types"
-import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
-import {
-  dateToUnixTimestamp,
-  unixTimestampToTimeUnits,
-  addLeadingZero,
-} from "#/utils"
+import { time } from "#/constants"
+import { timeUtils, numbersUtils } from "#/utils"
 
 /**
  * It was decided to use an already implemented hook used by Threshold Network.
@@ -15,16 +11,18 @@ import {
  * Source:
  * https://github.com/threshold-network/components/blob/main/src/hooks/useCountdown.ts
  */
-export const useCountdown = (
+const useCountdown = (
   targetDateInUnix: number,
   addLeadingZeroes?: boolean,
   onComplete?: (targetDateInUnix: number) => void,
 ): TimeUnits => {
-  const [diff, setDiff] = useState(targetDateInUnix - dateToUnixTimestamp())
+  const [diff, setDiff] = useState(
+    targetDateInUnix - timeUtils.dateToUnixTimestamp(),
+  )
 
   useEffect(() => {
     const countdownInterval = setInterval(() => {
-      const newDiff = targetDateInUnix - dateToUnixTimestamp()
+      const newDiff = targetDateInUnix - timeUtils.dateToUnixTimestamp()
       if (newDiff === 0) {
         if (onComplete) {
           onComplete(targetDateInUnix)
@@ -33,18 +31,19 @@ export const useCountdown = (
       }
 
       setDiff(newDiff)
-    }, ONE_SEC_IN_MILLISECONDS)
+    }, time.ONE_SEC_IN_MILLISECONDS)
 
     return () => clearInterval(countdownInterval)
   }, [targetDateInUnix, onComplete])
 
-  let { days, hours, minutes, seconds } = unixTimestampToTimeUnits(diff)
+  let { days, hours, minutes, seconds } =
+    timeUtils.unixTimestampToTimeUnits(diff)
 
   if (addLeadingZeroes) {
-    days = addLeadingZero(Number(days))
-    hours = addLeadingZero(Number(hours))
-    minutes = addLeadingZero(Number(minutes))
-    seconds = addLeadingZero(Number(seconds))
+    days = numbersUtils.addLeadingZero(Number(days))
+    hours = numbersUtils.addLeadingZero(Number(hours))
+    minutes = numbersUtils.addLeadingZero(Number(minutes))
+    seconds = numbersUtils.addLeadingZero(Number(seconds))
   }
 
   return {
@@ -54,3 +53,5 @@ export const useCountdown = (
     seconds,
   }
 }
+
+export default useCountdown

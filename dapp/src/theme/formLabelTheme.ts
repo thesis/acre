@@ -20,4 +20,4 @@ const sizes = {
   lg: sizeLg,
 }
 
-export const formLabelTheme = defineStyleConfig({ baseStyle, sizes })
+export default defineStyleConfig({ baseStyle, sizes })

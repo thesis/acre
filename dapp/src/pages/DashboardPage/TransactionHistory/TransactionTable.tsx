@@ -8,8 +8,8 @@ import {
   PaginationStatus,
 } from "#/components/shared/Pagination"
 import { TextSm } from "#/components/shared/Typography"
-import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
-import { displayBlockTimestamp, getActivityTimestamp } from "#/utils"
+import CurrencyBalance from "#/components/shared/CurrencyBalance"
+import { timeUtils, activitiesUtils } from "#/utils"
 import { Activity } from "#/types"
 import BlockExplorerLink from "#/components/shared/BlockExplorerLink"
 import { IconArrowUpRight } from "@tabler/icons-react"
@@ -52,7 +52,9 @@ export default function TransactionTable() {
                   </Flex>
                   <Flex justifyContent="space-between">
                     <TextSm color="grey.500" flex={1} fontWeight="medium">
-                      {displayBlockTimestamp(getActivityTimestamp(activity))}
+                      {timeUtils.displayBlockTimestamp(
+                        activitiesUtils.getActivityTimestamp(activity),
+                      )}
                     </TextSm>
                     {activity.txHash ? (
                       <BlockExplorerLink

@@ -9,7 +9,7 @@ import {
   ModalHeader,
 } from "@chakra-ui/react"
 import { TextMd } from "#/components/shared/Typography"
-import { EXTERNAL_HREF } from "#/constants"
+import { externalHref } from "#/constants"
 import { IconBrandDiscordFilled } from "@tabler/icons-react"
 import { BaseModalProps } from "#/types"
 import withBaseModal from "./ModalRoot/withBaseModal"
@@ -31,7 +31,7 @@ export function UnexpectedErrorModalBase({ withCloseButton }: BaseModalProps) {
           width="100%"
           variant="outline"
           rightIcon={<Icon as={IconBrandDiscordFilled} boxSize={5} />}
-          href={EXTERNAL_HREF.DISCORD}
+          href={externalHref.DISCORD}
           isExternal
         >
           Get help on Discord

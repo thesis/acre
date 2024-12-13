@@ -6,13 +6,13 @@ import {
   useBitcoinBalance,
   useCancelPromise,
   useDepositBTCTransaction,
+  usePostHogCapture,
   useStakeFlowContext,
   useVerifyDepositAddress,
 } from "#/hooks"
-import { usePostHogCapture } from "#/hooks/posthog/usePostHogCapture"
-import { PostHogEvent } from "#/posthog/events"
+import PostHogEvent from "#/posthog/events"
 import { setStatus, setTxHash } from "#/store/action-flow"
-import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
+import { time } from "#/constants"
 import { PROCESS_STATUSES } from "#/types"
 import { eip1193, logPromiseFailure } from "#/utils"
 import { useTimeout } from "@chakra-ui/react"
@@ -116,7 +116,7 @@ export default function DepositBTCModal() {
     logPromiseFailure(handledDepositBTC())
   }, [handledDepositBTC])
 
-  useTimeout(handledDepositBTCWrapper, ONE_SEC_IN_MILLISECONDS)
+  useTimeout(handledDepositBTCWrapper, time.ONE_SEC_IN_MILLISECONDS)
 
   if (status === "pending" || status === "success")
     return <WalletInteractionModal step="awaiting-transaction" />

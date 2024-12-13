@@ -3,7 +3,7 @@ import { fetchBTCPriceUSD } from "#/store/btc"
 import { logPromiseFailure } from "#/utils"
 import { useAppDispatch } from "./store"
 
-export function useFetchBTCPriceUSD() {
+export default function useFetchBTCPriceUSD() {
   const dispatch = useAppDispatch()
 
   useEffect(() => {

@@ -1,9 +1,9 @@
-import { PostHogEvent } from "#/posthog/events"
+import PostHogEvent from "#/posthog/events"
 import { useEffect } from "react"
 import { useLocation } from "react-router-dom"
-import { usePostHogCapture } from "./usePostHogCapture"
+import usePostHogCapture from "./usePostHogCapture"
 
-export const usePostHogPageViewCapture = () => {
+const usePostHogPageViewCapture = () => {
   const { handleCapture } = usePostHogCapture()
   const location = useLocation()
 
@@ -13,3 +13,5 @@ export const usePostHogPageViewCapture = () => {
 
   return handleCapture
 }
+
+export default usePostHogPageViewCapture

@@ -1,6 +1,6 @@
 import { selectActionFlowTokenAmount } from "#/store/action-flow"
-import { useAppSelector } from "./useAppSelector"
+import useAppSelector from "./useAppSelector"
 
-export function useActionFlowTokenAmount() {
+export default function useActionFlowTokenAmount() {
   return useAppSelector(selectActionFlowTokenAmount)
 }

@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef } from "react"
 
 // Source: https://usehooks-ts.com/react-hook/use-timeout
-export function useTimeout(callback: () => void, delay: number | null) {
+export default function useTimeout(callback: () => void, delay: number | null) {
   const savedCallback = useRef(callback)
 
   // Remember the latest callback if it changes.

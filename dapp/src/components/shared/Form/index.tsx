@@ -1,3 +1,3 @@
-export * from "./Form"
+export { default as Form } from "./Form"
 export * from "./FormTokenBalanceInput"
-export * from "./FormSubmitButton"
+export { default as FormSubmitButton } from "./FormSubmitButton"

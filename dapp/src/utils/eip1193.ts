@@ -3,7 +3,9 @@ import {
   EIP1193ErrorCodeNumbers,
   EIP1193_ERROR_CODES,
 } from "#/types"
-import { isNumber, isObject, isString } from "./type-check"
+import typeCheck from "./type-check"
+
+const { isNumber, isObject, isString } = typeCheck
 
 function isEIP1193ErrorCodeNumber(
   code: unknown,

@@ -2,9 +2,9 @@ import { useEffect } from "react"
 import { setMinDepositAmount } from "#/store/btc"
 import { logPromiseFailure } from "#/utils"
 import { useAcreContext } from "#/acre-react/hooks"
-import { useAppDispatch } from "../store/useAppDispatch"
+import useAppDispatch from "../store/useAppDispatch"
 
-export function useFetchMinDepositAmount() {
+export default function useFetchMinDepositAmount() {
   const { acre, isInitialized } = useAcreContext()
   const dispatch = useAppDispatch()
 

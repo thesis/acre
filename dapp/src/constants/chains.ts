@@ -10,9 +10,14 @@ const BLOCK_EXPLORER_MAINNET = {
   bitcoin: { title: "Mempool", url: "https://mempool.space" },
 }
 
-export const BLOCK_EXPLORER: Record<Chain, { title: string; url: string }> =
+const BLOCK_EXPLORER: Record<Chain, { title: string; url: string }> =
   env.USE_TESTNET ? BLOCK_EXPLORER_TESTNET : BLOCK_EXPLORER_MAINNET
 
-export const BITCOIN_NETWORK: BitcoinNetwork = env.USE_TESTNET
+const BITCOIN_NETWORK: BitcoinNetwork = env.USE_TESTNET
   ? BitcoinNetwork.Testnet
   : BitcoinNetwork.Mainnet
+
+export default {
+  BLOCK_EXPLORER,
+  BITCOIN_NETWORK,
+}

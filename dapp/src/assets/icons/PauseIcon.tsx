@@ -1,7 +1,7 @@
 import React from "react"
 import { createIcon } from "@chakra-ui/react"
 
-export const PauseIcon = createIcon({
+export default createIcon({
   displayName: "PauseIcon",
   viewBox: "0 0 18 20",
   path: (
