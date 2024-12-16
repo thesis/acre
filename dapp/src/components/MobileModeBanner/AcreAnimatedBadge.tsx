@@ -7,8 +7,6 @@ function AcreAnimatedBadge(props: BoxProps) {
     <Box
       as="svg"
       xmlns="http://www.w3.org/2000/svg"
-      w="224px"
-      h="224px"
       fill="none"
       viewBox="0 0 224 224"
       {...props}
