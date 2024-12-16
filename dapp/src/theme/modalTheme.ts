@@ -6,7 +6,10 @@ const baseStyleContainer = defineStyle({
 })
 
 const baseStyleDialog = defineStyle({
-  marginTop: { base: 12, sm: "var(--chakra-space-modal_shift)" },
+  marginTop: {
+    base: 12,
+    sm: "9.75rem", // 156px
+  },
   marginBottom: 8,
   boxShadow: "none",
   borderRadius: "xl",
@@ -38,8 +41,8 @@ const baseStyleHeader = defineStyle({
   fontSize: "xl",
   lineHeight: "xl",
   fontWeight: "bold",
-  pt: { sm: 10 },
-  px: { sm: 10 },
+  pt: { sm: 8 },
+  px: { sm: 8 },
   pb: 8,
 })
 
@@ -51,15 +54,15 @@ const baseStyleBody = defineStyle({
   alignItems: "center",
   gap: 6,
   pt: 0,
-  px: { base: 0, sm: 10 },
-  pb: { base: 0, sm: 10 },
+  px: { base: 0, sm: 8 },
+  pb: { base: 0, sm: 8 },
 })
 
 const baseStyleFooter = defineStyle({
   flexDirection: "column",
   gap: 6,
   px: { base: 0, sm: 8 },
-  pb: { base: 0, sm: 10 },
+  pb: { base: 0, sm: 8 },
 })
 
 const multiStyleConfig = createMultiStyleConfigHelpers(parts.keys)

@@ -1,5 +1,4 @@
 import { extendTheme } from "@chakra-ui/react"
-import { buttonTheme } from "./Button"
 import {
   colors,
   fonts,
@@ -8,27 +7,27 @@ import {
   styles,
   zIndices,
 } from "./utils"
-import { drawerTheme } from "./Drawer"
-import { modalTheme } from "./Modal"
-import { cardTheme } from "./Card"
-import { tooltipTheme } from "./Tooltip"
-import { headingTheme } from "./Heading"
-import { currencyBalanceTheme } from "./CurrencyBalance"
-import { tokenBalanceInputTheme } from "./TokenBalanceInput"
-import { inputTheme } from "./Input"
-import { alertTheme } from "./Alert"
-import { formTheme } from "./Form"
-import { formLabelTheme } from "./FormLabel"
-import { formErrorTheme } from "./FormError"
-import { tagTheme } from "./Tag"
-import { spinnerTheme } from "./Spinner"
-import { linkTheme } from "./Link"
-import { skeletonTheme } from "./Skeleton"
-import { closeButtonTheme } from "./CloseButton"
-import { progressTheme } from "./Progress"
-import { countdownTheme } from "./Countdown"
-import { footerTheme } from "./Footer"
-import { acreTVLProgressTheme } from "./AcreTVLProgress"
+import { acreTVLProgressTheme } from "./acreTVLProgressTheme"
+import { alertTheme } from "./alertTheme"
+import { buttonTheme } from "./buttonTheme"
+import { cardTheme } from "./cardTheme"
+import { closeButtonTheme } from "./closeButtonTheme"
+import { countdownTheme } from "./countdownTheme"
+import { currencyBalanceTheme } from "./currencyBalanceTheme"
+import { footerTheme } from "./footerTheme"
+import { formErrorTheme } from "./formErrorTheme"
+import { formLabelTheme } from "./formLabelTheme"
+import { formTheme } from "./formTheme"
+import { headingTheme } from "./headingTheme"
+import { inputTheme } from "./inputTheme"
+import { linkTheme } from "./linkTheme"
+import { modalTheme } from "./modalTheme"
+import { progressTheme } from "./progressTheme"
+import { skeletonTheme } from "./skeletonTheme"
+import { spinnerTheme } from "./spinnerTheme"
+import { tagTheme } from "./tagTheme"
+import { tokenBalanceInputTheme } from "./tokenBalanceInputTheme"
+import { tooltipTheme } from "./tooltipTheme"
 
 const defaultTheme = {
   // TODO: Remove when dark mode is ready
@@ -52,7 +51,6 @@ const defaultTheme = {
     Card: cardTheme,
     CloseButton: closeButtonTheme,
     CurrencyBalance: currencyBalanceTheme,
-    Drawer: drawerTheme,
     Form: formTheme,
     FormLabel: formLabelTheme,
     FormError: formErrorTheme,
