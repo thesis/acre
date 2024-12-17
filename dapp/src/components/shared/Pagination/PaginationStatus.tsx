@@ -1,7 +1,6 @@
 import React from "react"
-import { TextProps } from "@chakra-ui/react"
+import { Text, TextProps } from "@chakra-ui/react"
 import { usePagination } from "#/hooks"
-import { TextSm } from "../Typography"
 
 // TODO: move to top level `utils` directory
 const getPaginationState = (
@@ -30,9 +29,9 @@ function PaginationStatus(props: PaginationStatusProps) {
   )
 
   return (
-    <TextSm {...restProps}>
+    <Text size="sm" {...restProps}>
       {rangeStart}-{rangeEnd} out of {totalSize} {dataLabel}
-    </TextSm>
+    </Text>
   )
 }
 

@@ -1,8 +1,7 @@
 import React from "react"
-import { Box, HStack, StackProps, VStack } from "@chakra-ui/react"
+import { Box, HStack, StackProps, VStack, Text } from "@chakra-ui/react"
 import { useActivitiesCount, useStatistics, useWallet } from "#/hooks"
 import { IconBolt } from "@tabler/icons-react"
-import { TextMd } from "#/components/shared/Typography"
 import CurrencyBalance from "#/components/shared/CurrencyBalance"
 
 type AcreTVLMessageProps = Omit<StackProps, "children">
@@ -25,13 +24,13 @@ export default function AcreTVLMessage(props: AcreTVLMessageProps) {
       </Box>
       {tvl.isCapExceeded ? (
         <VStack align="start" spacing={0}>
-          <TextMd fontWeight="semibold" color="grey.700">
+          <Text size="md" fontWeight="semibold" color="grey.700">
             Deposit cap reached!
-          </TextMd>
-          <TextMd>Stay tuned for the next deposit cycle.</TextMd>
+          </Text>
+          <Text size="md">Stay tuned for the next deposit cycle.</Text>
         </VStack>
       ) : (
-        <TextMd as="div">
+        <Text size="md" as="div">
           <CurrencyBalance
             amount={tvl.remaining}
             currency="bitcoin"
@@ -40,7 +39,7 @@ export default function AcreTVLMessage(props: AcreTVLMessageProps) {
             color="grey.700"
           />
           <Box as="span">&nbsp;remaining until deposit cap</Box>
-        </TextMd>
+        </Text>
       )}
     </HStack>
   )
