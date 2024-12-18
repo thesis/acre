@@ -19,7 +19,7 @@ import {
   IconReload,
   IconServerBolt,
 } from "@tabler/icons-react"
-// import InfoTooltip from "#/components/shared/InfoTooltip"
+// import TooltipIcon from "#/components/shared/TooltipIcon"
 
 export default function ServerErrorModal({
   isLoading,
@@ -66,7 +66,7 @@ export default function ServerErrorModal({
           <HStack>
             <TextMd fontWeight="bold">System status</TextMd>
             {/* TODO: ADD a tooltip */}
-            {/* <InfoTooltip label="Tooltip text" placement="top" /> */}
+            {/* <TooltipIcon label="Tooltip text" placement="top" /> */}
           </HStack>
           <TextMd color="red.400">Partial Outage</TextMd>
         </Flex>

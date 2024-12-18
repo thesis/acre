@@ -1,22 +1,23 @@
-import React, { useCallback } from "react"
+import React, { useCallback, useRef } from "react"
 import {
   useActionFlowPause,
   useActionFlowTokenAmount,
   useAppDispatch,
+  useBitcoinBalance,
+  useCancelPromise,
   useDepositBTCTransaction,
-  useInvalidateQueries,
   useStakeFlowContext,
   useVerifyDepositAddress,
 } from "#/hooks"
-import { eip1193, logPromiseFailure } from "#/utils"
-import { PROCESS_STATUSES } from "#/types"
+import { usePostHogCapture } from "#/hooks/posthog/usePostHogCapture"
+import { PostHogEvent } from "#/posthog/events"
 import { setStatus, setTxHash } from "#/store/action-flow"
-import { ONE_SEC_IN_MILLISECONDS, queryKeysFactory } from "#/constants"
+import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
+import { PROCESS_STATUSES } from "#/types"
+import { eip1193, logPromiseFailure } from "#/utils"
 import { useTimeout } from "@chakra-ui/react"
 import { useMutation } from "@tanstack/react-query"
 import WalletInteractionModal from "../WalletInteractionModal"
-
-const { userKeys } = queryKeysFactory
 
 export default function DepositBTCModal() {
   const tokenAmount = useActionFlowTokenAmount()
@@ -24,14 +25,19 @@ export default function DepositBTCModal() {
   const verifyDepositAddress = useVerifyDepositAddress()
   const dispatch = useAppDispatch()
   const { handlePause } = useActionFlowPause()
-  const handleBitcoinBalanceInvalidation = useInvalidateQueries({
-    queryKey: userKeys.balance(),
-  })
+  const { refetch: refetchBitcoinBalance } = useBitcoinBalance()
+  const { handleCapture, handleCaptureWithCause } = usePostHogCapture()
+
+  const sessionId = useRef(Math.random())
+  const { cancel, resolve, sessionIdToPromise } = useCancelPromise(
+    sessionId.current,
+    "Deposit cancelled",
+  )
 
   const onStakeBTCSuccess = useCallback(() => {
-    handleBitcoinBalanceInvalidation()
+    logPromiseFailure(refetchBitcoinBalance())
     dispatch(setStatus(PROCESS_STATUSES.SUCCEEDED))
-  }, [dispatch, handleBitcoinBalanceInvalidation])
+  }, [dispatch, refetchBitcoinBalance])
 
   const onError = useCallback(
     (error: unknown) => {
@@ -52,19 +58,26 @@ export default function DepositBTCModal() {
     (transactionHash: string) => {
       dispatch(setTxHash(transactionHash))
       handleStake()
+      handleCapture(PostHogEvent.DepositSuccess, {
+        transactionHash,
+      })
     },
-    [dispatch, handleStake],
+    [dispatch, handleStake, handleCapture],
   )
 
   const onDepositBTCError = useCallback(
     (error: unknown) => {
+      if (!sessionIdToPromise[sessionId.current].shouldOpenErrorModal) return
+
       if (eip1193.didUserRejectRequest(error)) {
         handlePause()
       } else {
         onError(error)
       }
+
+      handleCaptureWithCause(error, PostHogEvent.DepositFailure)
     },
-    [onError, handlePause],
+    [sessionIdToPromise, handlePause, onError, handleCaptureWithCause],
   )
 
   const { mutate: sendBitcoinTransaction, status } = useDepositBTCTransaction({
@@ -79,6 +92,8 @@ export default function DepositBTCModal() {
       btcAddress,
     )
 
+    await resolve()
+
     if (verificationStatus === "valid") {
       sendBitcoinTransaction({
         recipient: btcAddress,
@@ -92,6 +107,7 @@ export default function DepositBTCModal() {
     btcAddress,
     depositReceipt,
     verifyDepositAddress,
+    resolve,
     sendBitcoinTransaction,
     onError,
   ])
@@ -105,5 +121,5 @@ export default function DepositBTCModal() {
   if (status === "pending" || status === "success")
     return <WalletInteractionModal step="awaiting-transaction" />
 
-  return <WalletInteractionModal step="opening-wallet" />
+  return <WalletInteractionModal step="opening-wallet" onClose={cancel} />
 }

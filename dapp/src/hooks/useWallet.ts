@@ -8,6 +8,7 @@ import {
   useDisconnect,
 } from "wagmi"
 import { orangeKit } from "#/utils"
+import sentry from "#/sentry"
 import {
   OnErrorCallback,
   OrangeKitConnector,
@@ -17,10 +18,10 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useDispatch } from "react-redux"
 import { setAddress } from "#/store/wallet"
-import useBitcoinBalance from "./orangeKit/useBitcoinBalance"
 import useResetWalletState from "./useResetWalletState"
 import useLastUsedBtcAddress from "./useLastUsedBtcAddress"
-import useWalletAddress from "./store/useWalletAddress"
+import useBitcoinBalance from "./useBitcoinBalance"
+import { useWalletAddress } from "./store"
 
 const { typeConversionToConnector, typeConversionToOrangeKitConnector } =
   orangeKit
@@ -50,7 +51,7 @@ export function useWallet(): UseWalletReturn {
   const { setAddressInLocalStorage, removeAddressFromLocalStorage } =
     useLastUsedBtcAddress()
 
-  const { data: balance } = useBitcoinBalance(btcAddress)
+  const { data: balance } = useBitcoinBalance()
 
   const chainId = useChainId()
   const config = useConfig()
@@ -76,6 +77,7 @@ export function useWallet(): UseWalletReturn {
 
         dispatch(setAddress(bitcoinAddress))
         setAddressInLocalStorage(bitcoinAddress)
+        sentry.setUser(bitcoinAddress)
       },
     },
   })
@@ -87,6 +89,7 @@ export function useWallet(): UseWalletReturn {
         dispatch(setAddress(undefined))
         removeAddressFromLocalStorage()
         resetWalletState()
+        sentry.setUser(undefined)
       },
     },
   })
@@ -125,6 +128,7 @@ export function useWallet(): UseWalletReturn {
 
         dispatch(setAddress(bitcoinAddress))
         setAddressInLocalStorage(bitcoinAddress)
+        sentry.setUser(bitcoinAddress)
       },
     },
     queryClient,

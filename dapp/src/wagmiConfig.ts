@@ -5,6 +5,7 @@ import { env } from "./constants"
 import { getLastUsedBtcAddress } from "./hooks/useLastUsedBtcAddress"
 import referralProgram, { EmbedApp } from "./utils/referralProgram"
 import { orangeKit } from "./utils"
+import { AcreLedgerLiveBitcoinProviderOptions } from "./utils/orangekit/ledger-live/bitcoin-provider"
 
 const isTestnet = env.USE_TESTNET
 const CHAIN_ID = isTestnet ? sepolia.id : mainnet.id
@@ -34,12 +35,19 @@ async function getWagmiConfig() {
   let createEmbedConnectorFn
   const embeddedApp = referralProgram.getEmbeddedApp()
   if (referralProgram.isEmbedApp(embeddedApp)) {
+    const lastUsedBtcAddress = getLastUsedBtcAddress()
+    const xpub = orangeKit.findXpubFromUrl(window.location.href)
+    const ledgerLiveConnectorOptions: AcreLedgerLiveBitcoinProviderOptions =
+      xpub
+        ? { tryConnectToAccountByXpub: xpub }
+        : {
+            tryConnectToAddress: lastUsedBtcAddress,
+          }
+
     const orangeKitLedgerLiveConnector =
       orangeKit.getOrangeKitLedgerLiveConnector({
         ...connectorConfig,
-        options: {
-          tryConnectToAddress: getLastUsedBtcAddress(),
-        },
+        options: ledgerLiveConnectorOptions,
       })
 
     const embedConnectorsMap: Record<

@@ -1,19 +1,12 @@
-import {
-  ACRE_SESSION_EXPIRATION_TIME,
-  CONNECTION_ERRORS,
-  wallets,
-} from "#/constants"
-import {
-  ConnectionErrorData,
-  OrangeKitError,
-  OrangeKitConnector,
-} from "#/types"
+import { ACRE_SESSION_EXPIRATION_TIME, wallets } from "#/constants"
+import { OrangeKitError, OrangeKitConnector } from "#/types"
 import {
   isUnsupportedBitcoinAddressError,
   isWalletNetworkDoesNotMatchProviderChainError,
 } from "@orangekit/react"
 import { Connector } from "wagmi"
 import { SignInWithWalletMessage } from "@orangekit/sign-in-with-wallet"
+import { ConnectionAlert } from "#/components/ConnectWalletModal/ConnectWalletAlert"
 import { getExpirationDate } from "../time"
 import { getOrangeKitLedgerLiveConnector } from "./ledger-live"
 
@@ -71,22 +64,22 @@ const typeConversionToConnector = (connector?: OrangeKitConnector): Connector =>
 
 const parseOrangeKitConnectionError = (
   error: OrangeKitError,
-): ConnectionErrorData => {
+): ConnectionAlert => {
   const { cause } = error
 
   if (isWalletConnectionRejectedError(cause)) {
-    return CONNECTION_ERRORS.REJECTED
+    return ConnectionAlert.Rejected
   }
 
   if (isUnsupportedBitcoinAddressError(cause)) {
-    return CONNECTION_ERRORS.NOT_SUPPORTED
+    return ConnectionAlert.NotSupported
   }
 
   if (isWalletNetworkDoesNotMatchProviderChainError(cause)) {
-    return CONNECTION_ERRORS.NETWORK_MISMATCH
+    return ConnectionAlert.NetworkMismatch
   }
 
-  return CONNECTION_ERRORS.DEFAULT
+  return ConnectionAlert.Default
 }
 
 async function verifySignInWithWalletMessage(
@@ -107,6 +100,33 @@ async function verifySignInWithWalletMessage(
   return result.data
 }
 
+/**
+ * Finds the extended public key (xpub) of the user's account from URL. Users
+ * can be redirected to the exact app in the Ledger Live application. One of the
+ * parameters passed via URL is `accountId` - the ID of the user's account in
+ * Ledger Live.
+ * @see https://developers.ledger.com/docs/ledger-live/exchange/earn/liveapp#url-parameters-for-direct-navigation
+ *
+ * @param {string} url Request url
+ * @returns The extended public key (xpub) of the user's account if the search
+ *          parameter `accountId` exists in the URL. Otherwise `undefined`.
+ */
+function findXpubFromUrl(url: string): string | undefined {
+  const parsedUrl = new URL(url)
+
+  const accountId = parsedUrl.searchParams.get("accountId")
+
+  if (!accountId) return undefined
+
+  // The fourth value separated by `:` is extended public key. See the
+  // account ID template: `js:2:bitcoin_testnet:<xpub>:<address_type>`.
+  const xpubFromAccountId = accountId.split(":")[3]
+
+  if (!xpubFromAccountId) return undefined
+
+  return xpubFromAccountId
+}
+
 export default {
   getWalletInfo,
   isWalletInstalled,
@@ -119,4 +139,5 @@ export default {
   isWalletConnectionRejectedError,
   verifySignInWithWalletMessage,
   getOrangeKitLedgerLiveConnector,
+  findXpubFromUrl,
 }

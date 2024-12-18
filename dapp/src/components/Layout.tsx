@@ -3,10 +3,9 @@ import { Outlet } from "react-router-dom"
 import { Flex, VStack } from "@chakra-ui/react"
 import { useIsEmbed, useMobileMode } from "#/hooks"
 import { DappMode } from "#/types"
-import DocsDrawer from "./DocsDrawer"
+import { usePostHogPageViewCapture } from "#/hooks/posthog"
 import Header from "./Header"
 import ModalRoot from "./ModalRoot"
-import Sidebar from "./Sidebar"
 import MobileModeBanner from "./MobileModeBanner"
 import Footer from "./Footer"
 
@@ -23,6 +22,10 @@ const PAGE_MAX_WIDTH: Record<DappMode, string> = {
 function Layout() {
   const isMobileMode = useMobileMode()
   const { isEmbed, embeddedApp } = useIsEmbed()
+
+  // It needs to be called here because the scope of `RouterProvider` is
+  // required to get `location` from `useLocation` hook.
+  usePostHogPageViewCapture()
 
   if (!isEmbed && isMobileMode) return <MobileModeBanner forceOpen />
 
@@ -46,8 +49,6 @@ function Layout() {
       >
         <Outlet />
 
-        <Sidebar />
-        <DocsDrawer />
         <ModalRoot />
       </Flex>
 

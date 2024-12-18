@@ -1,26 +1,23 @@
 import React from "react"
 import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
 import {
-  useAllActivitiesCount,
+  useActivitiesCount,
   useBitcoinPosition,
   useTransactionModal,
   useStatistics,
   useWallet,
   useMobileMode,
+  useActivities,
 } from "#/hooks"
 import { ACTION_FLOW_TYPES } from "#/types"
-import {
-  Button,
-  ButtonProps,
-  Flex,
-  HStack,
-  // Tag,
-  VStack,
-} from "@chakra-ui/react"
+import { Button, ButtonProps, Flex, HStack, VStack } from "@chakra-ui/react"
 import ArrivingSoonTooltip from "#/components/ArrivingSoonTooltip"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import { featureFlags } from "#/constants"
 import { TextMd } from "#/components/shared/Typography"
+import { IconClockHour5Filled } from "@tabler/icons-react"
+import TooltipIcon from "#/components/shared/TooltipIcon"
+import { hasPendingDeposits } from "#/utils"
 import AcreTVLMessage from "./AcreTVLMessage"
 
 const isWithdrawalFlowEnabled = featureFlags.WITHDRAWALS_ENABLED
@@ -36,12 +33,13 @@ const buttonStyles: ButtonProps = {
 }
 
 export default function PositionDetails() {
-  const { data } = useBitcoinPosition()
-  const bitcoinAmount = data?.estimatedBitcoinBalance ?? 0n
+  const { data: bitcoinPosition } = useBitcoinPosition()
+  const bitcoinAmount = bitcoinPosition?.estimatedBitcoinBalance ?? 0n
 
   const openDepositModal = useTransactionModal(ACTION_FLOW_TYPES.STAKE)
   const openWithdrawModal = useTransactionModal(ACTION_FLOW_TYPES.UNSTAKE)
-  const activitiesCount = useAllActivitiesCount()
+  const activitiesCount = useActivitiesCount()
+  const { data: activities } = useActivities()
   const isMobileMode = useMobileMode()
 
   const { tvl } = useStatistics()
@@ -55,25 +53,16 @@ export default function PositionDetails() {
     <Flex w="100%" flexDirection="column" gap={5}>
       <VStack alignItems="start" spacing={0}>
         {/* TODO: Component should be moved to `CardHeader` */}
-        <TextMd>
-          Your deposit
-          {/* TODO: Uncomment when position will be implemented */}
-          {/* {positionPercentage && (
-            <Tag
-              px={3}
-              py={1}
-              ml={2}
-              borderWidth={0}
-              color="gold.100"
-              bg="gold.700"
-              fontWeight="bold"
-              lineHeight={5}
-              verticalAlign="baseline"
-            >
-              Top {positionPercentage}%
-            </Tag>
-          )} */}
-        </TextMd>
+        <HStack>
+          <TextMd>Your Acre balance</TextMd>
+          {hasPendingDeposits(activities ?? []) && (
+            <TooltipIcon
+              icon={IconClockHour5Filled}
+              label="Your balance will update once the pending deposit is finalized."
+              placement="right"
+            />
+          )}
+        </HStack>
         <UserDataSkeleton>
           <VStack alignItems="start" spacing={0}>
             <CurrencyBalanceWithConversion

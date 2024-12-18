@@ -39,11 +39,11 @@ importers:
         specifier: 1.6.0
         version: 1.6.0
       '@orangekit/react':
-        specifier: 1.0.0-beta.33
-        version: 1.0.0-beta.33(@react-native-async-storage/async-storage@1.23.1(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10)))(@tanstack/query-core@5.45.0)(@tanstack/react-query@5.45.0(react@18.3.1))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(immer@10.1.1)(react-dom@18.3.1(react@18.3.1))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10))(rollup@4.18.0)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8)
+        specifier: 1.0.0-beta.34
+        version: 1.0.0-beta.34(@react-native-async-storage/async-storage@1.23.1(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10)))(@tanstack/query-core@5.45.0)(@tanstack/react-query@5.45.0(react@18.3.1))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(immer@10.1.1)(react-dom@18.3.1(react@18.3.1))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10))(rollup@4.18.0)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8)
       '@orangekit/sign-in-with-wallet':
-        specifier: 1.0.0-beta.6
-        version: 1.0.0-beta.6(bech32@2.0.0)(ethers@6.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))
+        specifier: 1.0.0-beta.7
+        version: 1.0.0-beta.7(bech32@2.0.0)(ethers@6.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))
       '@reduxjs/toolkit':
         specifier: ^2.2.0
         version: 2.2.5(react-redux@9.1.2(@types/react@18.3.3)(react@18.3.1)(redux@5.0.1))(react@18.3.1)
@@ -89,6 +89,9 @@ importers:
       mustache:
         specifier: ^4.2.0
         version: 4.2.0
+      posthog-js:
+        specifier: ^1.186.1
+        version: 1.186.1
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -172,8 +175,8 @@ importers:
         specifier: 2.5.0-dev.3
         version: 2.5.0-dev.3(@keep-network/keep-core@1.8.1-dev.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@5.0.10)
       '@orangekit/sdk':
-        specifier: 1.0.0-beta.18
-        version: 1.0.0-beta.18(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@5.0.10)
+        specifier: 1.0.0-beta.19
+        version: 1.0.0-beta.19(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@5.0.10)
       ethers:
         specifier: 6.10.0
         version: 6.10.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
@@ -2692,17 +2695,17 @@ packages:
   '@orangekit/contracts@1.0.0-beta.3':
     resolution: {integrity: sha512-xP1Oz/JzuHypg5DcsHayINhFSL5M/tCmRP/stmNAvjeebXhrKuALKAHWn98H0Mo3QfYYrz8UcltQPeH6+68n6A==}
 
-  '@orangekit/react@1.0.0-beta.33':
-    resolution: {integrity: sha512-b5VMFB2tZad86FNdtylwsKaXlXlrSjY9cIMsaJMUh7EEWEoVvtndbCsHrISKbspm7y+S5nNmGlE3WcQvR8RWWw==}
+  '@orangekit/react@1.0.0-beta.34':
+    resolution: {integrity: sha512-/PTfYcu/BU4ssltIuy+AKqbaGzue+MEJHwd7+4aZhXhwJ+/xrYo3mJ1tSwj6K8lAJCl/N25vq7zNJgVgjLK1WQ==}
 
-  '@orangekit/sdk@1.0.0-beta.18':
-    resolution: {integrity: sha512-031JkI0F8gdGzj/7sKbJ52k0Xj/E4uwp/O0SWFDCXyZC0vwtjlw3ItAaZz+nIj820b6dSM6pjL+P7um3m9AK3Q==}
+  '@orangekit/sdk@1.0.0-beta.19':
+    resolution: {integrity: sha512-sIqzu3QTb0WkB4Ir4zHX4tP7hf+uZBXX60q/ww6UzwPjoqGL3dOdui59lTZSNygdMbydLE3y9FSNZPNkQvm+gA==}
 
-  '@orangekit/sign-in-with-wallet-parser@1.0.0-beta.6':
-    resolution: {integrity: sha512-Yi6ohSJV4/Ovrq5c7jD+kPE8pZxLhWtFbZjKRwUW8JL60P/tcyT5o0etul0reqcY2iBlIo5aoC2Hh0noRGl86w==}
+  '@orangekit/sign-in-with-wallet-parser@1.0.0-beta.7':
+    resolution: {integrity: sha512-C7gmliw2TJOQzIMpuhDZhIGlp7zFSqNsa/oevNaqnB+i0zFIsXZjsKg2oddr8smYG1+KhbX+V+O3AeaPCSsK9A==}
 
-  '@orangekit/sign-in-with-wallet@1.0.0-beta.6':
-    resolution: {integrity: sha512-UzNG8QHehem2wayWDyMBd13z1lQUBKsSq+NjGK6KHYWUbet6EizBeVZK7jSruzTHba3gDI8I3NH071E6sxTFtQ==}
+  '@orangekit/sign-in-with-wallet@1.0.0-beta.7':
+    resolution: {integrity: sha512-o2U5oi8b+2cc0Lel4p7myp1pQ6J2OLCdVTRhYQ4Te4+iqVFns1UlHx28pEo0zvGCJ5CwHQBmJHX6QguL02Kj4Q==}
     peerDependencies:
       bech32: '=2.0.0'
       ethers: ^6.0.8
@@ -3113,8 +3116,13 @@ packages:
     peerDependencies:
       ethers: 5.4.0
 
+  '@safe-global/safe-core-sdk-types@4.1.1':
+    resolution: {integrity: sha512-5NIWG7OjV+C5iquux0yPcu8SHUzg1qJXJ/jAQcPwXGTC7ZVsFawnR43/l2Vg9zEwf0RF0xTm3W8DXkaBYORiEQ==}
+    deprecated: 'WARNING: This project has been renamed to @safe-global/types-kit. Please, migrate from @safe-global/safe-core-sdk-types@5.1.0 to @safe-global/types-kit@1.0.0.'
+
   '@safe-global/safe-core-sdk-types@5.0.1':
     resolution: {integrity: sha512-xIlHZ9kaAIwEhR0OY0i2scdcQyrc0tDJ+eZZ04lhvg81cgYLY1Z5wfJQqazR2plPT1Hz0A9C79jYdUVvzoF/tw==}
+    deprecated: 'WARNING: This project has been renamed to @safe-global/types-kit. Please, migrate from @safe-global/safe-core-sdk-types@5.1.0 to @safe-global/types-kit@1.0.0.'
 
   '@safe-global/safe-deployments@1.37.0':
     resolution: {integrity: sha512-OInLNWC9EPem/eOsvPdlq4Gt/08Nfhslm9z6T92Jvjmcu6hs85vjfnDP1NrzwcOmsCarATU5NH2bTITd9VNCPw==}
@@ -5063,6 +5071,9 @@ packages:
   core-js-compat@3.37.1:
     resolution: {integrity: sha512-9TNiImhKvQqSUkOvk/mMRZzOANTiEVC7WaBNhHcKM7x+/5E1l5NvsysR19zuDQScE8k+kfQXWRN3AtS/eOSHpg==}
 
+  core-js@3.39.0:
+    resolution: {integrity: sha512-raM0ew0/jJUqkJ0E6e8UDtl+y/7ktFivgWvqw8dNSQeNWoSDLvQ1H/RN3aPXB9tBd4/FhyR4RDPGhsNIMsAn7g==}
+
   core-util-is@1.0.2:
     resolution: {integrity: sha512-3lqz5YjWTYnW6dlDa5TLaTCcShfar1e40rmcJVwCBJC6mWlFuj0eCHIElmG1g5kyuJ/GD+8Wn4FFCcz4gJPfaQ==}
 
@@ -6067,6 +6078,9 @@ packages:
 
   fd-slicer@1.1.0:
     resolution: {integrity: sha512-cE1qsB/VwyQozZ+q1dGxR8LBYNZeofhEdUNGSMbQD3Gw2lAzX9Zb3uIU6Ebc/Fmyjo9AWWfnn0AUCHqtevs/8g==}
+
+  fflate@0.4.8:
+    resolution: {integrity: sha512-FJqqoDBR00Mdj9ppamLa/Y7vxm+PRmNWA67N846RvsoYVMKB4q3y/de5PA7gUmRMYK/8CMz2GDZQmCRN1wBcWA==}
 
   file-entry-cache@6.0.1:
     resolution: {integrity: sha512-7Gps/XWymbLk2QLYK4NzpMOrYjMhdIxXuIvy2QBsLE6ljuodKvdkWs/cpyJJ3CVIVpH0Oi1Hvg1ovbMzLdFBBg==}
@@ -8616,6 +8630,9 @@ packages:
     resolution: {integrity: sha512-Wglpdk03BSfXkHoQa3b/oulrotAkwrlLDRSOb9D0bN86FdRyE9lppSp33aHNPgBa0JKCoB+drFLZkQoRRYae5A==}
     engines: {node: ^10 || ^12 || >=14}
 
+  posthog-js@1.186.1:
+    resolution: {integrity: sha512-m6TNW01nfqErwMxaZxNScYdMaUJO0s3bbmt/tboL29yZDnuHdOiYFbG+T4MCxdFxjWRa5gOR25bQD/SSt1t/4A==}
+
   preact@10.22.0:
     resolution: {integrity: sha512-RRurnSjJPj4rp5K6XoP45Ui33ncb7e4H7WiOHVpjbkvqvA3U+N8Z6Qbo0AE6leGYBV66n8EhEaFixvIu3SkxFw==}
 
@@ -10485,6 +10502,9 @@ packages:
   web-streams-polyfill@3.3.3:
     resolution: {integrity: sha512-d2JWLCivmZYTSIoge9MsgFCZrt571BikcWGYkjC1khllbTeDlGqZ2D8vD8E/lJa8WGWbb7Plm8/XJYV7IJHZZw==}
     engines: {node: '>= 8'}
+
+  web-vitals@4.2.4:
+    resolution: {integrity: sha512-r4DIlprAGwJ7YM11VZp4R884m0Vmgr6EAKe3P+kO0PPj3Unqyvv59rczf6UiGcb9Z8QxZVcqKNwv/g0WNdWwsw==}
 
   web3-bzz@1.10.4:
     resolution: {integrity: sha512-ZZ/X4sJ0Uh2teU9lAGNS8EjveEppoHNQiKlOXAjedsrdWuaMErBPdLQjXfcrYvN6WM6Su9PMsAxf3FXXZ+HwQw==}
@@ -14831,9 +14851,9 @@ snapshots:
     transitivePeerDependencies:
       - ethers
 
-  '@orangekit/react@1.0.0-beta.33(@react-native-async-storage/async-storage@1.23.1(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10)))(@tanstack/query-core@5.45.0)(@tanstack/react-query@5.45.0(react@18.3.1))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(immer@10.1.1)(react-dom@18.3.1(react@18.3.1))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10))(rollup@4.18.0)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8)':
+  '@orangekit/react@1.0.0-beta.34(@react-native-async-storage/async-storage@1.23.1(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10)))(@tanstack/query-core@5.45.0)(@tanstack/react-query@5.45.0(react@18.3.1))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(immer@10.1.1)(react-dom@18.3.1(react@18.3.1))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10))(rollup@4.18.0)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8)':
     dependencies:
-      '@orangekit/sdk': 1.0.0-beta.18(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@5.0.10)
+      '@orangekit/sdk': 1.0.0-beta.19(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@5.0.10)
       '@rainbow-me/rainbowkit': 2.0.2(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(viem@2.8.16(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8))(wagmi@2.5.12(@react-native-async-storage/async-storage@1.23.1(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10)))(@tanstack/query-core@5.45.0)(@tanstack/react-query@5.45.0(react@18.3.1))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(immer@10.1.1)(react-dom@18.3.1(react@18.3.1))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10))(react@18.3.1)(rollup@4.18.0)(typescript@5.4.5)(utf-8-validate@5.0.10)(viem@2.8.16(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8))(zod@3.23.8))
       ethers: 6.12.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       react: 18.3.1
@@ -14870,13 +14890,14 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@orangekit/sdk@1.0.0-beta.18(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@5.0.10)':
+  '@orangekit/sdk@1.0.0-beta.19(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@5.0.10)':
     dependencies:
       '@gelatonetwork/relay-sdk': 5.5.6(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@noble/curves': 1.4.0
       '@noble/hashes': 1.4.0
       '@orangekit/contracts': 1.0.0-beta.3(ethers@6.12.1(bufferutil@4.0.8)(utf-8-validate@5.0.10))
       '@safe-global/protocol-kit': 3.1.1(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@5.0.10)
+      '@safe-global/safe-core-sdk-types': 4.1.1(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@5.0.10)
       bitcoinjs-lib: 6.1.5
       ethers: 6.12.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
@@ -14886,16 +14907,16 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@orangekit/sign-in-with-wallet-parser@1.0.0-beta.6':
+  '@orangekit/sign-in-with-wallet-parser@1.0.0-beta.7':
     dependencies:
       '@noble/hashes': 1.4.0
       apg-js: 4.4.0
       uri-js: 4.4.1
       valid-url: 1.0.9
 
-  '@orangekit/sign-in-with-wallet@1.0.0-beta.6(bech32@2.0.0)(ethers@6.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))':
+  '@orangekit/sign-in-with-wallet@1.0.0-beta.7(bech32@2.0.0)(ethers@6.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))':
     dependencies:
-      '@orangekit/sign-in-with-wallet-parser': 1.0.0-beta.6
+      '@orangekit/sign-in-with-wallet-parser': 1.0.0-beta.7
       '@stablelib/random': 1.0.2
       bech32: 2.0.0
       ethers: 6.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
@@ -15491,6 +15512,18 @@ snapshots:
   '@safe-global/safe-contracts@1.4.1-build.0(ethers@6.12.1(bufferutil@4.0.8)(utf-8-validate@5.0.10))':
     dependencies:
       ethers: 6.12.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+
+  '@safe-global/safe-core-sdk-types@4.1.1(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@5.0.10)':
+    dependencies:
+      '@safe-global/safe-deployments': 1.37.0
+      ethers: 6.10.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      web3-core: 1.10.4(encoding@0.1.13)
+      web3-utils: 1.10.4
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - supports-color
+      - utf-8-validate
 
   '@safe-global/safe-core-sdk-types@5.0.1(typescript@5.4.5)(zod@3.23.8)':
     dependencies:
@@ -18323,6 +18356,8 @@ snapshots:
     dependencies:
       browserslist: 4.23.1
 
+  core-js@3.39.0: {}
+
   core-util-is@1.0.2: {}
 
   core-util-is@1.0.3: {}
@@ -19728,6 +19763,8 @@ snapshots:
   fd-slicer@1.1.0:
     dependencies:
       pend: 1.2.0
+
+  fflate@0.4.8: {}
 
   file-entry-cache@6.0.1:
     dependencies:
@@ -22902,6 +22939,13 @@ snapshots:
       picocolors: 1.0.1
       source-map-js: 1.2.0
 
+  posthog-js@1.186.1:
+    dependencies:
+      core-js: 3.39.0
+      fflate: 0.4.8
+      preact: 10.22.0
+      web-vitals: 4.2.4
+
   preact@10.22.0: {}
 
   prelude-ls@1.1.2: {}
@@ -25084,6 +25128,8 @@ snapshots:
       defaults: 1.0.4
 
   web-streams-polyfill@3.3.3: {}
+
+  web-vitals@4.2.4: {}
 
   web3-bzz@1.10.4(bufferutil@4.0.8)(utf-8-validate@5.0.10):
     dependencies:
