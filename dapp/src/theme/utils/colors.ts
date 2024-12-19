@@ -1,4 +1,4 @@
-export default {
+const oldPalette = {
   brand: {
     100: "#FFEDEB",
     200: "#FFC5BF",
@@ -74,15 +74,99 @@ export default {
       15: "rgba(0, 0, 0, 0.15)",
     },
   },
-  neutral: {
-    70: "#7D6A4B",
+}
+
+const primary = {
+  acre: {
+    50: "#F34900",
+    60: "#D54000",
+    70: "#B73700",
+    80: "#7A2500",
   },
-  brown: {
-    80: "#5A4D3A",
+  ink: {
+    50: "#4E01F3",
+    60: "#4601D9",
+    70: "#3B01B7",
+    80: "#27007A",
+  },
+  flower: {
+    30: "#C9A0FF",
+  },
+  ocean: {
+    30: "#D7E9F1",
+  },
+  grass: {
+    30: "#C3E8C3",
+  },
+}
+
+const secondary = {
+  ivoire: {
+    "05": "#FFFDF9",
+    10: "#FBF7EC",
+    20: "#F8EFDA",
+    30: "#F3E4BE",
+    40: "#EDD8A2",
+    50: "#E8CD87",
   },
   orange: {
-    30: "#FF7A00",
-    50: "#FFB76E",
+    10: "#FCE4C9",
+    30: "#FFBC80",
+    50: "#FF7A00",
+  },
+  neutral: { 50: "#A0957F", 60: "#8E8169" },
+  brown: {
+    "05": "rgba(125, 106, 75, 0.05)",
+    10: "rgba(125, 106, 75, 0.10)",
+    20: "rgba(125, 106, 75, 0.15)",
+    30: "rgba(125, 106, 75, 0.25)",
+    40: "#B5AC9B",
+    80: "#554C3F",
+    90: "#38332A",
+    100: "#1D1A15",
+  },
+}
+
+const functional = {
+  green: {
+    10: "#D9F6D5",
+    30: "#A1EA95",
+    50: "#33A321",
+  },
+  yellow: {
+    10: "#F6F1D2",
+    30: "#FFDC80",
+    50: "#FFBA07",
+  },
+  red: {
+    10: "#FFDCDC",
+    30: "#FF8085",
+    50: "#FF1822",
+  },
+  blue: {
+    10: "#CFE0FF",
+    30: "#80ACFE",
+    50: "#0E61FE",
+  },
+}
+
+export default {
+  oldPalette,
+  ...primary,
+  ...secondary,
+  ...functional,
+  text: {
+    primary: secondary.brown["100"],
+    secondary: secondary.brown["80"],
+    tertiary: secondary.neutral["60"],
+  },
+  surface: {
+    1: secondary.ivoire["05"],
+    2: secondary.ivoire["10"],
+    3: secondary.ivoire["20"],
+    4: secondary.ivoire["30"],
+    5: secondary.ivoire["40"],
+    6: secondary.ivoire["50"],
   },
   mezo: "#FF004D",
 }

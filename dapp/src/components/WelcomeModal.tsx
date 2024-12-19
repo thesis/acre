@@ -133,12 +133,12 @@ function WelcomeModalBase({ closeModal }: BaseModalProps) {
     <SimpleGrid columns={2} templateColumns="1fr auto">
       <Box>
         <ModalHeader gap={3} pb={8}>
-          <TextSm mb={{ base: 4, md: 12 }} color="neutral.70">
+          <TextSm mb={{ base: 4, md: 12 }} color="text.tertiary">
             Welcome to Acre,
           </TextSm>
           {activeStepData.title}
         </ModalHeader>
-        <ModalBody textAlign="left" display="block" color="brown.80">
+        <ModalBody textAlign="left" display="block" color="text.secondary">
           {activeStepData.content(embeddedApp)}
         </ModalBody>
         <ModalFooter

@@ -35,7 +35,7 @@ function MezoBeehiveModalBase() {
             mx={-2}
             boxSize="3.75rem" // 60px
             ring={0.5}
-            ringColor="gold.100"
+            ringColor="surface.2"
             rounded="full"
           />
           <MezoSignIcon boxSize={10} rounded="full" zIndex={-1} />
@@ -61,8 +61,8 @@ function MezoBeehiveModalBase() {
         <VStack>
           <Card
             gap={2}
-            bg="grey.700"
-            color="gold.300"
+            bg="brown.100"
+            color="surface.4"
             align="start"
             textAlign="start"
             position="relative"
@@ -82,7 +82,7 @@ function MezoBeehiveModalBase() {
             }}
           >
             <CardHeader as={HStack}>
-              <Icon as={IconChartPieFilled} color="brand.400" boxSize={5} />
+              <Icon as={IconChartPieFilled} color="acre.50" boxSize={5} />
             </CardHeader>
 
             <CardBody>
@@ -98,7 +98,7 @@ function MezoBeehiveModalBase() {
             <CardBody
               as={HStack}
               spacing={6}
-              color="grey.700"
+              color="text.primary"
               textAlign="start"
             >
               <MezoSignIcon
@@ -118,7 +118,7 @@ function MezoBeehiveModalBase() {
                   variant="link"
                   textDecorationLine="none"
                   rightIcon={
-                    <Icon as={IconArrowUpRight} boxSize={4} color="brand.400" />
+                    <Icon as={IconArrowUpRight} boxSize={4} color="acre.50" />
                   }
                 >
                   More info

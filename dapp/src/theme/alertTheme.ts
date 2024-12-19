@@ -47,7 +47,7 @@ const variantSubtle = multiStyleConfig.definePartsStyle(({ colorScheme }) => {
 
 const variantElevated = multiStyleConfig.definePartsStyle(({ colorScheme }) => {
   const backgroundColor = getColorLevel(colorScheme, 200)
-  const foregroundColor = getColorLevel("grey", 700)
+  const foregroundColor = getColorLevel("oldPalette.grey", 700)
 
   return {
     container: {

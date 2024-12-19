@@ -28,7 +28,7 @@ export default function ResumeModal({ closeModal }: BaseModalProps) {
       <ModalBody textAlign="start" py={6} mx={3} gap={4}>
         <HStack position="relative" justifyContent="center">
           <Spinner size="2xl" variant="filled" />
-          <PauseIcon position="absolute" boxSize={6} color="brand.400" />
+          <PauseIcon position="absolute" boxSize={6} color="acre.50" />
         </HStack>
 
         <TextMd>Are you sure you want to cancel?</TextMd>

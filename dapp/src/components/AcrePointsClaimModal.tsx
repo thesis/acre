@@ -67,7 +67,7 @@ function AcrePointsClaimModalBase({
           prefix="+"
           suffix=" PTS"
           animateMode="whileInView"
-          color="brand.400"
+          color="acre.50"
         />,
       ],
       [
@@ -76,7 +76,7 @@ function AcrePointsClaimModalBase({
           value={formattedTotalAmount}
           suffix=" PTS"
           animateMode="whileInView"
-          indicationColor="brand.400"
+          indicationColor="acre.50"
         />,
       ],
       // TODO: Uncomment when the leaderboard feature is ready
@@ -86,7 +86,7 @@ function AcrePointsClaimModalBase({
       //     value={rankPositionDifference}
       //     prefix={rankPositionDifference > 0 ? "+" : "-"}
       //     animateMode="whileInView"
-      //     color={rankPositionDifference > 0 ? "green.500" : "red.500"}
+      //     color={rankPositionDifference > 0 ? "green.50" : "red.50"}
       //   />,
       // ],
       // [
@@ -95,7 +95,7 @@ function AcrePointsClaimModalBase({
       //     value={estimatedRankPosition}
       //     prefix="#"
       //     animateMode="whileInView"
-      //     indicationColor="brand.400"
+      //     indicationColor="acre.50"
       //   />,
       // ],
     ],
@@ -166,7 +166,7 @@ function AcrePointsClaimModalBase({
                 fontSize={{ base: "5xl", md: "8xl" }}
                 lineHeight="6.25rem" // 100px
                 fontWeight="bold"
-                color="grey.700"
+                color="text.primary"
               >
                 {currentStepValue}
               </Box>

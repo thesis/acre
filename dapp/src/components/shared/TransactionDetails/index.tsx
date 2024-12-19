@@ -21,10 +21,10 @@ function TransactionDetailsItem({
       alignItems="center"
       {...listItemProps}
     >
-      <TextMd fontWeight="semibold" color="grey.700">
+      <TextMd fontWeight="semibold" color="text.primary">
         {label}
       </TextMd>
-      {value ? <TextMd color="grey.700">{value}</TextMd> : children}
+      {value ? <TextMd color="text.primary">{value}</TextMd> : children}
     </ListItem>
   )
 }

@@ -50,15 +50,15 @@ export default function RetryModal({ isLoading, retry }: RetryModalProps) {
 
   return (
     <>
-      <ModalHeader as={Flex} color="red.400" justifyContent="center">
+      <ModalHeader as={Flex} color="red.50" justifyContent="center">
         <Skeleton isLoaded={!isLoading} w="fit-content">
           Oops! There was an error.
         </Skeleton>
       </ModalHeader>
       <ModalBody gap={10} pt={2} pb={6}>
         <Skeleton isLoaded={!isLoading} borderRadius="50%">
-          <IconWrapper icon={CableWithPlugIcon} boxSize={32} color="red.400">
-            <Icon as={IconX} color="red.400" boxSize={14} strokeWidth={1} />
+          <IconWrapper icon={CableWithPlugIcon} boxSize={32} color="red.50">
+            <Icon as={IconX} color="red.50" boxSize={14} strokeWidth={1} />
           </IconWrapper>
         </Skeleton>
         <Flex flexDirection="column" alignItems="center">
@@ -84,7 +84,7 @@ export default function RetryModal({ isLoading, retry }: RetryModalProps) {
               h={3}
               aspectRatio={1}
               borderRadius="50%"
-              background={`conic-gradient(var(--chakra-colors-brand-400) ${progressPercent}, transparent 0)`}
+              background={`conic-gradient(var(--chakra-colors-acre-50) ${progressPercent}, transparent 0)`}
               transition="background"
             />
             <Box />
@@ -96,8 +96,8 @@ export default function RetryModal({ isLoading, retry }: RetryModalProps) {
           Retry transaction
         </Button>
         <HStack>
-          <Icon as={IconShieldCheckFilled} boxSize={5} color="gold.700" />
-          <TextSm color="grey.700">Your funds are secure.</TextSm>
+          <Icon as={IconShieldCheckFilled} boxSize={5} color="acre.50" />
+          <TextSm color="text.primary">Your funds are secure.</TextSm>
         </HStack>
       </ModalFooter>
     </>

@@ -18,7 +18,7 @@ function ProgressBar(props: ProgressBarProps) {
           position="absolute"
           top="50%"
           left={`${value}%`}
-          color="grey.700"
+          color="text.primary"
           boxSize={3}
           transform="auto"
           translateX="-100%"

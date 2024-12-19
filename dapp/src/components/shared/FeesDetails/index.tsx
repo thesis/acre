@@ -29,13 +29,13 @@ function FeesDetailsItem({
           display="flex"
           alignItems="center"
           fontWeight="semibold"
-          color="grey.700"
+          color="text.primary"
         >
           {label}
         </TextMd>
         {tooltip}
       </HStack>
-      {value ? <TextMd color="grey.700">{value}</TextMd> : children}
+      {value ? <TextMd color="text.primary">{value}</TextMd> : children}
     </ListItem>
   )
 }

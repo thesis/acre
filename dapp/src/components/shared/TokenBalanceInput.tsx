@@ -135,7 +135,7 @@ export default function TokenBalanceInput({
               {tokenAmountLabel}
             </Box>
             <CurrencyBalance
-              color={isBalanceExceeded ? "red.400" : "gray.700"}
+              color={isBalanceExceeded ? "red.50" : "text.primary"}
               size={size === "lg" ? "md" : "sm"}
               amount={tokenBalance}
               currency={currency}

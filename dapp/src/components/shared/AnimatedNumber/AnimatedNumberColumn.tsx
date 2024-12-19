@@ -29,10 +29,7 @@ function AnimatedNumberColumn(props: AnimatedNumberColumnProps) {
 
   useEffect(() => setDigitToPosition(digit), [digit, setDigitToPosition])
 
-  const indicationColorValue = useToken(
-    "colors",
-    indicationColor ?? "brand.400",
-  )
+  const indicationColorValue = useToken("colors", indicationColor ?? "acre.50")
 
   return (
     <Box ref={containerRef} position="relative" {...restProps}>
