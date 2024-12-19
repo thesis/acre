@@ -5,11 +5,11 @@ import {
   ModalFooter,
   Button,
   HStack,
+  Text,
 } from "@chakra-ui/react"
 
 import Spinner from "#/components/shared/Spinner"
 import { PauseIcon } from "#/assets/icons"
-import { TextMd } from "#/components/shared/Typography"
 import { useActionFlowPause, useActionFlowType } from "#/hooks"
 import { ACTION_FLOW_TYPES, BaseModalProps } from "#/types"
 
@@ -31,7 +31,7 @@ export default function ResumeModal({ closeModal }: BaseModalProps) {
           <PauseIcon position="absolute" boxSize={6} color="brand.400" />
         </HStack>
 
-        <TextMd>Are you sure you want to cancel?</TextMd>
+        <Text size="md">Are you sure you want to cancel?</Text>
       </ModalBody>
       <ModalFooter flexDirection="column" gap={2}>
         <Button size="lg" width="100%" onClick={handleResume}>

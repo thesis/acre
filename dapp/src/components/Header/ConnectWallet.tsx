@@ -10,6 +10,7 @@ import {
   MenuItem,
   MenuList,
   StackDivider,
+  Text,
   useClipboard,
   useMultiStyleConfig,
 } from "@chakra-ui/react"
@@ -21,7 +22,6 @@ import {
   useWallet,
 } from "#/hooks"
 import CurrencyBalance from "#/components/shared/CurrencyBalance"
-import { TextMd } from "#/components/shared/Typography"
 import { BitcoinIcon } from "#/assets/icons"
 import { referralProgram, addressUtils } from "#/utils"
 import { motion } from "framer-motion"
@@ -118,9 +118,9 @@ export default function ConnectWallet() {
             leftIcon={<Icon as={BitcoinIcon} boxSize={6} color="brand.400" />}
             rightIcon={isOpen ? <IconChevronUp /> : <IconChevronDown />}
           >
-            <TextMd color="brand.400">
+            <Text size="md" color="brand.400">
               {addressUtils.truncateAddress(address)}
-            </TextMd>
+            </Text>
           </MenuButton>
           <MenuList bg="gold.200">
             {options.map(
@@ -166,9 +166,9 @@ export default function ConnectWallet() {
           spacing={3}
         >
           <Icon as={BitcoinIcon} boxSize={6} color="brand.400" />
-          <TextMd color="brand.400">
+          <Text size="md" color="brand.400">
             {addressUtils.truncateAddress(address)}
-          </TextMd>
+          </Text>
         </HStack>
 
         <HStack

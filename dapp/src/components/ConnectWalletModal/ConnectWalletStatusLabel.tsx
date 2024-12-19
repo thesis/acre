@@ -1,12 +1,11 @@
 import React from "react"
 import { Status } from "#/types"
-import { Box, HStack, Icon } from "@chakra-ui/react"
+import { Box, HStack, Icon, Text } from "@chakra-ui/react"
 import {
   IconCircleCheck,
   IconCircleX,
   IconInfoCircle,
 } from "@tabler/icons-react"
-import { TextMd } from "../shared/Typography"
 import Spinner from "../shared/Spinner"
 
 const statusToLabelProps: Record<Status, { color: string }> = {
@@ -48,12 +47,14 @@ export default function ConnectWalletStatusLabel({
     <HStack spacing={3}>
       <HStack textAlign="start">
         {icon}
-        <TextMd {...statusToLabelProps[status]}>{label}</TextMd>
+        <Text size="md" {...statusToLabelProps[status]}>
+          {label}
+        </Text>
       </HStack>
       {isError && (
         <HStack color="red.400" textAlign="start">
           <Icon as={IconInfoCircle} boxSize={boxSize} />
-          <TextMd>Rejected by user</TextMd>
+          <Text size="md">Rejected by user</Text>
         </HStack>
       )}
     </HStack>

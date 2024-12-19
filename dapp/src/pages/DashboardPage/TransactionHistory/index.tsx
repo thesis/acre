@@ -1,6 +1,5 @@
 import React from "react"
-import { StackProps, VStack, Image } from "@chakra-ui/react"
-import { TextMd } from "#/components/shared/Typography"
+import { StackProps, VStack, Image, Text } from "@chakra-ui/react"
 import { useActivitiesCount, useIsFetchedWalletData } from "#/hooks"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import { emptyState } from "#/assets/images"
@@ -23,7 +22,9 @@ function TransactionHistoryContent() {
     return (
       <VStack w="100%">
         <Image src={emptyState} alt="Stack of paper with magnifying glass" />,
-        <TextMd color="grey.400">You have no transactions yet!</TextMd>
+        <Text size="md" color="grey.400">
+          You have no transactions yet!
+        </Text>
       </VStack>
     )
 
@@ -33,7 +34,9 @@ function TransactionHistoryContent() {
 export default function TransactionHistory(props: StackProps) {
   return (
     <VStack spacing={6} w="full" {...props}>
-      <TextMd w="full">Transactions</TextMd>
+      <Text size="md" w="full">
+        Transactions
+      </Text>
       <TransactionHistoryContent />
     </VStack>
   )

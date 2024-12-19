@@ -2,7 +2,7 @@ import React from "react"
 import { ActivityType } from "#/types"
 import { activitiesUtils } from "#/utils"
 import { useFormField } from "#/hooks"
-import { TextMd } from "../shared/Typography"
+import { Text } from "@chakra-ui/react"
 import { TOKEN_AMOUNT_FIELD_NAME } from "../shared/TokenAmountForm/TokenAmountFormBase"
 
 export default function ActionDurationEstimation({
@@ -15,11 +15,11 @@ export default function ActionDurationEstimation({
   )
 
   return (
-    <TextMd mt={4} color="grey.400">
+    <Text size="md" mt={4} color="grey.400">
       Estimated duration&nbsp;
-      <TextMd as="span" color="grey.500">
+      <Text size="md" as="span" color="grey.500">
         ~ {activitiesUtils.getEstimatedDuration(amount, type)}
-      </TextMd>
-    </TextMd>
+      </Text>
+    </Text>
   )
 }

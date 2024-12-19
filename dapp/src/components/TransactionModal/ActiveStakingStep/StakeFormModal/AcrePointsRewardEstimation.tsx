@@ -7,9 +7,9 @@ import {
   MenuItem,
   MenuList,
   StackProps,
+  Text,
   VStack,
 } from "@chakra-ui/react"
-import { H4, TextMd } from "#/components/shared/Typography"
 import { numbersUtils } from "#/utils"
 import { IconChevronDown } from "@tabler/icons-react"
 import { TOKEN_AMOUNT_FIELD_NAME } from "#/components/shared/TokenAmountForm/TokenAmountFormBase"
@@ -67,7 +67,9 @@ function AcrePointsRewardEstimation(props: StackProps) {
   return (
     <VStack spacing={2} {...props}>
       <HStack>
-        <TextMd fontWeight="semibold">Acre points you&apos;ll earn</TextMd>
+        <Text size="md" fontWeight="semibold">
+          Acre points you&apos;ll earn
+        </Text>
 
         <Menu gutter={0} matchWidth offset={[0, -32]}>
           {({ isOpen }) => (
@@ -82,7 +84,7 @@ function AcrePointsRewardEstimation(props: StackProps) {
                 _hover={{ bg: "gold.200" }}
               >
                 <HStack spacing={1}>
-                  <TextMd>{selectedTierItem.label}</TextMd>
+                  <Text size="md">{selectedTierItem.label}</Text>
                   <Icon
                     as={IconChevronDown}
                     boxSize={4}
@@ -129,7 +131,9 @@ function AcrePointsRewardEstimation(props: StackProps) {
         </Menu>
       </HStack>
 
-      <H4>+{numbersUtils.numberToLocaleString(estimatedReward)} PTS</H4>
+      <Text size="4xl">
+        +{numbersUtils.numberToLocaleString(estimatedReward)} PTS
+      </Text>
     </VStack>
   )
 }

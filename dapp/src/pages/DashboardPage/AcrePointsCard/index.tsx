@@ -1,5 +1,4 @@
 import React from "react"
-import { H4, TextMd } from "#/components/shared/Typography"
 import {
   Card,
   CardBody,
@@ -7,6 +6,7 @@ import {
   CardProps,
   HStack,
   Image,
+  Text,
 } from "@chakra-ui/react"
 import { numbersUtils } from "#/utils"
 import { useAcrePointsData, useUserPointsData, useWallet } from "#/hooks"
@@ -33,9 +33,9 @@ export default function AcrePointsCard(props: CardProps) {
   return (
     <Card {...props}>
       <CardHeader mb={2} as={HStack} justify="space-between">
-        <TextMd color="grey.700">
+        <Text size="md" color="grey.700">
           {isConnected ? "Your" : "Total"} Acre points
-        </TextMd>
+        </Text>
 
         <TooltipIcon
           label={
@@ -49,11 +49,11 @@ export default function AcrePointsCard(props: CardProps) {
 
       <CardBody>
         <UserDataSkeleton>
-          <H4 fontWeight="semibold" mb={2}>
+          <Text size="4xl" fontWeight="semibold" mb={2}>
             {isConnected
               ? formattedUserTotalBalance
               : formattedTotalPoolBalance}
-          </H4>
+          </Text>
         </UserDataSkeleton>
 
         <Image src={acrePointsIllustrationSrc} mt={6} />

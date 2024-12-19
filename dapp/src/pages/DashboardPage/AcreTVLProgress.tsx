@@ -6,12 +6,12 @@ import {
   VStack,
   Grid,
   Box,
+  Text,
 } from "@chakra-ui/react"
 import { useStatistics } from "#/hooks"
 import { BitcoinIcon } from "#/assets/icons"
 import CurrencyBalance from "#/components/shared/CurrencyBalance"
 import ProgressBar from "#/components/shared/ProgressBar"
-import { TextMd, TextXs } from "#/components/shared/Typography"
 
 type AcreTVLProgressProps = StackProps
 
@@ -45,15 +45,15 @@ export default function AcreTVLProgress(props: AcreTVLProgressProps) {
             desiredDecimals={2}
           />
 
-          <TextMd>Total value locked</TextMd>
+          <Text size="md">Total value locked</Text>
         </Grid>
 
         <VStack sx={styles.progressWrapper}>
           <HStack sx={styles.progressLabelsWrapper}>
             {steps.map((value) => (
-              <TextXs key={value} sx={styles.progressLabel}>
+              <Text size="xs" key={value} sx={styles.progressLabel}>
                 {value}
-              </TextXs>
+              </Text>
             ))}
           </HStack>
 

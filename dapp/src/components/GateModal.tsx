@@ -1,6 +1,11 @@
 import React, { useCallback } from "react"
-import { Link, ModalBody, ModalFooter, ModalHeader } from "@chakra-ui/react"
-import { TextSm } from "#/components/shared/Typography"
+import {
+  Link,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Text,
+} from "@chakra-ui/react"
 import { externalHref } from "#/constants"
 import { BaseModalProps } from "#/types"
 import { useAccessCode } from "#/hooks"
@@ -29,7 +34,7 @@ export function GateModalBase({ closeModal }: BaseModalProps) {
         <PasswordForm submitButtonText="Connect" onSubmitForm={onSubmitForm} />
       </ModalBody>
       <ModalFooter pt={0}>
-        <TextSm>
+        <Text size="sm">
           Don’t have a password? Contact us on{" "}
           <Link
             fontWeight="bold"
@@ -39,7 +44,7 @@ export function GateModalBase({ closeModal }: BaseModalProps) {
           >
             Discord
           </Link>
-        </TextSm>
+        </Text>
       </ModalFooter>
     </>
   )

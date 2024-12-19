@@ -90,11 +90,11 @@ const baseStyle = multiStyleConfig.definePartsStyle((props) => ({
 const sizes = {
   lg: multiStyleConfig.definePartsStyle({
     track: { h: 4 },
-    label: { fontSize: "0.875em", lineHeight: 3, px: 1.5 },
+    label: { fontSize: "sm", lineHeight: "sm", px: 1.5 },
   }),
   xl: multiStyleConfig.definePartsStyle({
     track: { h: 8 },
-    label: { fontSize: "1.125em", lineHeight: 6, px: 3 },
+    label: { fontSize: "xl", lineHeight: "xl", px: 3 },
   }),
   "2xl": multiStyleConfig.definePartsStyle({
     track: { h: 16 },

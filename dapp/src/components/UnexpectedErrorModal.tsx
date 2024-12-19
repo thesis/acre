@@ -7,8 +7,8 @@ import {
   ModalCloseButton,
   ModalFooter,
   ModalHeader,
+  Text,
 } from "@chakra-ui/react"
-import { TextMd } from "#/components/shared/Typography"
 import { externalHref } from "#/constants"
 import { IconBrandDiscordFilled } from "@tabler/icons-react"
 import { BaseModalProps } from "#/types"
@@ -22,7 +22,7 @@ export function UnexpectedErrorModalBase({ withCloseButton }: BaseModalProps) {
         Unexpected error...
       </ModalHeader>
       <ModalBody gap={10} pb={6}>
-        <TextMd>Please try again.</TextMd>
+        <Text size="md">Please try again.</Text>
       </ModalBody>
       <ModalFooter py={6} px={8} flexDirection="row">
         <Button

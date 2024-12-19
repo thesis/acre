@@ -4,9 +4,9 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalHeader,
+  Text,
 } from "@chakra-ui/react"
 import Spinner from "#/components/shared/Spinner"
-import { TextMd } from "#/components/shared/Typography"
 
 export default function BuildTransactionModal({
   onClose,
@@ -19,7 +19,7 @@ export default function BuildTransactionModal({
       <ModalHeader>Preparing withdrawal transaction...</ModalHeader>
       <ModalBody>
         <Spinner size="xl" variant="filled" />
-        <TextMd>This may take a few minutes.</TextMd>
+        <Text size="md">This may take a few minutes.</Text>
         <Button size="lg" width="100%" variant="outline" onClick={onClose}>
           Cancel
         </Button>

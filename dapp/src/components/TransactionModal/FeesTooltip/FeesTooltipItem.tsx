@@ -1,9 +1,8 @@
 import React from "react"
-import { ListItem } from "@chakra-ui/react"
+import { ListItem, Text } from "@chakra-ui/react"
 import CurrencyBalance, {
   CurrencyBalanceProps,
 } from "#/components/shared/CurrencyBalance"
-import { TextSm } from "#/components/shared/Typography"
 import { currencies } from "#/constants"
 
 type FeesItemType = CurrencyBalanceProps & {
@@ -17,7 +16,9 @@ export default function FeesTooltipItem({
 }: FeesItemType) {
   return (
     <ListItem display="flex" justifyContent="space-between">
-      <TextSm color="white">{label}</TextSm>
+      <Text size="sm" color="white">
+        {label}
+      </Text>
       <CurrencyBalance
         size="sm"
         amount={amount}
