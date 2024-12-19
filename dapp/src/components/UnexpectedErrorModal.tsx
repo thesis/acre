@@ -18,7 +18,7 @@ export function UnexpectedErrorModalBase({ withCloseButton }: BaseModalProps) {
   return (
     <>
       {withCloseButton && <ModalCloseButton />}
-      <ModalHeader color="red.400" textAlign="center">
+      <ModalHeader color="red.50" textAlign="center">
         Unexpected error...
       </ModalHeader>
       <ModalBody gap={10} pb={6}>

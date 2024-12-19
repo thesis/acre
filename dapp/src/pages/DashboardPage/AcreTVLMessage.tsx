@@ -19,13 +19,13 @@ export default function AcreTVLMessage(props: AcreTVLMessageProps) {
   }
 
   return (
-    <HStack align="start" spacing={1} color="grey.500" {...props}>
+    <HStack align="start" spacing={1} color="text.tertiary" {...props}>
       <Box color="orange.400" margin="auto">
         <IconBolt fill="currentColor" size={16} />
       </Box>
       {tvl.isCapExceeded ? (
         <VStack align="start" spacing={0}>
-          <TextMd fontWeight="semibold" color="grey.700">
+          <TextMd fontWeight="semibold" color="text.primary">
             Deposit cap reached!
           </TextMd>
           <TextMd>Stay tuned for the next deposit cycle.</TextMd>
@@ -37,7 +37,7 @@ export default function AcreTVLMessage(props: AcreTVLMessageProps) {
             currency="bitcoin"
             shouldBeFormatted={false}
             desiredDecimals={2}
-            color="grey.700"
+            color="text.primary"
           />
           <Box as="span">&nbsp;remaining until deposit cap</Box>
         </TextMd>

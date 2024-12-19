@@ -196,7 +196,7 @@ export default function ConnectWalletButton({
       key={connector.id}
       alignSelf="stretch"
       borderWidth={1}
-      borderColor="gold.300"
+      borderColor="surface.4"
       rounded="lg"
       mb={3}
       _last={{ mb: 0 }}
@@ -252,7 +252,7 @@ export default function ConnectWalletButton({
               pt={4}
               borderTopWidth={1}
               borderStyle="solid"
-              borderColor="gold.300"
+              borderColor="surface.4"
               align="start"
             >
               <Flex direction="column" gap={2} w="full">

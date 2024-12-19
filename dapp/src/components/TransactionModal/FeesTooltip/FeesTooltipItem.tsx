@@ -21,7 +21,7 @@ export default function FeesTooltipItem({
       <CurrencyBalance
         size="sm"
         amount={amount}
-        color="gold.300"
+        color="surface.4"
         fontWeight="semibold"
         desiredDecimals={currencies.DESIRED_DECIMALS_FOR_FEE}
         withRoundUp

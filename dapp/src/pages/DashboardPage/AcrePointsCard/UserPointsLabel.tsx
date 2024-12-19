@@ -10,10 +10,6 @@ import { time } from "#/constants"
 import LabelWrapper from "./LabelWrapper"
 import { NextDropTimestampLabel } from "./AcrePointsLabel"
 
-// TODO: Update `Button` component theme
-const COLOR_BUTTON_LABEL = "#FBF7EC"
-const COLOR_BUTTON_BACKGROUND = "#33A321"
-
 function ClaimableBalanceLabel() {
   const { mutate: claimPoints } = useClaimPoints()
   const { data: userPointsData } = useUserPointsData()
@@ -33,9 +29,9 @@ function ClaimableBalanceLabel() {
       mt={5}
       onClick={debouncedClaimPoints}
       w="full"
-      colorScheme="green"
-      bgColor={COLOR_BUTTON_BACKGROUND}
-      color={COLOR_BUTTON_LABEL}
+      colorScheme="oldPalette.green"
+      bgColor="green.50"
+      color="ivoire.10"
       fontWeight="semibold"
       size="lg"
     >
@@ -50,7 +46,7 @@ function CalculationInProgressLabel() {
   return (
     <VStack spacing={4}>
       {!data?.claimableBalance && (
-        <TextMd color="grey.500">Please wait...</TextMd>
+        <TextMd color="text.tertiary">Please wait...</TextMd>
       )}
       <HStack spacing={0}>
         <Spinner mr={3} size="sm" />

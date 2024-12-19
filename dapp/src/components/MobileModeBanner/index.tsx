@@ -44,9 +44,9 @@ function MobileModeBanner(props: MobileModeBannerProps) {
       maxH="100vh"
       {...restProps}
     >
-      <Flex align="center" justify="center" p={4} bg="grey.700">
-        <TextMd color="gold.300" textAlign="center" whiteSpace="break-spaces">
-          Acre App is <LiveTag color="brand.400" gap={1} px={1} py={0} /> on
+      <Flex align="center" justify="center" p={4} bg="brown.100">
+        <TextMd color="surface.4" textAlign="center" whiteSpace="break-spaces">
+          Acre App is <LiveTag color="acre.50" gap={1} px={1} py={0} /> on
           desktop!
         </TextMd>
 
@@ -62,7 +62,7 @@ function MobileModeBanner(props: MobileModeBannerProps) {
               />
             }
             iconSpacing={0}
-            color="brand.400"
+            color="acre.50"
             p={0}
             h="auto"
             ml={2}
@@ -83,8 +83,8 @@ function MobileModeBanner(props: MobileModeBannerProps) {
           >
             <Box
               h="full"
-              bg="grey.700"
-              color="gold.300"
+              bg="brown.100"
+              color="surface.4"
               px={5}
               py={8}
               textAlign="center"

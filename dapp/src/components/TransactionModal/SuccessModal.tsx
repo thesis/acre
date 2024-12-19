@@ -68,10 +68,10 @@ export default function SuccessModal({ type }: SuccessModalProps) {
             /* TODO: Update styles */
             <BlockExplorerLink id={txHash} type="transaction" chain="bitcoin">
               <HStack gap={1}>
-                <TextSm color="grey.600" fontWeight="semibold">
+                <TextSm color="text.primary" fontWeight="semibold">
                   View on Mempool
                 </TextSm>
-                <Icon as={IconArrowUpRight} color="brand.400" boxSize={4} />
+                <Icon as={IconArrowUpRight} color="acre.50" boxSize={4} />
               </HStack>
             </BlockExplorerLink>
           )}

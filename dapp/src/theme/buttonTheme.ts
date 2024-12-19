@@ -10,11 +10,11 @@ const variantCard = defineStyle({
   p: 3,
   pr: 4,
   fontWeight: "semibold",
-  bg: "gold.200",
-  color: "brand.400",
+  bg: "surface.3",
+  color: "acre.50",
 
   _hover: {
-    bg: "gold.400",
+    bg: "surface.3",
     textDecoration: "none",
   },
 })
@@ -43,7 +43,7 @@ const buttonTheme: ComponentSingleStyleConfig = {
       let baseBg = `${colorScheme}.400`
       let hoverBg = `${colorScheme}.500`
 
-      if (colorScheme === "green") {
+      if (colorScheme === "oldPalette.green") {
         baseBg = `${colorScheme}.500`
         hoverBg = `${colorScheme}.600`
       }
@@ -54,7 +54,7 @@ const buttonTheme: ComponentSingleStyleConfig = {
         _hover: {
           bg: hoverBg,
           _disabled: {
-            bg: "grey.400",
+            bg: "oldPalette.grey.400",
           },
         },
         _active: {
@@ -62,23 +62,23 @@ const buttonTheme: ComponentSingleStyleConfig = {
         },
         _loading: {
           _disabled: {
-            background: "gold.300",
+            background: "oldPalette.gold.300",
             opacity: 1,
           },
         },
         _disabled: {
-          bg: "grey.500",
-          color: "gold.200",
+          bg: "oldPalette.grey.500",
+          color: "oldPalette.gold.200",
         },
       }
     },
     outline: ({ colorScheme }: StyleFunctionProps) => {
       const defaultStyles = {
-        color: "grey.700",
-        borderColor: "grey.700",
+        color: "oldPalette.grey.700",
+        borderColor: "oldPalette.grey.700",
 
         _hover: {
-          bg: "opacity.grey.700.05",
+          bg: "oldPalette.opacity.grey.700.05",
         },
         _active: {
           bg: "transparent",
@@ -86,20 +86,20 @@ const buttonTheme: ComponentSingleStyleConfig = {
         _loading: {
           _disabled: {
             borderColor: "white",
-            background: "opacity.white.5",
+            background: "oldPalette.opacity.white.5",
             opacity: 1,
           },
         },
       }
-      if (colorScheme === "gold") {
+      if (colorScheme === "oldPalette.gold") {
         return {
           ...defaultStyles,
-          bg: "gold.100",
+          bg: "oldPalette.gold.100",
           borderColor: "white",
           borderStyle: "solid",
 
           _hover: {
-            borderColor: "grey.500",
+            borderColor: "oldPalette.grey.500",
             bg: "transparent",
           },
         }
@@ -112,7 +112,7 @@ const buttonTheme: ComponentSingleStyleConfig = {
           borderColor: "white",
 
           _hover: {
-            bg: "opacity.black.05",
+            bg: "oldPalette.opacity.black.05",
           },
         }
       }
@@ -130,22 +130,22 @@ const buttonTheme: ComponentSingleStyleConfig = {
     card: variantCard,
     pagination: {
       bg: "white",
-      color: "grey.700",
+      color: "oldPalette.grey.700",
       ring: 0,
       ringInset: "inset",
       ringColor: "white",
 
       _hover: {
-        color: "brand.400",
-        bg: "opacity.white.6",
+        color: "acre.50",
+        bg: "oldPalette.opacity.white.6",
         ring: 1,
       },
       _active: {
         ring: 1,
-        ringColor: "brand.400",
+        ringColor: "acre.50",
       },
       _disabled: {
-        color: "grey.300",
+        color: "oldPalette.grey.300",
         bg: "white",
         opacity: 1,
         pointerEvents: "none",
@@ -160,7 +160,7 @@ const buttonTheme: ComponentSingleStyleConfig = {
     },
   },
   defaultProps: {
-    colorScheme: "brand",
+    colorScheme: "oldPalette.brand",
   },
 }
 

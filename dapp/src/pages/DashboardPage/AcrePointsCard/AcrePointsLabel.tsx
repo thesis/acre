@@ -6,10 +6,6 @@ import { logPromiseFailure } from "#/utils"
 import { useAcrePointsData, useUserPointsData } from "#/hooks"
 import LabelWrapper from "./LabelWrapper"
 
-// TODO: Define colors as theme value
-const COLOR_TEXT_LIGHT_PRIMARY = "#1C1A16"
-const COLOR_TEXT_LIGHT_TERTIARY = "#7D6A4B"
-
 export function NextDropTimestampLabel() {
   const { data: acrePointsData, refetch: acrePointsDataRefetch } =
     useAcrePointsData()
@@ -24,7 +20,7 @@ export function NextDropTimestampLabel() {
 
   return (
     <HStack spacing={0}>
-      <TextMd color={COLOR_TEXT_LIGHT_TERTIARY} textAlign="center">
+      <TextMd color="text.tertiary" textAlign="center">
         Next drop in
       </TextMd>
       <Countdown
@@ -32,7 +28,7 @@ export function NextDropTimestampLabel() {
         onCountdownEnd={handleOnCountdownEnd}
         size="md"
         ml={1}
-        color={COLOR_TEXT_LIGHT_PRIMARY}
+        color="text.primary"
       />
     </HStack>
   )

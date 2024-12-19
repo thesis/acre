@@ -39,8 +39,18 @@ export default function AcrePointsTemplateCard(props: CardProps) {
             pt={16}
             pb="8.5rem" // 136px (156px - y-axis padding)
           >
-            <Tag px={3} py={1} bg="grey.700" color="gold.300" mb={6} border={0}>
-              <TagLeftIcon as={IconPlayerTrackNextFilled} color="brand.300" />
+            <Tag
+              px={3}
+              py={1}
+              bg="brown.100"
+              color="surface.4"
+              mb={6}
+              border={0}
+            >
+              <TagLeftIcon
+                as={IconPlayerTrackNextFilled}
+                color="oldPalette.brand.300"
+              />
               <TextSm
                 textTransform="uppercase"
                 fontWeight="bold"
@@ -49,10 +59,10 @@ export default function AcrePointsTemplateCard(props: CardProps) {
                 Coming soon
               </TextSm>
             </Tag>
-            <TextLg color="grey.700" fontWeight="semibold">
+            <TextLg color="text.primary" fontWeight="semibold">
               Acre Points will be live soon!
             </TextLg>
-            <TextMd color="grey.500" fontWeight="medium">
+            <TextMd color="text.tertiary" fontWeight="medium">
               Stake now to secure your spot
             </TextMd>
             {/* TODO: Update `ButtonLink` component and 'link' Button theme variant */}
@@ -61,10 +71,10 @@ export default function AcrePointsTemplateCard(props: CardProps) {
               href={`${externalHref.DOCS}/acre-points-program`}
               isExternal
               variant="ghost"
-              color="brand.400"
+              color="acre.50"
               iconSpacing={1}
               rightIcon={
-                <Icon as={IconArrowUpRight} boxSize={4} color="brand.400" />
+                <Icon as={IconArrowUpRight} boxSize={4} color="acre.50" />
               }
               mt={4}
             >

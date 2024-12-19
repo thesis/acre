@@ -1,16 +1,16 @@
 import { defineStyle, defineStyleConfig } from "@chakra-ui/react"
 
 const baseStyle = defineStyle({
-  color: "brand.400",
+  color: "acre.50",
   borderWidth: 2,
-  borderBottomColor: "brand.400",
+  borderBottomColor: "acre.50",
 })
 
 const variantFilled = defineStyle({
   borderWidth: 3,
-  borderTopColor: "gold.400",
-  borderBottomColor: "gold.400",
-  borderLeftColor: "gold.400",
+  borderTopColor: "brown.20",
+  borderBottomColor: "brown.20",
+  borderLeftColor: "brown.20",
 })
 
 const variants = {

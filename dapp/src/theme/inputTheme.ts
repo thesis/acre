@@ -4,30 +4,30 @@ import { createMultiStyleConfigHelpers, defineStyle } from "@chakra-ui/react"
 const variantOutlineField = defineStyle({
   boxShadow: "none !important",
   border: "1px solid",
-  borderColor: "gold.300",
-  color: "grey.700",
+  borderColor: "surface.4",
+  color: "text.primary",
   fontWeight: "bold",
-  bg: "opacity.white.5",
+  bg: "surface.1",
   paddingRight: 20,
   minH: 14,
   // TODO: Set the color correctly without using the chakra variable.
-  caretColor: "var(--chakra-colors-brand-400)",
+  caretColor: "var(--chakra-colors-acre-50)",
 
   _placeholder: {
-    color: "grey.300",
+    color: "brown.30",
     fontWeight: "medium",
   },
 
   _hover: {
-    borderColor: "gold.300",
+    borderColor: "surface.4",
   },
 
   _focus: {
-    borderColor: "gold.300",
+    borderColor: "surface.4",
   },
 
   _invalid: {
-    borderColor: "red.400 !important",
+    borderColor: "red.50 !important",
   },
 })
 

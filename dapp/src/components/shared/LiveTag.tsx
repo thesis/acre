@@ -10,8 +10,8 @@ export default function LiveTag(props: TagProps) {
       px={4}
       py={2}
       rounded="3xl"
-      color="gold.200"
-      bg="grey.700"
+      color="surface.3"
+      bg="brown.100"
       variant="solid"
       fontSize="md"
       lineHeight={5}
@@ -26,7 +26,7 @@ export default function LiveTag(props: TagProps) {
           rounded="full"
           w={2}
           h={2}
-          bg="brand.400"
+          bg="acre.50"
         />
         <MotionBox
           as="span"
@@ -36,7 +36,7 @@ export default function LiveTag(props: TagProps) {
           rounded="full"
           w={2}
           h={2}
-          bg="brand.400"
+          bg="acre.50"
           animate={{ scale: [1, 5.5, 0], opacity: [0.5, 0.1, 0] }}
           transition={{
             duration: 2,
