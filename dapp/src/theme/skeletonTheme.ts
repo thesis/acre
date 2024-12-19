@@ -4,7 +4,7 @@ const $startColor = cssVar("skeleton-start-color")
 const $endColor = cssVar("skeleton-end-color")
 
 const baseStyle = defineStyle({
-  borderRadius: "lg",
+  borderRadius: "sm",
 
   _light: {
     [$startColor.variable]: "colors.gold.300",

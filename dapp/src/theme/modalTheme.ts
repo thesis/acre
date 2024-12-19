@@ -12,7 +12,7 @@ const baseStyleDialog = defineStyle({
   },
   marginBottom: 8,
   boxShadow: "none",
-  borderRadius: "xl",
+  borderRadius: "md",
   p: { base: 5, sm: 0 },
   bg: "gold.100",
   border: "none",

@@ -26,14 +26,14 @@ const sizeXs = defineStyle({
   py: 1,
   fontSize: "xs",
   lineHeight: "xs",
-  borderRadius: "base",
+  borderRadius: "xs",
 })
 
 const sizeSm = defineStyle({
   p: 3,
   fontSize: "sm",
   lineHeight: "sm",
-  borderRadius: "lg",
+  borderRadius: "sm",
 })
 
 const sizes = {

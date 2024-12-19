@@ -103,7 +103,7 @@ function MezoBeehiveModalBase() {
             >
               <MezoSignIcon
                 boxSize="5.5rem" // 88px
-                rounded="lg"
+                rounded="sm"
               />
               <VStack align="start">
                 <TextMd lineHeight={5}>

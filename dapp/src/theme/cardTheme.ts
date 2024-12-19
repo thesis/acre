@@ -6,7 +6,7 @@ const multiStyleConfig = createMultiStyleConfigHelpers(parts.keys)
 const baseStyleContainer = defineStyle({
   boxShadow: "none",
   bg: "gold.200",
-  borderRadius: "xl",
+  borderRadius: "md",
   p: 5,
 })
 
