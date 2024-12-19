@@ -1,10 +1,10 @@
 import { useEffect } from "react"
 import { MODAL_TYPES } from "#/types"
 import { featureFlags } from "#/constants"
-import { useWallet } from "../useWallet"
-import { useModal } from "../useModal"
+import useWallet from "../useWallet"
+import useModal from "../useModal"
 
-export function useAccountChangedOKX() {
+export default function useAccountChangedOKX() {
   const { isConnected, address, onDisconnect } = useWallet()
   const { openModal } = useModal()
 

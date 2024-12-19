@@ -1,6 +1,6 @@
-import { CURRENCIES_BY_TYPE } from "#/constants"
+import { currencies } from "#/constants"
 import { selectBtcUsdPrice } from "#/store/btc"
-import { bigIntToUserAmount } from "#/utils"
+import { numbersUtils } from "#/utils"
 import { CurrencyType } from "#/types"
 import { useMemo } from "react"
 import { useAppSelector } from "./store"
@@ -16,7 +16,7 @@ const isBtcUsdConversion = (
   to: CurrencyConversionType,
 ): boolean => from.currency === "bitcoin" && to.currency === "usd"
 
-export function useCurrencyConversion({
+export default function useCurrencyConversion({
   from,
   to,
 }: {
@@ -31,9 +31,12 @@ export function useCurrencyConversion({
     if (from.amount === undefined || !price) return undefined
 
     const { amount, currency } = from
-    const { decimals } = CURRENCIES_BY_TYPE[currency]
+    const { decimals } = currencies.CURRENCIES_BY_TYPE[currency]
 
-    return bigIntToUserAmount(BigInt(amount), decimals, decimals - 1) * price
+    return (
+      numbersUtils.bigIntToUserAmount(BigInt(amount), decimals, decimals - 1) *
+      price
+    )
   }, [from, price])
 
   return conversionAmount

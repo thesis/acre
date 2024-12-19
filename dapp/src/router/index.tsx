@@ -30,7 +30,7 @@ const mainLayoutLoader: LoaderFunction = ({ request }) => {
   return routerUtils.redirectWithSearchParams(request.url, "/access")
 }
 
-export const router = createBrowserRouter([
+const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
@@ -75,3 +75,5 @@ export const router = createBrowserRouter([
     ],
   },
 ])
+
+export default router

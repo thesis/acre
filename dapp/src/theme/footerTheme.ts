@@ -58,6 +58,6 @@ const baseStyle = multiStyleConfig.definePartsStyle({
   link: linkStyles,
 })
 
-export const footerTheme = multiStyleConfig.defineMultiStyleConfig({
+export default multiStyleConfig.defineMultiStyleConfig({
   baseStyle,
 })

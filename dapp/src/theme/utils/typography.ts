@@ -1,4 +1,4 @@
-export const lineHeights = {
+const lineHeights = {
   "7xl": "5.625rem",
   "6xl": "4.5rem",
   "5xl": "3.75rem",
@@ -12,7 +12,12 @@ export const lineHeights = {
   xs: "1.125rem",
 }
 
-export const fonts = {
+const fonts = {
   heading: "Segment, sans-serif",
   body: "Segment, sans-serif",
+}
+
+export default {
+  fonts,
+  lineHeights,
 }

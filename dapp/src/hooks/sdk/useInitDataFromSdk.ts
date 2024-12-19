@@ -1,5 +1,5 @@
-import { useFetchMinDepositAmount } from "./useFetchMinDepositAmount"
+import useFetchMinDepositAmount from "./useFetchMinDepositAmount"
 
-export function useInitDataFromSdk() {
+export default function useInitDataFromSdk() {
   useFetchMinDepositAmount()
 }

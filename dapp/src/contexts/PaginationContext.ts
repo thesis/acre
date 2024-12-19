@@ -8,5 +8,4 @@ type PaginationContextType<T = unknown> = {
   pageData: T[]
 } | null
 
-export const PaginationContext =
-  React.createContext<PaginationContextType>(null)
+export default React.createContext<PaginationContextType>(null)

@@ -1,7 +1,7 @@
 import React, { useCallback } from "react"
 import { Link, ModalBody, ModalFooter, ModalHeader } from "@chakra-ui/react"
 import { TextSm } from "#/components/shared/Typography"
-import { EXTERNAL_HREF } from "#/constants"
+import { externalHref } from "#/constants"
 import { BaseModalProps } from "#/types"
 import { useAccessCode } from "#/hooks"
 import withBaseModal from "./ModalRoot/withBaseModal"
@@ -34,7 +34,7 @@ export function GateModalBase({ closeModal }: BaseModalProps) {
           <Link
             fontWeight="bold"
             textDecoration="underline"
-            href={EXTERNAL_HREF.DISCORD}
+            href={externalHref.DISCORD}
             isExternal
           >
             Discord

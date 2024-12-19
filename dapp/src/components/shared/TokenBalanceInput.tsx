@@ -10,19 +10,14 @@ import {
   InputRightElement,
   useMultiStyleConfig,
 } from "@chakra-ui/react"
-import {
-  fixedPointNumberToString,
-  getCurrencyByType,
-  isFormError,
-  userAmountToBigInt,
-} from "#/utils"
+import { numbersUtils, currencyUtils, forms } from "#/utils"
 import { CurrencyType } from "#/types"
 import { useCurrencyConversion } from "#/hooks"
 import NumberFormatInput, {
   NumberFormatInputValues,
   NumberFormatInputProps,
 } from "./NumberFormatInput"
-import { CurrencyBalance } from "./CurrencyBalance"
+import CurrencyBalance from "./CurrencyBalance"
 import HelperErrorText, { HelperErrorTextProps } from "./Form/HelperErrorText"
 
 type FiatCurrencyBalanceProps = {
@@ -94,12 +89,14 @@ export default function TokenBalanceInput({
   const [displayedValue, setDisplayedValue] = useState<string | undefined>()
   const styles = useMultiStyleConfig("TokenBalanceInput", { size })
 
-  const { decimals, symbol } = getCurrencyByType(currency)
+  const { decimals, symbol } = currencyUtils.getCurrencyByType(currency)
 
   const onValueChange = (values: NumberFormatInputValues) => {
     const { value } = values
 
-    valueRef.current = value ? userAmountToBigInt(value, decimals) : undefined
+    valueRef.current = value
+      ? numbersUtils.userAmountToBigInt(value, decimals)
+      : undefined
     setDisplayedValue(value)
   }
 
@@ -109,15 +106,17 @@ export default function TokenBalanceInput({
 
   const onClickMaxButton = () => {
     setAmount(tokenBalance)
-    setDisplayedValue(fixedPointNumberToString(tokenBalance, decimals))
+    setDisplayedValue(
+      numbersUtils.fixedPointNumberToString(tokenBalance, decimals),
+    )
   }
 
   const isBalanceExceeded =
     typeof errorMsgText === "string" &&
-    isFormError("EXCEEDED_VALUE", errorMsgText)
+    forms.isFormError("EXCEEDED_VALUE", errorMsgText)
 
   const defaultValue = defaultAmount
-    ? fixedPointNumberToString(defaultAmount, decimals)
+    ? numbersUtils.fixedPointNumberToString(defaultAmount, decimals)
     : undefined
 
   useEffect(() => {

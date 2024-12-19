@@ -4,7 +4,7 @@ import { walletSlice } from "./wallet/walletSlice"
 import { actionFlowSlice } from "./action-flow/actionFlowSlice"
 import { modalSlice } from "./modal/modalSlice"
 
-export const reducer = combineReducers({
+export default combineReducers({
   btc: btcSlice.reducer,
   wallet: walletSlice.reducer,
   actionFlow: actionFlowSlice.reducer,

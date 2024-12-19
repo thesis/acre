@@ -1,12 +1,12 @@
 import React from "react"
 import { MezoSignIcon } from "#/assets/icons"
-import beehiveIllustrationSrc from "#/assets/images/beehive-illustration.svg"
+import { beehiveIllustration } from "#/assets/images"
 import TooltipIcon from "#/components/shared/TooltipIcon"
 import { H6, TextMd, TextSm } from "#/components/shared/Typography"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import { useMats, useModal } from "#/hooks"
 import { MODAL_TYPES } from "#/types"
-import { numberToLocaleString } from "#/utils"
+import { numbersUtils } from "#/utils"
 import {
   Box,
   Button,
@@ -39,7 +39,7 @@ export default function BeehiveCard(props: CardProps) {
       </CardHeader>
 
       <CardBody as={VStack}>
-        <Image src={beehiveIllustrationSrc} boxSize={32} />
+        <Image src={beehiveIllustration} boxSize={32} />
         <UserDataSkeleton w="100%" mt={-7}>
           <Box px={4} py={3} bg="gold.100" borderRadius="lg">
             <TextSm>
@@ -54,7 +54,7 @@ export default function BeehiveCard(props: CardProps) {
             </TextSm>
             {data && (
               <H6 fontWeight="semibold" color="grey.700">
-                {numberToLocaleString(data.totalMats)}
+                {numbersUtils.numberToLocaleString(data.totalMats)}
               </H6>
             )}
             <Button mt={4} variant="outline" onClick={handleOpenBeehiveModal}>

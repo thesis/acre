@@ -10,7 +10,7 @@ export const initialFee = {
   total: 0n,
 }
 
-export function useTransactionFee(
+export default function useTransactionFee(
   amount: bigint | undefined,
   flow: ActionFlowType,
 ): Fee {

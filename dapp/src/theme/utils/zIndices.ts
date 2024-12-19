@@ -1,4 +1,4 @@
-export const zIndices = {
+export default {
   mobileBanner: 1500,
   header: 1400,
   footer: 1380,

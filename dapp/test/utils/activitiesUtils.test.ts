@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { getEstimatedDuration } from "#/utils/activities"
+import { activitiesUtils } from "#/utils"
 
 describe("Utils functions for activities", () => {
   describe("getEstimatedDuration", () => {
@@ -15,9 +15,12 @@ describe("Utils functions for activities", () => {
         { value: 10, expectedResult: "6 hours" },
       ])("when it is $value BTC", ({ value, expectedResult }) => {
         it(`should return ${expectedResult}`, () => {
-          expect(getEstimatedDuration(BigInt(value * 1e8), "withdraw")).toEqual(
-            expectedResult,
-          )
+          expect(
+            activitiesUtils.getEstimatedDuration(
+              BigInt(value * 1e8),
+              "withdraw",
+            ),
+          ).toEqual(expectedResult)
         })
       })
     })
@@ -42,9 +45,12 @@ describe("Utils functions for activities", () => {
         { value: 10, expectedResult: "3 hours" },
       ])("when it is $value BTC", ({ value, expectedResult }) => {
         it(`should return ${expectedResult}`, () => {
-          expect(getEstimatedDuration(BigInt(value * 1e8), "deposit")).toEqual(
-            expectedResult,
-          )
+          expect(
+            activitiesUtils.getEstimatedDuration(
+              BigInt(value * 1e8),
+              "deposit",
+            ),
+          ).toEqual(expectedResult)
         })
       })
     })

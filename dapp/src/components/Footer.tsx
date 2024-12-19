@@ -9,7 +9,7 @@ import {
   Button,
   Icon,
 } from "@chakra-ui/react"
-import { EXTERNAL_HREF } from "#/constants"
+import { externalHref } from "#/constants"
 import { AcreSignIcon } from "#/assets/icons"
 import { useMobileMode } from "#/hooks"
 import { IconArrowUpRight } from "@tabler/icons-react"
@@ -19,38 +19,38 @@ type FooterListItem = Pick<LinkProps, "href" | "children">
 const NAVIGATION: FooterListItem[] = [
   {
     children: "Acre.fi",
-    href: EXTERNAL_HREF.WEBSITE,
+    href: externalHref.WEBSITE,
   },
   {
     children: "Docs",
-    href: EXTERNAL_HREF.DOCS,
+    href: externalHref.DOCS,
   },
   {
     children: "FAQ",
-    href: EXTERNAL_HREF.FAQ,
+    href: externalHref.FAQ,
   },
   {
     children: "Blog",
-    href: EXTERNAL_HREF.BLOG,
+    href: externalHref.BLOG,
   },
   {
     children: "Discord",
-    href: EXTERNAL_HREF.DISCORD,
+    href: externalHref.DISCORD,
   },
   {
     children: "X",
-    href: EXTERNAL_HREF.X,
+    href: externalHref.X,
   },
 ]
 
 const DOCUMENTS: FooterListItem[] = [
   {
     children: "Privacy Policy",
-    href: EXTERNAL_HREF.PRIVACY_POLICY,
+    href: externalHref.PRIVACY_POLICY,
   },
   {
     children: "Terms of Use",
-    href: EXTERNAL_HREF.TERMS_OF_USE,
+    href: externalHref.TERMS_OF_USE,
   },
 ]
 

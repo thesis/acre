@@ -167,7 +167,7 @@ const sizes = {
   "6xl": size6Xl,
 }
 
-export const currencyBalanceTheme = multiStyleConfig.defineMultiStyleConfig({
+export default multiStyleConfig.defineMultiStyleConfig({
   baseStyle,
   variants,
   sizes,

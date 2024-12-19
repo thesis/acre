@@ -15,6 +15,6 @@ const baseStyle = multiStyleConfig.definePartsStyle({
   text: baseStyleText,
 })
 
-export const formErrorTheme = multiStyleConfig.defineMultiStyleConfig({
+export default multiStyleConfig.defineMultiStyleConfig({
   baseStyle,
 })

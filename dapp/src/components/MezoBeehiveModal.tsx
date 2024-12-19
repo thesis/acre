@@ -16,8 +16,8 @@ import {
 import { H6, TextLg, TextMd, TextXl } from "#/components/shared/Typography"
 import { AcreSignIcon, MatsIcon, MezoSignIcon } from "#/assets/icons"
 import { IconArrowUpRight, IconChartPieFilled } from "@tabler/icons-react"
-import { EXTERNAL_HREF } from "#/constants"
-import { numberToLocaleString } from "#/utils"
+import { externalHref } from "#/constants"
+import { numbersUtils } from "#/utils"
 import { useMats } from "#/hooks"
 import withBaseModal from "./ModalRoot/withBaseModal"
 
@@ -46,7 +46,9 @@ function MezoBeehiveModalBase() {
         <VStack spacing={1}>
           {data && (
             <HStack>
-              <H6 fontWeight="bold">{numberToLocaleString(data.totalMats)}</H6>
+              <H6 fontWeight="bold">
+                {numbersUtils.numberToLocaleString(data.totalMats)}
+              </H6>
               <TextLg fontWeight="bold">MATS</TextLg>
             </HStack>
           )}
@@ -111,7 +113,7 @@ function MezoBeehiveModalBase() {
 
                 <Button
                   as={Link}
-                  href={EXTERNAL_HREF.MEZO_INFO}
+                  href={externalHref.MEZO_INFO}
                   isExternal
                   variant="link"
                   textDecorationLine="none"

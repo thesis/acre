@@ -7,10 +7,10 @@ import {
 } from "#/store/modal"
 import { ModalProps, ModalType } from "#/types"
 import { useCallback } from "react"
-import { useAppDispatch } from "./store/useAppDispatch"
-import { useAppSelector } from "./store/useAppSelector"
+import useAppDispatch from "./store/useAppDispatch"
+import useAppSelector from "./store/useAppSelector"
 
-export function useModal() {
+export default function useModal() {
   const modalType = useAppSelector(selectModalType)
   const modalProps = useAppSelector(selectModalProps)
   const isOpenGlobalErrorModal = useAppSelector(selectIsOpenGlobalErrorModal)

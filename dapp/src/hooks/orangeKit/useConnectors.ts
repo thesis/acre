@@ -4,7 +4,7 @@ import { useConnectors as useWagmiConnectors } from "wagmi"
 
 const { isOrangeKitConnector, typeConversionToOrangeKitConnector } = orangeKit
 
-export function useConnectors() {
+export default function useConnectors() {
   const connectors = useWagmiConnectors()
 
   return connectors.reduce<OrangeKitConnector[]>((acc, connector) => {

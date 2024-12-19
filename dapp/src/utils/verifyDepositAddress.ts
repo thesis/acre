@@ -1,4 +1,4 @@
-import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
+import { time } from "#/constants"
 import { BitcoinNetwork, DepositReceipt } from "@acre-btc/sdk"
 import axios from "axios"
 
@@ -22,7 +22,7 @@ function createURL(deposit: DepositReceipt, network: BitcoinNetwork): string {
   return extraData ? `${baseUrl}/${extraData.toString()}` : baseUrl
 }
 
-export async function verifyDepositAddress(
+export default async function verifyDepositAddress(
   deposit: DepositReceipt,
   depositAddress: string,
   network: BitcoinNetwork,
@@ -33,7 +33,7 @@ export async function verifyDepositAddress(
   try {
     const url = createURL(deposit, network)
     const response = await axios.get<{ address: string }>(url, {
-      timeout: ONE_SEC_IN_MILLISECONDS * 10,
+      timeout: time.ONE_SEC_IN_MILLISECONDS * 10,
     })
 
     const match = response.data.address === depositAddress

@@ -1,5 +1,5 @@
 import React from "react"
-import { CurrencyBalanceWithConversion } from "#/components/shared/CurrencyBalanceWithConversion"
+import CurrencyBalanceWithConversion from "#/components/shared/CurrencyBalanceWithConversion"
 import {
   useActivitiesCount,
   useBitcoinPosition,
@@ -17,7 +17,7 @@ import { featureFlags } from "#/constants"
 import { TextMd } from "#/components/shared/Typography"
 import { IconClockHour5Filled } from "@tabler/icons-react"
 import TooltipIcon from "#/components/shared/TooltipIcon"
-import { hasPendingDeposits } from "#/utils"
+import { activitiesUtils } from "#/utils"
 import AcreTVLMessage from "./AcreTVLMessage"
 
 const isWithdrawalFlowEnabled = featureFlags.WITHDRAWALS_ENABLED
@@ -55,7 +55,7 @@ export default function PositionDetails() {
         {/* TODO: Component should be moved to `CardHeader` */}
         <HStack>
           <TextMd>Your Acre balance</TextMd>
-          {hasPendingDeposits(activities ?? []) && (
+          {activitiesUtils.hasPendingDeposits(activities ?? []) && (
             <TooltipIcon
               icon={IconClockHour5Filled}
               label="Your balance will update once the pending deposit is finalized."

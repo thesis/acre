@@ -4,7 +4,7 @@ import {
   MessageSignedStepCallback,
   OnSignMessageStepCallback,
 } from "@acre-btc/sdk/dist/src/lib/redeemer-proxy"
-import { useAcreContext } from "./useAcreContext"
+import useAcreContext from "./useAcreContext"
 
 export default function useInitializeWithdraw() {
   const { acre, isConnected } = useAcreContext()

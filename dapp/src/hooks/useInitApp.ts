@@ -1,13 +1,13 @@
-import { useAccountChangedOKX } from "./orangeKit/useAccountChangedOKX"
-import { useAccountsChangedUnisat } from "./orangeKit/useAccountsChangedUnisat"
-import { useAccountsChangedOKX } from "./orangeKit/useAccountsChangedOKX"
+import useAccountChangedOKX from "./orangeKit/useAccountChangedOKX"
+import useAccountsChangedUnisat from "./orangeKit/useAccountsChangedUnisat"
+import useAccountsChangedOKX from "./orangeKit/useAccountsChangedOKX"
 import { useInitDataFromSdk, useInitializeAcreSdk } from "./sdk"
-import { useSentry } from "./sentry"
 import useDetectEmbed from "./useDetectEmbed"
-import { useDisconnectWallet } from "./useDisconnectWallet"
-import { useFetchBTCPriceUSD } from "./useFetchBTCPriceUSD"
+import useFetchBTCPriceUSD from "./useFetchBTCPriceUSD"
+import useDisconnectWallet from "./useDisconnectWallet"
+import useSentry from "./useSentry"
 
-export function useInitApp() {
+export default function useInitApp() {
   // TODO: Let's uncomment when dark mode is ready
   // useDetectThemeMode()
   useSentry()

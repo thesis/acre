@@ -1,10 +1,10 @@
 import { useMutation } from "@tanstack/react-query"
 import { acreApi } from "#/utils"
 import { MODAL_TYPES } from "#/types"
-import { PostHogEvent } from "#/posthog/events"
-import { useWallet } from "./useWallet"
-import { useModal } from "./useModal"
-import { usePostHogCapture } from "./posthog/usePostHogCapture"
+import PostHogEvent from "#/posthog/events"
+import useWallet from "./useWallet"
+import useModal from "./useModal"
+import usePostHogCapture from "./posthog/usePostHogCapture"
 import useUserPointsData from "./useUserPointsData"
 
 export default function useClaimPoints() {

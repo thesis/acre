@@ -41,4 +41,3 @@ export const {
   resetState,
   setAddress,
 } = walletSlice.actions
-export default walletSlice.reducer

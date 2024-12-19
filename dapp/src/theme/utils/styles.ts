@@ -11,6 +11,6 @@ const globalStyle = (props: StyleFunctionProps) => ({
   body: bodyStyle(props),
 })
 
-export const styles = {
+export default {
   global: (props: StyleFunctionProps) => globalStyle(props),
 }

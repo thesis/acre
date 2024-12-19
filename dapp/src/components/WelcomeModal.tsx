@@ -18,10 +18,12 @@ import { H3, TextSm } from "#/components/shared/Typography"
 import { BaseModalProps, DappMode } from "#/types"
 import { EmbedApp } from "#/utils/referralProgram"
 import { useIsEmbed, useMobileMode } from "#/hooks"
+import {
+  step1Video,
+  step2Video,
+  step3Video,
+} from "#/assets/videos/welcome-steps"
 import withBaseModal from "./ModalRoot/withBaseModal"
-import step1Video from "../assets/videos/welcome-steps/welcome-step-1.mp4"
-import step2Video from "../assets/videos/welcome-steps/welcome-step-2.mp4"
-import step3Video from "../assets/videos/welcome-steps/welcome-step-3.mp4"
 
 const dappModeToContent: Record<DappMode, () => ReactElement> = {
   standalone: () => (

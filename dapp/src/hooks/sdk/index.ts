@@ -1,4 +1,4 @@
-export * from "./useInitializeAcreSdk"
-export * from "./useFetchMinDepositAmount"
-export * from "./useInitDataFromSdk"
-export * from "./useMinWithdrawAmount"
+export { default as useInitializeAcreSdk } from "./useInitializeAcreSdk"
+export { default as useFetchMinDepositAmount } from "./useFetchMinDepositAmount"
+export { default as useInitDataFromSdk } from "./useInitDataFromSdk"
+export { default as useMinWithdrawAmount } from "./useMinWithdrawAmount"

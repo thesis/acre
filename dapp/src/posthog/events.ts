@@ -1,4 +1,4 @@
-export enum PostHogEvent {
+enum PostHogEvent {
   PageView = "$pageview",
   DepositSuccess = "deposit_success",
   DepositFailure = "deposit_failure",
@@ -7,3 +7,5 @@ export enum PostHogEvent {
   PointsClaimSuccess = "points_claim_success",
   PointsClaimFailure = "points_claim_failure",
 }
+
+export default PostHogEvent

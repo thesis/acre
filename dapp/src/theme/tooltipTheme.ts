@@ -41,7 +41,7 @@ const sizes = {
   sm: sizeSm,
 }
 
-export const tooltipTheme = defineStyleConfig({
+export default defineStyleConfig({
   defaultProps: {
     size: "sm",
   },

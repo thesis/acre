@@ -1,12 +1,12 @@
 import React from "react"
 import { TextMd } from "#/components/shared/Typography"
 import { Button, HStack, VStack } from "@chakra-ui/react"
-import { numberToLocaleString } from "#/utils"
+import { numbersUtils } from "#/utils"
 import { useAcrePointsData, useClaimPoints, useUserPointsData } from "#/hooks"
 import Spinner from "#/components/shared/Spinner"
 import TooltipIcon from "#/components/shared/TooltipIcon"
 import useDebounce from "#/hooks/useDebounce"
-import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
+import { time } from "#/constants"
 import LabelWrapper from "./LabelWrapper"
 import { NextDropTimestampLabel } from "./AcrePointsLabel"
 
@@ -17,10 +17,14 @@ const COLOR_BUTTON_BACKGROUND = "#33A321"
 function ClaimableBalanceLabel() {
   const { mutate: claimPoints } = useClaimPoints()
   const { data: userPointsData } = useUserPointsData()
-  const debouncedClaimPoints = useDebounce(claimPoints, ONE_SEC_IN_MILLISECONDS)
+  const debouncedClaimPoints = useDebounce(
+    claimPoints,
+    time.ONE_SEC_IN_MILLISECONDS,
+  )
 
   const claimableBalance = userPointsData?.claimableBalance || 0
-  const formattedClaimablePointsAmount = numberToLocaleString(claimableBalance)
+  const formattedClaimablePointsAmount =
+    numbersUtils.numberToLocaleString(claimableBalance)
 
   if (claimableBalance <= 0) return null
 

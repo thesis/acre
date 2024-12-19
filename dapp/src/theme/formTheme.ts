@@ -15,4 +15,4 @@ const baseStyle = multiStyleConfig.definePartsStyle({
   helperText: baseStyleHelperText,
 })
 
-export const formTheme = multiStyleConfig.defineMultiStyleConfig({ baseStyle })
+export default multiStyleConfig.defineMultiStyleConfig({ baseStyle })

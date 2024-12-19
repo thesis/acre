@@ -44,7 +44,7 @@ const sizes = Object.fromEntries(
   ]),
 )
 
-export const countdownTheme = multiStyleConfig.defineMultiStyleConfig({
+export default multiStyleConfig.defineMultiStyleConfig({
   baseStyle,
   sizes,
 })

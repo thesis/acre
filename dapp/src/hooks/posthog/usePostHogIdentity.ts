@@ -4,7 +4,7 @@ import { sha256, toUtf8Bytes } from "ethers"
 
 type IdentifyArgs = Parameters<PostHog["identify"]>
 
-export const usePostHogIdentity = () => {
+const usePostHogIdentity = () => {
   const posthog = usePostHog()
 
   const handleIdentification = useCallback(
@@ -25,3 +25,5 @@ export const usePostHogIdentity = () => {
 
   return { handleIdentification, resetIdentity }
 }
+
+export default usePostHogIdentity

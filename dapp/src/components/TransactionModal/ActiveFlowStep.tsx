@@ -5,8 +5,8 @@ import {
   ActionFlowType,
   ACTION_FLOW_TYPES,
 } from "#/types"
-import { ActiveUnstakingStep } from "./ActiveUnstakingStep"
-import { ActiveStakingStep } from "./ActiveStakingStep"
+import ActiveUnstakingStep from "./ActiveUnstakingStep"
+import ActiveStakingStep from "./ActiveStakingStep"
 
 const FLOW: Record<ActionFlowType, (activeStep: number) => ReactElement> = {
   [ACTION_FLOW_TYPES.STAKE]: (activeStep) => (
@@ -17,7 +17,7 @@ const FLOW: Record<ActionFlowType, (activeStep: number) => ReactElement> = {
   ),
 }
 
-export function ActiveFlowStep() {
+export default function ActiveFlowStep() {
   const { closeModal } = useModal()
   const activeStep = useActionFlowActiveStep()
   const type = useActionFlowType()

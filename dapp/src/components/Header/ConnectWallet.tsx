@@ -13,11 +13,17 @@ import {
   useClipboard,
   useMultiStyleConfig,
 } from "@chakra-ui/react"
-import { useIsEmbed, useMobileMode, useModal, useWallet } from "#/hooks"
-import { CurrencyBalance } from "#/components/shared/CurrencyBalance"
+import {
+  useIsEmbed,
+  useMobileMode,
+  useModal,
+  usePostHogIdentity,
+  useWallet,
+} from "#/hooks"
+import CurrencyBalance from "#/components/shared/CurrencyBalance"
 import { TextMd } from "#/components/shared/Typography"
 import { BitcoinIcon } from "#/assets/icons"
-import { referralProgram, truncateAddress } from "#/utils"
+import { referralProgram, addressUtils } from "#/utils"
 import { motion } from "framer-motion"
 import { MODAL_TYPES } from "#/types"
 import {
@@ -29,7 +35,6 @@ import {
   IconChevronUp,
 } from "@tabler/icons-react"
 import { useMatch } from "react-router-dom"
-import { usePostHogIdentity } from "#/hooks/posthog"
 import Tooltip from "../shared/Tooltip"
 
 function isChangeAccountFeatureSupported(embeddedApp: string | undefined) {
@@ -113,7 +118,9 @@ export default function ConnectWallet() {
             leftIcon={<Icon as={BitcoinIcon} boxSize={6} color="brand.400" />}
             rightIcon={isOpen ? <IconChevronUp /> : <IconChevronDown />}
           >
-            <TextMd color="brand.400">{truncateAddress(address)}</TextMd>
+            <TextMd color="brand.400">
+              {addressUtils.truncateAddress(address)}
+            </TextMd>
           </MenuButton>
           <MenuList bg="gold.200">
             {options.map(
@@ -159,7 +166,9 @@ export default function ConnectWallet() {
           spacing={3}
         >
           <Icon as={BitcoinIcon} boxSize={6} color="brand.400" />
-          <TextMd color="brand.400">{truncateAddress(address)}</TextMd>
+          <TextMd color="brand.400">
+            {addressUtils.truncateAddress(address)}
+          </TextMd>
         </HStack>
 
         <HStack

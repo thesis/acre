@@ -11,10 +11,10 @@ import {
 } from "@chakra-ui/react"
 import { IconChevronDown } from "@tabler/icons-react"
 import { AnimatePresence, motion } from "framer-motion"
-import { EXTERNAL_HREF } from "#/constants"
-import { LiveTag } from "../shared/LiveTag"
+import { externalHref } from "#/constants"
 import { H4, TextMd, TextXl } from "../shared/Typography"
 import AcreAnimatedBadge from "./AcreAnimatedBadge"
+import LiveTag from "../shared/LiveTag"
 
 const MotionIcon = motion(Icon)
 const MotionBox = motion(Box)
@@ -100,7 +100,7 @@ function MobileModeBanner(props: MobileModeBannerProps) {
                 Stay tuned on{" "}
                 <Link
                   textDecoration="underline"
-                  href={EXTERNAL_HREF.X}
+                  href={externalHref.X}
                   isExternal
                 >
                   X
@@ -108,7 +108,7 @@ function MobileModeBanner(props: MobileModeBannerProps) {
                 and join our{" "}
                 <Link
                   textDecoration="underline"
-                  href={EXTERNAL_HREF.DISCORD}
+                  href={externalHref.DISCORD}
                   isExternal
                 >
                   Discord

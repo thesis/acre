@@ -1,8 +1,8 @@
 import { useEffect } from "react"
 import { featureFlags } from "#/constants"
-import { useWallet } from "../useWallet"
+import useWallet from "../useWallet"
 
-export function useAccountsChangedOKX() {
+export default function useAccountsChangedOKX() {
   const { isConnected, onDisconnect } = useWallet()
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-export const EXTERNAL_HREF = {
+export default {
   DISCORD: "https://discord.gg/acre",
   DOCS: "https://docs.acre.fi",
   FAQ: "https://docs.acre.fi/faq",

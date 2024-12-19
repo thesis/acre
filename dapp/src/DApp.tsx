@@ -9,18 +9,18 @@ import { AcreSdkProvider } from "./acre-react/contexts"
 import GlobalStyles from "./components/GlobalStyles"
 import { WalletConnectionAlertContextProvider } from "./contexts"
 import { useInitApp } from "./hooks"
-import { router } from "./router"
-import { store } from "./store"
+import router from "./router"
+import store from "./store"
 import getWagmiConfig from "./wagmiConfig"
 import queryClient from "./queryClient"
 import { delay, logPromiseFailure } from "./utils"
-import { AcreLogo } from "./assets/icons"
+import { AcreLogoIcon } from "./assets/icons"
 import PostHogProvider from "./posthog/PostHogProvider"
 
 function SplashPage() {
   return (
     <Center h="100vh" w="100vw">
-      <Icon as={AcreLogo} w={200} h={300} />
+      <Icon as={AcreLogoIcon} w={200} h={300} />
     </Center>
   )
 }

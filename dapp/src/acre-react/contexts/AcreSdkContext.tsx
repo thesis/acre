@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react"
 import { Acre, AcreBitcoinProvider } from "@acre-btc/sdk"
-import { BITCOIN_NETWORK, env } from "#/constants"
+import { chains, env } from "#/constants"
 
 const { TBTC_API_ENDPOINT, SUBGRAPH_API_KEY } = env
 const ETH_RPC_URL = env.ETH_HOSTNAME_HTTP
@@ -28,7 +28,7 @@ export function AcreSdkProvider({ children }: { children: React.ReactNode }) {
   const init = useCallback<AcreSdkContextValue["init"]>(
     async (bitcoinProvider?: AcreBitcoinProvider) => {
       let sdk = await Acre.initialize(
-        BITCOIN_NETWORK,
+        chains.BITCOIN_NETWORK,
         TBTC_API_ENDPOINT,
         ETH_RPC_URL,
         GELATO_API_KEY,

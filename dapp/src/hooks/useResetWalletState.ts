@@ -3,7 +3,7 @@ import { useCallback } from "react"
 import { resetState } from "#/store/wallet"
 import { queryKeysFactory } from "#/constants"
 import { logPromiseFailure } from "#/utils"
-import { useAppDispatch } from "./store/useAppDispatch"
+import useAppDispatch from "./store/useAppDispatch"
 
 const { userKeys } = queryKeysFactory
 

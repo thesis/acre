@@ -5,7 +5,7 @@ import { OrangeKitConnector } from "#/types"
 
 type UseConnectorReturn = OrangeKitConnector | undefined
 
-export function useConnector(): UseConnectorReturn {
+export default function useConnector(): UseConnectorReturn {
   const { connector, status } = useAccount()
 
   return useMemo(() => {

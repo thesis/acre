@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react"
 import { CableWithPlugIcon } from "#/assets/icons"
 import { TextMd } from "#/components/shared/Typography"
-import { EXTERNAL_HREF } from "#/constants"
+import { externalHref } from "#/constants"
 import IconWrapper from "#/components/shared/IconWrapper"
 import {
   IconBrandDiscordFilled,
@@ -48,7 +48,7 @@ export default function ServerErrorModal({
           width="100%"
           variant="outline"
           rightIcon={<Icon as={IconBrandDiscordFilled} boxSize={5} />}
-          href={EXTERNAL_HREF.DISCORD}
+          href={externalHref.DISCORD}
           isExternal
         >
           Get help on Discord

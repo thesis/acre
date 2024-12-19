@@ -43,7 +43,7 @@ type UseWalletReturn = {
   onDisconnect: () => void
 }
 
-export function useWallet(): UseWalletReturn {
+export default function useWallet(): UseWalletReturn {
   const queryClient = useQueryClient()
   const dispatch = useDispatch()
   const btcAddress = useWalletAddress()

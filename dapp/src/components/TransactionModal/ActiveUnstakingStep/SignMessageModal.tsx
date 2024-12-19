@@ -6,17 +6,17 @@ import {
   useBitcoinPosition,
   useCancelPromise,
   useModal,
+  usePostHogCapture,
   useTimeout,
   useTransactionDetails,
 } from "#/hooks"
 import { ACTION_FLOW_TYPES, Activity, PROCESS_STATUSES } from "#/types"
-import { dateToUnixTimestamp, eip1193, logPromiseFailure } from "#/utils"
+import { timeUtils, eip1193, logPromiseFailure } from "#/utils"
 import { setStatus } from "#/store/action-flow"
 import { useInitializeWithdraw } from "#/acre-react/hooks"
-import { ONE_SEC_IN_MILLISECONDS, queryKeysFactory } from "#/constants"
+import { time, queryKeysFactory } from "#/constants"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { PostHogEvent } from "#/posthog/events"
-import { usePostHogCapture } from "#/hooks/posthog/usePostHogCapture"
+import PostHogEvent from "#/posthog/events"
 import BuildTransactionModal from "./BuildTransactionModal"
 import WalletInteractionModal from "../WalletInteractionModal"
 
@@ -130,9 +130,9 @@ export default function SignMessageModal() {
             // This is a requested amount. The amount of BTC received will be
             // around: `amount - transactionFee.total`.
             amount: amount - transactionFee.acre,
-            initializedAt: dateToUnixTimestamp(),
+            initializedAt: timeUtils.dateToUnixTimestamp(),
             // The message is signed immediately after the initialization.
-            finalizedAt: dateToUnixTimestamp(),
+            finalizedAt: timeUtils.dateToUnixTimestamp(),
           }
 
           if (oldData) return [newActivity, ...oldData]
@@ -149,7 +149,7 @@ export default function SignMessageModal() {
     closeModal()
   }
 
-  useTimeout(handleSignMessage, ONE_SEC_IN_MILLISECONDS)
+  useTimeout(handleSignMessage, time.ONE_SEC_IN_MILLISECONDS)
 
   if (status === "building-data")
     return <BuildTransactionModal onClose={onClose} />

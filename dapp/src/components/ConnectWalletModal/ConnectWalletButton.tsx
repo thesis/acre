@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from "react"
-import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
+import { time } from "#/constants"
 import {
   useAppDispatch,
   useIsEmbed,
   useModal,
+  usePostHogIdentity,
   useSignMessageAndCreateSession,
   useWallet,
   useWalletConnectionAlert,
@@ -24,7 +25,6 @@ import {
 } from "@chakra-ui/react"
 import { IconArrowNarrowRight } from "@tabler/icons-react"
 import { AnimatePresence, Variants, motion } from "framer-motion"
-import { usePostHogIdentity } from "#/hooks/posthog"
 import ArrivingSoonTooltip from "../ArrivingSoonTooltip"
 import { TextLg, TextMd } from "../shared/Typography"
 import ConnectWalletStatusLabel from "./ConnectWalletStatusLabel"
@@ -162,7 +162,7 @@ export default function ConnectWalletButton({
       }
 
       setIsLoading(false)
-    }, ONE_SEC_IN_MILLISECONDS * 2)
+    }, time.ONE_SEC_IN_MILLISECONDS * 2)
   }, [connector])
 
   const handleButtonClick = () => {

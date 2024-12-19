@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react"
 import { StakeInitialization, DepositReceipt } from "@acre-btc/sdk"
-import { useAcreContext } from "./useAcreContext"
+import useAcreContext from "./useAcreContext"
 
 export type UseStakeFlowReturn = {
   initStake: (

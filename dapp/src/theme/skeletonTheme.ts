@@ -16,4 +16,4 @@ const baseStyle = defineStyle({
   },
 })
 
-export const skeletonTheme = defineStyleConfig({ baseStyle })
+export default defineStyleConfig({ baseStyle })

@@ -7,13 +7,13 @@ import {
   Transition,
   useAnimate,
 } from "framer-motion"
-import { logPromiseFailure, numberToLocaleString } from "#/utils"
-import { ONE_SEC_IN_MILLISECONDS } from "#/constants"
+import { logPromiseFailure, numbersUtils } from "#/utils"
+import { time } from "#/constants"
 import ConfettiExplosion from "react-confetti-explosion"
 import { BaseModalProps } from "#/types"
-import { AnimatedNumber } from "./shared/AnimatedNumber"
 import { TextXl } from "./shared/Typography"
 import withBaseModal from "./ModalRoot/withBaseModal"
+import AnimatedNumber from "./shared/AnimatedNumber"
 
 const MotionBox = motion(Box)
 
@@ -28,8 +28,8 @@ const TRANSITION: Transition = {
   stiffness: 86,
   delay: 4, // step duration
 }
-const AUTOCLOSE_DELAY = 12 * ONE_SEC_IN_MILLISECONDS
-const CONFETTI_DURATION = 4 * ONE_SEC_IN_MILLISECONDS
+const AUTOCLOSE_DELAY = 12 * time.ONE_SEC_IN_MILLISECONDS
+const CONFETTI_DURATION = 4 * time.ONE_SEC_IN_MILLISECONDS
 
 const getStepOffsets = (
   stepCount: number,
@@ -54,8 +54,9 @@ function AcrePointsClaimModalBase({
   totalAmount,
   closeModal,
 }: AcrePointsClaimModalBaseProps) {
-  const formattedClaimedAmount = numberToLocaleString(claimedAmount)
-  const formattedTotalAmount = numberToLocaleString(totalAmount)
+  const formattedClaimedAmount =
+    numbersUtils.numberToLocaleString(claimedAmount)
+  const formattedTotalAmount = numbersUtils.numberToLocaleString(totalAmount)
 
   const steps = useMemo<[string, ReactNode][]>(
     () => [

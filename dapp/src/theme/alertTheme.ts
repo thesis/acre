@@ -63,7 +63,7 @@ const variants = {
   elevated: variantElevated,
 }
 
-export const alertTheme = multiStyleConfig.defineMultiStyleConfig({
+export default multiStyleConfig.defineMultiStyleConfig({
   baseStyle,
   variants,
 })

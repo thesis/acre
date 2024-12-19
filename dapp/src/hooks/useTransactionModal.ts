@@ -1,8 +1,8 @@
 import { ActionFlowType, MODAL_TYPES } from "#/types"
 import { useCallback } from "react"
-import { useModal } from "./useModal"
+import useModal from "./useModal"
 
-export function useTransactionModal(type: ActionFlowType) {
+export default function useTransactionModal(type: ActionFlowType) {
   const { openModal } = useModal()
 
   return useCallback(() => {

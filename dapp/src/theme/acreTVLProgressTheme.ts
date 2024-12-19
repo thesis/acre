@@ -82,6 +82,6 @@ const baseStyle = multiStyleConfig.definePartsStyle({
   progressLabel: progressLabelStyles,
 })
 
-export const acreTVLProgressTheme = multiStyleConfig.defineMultiStyleConfig({
+export default multiStyleConfig.defineMultiStyleConfig({
   baseStyle,
 })

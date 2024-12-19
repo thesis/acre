@@ -8,13 +8,15 @@ import {
   HStack,
   Image,
 } from "@chakra-ui/react"
-import { numberToLocaleString } from "#/utils"
+import { numbersUtils } from "#/utils"
 import { useAcrePointsData, useUserPointsData, useWallet } from "#/hooks"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import TooltipIcon from "#/components/shared/TooltipIcon"
 import acrePointsIllustrationSrc from "#/assets/images/acre-points-illustration.png"
 import AcrePointsLabel from "./AcrePointsLabel"
 import UserPointsLabel from "./UserPointsLabel"
+
+const { numberToLocaleString } = numbersUtils
 
 export default function AcrePointsCard(props: CardProps) {
   const { data: acrePointsData } = useAcrePointsData()

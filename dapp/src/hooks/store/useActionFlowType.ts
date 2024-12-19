@@ -1,6 +1,6 @@
 import { selectActionFlowType } from "#/store/action-flow"
-import { useAppSelector } from "./useAppSelector"
+import useAppSelector from "./useAppSelector"
 
-export function useActionFlowType() {
+export default function useActionFlowType() {
   return useAppSelector(selectActionFlowType)
 }

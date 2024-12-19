@@ -4,7 +4,7 @@ import { motion } from "framer-motion"
 
 const MotionBox = motion(Box)
 
-export function LiveTag(props: TagProps) {
+export default function LiveTag(props: TagProps) {
   return (
     <Tag
       px={4}
