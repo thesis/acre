@@ -28,6 +28,7 @@ import spinnerTheme from "./spinnerTheme"
 import tagTheme from "./tagTheme"
 import tokenBalanceInputTheme from "./tokenBalanceInputTheme"
 import tooltipTheme from "./tooltipTheme"
+import textTheme from "./textTheme"
 
 const defaultTheme = {
   // TODO: Remove when dark mode is ready
@@ -67,6 +68,7 @@ const defaultTheme = {
     Countdown: countdownTheme,
     Footer: footerTheme,
     AcreTVLProgress: acreTVLProgressTheme,
+    Text: textTheme,
   },
 }
 

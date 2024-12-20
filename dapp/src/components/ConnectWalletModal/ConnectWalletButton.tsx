@@ -22,11 +22,11 @@ import {
   Image,
   ImageProps,
   VStack,
+  Text,
 } from "@chakra-ui/react"
 import { IconArrowNarrowRight } from "@tabler/icons-react"
 import { AnimatePresence, Variants, motion } from "framer-motion"
 import ArrivingSoonTooltip from "../ArrivingSoonTooltip"
-import { TextLg, TextMd } from "../shared/Typography"
 import ConnectWalletStatusLabel from "./ConnectWalletStatusLabel"
 import Spinner from "../shared/Spinner"
 import { ConnectionAlert } from "./ConnectWalletAlert"
@@ -229,9 +229,9 @@ export default function ConnectWalletButton({
             iconSpacing={4}
             isDisabled={connector.isDisabled}
           >
-            <TextLg flex={1} textAlign="start" fontWeight="semibold">
+            <Text size="lg" flex={1} textAlign="start" fontWeight="semibold">
               {label}
-            </TextLg>
+            </Text>
           </Button>
         </ArrivingSoonTooltip>
       </CardHeader>
@@ -256,9 +256,9 @@ export default function ConnectWalletButton({
               align="start"
             >
               <Flex direction="column" gap={2} w="full">
-                <TextMd fontWeight="bold" textAlign="start">
+                <Text size="md" fontWeight="bold" textAlign="start">
                   Requires 2 actions:
-                </TextMd>
+                </Text>
                 <ConnectWalletStatusLabel
                   status={connectionStatus}
                   label={`Connect ${isEmbed ? "account" : "wallet"}`}

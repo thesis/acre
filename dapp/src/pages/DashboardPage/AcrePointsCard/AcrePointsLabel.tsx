@@ -1,6 +1,5 @@
 import React from "react"
-import { TextMd } from "#/components/shared/Typography"
-import { HStack } from "@chakra-ui/react"
+import { HStack, Text } from "@chakra-ui/react"
 import Countdown from "#/components/shared/Countdown"
 import { logPromiseFailure } from "#/utils"
 import { useAcrePointsData, useUserPointsData } from "#/hooks"
@@ -24,9 +23,9 @@ export function NextDropTimestampLabel() {
 
   return (
     <HStack spacing={0}>
-      <TextMd color={COLOR_TEXT_LIGHT_TERTIARY} textAlign="center">
+      <Text size="md" color={COLOR_TEXT_LIGHT_TERTIARY} textAlign="center">
         Next drop in
-      </TextMd>
+      </Text>
       <Countdown
         timestamp={acrePointsData.nextDropTimestamp} // Timestamp presence already checked
         onCountdownEnd={handleOnCountdownEnd}

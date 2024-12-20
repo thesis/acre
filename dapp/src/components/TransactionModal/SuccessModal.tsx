@@ -7,6 +7,7 @@ import {
   ModalFooter,
   ModalHeader,
   VStack,
+  Text,
 } from "@chakra-ui/react"
 import { LoadingSpinnerSuccessIcon } from "#/assets/icons"
 import { useActionFlowTokenAmount, useActionFlowTxHash } from "#/hooks"
@@ -15,7 +16,6 @@ import { ACTION_FLOW_TYPES, ActionFlowType } from "#/types"
 import { IconArrowUpRight } from "@tabler/icons-react"
 import { activitiesUtils } from "#/utils"
 import { Alert, AlertIcon, AlertDescription } from "#/components/shared/Alert"
-import { TextMd, TextSm } from "../shared/Typography"
 import BlockExplorerLink from "../shared/BlockExplorerLink"
 
 type SuccessModalProps = {
@@ -59,18 +59,18 @@ export default function SuccessModal({ type }: SuccessModalProps) {
             </VStack>
           )}
           {ACTION_FLOW_TYPES.UNSTAKE === type && (
-            <TextMd>
+            <Text size="md">
               Funds will arrive in your wallet once the withdrawal is complete.
               Track progress in your dashboard.
-            </TextMd>
+            </Text>
           )}
           {ACTION_FLOW_TYPES.STAKE === type && txHash && (
             /* TODO: Update styles */
             <BlockExplorerLink id={txHash} type="transaction" chain="bitcoin">
               <HStack gap={1}>
-                <TextSm color="grey.600" fontWeight="semibold">
+                <Text size="sm" color="grey.600" fontWeight="semibold">
                   View on Mempool
-                </TextSm>
+                </Text>
                 <Icon as={IconArrowUpRight} color="brand.400" boxSize={4} />
               </HStack>
             </BlockExplorerLink>
@@ -81,15 +81,15 @@ export default function SuccessModal({ type }: SuccessModalProps) {
         <Alert variant="elevated">
           <AlertIcon status="loading" />
           <AlertDescription>
-            <TextSm>You can close this window.</TextSm>
-            <TextSm>The process will continue in the background.</TextSm>
-            <TextSm color="#7D6A4B">
+            <Text size="sm">You can close this window.</Text>
+            <Text size="sm">The process will continue in the background.</Text>
+            <Text size="sm" color="#7D6A4B">
               Estimated duration&nbsp; ~{" "}
               {activitiesUtils.getEstimatedDuration(
                 tokenAmount?.amount ?? 0n,
                 activityType,
               )}
-            </TextSm>
+            </Text>
           </AlertDescription>
         </Alert>
       </ModalFooter>

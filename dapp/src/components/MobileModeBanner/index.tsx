@@ -7,12 +7,12 @@ import {
   Flex,
   Icon,
   Link,
+  Text,
   useDisclosure,
 } from "@chakra-ui/react"
 import { IconChevronDown } from "@tabler/icons-react"
 import { AnimatePresence, motion } from "framer-motion"
 import { externalHref } from "#/constants"
-import { H4, TextMd, TextXl } from "../shared/Typography"
 import AcreAnimatedBadge from "./AcreAnimatedBadge"
 import LiveTag from "../shared/LiveTag"
 
@@ -45,10 +45,15 @@ function MobileModeBanner(props: MobileModeBannerProps) {
       {...restProps}
     >
       <Flex align="center" justify="center" p={4} bg="grey.700">
-        <TextMd color="gold.300" textAlign="center" whiteSpace="break-spaces">
+        <Text
+          size="md"
+          color="gold.300"
+          textAlign="center"
+          whiteSpace="break-spaces"
+        >
           Acre App is <LiveTag color="brand.400" gap={1} px={1} py={0} /> on
           desktop!
-        </TextMd>
+        </Text>
 
         {!forceOpen && (
           <Button
@@ -67,7 +72,7 @@ function MobileModeBanner(props: MobileModeBannerProps) {
             h="auto"
             ml={2}
           >
-            <TextMd>Info</TextMd>
+            <Text size="md">Info</Text>
           </Button>
         )}
       </Flex>
@@ -91,12 +96,12 @@ function MobileModeBanner(props: MobileModeBannerProps) {
             >
               <AcreAnimatedBadge mx="auto" mb={12} boxSize={44} />
 
-              <H4 mb={9} fontWeight="500">
+              <Text size="4xl" mb={9} fontWeight="500">
                 Acre App live only on desktop for now. We&apos;re working with
                 partners to bring it to mobile soon.
-              </H4>
+              </Text>
 
-              <TextXl lineHeight={9}>
+              <Text size="xl">
                 Stay tuned on{" "}
                 <Link
                   textDecoration="underline"
@@ -114,7 +119,7 @@ function MobileModeBanner(props: MobileModeBannerProps) {
                   Discord
                 </Link>
                 . We would love to hear from you.
-              </TextXl>
+              </Text>
             </Box>
           </MotionBox>
         )}

@@ -2,7 +2,6 @@ import React from "react"
 import { MezoSignIcon } from "#/assets/icons"
 import { beehiveIllustration } from "#/assets/images"
 import TooltipIcon from "#/components/shared/TooltipIcon"
-import { H6, TextMd, TextSm } from "#/components/shared/Typography"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import { useMats, useModal } from "#/hooks"
 import { MODAL_TYPES } from "#/types"
@@ -18,6 +17,7 @@ import {
   Highlight,
   Image,
   VStack,
+  Text,
 } from "@chakra-ui/react"
 
 export default function BeehiveCard(props: CardProps) {
@@ -31,7 +31,7 @@ export default function BeehiveCard(props: CardProps) {
   return (
     <Card {...props}>
       <CardHeader as={Flex} alignItems="center" justify="space-between" gap={2}>
-        <TextMd>Additional rewards</TextMd>
+        <Text size="md">Additional rewards</Text>
         <TooltipIcon
           label="Acre Beehive automatically collects rewards from our partner projects. Rewards are dropped daily, and your share is calculated based on your deposit amount and how long you HODL."
           w={56}
@@ -42,7 +42,7 @@ export default function BeehiveCard(props: CardProps) {
         <Image src={beehiveIllustration} boxSize={32} />
         <UserDataSkeleton w="100%" mt={-7}>
           <Box px={4} py={3} bg="gold.100" borderRadius="sm">
-            <TextSm>
+            <Text size="sm">
               <Highlight query="Mezo" styles={{ color: "mezo" }}>
                 Total collected mats from Mezo
               </Highlight>
@@ -51,11 +51,11 @@ export default function BeehiveCard(props: CardProps) {
                 boxSize={{ base: 4, md: 5 }}
                 rounded="full"
               />
-            </TextSm>
+            </Text>
             {data && (
-              <H6 fontWeight="semibold" color="grey.700">
+              <Text size="2xl" fontWeight="semibold" color="grey.700">
                 {numbersUtils.numberToLocaleString(data.totalMats)}
-              </H6>
+              </Text>
             )}
             <Button mt={4} variant="outline" onClick={handleOpenBeehiveModal}>
               Read more
