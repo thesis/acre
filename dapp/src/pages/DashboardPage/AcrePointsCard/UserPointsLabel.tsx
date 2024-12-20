@@ -1,6 +1,5 @@
 import React from "react"
-import { TextMd } from "#/components/shared/Typography"
-import { Button, HStack, VStack } from "@chakra-ui/react"
+import { Button, HStack, VStack, Text } from "@chakra-ui/react"
 import { numbersUtils } from "#/utils"
 import { useAcrePointsData, useClaimPoints, useUserPointsData } from "#/hooks"
 import Spinner from "#/components/shared/Spinner"
@@ -50,11 +49,13 @@ function CalculationInProgressLabel() {
   return (
     <VStack spacing={4}>
       {!data?.claimableBalance && (
-        <TextMd color="grey.500">Please wait...</TextMd>
+        <Text size="md" color="grey.500">
+          Please wait...
+        </Text>
       )}
       <HStack spacing={0}>
         <Spinner mr={3} size="sm" />
-        <TextMd>Your drop is being prepared.</TextMd>
+        <Text size="md">Your drop is being prepared.</Text>
         <TooltipIcon
           label={`
             We need some time to calculate your points. It may take up to 30 minutes. 
