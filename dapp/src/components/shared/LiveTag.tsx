@@ -9,7 +9,7 @@ export default function LiveTag(props: TagProps) {
     <Tag
       px={4}
       py={2}
-      rounded="3xl"
+      rounded="lg"
       color="gold.200"
       bg="grey.700"
       variant="solid"

@@ -41,7 +41,7 @@ export default function BeehiveCard(props: CardProps) {
       <CardBody as={VStack}>
         <Image src={beehiveIllustration} boxSize={32} />
         <UserDataSkeleton w="100%" mt={-7}>
-          <Box px={4} py={3} bg="gold.100" borderRadius="lg">
+          <Box px={4} py={3} bg="gold.100" borderRadius="sm">
             <Text size="sm">
               <Highlight query="Mezo" styles={{ color: "mezo" }}>
                 Total collected mats from Mezo

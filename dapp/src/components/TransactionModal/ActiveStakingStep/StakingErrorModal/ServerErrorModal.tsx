@@ -60,7 +60,7 @@ export default function ServerErrorModal({
         flexDirection="row"
         justifyContent="space-between"
         bgColor="gold.200"
-        borderRadius="xl"
+        borderRadius="md"
       >
         <Flex flexDirection="column">
           <HStack>

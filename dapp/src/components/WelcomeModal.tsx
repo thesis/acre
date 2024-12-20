@@ -172,7 +172,7 @@ function WelcomeModalBase({ closeModal }: BaseModalProps) {
           muted
           loop
           objectFit="cover"
-          roundedRight="xl"
+          roundedRight="md"
           outline="1px solid #f6ead5"
           outlineOffset="-1px"
         />

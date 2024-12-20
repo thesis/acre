@@ -197,7 +197,7 @@ export default function ConnectWalletButton({
       alignSelf="stretch"
       borderWidth={1}
       borderColor="gold.300"
-      rounded="lg"
+      rounded="sm"
       mb={3}
       _last={{ mb: 0 }}
       p={0}
@@ -215,7 +215,7 @@ export default function ConnectWalletButton({
                 src={connector.icon}
                 boxSize={6}
                 bg="black"
-                rounded="sm"
+                rounded="xs"
                 {...iconStyles[connector.id]}
               />
             }

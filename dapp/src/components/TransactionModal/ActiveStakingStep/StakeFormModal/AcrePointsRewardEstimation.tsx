@@ -79,7 +79,7 @@ function AcrePointsRewardEstimation(props: StackProps) {
                 h="auto"
                 px={3}
                 py={1}
-                rounded="2xl"
+                rounded="sm"
                 bg="gold.300"
                 _hover={{ bg: "gold.200" }}
               >
@@ -99,7 +99,7 @@ function AcrePointsRewardEstimation(props: StackProps) {
               <MenuList
                 p={0}
                 minW={0}
-                rounded="2xl"
+                rounded="sm"
                 shadow="none"
                 bg="gold.300"
                 border="none"
@@ -113,7 +113,7 @@ function AcrePointsRewardEstimation(props: StackProps) {
                     type="button"
                     px={3}
                     py={1}
-                    rounded="2xl"
+                    rounded="sm"
                     bg="gold.300"
                     _active={{ bg: "gold.200" }}
                     _hover={{ bg: "gold.200" }}
