@@ -16,18 +16,18 @@ export default function EstimatedDuration({
       <Tag variant="solid">
         <TagLeftIcon
           as={Spinner}
+          variant="filled"
+          color="acre.50"
           mr={2}
           borderWidth={3}
           boxSize={6}
-          color="gold.400"
-          emptyColor="brand.400"
         />
         <TagLabel>In progress...</TagLabel>
       </Tag>
       <Tag variant="solid">
         <TagLabel display="flex" gap={1}>
           Est. duration
-          <Box as="span" color="brand.400">
+          <Box as="span" color="acre.50">
             {activitiesUtils.getEstimatedDuration(
               activity.amount,
               activity.type,

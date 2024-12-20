@@ -41,7 +41,7 @@ export default function BeehiveCard(props: CardProps) {
       <CardBody as={VStack}>
         <Image src={beehiveIllustration} boxSize={32} />
         <UserDataSkeleton w="100%" mt={-7}>
-          <Box px={4} py={3} bg="gold.100" borderRadius="sm">
+          <Box px={4} py={3} bg="surface.2" borderRadius="sm">
             <Text size="sm">
               <Highlight query="Mezo" styles={{ color: "mezo" }}>
                 Total collected mats from Mezo
@@ -53,7 +53,7 @@ export default function BeehiveCard(props: CardProps) {
               />
             </Text>
             {data && (
-              <Text size="2xl" fontWeight="semibold" color="grey.700">
+              <Text size="2xl" fontWeight="semibold" color="text.primary">
                 {numbersUtils.numberToLocaleString(data.totalMats)}
               </Text>
             )}

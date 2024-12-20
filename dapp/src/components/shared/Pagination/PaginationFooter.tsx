@@ -16,7 +16,7 @@ function PaginationFooter(props: PaginationFooterProps) {
       pb={containerPadding}
       mt={-TOP_SPACE}
       pt={TOP_SPACE}
-      bgGradient="linear(to-b, transparent, gold.200 20%)"
+      bgGradient="linear(to-b, transparent, surface.3 20%)"
       zIndex={2}
       {...restProps}
     >

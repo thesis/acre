@@ -10,16 +10,16 @@ import Spinner from "../shared/Spinner"
 
 const statusToLabelProps: Record<Status, { color: string }> = {
   idle: {
-    color: "grey.500",
+    color: "text.tertiary",
   },
   pending: {
-    color: "brand.400",
+    color: "acre.50",
   },
   error: {
-    color: "grey.500",
+    color: "text.tertiary",
   },
   success: {
-    color: "grey.700",
+    color: "text.primary",
   },
 }
 
@@ -27,8 +27,8 @@ const boxSize = 5
 const statusToIcon: Record<Status, React.ReactNode> = {
   idle: <Box boxSize={boxSize} />,
   pending: <Spinner boxSize={boxSize} />,
-  error: <Icon as={IconCircleX} boxSize={boxSize} color="grey.500" />,
-  success: <Icon as={IconCircleCheck} boxSize={boxSize} color="green.500" />,
+  error: <Icon as={IconCircleX} boxSize={boxSize} color="text.tertiary" />,
+  success: <Icon as={IconCircleCheck} boxSize={boxSize} color="green.50" />,
 }
 
 type ConnectWalletStatusLabelProps = {
@@ -52,7 +52,7 @@ export default function ConnectWalletStatusLabel({
         </Text>
       </HStack>
       {isError && (
-        <HStack color="red.400" textAlign="start">
+        <HStack color="red.50" textAlign="start">
           <Icon as={IconInfoCircle} boxSize={boxSize} />
           <Text size="md">Rejected by user</Text>
         </HStack>

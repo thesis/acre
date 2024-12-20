@@ -13,8 +13,8 @@ const containerBaseStyle = defineStyle({
 
 const navigationContainerStyles = defineStyle({
   fontWeight: "medium",
-  color: "grey.700",
-  _activeLink: { color: "brand.400" },
+  color: "text.primary",
+  _activeLink: { color: "acre.50" },
 })
 
 const sizeSm = multiStyleConfig.definePartsStyle({

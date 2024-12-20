@@ -2,7 +2,7 @@ import { defineStyle, defineStyleConfig } from "@chakra-ui/react"
 
 const baseStyle = defineStyle({
   fontWeight: "semibold",
-  color: "grey.700",
+  color: "text.primary",
 })
 
 const sizeMd = defineStyle({

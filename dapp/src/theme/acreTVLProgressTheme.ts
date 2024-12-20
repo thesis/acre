@@ -14,10 +14,10 @@ const PARTS = [
 
 const containerStyles = defineStyle({
   w: "full",
-  bgColor: "grey.700",
+  bgColor: "brown.100",
   bgGradient:
     "linear(to-r, transparent, rgba(255, 122, 0, 0.2) 10%, rgba(243, 73, 0, 0.25) 20%, transparent 30%)",
-  color: "gold.200",
+  color: "surface.3",
   mask: 'linear-gradient(0, black, black), url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3MzkuNjI3IiBoZWlnaHQ9IjI4IiBmaWxsPSJub25lIj48cGF0aCBkPSJNNzM5LjYyNyAwYzAgNi42MjctNS4zNyAxMi0xMiAxMkgyOS4yNTRhMTUuOTk2IDE1Ljk5NiAwIDAgMC0xMS4zMTMgNC42ODZsLTYuNjI4IDYuNjI4QzguMzEzIDI2LjMxNSA0LjI0MyAyOCAwIDI4aDczOS42Mjd6IiBzdHlsZT0iZmlsbDojMDAwO2ZpbGwtb3BhY2l0eToxO3N0cm9rZTpub25lO3N0cm9rZS13aWR0aDo4O3N0cm9rZS1saW5lY2FwOnJvdW5kO3N0cm9rZS1saW5lam9pbjpyb3VuZCIvPjwvc3ZnPg==")',
   maskPosition: "100% 100%",
   clipPath: "inset(0 1px 0 0 round 12px)",
@@ -38,8 +38,8 @@ const contentWrapperStyles = defineStyle({
 })
 const valueIconStyles = defineStyle({
   boxSize: 6,
-  color: "brand.400",
-  bg: "gold.200",
+  color: "acre.50",
+  bg: "surface.3",
   rounded: "full",
   gridRowEnd: "span 2",
   transform: "auto",

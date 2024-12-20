@@ -14,7 +14,7 @@ const baseStyleBalanceContainer = defineStyle({
 
 const baseStyleBalance = defineStyle({
   fontWeight: "medium",
-  color: "grey.500",
+  color: "text.tertiary",
 })
 
 const multiStyleConfig = createMultiStyleConfigHelpers(PARTS)

@@ -22,23 +22,23 @@ import Spinner from "./Spinner"
 const STATUSES = {
   info: {
     icon: IconInfoCircle,
-    colorScheme: "gold",
+    colorScheme: "oldPalette.gold",
   },
   warning: {
     icon: IconExclamationCircle,
-    colorScheme: "orange",
+    colorScheme: "oldPalette.orange",
   },
   success: {
     icon: IconCircleCheck,
-    colorScheme: "green",
+    colorScheme: "oldPalette.green",
   },
   error: {
     icon: IconExclamationCircle,
-    colorScheme: "red",
+    colorScheme: "oldPalette.red",
   },
   loading: {
     icon: Spinner,
-    colorScheme: "brand",
+    colorScheme: "oldPalette.brand",
   },
 }
 

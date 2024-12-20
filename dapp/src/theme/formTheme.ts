@@ -6,7 +6,7 @@ const baseStyleHelperText = defineStyle({
   alignItems: "center",
   gap: 1,
   fontWeight: "medium",
-  color: "grey.500",
+  color: "text.tertiary",
 })
 
 const multiStyleConfig = createMultiStyleConfigHelpers(parts.keys)

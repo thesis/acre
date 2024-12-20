@@ -72,7 +72,7 @@ export default function WalletInteractionModal({
           {/* TODO: Create correct progress bar */}
           <Progress
             size="sm"
-            bg="gold.200"
+            bg="surface.3"
             isIndeterminate
             {...progressProps}
           />

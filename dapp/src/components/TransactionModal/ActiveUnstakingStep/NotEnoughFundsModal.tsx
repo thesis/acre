@@ -33,7 +33,7 @@ export default function NotEnoughFundsModal() {
         as={Text}
         size="xl"
         textAlign="center"
-        color="red.400"
+        color="red.50"
         fontWeight="bold"
       >
         Not enough funds left for future withdrawals
@@ -41,7 +41,7 @@ export default function NotEnoughFundsModal() {
       <ModalBody>
         <BitcoinsStackErrorIcon />
 
-        <Text size="md" color="grey.600" px={1}>
+        <Text size="md" color="text.primary" px={1}>
           After this withdrawal, your balance will fall below the{" "}
           <CurrencyBalance
             amount={minWithdrawAmount}
