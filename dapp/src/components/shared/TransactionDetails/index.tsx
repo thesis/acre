@@ -1,6 +1,5 @@
 import React from "react"
-import { ListItem, ListItemProps } from "@chakra-ui/react"
-import { TextMd } from "../Typography"
+import { ListItem, ListItemProps, Text } from "@chakra-ui/react"
 
 export type TransactionDetailsItemProps = {
   label: string
@@ -21,10 +20,16 @@ function TransactionDetailsItem({
       alignItems="center"
       {...listItemProps}
     >
-      <TextMd fontWeight="semibold" color="text.primary">
+      <Text size="md" fontWeight="semibold" color="text.primary">
         {label}
-      </TextMd>
-      {value ? <TextMd color="text.primary">{value}</TextMd> : children}
+      </Text>
+      {value ? (
+        <Text size="md" color="text.primary">
+          {value}
+        </Text>
+      ) : (
+        children
+      )}
     </ListItem>
   )
 }

@@ -7,11 +7,11 @@ import {
   ModalCloseButton,
   ModalHeader,
   VStack,
+  Text,
 } from "@chakra-ui/react"
 import { setStatus } from "#/store/action-flow"
 import { PROCESS_STATUSES } from "#/types"
 import { BitcoinsStackErrorIcon } from "#/assets/icons"
-import { TextMd, TextXl } from "../../shared/Typography"
 import { Alert, AlertIcon } from "../../shared/Alert"
 import CurrencyBalance from "../../shared/CurrencyBalance"
 
@@ -30,8 +30,8 @@ export default function NotEnoughFundsModal() {
     <>
       <ModalCloseButton />
       <ModalHeader
-        as={TextXl}
-        fontSize="xl"
+        as={Text}
+        size="xl"
         textAlign="center"
         color="red.50"
         fontWeight="bold"
@@ -41,7 +41,7 @@ export default function NotEnoughFundsModal() {
       <ModalBody>
         <BitcoinsStackErrorIcon />
 
-        <TextMd color="text.primary" px={1}>
+        <Text size="md" color="text.primary" px={1}>
           After this withdrawal, your balance will fall below the{" "}
           <CurrencyBalance
             amount={minWithdrawAmount}
@@ -50,7 +50,7 @@ export default function NotEnoughFundsModal() {
           />{" "}
           minimum required to initiate a withdrawal. Subsequent withdrawals will
           not be possible until a new deposit is made.
-        </TextMd>
+        </Text>
 
         <Alert status="info" variant="elevated">
           <AlertIcon />

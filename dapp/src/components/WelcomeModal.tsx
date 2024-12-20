@@ -13,8 +13,8 @@ import {
   StepIndicatorProps,
   UseStepsReturn,
   Highlight,
+  Text,
 } from "@chakra-ui/react"
-import { H3, TextSm } from "#/components/shared/Typography"
 import { BaseModalProps, DappMode } from "#/types"
 import { EmbedApp } from "#/utils/referralProgram"
 import { useIsEmbed, useMobileMode } from "#/hooks"
@@ -45,12 +45,12 @@ const steps = [
   {
     id: 0,
     title: (
-      <H3 fontWeight="semibold">
+      <Text size="5xl" fontWeight="semibold">
         Activate your BTC,{" "}
         <Box as="span" display="block" color="orange.30">
           earn rewards
         </Box>
-      </H3>
+      </Text>
     ),
     content: (embeddedApp?: EmbedApp) =>
       dappModeToContent[embeddedApp ?? "standalone"](),
@@ -60,12 +60,12 @@ const steps = [
   {
     id: 1,
     title: (
-      <H3 fontWeight="semibold">
+      <Text size="5xl" fontWeight="semibold">
         <Box as="span" display="block" color="orange.30">
           Battle-tested{" "}
         </Box>
         in the market
-      </H3>
+      </Text>
     ),
     content: () => (
       <Highlight query="tBTC">
@@ -79,12 +79,12 @@ const steps = [
   {
     id: 2,
     title: (
-      <H3 fontWeight="semibold">
+      <Text size="5xl" fontWeight="semibold">
         One dashboard,{" "}
         <Box as="span" display="block" color="orange.30">
           endless rewards
         </Box>
-      </H3>
+      </Text>
     ),
     content: () => (
       <Highlight query="Acre Points Program">
@@ -133,9 +133,9 @@ function WelcomeModalBase({ closeModal }: BaseModalProps) {
     <SimpleGrid columns={2} templateColumns="1fr auto">
       <Box>
         <ModalHeader gap={3} pb={8}>
-          <TextSm mb={{ base: 4, md: 12 }} color="text.tertiary">
+          <Text size="sm" mb={{ base: 4, md: 12 }} color="text.tertiary">
             Welcome to Acre,
-          </TextSm>
+          </Text>
           {activeStepData.title}
         </ModalHeader>
         <ModalBody textAlign="left" display="block" color="text.secondary">
@@ -172,7 +172,7 @@ function WelcomeModalBase({ closeModal }: BaseModalProps) {
           muted
           loop
           objectFit="cover"
-          roundedRight="xl"
+          roundedRight="md"
           outline="1px solid #f6ead5"
           outlineOffset="-1px"
         />

@@ -12,8 +12,8 @@ import {
   ModalCloseButton,
   Link,
   Flex,
+  Text,
 } from "@chakra-ui/react"
-import { H6, TextLg, TextMd, TextXl } from "#/components/shared/Typography"
 import { AcreSignIcon, MatsIcon, MezoSignIcon } from "#/assets/icons"
 import { IconArrowUpRight, IconChartPieFilled } from "@tabler/icons-react"
 import { externalHref } from "#/constants"
@@ -28,7 +28,9 @@ function MezoBeehiveModalBase() {
     <>
       <ModalCloseButton />
       <ModalHeader as={VStack} spacing={2.5} px={8} pt={8} pb={2.5}>
-        <TextXl fontWeight="bold">Acre & Mezo</TextXl>
+        <Text size="xl" fontWeight="bold">
+          Acre & Mezo
+        </Text>
         <Flex alignItems="center">
           <AcreSignIcon boxSize={10} rounded="full" />
           <MatsIcon
@@ -46,16 +48,18 @@ function MezoBeehiveModalBase() {
         <VStack spacing={1}>
           {data && (
             <HStack>
-              <H6 fontWeight="bold">
+              <Text size="2xl" fontWeight="bold">
                 {numbersUtils.numberToLocaleString(data.totalMats)}
-              </H6>
-              <TextLg fontWeight="bold">MATS</TextLg>
+              </Text>
+              <Text size="lg" fontWeight="bold">
+                MATS
+              </Text>
             </HStack>
           )}
-          <TextLg>
+          <Text size="lg">
             Acre users are automatically part of the Mezo Points program as a
             group.
-          </TextLg>
+          </Text>
         </VStack>
 
         <VStack>
@@ -86,11 +90,11 @@ function MezoBeehiveModalBase() {
             </CardHeader>
 
             <CardBody>
-              <TextMd lineHeight={5}>
+              <Text size="md">
                 In the event of a reward distribution, your share is calculated
                 by deposit amount and duration, and you can claim it directly
                 from Acre.
-              </TextMd>
+              </Text>
             </CardBody>
           </Card>
 
@@ -103,13 +107,13 @@ function MezoBeehiveModalBase() {
             >
               <MezoSignIcon
                 boxSize="5.5rem" // 88px
-                rounded="lg"
+                rounded="sm"
               />
               <VStack align="start">
-                <TextMd lineHeight={5}>
+                <Text size="md">
                   Mezo is the economic layer for Bitcoin with a mission to
                   activate a trillion dollar opportunity.
-                </TextMd>
+                </Text>
 
                 <Button
                   as={Link}

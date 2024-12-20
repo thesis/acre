@@ -1,5 +1,4 @@
 import React from "react"
-import { TextLg, TextMd, TextSm } from "#/components/shared/Typography"
 import {
   Button,
   Card,
@@ -11,6 +10,7 @@ import {
   Tag,
   TagLeftIcon,
   VStack,
+  Text,
 } from "@chakra-ui/react"
 import { acrePointsCardPlaceholder } from "#/assets/images"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
@@ -27,7 +27,7 @@ export default function AcrePointsTemplateCard(props: CardProps) {
       {...props}
     >
       <CardHeader mb={8}>
-        <TextMd>Acre points</TextMd>
+        <Text size="md">Acre points</Text>
       </CardHeader>
 
       <CardBody>
@@ -51,20 +51,21 @@ export default function AcrePointsTemplateCard(props: CardProps) {
                 as={IconPlayerTrackNextFilled}
                 color="oldPalette.brand.300"
               />
-              <TextSm
+              <Text
+                size="sm"
                 textTransform="uppercase"
                 fontWeight="bold"
                 fontStyle="italic"
               >
                 Coming soon
-              </TextSm>
+              </Text>
             </Tag>
-            <TextLg color="text.primary" fontWeight="semibold">
+            <Text size="lg" color="text.primary" fontWeight="semibold">
               Acre Points will be live soon!
-            </TextLg>
-            <TextMd color="text.tertiary" fontWeight="medium">
+            </Text>
+            <Text size="md" color="text.tertiary" fontWeight="medium">
               Stake now to secure your spot
-            </TextMd>
+            </Text>
             {/* TODO: Update `ButtonLink` component and 'link' Button theme variant */}
             <Button
               as={Link}

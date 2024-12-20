@@ -29,12 +29,12 @@ const buttonTheme: ComponentSingleStyleConfig = {
     md: {
       fontSize: "sm",
       py: 2,
-      borderRadius: "md",
+      borderRadius: "sm",
     },
     lg: {
       fontSize: "md",
       py: 4,
-      borderRadius: "lg",
+      borderRadius: "sm",
       h: 14,
     },
   },
