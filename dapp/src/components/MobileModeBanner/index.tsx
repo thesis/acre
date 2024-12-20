@@ -94,7 +94,7 @@ function MobileModeBanner(props: MobileModeBannerProps) {
               py={8}
               textAlign="center"
             >
-              <AcreAnimatedBadge mx="auto" mb={12} />
+              <AcreAnimatedBadge mx="auto" mb={12} boxSize={44} />
 
               <Text size="4xl" mb={9} fontWeight="500">
                 Acre App live only on desktop for now. We&apos;re working with
