@@ -5,21 +5,20 @@ import {
   HStack,
   VStack,
   Icon,
-  Button,
   Card,
   CardBody,
   CardHeader,
   ModalCloseButton,
-  Link,
   Flex,
 } from "@chakra-ui/react"
 import { H6, TextLg, TextMd, TextXl } from "#/components/shared/Typography"
 import { AcreSignIcon, MatsIcon, MezoSignIcon } from "#/assets/icons"
-import { IconArrowUpRight, IconChartPieFilled } from "@tabler/icons-react"
+import { IconChartPieFilled } from "@tabler/icons-react"
 import { externalHref } from "#/constants"
 import { numbersUtils } from "#/utils"
 import { useMats } from "#/hooks"
 import withBaseModal from "./ModalRoot/withBaseModal"
+import LinkButton from "./shared/LinkButton"
 
 function MezoBeehiveModalBase() {
   const { data } = useMats()
@@ -111,18 +110,9 @@ function MezoBeehiveModalBase() {
                   activate a trillion dollar opportunity.
                 </TextMd>
 
-                <Button
-                  as={Link}
-                  href={externalHref.MEZO_INFO}
-                  isExternal
-                  variant="link"
-                  textDecorationLine="none"
-                  rightIcon={
-                    <Icon as={IconArrowUpRight} boxSize={4} color="acre.50" />
-                  }
-                >
+                <LinkButton href={externalHref.MEZO_INFO} isExternal>
                   More info
-                </Button>
+                </LinkButton>
               </VStack>
             </CardBody>
           </Card>

@@ -1,24 +1,19 @@
 import React from "react"
 import { TextLg, TextMd, TextSm } from "#/components/shared/Typography"
 import {
-  Button,
   Card,
   CardBody,
   CardHeader,
   CardProps,
-  Icon,
-  Link,
   Tag,
   TagLeftIcon,
   VStack,
 } from "@chakra-ui/react"
 import { acrePointsCardPlaceholder } from "#/assets/images"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
-import {
-  IconArrowUpRight,
-  IconPlayerTrackNextFilled,
-} from "@tabler/icons-react"
+import { IconPlayerTrackNextFilled } from "@tabler/icons-react"
 import { externalHref } from "#/constants"
+import LinkButton from "#/components/shared/LinkButton"
 
 export default function AcrePointsTemplateCard(props: CardProps) {
   return (
@@ -65,21 +60,13 @@ export default function AcrePointsTemplateCard(props: CardProps) {
             <TextMd color="text.tertiary" fontWeight="medium">
               Stake now to secure your spot
             </TextMd>
-            {/* TODO: Update `ButtonLink` component and 'link' Button theme variant */}
-            <Button
-              as={Link}
+            <LinkButton
               href={`${externalHref.DOCS}/acre-points-program`}
               isExternal
-              variant="ghost"
-              color="acre.50"
-              iconSpacing={1}
-              rightIcon={
-                <Icon as={IconArrowUpRight} boxSize={4} color="acre.50" />
-              }
               mt={4}
             >
               Read documentation
-            </Button>
+            </LinkButton>
           </VStack>
         </UserDataSkeleton>
       </CardBody>
