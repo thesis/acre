@@ -10,11 +10,17 @@ import {
   useActivities,
 } from "#/hooks"
 import { ACTION_FLOW_TYPES } from "#/types"
-import { Button, ButtonProps, Flex, HStack, VStack } from "@chakra-ui/react"
+import {
+  Button,
+  ButtonProps,
+  Flex,
+  HStack,
+  VStack,
+  Text,
+} from "@chakra-ui/react"
 import ArrivingSoonTooltip from "#/components/ArrivingSoonTooltip"
 import UserDataSkeleton from "#/components/shared/UserDataSkeleton"
 import { featureFlags } from "#/constants"
-import { TextMd } from "#/components/shared/Typography"
 import { IconClockHour5Filled } from "@tabler/icons-react"
 import TooltipIcon from "#/components/shared/TooltipIcon"
 import { activitiesUtils } from "#/utils"
@@ -49,7 +55,7 @@ export default function PositionDetails() {
       <VStack alignItems="start" spacing={0}>
         {/* TODO: Component should be moved to `CardHeader` */}
         <HStack>
-          <TextMd>Your Acre balance</TextMd>
+          <Text size="md">Your Acre balance</Text>
           {activitiesUtils.hasPendingDeposits(activities ?? []) && (
             <TooltipIcon
               icon={IconClockHour5Filled}

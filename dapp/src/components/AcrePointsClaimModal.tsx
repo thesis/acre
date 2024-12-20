@@ -1,6 +1,6 @@
 import React, { ReactNode, useEffect, useMemo, useState } from "react"
 import { useTimeout } from "#/hooks"
-import { Box, Button, ModalBody, VStack } from "@chakra-ui/react"
+import { Box, Button, ModalBody, Text, VStack } from "@chakra-ui/react"
 import {
   AnimationSequence,
   motion,
@@ -11,7 +11,6 @@ import { logPromiseFailure, numbersUtils } from "#/utils"
 import { time } from "#/constants"
 import ConfettiExplosion from "react-confetti-explosion"
 import { BaseModalProps } from "#/types"
-import { TextXl } from "./shared/Typography"
 import withBaseModal from "./ModalRoot/withBaseModal"
 import AnimatedNumber from "./shared/AnimatedNumber"
 
@@ -153,12 +152,13 @@ function AcrePointsClaimModalBase({
         <VStack data-steps-list spacing={8}>
           {steps.map(([currentStepLabel, currentStepValue]) => (
             <Box key={currentStepLabel}>
-              <TextXl
+              <Text
+                size="xl"
                 fontWeight="semibold"
                 mb="5.25rem" // 84px
               >
                 {currentStepLabel}
-              </TextXl>
+              </Text>
 
               <Box
                 data-step-value

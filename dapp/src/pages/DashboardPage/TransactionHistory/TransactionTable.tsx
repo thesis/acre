@@ -1,5 +1,5 @@
 import React from "react"
-import { HStack, Card, CardBody, Box, Flex, Icon } from "@chakra-ui/react"
+import { HStack, Card, CardBody, Box, Flex, Icon, Text } from "@chakra-ui/react"
 import {
   Pagination,
   PaginationButton,
@@ -7,7 +7,6 @@ import {
   PaginationPage,
   PaginationStatus,
 } from "#/components/shared/Pagination"
-import { TextSm } from "#/components/shared/Typography"
 import CurrencyBalance from "#/components/shared/CurrencyBalance"
 import { timeUtils, activitiesUtils } from "#/utils"
 import { Activity } from "#/types"
@@ -28,18 +27,25 @@ export default function TransactionTable() {
       <PaginationPage direction="column" spacing={2} pageSpacing={6}>
         {(pageData: Activity[]) =>
           pageData.map((activity) => (
-            <Card key={activity.id} role="group" bg="surface.2" p={4}>
+            <Card
+              key={activity.id}
+              role="group"
+              bg="surface.2"
+              p={4}
+              borderRadius="sm"
+            >
               <CardBody as={Flex} flexDirection="column" gap={4}>
                 <Flex flexDirection="column">
                   <Flex justifyContent="space-between">
-                    <TextSm
+                    <Text
+                      size="sm"
                       color="text.primary"
                       flex={1}
                       fontWeight="semibold"
                       textTransform="capitalize"
                     >
                       {activity.type}
-                    </TextSm>
+                    </Text>
                     <CurrencyBalance
                       color="text.primary"
                       size="sm"
@@ -51,11 +57,11 @@ export default function TransactionTable() {
                     />
                   </Flex>
                   <Flex justifyContent="space-between">
-                    <TextSm color="text.tertiary" flex={1} fontWeight="medium">
+                    <Text size="sm" color="text.tertiary" flex={1}>
                       {timeUtils.displayBlockTimestamp(
                         activitiesUtils.getActivityTimestamp(activity),
                       )}
-                    </TextSm>
+                    </Text>
                     {activity.txHash ? (
                       <BlockExplorerLink
                         id={activity.txHash}
@@ -69,7 +75,7 @@ export default function TransactionTable() {
                         minW={BLOCK_EXPLORER_CELL_MIN_WIDTH}
                       >
                         <HStack spacing={1}>
-                          <TextSm>Details</TextSm>
+                          <Text size="sm">Details</Text>
                           <Icon
                             as={IconArrowUpRight}
                             color="acre.50"

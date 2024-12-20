@@ -8,12 +8,12 @@ import {
   HStack,
   Progress,
   ProgressProps,
+  Text,
 } from "@chakra-ui/react"
 import { AcreSignIcon } from "#/assets/icons"
 import { useActionFlowType, useConnector, useIsEmbed } from "#/hooks"
 import { ACTION_FLOW_TYPES, DappMode } from "#/types"
 import { Alert, AlertIcon } from "../shared/Alert"
-import { TextMd } from "../shared/Typography"
 
 const ICON_STYLES = {
   boxSize: 14,
@@ -84,17 +84,17 @@ export default function WalletInteractionModal({
             {...ICON_STYLES}
           />
         </HStack>
-        <TextMd>
+        <Text size="md">
           {description(
             actionType === ACTION_FLOW_TYPES.STAKE ? "deposit" : "withdraw",
             embeddedApp ?? "standalone",
           )}
-        </TextMd>
+        </Text>
         {step === "awaiting-transaction" && (
           <Alert variant="elevated">
             <AlertIcon />
             <AlertDescription>
-              <TextMd>This may take up to a minute.</TextMd>
+              <Text size="md">This may take up to a minute.</Text>
             </AlertDescription>
           </Alert>
         )}

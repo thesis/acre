@@ -8,9 +8,9 @@ import {
   ModalCloseButton,
   ModalFooter,
   ModalHeader,
+  Text,
 } from "@chakra-ui/react"
 import { CableWithPlugIcon } from "#/assets/icons"
-import { TextMd } from "#/components/shared/Typography"
 import { externalHref } from "#/constants"
 import IconWrapper from "#/components/shared/IconWrapper"
 import {
@@ -38,10 +38,10 @@ export default function ServerErrorModal({
         <IconWrapper icon={CableWithPlugIcon} boxSize={32} color="red.50">
           <Icon as={IconServerBolt} boxSize={14} strokeWidth={1} />
         </IconWrapper>
-        <TextMd>
+        <Text size="md">
           Your deposit didn&apos;t go through but no worries, your funds are
           safe.
-        </TextMd>
+        </Text>
         <LinkButton
           size="lg"
           width="100%"
@@ -59,15 +59,19 @@ export default function ServerErrorModal({
         flexDirection="row"
         justifyContent="space-between"
         bgColor="surface.3"
-        borderRadius="xl"
+        borderRadius="md"
       >
         <Flex flexDirection="column">
           <HStack>
-            <TextMd fontWeight="bold">System status</TextMd>
+            <Text size="md" fontWeight="bold">
+              System status
+            </Text>
             {/* TODO: ADD a tooltip */}
             {/* <TooltipIcon label="Tooltip text" placement="top" /> */}
           </HStack>
-          <TextMd color="red.50">Partial Outage</TextMd>
+          <Text size="md" color="red.50">
+            Partial Outage
+          </Text>
         </Flex>
         <Button
           isLoading={isLoading}

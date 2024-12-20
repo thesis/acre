@@ -8,9 +8,9 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
+  Text,
 } from "@chakra-ui/react"
 import { CableWithPlugIcon } from "#/assets/icons"
-import { TextMd, TextSm } from "#/components/shared/Typography"
 import IconWrapper from "#/components/shared/IconWrapper"
 import { timeUtils, numbersUtils } from "#/utils"
 import { useCountdown } from "#/hooks"
@@ -63,22 +63,24 @@ export default function RetryModal({ isLoading, retry }: RetryModalProps) {
         </Skeleton>
         <Flex flexDirection="column" alignItems="center">
           <Skeleton isLoaded={!isLoading}>
-            <TextMd>No worries—your funds are safe.</TextMd>
+            <Text size="md">No worries—your funds are safe.</Text>
           </Skeleton>
           <Skeleton isLoaded={!isLoading} mt={2}>
-            <TextMd>
+            <Text size="md">
               An error occurred while processing your transaction.
-            </TextMd>
+            </Text>
           </Skeleton>
         </Flex>
         {isLoading ? (
-          <TextMd fontWeight="semibold">Retrying transaction...</TextMd>
+          <Text size="md" fontWeight="semibold">
+            Retrying transaction...
+          </Text>
         ) : (
           <HStack gap={1}>
-            <TextMd>Auto-retry in</TextMd>
-            <TextMd fontWeight="bold" textAlign="left" minW={10}>
+            <Text size="md">Auto-retry in</Text>
+            <Text size="md" fontWeight="bold" textAlign="left" minW={10}>
               {label}
-            </TextMd>
+            </Text>
             <Box
               w={3}
               h={3}
@@ -97,7 +99,9 @@ export default function RetryModal({ isLoading, retry }: RetryModalProps) {
         </Button>
         <HStack>
           <Icon as={IconShieldCheckFilled} boxSize={5} color="acre.50" />
-          <TextSm color="text.primary">Your funds are secure.</TextSm>
+          <Text size="sm" color="text.primary">
+            Your funds are secure.
+          </Text>
         </HStack>
       </ModalFooter>
     </>

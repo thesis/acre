@@ -1,5 +1,12 @@
 import { extendTheme } from "@chakra-ui/react"
-import { colors, typography, semanticTokens, styles, zIndices } from "./utils"
+import {
+  colors,
+  typography,
+  semanticTokens,
+  styles,
+  zIndices,
+  borderRadius,
+} from "./utils"
 import acreTVLProgressTheme from "./acreTVLProgressTheme"
 import alertTheme from "./alertTheme"
 import buttonTheme from "./buttonTheme"
@@ -21,6 +28,7 @@ import spinnerTheme from "./spinnerTheme"
 import tagTheme from "./tagTheme"
 import tokenBalanceInputTheme from "./tokenBalanceInputTheme"
 import tooltipTheme from "./tooltipTheme"
+import textTheme from "./textTheme"
 
 const defaultTheme = {
   // TODO: Remove when dark mode is ready
@@ -29,6 +37,7 @@ const defaultTheme = {
   useSystemColorMode: false,
   colors,
   ...typography,
+  ...borderRadius,
   zIndices,
   semanticTokens,
   styles,
@@ -59,6 +68,7 @@ const defaultTheme = {
     Countdown: countdownTheme,
     Footer: footerTheme,
     AcreTVLProgress: acreTVLProgressTheme,
+    Text: textTheme,
   },
 }
 
