@@ -2,6 +2,7 @@ import { defineStyle, defineStyleConfig } from "@chakra-ui/react"
 
 const baseStyle = defineStyle({
   borderRadius: "sm",
+  gap: 1,
 })
 
 const loadingStyles = defineStyle({
