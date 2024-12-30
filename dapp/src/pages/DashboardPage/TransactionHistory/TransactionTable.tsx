@@ -30,7 +30,7 @@ export default function TransactionTable() {
             <Card
               key={activity.id}
               role="group"
-              bg="gold.100"
+              bg="surface.2"
               p={4}
               borderRadius="sm"
             >
@@ -39,7 +39,7 @@ export default function TransactionTable() {
                   <Flex justifyContent="space-between">
                     <Text
                       size="sm"
-                      color="grey.700"
+                      color="text.primary"
                       flex={1}
                       fontWeight="semibold"
                       textTransform="capitalize"
@@ -47,7 +47,7 @@ export default function TransactionTable() {
                       {activity.type}
                     </Text>
                     <CurrencyBalance
-                      color="grey.700"
+                      color="text.primary"
                       size="sm"
                       fontWeight="bold"
                       amount={activity.amount}
@@ -57,7 +57,7 @@ export default function TransactionTable() {
                     />
                   </Flex>
                   <Flex justifyContent="space-between">
-                    <Text size="sm" color="grey.500" flex={1}>
+                    <Text size="sm" color="text.tertiary" flex={1}>
                       {timeUtils.displayBlockTimestamp(
                         activitiesUtils.getActivityTimestamp(activity),
                       )}
@@ -67,9 +67,9 @@ export default function TransactionTable() {
                         id={activity.txHash}
                         chain="bitcoin"
                         type="transaction"
-                        color="grey.600"
+                        color="text.primary"
                         _groupHover={{
-                          color: "brand.400",
+                          color: "acre.50",
                           textDecoration: "none",
                         }}
                         minW={BLOCK_EXPLORER_CELL_MIN_WIDTH}
@@ -78,7 +78,7 @@ export default function TransactionTable() {
                           <Text size="sm">Details</Text>
                           <Icon
                             as={IconArrowUpRight}
-                            color="brand.400"
+                            color="acre.50"
                             boxSize={4}
                           />
                         </HStack>
@@ -111,7 +111,7 @@ export default function TransactionTable() {
           <PaginationButton mode="next" />
         </HStack>
 
-        <PaginationStatus dataLabel="entries" color="grey.500" />
+        <PaginationStatus dataLabel="entries" color="text.tertiary" />
       </PaginationFooter>
     </Pagination>
   )

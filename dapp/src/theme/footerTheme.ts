@@ -8,8 +8,8 @@ const containerStyles = defineStyle({
   bottom: 0,
   left: 0,
   borderTop: "1px",
-  borderColor: "gold.500",
-  bgColor: "gold.300",
+  borderColor: "surface.5",
+  bgColor: "surface.4",
   zIndex: "footer",
 })
 
@@ -37,7 +37,7 @@ const listStyles = defineStyle({
 
 const linkStyles = defineStyle({
   display: "flex",
-  color: "grey.700",
+  color: "text.primary",
   fontWeight: "medium",
   fontSize: {
     base: "xs",

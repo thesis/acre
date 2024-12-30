@@ -49,7 +49,7 @@ const CONNECTION_ALERTS: ConnectionAlerts = {
   [ConnectionAlert.Rejected]: {
     title: "Please connect your wallet to start using Acre",
     status: "info",
-    colorScheme: "blue",
+    colorScheme: "oldPalette.blue",
   },
   [ConnectionAlert.NotSupported]: {
     title: "Not supported.",

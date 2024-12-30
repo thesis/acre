@@ -33,7 +33,7 @@ export default function AcrePointsCard(props: CardProps) {
   return (
     <Card {...props}>
       <CardHeader mb={2} as={HStack} justify="space-between">
-        <Text size="md" color="grey.700">
+        <Text size="md" color="text.primary">
           {isConnected ? "Your" : "Total"} Acre points
         </Text>
 

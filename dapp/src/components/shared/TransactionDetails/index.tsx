@@ -20,11 +20,11 @@ function TransactionDetailsItem({
       alignItems="center"
       {...listItemProps}
     >
-      <Text size="md" fontWeight="semibold" color="grey.700">
+      <Text size="md" fontWeight="semibold" color="text.primary">
         {label}
       </Text>
       {value ? (
-        <Text size="md" color="grey.700">
+        <Text size="md" color="text.primary">
           {value}
         </Text>
       ) : (

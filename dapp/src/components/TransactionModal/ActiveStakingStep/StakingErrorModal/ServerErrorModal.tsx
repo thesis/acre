@@ -31,11 +31,11 @@ export default function ServerErrorModal({
   return (
     <>
       <ModalCloseButton />
-      <ModalHeader color="red.400" textAlign="center">
+      <ModalHeader color="red.50" textAlign="center">
         We&apos;re currently facing system issues.
       </ModalHeader>
       <ModalBody gap={10} pb={6}>
-        <IconWrapper icon={CableWithPlugIcon} boxSize={32} color="red.400">
+        <IconWrapper icon={CableWithPlugIcon} boxSize={32} color="red.50">
           <Icon as={IconServerBolt} boxSize={14} strokeWidth={1} />
         </IconWrapper>
         <Text size="md">
@@ -59,7 +59,7 @@ export default function ServerErrorModal({
         px={8}
         flexDirection="row"
         justifyContent="space-between"
-        bgColor="gold.200"
+        bgColor="surface.3"
         borderRadius="md"
       >
         <Flex flexDirection="column">
@@ -70,14 +70,14 @@ export default function ServerErrorModal({
             {/* TODO: ADD a tooltip */}
             {/* <TooltipIcon label="Tooltip text" placement="top" /> */}
           </HStack>
-          <Text size="md" color="red.400">
+          <Text size="md" color="red.50">
             Partial Outage
           </Text>
         </Flex>
         <Button
           // TODO: Use a loading button
           isLoading={isLoading}
-          leftIcon={<Icon as={IconReload} boxSize={5} color="brand.400" />}
+          leftIcon={<Icon as={IconReload} boxSize={5} color="acre.50" />}
           variant="outline"
           onClick={retry}
         >

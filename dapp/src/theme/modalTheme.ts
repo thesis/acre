@@ -14,7 +14,7 @@ const baseStyleDialog = defineStyle({
   boxShadow: "none",
   borderRadius: "md",
   p: { base: 5, sm: 0 },
-  bg: "gold.100",
+  bg: "surface.2",
   border: "none",
 })
 
@@ -23,10 +23,10 @@ const baseCloseButton = defineStyle({
   right: { base: 3, sm: -7 },
   boxSize: { sm: 7 },
   rounded: { sm: "100%" },
-  bg: "opacity.white.5",
+  bg: "oldPalette.opacity.white.5",
 
   _hover: {
-    bg: "opacity.white.5",
+    bg: "oldPalette.opacity.white.5",
   },
 })
 
@@ -48,7 +48,7 @@ const baseStyleHeader = defineStyle({
 
 const baseStyleBody = defineStyle({
   textAlign: "center",
-  color: "grey.600",
+  color: "text.primary",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
@@ -79,7 +79,7 @@ const baseStyle = multiStyleConfig.definePartsStyle({
 
 const unstyledVariant = multiStyleConfig.definePartsStyle({
   dialog: { bg: "none", borderWidth: 0 },
-  overlay: { bg: "opacity.gold.300.75" },
+  overlay: { bg: "oldPalette.opacity.gold.300.75" },
 })
 
 const variants = {

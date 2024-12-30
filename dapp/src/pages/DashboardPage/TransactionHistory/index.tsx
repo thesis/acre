@@ -22,7 +22,7 @@ function TransactionHistoryContent() {
     return (
       <VStack w="100%">
         <Image src={emptyState} alt="Stack of paper with magnifying glass" />,
-        <Text size="md" color="grey.400">
+        <Text size="md" color="text.tertiary">
           You have no transactions yet!
         </Text>
       </VStack>

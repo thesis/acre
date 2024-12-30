@@ -25,7 +25,7 @@ function FeesDetailsAmountItem({
           to={{
             size: "sm",
             fontWeight: "medium",
-            color: "grey.500",
+            color: "text.tertiary",
             ...to,
           }}
         />

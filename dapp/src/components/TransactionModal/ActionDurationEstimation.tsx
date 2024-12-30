@@ -15,9 +15,9 @@ export default function ActionDurationEstimation({
   )
 
   return (
-    <Text size="md" mt={4} color="grey.400">
+    <Text size="md" mt={4} color="text.tertiary">
       Estimated duration&nbsp;
-      <Text size="md" as="span" color="grey.500">
+      <Text size="md" as="span">
         ~ {activitiesUtils.getEstimatedDuration(amount, type)}
       </Text>
     </Text>

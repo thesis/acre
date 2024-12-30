@@ -7,12 +7,12 @@ const baseStyle = defineStyle({
   borderRadius: "sm",
 
   _light: {
-    [$startColor.variable]: "colors.gold.300",
-    [$endColor.variable]: "colors.gold.200",
+    [$startColor.variable]: "colors.surface.4",
+    [$endColor.variable]: "colors.surface.3",
   },
   _dark: {
-    [$startColor.variable]: "colors.gold.300",
-    [$endColor.variable]: "colors.gold.200",
+    [$startColor.variable]: "colors.surface.4",
+    [$endColor.variable]: "colors.surface.3",
   },
 })
 

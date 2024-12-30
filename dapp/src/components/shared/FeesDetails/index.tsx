@@ -29,14 +29,14 @@ function FeesDetailsItem({
           display="flex"
           alignItems="center"
           fontWeight="semibold"
-          color="grey.700"
+          color="text.primary"
         >
           {label}
         </Text>
         {tooltip}
       </HStack>
       {value ? (
-        <Text size="md" color="grey.700">
+        <Text size="md" color="text.primary">
           {value}
         </Text>
       ) : (

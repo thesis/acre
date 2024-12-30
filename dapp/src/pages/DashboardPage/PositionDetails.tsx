@@ -77,11 +77,11 @@ export default function PositionDetails() {
                 currency: "bitcoin",
                 size: "4xl",
                 letterSpacing: "-0.075rem", // -1.2px
-                color: "grey.700",
+                color: "text.primary",
               }}
               to={{
                 currency: "usd",
-                color: "grey.500",
+                color: "text.tertiary",
                 fontWeight: "medium",
               }}
             />

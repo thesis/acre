@@ -68,8 +68,8 @@ export default function ConnectWallet() {
       <Button
         size="lg"
         variant="card"
-        color="grey.700"
-        leftIcon={<Icon as={BitcoinIcon} boxSize={6} color="brand.400" />}
+        color="text.primary"
+        leftIcon={<Icon as={BitcoinIcon} boxSize={6} color="acre.50" />}
         onClick={() => handleConnectWallet(false)}
         {...((modalType === MODAL_TYPES.CONNECT_WALLET ||
           isOpenGlobalErrorModal) && {
@@ -115,14 +115,14 @@ export default function ConnectWallet() {
           <MenuButton
             as={Button}
             variant="card"
-            leftIcon={<Icon as={BitcoinIcon} boxSize={6} color="brand.400" />}
+            leftIcon={<Icon as={BitcoinIcon} boxSize={6} color="acre.50" />}
             rightIcon={isOpen ? <IconChevronUp /> : <IconChevronDown />}
           >
-            <Text size="md" color="brand.400">
+            <Text size="md" color="acre.50">
               {addressUtils.truncateAddress(address)}
             </Text>
           </MenuButton>
-          <MenuList bg="gold.200">
+          <MenuList bg="surface.3">
             {options.map(
               (option) =>
                 option.isSupported && (
@@ -165,8 +165,8 @@ export default function ConnectWallet() {
           }}
           spacing={3}
         >
-          <Icon as={BitcoinIcon} boxSize={6} color="brand.400" />
-          <Text size="md" color="brand.400">
+          <Icon as={BitcoinIcon} boxSize={6} color="acre.50" />
+          <Text size="md" color="acre.50">
             {addressUtils.truncateAddress(address)}
           </Text>
         </HStack>
@@ -178,7 +178,7 @@ export default function ConnectWallet() {
             collapsed: { width: 0 },
           }}
           spacing={1}
-          divider={<StackDivider borderColor="gold.500" />}
+          divider={<StackDivider borderColor="surface.5" />}
         >
           {options.map(
             (option) =>

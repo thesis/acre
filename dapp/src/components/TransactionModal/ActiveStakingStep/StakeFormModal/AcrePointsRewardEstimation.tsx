@@ -80,15 +80,15 @@ function AcrePointsRewardEstimation(props: StackProps) {
                 px={3}
                 py={1}
                 rounded="sm"
-                bg="gold.300"
-                _hover={{ bg: "gold.200" }}
+                bg="surface.4"
+                _hover={{ bg: "surface.3" }}
               >
                 <HStack spacing={1}>
                   <Text size="md">{selectedTierItem.label}</Text>
                   <Icon
                     as={IconChevronDown}
                     boxSize={4}
-                    color="brand.400"
+                    color="acre.50"
                     zIndex={2}
                     rotate={isOpen ? 180 : 0}
                     transform="auto"
@@ -101,7 +101,7 @@ function AcrePointsRewardEstimation(props: StackProps) {
                 minW={0}
                 rounded="sm"
                 shadow="none"
-                bg="gold.300"
+                bg="surface.4"
                 border="none"
                 overflow="hidden"
                 motionProps={{
@@ -114,9 +114,9 @@ function AcrePointsRewardEstimation(props: StackProps) {
                     px={3}
                     py={1}
                     rounded="sm"
-                    bg="gold.300"
-                    _active={{ bg: "gold.200" }}
-                    _hover={{ bg: "gold.200" }}
+                    bg="surface.4"
+                    _active={{ bg: "surface.3" }}
+                    _hover={{ bg: "surface.3" }}
                     key={tierItem.label}
                     onClick={() => setSelectedTierItem(tierItem)}
                     fontWeight="semibold"

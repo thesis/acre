@@ -22,7 +22,7 @@ function TransactionDetailsAmountItem({
   }
 
   const toProps: TransactionDetailsAmountItemProps["to"] = to
-    ? { size: "sm", fontWeight: "medium", color: "grey.500", ...to }
+    ? { size: "sm", fontWeight: "medium", color: "text.tertiary", ...to }
     : undefined
 
   return (
