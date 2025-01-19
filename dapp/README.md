@@ -1,6 +1,6 @@
 # Acre dApp
 
-The application is integrated with OrangeKit and allows people to earn yield on their Bitcoin via yield farming on Ethereum.
+The application is integrated with OrangeKit and allows people to earn a yield on their Bitcoin via yield farming on Ethereum.
 
 This project was bootstrapped with [Create Vite](https://github.com/vitejs/vite/tree/main/packages/create-vite).
 
