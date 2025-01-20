@@ -4,7 +4,7 @@ This repository contains Acre staking subgraphs. Subgraphs are open APIs to
 query data from networks like Ethereum and IPFS. The data is indexed by [The
 Graph](https://thegraph.com/) decentralized protocol.
 
-By the moment, there one subgraph have been developed:
+By the moment, there one subgraph has been developed:
 
 - sepolia: collects the data from contracts in Sepolia Testnet.
 
@@ -46,7 +46,7 @@ create a private one
 
 2. Set the API key in the `docker-compose.yaml` file. Note that the provided RPC
    URL should support the `trace_filter` method because the Acre subgraph
-   defines the contract's function call handler. Eg. Alchemy does not not
+   defines the contract's function call handler. Eg. Alchemy does not
    support it in a free plan - it requires at least `growth` paid plan.
 
    ```

@@ -15,7 +15,7 @@ please see the [documentation](https://pnpm.io/installation).
 
 #### Package Dependencies
 
-To install the packages dependencies run:
+To install the package dependencies run:
 
 ```sh
 pnpm install

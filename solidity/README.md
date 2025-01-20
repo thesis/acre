@@ -18,7 +18,7 @@ pnpm install
 
 ### Testing
 
-To run the tests execute:
+To run the tests execute the following:
 
 ```
 $ pnpm test
@@ -28,7 +28,7 @@ $ pnpm test
 
 To run the integration tests follow these steps:
 
-- Define `MAINNET_RPC_URL` environment variable pointing to Ethereum Mainnet RPC URL.
+- Define `MAINNET_RPC_URL` environment variable pointing to the Ethereum Mainnet RPC URL.
 
 - Run the Hardhat Node locally forking Mainnet:
 
