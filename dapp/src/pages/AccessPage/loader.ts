@@ -1,12 +1,26 @@
+import { featureFlags } from "#/constants"
 import { getAccessCodeFromLocalStorage } from "#/hooks/useAccessCode"
 import { acreApi, router, shouldDisplayWelcomeModal } from "#/utils"
 import { LoaderFunction } from "react-router-dom"
+
+const resolveSuccessRedirect = (
+  url: string,
+  redirectToOnSuccess: null | string = null,
+) =>
+  shouldDisplayWelcomeModal()
+    ? router.redirectWithSearchParams(url, "/welcome")
+    : !redirectToOnSuccess ||
+      router.redirectWithSearchParams(url, redirectToOnSuccess)
 
 export const redirectToAccessPageLoader = async (
   url: string,
   redirectToOnSuccess: null | string = null,
   redirectToOnFail: null | string = null,
 ) => {
+  if (!featureFlags.GATING_DAPP_ENABLED) {
+    return resolveSuccessRedirect(url, redirectToOnSuccess)
+  }
+
   try {
     const encodedCode = getAccessCodeFromLocalStorage()
 
@@ -15,12 +29,7 @@ export const redirectToAccessPageLoader = async (
       : false
 
     if (isValid) {
-      const shouldRedirectToWelcomeModal = shouldDisplayWelcomeModal()
-
-      return shouldRedirectToWelcomeModal
-        ? router.redirectWithSearchParams(url, "/welcome")
-        : !redirectToOnSuccess ||
-            router.redirectWithSearchParams(url, redirectToOnSuccess)
+      return resolveSuccessRedirect(url, redirectToOnSuccess)
     }
 
     return redirectToOnFail

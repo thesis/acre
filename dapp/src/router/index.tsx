@@ -20,9 +20,7 @@ const mainLayoutLoader: LoaderFunction = ({ request }) => {
   const embedApp = referralProgram.getEmbeddedApp(request.url)
 
   if (referralProgram.isEmbedApp(embedApp)) {
-    const shouldRedirectToWelcomeModal = !shouldDisplayWelcomeModal()
-
-    return shouldRedirectToWelcomeModal
+    return shouldDisplayWelcomeModal()
       ? routerUtils.redirectWithSearchParams(request.url, "/welcome")
       : routerUtils.redirectWithSearchParams(request.url, "/dashboard")
   }
