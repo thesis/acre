@@ -46,7 +46,7 @@ const steps = [
     id: 0,
     title: (
       <Text size="5xl" fontWeight="semibold">
-        Activate your BTC,{" "}
+        Compound your bitcoin,{" "}
         <Box as="span" display="block" color="orange.30">
           earn rewards
         </Box>
@@ -69,9 +69,8 @@ const steps = [
     ),
     content: () => (
       <Highlight query="tBTC">
-        Acre is powered by tBTC, the trusted Bitcoin bridge that secured over
-        half a billion dollars in BTC. No centralized custodians, everything is
-        fully on-chain.
+        Acre is powered by a trusted, decentralized Bitcoin bridge (tBTC). No
+        centralized custodians, everything is fully on-chain.
       </Highlight>
     ),
     video: step2Video,
