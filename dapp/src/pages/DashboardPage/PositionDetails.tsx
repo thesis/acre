@@ -99,7 +99,7 @@ export default function PositionDetails() {
               {...buttonStyles}
               onClick={openDepositModal}
               isDisabled={
-                (featureFlags.TVL_ENABLED && tvl.isCapExceeded) ||
+                (featureFlags.DEPOSIT_CAP_ENABLED && tvl.isCapExceeded) ||
                 isDisabledForMobileMode
               }
             >
@@ -130,7 +130,7 @@ export default function PositionDetails() {
             </ArrivingSoonTooltip>
           </UserDataSkeleton>
         )}
-        {featureFlags.TVL_ENABLED && <AcreTVLMessage />}
+        {featureFlags.DEPOSIT_CAP_ENABLED && <AcreTVLMessage />}
       </HStack>
     </Flex>
   )
