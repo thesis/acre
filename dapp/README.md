@@ -54,8 +54,8 @@ the _Developer mode_ and import the manifest. Please follow the instructions bel
 3. Add your manifest
     
     Click on Browse next to **Add a local app** and select the manifest file:
-    - for _development_ environment: [ledger-manifest-development.json](ledger-manifest-development.json)
-    - for _testnet_ environment: [ledger-manifest-testnet.json](ledger-manifest-testnet.json)
+    - for _development_ environment: [ledger-manifest-development.json](https://github.com/thesis/acre/blob/main/dapp/manifests/ledger-live/ledger-live-manifest-development.json)
+    - for _testnet_ environment: [ledger-manifest-testnet.json](https://github.com/thesis/acre/blob/main/dapp/manifests/ledger-live/ledger-live-manifest-testnet.json)
     
     The app is now visible in the menu.
 
