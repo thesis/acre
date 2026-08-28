@@ -41,8 +41,6 @@ export class MockAcreContracts implements AcreContracts {
     this.bitcoinRedeemer = {
       getChainIdentifier: jest.fn(),
       calculateWithdrawalFee: jest.fn(),
-      encodeReceiveApprovalExtraData: jest.fn(),
-      findRedemptionRequestIdFromTransaction: jest.fn(),
     } as BitcoinRedeemer
   }
 }
