@@ -362,6 +362,61 @@ describe("AcreBTC", () => {
     })
   })
 
+  describe("encodeRedeemFunctionData", () => {
+    const shares = 10n
+    const receiverEvmAddress = "0x999333A67C9B55E78B97b9C0b287EB4AAeBa3D3b"
+    const receiver = EthereumAddress.from(receiverEvmAddress)
+    const owner = EthereumAddress.from(
+      "0x8FF2A98c1F08FD5a4D12bED447b90d4de045C10b",
+    )
+    const mockedEncodedData = "0xdeadbeef"
+    let result: Hex
+
+    beforeAll(() => {
+      mockedContractInstance.interface.encodeFunctionData.mockReturnValue(
+        mockedEncodedData,
+      )
+
+      result = acreBTC.encodeRedeemFunctionData(
+        shares,
+        receiverEvmAddress,
+        owner,
+      )
+    })
+
+    it("should encode a direct `redeem` call - no approval is involved", () => {
+      expect(
+        mockedContractInstance.interface.encodeFunctionData,
+      ).toHaveBeenLastCalledWith("redeem", [
+        shares,
+        `0x${receiver.identifierHex}`,
+        `0x${owner.identifierHex}`,
+      ])
+    })
+
+    it("should return the encoded data", () => {
+      expect(result.toPrefixedString()).toEqual(mockedEncodedData)
+    })
+
+    it("should reject a receiver that is not a valid Ethereum address", () => {
+      expect(() =>
+        acreBTC.encodeRedeemFunctionData(shares, "not-an-address", owner),
+      ).toThrow()
+    })
+
+    // Well-formed, so the address parser lets it through, and the vault does
+    // not reject it either.
+    it("should reject the zero address as the receiver", () => {
+      expect(() =>
+        acreBTC.encodeRedeemFunctionData(
+          shares,
+          "0x0000000000000000000000000000000000000000",
+          owner,
+        ),
+      ).toThrow("Receiver cannot be the zero address")
+    })
+  })
+
   describe("findRedemptionRequestIdFromTransaction", () => {
     const txHash = Hex.from(
       "0x6ecf70666399edf65fc1e159b22fbb48cf0e389e84fdbb3550a7366d9af7efff",

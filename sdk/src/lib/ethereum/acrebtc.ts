@@ -214,6 +214,35 @@ class EthereumAcreBTC
   }
 
   /**
+   * @see {AcreBTC#encodeRedeemFunctionData}
+   */
+  encodeRedeemFunctionData(
+    shares: bigint,
+    receiver: string,
+    owner: ChainIdentifier,
+  ): Hex {
+    // Parsed here rather than by the caller: this is the layer that knows the
+    // chain, and `EthereumAddress.from` rejects anything that is not a valid
+    // Ethereum address.
+    const receiverAddress = EthereumAddress.from(receiver)
+
+    // The zero address is well-formed, so `EthereumAddress.from` accepts it,
+    // and the vault does not reject it either. The shares are burned as part
+    // of the redemption, so redeeming to it would destroy the position with no
+    // way to recover it.
+    if (/^0+$/.test(receiverAddress.identifierHex))
+      throw new Error("Receiver cannot be the zero address")
+
+    const data = this.instance.interface.encodeFunctionData("redeem", [
+      shares,
+      `0x${receiverAddress.identifierHex}`,
+      `0x${owner.identifierHex}`,
+    ])
+
+    return Hex.from(data)
+  }
+
+  /**
    * Calculates the fee when it's included in the amount.
    * One is added to the result if there is a remainder to match the acreBTC
    * contract calculations rounding.
