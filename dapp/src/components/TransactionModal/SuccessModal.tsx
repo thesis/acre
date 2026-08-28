@@ -72,8 +72,8 @@ export default function SuccessModal({ type }: SuccessModalProps) {
           {ACTION_FLOW_TYPES.UNSTAKE === type && (
             <Text size="md">
               {withdrawsToTbtc
-                ? "Your tBTC will be sent to the Ethereum address you provided once the withdrawal is processed. Track the status in your dashboard."
-                : "Your BTC will appear in your wallet in approximately 14 days. Track the status in your dashboard."}
+                ? "Your tBTC has been sent to the Ethereum address you provided. Track the status in your dashboard."
+                : "Your BTC will appear in your wallet in approximately 6 hours. Track the status in your dashboard."}
             </Text>
           )}
           {ACTION_FLOW_TYPES.STAKE === type && txHash && (

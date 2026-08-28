@@ -1,4 +1,4 @@
-import { Activity, ActivityType } from "#/types"
+import { Activity, ActivityType, WithdrawalDestination } from "#/types"
 
 const MIN_LIMIT_VALUE_DURATION = BigInt(String(1e7)) // 0.1 BTC
 const MAX_LIMIT_VALUE_DURATION = BigInt(String(1e8)) // 1 BTC
@@ -29,14 +29,25 @@ function getEstimatedDuration(
   amount: bigint,
   type: ActivityType,
   shouldUseShortenTimeUnitSuffix = false,
-  status: Activity["status"] = "requested",
+  withdrawalDestination: WithdrawalDestination["type"] = "bitcoin",
 ): string {
   const hoursSuffix = shouldUseShortenTimeUnitSuffix ? "h" : " hours"
-  // Withdrawal duration is related to the tBTC redemption process, which takes
-  // approximately 5 - 7 hours. We use the average value of 6 hours.
-  if (isWithdrawType(type) && status === "pending") return `6${hoursSuffix}`
+  const minutesSuffix = shouldUseShortenTimeUnitSuffix ? "m" : " minutes"
 
-  if (isWithdrawType(type) && status === "requested") return `72${hoursSuffix}`
+  // This no longer varies by status: a withdrawal used to wait in the Midas
+  // queue for the next NAV update before redemption started, which is what the
+  // longer `requested` estimate accounted for. Funds now sit on the acreBTC
+  // contract, so neither destination waits on the queue.
+  if (isWithdrawType(type)) {
+    // Paid out in tBTC by `acreBTC.redeem`, which settles in the very
+    // transaction that requests it - no bridge, no queue. The only wait is
+    // the Ethereum transaction being mined.
+    if (withdrawalDestination === "tbtc") return `5${minutesSuffix}`
+
+    // Bridged to Bitcoin through the tBTC redemption process, which takes
+    // approximately 5 - 7 hours. We use the average value of 6 hours.
+    return `6${hoursSuffix}`
+  }
 
   // Deposit duration is related to the tBTC minting process, which varies based
   // on the amount of BTC deposited.
