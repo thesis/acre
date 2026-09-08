@@ -3,7 +3,9 @@ import { AcreContracts, ChainIdentifier } from "../lib/contracts"
 import StakeInitialization from "./staking"
 import { fromSatoshi, toSatoshi, Hex } from "../lib/utils"
 import Tbtc from "./tbtc"
-import AcreSubgraphApi from "../lib/api/AcreSubgraphApi"
+import AcreSubgraphApi, {
+  WithdrawalDestination,
+} from "../lib/api/AcreSubgraphApi"
 import { DepositStatus } from "../lib/api/TbtcApi"
 import { AcreBitcoinProvider } from "../lib/bitcoin"
 
@@ -52,6 +54,15 @@ export type Withdrawal = {
   requestedAmount: bigint
   amount?: bigint
   bitcoinTransactionId?: string
+  /**
+   * Where the withdrawal is delivered - bridged to Bitcoin, or paid out in tBTC
+   * to an Ethereum address.
+   */
+  destination: WithdrawalDestination
+  /**
+   * Hash of the Ethereum transaction that requested the withdrawal.
+   */
+  ethereumTransactionId: string
   status: WithdrawalStatus
   requestedAt: number
   initializedAt?: number
