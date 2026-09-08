@@ -52,7 +52,12 @@ type WithdrawalStatus = "requested" | "initialized" | "finalized"
 export type Withdrawal = {
   id: string
   requestedAmount: bigint
-  amount?: bigint
+  /**
+   * Always present: the subgraph reports it once the withdrawal completes, and
+   * until then `AcreSubgraphApi` falls back to the amount the withdrawal was
+   * requested for.
+   */
+  amount: bigint
   bitcoinTransactionId?: string
   /**
    * Where the withdrawal is delivered - bridged to Bitcoin, or paid out in tBTC
