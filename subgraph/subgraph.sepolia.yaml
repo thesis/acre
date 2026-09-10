@@ -76,7 +76,7 @@ dataSources:
         data: "0x02BfDaee4FB33a69Ecbf008Ad5822971A5382884"
       bitcoinRedeemerV3ContractAddress:
         type: Bytes
-        data: "0x0000000000000000000000000000000000000000"
+        data: "0xDCBE41F6dcE0Aca6B7c0e9b68D2D7dD51d9eA8A4"
     source:
       abi: TbtcBridge
       address: "0x9b1a7fE5a16A15F2f9475C5B231750598b113403"
@@ -116,7 +116,7 @@ dataSources:
         data: "0x7e184179b1F95A9ca398E6a16127f06b81Cb37a3"
       bitcoinRedeemerV3ContractAddress:
         type: Bytes
-        data: "0x0000000000000000000000000000000000000000"
+        data: "0xDCBE41F6dcE0Aca6B7c0e9b68D2D7dD51d9eA8A4"
     source:
       address: "0xB8ba4B007321e0EB4586De49E59593E0eD66d367"
       abi: AcreBTC
@@ -146,9 +146,9 @@ dataSources:
     name: BitcoinRedeemerV3
     network: sepolia
     source:
-      address: "0x0000000000000000000000000000000000000000"
+      address: "0xDCBE41F6dcE0Aca6B7c0e9b68D2D7dD51d9eA8A4"
       abi: BitcoinRedeemerV3
-      startBlock: 9190342
+      startBlock: 11667996
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
