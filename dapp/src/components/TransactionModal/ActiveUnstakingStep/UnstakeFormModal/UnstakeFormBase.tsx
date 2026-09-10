@@ -155,16 +155,9 @@ export default function UnstakeFormBase({
             </Text>
           ) : (
             <Text size="sm">
-              Most withdrawals take{" "}
-              {activitiesUtils.getEstimatedDuration(
-                // We can use 0 here. The redemption process is not related to
-                // amount. The withdraw branch returns before `amount` is read.
-                0n,
-                "withdraw",
-                false,
-                "bitcoin",
-              )}{" "}
-              to complete, but in some cases may take up to 24 hours.
+              Most withdrawals take {activitiesUtils.getWithdrawalDuration()} to
+              complete, but in some cases may take up to{" "}
+              {activitiesUtils.getWithdrawalMaxDuration()}.
             </Text>
           )}
         </AlertDescription>
