@@ -158,7 +158,8 @@ export function forkingConfigured(): boolean {
 }
 
 /**
- * Points the local Hardhat network at a fork of mainnet at FORK_BLOCK.
+ * Points the local Hardhat network at a fork of mainnet at FORK_BLOCK, or at
+ * `blockNumber` when a test needs a different block.
  *
  * We do this here instead of using hardhat.config.ts, because the fork block
  * there is 20971177. That block is older than acreBTC, MidasAllocator and the
@@ -166,14 +167,16 @@ export function forkingConfigured(): boolean {
  * `helpers.forking.resetFork()` does not work either, because it needs
  * `network.config.forking.url`, which is only set when FORKING=true.
  */
-export async function resetToMainnetFork(): Promise<void> {
+export async function resetToMainnetFork(
+  blockNumber: number = FORK_BLOCK,
+): Promise<void> {
   await network.provider.request({
     method: "hardhat_reset",
     params: [
       {
         forking: {
           jsonRpcUrl: process.env.MAINNET_RPC_URL,
-          blockNumber: FORK_BLOCK,
+          blockNumber,
         },
       },
     ],

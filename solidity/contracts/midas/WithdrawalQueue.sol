@@ -431,6 +431,22 @@ contract WithdrawalQueue is Maintainable {
         tbtcVault = newTbtcVault;
     }
 
+    /// @notice Repairs the redeemer output script hash of request 1. The
+    ///         request stored the hash of its script without the length
+    ///         prefix, which the tBTC Bridge requires, so it could never be
+    ///         finalized.
+    /// @dev The new hash is of the same P2WPKH script for
+    ///      bc1quv9n8egtcuz2f33qauvq7ny0hk4g76f804y5s3 with the length prefix,
+    ///      so the destination Bitcoin address does not change. The script
+    ///      without the prefix is in the request transaction:
+    ///      https://etherscan.io/tx/0x1d2980a5e55c9201445da5580aa65c304ea046728ee0def257d30469795bde1f
+    function fixRedeemerOutputScriptHash() external onlyOwner {
+        RedeemAndBridgeRequest storage request = redemAndBridgeRequests[1];
+        // keccak256(0x160014e30b33e50bc704a4c620ef180f4c8fbdaa8f6927)
+        bytes32 newRedeemerOutputScriptHash = 0x446dfb310b0b403f5ce6b5d5cbb6fc32f4b23a16c18be21e969172868adf57bd;
+        request.redeemerOutputScriptHash = newRedeemerOutputScriptHash;
+    }
+
     /// @notice Prepares for a shares redemption in the Midas Vault.
     /// @dev Pulls the Midas shares from the Midas Allocator, which causes
     ///      `MidasAllocator.totalAssets` to decrease. To maintain the balance
