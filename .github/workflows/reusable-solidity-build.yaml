@@ -18,6 +18,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: "solidity/.nvmrc"
+          check-latest: true
           cache: "pnpm"
 
       - name: Install Dependencies

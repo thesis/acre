@@ -29,6 +29,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: "sdk/.nvmrc"
+          check-latest: true
           cache: "pnpm"
 
       - name: Download Solidity Build Artifacts
@@ -56,6 +57,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: "sdk/.nvmrc"
+          check-latest: true
           cache: "pnpm"
 
       - name: Download Solidity Build Artifacts
